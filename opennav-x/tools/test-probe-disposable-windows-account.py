@@ -404,6 +404,11 @@ class OriginalCleanup(unittest.TestCase):
 
 
 class FixedNativeCommand(unittest.TestCase):
+    def setUp(self):
+        reset = mock.patch.object(probe.C, 'set_last_error', create=True)
+        reset.start()
+        self.addCleanup(reset.stop)
+
     def child_owner(self, *, child_change=None, authentication=17, report_change=None,
                     raw_output=None, raw_diagnostics=None, wait_state=0, exit_status=0):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
@@ -421,6 +426,7 @@ class FixedNativeCommand(unittest.TestCase):
                        if raw_diagnostics is None else raw_diagnostics)
         streams, consumed, calls, pipes = {101: output, 104: diagnostics}, set(), [], []
         owner.exit_observed = False
+        owner.kernelbase = 'kernelbase'
         owner.helper = Path('fixed-tools/installed_customer_launch.py')
         owner.native = SimpleNamespace(kernel='kernel', adv='adv', observed={'current': {'session': 2}},
             _token=lambda token: owner.limited_fact if token == 987 else child,
@@ -455,7 +461,22 @@ class FixedNativeCommand(unittest.TestCase):
         def exit_code(handle, code):
             code._obj.value = exit_status
             return True
+        observed_objects = {}
+        def handle_value(handle):
+            return handle.value if hasattr(handle, 'value') else handle
+        def duplicate(source_process, source_handle, target_process, target, access, inherit, flags):
+            self.assertEqual(source_process, owner.process)  # Never reopen a PID.
+            self.assertEqual(target_process, 901)  # Only the observing parent.
+            self.assertEqual((access, inherit, flags), (0, False, 2))
+            self.assertIn(handle_value(source_handle), (103, 102, 105))
+            target._obj.value = 1000 + handle_value(source_handle)
+            observed_objects[target._obj.value] = handle_value(source_handle)
+            return True
+        def compare(original, observed):
+            return handle_value(original) == observed_objects[observed.value]
         apis = {'CreatePipe': pipe, 'SetHandleInformation': lambda *args: True,
+                'GetCurrentProcess': lambda: 901, 'DuplicateHandle': duplicate,
+                'CompareObjectHandles': compare,
                 'CreateFileW': lambda *args: 103, 'CreateProcessWithTokenW': create,
                 'GetProcessId': lambda *args: 301, 'GetProcessIdOfThread': lambda *args: 301,
                 'GetThreadId': lambda *args: 302, 'ResumeThread': lambda *args: 1,
@@ -466,7 +487,7 @@ class FixedNativeCommand(unittest.TestCase):
                 calls.append(name)
                 return apis[name](*args)
             return call
-        owner.fn = fn
+        owner.fn, owner.apis = fn, apis
         return owner, calls
 
     def test_actual_child_handles_authentication_and_readonly_report_are_bound_through_exit(self):
@@ -482,6 +503,100 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertFalse(result['sameAccountElevationTested'])
         self.assertTrue(owner.facts['capabilityProgress']['markerSequenceComplete'])
         self.assertTrue(owner.facts['capabilityProgress']['finalDocumentPresent'])
+        self.assertEqual(calls.count('DuplicateHandle'), 3)
+        self.assertEqual(calls.count('CompareObjectHandles'), 3)
+        self.assertLess(max(i for i, name in enumerate(calls) if name == 'CompareObjectHandles'),
+                        calls.index('ResumeThread'))
+        for record in owner.facts['originalChild']['standardHandles'].values():
+            self.assertEqual(record, dict(duplicateSucceeded=True, sameObject=True,
+                                          duplicateError=None, comparisonError=None))
+        self.assertEqual([h.value for h in owner.owned[-3:]], [1103, 1102, 1105])
+
+    def test_missing_or_foreign_child_standard_objects_refuse_before_resume(self):
+        for slot in (103, 102, 105):
+            for fault in ('missing', 'foreign'):
+                with self.subTest(slot=slot, fault=fault):
+                    owner, calls = self.child_owner()
+                    duplicate, compare = owner.apis['DuplicateHandle'], owner.apis['CompareObjectHandles']
+                    def read_slot(source, handle, target, output, access, inherit, flags):
+                        if fault == 'missing' and handle == slot:
+                            self.assertEqual((source, target, access, inherit, flags),
+                                             (owner.process, 901, 0, False, 2))
+                            return False
+                        return duplicate(source, handle, target, output, access, inherit, flags)
+                    owner.apis['DuplicateHandle'] = read_slot
+                    owner.apis['CompareObjectHandles'] = lambda original, observed: (
+                        False if fault == 'foreign' and
+                        (original.value if hasattr(original, 'value') else original) == slot
+                        else compare(original, observed))
+                    with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=6):
+                        with self.assertRaises(probe.Refused) as caught:
+                            owner.observe()
+                    self.assertEqual(caught.exception.reason, 'original-probe-standard-handles-refused')
+                    records = owner.facts['originalChild']['standardHandles']
+                    name = {103: 'stdin', 102: 'stdout', 105: 'stderr'}[slot]
+                    self.assertFalse(records[name]['sameObject'])
+                    self.assertEqual(records[name]['duplicateSucceeded'], fault != 'missing')
+                    self.assertEqual(records[name]['duplicateError' if fault == 'missing' else 'comparisonError'], 6)
+                    self.assertEqual(calls.count('DuplicateHandle'), 3)
+                    self.assertNotIn('ResumeThread', calls)
+                    self.assertFalse(owner.facts['originalChild']['resumeAttempted'])
+                    self.assertFalse(owner.exit_observed)
+                    # No account/profile deletion is authorized by this new
+                    # observation; all originals and observer copies drain via
+                    # the unchanged owned-handle cleanup.
+                    owned = owner.owned.copy()
+                    owner.password = ctypes.create_unicode_buffer('synthetic-secret')
+                    owner.native.close = mock.Mock()
+                    owner.native.close_handle = mock.Mock(return_value=True)
+                    result = owner.cleanup()
+                    self.assertEqual(result['state'], 'deferred-to-disposable-job')
+                    self.assertEqual(owner.native.close_handle.call_args_list,
+                                     [mock.call(handle) for handle in reversed(owned)])
+                    self.assertEqual(owner.password.value, '')
+
+    def test_returned_observer_copy_survives_duplicate_refusal_or_interruption(self):
+        for interruption in (False, True):
+            with self.subTest(interruption=interruption):
+                owner, calls = self.child_owner()
+                def interrupted_duplicate(source, handle, target, output, access, inherit, flags):
+                    self.assertEqual((source, target, access, inherit, flags), (owner.process, 901, 0, False, 2))
+                    output._obj.value = 777
+                    if interruption:
+                        raise KeyboardInterrupt()
+                    return False
+                owner.apis['DuplicateHandle'] = interrupted_duplicate
+                expected = KeyboardInterrupt if interruption else probe.Refused
+                with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=6):
+                    with self.assertRaises(expected):
+                        owner.observe()
+                self.assertIn(777, [h.value if hasattr(h, 'value') else h for h in owner.owned])
+                self.assertNotIn('CompareObjectHandles', calls)
+                self.assertNotIn('ResumeThread', calls)
+
+    def test_child_identity_is_rechecked_after_standard_object_observation(self):
+        for fault in ('creation', 'token', 'thread'):
+            with self.subTest(fault=fault):
+                owner, calls = self.child_owner()
+                compare = owner.apis['CompareObjectHandles']
+                def change_after_comparison(original, observed):
+                    matched = compare(original, observed)
+                    if observed.value == 1105:
+                        if fault == 'creation':
+                            owner.native._created = lambda handle: 124
+                        elif fault == 'token':
+                            token = owner.native._token
+                            owner.native._token = lambda handle: dict(token(handle), session=3) if handle == 77 else token(handle)
+                        else:
+                            owner.apis['GetThreadId'] = lambda *args: 303
+                    return matched
+                owner.apis['CompareObjectHandles'] = change_after_comparison
+                with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                    with self.assertRaises(probe.Refused) as caught:
+                        owner.observe()
+                self.assertEqual(caught.exception.reason, 'original-probe-child-identity-refused')
+                self.assertEqual(calls.count('CompareObjectHandles'), 3)
+                self.assertNotIn('ResumeThread', calls)
 
     def test_timeout_retains_progress_even_with_complete_document_but_never_accepts_it(self):
         for output, diagnostics, last, document in (
@@ -546,6 +661,7 @@ class FixedNativeCommand(unittest.TestCase):
             self.assertEqual(caught.exception.reason, 'original-probe-child-identity-refused')
             self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
             self.assertNotIn('ResumeThread', calls)
+            self.assertNotIn('DuplicateHandle', calls)
             self.assertEqual(owner.launch_effect, 'created')
             self.assertFalse(owner.facts['originalChild']['resumeAttempted'])
 

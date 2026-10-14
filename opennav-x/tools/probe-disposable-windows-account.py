@@ -9,6 +9,9 @@ used by this entry. Original token statistics survive refusal. Limited-child
 desktop observations do not enable the elevated-parent customer launch API.
 Fixed stderr progress labels and bounded stdout-document presence survive
 refusal/timeout; neither diagnostic supplies capability or exit acceptance.
+Before resume, supplied standard-handle slots are observed from the original
+child process and compared with the retained parent pipe/NUL objects. This
+diagnostic duplicates handles only back into the parent, never into the child.
 Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
 window-station/desktop permission additions. Failures preserve uncertain live
 process/account/profile state for disposable-job destruction rather than kill.
@@ -16,6 +19,8 @@ process/account/profile state for disposable-job destruction rather than kill.
 Native contracts:
 https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-logonuserw
 https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw
+https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-duplicatehandle
+https://learn.microsoft.com/en-us/windows/win32/api/handleapi/nf-handleapi-compareobjecthandles
 https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-duplicatetokenex
 https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-deleteprofilew
 https://learn.microsoft.com/en-us/windows/win32/api/lmaccess/nf-lmaccess-netuseradd
@@ -190,6 +195,9 @@ class AccountProbe:
             self.fn, self.ok = self.native._fn, self.native._ok
             self.net = C.WinDLL('netapi32.dll', use_last_error=True, winmode=0x800)
             self.env = C.WinDLL('userenv.dll', use_last_error=True, winmode=0x800)
+            self.kernelbase = C.WinDLL('kernelbase.dll', use_last_error=True, winmode=0x800)
+            # Resolve the read-only comparator before creating the fresh account.
+            self.fn(self.kernelbase, 'CompareObjectHandles', W.BOOL, W.HANDLE, W.HANDLE)
             self.name = 'skgprobe' + secrets.token_hex(6)
             self.sid, self.account_created = None, False
             self.launch_effect, self.process, self.thread = 'not-attempted', None, None
@@ -385,6 +393,36 @@ class AccountProbe:
                 self.token_statistics(self.limited) == self.limited_statistics,
                 'original-limited-primary-changed')
 
+    def observe_child_standard_handles(self, startup, originals):
+        # CreateProcessWithTokenW copies STARTF_USESTDHANDLES fields unchanged.
+        # Observe those slots through the ORIGINAL returned child handle. Only
+        # the parent receives duplicates; SAME_ACCESS never grants more rights
+        # and CLOSE_SOURCE is never used. Existing cleanup owns every duplicate.
+        records = self.facts['originalChild']['standardHandles'] = {}
+        parent = self.fn(self.native.kernel, 'GetCurrentProcess', W.HANDLE)()
+        duplicate = self.fn(self.native.kernel, 'DuplicateHandle', W.BOOL,
+            W.HANDLE, W.HANDLE, W.HANDLE, C.POINTER(W.HANDLE), W.DWORD, W.BOOL, W.DWORD)
+        compare = self.fn(self.kernelbase, 'CompareObjectHandles', W.BOOL, W.HANDLE, W.HANDLE)
+        for name, original in zip(('stdin', 'stdout', 'stderr'), originals, strict=True):
+            record = records[name] = dict(duplicateSucceeded=False, sameObject=False,
+                                         duplicateError=None, comparisonError=None)
+            observed = W.HANDLE()
+            try:
+                C.set_last_error(0)
+                ok = duplicate(self.process, getattr(startup, name), parent,
+                               C.byref(observed), 0, False, 2)  # DUPLICATE_SAME_ACCESS
+                record['duplicateError'] = None if ok else number(C.get_last_error())
+            finally:
+                if observed.value:
+                    self.own(observed)
+            record['duplicateSucceeded'] = bool(ok and observed.value)
+            if record['duplicateSucceeded']:
+                C.set_last_error(0)
+                record['sameObject'] = bool(compare(original, observed))
+                record['comparisonError'] = None if record['sameObject'] else number(C.get_last_error())
+        require(all(record['duplicateSucceeded'] and record['sameObject'] for record in records.values()),
+                'original-probe-standard-handles-refused')
+
     def observe(self):
         self.check_limited()
         class Security(C.Structure):
@@ -443,17 +481,24 @@ class AccountProbe:
         child_statistics = self.token_statistics(child_token)
         self.facts['originalChild'] = dict(pid=process.pid, threadId=process.tid,
             created=self.native._created(self.process), token=child, statistics=child_statistics, resumeAttempted=False)
-        self.check_limited()
-        require(child['sid'] == self.sid and not child['elevated'] and child['elevationType'] == 3 and
-                child['tokenType'] == 1 and child['integrity'] == 'S-1-16-8192' and
-                child_statistics['authenticationId'] == self.limited_statistics['authenticationId'] and
-                child['session'] == self.native.observed['current']['session'] and
-                self.fn(self.native.kernel, 'GetProcessId', W.DWORD, W.HANDLE)(self.process) == process.pid and
-                self.fn(self.native.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(self.thread) == process.pid and
-                self.fn(self.native.kernel, 'GetThreadId', W.DWORD, W.HANDLE)(self.thread) == process.tid and
-                os.path.normcase(self.native._image(self.process)) == os.path.normcase(sys.executable),
-                'original-probe-child-identity-refused')
+        def check_created_child():
+            self.check_limited()
+            require(child['sid'] == self.sid and not child['elevated'] and child['elevationType'] == 3 and
+                    child['tokenType'] == 1 and child['integrity'] == 'S-1-16-8192' and
+                    child_statistics['authenticationId'] == self.limited_statistics['authenticationId'] and
+                    child['session'] == self.native.observed['current']['session'] and
+                    token_fact(self.native._token(child_token)) == child and
+                    self.token_statistics(child_token) == child_statistics and
+                    self.native._created(self.process) == self.facts['originalChild']['created'] and
+                    self.fn(self.native.kernel, 'GetProcessId', W.DWORD, W.HANDLE)(self.process) == process.pid and
+                    self.fn(self.native.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(self.thread) == process.pid and
+                    self.fn(self.native.kernel, 'GetThreadId', W.DWORD, W.HANDLE)(self.thread) == process.tid and
+                    os.path.normcase(self.native._image(self.process)) == os.path.normcase(sys.executable),
+                    'original-probe-child-identity-refused')
+        check_created_child()
         require(self.verify_profile() is not None, 'original-profile-load-unobserved')
+        self.observe_child_standard_handles(startup, (null, write, diagnostic_write))
+        check_created_child()
         self.facts['originalChild']['resumeAttempted'] = True
         previous = self.fn(self.native.kernel, 'ResumeThread', W.DWORD, W.HANDLE)(self.thread)
         self.facts['originalChild']['resumeResult'] = previous

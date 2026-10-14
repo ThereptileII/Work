@@ -29,3 +29,20 @@ customer/UAC/installed lifecycle qualification still needs a usable authorized
 Windows session. This result does not qualify that environment or close SCRUM-311.
 The separate full product candidate remains `9b12442d` in run38615517743; this later
 helper neither rebuilt nor relabelled that candidate.
+
+## Subsequent standard-handle diagnostic contract
+
+The maintained probe now compares each supplied stdin/stdout/stderr slot in the
+original suspended child with its retained parent NUL/pipe object, before the
+single resume. `DuplicateHandle` uses the original child as source and the parent
+as destination, with `DUPLICATE_SAME_ACCESS`, no inheritance and no
+`DUPLICATE_CLOSE_SOURCE`; `CompareObjectHandles` checks object identity. Only
+booleans and numeric errors are retained. Observer duplicates join the existing
+owned-handle cleanup, and original child identity is checked before and after
+observation. A failed comparison refuses resume and defers the created child's
+cleanup to the disposable job. No handle is injected into the child, and no
+token, privilege, desktop/ACL, launch flags or 60-second budget is changed.
+
+This is a prepared discriminator for missing diagnostic delivery, not evidence
+that standard handles caused either retained timeout. Native observation and
+actual interactive customer/UAC acceptance remain separate and pending.
