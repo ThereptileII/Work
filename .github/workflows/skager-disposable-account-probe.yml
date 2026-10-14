@@ -1,12 +1,17 @@
 name: SKAGER disposable ordinary-account capability
 on:
   workflow_dispatch:
+    inputs:
+      coordinator_only:
+        description: Run only native qualification challenge custody and Python streaming
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   ordinary-account-capability:
     name: Genuine disposable Windows account capability
-    if: github.repository == 'ThereptileII/Work'
+    if: ${{ github.repository == 'ThereptileII/Work' && !inputs.coordinator_only }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -27,3 +32,6 @@ jobs:
           name: disposable-account-probe-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: ${{ runner.temp }}/disposable-account-probe/result.json
           if-no-files-found: error
+  coordinator:
+    if: ${{ github.repository == 'ThereptileII/Work' && inputs.coordinator_only }}
+    uses: ./.github/workflows/skager-installed-coordinator-probe.yml
