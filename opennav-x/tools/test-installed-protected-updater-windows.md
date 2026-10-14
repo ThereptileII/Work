@@ -52,8 +52,9 @@ any such existing process, even without a visible window.
 ## Joined installed journey
 
 `installed_updater_journey.run_joined(initial, phases, pins, output, *, handoff)`
-composes the existing initial B0 admission and all four phases before the real
-Maintain uninstall. Prepare `initial` through the B0 driver's `prepare`, and
+composes the existing initial B0 admission, all four phases and explicit protected
+manual rollback to the original qualified B0 before the real Maintain uninstall.
+Prepare `initial` through the B0 driver's `prepare`, and
 `phases` through this driver's `prepare`, using independently approved original
 declarations. Both must identify the same B0, client request, operator kit,
 existing settings and original file identities. The callable does not supply
@@ -62,11 +63,27 @@ host authorization or approval, and must not run on the boat.
 The operator's explicit `handoff(phase_name, expected_selected_head)` performs
 only already authorized publication/connectivity changes outside the driver.
 It returns an independently approved timestamp hash for each online phase and
-exactly `None` for offline. Normal publication and offline observers still
-verify the actual endpoint. The journey creates no approval or publication.
+exactly `None` for both `offline` and `manual-rollback`. At the latter handoff,
+keep the already authorized offline condition through rollback and restored B0
+startup; returning a timestamp refuses. Actual offline observers
+still verify the configured endpoint before and after the rollback/startup step.
+The journey creates no approval, publication or connectivity change.
 
-One Setup/enrollment is followed by initial B0, no-update, Later, Now, offline,
-then Maintain. Every phase gets a fresh native observer using the same original
+One Setup/enrollment is followed by initial B0, no-update, Later, Now, offline B1,
+explicit manual rollback, restored ordinary B0 startup/normal close, then Maintain.
+The rollback sends the existing pinned provisioner's one-shot
+`--maintenance=manual-rollback` request with a fresh request ID, the observed B1
+selected head and the original qualified B0 generation/completion. Its exact
+`manual-selected` result must match fresh protected history; the B0 version,
+commit, completion and historical qualification/clean-close facts must match the
+original admission. A new selected head distinguishes explicit rollback from
+replayed original history. The current profile must remain preserved throughout.
+The restored B0 launch has its own named observation and original limited-token
+process checks; it is not recorded as a no-update or offline B1 phase. The helper
+never retries or kills an uncertain maintenance process, including on its bounded
+30-minute wait. A timeout can leave committed effects requiring operator review.
+
+Every step gets a fresh native observer using the same original
 SID, profile and registration. Generation-image owners drain before the next
 handoff or retirement. The fixture's original broker query handle stays retained
 and live through the phases, then closes before Maintain. The original profile
@@ -74,11 +91,13 @@ is compared before and after each phase, including between phases.
 
 Pass an absolute `result.json` in a fresh evidence directory. Per-phase results
 are create-only; partial failures remain recorded. A failure stops subsequent
-phases and uninstall without retry or automatic cleanup. Product and customer
-UAC acceptance remain false: this scoped composition is not blanket acceptance.
-The 69 focused portable checks (10 joined, 32 B0 and 27 phase) and independent
-source review pass. Actual execution on a suitable signed-in disposable Windows
-host remains required.
+steps and uninstall without retry or automatic cleanup. The separate
+`manual-rollback/result.json` and joined result set
+`nativeInstalledManualRollbackAcceptance` only after all rollback/startup checks
+and original owner cleanup pass. Product and customer UAC acceptance remain
+false. Repair, automatic rollback and functional stock startup after uninstall
+are outside this composition. Portable ordering/refusal checks cannot qualify
+native execution; a suitable signed-in disposable Windows host remains required.
 
 ## Approved fixture declaration
 

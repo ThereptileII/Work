@@ -21,13 +21,14 @@ class State:
         self.active, self.broker_live, self.broker_closed = set(), True, False
         self.fail_phase, self.fail_close = None, None
         self.fail_uninstall = False
+        self.restored = False
 
     def history(self):
         return dict(state='selected-history', generation=('d' if self.current else 'a') * 32,
                     version='0.4.0-beta2.5' if self.current else '0.4.0-beta2.4',
                     commit=('e' if self.current else 'b') * 40,
                     completionSha256=('2' if self.current else '1') * 64,
-                    selectedHeadSha256=('4' if self.current else '3') * 64,
+                    selectedHeadSha256=('b' if self.restored else '4' if self.current else '3') * 64,
                     qualificationSha256=('6' if self.current else '5') * 64,
                     qualificationClosedSha256=('8' if self.current else '7') * 64,
                     inventorySha256=('a' if self.current else '9') * 64,
@@ -64,6 +65,20 @@ class Native:
         if name == self.state.fail_phase and self.label != 'initial':
             raise ValueError('inert original native phase refusal')
         if name == 'now': self.state.current = True
+
+    def manual_rollback(self, before, target):
+        self.state.trace.append('manual-rollback:request')
+        assert self.state.current and before['selectedHeadSha256'] == '4' * 64
+        assert target['generation'] == 'a' * 32 and target['completionSha256'] == '1' * 64
+        if self.state.fail_phase == 'manual-rollback':
+            raise ValueError('inert original native rollback refusal')
+        self.state.current, self.state.restored = False, True
+        return dict(schema=1, state='manual-selected', generation='a' * 32,
+                    completionSha256='1' * 64, selectedHeadSha256='b' * 64)
+
+    def start_restored_b0_and_close(self, selected):
+        assert self.state.restored and not self.state.current and selected == self.state.history()
+        self.state.trace.append('restored-b0:start-close')
 
     def close(self):
         self.state.trace.append(self.label + ':close')
@@ -146,7 +161,7 @@ class JoinedTests(unittest.TestCase):
     def handoff(self, name, head):
         assert not self.state.active, 'Handoff occurred with image owners retained'
         self.state.trace.append(('handoff', name, head))
-        return None if name == 'offline' else ('f' if name == 'no-update' else 'a') * 64
+        return None if name in ('offline', 'manual-rollback') else ('f' if name == 'no-update' else 'a') * 64
 
     def run_joined(self, handoff=None, phase_native_factory=None):
         return journey.run_joined(self.initial, self.phases, self.pins, self.output,
@@ -166,13 +181,18 @@ class JoinedTests(unittest.TestCase):
         self.assertEqual(trace.count('enroll'), 1)
         self.assertEqual(trace.count('maintain'), 1)
         self.assertEqual([(item[1], item[2]) for item in trace if isinstance(item, tuple) and item[0] == 'handoff'],
-                         [('no-update', '3' * 64), ('later', '3' * 64), ('now', '3' * 64), ('offline', '4' * 64)])
+                         [('no-update', '3' * 64), ('later', '3' * 64), ('now', '3' * 64), ('offline', '4' * 64),
+                          ('manual-rollback', '4' * 64)])
         self.assertLess(trace.index('initial:close'), trace.index('broker:retain'))
-        self.assertLess(trace.index('phase-offline:close'), trace.index('broker:close'))
+        self.assertLess(trace.index('phase-offline:close'), trace.index('manual-rollback:request'))
+        self.assertLess(trace.index('manual-rollback:request'), trace.index('restored-b0:start-close'))
+        self.assertLess(trace.index('restored-b0:start-close'), trace.index('phase-manual-rollback:close'))
+        self.assertLess(trace.index('phase-manual-rollback:close'), trace.index('broker:close'))
         self.assertLess(trace.index('broker:close'), trace.index('before:close'))
         self.assertLess(trace.index('before:close'), trace.index('maintain'))
         self.assertEqual(self.phases, original_phase_inputs)
-        self.assertEqual(result['state'], 'genuine-setup-b0-four-phases-maintain-uninstalled')
+        self.assertEqual(result['state'], 'genuine-setup-b0-four-phases-manual-rollback-maintain-uninstalled')
+        self.assertTrue(result['nativeInstalledManualRollbackAcceptance'])
         self.assertTrue(result['nativeInitialB0Acceptance'])
         self.assertTrue(result['nativeInstalledUninstallAcceptance'])
         self.assertFalse(result['nativeProductAcceptance'])
@@ -182,6 +202,10 @@ class JoinedTests(unittest.TestCase):
             self.assertTrue(saved['nativeInstalledPhaseAcceptance'])
             self.assertEqual(saved['phase'], name)
             self.assertFalse(saved['nativeProductAcceptance'])
+        rollback = json.loads((self.output.parent / 'manual-rollback' / 'result.json').read_text())
+        self.assertTrue(rollback['nativeInstalledManualRollbackAcceptance'])
+        self.assertEqual(rollback['after']['generation'], 'a' * 32)
+        self.assertNotIn('nativeInstalledPhaseAcceptance', rollback)
         self.assertEqual(json.loads(self.output.read_text()), result)
 
     def test_native_phase_refusal_retains_prior_and_partial_results_without_later_phase_or_uninstall(self):
@@ -197,8 +221,29 @@ class JoinedTests(unittest.TestCase):
         self.assertFalse((self.output.parent / 'now').exists())
         self.assertEqual(self.state.trace.count('enroll'), 1)
 
+    def test_rollback_refusal_stops_before_restored_startup_and_maintain(self):
+        self.state.fail_phase = 'manual-rollback'
+        with self.assertRaises(ValueError): self.run_joined()
+        self.assertNotIn('restored-b0:start-close', self.state.trace)
+        self.assertNotIn('maintain', self.state.trace)
+        self.assertEqual(self.state.trace.count('manual-rollback:request'), 1)
+        self.assertFalse(self.state.active)
+        saved = json.loads(self.output.read_text())
+        self.assertFalse(saved['nativeInstalledManualRollbackAcceptance'])
+        self.assertTrue(all(item['nativeInstalledPhaseAcceptance'] for item in saved['phases'][:4]))
+        self.assertEqual(saved['phases'][4]['status'], 'refused')
+
+    def test_profile_change_at_rollback_handoff_stops_before_mutating_request(self):
+        def handoff(name, head):
+            answer = self.handoff(name, head)
+            if name == 'manual-rollback': self.state.profile['navigationSha256'] = 'f' * 64
+            return answer
+        with self.assertRaises(ValueError): self.run_joined(handoff)
+        self.assertNotIn('manual-rollback:request', self.state.trace)
+        self.assertNotIn('maintain', self.state.trace)
+
     def test_handoff_refusal_or_invalid_timestamp_never_starts_that_phase(self):
-        for fault in ('raise', 'missing', 'offline-pin'):
+        for fault in ('raise', 'missing', 'offline-pin', 'rollback-pin'):
             with self.subTest(fault=fault):
                 self.output = self.root / ('evidence-' + fault) / 'result.json'
                 self.state = State(self.root)
@@ -207,9 +252,10 @@ class JoinedTests(unittest.TestCase):
                     if fault == 'raise' and name == 'later': raise RuntimeError('inert operator refusal')
                     if fault == 'missing' and name == 'later': return None
                     if fault == 'offline-pin' and name == 'offline': return 'a' * 64
+                    if fault == 'rollback-pin' and name == 'manual-rollback': return 'a' * 64
                     return answer
                 with self.assertRaises((ValueError, RuntimeError)): self.run_joined(handoff)
-                phase = 'offline' if fault == 'offline-pin' else 'later'
+                phase = 'manual-rollback' if fault == 'rollback-pin' else 'offline' if fault == 'offline-pin' else 'later'
                 self.assertNotIn('phase-' + phase + ':open', self.state.trace)
                 self.assertNotIn('maintain', self.state.trace)
 
@@ -273,8 +319,9 @@ class JoinedTests(unittest.TestCase):
         with self.assertRaises(ValueError): self.run_joined()
         result = json.loads(self.output.read_text())
         self.assertEqual(result['state'], 'refused')
-        self.assertEqual(len(result['phases']), 4)
-        self.assertTrue(all(item['nativeInstalledPhaseAcceptance'] for item in result['phases']))
+        self.assertEqual(len(result['phases']), 5)
+        self.assertTrue(all(item['nativeInstalledPhaseAcceptance'] for item in result['phases'][:4]))
+        self.assertTrue(result['phases'][4]['nativeInstalledManualRollbackAcceptance'])
         self.assertFalse(result['nativeInstalledUninstallAcceptance'])
         self.assertNotIn('uninstalled', self.state.trace)
         self.assertEqual(self.state.trace.count('maintain'), 1)

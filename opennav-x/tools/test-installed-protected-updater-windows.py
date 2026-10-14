@@ -23,6 +23,7 @@ import ssl
 import sqlite3
 import stat
 import subprocess
+import tempfile
 import sys
 import time
 import urllib.error
@@ -651,6 +652,72 @@ def diagnostic(provisioner, run=subprocess.run, clock=time.monotonic):
         page += 1
 
 
+def manual_rollback(provisioner, before, target, popen=subprocess.Popen):
+    """One actual explicit operator request; refusal/uncertainty is never retried."""
+    for value in (before['selectedHeadSha256'], target['completionSha256']):
+        pin(value)
+    pin(target['generation'], 32)
+    require(before['generation'] != target['generation'] and
+            {'generation': target['generation'], 'completionSha256': target['completionSha256']} in before['ancestors'])
+    request = secrets.token_hex(16)
+    command = [str(provisioner), '--maintenance=manual-rollback', '--request-id=' + request,
+               '--expected-selected-head-sha256=' + before['selectedHeadSha256'],
+               '--target-generation=' + target['generation'],
+               '--target-completion-sha256=' + target['completionSha256']]
+    # Match the native maintenance deadline. wait leaves an uncertain original
+    # process alone; subprocess.run/communicate cleanup must not kill it. File
+    # capture avoids pipe deadlock and never buffers unbounded output in memory.
+    with tempfile.TemporaryFile() as output, tempfile.TemporaryFile() as errors:
+        process = popen(command, stdin=subprocess.DEVNULL, stdout=output, stderr=errors)
+        require(process.wait(timeout=1800) == 0)
+        output.seek(0)
+        errors.seek(0)
+        raw = output.read(4097)
+        require(len(raw) <= 4096 and not errors.read(1))
+    observed = strict(raw)
+    keys(observed, ('schema', 'requestId', 'state', 'generation', 'completionSha256', 'selectedHeadSha256'))
+    require(type(observed['schema']) is int and observed['schema'] == 1 and observed['requestId'] == request and
+            observed['state'] == 'manual-selected' and observed['generation'] == target['generation'] and
+            observed['completionSha256'] == target['completionSha256'] and
+            observed['selectedHeadSha256'] != before['selectedHeadSha256'])
+    pin(observed['selectedHeadSha256'])
+    return observed
+
+
+def run_manual_rollback(prepared, expected_head, original_b0, native, report):
+    """Restore the original qualified B0, then observe its real ordinary startup."""
+    pin(expected_head)
+    require(original_b0['generation'] == prepared['request']['installed']['generation'] and
+            original_b0['version'] == prepared['b0']['version'] and original_b0['commit'] == prepared['b0']['commit'])
+    before = native.history()
+    require(before['selectedHeadSha256'] == expected_head and before['version'] == prepared['b1']['version'] and
+            before['commit'] == prepared['b1']['commit'] and before['generation'] != original_b0['generation'] and
+            {'generation': original_b0['generation'], 'completionSha256': original_b0['completionSha256']} in before['ancestors'])
+    report['before'] = before
+    native.publication('offline', None)
+    profile = native.profile()
+    unchanged(prepared)
+    result = native.manual_rollback(before, original_b0)
+    report['rollback'] = result
+    selected = native.history()
+    require(selected['selectedHeadSha256'] == result['selectedHeadSha256'] and
+            selected['selectedHeadSha256'] not in (before['selectedHeadSha256'], original_b0['selectedHeadSha256']) and
+            all(selected[k] == original_b0[k] for k in
+                ('generation', 'completionSha256', 'version', 'commit', 'qualificationSha256', 'qualificationClosedSha256')))
+    report['selected'] = selected
+    require(profile_preserved(profile, native.profile()))
+    # A separate explicit launch; do not relabel this as an offline B1 phase.
+    native.start_restored_b0_and_close(selected)
+    after = native.history()
+    require(all(after[k] == selected[k] for k in
+                ('generation', 'completionSha256', 'selectedHeadSha256', 'version', 'commit',
+                 'qualificationSha256', 'qualificationClosedSha256', 'inventorySha256', 'ancestors')))
+    require(profile_preserved(profile, native.profile()))
+    native.publication('offline', None)
+    unchanged(prepared)
+    report.update(after=after, preservation=profile, status='passed')
+
+
 def run_phase(prepared, phase, expected_head, timestamp_sha, native, report):
     pin(expected_head)
     before = native.history()
@@ -771,6 +838,10 @@ class Native:
     def history(self):
         return diagnostic(self.provisioner)
 
+    def manual_rollback(self, before, target):
+        self.no_existing_clients()
+        return manual_rollback(self.provisioner, before, target)
+
     def publication(self, phase, timestamp_sha):
         publication(self.p, phase, timestamp_sha)
 
@@ -806,6 +877,15 @@ class Native:
             raise
 
     def start_and_close(self, phase, before):
+        require(phase in PHASES)
+        return self._start_and_close(phase, before)
+
+    def start_restored_b0_and_close(self, selected):
+        require(selected['generation'] == self.p['request']['installed']['generation'] and
+                selected['version'] == self.p['b0']['version'] and selected['commit'] == self.p['b0']['commit'])
+        return self._start_and_close('manual-rollback', selected)
+
+    def _start_and_close(self, phase, before):
         ui = self.ui
         self.no_existing_clients()
         require(not any(title in ('SKAGER / OpenCPN', 'SKAGER Legacy / OpenCPN', 'SKAGER Safe Mode / OpenCPN', 'SKAGER software update')
@@ -852,13 +932,17 @@ class Native:
                         require(ui.CloseHandle(handle))
             deadline = time.monotonic() + 180
             while parent.poll() is None and time.monotonic() < deadline:
-                if phase in ('no-update', 'offline'):
+                if phase in ('no-update', 'offline', 'manual-rollback'):
                     require(not any(title == 'SKAGER software update' for _, _, title in ui.windows()))
                 time.sleep(.1)
             require(parent.poll() == 0)
             selected = self.history()  # Actual Now health+closed facts precede ordinary selection.
             target = self.p['b1' if phase in ('now', 'offline') else 'b0']
             require(selected['version'] == target['version'] and selected['commit'] == target['commit'])
+            if phase == 'manual-rollback':
+                require(all(selected[k] == before[k] for k in
+                            ('generation', 'completionSha256', 'selectedHeadSha256', 'qualificationSha256',
+                             'qualificationClosedSha256', 'inventorySha256')))
             deadline, found = time.monotonic() + 30, None
             while time.monotonic() < deadline:
                 matches = [(h, pid) for h, pid, title in ui.windows() if title == 'SKAGER / OpenCPN']

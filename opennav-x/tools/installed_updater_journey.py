@@ -17,6 +17,7 @@ admission = importlib.util.module_from_spec(_spec)
 _spec.loader.exec_module(admission)
 phase = admission.phase
 PHASES = ('no-update', 'later', 'now', 'offline')
+STEPS = (*PHASES, 'manual-rollback')
 
 
 def _same_inputs(initial, phases):
@@ -80,11 +81,13 @@ def run_joined(initial, phases, pins, output, *, handoff,
                preflight_factory=admission.BeforeEnrollment, stage=phase.stage_operator,
                publish=phase.publication, enroll=admission.enroll_once,
                fixture_factory=admission.InstalledB0Fixture, broker_factory=_OriginalBroker):
-    """Setup/enroll once, qualify B0, run four original phases, Maintain LAST.
+    """Setup/enroll once, four startup phases, explicit B0 rollback, Maintain LAST.
 
     handoff(phase_name, expected_selected_head) performs only the independently
     authorized operator's publication/connectivity work. Return its independently
-    approved timestamp SHA-256 for each online phase and exactly None for offline.
+    approved timestamp SHA-256 for each online phase and exactly None for offline
+    and manual-rollback. The latter keeps the authorized offline condition through
+    explicit rollback and restored B0 ordinary startup; it cannot publish internally.
     This return value is a pin, never an approval manufactured by the journey.
     Original publication/offline observers verify the actual configured endpoint.
 
@@ -101,7 +104,8 @@ def run_joined(initial, phases, pins, output, *, handoff,
     output = _evidence(output, initial, phase_context)
     reports = []
     result = dict(schema=1, state='refused', nativeInitialB0Acceptance=False,
-                  nativeInstalledUninstallAcceptance=False, customerUacAcceptance=False,
+                  nativeInstalledUninstallAcceptance=False, nativeInstalledManualRollbackAcceptance=False,
+                  customerUacAcceptance=False,
                   nativeProductAcceptance=False, phases=reports)
     result['journeyHarnessSha256'] = admission.updater._hash(Path(__file__))
     result['admissionHarnessSha256'] = admission.updater._hash(Path(admission.__file__))
@@ -117,23 +121,27 @@ def run_joined(initial, phases, pins, output, *, handoff,
         expected_head = selected['selectedHeadSha256']
         broker = broker_factory(fixture)
         try:
-            for name in PHASES:
+            for name in STEPS:
                 broker.check()
                 admission.unchanged(authenticated)
                 phase.unchanged(phase_context)
                 directory = output.parent / name
                 directory.mkdir()
+                acceptance = ('nativeInstalledManualRollbackAcceptance' if name == 'manual-rollback'
+                              else 'nativeInstalledPhaseAcceptance')
                 report = dict(schema=1, status='refused', phase=name, nativeProductAcceptance=False,
-                              nativeInstalledPhaseAcceptance=False,
                               expectedSelectedHeadSha256=expected_head,
                               fixturesSha256=result['fixturesSha256'],
                               harnessSha256=admission.updater._hash(Path(phase.__file__)),
-                              scope='installed selection, actual normal app and scoped navigation/settings preservation')
+                              scope=('explicit protected B0 rollback, restored ordinary app and current-profile preservation'
+                                     if name == 'manual-rollback' else
+                                     'installed selection, actual normal app and scoped navigation/settings preservation'))
+                report[acceptance] = False
                 reports.append(report)
                 native = None
                 try:
                     timestamp = handoff(name, expected_head)
-                    admission.require(timestamp is None if name == 'offline' else phase.pin(timestamp))
+                    admission.require(timestamp is None if name in ('offline', 'manual-rollback') else phase.pin(timestamp))
                     if timestamp is not None:
                         report['timestampSha256'] = timestamp
                     broker.check()
@@ -143,7 +151,10 @@ def run_joined(initial, phases, pins, output, *, handoff,
                     admission.require(native.sid == fixture.n.sid and
                                       native.profile_root == fixture.n.profile_root)
                     admission.require(phase.profile_preserved(original_profile, native.profile()))
-                    phase.run_phase(phase_context, name, expected_head, timestamp, native, report)
+                    if name == 'manual-rollback':
+                        phase.run_manual_rollback(phase_context, expected_head, selected, native, report)
+                    else:
+                        phase.run_phase(phase_context, name, expected_head, timestamp, native, report)
                     admission.require(phase.profile_preserved(original_profile, native.profile()))
                     broker.check()
                     # Drain generation image owners before the next handoff,
@@ -152,11 +163,13 @@ def run_joined(initial, phases, pins, output, *, handoff,
                     closed.close()
                     admission.unchanged(authenticated)
                     phase.unchanged(phase_context)
-                    report['nativeInstalledPhaseAcceptance'] = True
+                    report[acceptance] = True
+                    if name == 'manual-rollback':
+                        result[acceptance] = True
                     expected_head = report['after']['selectedHeadSha256']
                 except BaseException:
                     report['status'] = 'refused'
-                    report['nativeInstalledPhaseAcceptance'] = False
+                    report[acceptance] = False
                     raise
                 finally:
                     try:
@@ -172,7 +185,7 @@ def run_joined(initial, phases, pins, output, *, handoff,
         installed = admission.run(initial, pins, output, initial_native_factory, preflight_factory,
                                   stage, publish, enroll, fixture_factory, before_uninstall=before_uninstall)
         result.update(installed)
-        result['state'] = 'genuine-setup-b0-four-phases-maintain-uninstalled'
+        result['state'] = 'genuine-setup-b0-four-phases-manual-rollback-maintain-uninstalled'
         return result
     finally:
         _write_result(output, result)

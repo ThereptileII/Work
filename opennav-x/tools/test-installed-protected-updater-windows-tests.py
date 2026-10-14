@@ -229,6 +229,104 @@ class Tests(unittest.TestCase):
         with self.assertRaises(ValueError):
             driver.diagnostic(Path('/inert/provisioner.exe'), run=mismatch)
 
+    def test_manual_rollback_actual_command_and_strict_one_shot_output(self):
+        before, target = self.history(True), self.history()
+        calls = []
+        def popen(command, **streams):
+            calls.append(command)
+            self.assertEqual(streams['stdin'], driver.subprocess.DEVNULL)
+            self.assertEqual(command[:2], ['/inert/provisioner.exe', '--maintenance=manual-rollback'])
+            self.assertEqual(command[3:], ['--expected-selected-head-sha256=' + '4' * 64,
+                '--target-generation=' + 'c' * 32, '--target-completion-sha256=' + '1' * 64])
+            request = command[2].removeprefix('--request-id=')
+            driver.pin(request, 32)
+            streams['stdout'].write(raw(dict(schema=1, requestId=request, state='manual-selected', generation='c' * 32,
+                completionSha256='1' * 64, selectedHeadSha256='b' * 64)))
+            return SimpleNamespace(wait=lambda timeout: self.assertEqual(timeout, 1800) or 0)
+        result = driver.manual_rollback(Path('/inert/provisioner.exe'), before, target, popen=popen)
+        self.assertEqual(result['selectedHeadSha256'], 'b' * 64)
+        self.assertEqual(len(calls), 1)
+
+    def test_manual_rollback_wrong_target_output_and_timeout_never_retry(self):
+        before, target = self.history(True), self.history()
+        faults = ('schema', 'requestId', 'state', 'generation', 'completionSha256', 'same-head', 'bad-head',
+                  'extra', 'duplicate', 'oversized', 'stderr', 'exit', 'timeout')
+        for fault in faults:
+            calls = []
+            def popen(command, **streams):
+                calls.append(command)
+                value = dict(schema=1, requestId=command[2].split('=', 1)[1], state='manual-selected',
+                             generation='c' * 32, completionSha256='1' * 64, selectedHeadSha256='b' * 64)
+                if fault == 'schema': value['schema'] = True
+                elif fault in ('requestId', 'state', 'generation', 'completionSha256'): value[fault] = 'wrong'
+                elif fault == 'same-head': value['selectedHeadSha256'] = before['selectedHeadSha256']
+                elif fault == 'bad-head': value['selectedHeadSha256'] = 'not-a-head'
+                elif fault == 'extra': value['untrusted'] = True
+                data = raw(value)
+                if fault == 'duplicate': data = data[:-1] + b',"state":"manual-selected"}'
+                if fault == 'oversized': data += b' ' * 4097
+                streams['stdout'].write(data)
+                if fault == 'stderr': streams['stderr'].write(b'uncertain')
+                def wait(timeout):
+                    if fault == 'timeout': raise driver.subprocess.TimeoutExpired(command, timeout)
+                    return 1 if fault == 'exit' else 0
+                return SimpleNamespace(wait=wait, kill=lambda: self.fail('Never kill an uncertain operator'),
+                                       terminate=lambda: self.fail('Never terminate an uncertain operator'))
+            with self.subTest(fault=fault), self.assertRaises((ValueError, driver.subprocess.TimeoutExpired)):
+                driver.manual_rollback(Path('/inert/provisioner.exe'), before, target, popen=popen)
+            self.assertEqual(len(calls), 1)
+        for mutation in ('generation', 'completion'):
+            wrong = copy.deepcopy(target)
+            wrong['generation' if mutation == 'generation' else 'completionSha256'] = 'f' * (32 if mutation == 'generation' else 64)
+            with self.subTest(mutation=mutation), self.assertRaises(ValueError):
+                driver.manual_rollback(Path('/inert/provisioner.exe'), before, wrong,
+                    popen=lambda *args, **kwargs: self.fail('Wrong ancestor must refuse before request'))
+
+    def test_manual_rollback_observes_exact_original_b0_then_explicit_restored_startup(self):
+        target, before = self.history(), self.history(True)
+        selected = dict(target, selectedHeadSha256='b' * 64)
+        events, observations = [], iter((before, selected, selected))
+        native = SimpleNamespace(history=lambda: next(observations),
+            publication=lambda *args: events.append(('publication', *args)), profile=profile_observation,
+            manual_rollback=lambda *args: events.append('request') or {'selectedHeadSha256': 'b' * 64},
+            start_restored_b0_and_close=lambda value: events.append(('restored-b0', value)))
+        report = {}
+        driver.run_manual_rollback(self.prepared(), before['selectedHeadSha256'], target, native, report)
+        self.assertEqual(report['status'], 'passed')
+        self.assertEqual(events, [('publication', 'offline', None), 'request', ('restored-b0', selected),
+                                  ('publication', 'offline', None)])
+        self.assertEqual(report['after']['completionSha256'], target['completionSha256'])
+
+    def test_manual_rollback_wrong_head_history_or_profile_cannot_launch_or_pass(self):
+        for fault in ('target', 'head', 'ancestor', 'completion', 'qualification', 'result-head', 'old-head',
+                      'profile-before-start', 'profile-after-start', 'after-start-head'):
+            target, before = self.history(), self.history(True)
+            selected = dict(target, selectedHeadSha256='b' * 64)
+            after = dict(selected)
+            if fault == 'target': target['generation'] = 'f' * 32
+            if fault == 'head': before['selectedHeadSha256'] = 'f' * 64
+            if fault == 'ancestor': before['ancestors'] = []
+            if fault == 'completion': selected['completionSha256'] = 'f' * 64
+            if fault == 'qualification': selected['qualificationClosedSha256'] = 'f' * 64
+            if fault == 'result-head': selected['selectedHeadSha256'] = 'f' * 64
+            if fault == 'old-head': selected['selectedHeadSha256'] = target['selectedHeadSha256']
+            if fault == 'after-start-head': after['selectedHeadSha256'] = 'f' * 64
+            histories, events = iter((before, selected, after)), []
+            profiles = iter((profile_observation(),
+                profile_observation('f' if fault == 'profile-before-start' else 'a'),
+                profile_observation('f' if fault == 'profile-after-start' else 'a')))
+            native = SimpleNamespace(history=lambda: next(histories), publication=lambda *args: None,
+                profile=lambda: next(profiles), manual_rollback=lambda *args: events.append('request') or
+                    {'selectedHeadSha256': target['selectedHeadSha256'] if fault == 'old-head' else 'b' * 64},
+                start_restored_b0_and_close=lambda *args: events.append('restored-startup'))
+            report = {'status': 'refused'}
+            with self.subTest(fault=fault), self.assertRaises(ValueError):
+                driver.run_manual_rollback(self.prepared(), '4' * 64, target, native, report)
+            self.assertEqual(report['status'], 'refused')
+            if fault not in ('profile-after-start', 'after-start-head'):
+                self.assertNotIn('restored-startup', events)
+            self.assertLessEqual(events.count('request'), 1)
+
     def test_offline_requires_connection_failure_not_http_tls_or_malformed_success(self):
         prepared = self.prepared()
         for error, accepted in ((ConnectionRefusedError(), True), (urllib.error.URLError(TimeoutError()), True),
@@ -687,7 +785,9 @@ class CustomerPhaseLaunchTests(unittest.TestCase):
                                 inventory={'app/skager-update-prompt.exe': 'd' * 64}),
                         b1=dict(version='0.4.0-beta2.5', commit='b' * 40, product=product))
         target = native.p['b1' if phase in ('now', 'offline') else 'b0']
-        native.history = lambda: dict(generation=generation, version=target['version'], commit=target['commit'])
+        native.history = lambda: dict(generation=generation, version=target['version'], commit=target['commit'],
+            completionSha256='1' * 64, selectedHeadSha256='2' * 64, qualificationSha256='3' * 64,
+            qualificationClosedSha256='4' * 64, inventorySha256='5' * 64)
         native.w = w
         native.no_existing_clients = lambda: None
         native.image = lambda generation, name: Path('/inert') / generation / name
@@ -746,6 +846,28 @@ class CustomerPhaseLaunchTests(unittest.TestCase):
         self.assertFalse(any(isinstance(item, tuple) and item[0] == 'message' for item in events))
         self.assertIn(('close-handle', 11), events)
         self.assertEqual(events[-1], 'close-owner')
+
+    def test_restored_b0_is_explicit_real_limited_startup_not_an_offline_b1_phase(self):
+        native, owner, events, generation = self.fixture('manual-rollback')
+        with patch.object(driver, 'open_same_account_protected_startup', return_value=owner) as launch:
+            native.start_restored_b0_and_close(native.history())
+        launch.assert_called_once_with(generation, native.sid)
+        self.assertLess(events.index(('token', 12)), events.index('startup-ready'))
+        self.assertLess(events.index('startup-ready'), events.index(('message', 102, 0x0010)))
+        self.assertEqual(events[-1], 'close-owner')
+
+    def test_restored_b0_wrong_target_or_changed_head_refuses_acceptance(self):
+        for fault in ('generation', 'version', 'head'):
+            native, owner, events, generation = self.fixture('manual-rollback')
+            selected = native.history()
+            if fault == 'head': selected['selectedHeadSha256'] = 'f' * 64
+            else: selected[fault] = 'wrong'
+            with patch.object(driver, 'open_same_account_protected_startup', return_value=owner) as launch, \
+                    self.subTest(fault=fault), self.assertRaises(ValueError):
+                native.start_restored_b0_and_close(selected)
+            self.assertNotIn('startup-ready', events)
+            if fault == 'head': self.assertEqual(events[-1], 'close-owner')
+            else: launch.assert_not_called()
 
     def test_wrong_application_token_prevents_close_input_and_acceptance(self):
         native, owner, events, generation = self.fixture('no-update', refuse_token=12)
