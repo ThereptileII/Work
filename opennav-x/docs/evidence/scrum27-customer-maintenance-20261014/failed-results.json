@@ -1,0 +1,49 @@
+{
+  "run": 38520213641,
+  "attempt": 1,
+  "source": "c6bb2e21c1534cab7f79084e44bda9017719b372",
+  "conclusion": "failure",
+  "scope": "focused native and portable component controls; not installed wizard or boat acceptance",
+  "artifacts": [
+    {
+      "platform": "windows",
+      "id": 11873890718,
+      "name": "startup-restoration-Windows-c6bb2e21c1534cab7f79084e44bda9017719b372-run38520213641-attempt1",
+      "bytes": 38423,
+      "sha256": "5671acc1637b4e8162c11b31d31b79b29e381a4713aff49f1689a8cd81c03101",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 203,
+        "nested_pass": 555,
+        "top_skip": 3,
+        "top_fail": 2,
+        "nested_fail": 2
+      },
+      "failures": [
+        "TestNativeStartupMaintenanceImagePublicationRetainsOriginalAndRefusesExistingOrRetry",
+        "TestNativeStartupMaintenanceImagePublicationRetainsOriginalAndRefusesExistingOrRetry/fresh",
+        "TestNativeStartupMaintenanceImagePublicationRetainsOriginalAndRefusesExistingOrRetry/unknown_existing",
+        "TestNativeStartupMaintenanceImageSourceBindsActualRunningOriginal"
+      ],
+      "skips": [
+        "TestDecommissionExplicitAPIRequiresWindows",
+        "TestStartupExplicitAPIRefusesNonWindows",
+        "TestStartupRestorationPublicNativeBoundary"
+      ]
+    },
+    {
+      "platform": "linux",
+      "id": 11873810920,
+      "name": "startup-restoration-Linux-c6bb2e21c1534cab7f79084e44bda9017719b372-run38520213641-attempt1",
+      "bytes": 35663,
+      "sha256": "c26349cac07dbc2a16380c4e091fb606fd7a922db5c32aea0f332e79481bbddd",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 140,
+        "nested_pass": 422
+      },
+      "failures": [],
+      "skips": []
+    }
+  ]
+}

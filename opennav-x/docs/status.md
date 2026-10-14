@@ -1,5 +1,30 @@
 # SKAGER status — 2026-10-14
 
+## Fixed customer maintenance passes focused Linux and native Windows
+
+Exact source `91d647c383ce662815b0e4e9fab79c5ad0f32ad6` passes
+[run 38521029142](https://github.com/ThereptileII/Work/actions/runs/38521029142):
+Linux **140 top-level / 422 nested** and native Win32 Windows **206 top-level /
+565 nested** cases, zero failures. Three existing non-Windows checks skip on
+Windows; all 65 explicitly checked current/prior native-run controls pass.
+Both original artifacts match provider source/run/attempt, hashes, lengths and
+ZIP CRCs. The original failed run `38520213641` is preserved; deriving canonical
+names from the original image handle fixes its Windows path-normalization
+failure without relaxing identity checks.
+
+Original enrollment now retains the approved maintenance helper and per-install
+completion. The fixed customer Uninstall path accepts no caller cleanup
+authority and joins the existing broker/installed cleanup owners. Same-account
+elevation, parent-loss cancellation and original-owner close outcomes govern
+completion. [Exact evidence and boundaries](evidence/scrum27-customer-maintenance-20261014/README.md).
+
+**Still open:** actual installed Maintain/UAC, genuine B0/update/rollback/uninstall
+journeys, full application package and boat acceptance. The existing B0 driver
+does not yet install the LocalAppData integration or exercise the unelevated
+customer launch. Old packages cannot be relabelled to qualify these new bytes.
+SCRUM-27 remains open; no full application rebuild, delivery or boat operation
+was performed in this component cycle. Earlier evidence remains below.
+
 ## Installed cleanup owner passes focused Windows and Linux
 
 Exact source `b93da59cf0749157dfca84c562cc8c39713ece68` passes
