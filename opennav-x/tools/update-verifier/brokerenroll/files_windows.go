@@ -160,6 +160,7 @@ type nativeEnrollmentFiles struct {
 	maintenanceAttempted  bool
 	bootstrapCache        *enrollmentPin
 	bootstrapCacheOwner   *nativeEnrollmentFiles
+	bootstrapRefresh      *nativeInstalledCodeRefresh
 }
 
 // createFreshFiles requires an independently authenticated provisioner before
@@ -320,6 +321,11 @@ func (f *nativeEnrollmentFiles) check() error {
 			return err
 		}
 	}
+	if f.bootstrapRefresh != nil {
+		if err := f.bootstrapRefresh.check(context.Background()); err != nil {
+			return err
+		}
+	}
 	if f.bootstrapCacheOwner != nil {
 		if f.bootstrapCacheOwner == f {
 			return errors.New("separate original bootstrap cache owner required")
@@ -343,6 +349,9 @@ func (f *nativeEnrollmentFiles) Close() error {
 		return f.closeErr
 	}
 	f.closed = true
+	if f.bootstrapRefresh != nil {
+		f.closeErr = errors.Join(f.closeErr, f.bootstrapRefresh.close())
+	}
 	for i := len(f.pins) - 1; i >= 0; i-- {
 		pin := f.pins[i]
 		if pin == f.fencePin && f.fence != nil {
@@ -780,6 +789,11 @@ func holdOperatorDirectories(cacheDir, artifactDir string) (io.Closer, error) {
 	if err := f.Check(); err != nil {
 		return nil, errors.Join(err, f.Close())
 	}
+	refresh, err := openInstalledCodeRefreshNative(context.Background(), f)
+	if err != nil {
+		return nil, errors.Join(err, f.Close())
+	}
+	f.bootstrapRefresh = refresh
 	return f, nil
 }
 
