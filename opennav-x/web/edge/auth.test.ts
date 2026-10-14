@@ -199,6 +199,9 @@ test("allowlisted OTP login verifies canonical user then issues opaque bounded s
   assert(
     f.remote[2].headers.get("authorization") === "Bearer SECRET access token",
   );
+  for (const call of f.remote) same(call.headers.get("apikey"), "test-public-key");
+  same(f.remote[0].headers.get("authorization"), null);
+  same(f.remote[1].headers.get("authorization"), null);
   assert(!JSON.stringify(f.calls).includes("SECRET"));
   assert(!JSON.stringify(f.calls).includes(session.split("=")[1]));
   assert(!(await res.text()).includes("SECRET"));
@@ -211,6 +214,9 @@ test("signup sends privileged unconfirmed invitation; recovery remains existing-
   same(f.remote[0].body, { email: address });
   same(f.remote[1].body, { email: address, create_user: false });
   same(f.remote[0].headers.get("authorization"), "Bearer SECRET service role");
+  same(f.remote[0].headers.get("apikey"), "SECRET service role");
+  same(f.remote[1].headers.get("apikey"), "test-public-key");
+  same(f.remote[1].headers.get("authorization"), null);
   same(f.sessions.size, 0);
   const denied = await handleAuth(
     request("signup", { email: "stranger@example.com" }),
@@ -219,6 +225,30 @@ test("signup sends privileged unconfirmed invitation; recovery remains existing-
   assert(denied?.status === 200);
   same(f.remote.length, 2);
   assert(challenge.startsWith("__Host-skager_challenge="));
+});
+test("admin invitation needs its server key independently of public OTP configuration", async () => {
+  const f = fixture();
+  delete f.ctx.env.SUPABASE_ANON_KEY;
+  await begin(f, "signup");
+  same(f.remote.length, 1);
+  same(f.remote[0].path, "/auth/v1/invite");
+  same(f.remote[0].headers.get("apikey"), "SECRET service role");
+  same(f.remote[0].headers.get("authorization"), "Bearer SECRET service role");
+  same(f.sessions.size, 0);
+
+  const missing = fixture();
+  delete missing.ctx.env.SUPABASE_SERVICE_ROLE_KEY;
+  missing.state.providerFailure = true;
+  const result = await handleAuth(request("signup", { email: address }), missing.ctx);
+  assert(result?.status === 200);
+  same(missing.remote.length, 1);
+  same(missing.remote[0].path, "/auth/v1/otp");
+  same(missing.remote[0].body, { email: address, create_user: false });
+  same(missing.remote[0].headers.get("apikey"), "test-public-key");
+  same(missing.remote[0].headers.get("authorization"), null);
+  same(missing.challenges.size, 0);
+  same(missing.sessions.size, 0);
+  assert(!(await result.text()).includes("SECRET"));
 });
 test("unknown emails, provider errors, throttle errors and denial have generic identical body", async () => {
   const f = fixture();

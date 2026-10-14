@@ -242,16 +242,19 @@ async function provider(
 ): Promise<Record<string, unknown> | null> {
   const base = new URL(ctx.env.SUPABASE_URL || "");
   if (base.href !== "https://kelwgubkuvditalsbqpr.supabase.co/") return null;
+  // Admin invitations use the server identity in both gateway and Auth headers.
+  // Ordinary OTP and canonical user verification retain the public API identity.
+  const apiKey = path === "invite"
+    ? ctx.env.SUPABASE_SERVICE_ROLE_KEY
+    : ctx.env.SUPABASE_ANON_KEY;
+  if (!apiKey) return null;
   const headers: Record<string, string> = {
-    "apikey": ctx.env.SUPABASE_ANON_KEY || "",
+    "apikey": apiKey,
     "content-type": "application/json",
     "accept-encoding": "identity",
   };
-  if (!headers.apikey) return null;
   if (path === "invite") {
-    const serviceKey = ctx.env.SUPABASE_SERVICE_ROLE_KEY;
-    if (!serviceKey) return null;
-    headers.authorization = `Bearer ${serviceKey}`;
+    headers.authorization = `Bearer ${apiKey}`;
   } else if (accessToken) headers.authorization = `Bearer ${accessToken}`;
   const result = await (ctx.fetch || fetch)(new URL(`/auth/v1/${path}`, base), {
     method: path === "user" ? "GET" : "POST",
