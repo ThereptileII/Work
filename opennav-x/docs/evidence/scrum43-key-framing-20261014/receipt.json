@@ -75,8 +75,15 @@
     "exactEditorEqualityBeforeAndAfter": true,
     "providerRecencyObserved": "a minute ago",
     "legacyJwtGatewayEnabled": false,
-    "sourceDeploymentIdentifierExposed": false,
-    "newOwnerCodeStepPending": true
+    "sourceDeploymentIdentifierExposed": true,
+    "newOwnerCodeStepPending": true,
+    "providerDeploymentId": "kelwgubkuvditalsbqpr_8fda2b14-f5cf-4bde-bb44-cd27323b6291_24",
+    "providerVersion": 24,
+    "configurationRefusalObserved": true,
+    "configurationRefusalBinding": "STRIPE_TEST_SECRET_KEY",
+    "configurationRefusalLogId": "6bf3cc1e-a328-4bdb-9bde-494fbc7d1d9d",
+    "configurationRefusalAtUtc": "2026-10-14T19:28:49Z",
+    "ownerKeyCorrectionPending": true
   },
   "scope": "Exact retained server bundle deployed through authorized provider UI with whole-editor byte equality before deploy and after reload. Frontend and secrets unchanged. No completed live checkout or payment acceptance yet."
 }

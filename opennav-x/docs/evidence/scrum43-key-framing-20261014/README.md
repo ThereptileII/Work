@@ -31,10 +31,19 @@ unchanged from active Cloudflare `ac34d9d4`; no Cloudflare redeploy is needed.
 Chrome reconnected. The existing provider editor matched the prior 78,865-byte
 server exactly before replacement. Whole-document readback before deployment and
 after reloading the provider page matches all 79,004 candidate bytes and the
-server SHA-256 above. Supabase shows a fresh deployment; no distinct deployment
-revision identifier was exposed by the observed UI. The existing legacy-JWT
+server SHA-256 above. Supabase shows a fresh deployment. Its subsequent function log identifies
+deployment `kelwgubkuvditalsbqpr_8fda2b14-f5cf-4bde-bb44-cd27323b6291_24`,
+version **24**. The existing legacy-JWT
 gateway flag remains OFF; application sessions, CSRF and webhook signatures
 remain enforced. No secrets or frontend bytes changed.
+
+The version-24 log at **2026-10-14T19:28:49Z**, ID
+`6bf3cc1e-a328-4bdb-9bde-494fbc7d1d9d`, still reports
+`skager-commerce:configuration-v1:STRIPE_TEST_SECRET_KEY`. The corrected broader
+framing therefore has not resolved the stored binding. No secret was read or
+changed and no Stripe authentication was attempted. The owner correction form
+contains only the exact binding name and an empty value; webhook and other
+settings remain untouched. Correcting that binding precedes another checkout.
 
 The owner previously confirmed sign-in. The new portal visit redirected to
 login because that session expired; a new authorized sign-in code was requested

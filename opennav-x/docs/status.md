@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Stripe TEST key framing deployed; live checkout awaits renewed session
+## Stripe TEST key framing deployed; saved binding still refuses
 
 SCRUM-43 source `2c1511c4e8dc269fce0846e616af9b99675faca7` accepts bounded,
 opaque TEST secret/restricted Bearer keys while preserving their exact bytes and
@@ -15,8 +15,10 @@ The exact server candidate is **deployed** with complete byte-identical editor
 readback before deployment and after reload. Chrome is reconnected. No frontend
 or secret changed. Earlier owner login was confirmed, but the session expired;
 a fresh code step is ready in the same browser.
-The earlier static binding rejection proves no Stripe authentication result;
-actual key validity, TEST checkout, webhook/entitlement and customer download
+The deployed **version 24** log at 19:28:49Z still identifies
+`STRIPE_TEST_SECRET_KEY` as the rejected binding before Stripe I/O. The owner
+correction form is prepared with an empty value; no secret was read or changed.
+Actual key validity, TEST checkout, webhook/entitlement and customer download
 remain unproven. Public signup, public payments and downloads remain closed.
 [Exact package and sanitized evidence](evidence/scrum43-key-framing-20261014/README.md).
 
