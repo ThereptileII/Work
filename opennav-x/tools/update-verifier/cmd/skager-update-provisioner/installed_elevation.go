@@ -54,12 +54,12 @@ func parseInstalledElevation(args []string) (installedElevationRequest, bool, er
 	if args[0] == "--maintenance" && len(args) > 1 {
 		action = args[1]
 	}
-	if action != installedElevationAction && action != installedElevationChildAction && action != rollbackCurrent && action != rollbackCurrent+"-elevated" {
+	if action != installedElevationAction && action != installedElevationChildAction && action != rollbackCurrent && action != rollbackCurrent+"-elevated" && action != repairCurrent && action != repairCurrent+"-elevated" {
 		return q, false, nil
 	}
 	refused := errors.New("fixed installed maintenance elevation arguments required")
 	q.action = strings.TrimSuffix(action, "-elevated")
-	if action == installedElevationAction || action == rollbackCurrent {
+	if action == installedElevationAction || action == rollbackCurrent || action == repairCurrent {
 		if !(len(args) == 1 && args[0] == "--maintenance="+action || len(args) == 2 && args[0] == "--maintenance" && args[1] == action) {
 			return q, true, refused
 		}

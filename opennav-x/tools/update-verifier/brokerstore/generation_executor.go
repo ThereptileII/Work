@@ -20,7 +20,10 @@ type generationExecutorBackend interface {
 //
 // This capability does not select a version, grant a spawn, commission a profile
 // or establish application health. The original generation/Store owns custody.
-type GenerationExecutorImage struct{ owner *ReadOnlyGeneration }
+type GenerationExecutorImage struct {
+	owner           *ReadOnlyGeneration
+	repairBootstrap *RepairSource
+}
 
 func (r *ReadOnlyGeneration) ExecutorImage(ctx context.Context) (*GenerationExecutorImage, error) {
 	if r == nil || r.generation == nil || ctx == nil {
@@ -64,6 +67,9 @@ func (r *ReadOnlyApprovedBaselineGeneration) ExecutorImage(ctx context.Context) 
 // creation FILETIME. Callers must derive both numbers from their retained native
 // peer, never from JSON. A successful comparison grants no execution authority.
 func (image *GenerationExecutorImage) MatchesProcess(ctx context.Context, processID uint32, creationFileTime uint64) error {
+	if image != nil && image.repairBootstrap != nil {
+		return image.repairBootstrap.matchBaselineExecutor(ctx, processID, creationFileTime)
+	}
 	if image == nil || image.owner == nil || image.owner.generation == nil || ctx == nil || processID == 0 || creationFileTime == 0 {
 		return ErrClosed
 	}

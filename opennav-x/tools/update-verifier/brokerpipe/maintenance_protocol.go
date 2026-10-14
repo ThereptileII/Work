@@ -14,6 +14,8 @@ import (
 const MaintenancePipeName = `\\.\pipe\SkagerUpdateBroker.maintenance.v1`
 const ManualRollback = "manual-rollback"
 const SelectedHistory = "selected-history"
+const RepairInspect = "repair-inspect"
+const RepairCurrent = "repair-current"
 const PreviousQualified = "previous-qualified"
 const PrepareDecommission = "prepare-decommission"
 const PrepareUninstall = "prepare-uninstall"
@@ -43,6 +45,7 @@ type RollbackTarget struct {
 	Commit           string `json:"commit"`
 }
 type MaintenanceResult struct {
+	RepairSourceQualification    *RepairQualification   `json:"repairSourceQualification,omitempty"`
 	Previous                     *RollbackTarget        `json:"previous,omitempty"`
 	ClientSID                    string                 `json:"clientSid,omitempty"`
 	RegistrationSHA256           string                 `json:"registrationSha256,omitempty"`
@@ -77,9 +80,9 @@ func validMaintenanceRequest(q MaintenanceRequest) bool {
 		return false
 	}
 	switch q.Operation {
-	case PreviousQualified:
+	case PreviousQualified, RepairInspect:
 		return q.Page == nil && q.InventorySHA256 == "" && q.ExpectedSelectedHeadSHA256 == "" && q.TargetGeneration == "" && q.TargetCompletionSHA256 == ""
-	case PrepareDecommission, PrepareUninstall:
+	case PrepareDecommission, PrepareUninstall, RepairCurrent:
 		return q.Page == nil && q.InventorySHA256 == "" && q.TargetGeneration == "" && q.TargetCompletionSHA256 == "" && hex64.MatchString(q.ExpectedSelectedHeadSHA256)
 	case ManualRollback:
 		return q.Page == nil && q.InventorySHA256 == "" && hex64.MatchString(q.ExpectedSelectedHeadSHA256) && id32.MatchString(q.TargetGeneration) && hex64.MatchString(q.TargetCompletionSHA256)
@@ -112,10 +115,10 @@ func decodeMaintenanceRequest(raw []byte) (q MaintenanceRequest, err error) {
 		return q, ErrRefused
 	}
 	fields := []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256", "targetGeneration", "targetCompletionSha256"}
-	if probe.Operation == PreviousQualified {
+	if probe.Operation == PreviousQualified || probe.Operation == RepairInspect {
 		fields = []string{"schema", "operation", "requestId"}
 	}
-	if probe.Operation == PrepareDecommission || probe.Operation == PrepareUninstall {
+	if probe.Operation == PrepareDecommission || probe.Operation == PrepareUninstall || probe.Operation == RepairCurrent {
 		fields = []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256"}
 	}
 	if probe.Operation == SelectedHistory {
@@ -142,6 +145,12 @@ func validMaintenanceResult(r MaintenanceResult, q MaintenanceRequest) bool {
 	if !validMaintenanceRequest(q) || r.Schema != 1 || r.RequestID != q.RequestID || (q.Operation != PreviousQualified && r.Previous != nil) {
 		return false
 	}
+	if q.Operation != SelectedHistory && r.RepairSourceQualification != nil {
+		return false
+	}
+	if q.Operation == RepairInspect || q.Operation == RepairCurrent {
+		return validRepairResult(r, q)
+	}
 	if q.Operation == PreviousQualified {
 		return validPreviousQualifiedResult(r)
 	}
@@ -154,7 +163,7 @@ func validMaintenanceResult(r MaintenanceResult, q MaintenanceRequest) bool {
 	if q.Operation == ManualRollback {
 		return r.State == "manual-selected" && r.Generation == q.TargetGeneration && r.CompletionSHA256 == q.TargetCompletionSHA256 && hex64.MatchString(r.SelectedHeadSHA256) && r.SelectedHeadSHA256 != q.ExpectedSelectedHeadSHA256 && r.Version == "" && r.Commit == "" && r.QualificationSHA256 == "" && r.QualificationClosedSHA256 == "" && r.InventorySHA256 == "" && r.Page == nil && r.NextPage == nil && r.Ancestors == nil
 	}
-	if r.State != SelectedHistory || !id32.MatchString(r.Generation) || !hex64.MatchString(r.CompletionSHA256) || !hex64.MatchString(r.SelectedHeadSHA256) || !hex64.MatchString(r.InventorySHA256) || !maintenanceCommit.MatchString(r.Commit) || !hex64.MatchString(r.QualificationSHA256) || !hex64.MatchString(r.QualificationClosedSHA256) || r.Page == nil || *r.Page != *q.Page || r.Ancestors == nil || len(*r.Ancestors) > selectedHistoryPageSize || len(r.Version) > 128 {
+	if r.State != SelectedHistory || !id32.MatchString(r.Generation) || !hex64.MatchString(r.CompletionSHA256) || !hex64.MatchString(r.SelectedHeadSHA256) || !hex64.MatchString(r.InventorySHA256) || !maintenanceCommit.MatchString(r.Commit) || !validHistoryQualification(r) || r.Page == nil || *r.Page != *q.Page || r.Ancestors == nil || len(*r.Ancestors) > selectedHistoryPageSize || len(r.Version) > 128 {
 		return false
 	}
 	if _, err := releasepolicy.ParseSemVer(r.Version); err != nil {
@@ -180,6 +189,9 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 		return r, ErrRefused
 	}
 	fields := []string{"schema", "requestId", "state", "generation", "completionSha256", "selectedHeadSha256"}
+	if q.Operation == RepairInspect || q.Operation == RepairCurrent {
+		fields = append(fields, "version", "commit")
+	}
 	if q.Operation == PreviousQualified {
 		fields = append(fields, "version", "commit", "previous")
 	}
@@ -190,7 +202,18 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 		fields = append(fields, "retirementSha256")
 	}
 	if q.Operation == SelectedHistory {
-		fields = append(fields, "version", "commit", "qualificationSha256", "qualificationClosedSha256", "inventorySha256", "page", "ancestors")
+		fields = append(fields, "version", "commit", "inventorySha256", "page", "ancestors")
+		var repair struct {
+			Source *RepairQualification `json:"repairSourceQualification"`
+		}
+		if json.Unmarshal(raw, &repair) != nil {
+			return r, ErrRefused
+		}
+		if repair.Source != nil {
+			fields = append(fields, "repairSourceQualification")
+		} else {
+			fields = append(fields, "qualificationSha256", "qualificationClosedSha256")
+		}
 		var probe struct {
 			NextPage *int `json:"nextPage"`
 		}
@@ -211,6 +234,11 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 		}
 	}
 	if q.Operation == SelectedHistory {
+		if original, ok := object["repairSourceQualification"]; ok {
+			if _, err := exactObject(original, []string{"generation", "completionSha256", "qualifiedHeadSha256", "healthSha256", "closedSha256"}, false); err != nil {
+				return r, ErrRefused
+			}
+		}
 		var items []json.RawMessage
 		if json.Unmarshal(object["ancestors"], &items) != nil || items == nil || len(items) > selectedHistoryPageSize {
 			return r, ErrRefused

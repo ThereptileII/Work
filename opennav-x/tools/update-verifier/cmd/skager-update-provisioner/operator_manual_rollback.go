@@ -32,6 +32,9 @@ func runMaintenanceDispatch(ctx context.Context, args []string, read func(string
 	var installedOutput bytes.Buffer
 	elevation, _, _ := parseInstalledElevation(args)
 	if handled, err := installedElevationDispatch(ctx, args, func(operationCtx context.Context) error {
+		if elevation.action == repairCurrent {
+			return runCustomerRepair(operationCtx, &installedOutput)
+		}
 		if elevation.action == rollbackCurrent {
 			return runCustomerRollback(operationCtx, &installedOutput)
 		}

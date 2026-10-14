@@ -74,3 +74,30 @@ func openInstalledMaintenanceWith(ctx context.Context, read func(context.Context
 	}
 	return m, nil
 }
+
+// OpenInstalledPayloadMaintenanceNative owns the original fixed helper,
+// completed installation and live original broker without preparing uninstall
+// or reopening damaged selected payload as a prerequisite for Repair.
+func OpenInstalledPayloadMaintenanceNative(ctx context.Context) (result *MaintenanceOwner, resultErr error) {
+	if ctx == nil || ctx.Err() != nil {
+		return nil, errors.New("live installed payload maintenance required")
+	}
+	inputs, err := readInstalledCompletionNative(ctx)
+	if err != nil {
+		return nil, err
+	}
+	transferred := false
+	defer func() {
+		if !transferred && inputs.completion != nil {
+			resultErr = errors.Join(resultErr, inputs.completion.close())
+		}
+	}()
+	if inputs.completion == nil || inputs.baseline == nil || inputs.publication == nil {
+		return nil, errors.New("original completed installation required")
+	}
+	if err = errors.Join(inputs.completion.check(ctx), inputs.baseline.Validate()); err != nil {
+		return nil, err
+	}
+	transferred = true
+	return openMaintenanceAuthorityWith(ctx, inputs.authority, maintenanceOperations{authenticate: maintenanceOperatorNative, openDecommission: openDecommissionNative, poll: servicePoll, limit: maintenanceStopLimit}, true, inputs.completion)
+}

@@ -3,6 +3,7 @@
 package brokerstore
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -202,8 +203,10 @@ func originalRetirementLineage(ctx context.Context, d *nativeDecommission, g *na
 		return nil, errors.New("retirement scope must exactly cover original baseline and completed native generation registry")
 	}
 	wanted := map[string]bool{}
+	wantedCompletion := map[string]string{}
 	for _, item := range lineage {
 		wanted[item.GenerationID] = true
+		wantedCompletion[item.GenerationID] = item.CompletionSHA256
 	}
 	stages := map[string]bool{}
 	for _, stage := range d.rootInventory.stages {
@@ -247,7 +250,20 @@ func originalRetirementLineage(ctx context.Context, d *nativeDecommission, g *na
 		if err != nil {
 			return nil, err
 		}
-		if i == 0 && record.Purpose != approvedBaselineGenerationPurpose || i > 0 && (record.Purpose != string(GenerationPurposeSignedCandidate) || !stages[item.GenerationID]) {
+		validChild := record.Purpose == string(GenerationPurposeSignedCandidate) && stages[item.GenerationID]
+		if record.Purpose == string(GenerationPurposeRepaired) && validateRepairOrigin(record) == nil && !stages[item.GenerationID] {
+			source := repairOriginalSourceGeneration(record)
+			validChild = wanted[source] && wanted[record.Repair.PreviousGeneration] && wantedCompletion[record.Repair.PreviousGeneration] == record.Repair.PreviousCompletionSHA256
+			found := false
+			for _, held := range g.held {
+				if held.file.pin.name == g.registry.name+`\`+source+".json" {
+					original, e := decommissionReadExact(held.file, held.length, nil)
+					found = e == nil && bytes.Equal(original, record.Repair.SourceCompletion)
+				}
+			}
+			validChild = validChild && found
+		}
+		if i == 0 && record.Purpose != approvedBaselineGenerationPurpose || i > 0 && !validChild {
 			return nil, errors.New("original baseline or sealed signed lineage purpose differs")
 		}
 		id, err := fileIdentity(root.handle)

@@ -49,21 +49,45 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 			return false, errors.Join(errExecutionHostRefused, err)
 		}
 		registrationDigest := executionOriginalDigest(raw)
-		baseline, err := adapter.OpenReadOnlyGeneration(ctx, peer.SID, r.Installed.Generation)
+		entries, err := adapter.EnumerateExecutionJournals(ctx, peer.SID)
 		if err != nil {
 			return false, err
 		}
-		defer func() { resultErr = errors.Join(resultErr, baseline.Close()) }()
-		if baseline.Purpose() != brokerstore.GenerationPurposeApprovedBaseline {
-			return false, errExecutionHostRefused
-		}
-		authorization := &nativeExecutionAuthorization{store: adapter.Store}
-		if err = authorization.authorize(ctx, baseline, nil); err != nil {
-			return false, err
-		}
-		image, err := executionHostExecutor(ctx, baseline)
-		if err != nil {
-			return false, err
+		var image *brokerstore.GenerationExecutorImage
+		var validateBootstrap func() error
+		if len(entries) == 0 {
+			baseline, err := adapter.OpenReadOnlyGeneration(ctx, peer.SID, r.Installed.Generation)
+			if err != nil {
+				return false, err
+			}
+			defer func() { resultErr = errors.Join(resultErr, baseline.Close()) }()
+			if baseline.Purpose() != brokerstore.GenerationPurposeApprovedBaseline {
+				return false, errExecutionHostRefused
+			}
+			authorization := &nativeExecutionAuthorization{store: adapter.Store}
+			if err = authorization.authorize(ctx, baseline, nil); err != nil {
+				return false, err
+			}
+			image, err = executionHostExecutor(ctx, baseline)
+			if err != nil {
+				return false, err
+			}
+
+			validateBootstrap = func() error { return authorization.authorize(ctx, baseline, nil) }
+		} else {
+			// A complete selected reader below must still authenticate ALL
+			// restored/current code. This separate owner admits only the intact
+			// original B0 bootstrap image, never the damaged B0 application.
+			bootstrap, e := adapter.Store.OpenRepairSource(ctx, peer.SID, r.Installed.Generation)
+			if e != nil {
+				return false, e
+			}
+			defer func() { resultErr = errors.Join(resultErr, bootstrap.Close()) }()
+			image, err = bootstrap.OriginalBaselineExecutorImage(ctx)
+			if err != nil {
+				return false, err
+			}
+			validateBootstrap = func() error { return bootstrap.Validate(ctx) }
 		}
 		// This pure comparison uses actual retained peer numbers and consumes no
 		// one-use session binding. Initial qualification binds its own retained
@@ -83,7 +107,7 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 		if err != nil || stock == nil || observed != stockBaseline {
 			return false, errors.Join(errExecutionHostRefused, err)
 		}
-		entries, err := adapter.EnumerateExecutionJournals(ctx, peer.SID)
+		entries, err = adapter.EnumerateExecutionJournals(ctx, peer.SID)
 		if err != nil {
 			return false, err
 		}
@@ -96,7 +120,7 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 			if err != nil || executionOriginalDigest(after) != registrationDigest {
 				return errors.Join(errExecutionHostRefused, err)
 			}
-			if err = errors.Join(capability.Validate(ctx), authorization.authorize(ctx, baseline, nil), stock.validate()); err != nil {
+			if err = errors.Join(capability.Validate(ctx), validateBootstrap(), stock.validate()); err != nil {
 				return err
 			}
 			afterEntries, err := adapter.EnumerateExecutionJournals(ctx, peer.SID)

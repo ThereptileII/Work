@@ -21,7 +21,7 @@ func selectedHistoryPage(attempts []executionSelectionAttempt, baseline string, 
 	seen := map[string]bool{}
 	for i := range attempts {
 		a := &attempts[i]
-		if a.manual != nil || a.recovery != nil || a.terminal != "selected" {
+		if a.repair != nil || a.manual != nil || a.recovery != nil || a.terminal != "selected" {
 			continue
 		}
 		if !hashPattern.MatchString(a.health) || !hashPattern.MatchString(a.closed) {
@@ -39,6 +39,25 @@ func selectedHistoryPage(attempts []executionSelectionAttempt, baseline string, 
 			continue
 		}
 		ancestors = append(ancestors, brokerpipe.MaintenanceAncestor{Generation: a.begin.Generation, CompletionSHA256: a.begin.CompletionSHA256})
+	}
+	var repair *executionRepairBegin
+	if qualified == nil {
+		for i := range attempts {
+			a := &attempts[i]
+			if a.repair != nil && a.terminal == "repair-selected" && a.begin.Generation == selected.generation && a.begin.CompletionSHA256 == selected.completion {
+				if repair != nil {
+					return refuse()
+				}
+				repair = a.repair
+			}
+		}
+		if repair != nil {
+			for i := range attempts {
+				if repairQualified(attempts[i], repair) {
+					qualified = &attempts[i]
+				}
+			}
+		}
 	}
 	if qualified == nil || len(ancestors) > 127 {
 		return refuse()
@@ -59,6 +78,11 @@ func selectedHistoryPage(attempts []executionSelectionAttempt, baseline string, 
 		Version: selected.installed.Version, Commit: selected.installed.Commit,
 		QualificationSHA256: qualified.health, QualificationClosedSHA256: qualified.closed,
 		InventorySHA256: inventory, Page: &page, Ancestors: &items}
+	if repair != nil {
+		result.QualificationSHA256 = ""
+		result.QualificationClosedSHA256 = ""
+		result.RepairSourceQualification = &brokerpipe.RepairQualification{Generation: qualified.begin.Generation, CompletionSHA256: qualified.begin.CompletionSHA256, QualifiedHeadSHA256: qualified.head, HealthSHA256: qualified.health, ClosedSHA256: qualified.closed}
+	}
 	if end < len(ancestors) {
 		next := page + 1
 		result.NextPage = &next

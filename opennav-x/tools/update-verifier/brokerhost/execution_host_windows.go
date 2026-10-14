@@ -249,8 +249,14 @@ func executionHostExecutor(ctx context.Context, g *brokerstore.ReopenedGeneratio
 			return nil, e
 		}
 		return b.ExecutorImage(ctx)
-	case brokerstore.GenerationPurposeSignedCandidate:
-		c, e := g.Candidate()
+	case brokerstore.GenerationPurposeSignedCandidate, brokerstore.GenerationPurposeRepaired:
+		var c *brokerstore.ReadOnlyGeneration
+		var e error
+		if g.Purpose() == brokerstore.GenerationPurposeRepaired {
+			c, e = g.Repaired()
+		} else {
+			c, e = g.Candidate()
+		}
 		if e != nil {
 			return nil, e
 		}
@@ -266,8 +272,14 @@ func executionHostApplication(ctx context.Context, g *brokerstore.ReopenedGenera
 			return nil, e
 		}
 		return b.ApplicationImage(ctx)
-	case brokerstore.GenerationPurposeSignedCandidate:
-		c, e := g.Candidate()
+	case brokerstore.GenerationPurposeSignedCandidate, brokerstore.GenerationPurposeRepaired:
+		var c *brokerstore.ReadOnlyGeneration
+		var e error
+		if g.Purpose() == brokerstore.GenerationPurposeRepaired {
+			c, e = g.Repaired()
+		} else {
+			c, e = g.Candidate()
+		}
 		if e != nil {
 			return nil, e
 		}

@@ -71,6 +71,7 @@ type Store struct {
 	registrations          []*Registration
 	baselines              []*InstalledBaseline
 	generations            []*InstalledGeneration
+	repairs                []*RepairSource
 	journals               []*ExecutionJournal
 	journalReaders         []*ExecutionJournalReader
 	profileBackups         []*executionProfileBackupState
@@ -238,6 +239,8 @@ func (s *Store) Close() error {
 	s.registrations = nil
 	baselines := s.baselines
 	s.baselines = nil
+	repairs := s.repairs
+	s.repairs = nil
 	generations := s.generations
 	s.generations = nil
 	profileBackups := s.profileBackups
@@ -271,6 +274,9 @@ func (s *Store) Close() error {
 	}
 	for _, j := range journals {
 		result = errors.Join(result, j.Close())
+	}
+	for _, r := range repairs {
+		result = errors.Join(result, r.Close())
 	}
 	for _, g := range generations {
 		result = errors.Join(result, g.Close())

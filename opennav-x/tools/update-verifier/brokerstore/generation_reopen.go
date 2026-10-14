@@ -224,7 +224,7 @@ func validateGenerationReopenEvidence(e generationReopenEvidence, client, stage 
 		if !bytes.Equal(a, b) {
 			return record, errors.New("approved baseline original physical provenance differs")
 		}
-	} else if record.Acquisition.Version != record.Identity.Version || record.Acquisition.Commit != record.Identity.Commit || stage == baseline.Generation {
+	} else if record.Purpose != string(GenerationPurposeRepaired) && (record.Acquisition.Version != record.Identity.Version || record.Acquisition.Commit != record.Identity.Commit || stage == baseline.Generation) {
 		return record, errors.New("signed candidate identity or distinct generation differs")
 	}
 	if len(record.Members) < 1 || len(record.Members) > MaxFiles || len(record.SourceMembers) != len(record.Members) || len(record.Directories) < 1 || len(record.Directories) > MaxFiles+16 || len(record.SourceDirectories) < 1 || len(record.SourceDirectories) > MaxFiles+16 {

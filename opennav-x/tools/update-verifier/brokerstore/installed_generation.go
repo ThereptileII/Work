@@ -38,6 +38,7 @@ type generationRecord struct {
 	Schema                   int                       `json:"schema"`
 	Purpose                  string                    `json:"purpose"`
 	ApprovedBaseline         *generationBaselineOrigin `json:"approvedBaseline,omitempty"`
+	Repair                   *RepairOrigin             `json:"repair,omitempty"`
 	ClientSID                string                    `json:"clientSid"`
 	Generation               string                    `json:"generation"`
 	PreviousCompletion       []byte                    `json:"previousCompletion"`
@@ -305,6 +306,11 @@ func (g *InstalledGeneration) names() []string {
 }
 
 func (g *InstalledGeneration) validateContents(ctx context.Context) error {
+	if g.record.Purpose == string(GenerationPurposeRepaired) {
+		if err := validateRepairOrigin(g.record); err != nil {
+			return err
+		}
+	}
 	if g.record.ApprovedBaseline != nil || g.record.Purpose == approvedBaselineGenerationPurpose {
 		if err := validateApprovedBaselineGeneration(g.record); err != nil {
 			return err
@@ -429,7 +435,7 @@ func (g *InstalledGeneration) Completion() (GenerationCompletion, error) {
 	return g.completionRecord()
 }
 func (g *InstalledGeneration) completionRecord() (GenerationCompletion, error) {
-	if g.record.Purpose != "signed-candidate-generation" || g.record.ApprovedBaseline != nil {
+	if (g.record.Purpose != "signed-candidate-generation" && g.record.Purpose != string(GenerationPurposeRepaired)) || g.record.ApprovedBaseline != nil {
 		return GenerationCompletion{}, errors.New("signed candidate completion required")
 	}
 	var previous baselineRecord

@@ -110,7 +110,7 @@ func validateExecutionJournalBytes(fence, raw []byte) error {
 	}
 	canonical, err := json.Marshal(origin)
 	if err != nil || !bytes.Equal(canonical, fence) || origin.Schema != 1 || origin.Purpose != "protected-execution-facts" || !validHex(origin.ExecutionID, 32) || !brokerregistration.IsCanonicalUserSID(origin.ClientSID) || !validHex(origin.Generation, 32) ||
-		(origin.GenerationPurpose != "signed-candidate-generation" && origin.GenerationPurpose != approvedBaselineGenerationPurpose) || len(origin.OriginalCompletion) == 0 || len(origin.OriginalCompletion) > maxGenerationRecordBytes || origin.CompletionSHA256 != registrationDigest(origin.OriginalCompletion) || !origin.Identities.valid() {
+		(origin.GenerationPurpose != "signed-candidate-generation" && origin.GenerationPurpose != approvedBaselineGenerationPurpose && origin.GenerationPurpose != string(GenerationPurposeRepaired)) || len(origin.OriginalCompletion) == 0 || len(origin.OriginalCompletion) > maxGenerationRecordBytes || origin.CompletionSHA256 != registrationDigest(origin.OriginalCompletion) || !origin.Identities.valid() {
 		return errors.New("noncanonical or unbound execution journal origin")
 	}
 	prefix := len(fence) + 1

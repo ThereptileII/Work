@@ -207,8 +207,14 @@ func manualRollbackGenerationIdentity(g *brokerstore.ReopenedGeneration) (comple
 		}
 		c, e := b.Completion()
 		return c.CompletionSHA256, c.Identity.Version, c.Identity.Commit, e
-	case brokerstore.GenerationPurposeSignedCandidate:
-		b, e := g.Candidate()
+	case brokerstore.GenerationPurposeSignedCandidate, brokerstore.GenerationPurposeRepaired:
+		var b *brokerstore.ReadOnlyGeneration
+		var e error
+		if g.Purpose() == brokerstore.GenerationPurposeRepaired {
+			b, e = g.Repaired()
+		} else {
+			b, e = g.Candidate()
+		}
 		if e != nil {
 			return "", "", "", e
 		}

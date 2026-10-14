@@ -19,11 +19,23 @@ func confirmCustomerRollbackNative(ctx context.Context, plan brokerpipe.Maintena
 	if ctx == nil || ctx.Err() != nil || plan.Previous == nil {
 		return false, errors.New("live authenticated rollback confirmation required")
 	}
-	message, err := windows.UTF16PtrFromString("Roll back SKAGER from " + plan.Version + " to " + plan.Previous.Version + "?\n\nTarget build: " + plan.Previous.Commit + "\n\nCurrent charts, routes, waypoints, plugins, connections and profile data are preserved. Older navigation data is never restored. The application stays closed. OpenCPN and the update broker remain installed.")
+	return confirmCustomerMaintenanceNative(ctx, "Confirm SKAGER rollback", "Roll back SKAGER from "+plan.Version+" to "+plan.Previous.Version+"?\n\nTarget build: "+plan.Previous.Commit+"\n\nCurrent charts, routes, waypoints, plugins, connections and profile data are preserved. Older navigation data is never restored. The application stays closed. OpenCPN and the update broker remain installed.")
+}
+
+// Shared own-dialog primitive. It never automates UAC; a late answer cannot
+// resume a cancelled maintenance operation.
+func confirmCustomerMaintenanceNative(ctx context.Context, titleText, messageText string) (bool, error) {
+	if ctx == nil || ctx.Err() != nil {
+		return false, errors.New("live customer confirmation required")
+	}
+	message, err := windows.UTF16PtrFromString(messageText)
 	if err != nil {
 		return false, err
 	}
-	title, _ := windows.UTF16PtrFromString("Confirm SKAGER rollback")
+	title, err := windows.UTF16PtrFromString(titleText)
+	if err != nil {
+		return false, err
+	}
 	box := windows.NewLazySystemDLL("user32.dll").NewProc("MessageBoxW")
 	if err := box.Find(); err != nil {
 		return false, err

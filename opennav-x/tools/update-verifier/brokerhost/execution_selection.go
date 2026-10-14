@@ -72,6 +72,7 @@ type executionSelectionAttempt struct {
 	consumed       bool
 	recovery       *executionSelectionRecovery
 	manual         *executionManualRollbackBegin
+	repair         *executionRepairBegin
 	health, closed string
 }
 
@@ -103,6 +104,9 @@ func parseExecutionSelectionAttempt(sid, executionID, generation, completion, ge
 	}
 	if json.Unmarshal(facts[0].original, &purpose) != nil {
 		return refuse()
+	}
+	if purpose.Purpose == "broker-selected-repair-v1" {
+		return parseExecutionRepair(sid, executionID, generation, completion, generationPurpose, journalDigest, facts)
 	}
 	if purpose.Purpose == "broker-selected-recovery-v1" {
 		return parseExecutionSelectionRecovery(sid, executionID, generation, completion, generationPurpose, journalDigest, facts)
@@ -351,9 +355,15 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 		if consumed >= 128 || (current != "" && next.begin.PreviousGeneration != selected.generation) {
 			return executionSelectedVersion{}, nil, errExecutionSelection
 		}
-		if next.terminal == "selected" && next.recovery == nil && next.manual == nil {
+		if next.terminal == "selected" && next.recovery == nil && next.manual == nil && next.repair == nil {
 			selected = executionSelectedVersion{next.begin.Generation, next.begin.CompletionSHA256, next.head, releasepolicy.Installed{Version: next.begin.Version, Commit: next.begin.Commit}}
 			qualifiedAtHead[next.head] = next
+		} else if current != "" && next.terminal == "repair-selected" && next.repair != nil {
+			ancestor, exists := qualifiedAtHead[next.repair.SourceQualifiedHeadSHA256]
+			if !exists || !repairQualified(ancestor, next.repair) || next.repair.PreviousCompletionSHA256 != selected.completion || selected.installed != ancestorInstalled(ancestor) || next.begin.Generation == selected.generation {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+			selected = executionSelectedVersion{next.begin.Generation, next.begin.CompletionSHA256, next.head, ancestorInstalled(ancestor)}
 		} else if current != "" && next.terminal == "manual-selected" && next.manual != nil {
 			// Only an original successful qualifier already reached BEFORE this
 			// edge may be selected. A later/unrelated qualifier, recovery label,
@@ -386,6 +396,14 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 		if parent != "" {
 			generation, reachable := selectedAtHead[parent]
 			if !reachable || a.begin.PreviousGeneration != generation {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+		}
+		if a.repair != nil {
+			ancestor, exists := qualifiedAtHead[a.repair.SourceQualifiedHeadSHA256]
+			ancestorOrder, reached := headOrder[a.repair.SourceQualifiedHeadSHA256]
+			parentOrder, parentReached := headOrder[parent]
+			if !exists || !reached || !parentReached || ancestorOrder > parentOrder || !repairQualified(ancestor, a.repair) {
 				return executionSelectedVersion{}, nil, errExecutionSelection
 			}
 		}

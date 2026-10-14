@@ -13,7 +13,7 @@ func previousQualified(attempts []executionSelectionAttempt, baseline string, ex
 	qualified := make(map[string]executionSelectionAttempt)
 	for _, a := range attempts {
 		byHead[a.head] = a
-		if a.terminal == "selected" && a.manual == nil && a.recovery == nil {
+		if a.terminal == "selected" && a.manual == nil && a.recovery == nil && a.repair == nil {
 			if _, duplicate := qualified[a.begin.Generation]; duplicate || !hashPattern.MatchString(a.health) || !hashPattern.MatchString(a.closed) {
 				return brokerpipe.MaintenanceResult{}, errExecutionSelection
 			}
@@ -30,9 +30,19 @@ func previousQualified(attempts []executionSelectionAttempt, baseline string, ex
 			generation = a.begin.PreviousGeneration
 		}
 		if generation != current.generation {
+			if a.repair != nil {
+				if a.begin.Version != current.installed.Version || a.begin.Commit != current.installed.Commit {
+					return brokerpipe.MaintenanceResult{}, errExecutionSelection
+				}
+				generation = a.repair.SourceGeneration
+			}
 			target, ok := qualified[generation]
 			if !ok {
 				return brokerpipe.MaintenanceResult{}, errExecutionSelection
+			}
+			if ancestorInstalled(target) == current.installed {
+				head = a.begin.PreviousHeadSHA256
+				continue
 			}
 			r := brokerpipe.MaintenanceResult{Schema: 1, RequestID: requestID, State: brokerpipe.PreviousQualified,
 				Generation: current.generation, CompletionSHA256: current.completion, SelectedHeadSHA256: current.head,

@@ -12,7 +12,7 @@ func ValidSelectedHistoryResult(r MaintenanceResult, q MaintenanceRequest) bool 
 // validation.
 // Decommission/uninstall retain their separate witness-owning conversation.
 func ValidMaintenanceClientRequest(q MaintenanceRequest) bool {
-	return (q.Operation == ManualRollback || q.Operation == SelectedHistory || q.Operation == PreviousQualified) && validMaintenanceRequest(q)
+	return (q.Operation == RepairInspect || q.Operation == RepairCurrent || q.Operation == ManualRollback || q.Operation == SelectedHistory || q.Operation == PreviousQualified) && validMaintenanceRequest(q)
 }
 
 func ValidMaintenanceClientResult(r MaintenanceResult, q MaintenanceRequest) bool {

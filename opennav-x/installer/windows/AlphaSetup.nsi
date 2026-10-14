@@ -271,6 +271,15 @@ Section "Uninstall"
   ; The machine-protected helper owns its own same-account elevation and native
   ; maintenance conversation. This user-level wizard supplies only a fixed action,
   ; never an elevated script, approval hash, SID, package or cleanup destination.
+  ${If} $Action == "Repair"
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_repair
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance
+protected_repair:
+    SetOutPath "$PROGRAMFILES32\SKAGER\UpdateBroker"
+    nsExec::ExecToLog '"$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" --maintenance=repair-current'
+    Pop $Result
+    Goto maintenance_result
+  ${EndIf}
   ${If} $Action == "Rollback"
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_rollback
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance

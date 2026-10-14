@@ -418,12 +418,17 @@ func validateApprovedBaselineGeneration(record generationRecord) error {
 }
 func validateGenerationPurpose(record generationRecord) error {
 	switch record.Purpose {
+	case string(GenerationPurposeRepaired):
+		return validateRepairOrigin(record)
 	case "signed-candidate-generation":
-		if record.ApprovedBaseline != nil || !record.Acquisition.valid() || registrationDigest(record.PreviousCompletion) != record.PreviousCompletionSHA256 {
+		if record.Repair != nil || record.ApprovedBaseline != nil || !record.Acquisition.valid() || registrationDigest(record.PreviousCompletion) != record.PreviousCompletionSHA256 {
 			return errors.New("signed candidate provenance differs")
 		}
 		return nil
 	case approvedBaselineGenerationPurpose:
+		if record.Repair != nil {
+			return ErrInstalledGenerationUncertain
+		}
 		if len(record.Members) == 0 {
 			return errors.New("completed approved baseline members required")
 		}
