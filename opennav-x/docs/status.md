@@ -1,6 +1,30 @@
 # SKAGER status — 2026-10-14
 
-## Existing broker code upgrade: bounded operator increment, not customer acceptance
+## Running successor finalization: focused native gate passes
+
+SCRUM-311 now recovers the bounded interruption after an exact complete successor
+pair is already AUTO_START/RUNNING but before final ready publication. A separate
+native capability observes the same retained process/token/image and authenticated
+history with query-only service rights, then exclusively publishes the absent
+marker. It cannot configure, start or stop the service. Existing disabled rename
+recovery is preserved. Cooperative executor-query access and its inherited
+abrupt-death limitations are documented; this is not a claim of zero effects.
+
+Exact `39f5b7e60d18498c329c37f34471dcb1a03a3969` passes
+[run 38602308806](https://github.com/ThereptileII/Work/actions/runs/38602308806):
+**340 Windows x86 / 237 Linux passes**, zero failures. All 87/64 mandatory
+maintenance cases pass, including five new portable and four inert native tests.
+Five existing explicit Windows skips remain. Original artifact hashes, lengths,
+ZIP CRCs and exact-source receipts were verified. Source-closure checks pass
+12 broker / 14 provisioner cases. No full application rebuild was required.
+[Evidence](evidence/scrum311-running-finalize-20261014/README.md).
+
+Normal Setup/Maintain activation, actual installed SCM/customer/UAC/boat
+qualification, early partial staging, DEMAND validation, AUTO+STOPPED and partial
+immutable-publication recovery remain open. This is bounded primitive acceptance,
+not complete customer recovery or public release approval.
+
+## Earlier checkpoint: existing broker code upgrade operator foundation
 
 SCRUM-311 now separates existing-code replacement from initial enrollment with
 a distinct signed TUF target, exact predecessor broker/helper hashes and an
