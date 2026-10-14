@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Windows SDK image drift stops candidate; dependency-only refresh running
+## Windows SDK authenticated; same-job early environment gate selected
 
 Exact `1107c04f55a5a51660e424493bf083fc83106443` passes
 [native helper run 38548714640](https://github.com/ThereptileII/Work/actions/runs/38548714640):
@@ -20,8 +20,21 @@ The overall candidate cannot qualify from this attempt.
 
 Root selected one dependency-only refresh at `e80f0b92`,
 [run38552041879](https://github.com/ThereptileII/Work/actions/runs/38552041879).
-It is running; its exact artifact and fresh native reuse still require verification.
-No image check was bypassed, old-lock retry or duplicate application build started.
+It completed successfully. Original artifact `11890887394` is 117,984,619 bytes,
+SHA-256 `b528229d8ec2f3f2272053da5c3baae98ab206d867c327f0bdd407303f7ab4d3`;
+all 296 ZIP CRCs and the complete 295-file payload inventory verify. Native
+producer tests passed: OpenSSL 4,283, zlib 13 and curl 1,569. Both its original
+GitHub runner log and bundle record the older image `20261004.326.1`, so this
+does not establish compatibility with `20261012.333.1`.
+
+Change `30c0b9b043e454af687eb01c6529748450cc9132` selects that exact authenticated
+SDK and moves its existing image/Python/source/inventory verifier immediately
+after checkout, before native setup, in the same job that would build the
+application. The later restore and native reprobes remain unchanged. Twenty-six
+workflow checks and four focused bundle refusal checks pass locally. A mismatched
+runner fails cheaply without a cold fallback or automatic retry; a separate
+preflight job cannot reserve an image for a later build. Fresh native consumption
+and application qualification remain pending. No image check was bypassed.
 [Original failure and refresh scope](evidence/scrum225-image-refresh-20261014/README.md).
 Later helper/evidence commits do not replace the product's source identity.
 Genuine customer installation/recovery, boat and public readiness remain open.
