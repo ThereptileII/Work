@@ -688,6 +688,41 @@ class FixedNativeCommand(unittest.TestCase):
                     self.assertEqual(result['reason'], 'capability-progress-contract-refused')
                     self.assertFalse(progress['markerProtocolValid'])
 
+    def test_startup_query_failure_does_not_replace_timeout_or_allow_unverified_exit(self):
+        owner, calls = self.child_owner(raw_output=b'', raw_diagnostics=b'', wait_state=258)
+        owner.prepare = mock.Mock()
+        owner.cleanup = mock.Mock(return_value=dict(state='deferred-to-disposable-job'))
+        def interrupted_query(*args):
+            raise KeyboardInterrupt('private-secret-observer-failure')
+        owner.apis['GetThreadTimes'] = interrupted_query
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0), \
+                mock.patch.object(probe.time, 'monotonic', side_effect=[100, 161]):
+            result = probe.run_probe(owner.helper, lambda helper: owner)
+        self.assertEqual(result['reason'], 'original-capability-child-timeout')
+        self.assertFalse(result['nativeCustomerAcceptance'])
+        self.assertFalse(owner.exit_observed)
+        samples = result['originalFacts']['childStartupObservation']
+        self.assertEqual(set(samples), {'beforeResume', 'onTimeout'})
+        self.assertTrue(all(sample['originalIdentityVerified'] for sample in samples.values()))
+        self.assertTrue(all(sample['threadTimes']['state'] == 'unavailable' for sample in samples.values()))
+        self.assertEqual(calls.count('GetThreadTimes'), 2)
+        self.assertLess(calls.index('GetThreadTimes'), calls.index('ResumeThread'))
+        self.assertGreater(len(calls) - 1 - calls[::-1].index('GetThreadTimes'), calls.index('ResumeThread'))
+        self.assertEqual(calls.count('ResumeThread'), 1)
+        self.assertNotIn('private-secret', json.dumps(result))
+
+    def test_startup_observation_never_substitutes_for_capability_or_repeats_after_exit(self):
+        owner, calls = self.child_owner()
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            result = owner.observe()
+        self.assertEqual(result['state'], 'available')
+        self.assertTrue(owner.exit_observed)
+        self.assertEqual(set(owner.facts['childStartupObservation']), {'beforeResume'})
+        self.assertEqual(calls.count('GetThreadTimes'), 1)
+        self.assertEqual(calls.count('ResumeThread'), 1)
+        self.assertFalse(result['nativeCustomerAcceptance'])
+        self.assertFalse(result['consentPromptAcceptance'])
+
     def test_changed_created_child_never_resumes_or_retries(self):
         cases = [dict(child_change={'session': 3}), dict(authentication=18),
                  dict(child_change={'tokenType': 2}), dict(child_change=dict(FULL, session=2))]
@@ -777,6 +812,149 @@ class FixedNativeCommand(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(probe.Refused):
                 owner.observe()
             owner.fn.assert_not_called()
+
+
+class ChildStartupQueries(unittest.TestCase):
+    def setUp(self):
+        self.error = 0
+        self.get_error = mock.patch.object(probe.C, 'get_last_error', create=True, side_effect=lambda: self.error)
+        self.set_error = mock.patch.object(probe.C, 'set_last_error', create=True,
+                                           side_effect=lambda value: setattr(self, 'error', value))
+        self.get_error.start()
+        self.set_error.start()
+        self.addCleanup(self.get_error.stop)
+        self.addCleanup(self.set_error.stop)
+        self.owner = SimpleNamespace(process=probe.W.HANDLE(0x101), thread=probe.W.HANDLE(0x202),
+                                     native=SimpleNamespace(kernel='kernel', user='user'))
+        self.calls, self.names, self.window_count = [], ['python312.dll', '_ctypes.pyd', 'private-secret.dll'], 3
+        self.module_bytes, self.foreign_window, self.thread_live = None, False, True
+        self.verify = mock.Mock()
+        def ok(value):
+            if not value:
+                error = OSError('private-secret-native-error')
+                error.winerror = self.error
+                raise error
+            return value
+        self.owner.ok = ok
+        self.owner.fn = self.fn
+        self.observer = probe._ChildStartupObservation(self.owner, 301, 302)
+
+    def fn(self, dll, name, result, *types):
+        def call(*args):
+            self.calls.append(name)
+            if name == 'GetThreadTimes':
+                self.assertIs(args[0], self.owner.thread)
+                self.assertEqual(dll, 'kernel')
+                self.assertEqual(ctypes.sizeof(args[1]._obj), 8)  # Native FILETIME, including on LP64 test hosts.
+                self.assertEqual(types[0], probe.W.HANDLE)
+                self.assertEqual(len(types), 5)
+                args[3]._obj.high, args[3]._obj.low = 1, 17
+                args[4]._obj.high, args[4]._obj.low = 2, 19
+                return True
+            if name == 'GetThreadIOPendingFlag':
+                self.assertIs(args[0], self.owner.thread)
+                self.assertEqual(types, (probe.W.HANDLE, ctypes.POINTER(probe.W.BOOL)))
+                args[1]._obj.value = 1
+                return True
+            if name == 'K32EnumProcessModulesEx':
+                self.assertIs(args[0], self.owner.process)
+                self.assertEqual((len(args[1]), args[2], args[4]),
+                    (128, 128 * ctypes.sizeof(ctypes.c_void_p), 3))
+                for index, _ in enumerate(self.names):
+                    args[1][index] = index + 1
+                args[3]._obj.value = self.module_bytes if self.module_bytes is not None else len(self.names) * ctypes.sizeof(ctypes.c_void_p)
+                return True
+            if name == 'K32GetModuleBaseNameW':
+                self.assertIs(args[0], self.owner.process)
+                self.assertEqual(args[3], 256)
+                args[2].value = self.names[args[1] - 1]
+                return len(args[2].value)
+            if name == 'WaitForSingleObject':
+                self.assertIs(args[0], self.owner.thread)
+                self.assertEqual(args[1], 0)
+                return 258 if self.thread_live else 0
+            if name == 'EnumThreadWindows':
+                self.assertEqual(dll, 'user')
+                self.assertEqual((args[0], args[2]), (302, 0))
+                self.assertEqual(ctypes.sizeof(types[1]._restype_), 4)
+                for index in range(self.window_count):
+                    if not args[1](index + 10, 0):
+                        return False
+                return bool(self.window_count)
+            if name == 'GetWindowThreadProcessId':
+                args[1]._obj.value = 999 if self.foreign_window else 301
+                return 302
+            if name == 'GetClassNameW':
+                self.assertEqual(args[2], 128)
+                args[1].value = {10: '#32770', 11: 'ConsoleWindowClass'}.get(args[0], 'private-secret-class')
+                return len(args[1].value)
+            if name == 'IsWindowVisible':
+                return args[0] == 10
+            raise AssertionError('Unapproved startup observer API: ' + name)
+        return call
+
+    def test_queries_original_handles_and_reports_only_fixed_classifications(self):
+        result = self.observer.collect(self.verify)
+        self.assertTrue(result['originalIdentityVerified'])
+        self.assertEqual(self.verify.call_count, 2)
+        self.assertEqual(result['threadTimes'], dict(state='observed', kernel100ns=(1 << 32) + 17,
+                                                     user100ns=(2 << 32) + 19))
+        self.assertEqual(result['pendingIO'], dict(state='observed', pending=True))
+        self.assertEqual(set(result['modules']['present']), set(probe.STARTUP_MODULES))
+        self.assertTrue(result['modules']['present']['python312.dll'])
+        self.assertTrue(result['modules']['present']['_ctypes.pyd'])
+        self.assertFalse(result['modules']['present']['user32.dll'])
+        self.assertEqual(result['windows']['windows'], [dict(kind='dialog', visible=True),
+            dict(kind='console', visible=False), dict(kind='other', visible=False)])
+        self.assertNotIn('private-secret', json.dumps(result))
+
+    def test_module_bound_never_resizes_or_reads_partial_names(self):
+        self.module_bytes = 129 * ctypes.sizeof(ctypes.c_void_p)
+        result = self.observer.collect(self.verify)
+        self.assertEqual(result['modules'], dict(state='bound-exceeded', bound=128))
+        self.assertEqual(self.calls.count('K32EnumProcessModulesEx'), 1)
+        self.assertNotIn('K32GetModuleBaseNameW', self.calls)
+
+    def test_malformed_module_count_or_native_error_is_unavailable(self):
+        self.module_bytes = 3
+        result = self.observer.collect(self.verify)
+        self.assertEqual(result['modules']['state'], 'unavailable')
+        self.assertNotIn('K32GetModuleBaseNameW', self.calls)
+        self.owner.fn = lambda *args: lambda *args: self.owner.ok(False)
+        self.error = 5
+        result = self.observer.collect(self.verify)
+        self.assertTrue(result['originalIdentityVerified'])
+        self.assertTrue(all(result[name] == dict(state='unavailable', nativeError=5)
+            for name in ('threadTimes', 'pendingIO', 'modules', 'windows')))
+        self.assertNotIn('private-secret', json.dumps(result))
+
+    def test_window_count_is_bounded_and_zero_is_not_an_error(self):
+        self.window_count = 100
+        result = self.observer.collect(self.verify)
+        self.assertEqual(len(result['windows']['windows']), 16)
+        self.assertTrue(result['windows']['boundReached'])
+        self.assertEqual(self.calls.count('GetClassNameW'), 16)
+        self.window_count = 0
+        self.assertEqual(self.observer.collect(self.verify)['windows'],
+                         dict(state='observed', windows=[], boundReached=False))
+
+    def test_foreign_window_or_exited_original_thread_never_yields_classification(self):
+        self.foreign_window = True
+        result = self.observer.collect(self.verify)
+        self.assertEqual(result['windows']['state'], 'unavailable')
+        self.assertNotIn('GetClassNameW', self.calls)
+        self.calls.clear()
+        self.thread_live = False
+        result = self.observer.collect(self.verify)
+        self.assertEqual(result['windows']['state'], 'unavailable')
+        self.assertNotIn('EnumThreadWindows', self.calls)
+
+    def test_identity_failure_discards_partial_data_without_throwing(self):
+        for after in (False, True):
+            self.verify.side_effect = [None, RuntimeError('private-secret')] if after else RuntimeError('private-secret')
+            result = self.observer.collect(self.verify)
+            self.assertEqual(result, dict(state='unavailable', originalIdentityVerified=False, nativeError=None))
+            self.assertNotIn('private-secret', json.dumps(result))
 
 
 class HostGate(unittest.TestCase):

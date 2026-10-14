@@ -42,6 +42,125 @@ import time
 import installed_customer_launch as customer
 
 
+STARTUP_MODULES = ('ntdll.dll', 'kernel32.dll', 'kernelbase.dll', 'python312.dll',
+                   'ucrtbase.dll', 'user32.dll', '_ctypes.pyd')
+STARTUP_MODULE_BOUND = 128
+STARTUP_WINDOW_BOUND = 16
+_WindowCallback = getattr(C, 'WINFUNCTYPE', C.CFUNCTYPE)(C.c_int32, W.HWND, C.c_ssize_t)
+
+
+class _Filetime(C.Structure):
+    _fields_ = [('low', C.c_uint32), ('high', C.c_uint32)]
+
+
+class _ChildStartupObservation:
+    """Query retained originals only; observations never grant launch authority.
+
+    No thread context capture, process reopening, suspension, debug privilege,
+    console attachment or window messages. Only fixed module/window classes and
+    numeric results leave the observer; no target text, addresses or paths do.
+    """
+    def __init__(self, owner, pid, tid):
+        self.owner, self.pid, self.tid = owner, pid, tid
+
+    def call(self, dll, name, result, types, *args):
+        value = self.owner.fn(dll, name, result, *types)(*args)
+        self.owner.ok(value)
+        return value
+
+    def thread_times(self):
+        created, exited, kernel, user = (_Filetime() for _ in range(4))
+        self.call(self.owner.native.kernel, 'GetThreadTimes', W.BOOL,
+            (W.HANDLE, *([C.POINTER(_Filetime)] * 4)), self.owner.thread,
+            C.byref(created), C.byref(exited), C.byref(kernel), C.byref(user))
+        # Exit time is undefined while the original thread is live.
+        return dict(kernel100ns=kernel.high << 32 | kernel.low,
+                    user100ns=user.high << 32 | user.low)
+
+    def pending_io(self):
+        pending = W.BOOL()
+        self.call(self.owner.native.kernel, 'GetThreadIOPendingFlag', W.BOOL,
+            (W.HANDLE, C.POINTER(W.BOOL)), self.owner.thread, C.byref(pending))
+        return dict(pending=bool(pending.value))
+
+    def modules(self):
+        modules, needed = (W.HANDLE * STARTUP_MODULE_BOUND)(), W.DWORD()
+        self.call(self.owner.native.kernel, 'K32EnumProcessModulesEx', W.BOOL,
+            (W.HANDLE, C.POINTER(W.HANDLE), W.DWORD, C.POINTER(W.DWORD), W.DWORD),
+            self.owner.process, modules, C.sizeof(modules), C.byref(needed), 3)
+        require(needed.value % C.sizeof(W.HANDLE) == 0, 'startup-module-shape-refused')
+        if needed.value > C.sizeof(modules):
+            return dict(state='bound-exceeded', bound=STARTUP_MODULE_BOUND)
+        present = {name: False for name in STARTUP_MODULES}
+        for module in modules[:needed.value // C.sizeof(W.HANDLE)]:
+            name = C.create_unicode_buffer(256)
+            length = self.call(self.owner.native.kernel, 'K32GetModuleBaseNameW', W.DWORD,
+                (W.HANDLE, W.HANDLE, W.LPWSTR, W.DWORD), self.owner.process, module, name, len(name))
+            require(length < len(name) - 1, 'startup-module-name-bound-refused')
+            if name.value.casefold() in present:
+                present[name.value.casefold()] = True
+        return dict(present=present)
+
+    def windows(self):
+        wait = self.owner.fn(self.owner.native.kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)
+        require(wait(self.owner.thread, 0) == 258, 'startup-original-thread-not-live')
+        rows, failed, stopped = [], None, False
+        def window(hwnd, unused):
+            nonlocal failed, stopped
+            try:
+                pid = W.DWORD()
+                tid = self.call(self.owner.native.user, 'GetWindowThreadProcessId', W.DWORD,
+                    (W.HWND, C.POINTER(W.DWORD)), hwnd, C.byref(pid))
+                require(pid.value == self.pid and tid == self.tid, 'startup-window-identity-refused')
+                name = C.create_unicode_buffer(128)
+                length = self.call(self.owner.native.user, 'GetClassNameW', C.c_int,
+                    (W.HWND, W.LPWSTR, C.c_int), hwnd, name, len(name))
+                require(length < len(name) - 1, 'startup-window-class-bound-refused')
+                visible = bool(self.owner.fn(self.owner.native.user, 'IsWindowVisible', W.BOOL, W.HWND)(hwnd))
+                tid = self.call(self.owner.native.user, 'GetWindowThreadProcessId', W.DWORD,
+                    (W.HWND, C.POINTER(W.DWORD)), hwnd, C.byref(pid))
+                require(pid.value == self.pid and tid == self.tid, 'startup-window-identity-refused')
+                rows.append(dict(kind='dialog' if name.value == '#32770' else
+                    'console' if name.value == 'ConsoleWindowClass' else 'other', visible=visible))
+                stopped = len(rows) == STARTUP_WINDOW_BOUND
+                return not stopped
+            except BaseException as error:
+                # Exceptions cannot cross the native callback boundary.
+                failed = dict(state='unavailable', nativeError=number(getattr(error, 'winerror', None)))
+                return False
+        callback = _WindowCallback(window)
+        C.set_last_error(0)
+        result = self.owner.fn(self.owner.native.user, 'EnumThreadWindows', W.BOOL,
+            W.DWORD, _WindowCallback, C.c_ssize_t)(self.tid, callback, 0)
+        error = C.get_last_error()
+        require(wait(self.owner.thread, 0) == 258, 'startup-original-thread-not-live')
+        if failed is not None:
+            return failed
+        # EnumThreadWindows also returns FALSE for zero windows or callback stop.
+        if not result and not stopped and error:
+            return dict(state='unavailable', nativeError=number(error))
+        require(result or stopped or not rows, 'startup-window-enumeration-incomplete')
+        return dict(windows=rows, boundReached=stopped)
+
+    def collect(self, verify):
+        result = dict(state='unavailable', originalIdentityVerified=False)
+        try:
+            verify()
+            for name, method in (('threadTimes', self.thread_times), ('pendingIO', self.pending_io),
+                                 ('modules', self.modules), ('windows', self.windows)):
+                try:
+                    result[name] = {'state': 'observed', **method()}
+                except BaseException as error:
+                    result[name] = dict(state='unavailable', nativeError=number(getattr(error, 'winerror', None)))
+            verify()
+            result.update(state='observed', originalIdentityVerified=True)
+        except BaseException as error:
+            # Unbound partial observations must not be mistaken for this child.
+            result = dict(state='unavailable', originalIdentityVerified=False,
+                          nativeError=number(getattr(error, 'winerror', None)))
+        return result
+
+
 class Refused(Exception):
     def __init__(self, reason, winerror=None):
         self.reason, self.winerror = reason, winerror
@@ -521,6 +640,11 @@ class AccountProbe:
         check_created_child()
         self.check_disposable_host('beforeResume')
         check_created_child()
+        startup_observer = _ChildStartupObservation(self, process.pid, process.tid)
+        self.facts['childStartupObservation'] = {
+            'beforeResume': startup_observer.collect(check_created_child)}
+        # Diagnostic refusal never replaces launch authority or its final check.
+        check_created_child()
         self.facts['originalChild']['resumeAttempted'] = True
         previous = self.fn(self.native.kernel, 'ResumeThread', W.DWORD, W.HANDLE)(self.thread)
         self.facts['originalChild']['resumeResult'] = previous
@@ -543,7 +667,9 @@ class AccountProbe:
                     self.facts['originalChild']['exitCode'] = code.value
                     require(code.value == 0, 'original-capability-child-exit-refused')
                     break
-                require(time.monotonic() < deadline, 'original-capability-child-timeout')
+                if time.monotonic() >= deadline:
+                    self.facts['childStartupObservation']['onTimeout'] = startup_observer.collect(check_created_child)
+                    raise Refused('original-capability-child-timeout')
         finally:
             self.facts['capabilityProgress'] = file_capability_progress(raw)
         require(self.facts['capabilityProgress']['markerSequenceComplete'], 'capability-progress-contract-refused')

@@ -26,3 +26,17 @@ Cleanup correctly remains deferred to disposal of the uncertain runner state.
 The separate full Staging candidate stays frozen at `89854110`; this helper
 neither rebuilds nor relabels it. Actual installed qualification needs a usable
 disposable interactive Windows context and its separately authorized inputs.
+
+The prepared follow-up queries original retained handles before resume and on
+timeout: [thread CPU time](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadtimes),
+[pending I/O](https://learn.microsoft.com/en-us/windows/win32/api/processthreadsapi/nf-processthreadsapi-getthreadiopendingflag),
+a bounded [module allowlist](https://learn.microsoft.com/en-us/windows/win32/api/psapi/nf-psapi-enumprocessmodulesex),
+and bounded [original-thread window classes](https://learn.microsoft.com/en-us/windows/win32/api/winuser/nf-winuser-enumthreadwindows).
+Only numeric results, fixed module booleans and dialog/console/other classes are
+retained. Identity is checked around each sample; diagnostics cannot replace the
+first failure or grant acceptance. CPU deltas indicate activity, pending I/O is
+momentary, mapped modules do not prove initialization, and absent windows do not
+rule out loader failure or another process's dialog. No target text/paths, wait
+chains, privilege changes, process reopening, suspension, console attachment,
+window messages, kill, retry or timeout increase are added. Native observation
+remains pending.
