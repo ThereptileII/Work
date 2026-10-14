@@ -21,7 +21,7 @@ func (e *engine) handleSelectedHistoryDiagnostic(ctx context.Context, peer broke
 			resultErr = errExecutionSelection
 		}
 	}()
-	if e == nil || ctx == nil || ctx.Err() != nil || q.Operation != brokerpipe.SelectedHistory || q.Schema != 1 || q.Page == nil {
+	if e == nil || ctx == nil || ctx.Err() != nil || (q.Operation != brokerpipe.SelectedHistory && q.Operation != brokerpipe.PreviousQualified) || q.Schema != 1 || (q.Operation == brokerpipe.SelectedHistory && q.Page == nil) {
 		return result, errExecutionSelection
 	}
 	adapter, ok := e.store.(storeAdapter)
@@ -56,14 +56,18 @@ func (e *engine) handleSelectedHistoryDiagnostic(ctx context.Context, peer broke
 			return err
 		}
 		defer func() { callbackErr = errors.Join(callbackErr, selected.Close()) }()
-		if *q.Page != 0 && (selected.selected.head != q.ExpectedSelectedHeadSHA256 || selected.inventory != q.InventorySHA256) {
+		if q.Operation == brokerpipe.SelectedHistory && *q.Page != 0 && (selected.selected.head != q.ExpectedSelectedHeadSHA256 || selected.inventory != q.InventorySHA256) {
 			return errExecutionSelection
 		}
 		attempts, err := selectedHistoryOriginalAttempts(selected)
 		if err != nil {
 			return err
 		}
-		result, err = selectedHistoryPage(attempts, registered.Installed.Generation, selected.selected, selected.inventory, q.RequestID, *q.Page)
+		if q.Operation == brokerpipe.PreviousQualified {
+			result, err = previousQualified(attempts, registered.Installed.Generation, selected.selected, q.RequestID)
+		} else {
+			result, err = selectedHistoryPage(attempts, registered.Installed.Generation, selected.selected, selected.inventory, q.RequestID, *q.Page)
+		}
 		if err != nil {
 			return err
 		}

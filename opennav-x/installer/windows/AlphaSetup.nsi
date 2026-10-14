@@ -249,7 +249,7 @@ Function un.MaintenancePage
   !insertmacro MUI_HEADER_TEXT "Maintain SKAGER" "Original OpenCPN and navigation data are preserved."
   nsDialogs::Create 1018
   Pop $0
-  ${NSD_CreateLabel} 0 0 100% 45u "Repair restores owned files from the retained package. Rollback restores the prior application generation, or removes the first installation. Uninstall removes verified owned files and registration; modified/custom additions and diagnostics remain."
+  ${NSD_CreateLabel} 0 0 100% 45u "Repair restores owned files from the retained package. Rollback returns to a prior application release while preserving current navigation data. Uninstall removes verified owned files and registration; modified/custom additions and diagnostics remain."
   Pop $0
   ${NSD_CreateDropList} 0 55u 100% 70u ""
   Pop $ActionControl
@@ -269,8 +269,17 @@ Function un.MaintenanceLeave
 FunctionEnd
 Section "Uninstall"
   ; The machine-protected helper owns its own same-account elevation and native
-  ; uninstall conversation. This user-level wizard supplies only a fixed action,
+  ; maintenance conversation. This user-level wizard supplies only a fixed action,
   ; never an elevated script, approval hash, SID, package or cleanup destination.
+  ${If} $Action == "Rollback"
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_rollback
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance
+protected_rollback:
+    SetOutPath "$PROGRAMFILES32\SKAGER\UpdateBroker"
+    nsExec::ExecToLog '"$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" --maintenance=rollback-current'
+    Pop $Result
+    Goto maintenance_result
+  ${EndIf}
   ${If} $Action == "Uninstall"
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_uninstall
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance

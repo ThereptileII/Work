@@ -19,7 +19,7 @@ func (e *engine) handleNativeMaintenance(ctx context.Context, peer brokerpipe.Pe
 	if q.Operation == brokerpipe.PrepareDecommission {
 		return e.handlePrepareDecommission(ctx, peer, q)
 	}
-	if q.Operation == brokerpipe.SelectedHistory {
+	if q.Operation == brokerpipe.SelectedHistory || q.Operation == brokerpipe.PreviousQualified {
 		return e.handleSelectedHistoryDiagnostic(ctx, peer, q)
 	}
 	defer func() {

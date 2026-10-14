@@ -174,6 +174,11 @@ Native rights, actual transport, installed lifecycle and recovery acceptance rem
 required. This source join does not qualify repair/uninstall or migrate the older
 LocalAppData installer layout.
 
+The separate [customer Maintain rollback join](customer-protected-rollback.md)
+uses this transaction after a broker-owned previous-qualified target query and
+explicit confirmation. It requires a fresh matching fixed bootstrap; an
+application update cannot retrofit an older broker/provisioner.
+
 ### Protected in-app mode restart
 
 A native Windows restart corroborates the actual process image, the requested

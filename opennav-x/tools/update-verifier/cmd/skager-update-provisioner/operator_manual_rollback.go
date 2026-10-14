@@ -30,7 +30,11 @@ func manualRollbackRequested(args []string) bool {
 
 func runMaintenanceDispatch(ctx context.Context, args []string, read func(string) ([]byte, error), maintain maintenanceOpener) error {
 	var installedOutput bytes.Buffer
+	elevation, _, _ := parseInstalledElevation(args)
 	if handled, err := installedElevationDispatch(ctx, args, func(operationCtx context.Context) error {
+		if elevation.action == rollbackCurrent {
+			return runCustomerRollback(operationCtx, &installedOutput)
+		}
 		return runCurrentInstalled(operationCtx, []string{"--maintenance=" + uninstallCurrent}, &installedOutput)
 	}); handled {
 		if err != nil {

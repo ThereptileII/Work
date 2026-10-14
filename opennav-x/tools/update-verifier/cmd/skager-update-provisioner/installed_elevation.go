@@ -15,6 +15,7 @@ const installedElevationLimit = 105 * time.Second
 // This private command is comparison-only. No command argument supplies an
 // executable, user SID, installation target, approval pin or mutation authority.
 type installedElevationRequest struct {
+	action  string
 	child   bool
 	pid     uint32
 	created uint64
@@ -53,18 +54,19 @@ func parseInstalledElevation(args []string) (installedElevationRequest, bool, er
 	if args[0] == "--maintenance" && len(args) > 1 {
 		action = args[1]
 	}
-	if action != installedElevationAction && action != installedElevationChildAction {
+	if action != installedElevationAction && action != installedElevationChildAction && action != rollbackCurrent && action != rollbackCurrent+"-elevated" {
 		return q, false, nil
 	}
 	refused := errors.New("fixed installed maintenance elevation arguments required")
-	if action == installedElevationAction {
+	q.action = strings.TrimSuffix(action, "-elevated")
+	if action == installedElevationAction || action == rollbackCurrent {
 		if !(len(args) == 1 && args[0] == "--maintenance="+action || len(args) == 2 && args[0] == "--maintenance" && args[1] == action) {
 			return q, true, refused
 		}
 		return q, true, nil
 	}
 	q.child = true
-	if len(args) != 3 || args[0] != "--maintenance="+installedElevationChildAction {
+	if len(args) != 3 || args[0] != "--maintenance="+q.action+"-elevated" {
 		return q, true, refused
 	}
 	pidText, createdText := strings.TrimPrefix(args[1], "--elevation-parent-pid="), strings.TrimPrefix(args[2], "--elevation-parent-created=")
@@ -108,7 +110,7 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 		if self.identity.elevated {
 			return true, errors.New("customer elevation requires the original unelevated account; use explicit operator maintenance")
 		}
-		childArgs := []string{"--maintenance=" + installedElevationChildAction, "--elevation-parent-pid=" + strconv.FormatUint(uint64(self.identity.pid), 10), "--elevation-parent-created=" + strconv.FormatUint(self.identity.created, 10)}
+		childArgs := []string{"--maintenance=" + q.action + "-elevated", "--elevation-parent-pid=" + strconv.FormatUint(uint64(self.identity.pid), 10), "--elevation-parent-created=" + strconv.FormatUint(self.identity.created, 10)}
 		child, err := op.launch(ctx, self.identity, childArgs)
 		if child != nil {
 			defer func() { resultErr = errors.Join(resultErr, child.close()) }()

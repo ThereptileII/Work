@@ -14,6 +14,7 @@ import (
 const MaintenancePipeName = `\\.\pipe\SkagerUpdateBroker.maintenance.v1`
 const ManualRollback = "manual-rollback"
 const SelectedHistory = "selected-history"
+const PreviousQualified = "previous-qualified"
 const PrepareDecommission = "prepare-decommission"
 const PrepareUninstall = "prepare-uninstall"
 
@@ -35,7 +36,14 @@ type MaintenanceAncestor struct {
 	Generation       string `json:"generation"`
 	CompletionSHA256 string `json:"completionSha256"`
 }
+type RollbackTarget struct {
+	Generation       string `json:"generation"`
+	CompletionSHA256 string `json:"completionSha256"`
+	Version          string `json:"version"`
+	Commit           string `json:"commit"`
+}
 type MaintenanceResult struct {
+	Previous                     *RollbackTarget        `json:"previous,omitempty"`
 	ClientSID                    string                 `json:"clientSid,omitempty"`
 	RegistrationSHA256           string                 `json:"registrationSha256,omitempty"`
 	CurrentProfileSHA256         string                 `json:"currentProfileSha256,omitempty"`
@@ -69,6 +77,8 @@ func validMaintenanceRequest(q MaintenanceRequest) bool {
 		return false
 	}
 	switch q.Operation {
+	case PreviousQualified:
+		return q.Page == nil && q.InventorySHA256 == "" && q.ExpectedSelectedHeadSHA256 == "" && q.TargetGeneration == "" && q.TargetCompletionSHA256 == ""
 	case PrepareDecommission, PrepareUninstall:
 		return q.Page == nil && q.InventorySHA256 == "" && q.TargetGeneration == "" && q.TargetCompletionSHA256 == "" && hex64.MatchString(q.ExpectedSelectedHeadSHA256)
 	case ManualRollback:
@@ -102,6 +112,9 @@ func decodeMaintenanceRequest(raw []byte) (q MaintenanceRequest, err error) {
 		return q, ErrRefused
 	}
 	fields := []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256", "targetGeneration", "targetCompletionSha256"}
+	if probe.Operation == PreviousQualified {
+		fields = []string{"schema", "operation", "requestId"}
+	}
 	if probe.Operation == PrepareDecommission || probe.Operation == PrepareUninstall {
 		fields = []string{"schema", "operation", "requestId", "expectedSelectedHeadSha256"}
 	}
@@ -126,8 +139,11 @@ func decodeMaintenanceRequest(raw []byte) (q MaintenanceRequest, err error) {
 	return q, nil
 }
 func validMaintenanceResult(r MaintenanceResult, q MaintenanceRequest) bool {
-	if !validMaintenanceRequest(q) || r.Schema != 1 || r.RequestID != q.RequestID {
+	if !validMaintenanceRequest(q) || r.Schema != 1 || r.RequestID != q.RequestID || (q.Operation != PreviousQualified && r.Previous != nil) {
 		return false
+	}
+	if q.Operation == PreviousQualified {
+		return validPreviousQualifiedResult(r)
 	}
 	if q.Operation == PrepareDecommission || q.Operation == PrepareUninstall {
 		return validDecommissionResult(r, q)
@@ -164,6 +180,9 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 		return r, ErrRefused
 	}
 	fields := []string{"schema", "requestId", "state", "generation", "completionSha256", "selectedHeadSha256"}
+	if q.Operation == PreviousQualified {
+		fields = append(fields, "version", "commit", "previous")
+	}
 	if q.Operation == PrepareDecommission || q.Operation == PrepareUninstall {
 		fields = append(fields, "clientSid", "registrationSha256", "currentProfileSha256", "currentProfileIdentitySha256", "fenceSha256")
 	}
@@ -185,6 +204,11 @@ func decodeMaintenanceResult(raw []byte, q MaintenanceRequest) (r MaintenanceRes
 	object, err := exactObject(raw, fields, false)
 	if err != nil {
 		return r, ErrRefused
+	}
+	if q.Operation == PreviousQualified {
+		if _, err := exactObject(object["previous"], []string{"generation", "completionSha256", "version", "commit"}, false); err != nil {
+			return r, ErrRefused
+		}
 	}
 	if q.Operation == SelectedHistory {
 		var items []json.RawMessage
