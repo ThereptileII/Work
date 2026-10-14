@@ -4,9 +4,15 @@ package brokerenroll
 
 import (
 	"bytes"
+	"errors"
 	"path/filepath"
+	"runtime"
 	"strings"
+	"syscall"
 	"testing"
+	"unsafe"
+
+	"golang.org/x/sys/windows"
 )
 
 // In-memory system ShellLink objects only. Targets are inert nonexistent paths;
@@ -54,16 +60,72 @@ func TestNativeStartupLinkFieldsRejectsMalformedAndOversized(t *testing.T) {
 }
 
 func TestNativeStartupLinkFieldsRefusesTruncatedGetterResults(t *testing.T) {
-	for _, tc := range []struct{ target, arguments, working string }{
-		{`C:\SKAGER-Inert-Shortcut-Reader\` + strings.Repeat(`Long-Path-Component\`, 14) + `opencpn.exe`, "", `C:\SKAGER-Inert-Shortcut-Reader`},
-		{`C:\SKAGER-Inert-Shortcut-Reader\opencpn.exe`, strings.Repeat("a", 32769), `C:\SKAGER-Inert-Shortcut-Reader`},
-	} {
-		raw, err := startupLinkBytes(tc.target, tc.arguments, tc.working)
-		if err != nil {
-			t.Fatal(err)
+	// Native run 38514939833 refused SetPath for an overlong fixture before
+	// decoding. Use a known-valid original object and constrain each actual COM
+	// getter's output buffer instead: truncation must refuse, never classify a
+	// prefix as the original target/arguments/working directory.
+	target := `C:\SKAGER-Inert-Shortcut-Reader\opencpn.exe`
+	arguments, working := "--xnav --preserve", `C:\SKAGER-Inert-Shortcut-Reader`
+	raw, err := startupLinkBytes(target, arguments, working)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if gotTarget, gotArguments, gotWorking, err := startupLinkFields(raw); err != nil || gotTarget != target || gotArguments != arguments || gotWorking != working {
+		t.Fatal("truncation fixture is not a valid original shortcut", err)
+	}
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	if err := windows.CoInitializeEx(0, 2); err != nil && !errors.Is(err, syscall.Errno(1)) {
+		t.Fatal(err)
+	}
+	defer startupUninitialize.Call()
+	clsid, _ := windows.GUIDFromString("{00021401-0000-0000-C000-000000000046}")
+	classIID, _ := windows.GUIDFromString("{00000001-0000-0000-C000-000000000046}")
+	linkIID, _ := windows.GUIDFromString("{000214F9-0000-0000-C000-000000000046}")
+	persistIID, _ := windows.GUIDFromString("{00000109-0000-0000-C000-000000000046}")
+	var factory, link, persist, stream *startupCOM
+	hr, _, _ := startupShellFactory.Call(uintptr(unsafe.Pointer(&clsid)), uintptr(unsafe.Pointer(&classIID)), uintptr(unsafe.Pointer(&factory)))
+	if int32(hr) < 0 || factory == nil {
+		t.Fatal("actual system ShellLink factory unavailable")
+	}
+	defer startupCOMRelease(factory)
+	if err := startupCOMCall(factory, 3, 0, uintptr(unsafe.Pointer(&linkIID)), uintptr(unsafe.Pointer(&link))); err != nil {
+		t.Fatal(err)
+	}
+	defer startupCOMRelease(link)
+	if err := startupCOMCall(link, 0, uintptr(unsafe.Pointer(&persistIID)), uintptr(unsafe.Pointer(&persist))); err != nil {
+		t.Fatal(err)
+	}
+	defer startupCOMRelease(persist)
+	hr, _, _ = startupMemoryStream.Call(0, 1, uintptr(unsafe.Pointer(&stream)))
+	if int32(hr) < 0 || stream == nil {
+		t.Fatal("actual native stream unavailable")
+	}
+	defer startupCOMRelease(stream)
+	var used uint32
+	writeErr := startupCOMCall(stream, 4, uintptr(unsafe.Pointer(&raw[0])), uintptr(len(raw)), uintptr(unsafe.Pointer(&used)))
+	runtime.KeepAlive(raw)
+	if writeErr != nil || used != uint32(len(raw)) {
+		t.Fatal("actual original stream write failed", writeErr)
+	}
+	if err := startupStreamRewind(stream); err != nil {
+		t.Fatal(err)
+	}
+	if err := startupCOMCall(persist, 5, uintptr(unsafe.Pointer(stream))); err != nil {
+		t.Fatal(err)
+	}
+	for _, field := range []struct {
+		method int
+		want   string
+	}{{3, target}, {10, arguments}, {8, working}} {
+		// This fixture is ASCII, so byte and UTF16-unit lengths are equal.
+		if value, err := startupReadLinkField(link, field.method, len(field.want)+2); err != nil || value != field.want {
+			t.Fatalf("actual getter %d failed positive control: value=%q err=%v", field.method, value, err)
 		}
-		if target, arguments, working, err := startupLinkFields(raw); err == nil || target != "" || arguments != "" || working != "" {
-			t.Fatal("truncated native field accepted", err)
+		for _, limit := range []int{1, 8, len(field.want) + 1} {
+			if value, err := startupReadLinkField(link, field.method, limit); err == nil || value != "" {
+				t.Fatalf("actual getter %d accepted truncated/full buffer %d: value=%q err=%v", field.method, limit, value, err)
+			}
 		}
 	}
 }
