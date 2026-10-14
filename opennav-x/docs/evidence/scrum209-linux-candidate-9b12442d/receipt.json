@@ -1,0 +1,47 @@
+{
+  "schema": 1,
+  "commit": "9b12442d9de9ad1fd91780f74cdfa43eba261dc6",
+  "run": "38615517743",
+  "job": "Linux integrated regression gate",
+  "artifactId": 11921168083,
+  "archiveBytes": 14643887,
+  "archiveSha256": "6822428def948dd72e0f3cc1e49d43db5feac784152832c20a8adc6f7d5c89a4",
+  "originalZipCrcPassed": true,
+  "testSuites": {
+    "xnav-linux-tests.xml": {
+      "sha256": "cca2617300fe0dcc3132b31cfab809167f0e0cb47f3372be58b48b7206d0b512",
+      "suite": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "13",
+        "timestamp": "2026-10-14T18:45:11"
+      },
+      "testCases": 154,
+      "failed": 0,
+      "skipped": 0
+    },
+    "production-linux-tests.xml": {
+      "sha256": "b8ca33a4b72c013b409f8ea84597bb9f55d9cd72fc32422eda3a326bb7a8529a",
+      "suite": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "12",
+        "timestamp": "2026-10-14T19:07:09"
+      },
+      "testCases": 154,
+      "failed": 0,
+      "skipped": 0
+    }
+  },
+  "windowsQualified": false,
+  "boatQualified": false,
+  "visualReviewPerformed": false
+}

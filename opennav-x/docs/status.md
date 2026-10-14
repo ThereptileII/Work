@@ -62,7 +62,10 @@ Candidate `9b12442d9de9ad1fd91780f74cdfa43eba261dc6`,
 received hosted image `20261012.333.1`. Its early SDK gate correctly refused the
 selected producer's `20261004.326.1`; native application compilation and packaging
 were not reached. This is an environment qualification failure, not an observed
-application crash. The Linux integrated regression job completed successfully.
+application crash. The Linux integrated regression job completed successfully: **154/154 tests**
+in each fixture-enabled and fixture-free application configuration. Original
+artifact source/hash/length and ZIP CRCs verify.
+[Linux evidence](evidence/scrum209-linux-candidate-9b12442d/README.md).
 The original job log is retained
 privately; the missing evidence-directory upload is a secondary failure after
 that early refusal.
