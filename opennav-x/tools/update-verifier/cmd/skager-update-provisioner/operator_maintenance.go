@@ -34,6 +34,9 @@ func openMaintenanceNative(ctx context.Context, req brokerenroll.MaintenanceRequ
 }
 
 func runOperator(ctx context.Context, args []string, read func(string) ([]byte, error), enroll, activate func(context.Context, brokerenroll.Request) error, maintain maintenanceOpener) (bool, error) {
+	if codeUpgradeRequested(args) {
+		return true, runCodeUpgrade(ctx, args, read, brokerenroll.UpgradeEnrolledCode)
+	}
 	for _, arg := range args {
 		name, _, _ := strings.Cut(arg, "=")
 		if name == "--maintenance" {

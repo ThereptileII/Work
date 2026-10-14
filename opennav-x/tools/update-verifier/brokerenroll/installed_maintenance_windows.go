@@ -17,12 +17,15 @@ import (
 )
 
 type nativeInstalledMaintenanceAuthority struct {
-	mu        sync.Mutex
-	files     *nativeEnrollmentFiles
-	clientSID string
-	baseline  *enrollmentPin
-	closed    bool
-	closeErr  error
+	mu                                                  sync.Mutex
+	files                                               *nativeEnrollmentFiles
+	clientSID                                           string
+	baseline                                            *enrollmentPin
+	closed                                              bool
+	closeErr                                            error
+	record                                              installedCompletionRecord
+	originalRaw                                         []byte
+	codeParent, requestParent, brokerImage, helperImage *enrollmentPin
 }
 
 func (c *nativeInstalledMaintenanceAuthority) check(ctx context.Context) error {
@@ -97,7 +100,11 @@ func installedMatchFile(ctx context.Context, pin *enrollmentPin, want startupFil
 // a retained maintenance owner. The record's parser alone has no such power.
 // Admin/SYSTEM are trusted, as in createFreshFiles; ordinary users cannot create
 // or replace this namespace. Missing/partial legacy state refuses without repair.
-func readInstalledCompletionNative(ctx context.Context) (result installedMaintenanceInputs, resultErr error) {
+func readInstalledCompletionNative(ctx context.Context) (installedMaintenanceInputs, error) {
+	return readInstalledCompletionModeNative(ctx, true)
+}
+
+func readInstalledCompletionModeNative(ctx context.Context, fixedHelper bool, recoverMode ...bool) (result installedMaintenanceInputs, resultErr error) {
 	if ctx == nil || ctx.Err() != nil {
 		return result, errors.New("live installed maintenance required")
 	}
@@ -164,6 +171,7 @@ func readInstalledCompletionNative(ctx context.Context) (result installedMainten
 	if err != nil || record.ClientSID != sid {
 		return result, errors.Join(errors.New("completed installation belongs to another user"), err)
 	}
+	c.record, c.originalRaw, c.requestParent = record, bytes.Clone(raw), parent
 	originalParent, err := startupDirectoryIdentity(parent)
 	if err != nil || originalParent != record.Parent {
 		return result, errors.Join(errors.New("original installed parent identity changed"), err)
@@ -220,20 +228,39 @@ func readInstalledCompletionNative(ctx context.Context) (result installedMainten
 	if err != nil {
 		return result, err
 	}
-	var helper *enrollmentPin
-	for _, item := range []struct {
-		name     string
-		identity startupFileBinding
-	}{{enrollmentImageName, record.Broker}, {maintenanceImageName, record.MaintenanceHelper}} {
-		pin, err := maintenanceHoldFile(c.files, code, item.name, imageSD, maxBrokerBytes)
+	c.codeParent = code
+	codeRecord := record
+	if fixedHelper {
+		codeRecord, err = readCodeSuccessorNative(ctx, c, record, raw, fileSD, imageSD)
 		if err != nil {
 			return result, err
 		}
-		if err := installedMatchFile(ctx, pin, item.identity); err != nil {
-			return result, err
+	} else if len(recoverMode) == 0 || !recoverMode[0] {
+		for _, name := range []string{sid + codeDrainSuffix, sid + codeIntentSuffix, sid + codeReservationSuffix, sid + codeSuccessorSuffix, sid + codeSuccessorPairSuffix, sid + codeSuccessorMarkerSuffix} {
+			if err := startupRestorationAbsent(parent, name); err != nil {
+				return result, err
+			}
 		}
-		if item.name == maintenanceImageName {
-			helper = pin
+	}
+	var helper *enrollmentPin
+	if len(recoverMode) == 0 || !recoverMode[0] {
+		for _, item := range []struct {
+			name     string
+			identity startupFileBinding
+		}{{enrollmentImageName, codeRecord.Broker}, {maintenanceImageName, codeRecord.MaintenanceHelper}} {
+			pin, err := maintenanceHoldFile(c.files, code, item.name, imageSD, maxBrokerBytes)
+			if err != nil {
+				return result, err
+			}
+			if err := installedMatchFile(ctx, pin, item.identity); err != nil {
+				return result, err
+			}
+			if item.name == maintenanceImageName {
+				helper = pin
+				c.helperImage = pin
+			} else {
+				c.brokerImage = pin
+			}
 		}
 	}
 	// Query the running process, not argv[0] or an environment path. A copied
@@ -241,14 +268,16 @@ func readInstalledCompletionNative(ctx context.Context) (result installedMainten
 	// relies on the authenticated protected helper and Windows loader boundary.
 	image := make([]uint16, 32768)
 	length := uint32(len(image))
-	if windows.QueryFullProcessImageName(windows.CurrentProcess(), 0, &image[0], &length) != nil || length == 0 || length >= uint32(len(image)) ||
-		!strings.EqualFold(windows.UTF16ToString(image[:length]), filepath.Join(programFiles, "SKAGER", "UpdateBroker", maintenanceImageName)) {
+	if fixedHelper && (windows.QueryFullProcessImageName(windows.CurrentProcess(), 0, &image[0], &length) != nil || length == 0 || length >= uint32(len(image)) ||
+		!strings.EqualFold(windows.UTF16ToString(image[:length]), filepath.Join(programFiles, "SKAGER", "UpdateBroker", maintenanceImageName))) {
 		return result, errors.New("run the fixed original installed maintenance executable")
 	}
 	// Corroborate the actual running native image against the retained full
 	// file identity using the same metadata-only observer as initial publication.
-	if err := (&nativeMaintenanceImage{ctx: ctx, files: c.files, pin: helper}).Check(ctx); err != nil {
-		return result, err
+	if fixedHelper {
+		if err := (&nativeMaintenanceImage{ctx: ctx, files: c.files, pin: helper}).Check(ctx); err != nil {
+			return result, err
+		}
 	}
 	publication, err := ParseApprovedStartupPublication(record.StartupPublication, record.StartupPublicationSHA256, record.ClientRequest, record.ClientRequestSHA256)
 	if err != nil {
@@ -278,7 +307,7 @@ func readInstalledCompletionNative(ctx context.Context) (result installedMainten
 	if err := c.check(ctx); err != nil {
 		return result, err
 	}
-	result = installedMaintenanceInputs{completion: c, authority: maintenanceAuthority{brokerSHA: record.Broker.SHA256, client: client}, publication: publication, baseline: completedBaselineView{owner: c, ctx: ctx}}
+	result = installedMaintenanceInputs{completion: c, authority: maintenanceAuthority{brokerSHA: codeRecord.Broker.SHA256, client: client}, publication: publication, baseline: completedBaselineView{owner: c, ctx: ctx}}
 	return result, nil
 }
 

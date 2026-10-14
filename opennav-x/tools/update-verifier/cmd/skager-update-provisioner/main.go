@@ -37,6 +37,10 @@ func main() {
 }
 
 func reportMaintenanceCompletion(args []string, output io.Writer) error {
+	if codeUpgradeRequested(args) {
+		_, err := fmt.Fprintln(output, "SKAGER enrolled broker/helper successor completed; initialized store and registered-client readiness verified.")
+		return err
+	}
 	_, installed, _ := parseInstalledElevation(args)
 	if installed || manualRollbackRequested(args) || selectedHistoryRequested(args) || decommissionRequested(args) || currentInstalledRequested(args) || len(args) > 0 && args[0] == "--maintenance=uninstall-current-elevated" {
 		return nil // The operation already emitted its one bound JSON result.

@@ -34,14 +34,14 @@ type nativeMaintenanceBackend struct {
 }
 
 func openMaintenanceNative(ctx context.Context, authority maintenanceAuthority) (result maintenanceBackend, resultErr error) {
-	return openMaintenanceNativeMode(ctx, authority, false)
+	return openMaintenanceNativeMode(ctx, authority, false, false)
 }
 
 func openDecommissionNative(ctx context.Context, authority maintenanceAuthority) (maintenanceBackend, error) {
-	return openMaintenanceNativeMode(ctx, authority, true)
+	return openMaintenanceNativeMode(ctx, authority, true, false)
 }
 
-func openMaintenanceNativeMode(ctx context.Context, authority maintenanceAuthority, decommission bool) (result maintenanceBackend, resultErr error) {
+func openMaintenanceNativeMode(ctx context.Context, authority maintenanceAuthority, decommission, codeUpgrade bool) (result maintenanceBackend, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if err := maintenanceOperatorNative(authority.client.ClientSID); err != nil {
@@ -73,6 +73,9 @@ func openMaintenanceNativeMode(ctx context.Context, authority maintenanceAuthori
 	rights := uint32(windows.SERVICE_QUERY_CONFIG | windows.SERVICE_QUERY_STATUS | windows.SERVICE_STOP | windows.READ_CONTROL)
 	if decommission {
 		rights |= windows.SERVICE_CHANGE_CONFIG | windows.DELETE
+	}
+	if codeUpgrade {
+		rights |= windows.SERVICE_CHANGE_CONFIG | windows.SERVICE_START
 	}
 	n.service.service, err = windows.OpenService(n.service.scm, name, rights)
 	if err != nil {
