@@ -2,7 +2,12 @@
 """Portable contracts for actual-token fixture launch; no Windows/API execution."""
 import copy
 import ctypes
+import os
+from pathlib import Path
 import subprocess
+import sys
+import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest import mock
 
@@ -15,6 +20,7 @@ PROGRAM = r'C:\Program Files (x86)'
 GENERATION = 'b' * 32
 STARTUP = [PROGRAM + '\\SKAGER\\Applications\\' + SID + '\\generations\\' + GENERATION + r'\app\skager-start.exe',
            '--broker-start=' + GENERATION]
+STOCK = [PROGRAM + r'\OpenCPN 5.12.4\opencpn.exe', '--no_opengl']
 
 
 def observations(consent=0):
@@ -389,6 +395,137 @@ class ProtectedStartupLaunchTests(unittest.TestCase):
             native._info = wrong
             with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
                 native._authentication_id(32)
+
+
+class StockSequenceNative(SequenceNative, customer._StockNative):
+    """Exercise the actual original-token create sequence for fixed stock."""
+    def __init__(self, fault=None):
+        SequenceNative.__init__(self, fault)
+        self.authentication_id = 0x123400005678
+
+    def _authentication_id(self, token):
+        value = self.value(token)
+        self.events.append(('limited-authentication', value))
+        return self.authentication_id + (value == 48 and self.fault == 'stock-logon')
+
+    def _pin_stock_image(self, image):
+        assert image == STOCK[0]
+        self.events.append('pin-original-stock')
+        if self.fault == 'stock-bytes':
+            raise customer.CustomerLaunchRefused('Original stock bytes differ')
+
+    def _fn(self, dll, name, result, *types):
+        call = super()._fn(dll, name, result, *types)
+        if name != 'CreateProcessWithTokenW':
+            return call
+        def create(*args):
+            assert self.events[0] == 'pin-original-stock'
+            assert args[2] == STOCK[0]
+            assert args[3].value == subprocess.list2cmdline(STOCK)
+            assert args[-2]._obj.desktop == 'WinSta0\\Default'
+            return call(*args)
+        return create
+
+    def _image(self, handle):
+        self.events.append('verify-image')
+        return STOCK[0] + ('.foreign' if self.fault == 'image' else '')
+
+
+class StockLaunchTests(unittest.TestCase):
+    def launch(self, native):
+        return customer.open_same_account_stock(STOCK[0], customer.STOCK_SHA256, SID,
+                                                _native_factory=lambda: native)
+
+    def test_official_image_pin_and_original_limited_logon_precede_single_resume(self):
+        native = StockSequenceNative()
+        owner = self.launch(native)
+        self.assertEqual(owner.command, STOCK)
+        self.assertEqual((owner.sid, owner.elevated), (SID, False))
+        self.assertLess(native.events.index('pin-original-stock'), native.events.index('CreateProcessWithTokenW'))
+        self.assertLess(native.events.index(('limited-authentication', 48)), native.events.index('ResumeThread'))
+        self.assertEqual(owner.wait(0), 0)
+        owner.close()
+        self.assertEqual(native.resumes, 1)
+        self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
+
+    def test_path_hash_and_arguments_cannot_redirect_stock_route(self):
+        for image in ('', r'\\server\share\opencpn.exe', r'C:/stock/opencpn.exe',
+                      r'C:\stock\..\opencpn.exe', r'C:\stock\Maintain.exe',
+                      r'C:\stock\opencpn.exe:stream', STOCK[0] + ' --portable',
+                      STOCK[0] + '\n', STOCK[0] + '\x00', 'C:\\stock"\\opencpn.exe'):
+            factory = mock.Mock()
+            with self.subTest(image=image), self.assertRaises(customer.CustomerLaunchRefused):
+                customer.open_same_account_stock(image, customer.STOCK_SHA256, SID, _native_factory=factory)
+            factory.assert_not_called()
+        for digest in (None, 'a' * 64, customer.STOCK_SHA256.upper()):
+            factory = mock.Mock()
+            with self.subTest(digest=digest), self.assertRaises(customer.CustomerLaunchRefused):
+                customer.open_same_account_stock(STOCK[0], digest, SID, _native_factory=factory)
+            factory.assert_not_called()
+        native = FakeNative()
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            customer.open_same_account_launch(STOCK, SID, _native_factory=lambda: native)
+        self.assertEqual(native.creates, 0)
+
+    def test_untrusted_image_or_changed_token_cannot_resume_stock(self):
+        for fault in ('stock-bytes', 'image', 'stock-logon'):
+            native = StockSequenceNative(fault)
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertEqual(native.resumes, 0)
+            self.assertTrue(native.closed)
+            if fault == 'stock-bytes':
+                self.assertNotIn('CreateProcessWithTokenW', native.events)
+        native = StockSequenceNative()
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            customer.open_same_account_stock(STOCK[0], customer.STOCK_SHA256, SID + '1', _native_factory=lambda: native)
+        self.assertNotIn('CreateProcessWithTokenW', native.events)
+
+    def test_missing_limited_token_or_private_desktop_refuses_stock_before_image_access(self):
+        for fault in ('missing', 'elevated', 'session', 'desktop'):
+            native = StockSequenceNative()
+            if fault == 'missing': native.observed['linked'] = None
+            elif fault == 'elevated': native.observed['linked']['elevated'] = True
+            elif fault == 'session': native.observed['linked']['session'] = 2
+            elif fault == 'desktop': native.observed['desktop']['input'] = 'Winlogon'
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertEqual(native.events, [])
+            self.assertTrue(native.closed)
+
+    def test_timeout_never_relaunches_or_terminates_original_stock(self):
+        native = StockSequenceNative()
+        owner = self.launch(native)
+        native._state = lambda child: 258
+        with self.assertRaises(subprocess.TimeoutExpired):
+            owner.wait(0)
+        self.assertFalse(native.closed)
+        self.assertEqual(native.events.count('CreateProcessWithTokenW'), 1)
+        self.assertEqual(native.resumes, 1)
+        owner.close()
+
+    def test_real_image_reader_refuses_changed_bytes_and_drains_original_read_owner(self):
+        # Use a real descriptor and reader; only the Windows ownership transfer
+        # is inert. A caller-supplied official digest cannot bless foreign bytes.
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory) / 'opencpn.exe'
+            path.write_bytes(b'foreign executable, not the approved stock')
+            descriptor = os.open(path, os.O_RDONLY)
+            native = object.__new__(customer._StockNative)
+            native.owned, native.closed, native.close_error = [], False, None
+            native.kernel = object()
+            native._fn = lambda *args: lambda *args: descriptor
+            native.close_handle = lambda value: os.close(value) is None
+            with mock.patch.dict(sys.modules, {'msvcrt': SimpleNamespace(open_osfhandle=lambda handle, flags: handle)}), \
+                    mock.patch.object(customer.os, 'O_BINARY', 0, create=True):
+                with self.assertRaises(customer.CustomerLaunchRefused):
+                    native._pin_stock_image(str(path))
+            self.assertEqual(len(native.owned), 1)
+            self.assertFalse(native.owned[0][0].closed)
+            native.close()
+            self.assertTrue(native.owned[0][0].closed)
+            with self.assertRaises(OSError):
+                os.fstat(descriptor)
 
 
 class CustomerLaunchTests(unittest.TestCase):

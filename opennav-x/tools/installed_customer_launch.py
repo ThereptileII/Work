@@ -1,8 +1,9 @@
 """Disposable installed-fixture normal-token launches; never approves UAC.
 
 The caller authenticates original image bytes and owns UI/process observations
-and product postconditions. The two separate routes accept only the current
-account's fixed integration Maintain or protected B0 startup command. Neither
+and product postconditions. The separate routes accept only the current
+account's fixed integration Maintain, protected B0 startup or authenticated
+official stock OpenCPN command. None
 alters policy, enables privileges, manufactures tokens, uses credentials nor
 invokes a private elevated product action. A timeout never kills or retries a
 possibly effective operation.
@@ -13,10 +14,13 @@ https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/
 """
 import ctypes as C
 from ctypes import wintypes as W
+import hashlib
 import json
 import math
 import ntpath
+import os
 import re
+import stat
 import subprocess
 import sys
 import time
@@ -25,6 +29,9 @@ import uuid
 
 class CustomerLaunchRefused(RuntimeError):
     pass
+
+
+STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 
 
 def _require(value, message):
@@ -57,6 +64,17 @@ def _protected_startup_command(generation, sid, program):
     image = ntpath.join(program, 'SKAGER', 'Applications', sid, 'generations', generation,
                         'app', 'skager-start.exe')
     return [image, '--broker-start=' + generation]
+
+
+def _stock_command(image, digest):
+    _require(isinstance(digest, str) and digest == STOCK_SHA256,
+             'Only the pinned official stock OpenCPN executable is allowed')
+    _require(isinstance(image, str) and 3 < len(image) < 960 and
+             ntpath.isabs(image) and ntpath.normpath(image) == image and
+             re.match(r'^[A-Za-z]:\\', image) is not None and
+             not any(c in image for c in '\r\n\x00"/') and ':' not in image[2:] and
+             ntpath.basename(image) == 'opencpn.exe', 'Canonical approved original stock path required')
+    return [image, '--no_opengl']
 
 
 def _normal(current, linked):
@@ -210,6 +228,31 @@ def open_same_account_protected_startup(generation, expected_sid, *, _native_fac
         fixed = _protected_startup_command(generation, actual_sid, native.program)
         child = native.create(fixed)
         owner = NativeProtectedStartupProcess(native, child, fixed, capability)
+        owner.check()
+        return owner
+    except BaseException:
+        native.close()
+        raise
+
+
+def open_same_account_stock(image, digest, expected_sid, *, _native_factory=None):
+    """Start only the approved pinned official stock image, with fixed arguments.
+
+    The native owner holds deny-write/delete original image bytes from before
+    CreateProcess until close. The original LIMITED token/logon, returned primary
+    thread and process identity are checked before the single resume. The caller
+    still owns actual caution, deferred startup and profile preservation checks.
+    """
+    fixed = _stock_command(image, digest)
+    _require(_native_factory is not None or sys.platform == 'win32', 'Native Windows customer launch required')
+    native = (_native_factory or _StockNative)()
+    try:
+        capability = _capability(native.observed)
+        _require(capability['state'] == 'available', capability['reason'])
+        _require(isinstance(expected_sid, str) and expected_sid == native.observed['current']['sid'],
+                 'Approved client comparison differs from actual current account')
+        child = native.create(fixed)
+        owner = NativeCustomerProcess(native, child, fixed, capability)
         owner.check()
         return owner
     except BaseException:
@@ -535,6 +578,51 @@ class _ProtectedStartupNative(_Native):
         # Use the supplied original process handle only, never a PID lookup.
         # Retain its query token with this owner until checked close/drain.
         return self._check_startup_token(self._process_token(process_handle))
+
+
+class _StockNative(_ProtectedStartupNative):
+    """Same original limited-logon ownership, with a fixed official image pin."""
+    def _pin_stock_image(self, image):
+        import msvcrt
+        call = self._fn(self.kernel, 'CreateFileW', W.HANDLE, W.LPCWSTR, W.DWORD, W.DWORD,
+                        C.c_void_p, W.DWORD, W.DWORD, W.HANDLE)
+        handle = call(image, 0x80000000, 1, None, 3, 0x00200000, None)
+        _require(handle not in (None, C.c_void_p(-1).value), 'Original stock READ owner required')
+        try:
+            descriptor = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+        except BaseException:
+            self._ok(self.close_handle(handle))
+            raise
+        try:
+            stream = os.fdopen(descriptor, 'rb')
+        except BaseException:
+            os.close(descriptor)
+            raise
+        self.owned.append((stream, self._close_stock_image))
+        before = os.fstat(stream.fileno())
+        _require(stat.S_ISREG(before.st_mode) and before.st_nlink == 1 and
+                 0 < before.st_size <= 1 << 30 and
+                 not getattr(before, 'st_file_attributes', 0) & 0x400,
+                 'Plain bounded singly linked official stock image required')
+        def identity(value):
+            return (value.st_dev, value.st_ino, value.st_mode, value.st_nlink, value.st_size,
+                    value.st_mtime_ns, value.st_ctime_ns)
+        _require(hashlib.file_digest(stream, 'sha256').hexdigest() == STOCK_SHA256 and
+                 identity(os.fstat(stream.fileno())) == identity(before), 'Original stock image bytes differ')
+
+    @staticmethod
+    def _close_stock_image(stream):
+        try:
+            stream.close()
+            return True
+        except OSError:
+            return False
+
+    def create(self, command):
+        _require(isinstance(command, list) and len(command) == 2 and
+                 command == _stock_command(command[0], STOCK_SHA256), 'Only fixed stock arguments allowed')
+        self._pin_stock_image(command[0])
+        return super().create(command)
 
 
 if __name__ == '__main__':

@@ -5,7 +5,7 @@ import ctypes
 from pathlib import Path
 import subprocess
 import installed_b0_fixture as fixture
-from installed_customer_launch import CustomerLaunchRefused
+from installed_customer_launch import CustomerLaunchRefused, STOCK_SHA256
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -616,6 +616,7 @@ class NativeUninstallPostconditions(unittest.TestCase):
         f.startup_recovery_before = fixture.Counter(f.inventory(f.startup_recovery).values())
         f.service_absent = lambda: True
         f.registration = lambda: None
+        f.reopen_stock = mock.Mock(return_value={'state': 'original-stock-current-profile-reopened-and-closed'})
         preserved = {str(path.relative_to(f.root)): b0.updater._hash(path) for path in
                      (f.generation / 'docs' / 'modified.txt', f.generation / 'app' / 'custom.txt')}
         return f, preserved
@@ -627,6 +628,8 @@ class NativeUninstallPostconditions(unittest.TestCase):
             self.assertEqual(result['modifiedAndCustomFiles'], 2)
             self.assertEqual(result['stock'], 'preserved')
             self.assertFalse(result['nativeProductAcceptance'])
+            f.reopen_stock.assert_called_once_with()
+            self.assertEqual(result['stockReopen']['state'], 'original-stock-current-profile-reopened-and-closed')
 
     def test_missing_preservation_or_incomplete_cleanup_is_never_success(self):
         for defect in ('stock', 'modified', 'custom', 'baseline', 'startup-recovery', 'setup-recovery',
@@ -646,6 +649,168 @@ class NativeUninstallPostconditions(unittest.TestCase):
                 if defect == 'registration-remains': f.registration = lambda: {'OpenNavOwner': 'still installed'}
                 with self.assertRaises((ValueError, OSError)):
                     f.verify_uninstall(preserved)
+                f.reopen_stock.assert_not_called()
+
+    def test_stock_refusal_prevents_complete_uninstall_observation(self):
+        with tempfile.TemporaryDirectory() as directory:
+            f, preserved = self.make(Path(directory))
+            f.reopen_stock.side_effect = ValueError('Original stock did not reopen')
+            with self.assertRaises(ValueError):
+                f.verify_uninstall(preserved)
+            f.reopen_stock.assert_called_once_with()
+
+
+class StockReopenTests(unittest.TestCase):
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.directory = Path(self.temp.name)
+        self.events, self.fault, self.notice, self.running, self.closed = [], '', True, True, False
+        self.profile_calls, self.inventory_calls = 0, 0
+        self.profile = dict(navigationStore='sqlite', navigationSha256='a' * 64,
+                            navigationDetailsSha256='a' * 64, navigationMigrationFixtureSha256='',
+                            settingsSha256=['b' * 64])
+        self.owner = SimpleNamespace(pid=17, created=101, sid='S-1-5-21-1-2-3-4', elevated=False,
+                                    child={'handle': 111}, poll=self.poll, wait=self.wait, close=self.close)
+        self.owner.launch_evidence = dict(pid=17, threadId=18, created=101, resumeAttempted=True,
+                                         resumeResult=1, state='original-child-resumed')
+        self.ui = SimpleNamespace(wait_window=self.wait_window, windows=self.windows,
+                                  GetWindowThreadProcessId=self.window_owner, children=lambda window: [(30, 'Agree'), (31, 'Cancel')],
+                                  GetClassNameW=lambda child, buffer, length: setattr(buffer, 'value', 'Button'),
+                                  IsWindowEnabled=lambda window: True, control_text=lambda child: 'Agree' if child == 30 else 'Cancel',
+                                  capture=lambda window, path, **kwargs: path.write_bytes(b'inert notice screenshot'),
+                                  dismiss_native_dialog=self.dismiss, PostMessageW=self.post)
+        self.f = fixture.InstalledB0Fixture.__new__(fixture.InstalledB0Fixture)
+        self.f.n = SimpleNamespace(ui=self.ui, w=b0.wintypes, sid=self.owner.sid,
+                                   profile=self.observe_profile, profile_root=self.directory / 'profile')
+        self.f.phase = SimpleNamespace(profile_preserved=b0.phase.profile_preserved, module=self.module)
+        self.f.stock, self.f.evidence = self.directory / 'stock' / 'opencpn.exe', self.directory
+        self.f.p = {'request': {'stock': {'path': str(self.f.stock), 'executableSha256': STOCK_SHA256}}}
+        self.f.profile_before, self.f.stock_before = self.profile, {'opencpn.exe': STOCK_SHA256}
+        self.f.inventory, self.f.process_identity = self.inventory, self.identity
+        patch = mock.patch('installed_customer_launch.open_same_account_stock', side_effect=self.launch)
+        self.launch_mock = patch.start()
+        self.addCleanup(patch.stop)
+
+    def module(self, name):
+        if name == 'test-packaged-updater-windows':
+            return SimpleNamespace(startup_log=lambda profile: b'original startup log', wait_startup_ready=self.ready)
+        return b0.phase.module(name)
+
+    def launch(self, image, digest, sid):
+        self.assertEqual((image, digest, sid), (str(self.f.stock), STOCK_SHA256, self.owner.sid))
+        self.events.append('launch')
+        return self.owner
+
+    def observe_profile(self):
+        self.profile_calls += 1
+        self.events.append('profile')
+        value = dict(self.profile)
+        if self.profile_calls > 1 and self.fault == 'navigation':
+            value['navigationSha256'] = 'c' * 64
+        if self.profile_calls > 1 and self.fault == 'details':
+            value['navigationDetailsSha256'] = 'c' * 64
+        if self.profile_calls > 1 and self.fault == 'settings':
+            value['settingsSha256'] = ['c' * 64]
+        return value
+
+    def inventory(self, path):
+        self.inventory_calls += 1
+        return {'opencpn.exe': 'c' * 64 if self.inventory_calls > 1 and self.fault == 'stock' else STOCK_SHA256}
+
+    def poll(self):
+        self.assertFalse(self.closed)
+        if self.fault == 'token':
+            raise CustomerLaunchRefused('original limited token changed')
+        return None if self.running else 0
+
+    def identity(self, handle, path, digest):
+        self.assertEqual((handle, path, digest), (111, self.f.stock, STOCK_SHA256))
+        if self.fault == 'image':
+            raise ValueError('Original process image differs')
+        return 102 if self.fault == 'birth' else 101
+
+    def windows(self, pid=None):
+        result = [(20, 17, 'OpenCPN 5.12.4-0')]
+        if self.notice:
+            result.append((10, 17, 'Welcome to OpenCPN'))
+        if self.fault == 'extra-dialog':
+            result.append((21, 17, 'Unrelated prompt'))
+        return result
+
+    def wait_window(self, title, pid=None, timeout=45):
+        self.assertEqual((pid, timeout), (17, 45))
+        return (10 if title == 'Welcome to OpenCPN' else 20), 17
+
+    def window_owner(self, window, pid):
+        pid._obj.value = 99 if self.fault == 'window' else 17
+
+    def dismiss(self, window, label):
+        self.assertEqual((window, label), (10, 'Agree'))
+        self.events.append('genuine-notice-agree')
+        self.notice = False
+
+    def ready(self, profile, before):
+        self.assertEqual((profile, before), (self.f.n.profile_root, b'original startup log'))
+        self.events.append('fresh-deferred-startup')
+        if self.fault == 'startup':
+            raise RuntimeError('Fresh deferred startup absent')
+
+    def post(self, window, message, wparam, lparam):
+        self.assertEqual((window, message, wparam, lparam), (20, 0x0010, 0, 0))
+        self.assertIn('fresh-deferred-startup', self.events)
+        self.events.append('normal-close')
+        return True
+
+    def wait(self, timeout):
+        self.assertEqual(timeout, 30)
+        if self.fault == 'timeout':
+            raise subprocess.TimeoutExpired('original stock', timeout)
+        self.running = False
+        self.events.append('original-exit')
+        return 7 if self.fault == 'exit' else 0
+
+    def close(self):
+        self.closed = True
+        self.events.append('drain-original-owners')
+        if self.fault == 'close':
+            raise CustomerLaunchRefused('Original owner close failed')
+
+    def test_original_stock_caution_fresh_startup_and_normal_close_precede_preservation_proof(self):
+        result = self.f.reopen_stock()
+        self.assertEqual(self.events, ['profile', 'launch', 'genuine-notice-agree', 'fresh-deferred-startup',
+                                       'normal-close', 'original-exit', 'profile', 'drain-original-owners'])
+        self.assertTrue(result['navigationAndSelectedSettingsPreserved'])
+        self.assertTrue(result['stockInventoryPreserved'])
+        self.assertFalse(result['visibleNavigationObjectsObserved'])
+        self.assertFalse(result['nativeProductAcceptance'])
+        self.assertEqual(json.loads((self.directory / 'stock-reopen.json').read_text()), result)
+        self.launch_mock.assert_called_once()
+
+    def test_foreign_token_image_birth_window_or_notice_never_receives_agree_or_close(self):
+        for fault in ('token', 'image', 'birth', 'window', 'extra-dialog'):
+            self.fault, self.events, self.closed = fault, [], False
+            with self.subTest(fault=fault), self.assertRaises((ValueError, CustomerLaunchRefused)):
+                self.f.reopen_stock()
+            self.assertNotIn('genuine-notice-agree', self.events)
+            self.assertNotIn('normal-close', self.events)
+            self.assertTrue(self.closed)
+            self.assertFalse((self.directory / 'stock-reopen.json').exists())
+
+    def test_stale_startup_timeout_nonzero_exit_or_changed_navigation_settings_stock_refuses_success(self):
+        for fault in ('startup', 'timeout', 'exit', 'navigation', 'details', 'settings', 'stock', 'close'):
+            self.fault, self.events, self.closed, self.running, self.notice = fault, [], False, True, True
+            self.profile_calls, self.inventory_calls = 0, 0
+            (self.directory / 'stock-reopen-welcome.png').unlink(missing_ok=True)
+            with self.subTest(fault=fault), self.assertRaises((ValueError, RuntimeError, subprocess.TimeoutExpired)):
+                self.f.reopen_stock()
+            if fault == 'startup':
+                self.assertNotIn('normal-close', self.events)
+            if fault == 'timeout':
+                self.assertTrue(self.running)
+            self.assertTrue(self.closed)
+            self.assertFalse((self.directory / 'stock-reopen.json').exists())
+        self.assertEqual(self.launch_mock.call_count, 8)
 
 
 if __name__ == '__main__':

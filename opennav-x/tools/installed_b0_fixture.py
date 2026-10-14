@@ -89,6 +89,7 @@ class InstalledB0Fixture:
         self.stock = Path(prepared['request']['stock']['path'])
         require(not self.root.exists() and not self.root.is_symlink() and self.registration() is None)
         self.stock_before = self.inventory(self.stock.parent)
+        self.profile_before = observer.profile()
 
     def inventory(self, root):
         self.phase.updater._plain(root)
@@ -376,6 +377,80 @@ class InstalledB0Fixture:
         finally:
             require(close(scm))
 
+    def reopen_stock(self):
+        """Observe the original stock opening this current profile, then closing.
+
+        This does not claim that navigation objects were inspected in the UI.
+        Never seed/edit the profile, restore an old XML backup, kill or retry.
+        """
+        from installed_customer_launch import STOCK_SHA256, open_same_account_stock
+        ui, stock = self.n.ui, self.p['request']['stock']
+        require(stock['executableSha256'] == STOCK_SHA256 and str(self.stock) == stock['path'])
+        require(self.inventory(self.stock.parent) == self.stock_before)
+        require(self.phase.profile_preserved(self.profile_before, self.n.profile()))
+        runtime = self.phase.module('test-packaged-updater-windows')
+        welcome = self.phase.module('installer-welcome')
+        before_log = runtime.startup_log(self.n.profile_root)
+        owner = open_same_account_stock(str(self.stock), STOCK_SHA256, self.n.sid)
+        try:
+            require(owner.sid == self.n.sid and not owner.elevated)
+            launch = customer_launch_evidence(owner.launch_evidence)
+            require(launch['state'] == 'original-child-resumed' and launch['pid'] == owner.pid and
+                    launch['created'] == owner.created and launch['threadId'] > 0 and
+                    launch['resumeAttempted'] and launch['resumeResult'] == 1)
+
+            def original_window(window, title):
+                require(owner.poll() is None)
+                require(self.process_identity(owner.child['handle'], self.stock, STOCK_SHA256) == owner.created)
+                require((window, owner.pid, title) in ui.windows(owner.pid))
+                process = self.n.w.DWORD()
+                ui.GetWindowThreadProcessId(window, ctypes.byref(process))
+                require(process.value == owner.pid)
+
+            dialog, pid = ui.wait_window('Welcome to OpenCPN', owner.pid, timeout=45)
+            require(pid == owner.pid)
+
+            def original_notice():
+                original_window(dialog, 'Welcome to OpenCPN')
+                buttons = []
+                for child, _ in ui.children(dialog):
+                    kind = ctypes.create_unicode_buffer(128)
+                    ui.GetClassNameW(child, kind, len(kind))
+                    if kind.value == 'Button':
+                        require(ui.IsWindowEnabled(child))
+                        buttons.append(ui.control_text(child))
+                welcome.validate_notice(owner.pid, dialog, ui.windows(owner.pid), buttons)
+
+            original_notice()
+            image = self.evidence / 'stock-reopen-welcome.png'
+            require(not image.exists() and not image.is_symlink())
+            ui.capture(dialog, image, resize=False, screen_pixels=True)
+            original_notice()
+            ui.dismiss_native_dialog(dialog, 'Agree')
+            frame, pid = ui.wait_window('OpenCPN 5.12.4-0', owner.pid, timeout=45)
+            require(pid == owner.pid)
+            original_window(frame, 'OpenCPN 5.12.4-0')
+            runtime.wait_startup_ready(self.n.profile_root, before_log)
+            original_window(frame, 'OpenCPN 5.12.4-0')
+            require(ui.IsWindowEnabled(frame) and ui.PostMessageW(frame, 0x0010, 0, 0))
+            require(owner.wait(timeout=30) == 0)
+            require(self.phase.profile_preserved(self.profile_before, self.n.profile()))
+            require(self.inventory(self.stock.parent) == self.stock_before)
+            result = {'state': 'original-stock-current-profile-reopened-and-closed',
+                      'executableSha256': STOCK_SHA256, 'originalProcessId': owner.pid,
+                      'launchEvidence': launch, 'normalToken': True, 'freshDeferredStartup': True,
+                      'normalClose': True, 'navigationAndSelectedSettingsPreserved': True,
+                      'stockInventoryPreserved': True, 'visibleNavigationObjectsObserved': False,
+                      'nativeProductAcceptance': False}
+        finally:
+            # Close only original owners, including the held image. A failed or
+            # uncertain stock process remains alive for explicit recovery.
+            owner.close()
+        with (self.evidence / 'stock-reopen.json').open('x', encoding='utf-8') as stream:
+            json.dump(result, stream, sort_keys=True, indent=2)
+            stream.write('\n')
+        return result
+
     def verify_uninstall(self, preserved):
         deadline = time.monotonic() + 30
         while not self.service_absent() and time.monotonic() < deadline:
@@ -399,6 +474,8 @@ class InstalledB0Fixture:
             require(all(logs_after.get(name) == digest for name, digest in self.logs_before.items()))
         for name in ('Skager.lnk', 'Skager Legacy.lnk', 'Skager Safe Mode.lnk', 'OpenCPN Legacy.lnk', 'Maintain Skager.lnk'):
             require(not (self.menu / name).exists() and not (self.menu / name).is_symlink())
+        stock_reopen = self.reopen_stock()
         return {'state': 'service-and-registration-absent-original-state-retired',
                 'stock': 'preserved', 'baseline': 'preserved', 'recovery': 'preserved',
-                'modifiedAndCustomFiles': len(preserved), 'nativeProductAcceptance': False}
+                'modifiedAndCustomFiles': len(preserved), 'stockReopen': stock_reopen,
+                'nativeProductAcceptance': False}
