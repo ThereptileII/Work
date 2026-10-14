@@ -106,6 +106,7 @@ jobs:
           Get-Content -LiteralPath (Join-Path $Evidence 'helper-tests.log')
           if ($Result -ne 0) { exit $Result }
       - name: Probe native metadata using Python and inert files only
+        if: ${{ !cancelled() }}
         shell: pwsh
         run: |
           $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installer-receipt-contracts'
