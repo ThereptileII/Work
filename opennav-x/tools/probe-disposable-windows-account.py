@@ -2,7 +2,9 @@
 """One real account on an exact disposable GitHub-hosted job; no product action.
 
 No caller command, password arguments/files/environment, privilege enablement,
-token duplication/restriction, policy writes or desktop ACL changes. The only
+restricted tokens, policy writes or desktop ACL changes. Only an original OS
+FULL impersonation token can be converted to primary with DuplicateTokenEx,
+preserving its security context and AuthenticationId. The only
 child command is the original installed_customer_launch.py noargs capability CLI.
 Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
 window-station/desktop permission additions. Failures preserve uncertain live
@@ -11,6 +13,7 @@ process/account/profile state for disposable-job destruction rather than kill.
 Native contracts:
 https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-logonuserw
 https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw
+https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-duplicatetokenex
 https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-deleteprofilew
 https://learn.microsoft.com/en-us/windows/win32/api/lmaccess/nf-lmaccess-netuseradd
 """
@@ -57,10 +60,11 @@ def token_fact(value):
 def original_full(first, linked, expected_sid):
     first, linked = token_fact(first), token_fact(linked)
     require(first['sid'] == linked['sid'] == expected_sid and first['session'] == linked['session'] and
-            first['tokenType'] == linked['tokenType'] == 1, 'original-split-token-identity-refused')
+            first['tokenType'] == 1, 'original-split-token-identity-refused')
     full, limited = (first, linked) if first['elevationType'] == 2 else (linked, first)
     require(full['elevated'] and full['elevationType'] == 2 and full['integrity'] == 'S-1-16-12288' and
-            not limited['elevated'] and limited['elevationType'] == 3 and limited['integrity'] == 'S-1-16-8192',
+            not limited['elevated'] and limited['elevationType'] == 3 and limited['integrity'] == 'S-1-16-8192' and
+            limited['tokenType'] == 1,
             'original-split-token-unavailable')
     return 0 if full == first else 1
 
@@ -161,6 +165,55 @@ class AccountProbe:
         self.owned.append(handle)
         return handle
 
+    def token_statistics(self, token):
+        # Explicit Win32 widths also let portable checks verify the SDK layout.
+        class Luid(C.Structure):
+            _fields_ = [('low', C.c_uint32), ('high', C.c_int32)]
+        class Statistics(C.Structure):
+            _fields_ = [('tokenId', Luid), ('authenticationId', Luid), ('expiration', C.c_int64),
+                ('tokenType', C.c_int32), ('impersonationLevel', C.c_int32),
+                ('dynamicCharged', C.c_uint32), ('dynamicAvailable', C.c_uint32),
+                ('groupCount', C.c_uint32), ('privilegeCount', C.c_uint32), ('modifiedId', Luid)]
+        value = self.native._info(token, 10, Statistics())  # TokenStatistics
+        require(value.tokenType in (1, 2) and value.impersonationLevel in (0, 1, 2, 3),
+                'original-full-token-statistics-refused')
+        return dict(authenticationId=(value.authenticationId.high & 0xffffffff) << 32 |
+                    value.authenticationId.low, tokenType=value.tokenType,
+                    impersonationLevel=value.impersonationLevel)
+
+    def full_primary(self, original, expected):
+        before = token_fact(self.native._token(original))
+        require(before == expected and before['sid'] == self.sid and before['elevationType'] == 2 and
+                before['elevated'] and before['integrity'] == 'S-1-16-12288', 'original-full-token-changed')
+        statistics = self.token_statistics(original)
+        require(statistics['tokenType'] == before['tokenType'], 'original-full-token-statistics-refused')
+        if before['tokenType'] == 1:
+            return original
+        # Native 38531935235 proved the OS-linked FULL can be impersonation.
+        # Convert that exact retained FULL only; never create FULL from LIMITED.
+        primary = W.HANDLE()
+        try:
+            result = self.fn(self.native.adv, 'DuplicateTokenEx', W.BOOL, W.HANDLE, W.DWORD,
+                C.c_void_p, C.c_int, C.c_int, C.POINTER(W.HANDLE))(
+                original, 0x8 | 0x2 | 0x1, None, statistics['impersonationLevel'], 1, C.byref(primary))
+            error = C.get_last_error()
+        finally:
+            if primary.value:
+                self.own(primary)
+        if not result:
+            raise Refused('original-full-primary-conversion-refused', number(error))
+        require(primary.value and primary.value != original.value, 'original-full-primary-handle-refused')
+        converted = token_fact(self.native._token(primary))
+        converted_statistics = self.token_statistics(primary)
+        require(converted == dict(before, tokenType=1) and converted_statistics['tokenType'] == 1 and
+                converted_statistics['authenticationId'] == statistics['authenticationId'] and
+                token_fact(self.native._token(original)) == before and
+                self.token_statistics(original) == statistics, 'original-full-primary-context-changed')
+        self.facts['fullTokenConversion'] = dict(state='original-full-impersonation-converted-to-primary',
+            originalAuthenticationId=statistics['authenticationId'],
+            primaryAuthenticationId=converted_statistics['authenticationId'], primaryToken=converted)
+        return primary
+
     def account_sid(self):
         class User23(C.Structure):
             _fields_ = [('name', W.LPWSTR), ('fullName', W.LPWSTR), ('comment', W.LPWSTR),
@@ -254,7 +307,8 @@ class AccountProbe:
         self.own(linked)
         partner = token_fact(self.native._token(linked))
         self.facts['originalLinkedToken'] = partner
-        self.full = (token, linked)[original_full(first, partner, self.sid)]
+        selected = original_full(first, partner, self.sid)
+        self.full = self.full_primary((token, linked)[selected], (first, partner)[selected])
 
     def observe(self):
         class Security(C.Structure):

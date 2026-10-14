@@ -30,6 +30,9 @@ class OriginalTokenSelection(unittest.TestCase):
         self.assertEqual(probe.original_full(LIMITED, FULL, SID), 1)
         self.assertEqual(FULL['session'], 0)
 
+    def test_actual_os_linked_full_impersonation_is_selected_for_conversion(self):
+        self.assertEqual(probe.original_full(LIMITED, dict(FULL, tokenType=2), SID), 1)
+
     def test_missing_unsplit_foreign_session_and_foreign_account_are_refused(self):
         for first, linked in [(FULL, None), (dict(FULL, elevationType=1), LIMITED),
                               (FULL, dict(LIMITED, session=2)), (FULL, dict(LIMITED, sid=SID[:-1]+'2')),
@@ -37,6 +40,115 @@ class OriginalTokenSelection(unittest.TestCase):
             with self.subTest(first=first['elevationType'], linked=linked is not None):
                 with self.assertRaises(probe.Refused):
                     probe.original_full(first, linked, SID)
+
+
+class OriginalFullPrimaryConversion(unittest.TestCase):
+    def owner(self, full_type=2, changed=None, authentication=0x123456789abcdef0):
+        owner = probe.AccountProbe.__new__(probe.AccountProbe)
+        owner.sid, owner.facts = SID, {}
+        owner.original = probe.W.HANDLE(22)
+        owner.owned = [probe.W.HANDLE(11), owner.original]
+        owner.before = dict(FULL, tokenType=full_type)
+        owner.after = dict(FULL, **(changed or {}))
+        owner.native = SimpleNamespace(adv='adv', _token=lambda handle:
+            owner.before.copy() if handle.value == 22 else owner.after.copy())
+        owner.token_statistics = mock.Mock(side_effect=lambda handle:
+            dict(authenticationId=authentication if handle.value == 22 else owner.primary_authentication,
+                 tokenType=owner.before['tokenType'] if handle.value == 22 else owner.after['tokenType'],
+                 impersonationLevel=2 if handle.value == 22 and full_type == 2 else 0))
+        owner.primary_authentication = authentication
+        def duplicate(original, access, attributes, level, kind, target):
+            self.assertIs(original, owner.original)
+            self.assertEqual((access, attributes, level, kind), (0xb, None, 2, 1))
+            target._obj.value = 33
+            return True
+        owner.duplicate = mock.Mock(side_effect=duplicate)
+        owner.fn = mock.Mock(return_value=owner.duplicate)
+        return owner
+
+    def test_only_original_full_is_converted_with_minimum_rights_and_original_handles_retained(self):
+        owner = self.owner()
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            primary = owner.full_primary(owner.original, owner.before.copy())
+        self.assertEqual(primary.value, 33)
+        self.assertEqual([handle.value for handle in owner.owned], [11, 22, 33])
+        owner.duplicate.assert_called_once()
+        self.assertEqual(owner.fn.call_args.args[1], 'DuplicateTokenEx')
+        conversion = owner.facts['fullTokenConversion']
+        self.assertEqual(conversion['originalAuthenticationId'], conversion['primaryAuthenticationId'])
+        self.assertEqual(conversion['primaryToken'], FULL)
+
+    def test_original_primary_is_reused_without_duplication(self):
+        owner = self.owner(full_type=1)
+        self.assertIs(owner.full_primary(owner.original, owner.before.copy()), owner.original)
+        owner.fn.assert_not_called()
+        self.assertEqual([handle.value for handle in owner.owned], [11, 22])
+
+    def test_limited_or_changed_original_context_never_reaches_duplicate_api(self):
+        for defect in [dict(LIMITED, tokenType=2), dict(FULL, tokenType=2, sid=SID[:-1]+'2')]:
+            owner = self.owner()
+            owner.before = defect
+            with self.assertRaises(probe.Refused):
+                owner.full_primary(owner.original, defect.copy())
+            owner.fn.assert_not_called()
+
+    def test_converted_security_context_or_authentication_mismatch_refuses(self):
+        for change in [dict(sid=SID[:-1]+'2'), dict(session=2), dict(elevated=False),
+                       dict(elevationType=3), dict(integrity='S-1-16-8192'), dict(tokenType=2), {}]:
+            owner = self.owner(changed=change)
+            if not change:
+                owner.primary_authentication += 1
+            with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                with self.assertRaises(probe.Refused) as caught:
+                    owner.full_primary(owner.original, owner.before.copy())
+            self.assertEqual(caught.exception.reason, 'original-full-primary-context-changed')
+            self.assertEqual([handle.value for handle in owner.owned], [11, 22, 33])
+
+    def test_original_context_is_rechecked_after_conversion(self):
+        owner = self.owner()
+        original = owner.before.copy()
+        owner.native._token = mock.Mock(side_effect=[original, FULL.copy(), dict(original, session=2)])
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            with self.assertRaises(probe.Refused):
+                owner.full_primary(owner.original, original)
+        self.assertEqual([handle.value for handle in owner.owned], [11, 22, 33])
+
+    def test_native_conversion_failure_does_not_enable_privileges_or_retry(self):
+        owner = self.owner()
+        owner.duplicate.side_effect = None
+        owner.duplicate.return_value = False
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=5):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.full_primary(owner.original, owner.before.copy())
+        self.assertEqual((caught.exception.reason, caught.exception.winerror),
+                         ('original-full-primary-conversion-refused', 5))
+        owner.duplicate.assert_called_once()
+        self.assertEqual([handle.value for handle in owner.owned], [11, 22])
+
+    def test_interrupted_return_still_retains_new_token_for_original_cleanup(self):
+        owner = self.owner()
+        def interrupted(*args):
+            args[-1]._obj.value = 33
+            raise KeyboardInterrupt()
+        owner.duplicate.side_effect = interrupted
+        with self.assertRaises(KeyboardInterrupt):
+            owner.full_primary(owner.original, owner.before.copy())
+        self.assertEqual([handle.value for handle in owner.owned], [11, 22, 33])
+
+    def test_native_statistics_layout_and_full_authentication_luid_bits(self):
+        owner = probe.AccountProbe.__new__(probe.AccountProbe)
+        def read(token, kind, target):
+            self.assertEqual(kind, 10)
+            self.assertEqual(ctypes.sizeof(target), 56)
+            self.assertEqual(type(target).authenticationId.offset, 8)
+            self.assertEqual(type(target).tokenType.offset, 24)
+            self.assertEqual(type(target).modifiedId.offset, 48)
+            target.authenticationId.high, target.authenticationId.low = -1, 17
+            target.tokenType, target.impersonationLevel = 2, 2
+            return target
+        owner.native = SimpleNamespace(_info=read)
+        self.assertEqual(owner.token_statistics(None), dict(authenticationId=0xffffffff00000011,
+                                                          tokenType=2, impersonationLevel=2))
 
 
 class SanitizedCapability(unittest.TestCase):
