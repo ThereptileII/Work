@@ -2,7 +2,7 @@
 """One real account on an exact disposable GitHub-hosted job; no product action.
 
 No caller command, password arguments/files/environment, privilege enablement,
-restricted tokens, policy writes or desktop ACL changes. The original OS LIMITED
+restricted tokens, policy writes or manual desktop ACL edits. The original OS LIMITED
 PRIMARY logon token launches only the original installed_customer_launch.py
 fixed literal profile-file capability worker (the noargs CLI is unchanged). The linked FULL token is observed, never converted or
 used by this entry. Original token statistics survive refusal. Limited-child
@@ -10,8 +10,12 @@ desktop observations do not enable the elevated-parent customer launch API.
 Bounded flushed progress and the final report use one child-created fixed file
 in the actual-token profile. No stdout/stderr handles, environment paths or
 handle inheritance are assumed. Original verified exit remains necessary.
-Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
-window-station/desktop permission additions. Failures preserve uncertain live
+This fresh-account-only probe requests documented Windows-managed per-user
+access to the caller's inherited desktop with lpDesktop=NULL. Actual caller
+WinSta0/Default and unchanged UAC policy are checked before/after. This is host
+provisioning, not an unchanged-ACL claim or a customer launch/elevation route.
+Installed customer launch helpers keep their explicit desktop behavior.
+Failures preserve uncertain live
 process/account/profile state for disposable-job destruction rather than kill.
 
 Native contracts:
@@ -239,6 +243,39 @@ class AccountProbe:
         self.owned.append(handle)
         return handle
 
+    def check_disposable_host(self, phase):
+        """Observe the exact existing caller desktop/policy; never repair them."""
+        record = self.facts.setdefault('hostDesktopProvisioning', dict(
+            mode='windows-managed-fresh-account-inherited-desktop',
+            manualAclEdits=False, permissionAdditionsRequested=False, observations={}))
+        sample = dict(checksPassed=False)
+        record['observations'][phase] = sample
+        policy = self.native._policy()
+        sample['policy'] = {key: number(policy.get(key)) for key in
+            ('enableLUA', 'consentPromptBehaviorAdmin', 'promptOnSecureDesktop')}
+        current = token_fact(self.native._token(self.native.current))
+        sample['session'] = current['session']
+        desktop = self.native._desktop()
+        sample['desktop'] = dict(station='WinSta0' if desktop.get('station') == 'WinSta0' else 'other',
+            visible=desktop.get('visible') is True,
+            input='Default' if desktop.get('input') == 'Default' else None,
+            thread='Default' if desktop.get('thread') == 'Default' else None,
+            nativeError=number(desktop.get('nativeError')))
+        require(current == token_fact(self.native.observed['current']) and current['tokenType'] == 1 and
+                current['elevated'] and current['session'] > 0 and
+                desktop.get('station') == 'WinSta0' and desktop.get('visible') is True and
+                desktop.get('input') == desktop.get('thread') == 'Default' and desktop.get('nativeError') is None and
+                sample['policy']['enableLUA'] == 1 and
+                type(policy.get('consentPromptBehaviorAdmin')) is int and policy['consentPromptBehaviorAdmin'] in range(6) and
+                type(policy.get('promptOnSecureDesktop')) is int and policy['promptOnSecureDesktop'] in (0, 1),
+                'disposable-caller-desktop-or-policy-refused')
+        observed = {key: sample[key] for key in ('policy', 'session', 'desktop')}
+        if 'original' in record:
+            require(observed == record['original'], 'disposable-caller-desktop-or-policy-changed')
+        else:
+            record['original'] = observed
+        sample['checksPassed'] = True
+
     def token_statistics(self, token):
         # Explicit Win32 widths also let portable checks verify the SDK layout.
         class Luid(C.Structure):
@@ -343,6 +380,7 @@ class AccountProbe:
         return path
 
     def prepare(self):
+        self.check_disposable_host('beforeAccount')
         class User(C.Structure):
             _fields_ = [('name', W.LPWSTR), ('password', W.LPWSTR), ('age', W.DWORD), ('privilege', W.DWORD),
                         ('home', W.LPWSTR), ('comment', W.LPWSTR), ('flags', W.DWORD), ('script', W.LPWSTR)]
@@ -406,6 +444,19 @@ class AccountProbe:
                 'original-limited-primary-changed')
 
     def observe(self):
+        completed = False
+        try:
+            result = self._observe()
+            completed = True
+            return result
+        finally:
+            try:
+                self.check_disposable_host('afterObservation')
+            except BaseException:
+                if completed:
+                    raise
+
+    def _observe(self):
         self.check_limited()
         class Startup(C.Structure):
             _fields_ = [('cb', W.DWORD), ('reserved', W.LPWSTR), ('desktop', W.LPWSTR), ('title', W.LPWSTR),
@@ -416,13 +467,18 @@ class AccountProbe:
         class Process(C.Structure):
             _fields_ = [('process', W.HANDLE), ('thread', W.HANDLE), ('pid', W.DWORD), ('tid', W.DWORD)]
         startup, process = Startup(), Process()
-        startup.cb, startup.desktop = C.sizeof(startup), 'WinSta0\\Default'
+        # Dedicated disposable-account setup: Windows provisions access for
+        # this original token to the already verified caller desktop. This has
+        # documented permission side effects; no product launch uses this seam.
+        startup.cb, startup.desktop = C.sizeof(startup), None
         # No STARTF_USESTDHANDLES or inherited NUL/pipes. Do not infer destination
         # from lpEnvironment=NULL: only the original token chooses its profile.
         command = [sys.executable, '-I', '-B', str(self.helper), customer.PROFILE_CAPABILITY_MODE]
         line = C.create_unicode_buffer(subprocess.list2cmdline(command))
         require(len(line) < 1024, 'fixed-helper-command-bound-refused')
         self.check_limited()
+        self.check_disposable_host('beforeLaunch')
+        self.facts['hostDesktopProvisioning']['permissionAdditionsRequested'] = True
         self.profile_attempted, self.launch_effect = True, 'uncertain'
         try:
             result = self.fn(self.native.adv, 'CreateProcessWithTokenW', W.BOOL, W.HANDLE, W.DWORD, W.LPCWSTR,
@@ -463,6 +519,8 @@ class AccountProbe:
         require(profile is not None, 'original-profile-load-unobserved')
         self.diagnostic = customer._ProfileCapabilityFile(self.limited, expected_profile=profile, expected_sid=self.sid)
         check_created_child()
+        self.check_disposable_host('beforeResume')
+        check_created_child()
         self.facts['originalChild']['resumeAttempted'] = True
         previous = self.fn(self.native.kernel, 'ResumeThread', W.DWORD, W.HANDLE)(self.thread)
         self.facts['originalChild']['resumeResult'] = previous
@@ -491,7 +549,11 @@ class AccountProbe:
         require(self.facts['capabilityProgress']['markerSequenceComplete'], 'capability-progress-contract-refused')
         require(self.verify_profile() is not None, 'original-profile-load-unobserved')
         self.check_limited()
-        return project_limited_capability(file_capability_parts(raw)[0], child)
+        capability = project_limited_capability(file_capability_parts(raw)[0], child)
+        if capability.get('limitedPrimaryChildObserved'):
+            require(capability['observations']['policy'] == self.facts['hostDesktopProvisioning']['original']['policy'],
+                    'original-limited-child-policy-mismatch')
+        return capability
 
     def cleanup(self):
         # No delete/kill if creation was interrupted or the original process may

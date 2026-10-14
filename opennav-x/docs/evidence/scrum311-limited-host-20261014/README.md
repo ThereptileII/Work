@@ -87,3 +87,43 @@ customer/UAC capability, installed product acceptance or SCRUM-311 completion.
 Primary contracts: [CreateProcessWithTokenW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw),
 [GetUserProfileDirectoryW](https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-getuserprofiledirectoryw),
 [CreateFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew).
+
+
+## Disposable-host desktop provisioning correction
+
+The fresh-account probe now uses `CreateProcessWithTokenW` with `lpDesktop=NULL`
+to request Windows' documented per-user access provisioning for the caller's
+inherited desktop. This changes OS-managed window-station/desktop permissions;
+it is not an unchanged-ACL claim. Only this dedicated, exact-source,
+workflow-dispatched disposable-account probe uses the choice. Installed customer
+launch helpers retain their explicit desktop behavior.
+
+Before account creation and immediately before launch/resume, the probe requires
+the actual original elevated primary caller in a nonzero session on visible
+`WinSta0`, with `Default` input and thread desktops, and reads the actual UAC
+policy. Caller desktop/token and policy must remain unchanged after observation,
+including timeout/refusal. A changed post-observation state blocks success and
+is retained without masking an earlier failure. The successful child's native
+report must preserve the same UAC policy and existing exact LIMITED primary
+identity/session and real interactive desktop checks.
+
+The fresh same-machine non-RID500 account, original OS token/logon, fixed worker,
+actual-token profile/file custody, one suspended child, one resume, verified exit
+and 60-second bound remain required. No manual DACL editing, policy write,
+privilege enablement, token conversion, alternate launch, product action or
+manual permission rollback is added. Uncertain child/account state still belongs
+to whole disposable-job destruction. Normal OS per-user provisioning here is
+host preparation, not a relaxation of installed broker/client authority.
+
+One subsequent native observation is needed to test this documented setup
+difference. It may resolve the no-entry symptom; it does not establish the
+historical stall function. A usable LIMITED child's desktop alone does not prove
+an interactive Explorer sign-in, usable original FULL primary custody, installed
+mechanics or human UAC consent. Silent-elevation policy remains visible and both
+acceptance flags remain false. No further automatic retry follows refusal.
+
+Microsoft distinguishes these APIs: [CreateProcessWithTokenW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw)
+documents inherited-desktop permission additions for NULL/empty `lpDesktop`;
+[CreateProcessWithLogonW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithlogonw)
+requires application-provided access on current Windows and qualifies automatic
+additions as Windows XP behavior. The existing token-based route is preserved.

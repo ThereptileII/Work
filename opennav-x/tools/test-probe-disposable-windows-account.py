@@ -16,6 +16,9 @@ spec.loader.exec_module(probe)
 SID = 'S-1-5-21-123-456-789-1001'
 FULL = dict(sid=SID, session=0, tokenType=1, integrity='S-1-16-12288', elevationType=2, elevated=True)
 LIMITED = dict(FULL, integrity='S-1-16-8192', elevationType=3, elevated=False)
+CALLER = dict(FULL, sid='S-1-5-21-123-456-789-500', session=2, elevationType=1)
+DESKTOP = dict(station='WinSta0', visible=True, input='Default', thread='Default')
+POLICY = dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1)
 
 
 def capability():
@@ -451,8 +454,9 @@ class FixedNativeCommand(unittest.TestCase):
         owner.exit_observed = False
         owner.kernelbase = 'kernelbase'
         owner.helper = Path('fixed-tools/installed_customer_launch.py')
-        owner.native = SimpleNamespace(kernel='kernel', adv='adv', observed={'current': {'session': 2}},
-            _token=lambda token: owner.limited_fact if token == 987 else child,
+        owner.native = SimpleNamespace(kernel='kernel', adv='adv', current=876, observed={'current': CALLER},
+            _desktop=mock.Mock(side_effect=lambda: DESKTOP.copy()), _policy=mock.Mock(side_effect=lambda: POLICY.copy()),
+            _token=lambda token: owner.limited_fact if token == 987 else CALLER.copy() if token == 876 else child,
             _process_token=lambda handle: 77, _created=lambda handle: 123,
             _image=lambda handle: probe.sys.executable)
         owner.token_statistics = lambda token: (owner.limited_statistics if token == 987 else
@@ -464,7 +468,7 @@ class FixedNativeCommand(unittest.TestCase):
             self.assertEqual(executable, probe.sys.executable)
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
                 [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
-            self.assertEqual(startup._obj.desktop, 'WinSta0\\Default')
+            self.assertIsNone(startup._obj.desktop)
             self.assertEqual(startup._obj.flags, 0)
             self.assertEqual((startup._obj.stdin, startup._obj.stdout, startup._obj.stderr), (None, None, None))
             process._obj.process, process._obj.thread = 201, 202
@@ -502,6 +506,107 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertNotIn('DuplicateHandle', calls)
         self.assertIs(owner.diagnostic, self.current_diagnostic)
         self.assertLess(calls.index('DiagnosticReadFinal'), calls.index('GetExitCodeProcess'))
+        provisioning = owner.facts['hostDesktopProvisioning']
+        self.assertEqual(provisioning['mode'], 'windows-managed-fresh-account-inherited-desktop')
+        self.assertTrue(provisioning['permissionAdditionsRequested'])
+        self.assertFalse(provisioning['manualAclEdits'])
+        self.assertEqual(provisioning['original']['policy'], POLICY)
+        self.assertEqual(set(provisioning['observations']), {'beforeLaunch', 'beforeResume', 'afterObservation'})
+        self.assertTrue(all(s['checksPassed'] for s in provisioning['observations'].values()))
+        self.assertFalse(result['consentPromptAcceptance'])
+        self.assertFalse(result['nativeCustomerAcceptance'])
+
+    def test_unsuitable_caller_refuses_before_launch_or_fresh_account_creation(self):
+        for change in ({'station': 'service-station'}, {'visible': False}, {'input': 'Winlogon'},
+                       {'thread': 'other'}, {'nativeError': 5}):
+            owner, calls = self.child_owner()
+            owner.native._desktop.side_effect = None
+            owner.native._desktop.return_value = dict(DESKTOP, **change)
+            with self.subTest(change=change), self.assertRaises(probe.Refused):
+                owner.observe()
+            self.assertNotIn('CreateProcessWithTokenW', calls)
+            self.assertNotIn('ResumeThread', calls)
+            self.assertFalse(owner.facts['hostDesktopProvisioning']['permissionAdditionsRequested'])
+            # prepare() must refuse the same unsuitable host before NetUserAdd.
+            with self.assertRaises(probe.Refused):
+                owner.prepare()
+            self.assertNotIn('NetUserAdd', calls)
+
+    def test_changed_policy_or_caller_desktop_before_resume_keeps_original_child_suspended(self):
+        for kind in ('policy', 'desktop'):
+            owner, calls = self.child_owner()
+            if kind == 'policy':
+                owner.native._policy.side_effect = [POLICY.copy(), dict(POLICY, consentPromptBehaviorAdmin=5), POLICY.copy()]
+            else:
+                owner.native._desktop.side_effect = [DESKTOP.copy(), dict(DESKTOP, input='Winlogon'), DESKTOP.copy()]
+            with self.subTest(kind=kind), mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                with self.assertRaises(probe.Refused):
+                    owner.observe()
+            self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
+            self.assertNotIn('ResumeThread', calls)
+            self.assertFalse(owner.facts['hostDesktopProvisioning']['observations']['beforeResume']['checksPassed'])
+            self.assertTrue(owner.facts['hostDesktopProvisioning']['observations']['afterObservation']['checksPassed'])
+
+    def test_changed_policy_after_child_exit_blocks_success_and_is_retained(self):
+        owner, calls = self.child_owner()
+        changed = dict(POLICY, promptOnSecureDesktop=0)
+        owner.native._policy.side_effect = [POLICY.copy(), POLICY.copy(), changed]
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.observe()
+        self.assertEqual(caught.exception.reason, 'disposable-caller-desktop-or-policy-changed')
+        self.assertTrue(owner.exit_observed)
+        post = owner.facts['hostDesktopProvisioning']['observations']['afterObservation']
+        self.assertEqual(post['policy'], changed)
+        self.assertFalse(post['checksPassed'])
+        self.assertEqual(calls.count('ResumeThread'), 1)
+
+    def test_disabled_or_unprovable_uac_policy_never_launches(self):
+        for change in ({'enableLUA': 0}, {'enableLUA': None}, {'consentPromptBehaviorAdmin': 6},
+                       {'promptOnSecureDesktop': None}):
+            owner, calls = self.child_owner()
+            owner.native._policy.side_effect = lambda: dict(POLICY, **change)
+            with self.subTest(change=change), self.assertRaises(probe.Refused):
+                owner.observe()
+            self.assertNotIn('CreateProcessWithTokenW', calls)
+            self.assertNotIn('ResumeThread', calls)
+            self.assertFalse(owner.facts['hostDesktopProvisioning']['permissionAdditionsRequested'])
+
+    def test_post_check_failure_is_not_hidden_by_an_unrelated_callers_exception_context(self):
+        owner, _ = self.child_owner()
+        owner.native._policy.side_effect = [POLICY.copy(), POLICY.copy(), dict(POLICY, consentPromptBehaviorAdmin=5)]
+        try:
+            raise ValueError('unrelated caller context')
+        except ValueError:
+            with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                with self.assertRaises(probe.Refused) as caught:
+                    owner.observe()
+        self.assertEqual(caught.exception.reason, 'disposable-caller-desktop-or-policy-changed')
+
+    def test_timeout_keeps_first_refusal_and_retains_changed_post_policy(self):
+        owner, calls = self.child_owner(wait_state=258)
+        changed = dict(POLICY, consentPromptBehaviorAdmin=5)
+        owner.native._policy.side_effect = [POLICY.copy(), POLICY.copy(), changed]
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0), \
+                mock.patch.object(probe.time, 'monotonic', side_effect=[100, 161]):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.observe()
+        self.assertEqual(caught.exception.reason, 'original-capability-child-timeout')
+        post = owner.facts['hostDesktopProvisioning']['observations']['afterObservation']
+        self.assertEqual(post['policy'], changed)
+        self.assertFalse(post['checksPassed'])
+        self.assertFalse(owner.exit_observed)
+        self.assertEqual(calls.count('ResumeThread'), 1)
+
+    def test_child_cannot_report_different_policy_than_actual_unchanged_host(self):
+        owner, calls = self.child_owner()
+        actual = dict(POLICY, consentPromptBehaviorAdmin=5)
+        owner.native._policy.side_effect = lambda: actual.copy()
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.observe()
+        self.assertEqual(caught.exception.reason, 'original-limited-child-policy-mismatch')
+        self.assertEqual(calls.count('ResumeThread'), 1)
 
     def test_original_identity_is_rechecked_after_profile_reader_acquisition(self):
         for fault in ('creation', 'token', 'thread'):
@@ -607,12 +712,15 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertEqual(calls.count('ResumeThread'), 1)
         self.assertTrue(owner.exit_observed)
 
-    def test_original_limited_token_profile_explicit_desktop_and_noargs_helper_only(self):
+    def test_original_limited_token_profile_managed_desktop_and_fixed_worker_only(self):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
         owner.sid, owner.limited = SID, 987
         owner.limited_fact = dict(LIMITED, session=2)
         owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
-        owner.native = SimpleNamespace(kernel='kernel', adv='adv', _token=lambda token: owner.limited_fact)
+        owner.native = SimpleNamespace(kernel='kernel', adv='adv', current=876, observed={'current': CALLER},
+            _desktop=lambda: DESKTOP.copy(), _policy=lambda: POLICY.copy(),
+            _token=lambda token: CALLER.copy() if token == 876 else owner.limited_fact)
+        owner.facts = {}
         owner.token_statistics = lambda token: owner.limited_statistics
         owner.full_primary = mock.Mock(side_effect=AssertionError('FULL conversion forbidden'))
         owner.helper, owner.owned = Path('fixed-tools/installed_customer_launch.py'), []
@@ -624,7 +732,7 @@ class FixedNativeCommand(unittest.TestCase):
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
                 [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
             self.assertEqual(executable, probe.sys.executable)
-            self.assertEqual(startup._obj.desktop, 'WinSta0\\Default')
+            self.assertIsNone(startup._obj.desktop)
             self.assertEqual(startup._obj.flags, 0)
             self.assertEqual((startup._obj.stdin, startup._obj.stdout, startup._obj.stderr), (None, None, None))
             return False  # Existing privilege unavailable: never enable or retry.
