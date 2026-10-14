@@ -61,6 +61,7 @@ prepare-test-profile.py prepare-stock-review-desktop.py build-installer-prior-fi
 extract-peer-buffer.py fetch-st4000-oracle.py soak-runtime.py
 collect-zoom-evidence.py openssl_loaded.py win32-pe-import-probe.cpp
 win32_plugin_inventory.py win32_module_observation.py plugin-guard-owned-trust.ps1
+installed_customer_launch.py installed_b0_fixture.py
 '''.split())
 DOC_FILES = frozenset('''
 README.md AGENTS.md FIRST_TASK.md PROJECT_GOAL.md START_HERE.md

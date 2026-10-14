@@ -4,11 +4,13 @@
 before the separate four-phase installed updater driver. It runs only on an
 explicitly disposable, interactive GitHub-hosted Windows runner in
 `ThereptileII/Work`, as the actual elevated intended client. It performs one
-fresh protected `--activate-startup=true` enrollment, then one original B0
-launcher startup. It waits for real initial qualification, selected-history
-readback, ordinary application startup and normal UI close. It does not build,
+genuine default Setup installation, fresh protected `--activate-startup=true`
+enrollment, then one original B0 launcher startup. It waits for real initial
+qualification, selected-history readback, ordinary application startup and
+normal UI close, then exercises installed Maintain uninstall. It does not build,
 approve an input, publish metadata, connect a tailnet, seed a profile, repair,
-retry, uninstall, remove fixed objects, or force a process to exit. Never run it
+retry, remove fixed objects itself, or force a process to exit. Only the product's
+authenticated customer uninstall performs its normal removal. Never run it
 on the boat or a machine with physical equipment connected.
 
 Before running, an operator must independently authenticate the original B0
@@ -43,6 +45,7 @@ product version and compiled 40-hex commit:
 ```json
 {
   "schema": 1,
+  "setup": {"path": "C:\\approved\\b0-Setup.exe", "sha256": "<approved Setup SHA-256>"},
   "b0": {
     "version": "<genuine B0 version>",
     "commit": "<B0 compiled 40-hex commit>",
@@ -82,6 +85,13 @@ python tools/test-installed-protected-b0-startup-windows.py `
   --disposable-opt-in SCRUM-311-disposable-initial-protected-b0
 ```
 
+The Setup executable must match the already-approved B0 policy's installer
+path, size and hash. The fixture runs it exactly once with default XNav, Legacy
+and Safe shortcuts; it never disables or deletes a shortcut to bypass a product
+conflict. Original stock files and installed payload inventory are checked
+before enrollment. A modified documentation file and custom/recovery files
+exercise preservation on uninstall; they are confined to the disposable setup.
+
 The verified kit is copied into a fresh, retained child of the independently
 protected acquisition directory. The final provisioner image is held against
 write/delete and rehashed before its single elevated invocation. The command
@@ -103,12 +113,30 @@ import bookkeeping; XML-to-database comparison is allowed only for the exact
 existing controlled `mode-persistence.gpx` fixture and its represented fields.
 Arbitrary XML migration, stale XML beside a database, incomplete schema and
 in-flight database sidecars refuse. This driver never seeds or repairs a profile.
+After ordinary B0 close, image handles drain before maintenance. The fixture
+launches installed `Maintain.exe /ACTION=Uninstall` using the current account's
+actual linked limited primary token. No token is synthesized and no UAC policy
+is changed. It retains the original launch handles and corroborates the
+relocated NSIS wizard's parent, creation time and image hash, then uses its
+Continue/Finish controls. The protected path does not produce a Lifecycle
+`/REPORT` file: completion instead requires original wrapper/wizard and broker
+exit zero, service absence, registration removal, retired original state and
+preserved stock/profile/recovery/modified/custom bytes.
+
+`customer-capability.json` records the actual desktop/token/UAC policy. Hosted
+silent elevation cannot establish interactive consent acceptance. A missing
+linked limited token or inaccessible desktop refuses, retaining evidence and
+partial state; it does not use an already-elevated private command instead.
+
 `result.json` is created only in a fresh evidence directory; staged operator
-files and evidence are retained on refusal. A successful result means only this
-initial native B0 admission and scoped preservation passed. It does not qualify
-the later B1 update phases, ordinary unelevated users, historical Setup,
-repair/uninstall, full product acceptance, or hardware/boat use. The component
-producer commit and this helper revision remain distinct evidence.
+files and evidence are retained on refusal. State
+`genuine-setup-b0-maintain-uninstalled` requires this actual journey and its
+scoped preservation checks. `customerUacAcceptance` and
+`nativeProductAcceptance` remain false: this does not qualify human consent,
+the later B1 update phases, earlier-version maintenance, repair, full product
+acceptance or hardware/boat use. The component producer commit and helper
+revision remain distinct evidence. Portable helper tests do not prove that the
+native journey has run.
 
 Portable inert checks: `python tools/test-installed-protected-b0-startup-windows-tests.py -v`.
 Actual Windows admission remains a separate native gate.
