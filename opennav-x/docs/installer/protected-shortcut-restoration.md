@@ -80,10 +80,13 @@ retirement/restoration controls. Qualification must authenticate their actual
 PASS/no-skip events from the original artifact. The explicit required-name
 addition is retained in local `db355047` but was not published because the
 current GitHub OAuth credential lacks workflow-edit scope; no existing gate was
-removed or relaxed. The original joined run failed as recorded above. Native
-execution of the two-phase correction and full installed uninstall acceptance
-remain pending; Win32 cross-compilation and inert native
-fixture source do not supply that proof. Updated/pending lineage
+removed or relaxed. The original joined run failed as recorded above. The corrected source
+`d7be409d` passes native run
+[38512820510](https://github.com/ThereptileII/Work/actions/runs/38512820510),
+including all eight explicitly checked new native controls without skips.
+[Authenticated component evidence](../evidence/scrum27-two-phase-uninstall-20261014/README.md)
+records the original artifacts and limits. Full installed uninstall acceptance
+remains pending; this component result does not supply that proof. Updated/pending lineage
 and authenticated terminal cleanup remain unsupported by this baseline join.
 
 For a bound service-only publication, `Decommission` retires the three fixed published links

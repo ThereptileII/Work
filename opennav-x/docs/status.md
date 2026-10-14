@@ -1,4 +1,28 @@
-# SKAGER status — 2026-10-13
+# SKAGER status — 2026-10-14
+
+## Corrected protected-uninstall sequence passes focused native Windows
+
+Exact source `d7be409dc5c3abc31b82315510891adf53de4486` passes
+[run 38512820510](https://github.com/ThereptileII/Work/actions/runs/38512820510):
+Linux **104 top-level / 298 nested** cases and native Win32 Windows
+**139 top-level / 356 nested** cases. Zero failures; three existing non-Windows
+boundary checks skip on Windows. All eight specifically required new native
+controls pass without skips. Both original evidence ZIPs match provider hashes,
+lengths and CRCs; broker-source closure passes.
+
+The original rename failure remains preserved. The correction uses one bounded
+same-broker conversation: terminal fence, original shortcut restoration and
+app/launcher handle drainage, original generation/registration retirement, then
+matching final witness before SCM effects. Original root and recovery custody
+remain held. Failed or interrupted handoffs cannot retry, fall back or claim
+success. Independent review and focused tests complete this component gate.
+[Exact evidence and remaining boundaries](evidence/scrum27-two-phase-uninstall-20261014/README.md).
+
+Full installed terminal cleanup/uninstall, updated lineage, repair/rollback,
+a new complete application package and boat acceptance remain open. No new full
+application build or boat operation was performed for this component check.
+The entries below retain original failures and earlier checkpoints.
+
 
 ## Windows compiled checks pass; SDK capture blocks packaging
 

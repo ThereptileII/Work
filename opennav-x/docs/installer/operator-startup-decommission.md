@@ -67,7 +67,7 @@ replacement shortcuts, another service, an application generation or a profile.
 
 ## Ownership and mutation order
 
-After input validation the action:
+After input validation the **service-only `decommission-service`** action:
 
 1. Opens and checks the original decommission service/process owner.
 2. Requests the terminal fence from that same authenticated original broker and
@@ -83,6 +83,19 @@ After input validation the action:
    the service, observe its clean original process exit and mark it for removal.
 5. Requires all retained owners to close successfully before emitting one
    structured result. No trailing generic completion message is added.
+
+The protected `uninstall-protected` action uses a different order because
+Windows cannot rename the generation while its app/launcher descendants remain
+open. It prepares original startup custody before contacting the broker, then
+uses one authenticated `CallProtectedUninstallNative` conversation. The interim
+fence authorizes only `RestoreStartupAndDrain`: restore original shortcuts,
+validate them and close app/launcher handles while retaining generation-root,
+parent, recovery, link and service/process ownership. The broker then retires its
+original generation/registration objects. Only the matching completed final
+witness can bind that retained root to the fixed retirement name and permit SCM
+effects. The operation has a 90-second total deadline; its restoration exchange
+is bounded to 30 seconds. The ordinary single-phase call refuses protected
+uninstall. See [the exact protected transaction](protected-service-decommission.md#explicit-protected-application-retirement).
 
 A failed or cancelled publication parse/binding stops this action. Once
 restoration was requested, it cannot be omitted to fall back to service-only

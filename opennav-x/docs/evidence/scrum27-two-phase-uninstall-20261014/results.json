@@ -1,0 +1,82 @@
+{
+  "schema": 1,
+  "sourceCommit": "d7be409dc5c3abc31b82315510891adf53de4486",
+  "runId": 38512820510,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38512820510",
+  "conclusion": "success",
+  "artifacts": [
+    {
+      "platform": "Windows",
+      "artifactId": 11871056554,
+      "artifactName": "startup-restoration-Windows-d7be409dc5c3abc31b82315510891adf53de4486-run38512820510-attempt1",
+      "bytes": 24297,
+      "sha256": "85778d819b0579851859bee5d151d2a5ceebcfe593b4190ddce704dffab504d4",
+      "zipMembers": 1,
+      "crc": "pass",
+      "counts": {
+        "pass": {
+          "topLevel": 139,
+          "nested": 356
+        },
+        "fail": {
+          "topLevel": 0,
+          "nested": 0
+        },
+        "skip": {
+          "topLevel": 3,
+          "nested": 0
+        }
+      },
+      "skips": [
+        {
+          "package": "example.com/opennav-update-verifier/brokerenroll",
+          "test": "TestDecommissionExplicitAPIRequiresWindows"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerenroll",
+          "test": "TestStartupRestorationPublicNativeBoundary"
+        },
+        {
+          "package": "example.com/opennav-update-verifier/brokerenroll",
+          "test": "TestStartupExplicitAPIRefusesNonWindows"
+        }
+      ],
+      "additionalRequiredNativePasses": [
+        "TestNativeOldMaintenanceServerRefusesProtectedUninstallBeforeHandler",
+        "TestNativePreparedStartupRetirementAndRestorationCompose",
+        "TestNativePreparedStartupRetirementPartialRestorationPreservesRecovery",
+        "TestNativeProtectedUninstallArmingPreservesOrdinaryInputRefusal",
+        "TestNativeProtectedUninstallPublisherDoesNotReenterOperatorLock",
+        "TestNativeRetirementStartupDrainKeepsOriginalRootAndRefusesFailedHandoffs",
+        "TestNativeStartupRetirementAnchorExcludesLauncherWrites",
+        "TestNativeStartupRetirementAnchorRefusesWrongLocationAndChangedOriginal"
+      ]
+    },
+    {
+      "platform": "Linux",
+      "artifactId": 11870438505,
+      "artifactName": "startup-restoration-Linux-d7be409dc5c3abc31b82315510891adf53de4486-run38512820510-attempt1",
+      "bytes": 25947,
+      "sha256": "4ffe6ebf7d3be1dd1b442cea16ac4c7a7cce74aa19e37e31f3ac91536b7f1a1b",
+      "zipMembers": 1,
+      "crc": "pass",
+      "counts": {
+        "pass": {
+          "topLevel": 104,
+          "nested": 298
+        },
+        "fail": {
+          "topLevel": 0,
+          "nested": 0
+        },
+        "skip": {
+          "topLevel": 0,
+          "nested": 0
+        }
+      },
+      "skips": []
+    }
+  ],
+  "scope": "focused native and portable component validation, not installed application or boat acceptance"
+}

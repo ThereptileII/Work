@@ -68,7 +68,9 @@ No new approval record or serialized custody object is introduced. This action
 restores original owned shortcuts, drains original descendant readers, retires
 the selected protected application generation and its completed registration pair
 into fixed protected recovery names, then disables/stops/marks the same original
-service for removal. The revised ordering is not yet native-qualified.
+service for removal. The revised ordering passes the focused native Win32
+component gate at `d7be409d`,
+[run 38512820510](https://github.com/ThereptileII/Work/actions/runs/38512820510).
 Ordinary Setup/Lifecycle uninstall and installed-product qualification remain
 separate integration gates. Its protected-enrollment observation intentionally
 refuses any retained protected namespace, including this terminal recovery. Do
