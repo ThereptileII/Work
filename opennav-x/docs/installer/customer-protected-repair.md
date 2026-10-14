@@ -129,10 +129,16 @@ addition/ID refusal, valid empty/prefix continuation, repeated interruption,
 fork/cycle/mismatch refusal, typed prior-reader revocation, and initial durable
 origin links before first Preparation. Real NTFS fixture cases cover baseline and
 signed source/copy custody plus durable zero-fact journal birth/read; four cold
-profile kernel cases exercise deny-write/watch custody. These Windows cases have
-only been crosscompiled here, not executed. Windows x86 compile/vet are static
-checks only. Fresh
-matching native enrollment, real same-account UAC, corruption/restore/startup,
+profile kernel cases exercise deny-write/watch custody. The exact source
+`de87b132f6f8dbbb7711b586854e412a8e23ea9d` passed
+[native Windows and Linux run 38587874517](https://github.com/ThereptileII/Work/actions/runs/38587874517):
+317 Windows passes and 214 Linux passes, with all 64/41 mandatory cases executed
+and passed. The five explicit Windows platform/opt-in skips are not acceptance.
+[Original artifact and receipt evidence](../evidence/scrum27-repair-native-20261014/README.md)
+records the preceding fixture failures and exact passing bytes. This is native
+helper/kernel evidence, not an installed customer journey. Fresh matching native
+enrollment, real same-account UAC, corruption/restore/startup,
 current-profile preservation, unknown-file retirement and actual installed
 customer acceptance remain pending on a suitable genuine interactive Windows
-host. This increment provides no application build or native acceptance claim.
+host. This increment provides no application build, boat acceptance or completed
+installed-customer qualification.
