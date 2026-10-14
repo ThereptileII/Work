@@ -12,6 +12,12 @@ Hosted images currently configure silent admin elevation; live observations
 below take precedence over this image default:
 https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/Configure-BaseImage.ps1
 """
+# The fixed CLI emits only constant progress labels on stderr. This first label
+# precedes native/import work, while stdout remains one capability JSON object.
+if __name__ == '__main__':
+    import sys
+    print('SKAGER_CAPABILITY_PROGRESS/1 helper-entry', file=sys.stderr, flush=True)
+
 import ctypes as C
 from ctypes import wintypes as W
 import hashlib
@@ -32,6 +38,8 @@ class CustomerLaunchRefused(RuntimeError):
 
 
 STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
+CAPABILITY_PROGRESS_MARKERS = ('helper-entry', 'observation-begin', 'observation-end')
+CAPABILITY_PROGRESS_PREFIX = 'SKAGER_CAPABILITY_PROGRESS/1 '
 
 
 def _require(value, message):
@@ -625,6 +633,13 @@ class _StockNative(_ProtectedStartupNative):
         return super().create(command)
 
 
-if __name__ == '__main__':
+def _run_capability_cli():
     _require(len(sys.argv) == 1, 'Capability inspection accepts no identity or launch arguments')
-    print(json.dumps(inspect_customer_capability(), sort_keys=True))
+    print(CAPABILITY_PROGRESS_PREFIX + 'observation-begin', file=sys.stderr, flush=True)
+    result = inspect_customer_capability()
+    print(CAPABILITY_PROGRESS_PREFIX + 'observation-end', file=sys.stderr, flush=True)
+    print(json.dumps(result, sort_keys=True), flush=True)
+
+
+if __name__ == '__main__':
+    _run_capability_cli()

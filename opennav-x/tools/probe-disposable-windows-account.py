@@ -7,6 +7,8 @@ PRIMARY logon token launches only the original installed_customer_launch.py
 noargs capability CLI. The linked FULL token is observed, never converted or
 used by this entry. Original token statistics survive refusal. Limited-child
 desktop observations do not enable the elevated-parent customer launch API.
+Fixed stderr progress labels and bounded stdout-document presence survive
+refusal/timeout; neither diagnostic supplies capability or exit acceptance.
 Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
 window-station/desktop permission additions. Failures preserve uncertain live
 process/account/profile state for disposable-job destruction rather than kill.
@@ -68,6 +70,29 @@ def original_full(first, linked, expected_sid):
             limited['tokenType'] == 1,
             'original-split-token-unavailable')
     return 0 if full == first else 1
+
+
+def capability_progress(output, diagnostics):
+    """Sanitized diagnostic projection only; never return captured bytes."""
+    require(len(output) <= 16384 and len(diagnostics) <= 1024, 'capability-progress-bound-refused')
+    observed, valid = [], True
+    lines = diagnostics.split(b'\n')
+    for line in lines[:-1]:
+        line = line.removesuffix(b'\r')  # Windows text-stream newline only.
+        index = len(observed)
+        if (valid and index < len(customer.CAPABILITY_PROGRESS_MARKERS) and
+                line == (customer.CAPABILITY_PROGRESS_PREFIX + customer.CAPABILITY_PROGRESS_MARKERS[index]).encode('ascii')):
+            observed.append(customer.CAPABILITY_PROGRESS_MARKERS[index])
+        else:
+            valid = False
+    try:
+        final_document = type(json.loads(output.decode('utf-8'))) is dict
+    except (ValueError, UnicodeError, RecursionError):
+        final_document = False
+    return dict(markers=observed, lastMarker=observed[-1] if observed else None,
+                markerProtocolValid=valid, markerSequenceComplete=valid and not lines[-1] and
+                len(observed) == len(customer.CAPABILITY_PROGRESS_MARKERS),
+                stdoutBytes=len(output), stderrBytes=len(diagnostics), finalDocumentPresent=final_document)
 
 
 def project_capability(raw, expected_sid):
@@ -378,13 +403,19 @@ class AccountProbe:
         self.own(read)
         self.own(write)
         self.ok(self.fn(self.native.kernel, 'SetHandleInformation', W.BOOL, W.HANDLE, W.DWORD, W.DWORD)(read, 1, 0))
+        diagnostic_read, diagnostic_write = W.HANDLE(), W.HANDLE()
+        self.ok(self.fn(self.native.kernel, 'CreatePipe', W.BOOL, C.POINTER(W.HANDLE), C.POINTER(W.HANDLE),
+                       C.POINTER(Security), W.DWORD)(C.byref(diagnostic_read), C.byref(diagnostic_write), C.byref(sa), 0))
+        self.own(diagnostic_read)
+        self.own(diagnostic_write)
+        self.ok(self.fn(self.native.kernel, 'SetHandleInformation', W.BOOL, W.HANDLE, W.DWORD, W.DWORD)(diagnostic_read, 1, 0))
         null = self.fn(self.native.kernel, 'CreateFileW', W.HANDLE, W.LPCWSTR, W.DWORD, W.DWORD,
                        C.POINTER(Security), W.DWORD, W.DWORD, W.HANDLE)('NUL', 0xc0000000, 3, C.byref(sa), 3, 0, None)
         require(null and null != C.c_void_p(-1).value, 'native-null-stream-refused')
         self.own(null)
         startup, process = Startup(), Process()
         startup.cb, startup.desktop, startup.flags = C.sizeof(startup), 'WinSta0\\Default', 0x100
-        startup.stdin, startup.stdout, startup.stderr = null, write, null
+        startup.stdin, startup.stdout, startup.stderr = null, write, diagnostic_write
         # No password/environment/caller command. Existing interpreter + exact
         # committed noargs helper only; profile/environment supplied by Windows.
         command = [sys.executable, '-I', '-B', str(self.helper)]
@@ -427,36 +458,51 @@ class AccountProbe:
         previous = self.fn(self.native.kernel, 'ResumeThread', W.DWORD, W.HANDLE)(self.thread)
         self.facts['originalChild']['resumeResult'] = previous
         require(previous == 1, 'original-probe-resume-effect-uncertain')
-        output, deadline = bytearray(), time.monotonic() + 60
-        while True:
+        output, diagnostics, deadline = bytearray(), bytearray(), time.monotonic() + 60
+
+        def drain(handle, buffer, limit):
             available = W.DWORD()
             self.ok(self.fn(self.native.kernel, 'PeekNamedPipe', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
                     C.POINTER(W.DWORD), C.POINTER(W.DWORD), C.POINTER(W.DWORD))(
-                    read, None, 0, None, C.byref(available), None))
-            require(len(output) + available.value <= 16384, 'capability-output-bound-refused')
+                    handle, None, 0, None, C.byref(available), None))
+            if len(buffer) + available.value > limit:
+                self.facts['capabilityProgress']['outputBoundRefused'] = True
+                raise Refused('capability-output-bound-refused')
             if available.value:
                 raw, count = C.create_string_buffer(available.value), W.DWORD()
                 self.ok(self.fn(self.native.kernel, 'ReadFile', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
-                        C.POINTER(W.DWORD), C.c_void_p)(read, raw, len(raw), C.byref(count), None))
-                output.extend(raw.raw[:count.value])
-            state = self.fn(self.native.kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)(self.process, 25)
-            require(state in (0, 258), 'original-probe-wait-refused')
-            if state == 0:
-                self.exit_observed = True
-                # One final pass drains stdout written immediately before exit.
-                available = W.DWORD()
-                self.ok(self.fn(self.native.kernel, 'PeekNamedPipe', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
-                    C.POINTER(W.DWORD), C.POINTER(W.DWORD), C.POINTER(W.DWORD))(
-                    read, None, 0, None, C.byref(available), None))
-                if available.value:
-                    continue
-                code = W.DWORD()
-                self.ok(self.fn(self.native.kernel, 'GetExitCodeProcess', W.BOOL, W.HANDLE, C.POINTER(W.DWORD))(
-                    self.process, C.byref(code)))
-                self.facts['originalChild']['exitCode'] = code.value
-                require(code.value == 0, 'original-capability-child-exit-refused')
-                break
-            require(time.monotonic() < deadline, 'original-capability-child-timeout')
+                        C.POINTER(W.DWORD), C.c_void_p)(handle, raw, len(raw), C.byref(count), None))
+                require(count.value <= len(raw), 'capability-read-bound-refused')
+                buffer.extend(raw.raw[:count.value])
+            return bool(available.value)
+
+        self.facts['capabilityProgress'] = capability_progress(output, diagnostics)
+        try:
+            while True:
+                drain(read, output, 16384)
+                drain(diagnostic_read, diagnostics, 1024)
+                state = self.fn(self.native.kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)(self.process, 25)
+                require(state in (0, 258), 'original-probe-wait-refused')
+                if state == 0:
+                    self.exit_observed = True
+                    # Drain both streams written immediately before original exit.
+                    more_output = drain(read, output, 16384)
+                    more_diagnostics = drain(diagnostic_read, diagnostics, 1024)
+                    if more_output or more_diagnostics:
+                        continue
+                    code = W.DWORD()
+                    self.ok(self.fn(self.native.kernel, 'GetExitCodeProcess', W.BOOL, W.HANDLE, C.POINTER(W.DWORD))(
+                        self.process, C.byref(code)))
+                    self.facts['originalChild']['exitCode'] = code.value
+                    require(code.value == 0, 'original-capability-child-exit-refused')
+                    break
+                require(time.monotonic() < deadline, 'original-capability-child-timeout')
+        finally:
+            bounded = self.facts['capabilityProgress'].get('outputBoundRefused', False)
+            self.facts['capabilityProgress'] = capability_progress(output, diagnostics)
+            if bounded:
+                self.facts['capabilityProgress']['outputBoundRefused'] = True
+        require(self.facts['capabilityProgress']['markerSequenceComplete'], 'capability-progress-contract-refused')
         require(self.verify_profile() is not None, 'original-profile-load-unobserved')
         self.check_limited()
         return project_limited_capability(bytes(output), child)

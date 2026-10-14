@@ -185,6 +185,31 @@ class SanitizedCapability(unittest.TestCase):
             with self.assertRaises(probe.Refused):
                 probe.project_capability(raw, SID)
 
+    def test_progress_is_ordered_bounded_and_never_contains_raw_output(self):
+        lines = [(customer.CAPABILITY_PROGRESS_PREFIX + marker + '\r\n').encode('ascii')
+                 for marker in customer.CAPABILITY_PROGRESS_MARKERS]
+        raw = b'{"privatePath":"secret-path","environment":"secret-value"}'
+        result = probe.capability_progress(raw, b''.join(lines))
+        self.assertTrue(result['markerSequenceComplete'])
+        self.assertTrue(result['finalDocumentPresent'])
+        self.assertEqual(result['lastMarker'], 'observation-end')
+        self.assertEqual(result['stdoutBytes'], len(raw))
+        self.assertNotIn('secret', json.dumps(result))
+        for diagnostics in (lines[1], lines[0] + lines[0], lines[0] + b'private-secret\n',
+                            b''.join(lines) + b'private-secret\n'):
+            with self.subTest(diagnostics=len(diagnostics)):
+                result = probe.capability_progress(raw, diagnostics)
+                self.assertFalse(result['markerProtocolValid'])
+                self.assertFalse(result['markerSequenceComplete'])
+                self.assertNotIn('secret', json.dumps(result))
+        partial = probe.capability_progress(b'{"schema":', lines[0] + lines[1][:-1])
+        self.assertEqual(partial['markers'], ['helper-entry'])
+        self.assertFalse(partial['markerSequenceComplete'])
+        self.assertFalse(partial['finalDocumentPresent'])
+        for output, diagnostics in ((b'x' * 16385, b''), (b'', b'x' * 1025)):
+            with self.assertRaises(probe.Refused):
+                probe.capability_progress(output, diagnostics)
+
     def test_limited_child_desktop_is_separate_from_elevated_parent_availability(self):
         expected = dict(LIMITED, session=2)
         value = customer._capability(dict(current=expected, linked=dict(FULL, session=2, tokenType=2),
@@ -379,7 +404,8 @@ class OriginalCleanup(unittest.TestCase):
 
 
 class FixedNativeCommand(unittest.TestCase):
-    def child_owner(self, *, child_change=None, authentication=17, report_change=None):
+    def child_owner(self, *, child_change=None, authentication=17, report_change=None,
+                    raw_output=None, raw_diagnostics=None, wait_state=0, exit_status=0):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
         owner.sid, owner.limited, owner.owned, owner.facts = SID, 987, [], {}
         owner.limited_fact = dict(LIMITED, session=2)
@@ -389,7 +415,12 @@ class FixedNativeCommand(unittest.TestCase):
         value = customer._capability(dict(current=reported, linked=dict(FULL, session=2, tokenType=2),
             linkedError=None, policy=dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1),
             desktop=dict(station='WinSta0', visible=True, input='Default', thread='Default')))
-        output, consumed, calls = json.dumps(value).encode(), [False], []
+        output = json.dumps(value).encode() if raw_output is None else raw_output
+        diagnostics = (b''.join((customer.CAPABILITY_PROGRESS_PREFIX + marker + '\r\n').encode('ascii')
+                       for marker in customer.CAPABILITY_PROGRESS_MARKERS)
+                       if raw_diagnostics is None else raw_diagnostics)
+        streams, consumed, calls, pipes = {101: output, 104: diagnostics}, set(), [], []
+        owner.exit_observed = False
         owner.helper = Path('fixed-tools/installed_customer_launch.py')
         owner.native = SimpleNamespace(kernel='kernel', adv='adv', observed={'current': {'session': 2}},
             _token=lambda token: owner.limited_fact if token == 987 else child,
@@ -400,7 +431,8 @@ class FixedNativeCommand(unittest.TestCase):
         owner.ok = lambda value: probe.require(value, 'native-failure')
         owner.verify_profile = mock.Mock(return_value=Path('original-profile'))
         def pipe(read, write, attributes, size):
-            read._obj.value, write._obj.value = 101, 102
+            read._obj.value, write._obj.value = (101, 102) if not pipes else (104, 105)
+            pipes.append(True)
             return True
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
             self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
@@ -412,20 +444,22 @@ class FixedNativeCommand(unittest.TestCase):
             process._obj.pid, process._obj.tid = 301, 302
             return True
         def peek(read, buffer, size, read_bytes, available, left):
-            available._obj.value = 0 if consumed[0] else len(output)
+            available._obj.value = 0 if read.value in consumed else len(streams[read.value])
             return True
         def read(handle, raw, length, count, overlap):
-            ctypes.memmove(raw, output, len(output))
-            count._obj.value, consumed[0] = len(output), True
+            value = streams[handle.value]
+            ctypes.memmove(raw, value, len(value))
+            count._obj.value = len(value)
+            consumed.add(handle.value)
             return True
         def exit_code(handle, code):
-            code._obj.value = 0
+            code._obj.value = exit_status
             return True
         apis = {'CreatePipe': pipe, 'SetHandleInformation': lambda *args: True,
                 'CreateFileW': lambda *args: 103, 'CreateProcessWithTokenW': create,
                 'GetProcessId': lambda *args: 301, 'GetProcessIdOfThread': lambda *args: 301,
                 'GetThreadId': lambda *args: 302, 'ResumeThread': lambda *args: 1,
-                'PeekNamedPipe': peek, 'ReadFile': read, 'WaitForSingleObject': lambda *args: 0,
+                'PeekNamedPipe': peek, 'ReadFile': read, 'WaitForSingleObject': lambda *args: wait_state,
                 'GetExitCodeProcess': exit_code}
         def fn(dll, name, *args):
             def call(*args):
@@ -446,6 +480,60 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertTrue(owner.exit_observed)
         self.assertEqual(owner.facts['originalChild']['statistics']['authenticationId'], 17)
         self.assertFalse(result['sameAccountElevationTested'])
+        self.assertTrue(owner.facts['capabilityProgress']['markerSequenceComplete'])
+        self.assertTrue(owner.facts['capabilityProgress']['finalDocumentPresent'])
+
+    def test_timeout_retains_progress_even_with_complete_document_but_never_accepts_it(self):
+        for output, diagnostics, last, document in (
+                (b'', b'', None, False),
+                (b'{"private":"secret"}', (customer.CAPABILITY_PROGRESS_PREFIX + 'helper-entry\n').encode(),
+                 'helper-entry', True),
+                (None, None, 'observation-end', True)):
+            with self.subTest(last=last):
+                owner, calls = self.child_owner(raw_output=output, raw_diagnostics=diagnostics, wait_state=258)
+                owner.prepare = mock.Mock()
+                owner.cleanup = mock.Mock(return_value=dict(state='deferred-to-disposable-job'))
+                with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0), \
+                        mock.patch.object(probe.time, 'monotonic', side_effect=[100, 161]):
+                    result = probe.run_probe(owner.helper, lambda helper: owner)
+                self.assertEqual(result['reason'], 'original-capability-child-timeout')
+                self.assertEqual(result['state'], 'blocked')
+                self.assertFalse(result['nativeCustomerAcceptance'])
+                self.assertFalse(result['consentPromptAcceptance'])
+                self.assertNotIn('capability', result)
+                self.assertFalse(owner.exit_observed)
+                progress = result['originalFacts']['capabilityProgress']
+                self.assertEqual(progress['lastMarker'], last)
+                self.assertEqual(progress['finalDocumentPresent'], document)
+                self.assertNotIn('secret', json.dumps(result))
+                self.assertEqual(calls.count('ResumeThread'), 1)
+                self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
+                self.assertNotIn('GetExitCodeProcess', calls)
+
+    def test_failure_retains_only_safe_progress_and_verified_exit_is_still_required(self):
+        for case in ({'exit_status': 1}, {'raw_diagnostics': b'private-secret\n'},
+                     {'raw_diagnostics': b'private-secret' * 100}):
+            with self.subTest(case=list(case)):
+                owner, calls = self.child_owner(**case)
+                owner.prepare = mock.Mock()
+                owner.cleanup = mock.Mock(return_value=dict(state='deferred-to-disposable-job'))
+                with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                    result = probe.run_probe(owner.helper, lambda helper: owner)
+                self.assertEqual(result['state'], 'blocked')
+                self.assertNotIn('capability', result)
+                self.assertNotIn('secret', json.dumps(result))
+                progress = result['originalFacts']['capabilityProgress']
+                self.assertTrue(progress['finalDocumentPresent'])
+                if case.get('exit_status') == 1:
+                    self.assertEqual(result['reason'], 'original-capability-child-exit-refused')
+                    self.assertTrue(progress['markerSequenceComplete'])
+                elif len(case['raw_diagnostics']) > 1024:
+                    self.assertEqual(result['reason'], 'capability-output-bound-refused')
+                    self.assertTrue(progress['outputBoundRefused'])
+                    self.assertEqual(progress['stderrBytes'], 0)
+                else:
+                    self.assertEqual(result['reason'], 'capability-progress-contract-refused')
+                    self.assertFalse(progress['markerProtocolValid'])
 
     def test_changed_created_child_never_resumes_or_retries(self):
         cases = [dict(child_change={'session': 3}), dict(authentication=18),
@@ -480,9 +568,10 @@ class FixedNativeCommand(unittest.TestCase):
         owner.full_primary = mock.Mock(side_effect=AssertionError('FULL conversion forbidden'))
         owner.helper, owner.owned = Path('fixed-tools/installed_customer_launch.py'), []
         owner.ok = lambda value: probe.require(value, 'native-failure')
-        calls = []
+        calls, pipes = [], []
         def pipe(read, write, attributes, size):
-            read._obj.value, write._obj.value = 101, 102
+            read._obj.value, write._obj.value = (101, 102) if not pipes else (104, 105)
+            pipes.append(True)
             return True
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
             calls.append('create')
@@ -493,6 +582,7 @@ class FixedNativeCommand(unittest.TestCase):
             self.assertEqual(startup._obj.desktop, 'WinSta0\\Default')
             self.assertEqual(startup._obj.flags, 0x100)
             self.assertEqual(startup._obj.stdout, 102)
+            self.assertEqual(startup._obj.stderr, 105)
             return False  # Existing privilege unavailable: never enable or retry.
         def fn(dll, name, *args):
             calls.append(name)
@@ -505,7 +595,8 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertEqual(caught.exception.reason, 'original-limited-token-fixed-probe-launch-refused')
         self.assertEqual(caught.exception.winerror, 1314)
         self.assertEqual(owner.launch_effect, 'refused-no-child')
-        self.assertEqual(owner.owned, [mock.ANY, mock.ANY, 103])
+        self.assertEqual([handle.value if hasattr(handle, 'value') else handle for handle in owner.owned],
+                         [101, 102, 104, 105, 103])
         self.assertEqual(calls.count('create'), 1)
         owner.full_primary.assert_not_called()
 

@@ -2,9 +2,13 @@
 """Portable contracts for actual-token fixture launch; no Windows/API execution."""
 import copy
 import ctypes
+import contextlib
+import io
+import json
 import os
 from pathlib import Path
 import subprocess
+import runpy
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -638,6 +642,45 @@ class CustomerLaunchTests(unittest.TestCase):
         result = customer.inspect_customer_capability(_native_factory=lambda: native)
         self.assertEqual(result['state'], 'blocked')
         self.assertFalse(result['normalTokenAvailable'])
+
+
+class CapabilityCLIProgress(unittest.TestCase):
+    def test_fixed_entry_precedes_imports_and_exposes_no_native_observations(self):
+        import builtins
+        original = builtins.__import__
+        def fail_ctypes(name, *args, **kwargs):
+            if name == 'ctypes':
+                raise RuntimeError('private import failure')
+            return original(name, *args, **kwargs)
+        output, diagnostic = io.StringIO(), io.StringIO()
+        with contextlib.redirect_stdout(output), contextlib.redirect_stderr(diagnostic), \
+                mock.patch.object(builtins, '__import__', side_effect=fail_ctypes):
+            with self.assertRaises(RuntimeError):
+                runpy.run_path(str(Path(customer.__file__)), run_name='__main__')
+        self.assertEqual(output.getvalue(), '')
+        self.assertEqual(diagnostic.getvalue(), customer.CAPABILITY_PROGRESS_PREFIX + 'helper-entry\n')
+        self.assertNotIn('private', diagnostic.getvalue())
+
+    def test_observation_markers_and_single_final_report_are_flushed(self):
+        result = dict(schema=1, state='blocked', nativeCustomerAcceptance=False, consentPromptAcceptance=False)
+        with mock.patch.object(customer.sys, 'argv', ['fixed-helper.py']), \
+                mock.patch.object(customer, 'inspect_customer_capability', return_value=result) as inspect, \
+                mock.patch('builtins.print') as write:
+            customer._run_capability_cli()
+        inspect.assert_called_once_with()
+        self.assertEqual(write.call_args_list, [
+            mock.call(customer.CAPABILITY_PROGRESS_PREFIX + 'observation-begin', file=customer.sys.stderr, flush=True),
+            mock.call(customer.CAPABILITY_PROGRESS_PREFIX + 'observation-end', file=customer.sys.stderr, flush=True),
+            mock.call(json.dumps(result, sort_keys=True), flush=True)])
+
+    def test_cli_still_refuses_caller_arguments_before_observation(self):
+        with mock.patch.object(customer.sys, 'argv', ['fixed-helper.py', '--command=anything']), \
+                mock.patch.object(customer, 'inspect_customer_capability') as inspect, \
+                mock.patch('builtins.print') as write:
+            with self.assertRaises(customer.CustomerLaunchRefused):
+                customer._run_capability_cli()
+        inspect.assert_not_called()
+        write.assert_not_called()
 
 
 if __name__ == '__main__':
