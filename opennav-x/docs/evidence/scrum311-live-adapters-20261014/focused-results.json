@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "helperCommit": "9352081fedd2e69d774a10b1f3a8752d26ee7619",
+  "productCommit": "1107c04f55a5a51660e424493bf083fc83106443",
+  "platform": "Linux portable/injected-OS fixtures",
+  "tests": [
+    {
+      "command": "python opennav-x/tools/test-installed-customer-launch.py",
+      "passed": 25,
+      "failed": 0
+    },
+    {
+      "command": "python opennav-x/tools/test-installed-protected-updater-windows-tests.py",
+      "passed": 27,
+      "failed": 0
+    },
+    {
+      "command": "python opennav-x/tools/test-installed-protected-b0-startup-windows-tests.py",
+      "passed": 29,
+      "failed": 0
+    },
+    {
+      "command": "python opennav-x/tools/test-installed-updater-approval-http.py",
+      "passed": 19,
+      "failed": 0
+    },
+    {
+      "command": "python opennav-x/tools/test-installed-updater-approval-transport.py",
+      "passed": 20,
+      "failed": 0
+    },
+    {
+      "command": "python opennav-x/tools/test-installed-updater-approval.py",
+      "passed": 25,
+      "failed": 0
+    }
+  ],
+  "totalPassed": 145,
+  "nativeInstalledAcceptance": "pending",
+  "independentSourceReview": "no blocking finding; native and live TLS gates not performed",
+  "sourceSha256": {
+    "installed_customer_launch.py": "8be1b2be18535c05dd532ee2906ef4083582e13410491cde49620f4d2d3024c8",
+    "test-installed-customer-launch.py": "9548fad2c8024da50c9895ea912b93cc09510cab49ae723e91b612dc6bfd3ed6",
+    "test-installed-protected-updater-windows.py": "1123b3ed299ff074fac071ac978e153b0dfa40ee8ba39b40df62e083a7e6a538",
+    "test-installed-protected-updater-windows-tests.py": "06df57db324cd03158ffe81c867ff5070c1178d9c0d47573271b7758ad95cb53",
+    "installed_updater_approval_http.py": "0ceff05f7b5ab71d802538cb3d9bb785fe920f461b0b2d3900e281a185db0fe6",
+    "test-installed-updater-approval-http.py": "853f491411c4bc21faaf1b169d07830a0c71c1229ecfc28a72aa2aefdff42a72",
+    "installed_updater_approval_transport.py": "4c4df5c357a40dd8a69fd8e16b065fce3a4e9f311fcea85697f59429e2a24196",
+    "installed_updater_approval.py": "77338b842fe0c0030ece5c9c6b48d2c185775fdc01eae503085090709d3cebeb"
+  }
+}

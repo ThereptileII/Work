@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "sourceCommit": "1107c04f55a5a51660e424493bf083fc83106443",
+  "toolchain": "go1.27.1",
+  "vcsModified": false,
+  "platform": "linux/amd64",
+  "operatorSha256": "17d2bc3c2093afa9fef699f012bd6ecb23f433fadb973e9db4060cb7b93e4d7f",
+  "publicConfigSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+  "publicConfigMatchesCommittedAndExisting": true,
+  "signingKeysAccessed": false,
+  "publicationPerformed": false,
+  "build": "offline CGO_ENABLED=0 -mod=readonly -trimpath -buildvcs=true"
+}

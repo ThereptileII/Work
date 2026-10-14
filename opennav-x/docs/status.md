@@ -14,9 +14,23 @@ That exact revision is now the one selected full
 [Staging candidate, run 38549237034](https://github.com/ThereptileII/Work/actions/runs/38549237034),
 with committed private-Staging trust enabled and extended/design checks off.
 The receipt contracts now run on both platforms before application compilation.
-The candidate remains **pending and unqualified**. Later evidence-only commits
+The candidate remains **pending and unqualified**. Later helper/evidence commits
 do not replace its source identity. Genuine customer installation/recovery,
 boat acceptance and public readiness still require their own evidence.
+
+## Installed updater adapters integrated; native journey remains open
+
+The actual four-phase observer now launches the fixed protected startup path
+using the original same-account limited token, checks prompt/application tokens
+before UI input and retains original ownership through close. Bounded GitHub
+HTTPS callbacks are also implemented. **145 focused tests pass**, with independent
+source review. [Implementation evidence](evidence/scrum311-live-adapters-20261014/README.md).
+
+The exact frozen product's Linux repository operator is prepared and its public
+trust matches the existing repository; no signing/publication was performed.
+A suitable disposable signed-in Windows host and coherent live admission/update
+journey remain pending. Portable tests are not native installed acceptance.
+The running full candidate is unchanged; no extra application build was started.
 
 ## Earlier candidate: compiled checks pass; installer receipt failed
 
