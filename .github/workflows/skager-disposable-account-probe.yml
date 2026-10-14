@@ -20,11 +20,28 @@ jobs:
           ref: ${{ github.sha }}
           persist-credentials: false
       - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        id: python
         with:
           python-version: '3.12'
+      - name: Prepare a disconnected disposable installed profile
+        shell: pwsh
+        run: |
+          New-Item -ItemType Directory "$env:RUNNER_TEMP/profile-adapter" | Out-Null
+          python opennav-x/tools/prepare-installed-updater-profile-windows.py --disposable-opt-in=SCRUM-311-disposable-create-installed-profile > "$env:RUNNER_TEMP/profile-adapter/result.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Probe one fresh real account without product or policy changes
+        # Independent diagnostics: a profile refusal stays a job failure but
+        # must not hide the original-child startup observation in this same VM.
+        if: ${{ !cancelled() && steps.python.outcome == 'success' }}
         shell: pwsh
         run: python opennav-x/tools/probe-disposable-windows-account.py
+      - name: Retain separate disconnected profile preparation evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: disposable-installed-profile-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/profile-adapter/result.json
+          if-no-files-found: error
       - name: Retain bounded capability and cleanup evidence
         if: always()
         uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

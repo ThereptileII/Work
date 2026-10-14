@@ -34,6 +34,15 @@ Original artifact and source bindings verify. No unchanged probe retry is
 selected, and no product crash or customer/UAC acceptance is inferred.
 [Native evidence](evidence/scrum311-limited-managed-desktop-20261014/README.md).
 
+The next focused diagnostic retains the original child and observes bounded
+thread CPU/I/O, fixed module presence and window classes before resume and at
+timeout. It changes no launch or privilege policy. A separate create-only,
+disconnected ProgramData profile adapter exercises the actual Windows `.ini`
+and navigation observer. Existing or partial profiles refuse without repair or
+cleanup. **60 probe / 17 profile-adapter checks pass**; native execution is
+pending. Both run in one short disposable job with separate artifacts and
+independent failure reporting; no application rebuild or boat changes occur.
+
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
 operator approval and performs no signing, publication or connectivity changes.
