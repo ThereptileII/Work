@@ -143,6 +143,29 @@ func TestNativeCodeUpgradeRefusesForeignRecoveryDestination(t *testing.T) {
 	if e := os.WriteFile(filepath.Join(n.parent.dos, enrollmentImageName), []byte("FOREIGN"), 0600); e != nil {
 		t.Fatal(e)
 	}
+	// Snapshot the foreign object's full native identity before either refusal.
+	// This ordinary reader must close before the probe acquires DELETE access.
+	foreignIdentity := func() startupFileBinding {
+		files := &nativeEnrollmentFiles{}
+		t.Cleanup(func() {
+			if e := files.Close(); e != nil {
+				t.Error(e)
+			}
+		})
+		pin, e := startupOpenFile(files, n.parent, enrollmentImageName, false, maxBrokerBytes)
+		if e != nil {
+			t.Fatal(e)
+		}
+		identity, e := startupFileIdentity(context.Background(), pin, digest([]byte("FOREIGN")))
+		if e != nil {
+			t.Fatal(e)
+		}
+		if e := files.Close(); e != nil {
+			t.Fatal(e)
+		}
+		return identity
+	}
+	originalForeign := foreignIdentity()
 	probe := &nativeEnrollmentFiles{}
 	defer probe.Close()
 	if _, _, e := readReservedCodePositions(context.Background(), probe, n.parent, enrollmentImageName, previousBrokerName, stagedBrokerName, n.oldBrokerID, n.nextBrokerID, n.sd); e == nil {
@@ -151,9 +174,18 @@ func TestNativeCodeUpgradeRefusesForeignRecoveryDestination(t *testing.T) {
 	if e := resumeOwnedCodePair(context.Background(), func(ctx context.Context) error { return ctx.Err() }, n.parent, &n.oldBroker, &n.oldHelper, &n.nextBroker, &n.nextHelper, n.policy); e == nil {
 		t.Fatal("foreign fixed file overwritten")
 	}
+	// The refusing probe intentionally retains the unknown file's DELETE-capable
+	// handle. Release that owner before the ordinary path reader (which does not
+	// share DELETE), then require both exact bytes and the original full identity.
+	if e := probe.Close(); e != nil {
+		t.Fatal(e)
+	}
 	raw, e := os.ReadFile(filepath.Join(n.parent.dos, enrollmentImageName))
 	if e != nil || !bytes.Equal(raw, []byte("FOREIGN")) {
 		t.Fatal("foreign bytes changed", e)
+	}
+	if got := foreignIdentity(); got != originalForeign {
+		t.Fatal("foreign native identity changed")
 	}
 }
 func TestNativeCodeUpgradeStageUsesExactProtectedCopy(t *testing.T) {
