@@ -42,10 +42,21 @@ Original artifact `11878317713` is 626 bytes, SHA-256
 provider run/source/identity, length, digest and every ZIP CRC were checked.
 Ephemeral account identity is omitted from this curated description.
 This is failed capability evidence, not a successful installed test. The next
-probe will use the documented conversion of an original impersonation token to
+probe used the documented conversion of an original impersonation token to
 a primary token while retaining the same security context; no groups,
-privileges, UAC policy or desktop permissions may be changed.
+privileges, UAC policy or desktop permissions were changed.
 See Microsoft's [DuplicateTokenEx contract](https://learn.microsoft.com/en-us/windows/win32/api/securitybaseapi/nf-securitybaseapi-duplicatetokenex).
+
+[Conversion probe 38532803351](https://github.com/ThereptileII/Work/actions/runs/38532803351)
+at `bf1e3a1c5c9c5d60577efb5bee9c3de7c8fe9691` was refused by Windows with
+`ERROR_BAD_IMPERSONATION_LEVEL` (1346), before process creation. Its own
+account/profile cleanup again passed. Original artifact `11878638237` is
+628 bytes, SHA-256
+`212e6b8db6f89d80c5a099793c454657daad933531061d9ae03c8868d88d15fc`;
+run/source, length, digest and every ZIP CRC were verified. This token route
+stops here. Do not change impersonation levels, privileges, desktop ACLs or UAC
+to force acceptance. A genuine authorized ordinary interactive Windows session
+or disposable VM remains necessary for the unqualified customer path.
 
 Full application packaging, actual installed B0/B1, same-account customer/UAC,
 repair/rollback/uninstall/profile preservation and boat acceptance remain open.
