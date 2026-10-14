@@ -16,6 +16,13 @@ unchanged. The superseded run's remaining Linux compilation was cancelled;
 no separate verifier-only build or dependency rebuild was selected.
 [Failure, bounded component evidence and correction](evidence/scrum311-updater-budget-20261014/README.md).
 
+Replacement attempt 1 passes the Windows updater job. Its application job was
+allocated older hosted image `20261004.326.1` and correctly refuses the SDK's
+required `20261012.333.1` before compilation. Linux continues. The next action is
+only a failed-Windows-job rerun on this same frozen candidate after the run ends;
+no dependency rebuild or image-check relaxation is selected.
+[Original allocation failure](evidence/scrum209-sdk-image-allocation-20261014/README.md).
+
 ## Disposable desktop provisioning remains insufficient
 
 Helper `81cd0821` uses documented Windows-managed desktop access only for the
