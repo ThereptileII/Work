@@ -1,0 +1,17 @@
+SKAGER APP — PRIVATE BETA
+
+Your SKAGER sign-in code
+
+Use this code to sign in to your SKAGER account or regain access.
+
+Your email verification code:
+{{ .Token }}
+
+Return to the browser where you requested this code and enter it there.
+Keep that browser open. The sign-in request is valid for 10 minutes.
+If it has expired, request a new code.
+
+If you did not request this email, you can ignore it. Do not share the code.
+
+Public access remains closed. Creating an account does not activate beta
+access or a production download.

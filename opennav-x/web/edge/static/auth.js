@@ -1,4 +1,4 @@
-const mode = ["login", "signup", "recover", "verify"].find(value => location.pathname === `/auth/${value}/`) || "login";
+const mode = ["login", "signup", "recover", "verify"].find(value => location.pathname.replace(/\/$/, "") === `/auth/${value}`) || "login";
 const copy = {
   login: ["Welcome back.", "Sign in securely with a code sent to your email.", "Send sign-in code ↗"],
   signup: ["Come aboard.", "Create your private test account using a code sent to your email.", "Send account code ↗"],

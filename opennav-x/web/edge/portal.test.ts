@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import { Script } from "node:vm";
 import { handlePortal, type PortalContext } from "./portal.ts";
 import { escapeHTML, orderTotal, renderDashboard } from "./static/portal.js";
 
@@ -151,5 +152,53 @@ test("static shells contain no customer data or inline execution; SQL grants no 
     assert.equal(html.includes(MINE), false);
     assert.equal(html.includes("sailor@example.test"), false);
     assert.equal(/<script(?![^>]*\bsrc=)[^>]*>/i.test(html), false);
+  }
+});
+
+test("auth shell preserves the intended form and CSRF submission with or without a trailing slash", async t => {
+  const source = await readFile(new URL("./static/auth.js", import.meta.url), "utf8");
+  for (const mode of ["login", "signup", "recover", "verify"]) {
+    for (const slash of ["", "/"]) {
+      await t.test(`/auth/${mode}${slash}`, async () => {
+        const elements = new Map<string, any>();
+        let submit: (event: any) => Promise<void>;
+        let next: any;
+        const calls: { path: string; init: RequestInit }[] = [];
+        const navigations: string[] = [];
+        const input = { name: "email", type: "email", value: mode === "verify" ? "123456" : "friend@example.test" };
+        elements.set("auth-input", input);
+        elements.set("auth-form", {
+          hidden: true,
+          addEventListener: (name: string, handler: typeof submit) => { assert.equal(name, "submit"); submit = handler; },
+          after: (link: any) => { next = link; },
+        });
+        const document = {
+          title: "",
+          getElementById: (id: string) => {
+            if (!elements.has(id)) elements.set(id, {});
+            return elements.get(id);
+          },
+          createElement: () => ({}),
+        };
+        await new Script(source).runInNewContext({
+          document, location: { pathname: `/auth/${mode}${slash}`, assign: (path: string) => navigations.push(path) },
+          fetch: async (path: string, init: RequestInit) => {
+            calls.push({ path, init });
+            return new Response(JSON.stringify(path === "/api/auth/session" ? { account: null, csrfToken: "c".repeat(64) } : { ok: true }));
+          },
+        });
+        assert.equal(elements.get("auth-form").hidden, false);
+        assert.equal(input.name, mode === "verify" ? "code" : "email");
+        assert.equal(input.type, mode === "verify" ? "text" : "email");
+        await submit!({ preventDefault() {} });
+        assert.equal(calls[1].path, `/api/auth/${mode}`);
+        assert.equal(calls[1].init.method, "POST");
+        assert.equal(calls[1].init.credentials, "same-origin");
+        assert.equal((calls[1].init.headers as Record<string, string>)["X-CSRF-Token"], "c".repeat(64));
+        assert.deepEqual(JSON.parse(calls[1].init.body as string), mode === "verify" ? { code: "123456" } : { email: "friend@example.test" });
+        if (mode === "verify") assert.deepEqual(navigations, ["/portal/"]);
+        else assert.equal(next.href, "/auth/verify/");
+      });
+    }
   }
 });
