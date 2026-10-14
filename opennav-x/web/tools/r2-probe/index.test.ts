@@ -65,7 +65,9 @@ test('genuine injected service-key possession makes exactly one fixed authentica
 test('missing, anon, publishable, user, forged role and other project credentials cannot reach R2', async () => {
   for (const token of [null, '', env.SUPABASE_ANON_KEY, 'sb_publishable_fixture', 'sb_secret_fixture',
     jwt({ role: 'authenticated' }), jwt({ ref: 'other-project' }), jwt({ exp: 1 }), service.slice(0, -1) + 'b', service + ', ' + service]) {
-    assert.equal((await result(request(token))).response.status, 401);
+    const denied = await result(request(token));
+    assert.equal(denied.response.status, 401);
+    assert.deepEqual(denied.body, { error: 'Administrative credential required.' });
   }
   assert.equal((await result(request(null, '/functions/v1/skager-r2-probe', { headers: { apikey: service } }))).response.status, 401);
 });
@@ -124,6 +126,49 @@ test('missing or changed R2 bindings cannot trigger provider I/O', async () => {
   }
 });
 
+test('only exact administrators see finite binding/config checks and never their values', async () => {
+  const binding = await result(request(), { ...env, SUPABASE_URL: 'https://private-value.example.test' });
+  assert.deepEqual(binding.body, { error: 'Administrative R2 probe unavailable.', phase: 'trusted-binding', checks: { project: false } });
+  for (const [patch, failed] of [
+    [{ SKAGER_DOWNLOAD_BACKEND: undefined }, 'backend'], [{ R2_ACCOUNT_ID: 'private-account' }, 'account'],
+    [{ R2_DOWNLOAD_BUCKET: 'private-bucket' }, 'bucket'], [{ R2_ACCESS_KEY_ID: undefined }, 'accessKeyFormat'],
+    [{ R2_SECRET_ACCESS_KEY: 'private-secret' }, 'secretKeyFormat'],
+  ] as const) {
+    const configured = { ...env, ...patch };
+    const observed = await result(request(), configured);
+    assert.deepEqual(observed.body, { error: 'Administrative R2 probe unavailable.', phase: 'config',
+      checks: { backend: true, account: true, bucket: true, accessKeyFormat: true, secretKeyFormat: true, [failed]: false } });
+    assert.doesNotMatch(JSON.stringify(observed.body), /private-account|private-bucket|private-secret/);
+    for (const token of [null, env.SUPABASE_ANON_KEY, jwt({ role: 'authenticated' })]) {
+      const denied = await result(request(token), configured);
+      assert.equal(denied.response.status, 401);
+      assert.deepEqual(denied.body, { error: 'Administrative credential required.' });
+    }
+  }
+  for (const key of [undefined, env.SUPABASE_ANON_KEY, jwt({ ref: 'other-project' })]) {
+    const refused = await result(request(), { ...env, SUPABASE_SERVICE_ROLE_KEY: key });
+    assert.deepEqual(refused.body, { error: 'Administrative R2 probe unavailable.' });
+  }
+});
+
+test('SDK failure and missing Request cache support expose only finite sign diagnostics to admin', async () => {
+  const original = AwsClient.prototype.sign;
+  mock.method(AwsClient.prototype, 'sign', async () => { throw Error(`${service} ${env.R2_SECRET_ACCESS_KEY}`); });
+  try { assert.deepEqual((await result()).body, { error: 'Administrative R2 probe unavailable.', phase: 'sign' }); }
+  finally { mock.restoreAll(); }
+  mock.method(AwsClient.prototype, 'sign', async function (...args) {
+    const signed = await original.apply(this, args);
+    Object.defineProperty(signed, 'cache', { value: undefined });
+    return signed;
+  });
+  try {
+    assert.deepEqual((await result()).body, { error: 'Administrative R2 probe unavailable.', phase: 'sign', checks: {
+      destination: true, headMethod: true, bodyAbsent: true, redirectsBlocked: true, cacheDisabled: false,
+      authorizationPresent: true, callerApiKeyAbsent: true, sessionTokenAbsent: true,
+    } });
+  } finally { mock.restoreAll(); }
+});
+
 test('R2 error statuses and redirects are generic, never retried or forwarded', async () => {
   for (const status of [204, 301, 302, 307, 400, 401, 403, 404, 429, 500, 503]) {
     let calls = 0;
@@ -131,7 +176,7 @@ test('R2 error statuses and redirects are generic, never retried or forwarded', 
       calls++; return new Response(null, { status, headers: { Location: 'https://untrusted.example.test/?secret=credential', 'X-Secret': env.R2_SECRET_ACCESS_KEY } });
     });
     assert.equal(calls, 1); assert.equal(response.status, 503);
-    assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.' });
+    assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.', phase: 'provider', providerStatus: status });
     assert.equal(response.headers.has('Location'), false); assert.equal(response.headers.has('X-Secret'), false);
   }
 });
@@ -150,7 +195,7 @@ test('transport exceptions are sanitized and no credential or signed request lea
     calls++; throw Error(`${service} ${env.R2_SECRET_ACCESS_KEY} ${target}?signature=private`);
   });
   assert.equal(calls, 1); assert.equal(response.status, 503);
-  assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.' });
+  assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.', phase: 'fetch' });
 });
 
 test('shared signing/network deadline aborts a stalled request and returns once', async () => {
@@ -166,7 +211,7 @@ test('shared signing/network deadline aborts a stalled request and returns once'
     mock.timers.tick(DEADLINE_MS);
     const { response, body } = await pending;
     assert.equal(response.status, 503); assert.equal(signal.aborted, true); assert.equal(calls, 1);
-    assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.' });
+    assert.deepEqual(body, { error: 'Administrative R2 probe unavailable.', phase: 'timeout' });
   } finally { mock.timers.reset(); }
 });
 
@@ -174,6 +219,25 @@ test('a changed SDK request cannot redirect credentials or select another method
   mock.method(AwsClient.prototype, 'sign', async () => new Request('https://untrusted.example.test', { method: 'GET' }));
   try { assert.equal((await result()).response.status, 503); }
   finally { mock.restoreAll(); }
+});
+
+test('late transport response is cancelled without replacing the recorded timeout phase', async () => {
+  let entered!: () => void, finish!: (response: Response) => void;
+  const started = new Promise<void>(resolve => { entered = resolve; });
+  let cancelled = false;
+  mock.timers.enable({ apis: ['setTimeout'] });
+  try {
+    const pending = result(request(), env, async () => { entered(); return new Promise<Response>(resolve => { finish = resolve; }); });
+    await started;
+    mock.timers.tick(DEADLINE_MS);
+    const observed = await pending;
+    assert.deepEqual(observed.body, { error: 'Administrative R2 probe unavailable.', phase: 'timeout' });
+    finish(new Response(new ReadableStream({ pull() { assert.fail('Late response was read'); },
+      cancel() { cancelled = true; } }, { highWaterMark: 0 }), { status: 200 }));
+    await new Promise(resolve => setImmediate(resolve));
+    assert.equal(cancelled, true);
+    assert.deepEqual(observed.body, { error: 'Administrative R2 probe unavailable.', phase: 'timeout' });
+  } finally { mock.timers.reset(); }
 });
 
 test('deadline during signing prevents later network I/O when the signer completes', async () => {
@@ -186,7 +250,9 @@ test('deadline during signing prevents later network I/O when the signer complet
     const pending = result();
     await started;
     mock.timers.tick(DEADLINE_MS);
-    assert.equal((await pending).response.status, 503);
+    const observed = await pending;
+    assert.equal(observed.response.status, 503);
+    assert.deepEqual(observed.body, { error: 'Administrative R2 probe unavailable.', phase: 'timeout' });
     finish(new Request(target, { method: 'HEAD', redirect: 'error', cache: 'no-store' }));
     await signing;
   } finally { mock.restoreAll(); mock.timers.reset(); }

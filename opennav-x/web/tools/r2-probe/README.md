@@ -35,6 +35,16 @@ returned or logged. A 200 result means only that this exact authenticated
 HeadBucket operation succeeded. It proves no download, object custody, release
 qualification, entitlement, readiness or public-access acceptance.
 
+After exact administrator authentication, a failure may add only a finite
+`phase` (`trusted-binding`, `config`, `sign`, `fetch`, `provider`, `timeout`),
+fixed boolean `checks` for binding/configuration or signed-request validation,
+and numeric `providerStatus` when an HTTP response was actually observed.
+No check contains a binding, key, endpoint, object name, request or error value.
+This allows a runtime boundary such as unsupported `Request.cache` to be
+identified without changing its validation. Before exact authorization all
+failures remain generic. Missing/malformed service-role bindings therefore
+cannot expose diagnostics: the handler cannot establish an administrator.
+
 Official references checked 2026-10-14:
 
 - [Supabase platform-injected legacy service key](https://supabase.com/docs/guides/functions/secrets).

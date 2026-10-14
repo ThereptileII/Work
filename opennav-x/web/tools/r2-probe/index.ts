@@ -17,7 +17,7 @@ function reply(status: number, body: Record<string, unknown>) {
 
 function serviceBinding(env: Env): string {
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
-  requireValue(env.SUPABASE_URL === ORIGIN && typeof key === 'string' && key.length <= 8192
+  requireValue(typeof key === 'string' && key.length <= 8192
     && key !== env.SUPABASE_ANON_KEY && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(key));
   const decode = (part: string) => JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')));
   const [header, payload] = key.split('.').slice(0, 2).map(decode);
@@ -45,6 +45,10 @@ async function authorized(request: Request, expected: string): Promise<boolean> 
 }
 
 export async function handleProbe(request: Request, env: Env, transport: typeof fetch = fetch): Promise<Response> {
+  let administrator = false;
+  let phase: 'trusted-binding' | 'config' | 'sign' | 'fetch' | 'provider' | 'timeout' = 'trusted-binding';
+  let checks: Record<string, boolean> | undefined;
+  let providerStatus: number | undefined;
   try {
     const url = new URL(request.url);
     // The gateway may replace the public origin with an internal HTTP origin.
@@ -59,34 +63,48 @@ export async function handleProbe(request: Request, env: Env, transport: typeof 
       return reply(400, { error: 'Request body not supported.' });
     }
     if (!await authorized(request, serviceBinding(env))) return reply(401, { error: 'Administrative credential required.' });
-    requireValue(env.SKAGER_DOWNLOAD_BACKEND === 'r2' && env.R2_ACCOUNT_ID === R2_ACCOUNT_ID
-      && env.R2_DOWNLOAD_BUCKET === DOWNLOAD_BUCKET && /^[0-9a-f]{32}$/.test(env.R2_ACCESS_KEY_ID || '')
-      && /^[0-9a-f]{64}$/.test(env.R2_SECRET_ACCESS_KEY || ''));
+    administrator = true;
+    checks = { project: env.SUPABASE_URL === ORIGIN };
+    requireValue(checks.project);
+    phase = 'config';
+    checks = { backend: env.SKAGER_DOWNLOAD_BACKEND === 'r2', account: env.R2_ACCOUNT_ID === R2_ACCOUNT_ID,
+      bucket: env.R2_DOWNLOAD_BUCKET === DOWNLOAD_BUCKET,
+      accessKeyFormat: /^[0-9a-f]{32}$/.test(env.R2_ACCESS_KEY_ID || ''),
+      secretKeyFormat: /^[0-9a-f]{64}$/.test(env.R2_SECRET_ACCESS_KEY || '') };
+    requireValue(Object.values(checks).every(Boolean));
     const controller = new AbortController();
     let timer: ReturnType<typeof setTimeout>;
     const expired = new Promise<never>((resolve, reject) => {
-      timer = setTimeout(() => { controller.abort(); reject(unavailable()); }, DEADLINE_MS);
+      timer = setTimeout(() => { phase = 'timeout'; checks = undefined; controller.abort(); reject(unavailable()); }, DEADLINE_MS);
     });
     try {
       await Promise.race([expired, (async () => {
+        phase = 'sign'; checks = undefined;
         const client = new AwsClient({ accessKeyId: env.R2_ACCESS_KEY_ID,
           secretAccessKey: env.R2_SECRET_ACCESS_KEY, service: 's3', region: 'auto', retries: 0 });
         const signed = await client.sign(TARGET, { method: 'HEAD', redirect: 'error',
           cache: 'no-store', signal: controller.signal });
-        requireValue(!controller.signal.aborted && signed.url === TARGET && signed.method === 'HEAD'
-          && signed.body === null && signed.redirect === 'error' && signed.cache === 'no-store'
-          && signed.headers.has('Authorization') && !signed.headers.has('apikey')
-          && !signed.headers.has('X-Amz-Security-Token'));
+        requireValue(!controller.signal.aborted);
+        checks = { destination: signed.url === TARGET, headMethod: signed.method === 'HEAD',
+          bodyAbsent: signed.body === null, redirectsBlocked: signed.redirect === 'error',
+          cacheDisabled: signed.cache === 'no-store', authorizationPresent: signed.headers.has('Authorization'),
+          callerApiKeyAbsent: !signed.headers.has('apikey'), sessionTokenAbsent: !signed.headers.has('X-Amz-Security-Token') };
+        requireValue(Object.values(checks).every(Boolean));
         // sign() does local cryptography; exactly this fetch performs I/O. Never
         // use AwsClient.fetch(), which can retry. No caller headers are forwarded.
+        phase = 'fetch'; checks = undefined;
         const response = await transport(signed);
         if (response.body !== null) void response.body.cancel().catch(() => {});
+        requireValue(!controller.signal.aborted);
+        phase = 'provider';
+        if (Number.isInteger(response.status) && response.status >= 100 && response.status <= 599) providerStatus = response.status;
         requireValue(!controller.signal.aborted && response.status === 200 && !response.redirected
           && response.body === null && (!response.url || response.url === TARGET));
       })()]);
       return reply(200, { probe: 'r2-head-bucket', authenticated: true });
     } finally { clearTimeout(timer!); controller.abort(); }
-  } catch { return reply(503, { error: 'Administrative R2 probe unavailable.' }); }
+  } catch { return reply(503, { error: 'Administrative R2 probe unavailable.',
+    ...(administrator ? { phase, ...(checks ? { checks } : {}), ...(providerStatus === undefined ? {} : { providerStatus }) } : {}) }); }
 }
 
 declare const Deno: { env: { get(name: string): string | undefined }; serve(handler: (request: Request) => Promise<Response>): void };
