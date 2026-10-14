@@ -66,7 +66,9 @@ func TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody(t *tes
 				}
 				path = filepath.Join(n.recovery.dos, installedOriginalStartupName)
 			}
-			retained, err := os.ReadFile(path)
+			// The production owner deliberately holds DELETE access. os.ReadFile's
+			// ordinary Windows sharing cannot reopen it until custody is closed.
+			retained, err := startupReadOriginal(ctx, n.original.pin)
 			if err != nil || !bytes.Equal(retained, raw) {
 				t.Fatal("original shortcut bytes were not preserved", err)
 			}
@@ -75,6 +77,10 @@ func TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody(t *tes
 			}
 			if _, err := owner.Decommission(ctx); err != nil {
 				t.Fatal("retained original recovery did not survive SCM sequence", err)
+			}
+			retained, err = os.ReadFile(path)
+			if err != nil || !bytes.Equal(retained, raw) {
+				t.Fatal("original shortcut bytes unavailable after owner drain", err)
 			}
 		})
 	}

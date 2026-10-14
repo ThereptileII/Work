@@ -1,0 +1,51 @@
+{
+  "source": "b64e12f37509ab7de87ba36af93e22d0e86a6d74",
+  "run": 38514939833,
+  "attempt": 1,
+  "conclusion": "failure",
+  "artifacts": [
+    {
+      "platform": "windows",
+      "artifactId": 11871965810,
+      "sha256": "3f8d7a6b84be2b5aa2a1a2912223a8d439f23c1ca8efee26a69d52c0a2dd2068",
+      "size": 28936,
+      "crc": "passed",
+      "counts": {
+        "pass_top": 149,
+        "pass_nested": 397,
+        "fail_top": 3,
+        "fail_nested": 7,
+        "skip_top": 3,
+        "skip_nested": 0
+      },
+      "failures": [
+        "TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody/retire_integration_target",
+        "TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody/preserve_stock_or_unknown_target",
+        "TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody",
+        "TestNativeStartupLinkFieldsRefusesTruncatedGetterResults",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/selected_B1",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/selected_B0_after_rollback",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/lost_callback",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/cancelled_callback",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/partial_final_move",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal"
+      ]
+    },
+    {
+      "platform": "linux",
+      "artifactId": 11871495600,
+      "sha256": "babe92ca915b943182de2c54de4e0808f06c3bed8f7764b31629ecfd96b51d9c",
+      "size": 27997,
+      "crc": "passed",
+      "counts": {
+        "pass_top": 108,
+        "pass_nested": 324,
+        "fail_top": 0,
+        "fail_nested": 0,
+        "skip_top": 0,
+        "skip_nested": 0
+      },
+      "failures": []
+    }
+  ]
+}

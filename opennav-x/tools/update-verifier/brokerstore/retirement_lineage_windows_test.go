@@ -131,22 +131,22 @@ func TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal
 			owner, err := p.commitWithSelectedDescriptorAndStartupDrain(ctx, p.generationSecurity, func(ctx context.Context) error { return ctx.Err() }, func(callbackCtx context.Context, fence string) error {
 				callbacks++
 				if callbackCtx != ctx || fence != registrationDigest(decommissionBytes(binding)) || !p.transferred {
-					t.Fatal("original terminal drain binding changed")
+					return errors.New("original terminal drain binding changed")
 				}
-				raw, err := os.ReadFile(filepath.Join(n.rootDOS, retirementStartedName(binding)))
+				raw, err := readRetirementFixtureRecord(filepath.Join(n.rootDOS, retirementStartedName(binding)))
 				if err != nil {
-					t.Fatal("durable lineage start missing before drain", err)
+					return errors.Join(errors.New("durable lineage start missing before drain"), err)
 				}
 				var start retirementLineageStartRecord
 				if json.Unmarshal(raw, &start) != nil || start.Schema != 2 || start.BaselineGeneration != lineage[0].GenerationID || len(start.Generations) != len(lineage) || start.Generation != binding.GenerationID {
-					t.Fatal("durable bounded lineage start differs")
+					return errors.New("durable bounded lineage start differs")
 				}
 				for i, generation := range original {
 					if start.Generations[i] != generation {
-						t.Fatal("original ordered completion/root identities lost")
+						return errors.New("original ordered completion/root identities lost")
 					}
 					if _, err := os.Stat(filepath.Join(root, generation.Generation)); err != nil {
-						t.Fatal("generation moved before callback", err)
+						return errors.Join(errors.New("generation moved before callback"), err)
 					}
 				}
 				if stage == "lost callback" {
@@ -273,4 +273,32 @@ func TestNativeRetirementLineageRefusesPendingExtraPartialAndChangedOriginals(t 
 			}
 		})
 	}
+}
+
+// Test-only readback of a durable original record while its production writer
+// remains held. All sharing must be granted to that original WRITE owner;
+// os.ReadFile would refuse before exercising the retirement under test.
+func readRetirementFixtureRecord(path string) (result []byte, resultErr error) {
+	pointer, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return nil, err
+	}
+	handle, err := windows.CreateFile(pointer, windows.GENERIC_READ, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return nil, err
+	}
+	defer func() { resultErr = errors.Join(resultErr, windows.CloseHandle(handle)) }()
+	var info windows.ByHandleFileInformation
+	if err := windows.GetFileInformationByHandle(handle, &info); err != nil {
+		return nil, err
+	}
+	if info.FileSizeHigh != 0 || info.FileSizeLow == 0 || info.FileSizeLow > 256<<10 || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != 0 {
+		return nil, errors.New("bounded original fixture record required")
+	}
+	result = make([]byte, info.FileSizeLow)
+	var read uint32
+	if err := windows.ReadFile(handle, result, &read, nil); err != nil || read != info.FileSizeLow {
+		return nil, errors.Join(errors.New("complete original fixture record required"), err)
+	}
+	return result, nil
 }
