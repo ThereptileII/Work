@@ -32,7 +32,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json . ./releasepolicy ./repository ./cmd/skager-repository ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|Repair|CodeUpgrade)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json . ./releasepolicy ./repository ./cmd/skager-repository ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|InstalledCompletion|InstalledBootstrapCache|EnrollmentOriginalCache|Repair|CodeUpgrade)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -175,7 +175,9 @@ jobs:
               'TestCodeUpgradeEarlyAbortIsDistinctTerminalNonSuccessWithNoServiceMutation',
               'TestCodeUpgradeEarlyAbortReachesCallerWithoutSuccessOrAutomaticContinuation',
               'TestCodeUpgradeEarlyAbortPostEffectCustodyLossRemainsUncertain',
-              'TestCodeUpgradeEarlyAbortDeferredCleanupFailureRevokesTerminalClassification']
+              'TestCodeUpgradeEarlyAbortDeferredCleanupFailureRevokesTerminalClassification',
+              'TestInstalledCompletionOriginalCacheVersionCompatibility',
+              'TestEnrollmentOriginalCacheBindingPrecedesServiceInitialization']
           maintenance['cmd/skager-update-provisioner'] += [
               'TestCodeUpgradeOperatorExplicitUpgradeAndResume',
               'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs']
@@ -195,7 +197,9 @@ jobs:
                   'TestNativeCodeUpgradeDemandAttemptCannotAdoptAliasNamespace',
                   'TestNativeCodeUpgradeEarlyAbortReaderRequiresExactCompleteClosure',
                   'TestNativeCodeUpgradeEarlyAbortRefusesUnprovablePartialAndForeignStages',
-                  'TestNativeCodeUpgradeEarlyAbortRejectsPartialOrForeignTerminalRecord']
+                  'TestNativeCodeUpgradeEarlyAbortRejectsPartialOrForeignTerminalRecord',
+                  'TestNativeInstalledBootstrapCacheMissingAndReplacementIdentityRefuse',
+                  'TestNativeInstalledCompletionCannotPublishWithoutOriginalCacheCustody']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
