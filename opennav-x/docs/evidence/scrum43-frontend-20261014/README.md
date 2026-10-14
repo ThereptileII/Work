@@ -85,8 +85,33 @@ the injected binding. Exact retained probe bytes also pass offline Node and Deno
 checks with synthetic credentials; no justified source bug was found. No R2
 credential was rotated and no authentication comparison was weakened.
 
-Pending: owner code verification, real authenticated session and recovery,
-TEST checkout/100% coupon/webhook/entitlement/refund, cross-account access,
-authenticated R2 read/download/expiry, and desktop release qualification.
-Checkout/portal/download activation is not claimed. Public signup, payments and
-downloads remain closed pending their separate readiness review and explicit GO.
+At that checkpoint, code verification and all commerce/download acceptance were
+pending. The later observation below supersedes only the explicitly verified
+parts; the earlier failed attempts remain evidence.
+
+## Owner verification and private portal follow-up
+
+The first application challenge expired before the owner entered its code. A
+fresh invitation was sent through the actual website and Resend confirmed
+delivery. The owner then entered the new code and reported success. Live DOM
+readback confirms the authenticated portal and Sign out control. Only delivery
+metadata and the credential-free portal were inspected; no OTP/email body was
+read. The private portal screenshot is retained outside Git.
+
+`PORTAL_ENABLED=true` was saved at 16:27:49 UTC, and the private TEST checkout
+flag at 16:28:54 UTC. Both flag digests were read back. Exact owner allowlisting,
+global signup OFF, email confirmation, session/CSRF checks and closed downloads
+remain unchanged. The portal correctly has no orders and no active entitlement.
+
+Entering approved `SKAGERFRIENDS` and choosing Continue to test checkout returns
+the exact `Unavailable` status. The deployed handler returns this generic 404
+only when configuration validation fails, before account/provider I/O. Known
+nonsecret configuration digests match the exact expected return origin, price,
+coupon and promotion IDs. No Stripe request, order or entitlement is inferred.
+Remaining credential-shape/runtime configuration diagnosis must not disclose
+values or relax validation. No new secret or provider key was created.
+
+Pending: returning-user recovery/logout checks, TEST checkout/100% coupon,
+verified webhook/entitlement/refund, cross-account access, authenticated R2
+read/download/expiry and desktop release qualification. Public signup, payments
+and downloads remain closed pending separate readiness review and explicit GO.

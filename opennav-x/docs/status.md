@@ -1,6 +1,23 @@
 # SKAGER status — 2026-10-14
 
-## Frontend published; invited sign-in reached email-code verification
+## Invited sign-in and customer portal verified; TEST checkout configuration blocked
+
+The owner entered a fresh website invitation code and confirmed successful
+sign-in. The live portal now shows authenticated navigation, Sign out, no orders
+and correctly no active beta entitlement. `PORTAL_ENABLED=true` and
+`STRIPE_TEST_CHECKOUT_ENABLED=true` were enabled only for the existing owner-only
+private TEST window. Public signup remains OFF, the exact allowlist is unchanged,
+and downloads remain closed. No OTP, email body or credential was captured.
+
+The approved `SKAGERFRIENDS` attempt returns the exact generic `Unavailable`
+response, which the deployed handler emits when its configuration validation
+fails before Stripe I/O. The nonsecret origin, price and coupon/promotion binding
+digests match their expected values. The remaining validation failure is under
+investigation; no order, payment, entitlement, refund or download success is
+claimed. Source/deployments remain those recorded below. Jira SCRUM-43 comment
+11681 records this live checkpoint.
+
+## Earlier checkpoint: frontend published; invited sign-in reached code verification
 
 The owner completed the whole-file upload of frontend source
 `8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`. Cloudflare deployment
