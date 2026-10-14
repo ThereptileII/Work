@@ -37,7 +37,7 @@ func main() {
 }
 
 func reportMaintenanceCompletion(args []string, output io.Writer) error {
-	if manualRollbackRequested(args) || selectedHistoryRequested(args) || decommissionRequested(args) {
+	if manualRollbackRequested(args) || selectedHistoryRequested(args) || decommissionRequested(args) || currentInstalledRequested(args) || len(args) > 0 && args[0] == "--maintenance=uninstall-current-elevated" {
 		return nil // The operation already emitted its one bound JSON result.
 	}
 	_, err := fmt.Fprintln(output, "SKAGER broker stop and original process exit verified. Application/profile recovery, repair and uninstall have not been performed.")

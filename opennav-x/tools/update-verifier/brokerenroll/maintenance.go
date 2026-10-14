@@ -93,6 +93,7 @@ type MaintenanceOwner struct {
 	startup                            startupRestorationBackend
 	installedAttempted, installedBound bool
 	installed                          installedUninstallBackend
+	completion                         installedMaintenanceCompletion
 }
 
 // OpenMaintenance observes only the exact existing normal-running broker as
@@ -130,13 +131,37 @@ func openMaintenanceModeWith(ctx context.Context, req MaintenanceRequest, op mai
 	if err := op.authenticate(client.ClientSID); err != nil {
 		return nil, err
 	}
-	m := &MaintenanceOwner{authority: maintenanceAuthority{brokerSHA: req.ApprovedBrokerSHA256, client: client}, op: op, decommission: decommission}
+	return openMaintenanceAuthorityWith(ctx, maintenanceAuthority{brokerSHA: req.ApprovedBrokerSHA256, client: client}, op, decommission, nil)
+}
+
+// The retained identity entry is private. Only the fixed native customer opener
+// may supply a completion from the original protected installation transaction;
+// the public operator entry above still validates fresh bootstrap trust.
+func openMaintenanceAuthorityWith(ctx context.Context, authority maintenanceAuthority, op maintenanceOperations, decommission bool, completion installedMaintenanceCompletion) (result *MaintenanceOwner, resultErr error) {
+	open := op.open
+	if decommission {
+		open = op.openDecommission
+	}
+	if ctx == nil || ctx.Err() != nil || open == nil || op.authenticate == nil || op.poll == nil || op.limit <= 0 || op.limit > maintenanceStopLimit {
+		err := errors.New("live native maintenance authority required")
+		if completion != nil {
+			err = errors.Join(err, completion.close())
+		}
+		return nil, err
+	}
+	m := &MaintenanceOwner{authority: authority, op: op, decommission: decommission, completion: completion}
 	m.self = m
 	defer func() {
 		if resultErr != nil {
 			resultErr = errors.Join(resultErr, m.Close())
 		}
 	}()
+	var err error
+	if completion != nil {
+		if err := completion.check(ctx); err != nil {
+			return nil, err
+		}
+	}
 	m.backend, err = open(ctx, m.authority)
 	if err != nil || m.backend == nil {
 		return nil, errors.Join(errors.New("retained original maintenance service required"), err)
@@ -175,6 +200,11 @@ func (m *MaintenanceOwner) custody(ctx context.Context) error {
 	}
 	if err := m.op.authenticate(m.authority.client.ClientSID); err != nil {
 		return err
+	}
+	if m.completion != nil {
+		if err := m.completion.check(ctx); err != nil {
+			return err
+		}
 	}
 	return m.backend.check(ctx)
 }
@@ -338,6 +368,10 @@ func (m *MaintenanceOwner) closeLocked() error {
 	if m.backend != nil {
 		m.closeErr = errors.Join(m.closeErr, m.backend.close())
 		m.backend = nil
+	}
+	if m.completion != nil {
+		m.closeErr = errors.Join(m.closeErr, m.completion.close())
+		m.completion = nil
 	}
 	if m.closeErr != nil {
 		m.closeErr = errors.Join(ErrCleanup, m.closeErr)

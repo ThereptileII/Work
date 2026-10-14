@@ -41,25 +41,37 @@ type nativeInstalledUninstall struct {
 }
 
 func openInstalledUninstallNative(ctx context.Context, authority maintenanceAuthority, artifactDirectory string) (result installedUninstallBackend, resultErr error) {
+	baseline, err := openClientBaselineInputNative(ctx, artifactDirectory)
+	if err != nil {
+		return nil, err
+	}
+	inventory, err := collectInstalledInventory(ctx, authority, baseline)
+	if err != nil {
+		return nil, errors.Join(err, baseline.Close())
+	}
+	return openInstalledUninstallInventoryNative(ctx, authority, baseline, inventory)
+}
+
+// The fresh operator path above and the private completed-installation path
+// both transfer an original retained baseline and already authenticated inventory.
+func openInstalledUninstallInventoryNative(ctx context.Context, authority maintenanceAuthority, baseline ApprovedClientBaseline, inventory map[string]installedApprovedMember) (result installedUninstallBackend, resultErr error) {
+	if baseline == nil {
+		return nil, errors.New("original installed baseline required")
+	}
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if err := maintenanceOperatorNative(authority.client.ClientSID); err != nil {
-		return nil, err
+		return nil, errors.Join(err, baseline.Close())
 	}
-	n := &nativeInstalledUninstall{ctx: ctx, clientSID: authority.client.ClientSID, files: &nativeEnrollmentFiles{}, approvedTargets: map[string]bool{}}
+	n := &nativeInstalledUninstall{ctx: ctx, clientSID: authority.client.ClientSID, baseline: baseline, files: &nativeEnrollmentFiles{}, approvedTargets: map[string]bool{}}
 	defer func() {
 		if resultErr != nil {
 			resultErr = errors.Join(resultErr, n.close())
 		}
 	}()
 	var err error
-	n.baseline, err = openClientBaselineInputNative(ctx, artifactDirectory)
-	if err != nil {
-		return nil, err
-	}
-	inventory, err := collectInstalledInventory(ctx, authority, n.baseline)
-	if err != nil {
-		return nil, err
+	if baseline == nil || len(inventory) == 0 {
+		return nil, errors.New("original verified installed inventory required")
 	}
 	local, err := windows.KnownFolderPath(windows.FOLDERID_LocalAppData, 0)
 	if err != nil {

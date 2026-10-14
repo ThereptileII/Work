@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"context"
 	"encoding/json"
 	"errors"
@@ -28,6 +29,20 @@ func manualRollbackRequested(args []string) bool {
 }
 
 func runMaintenanceDispatch(ctx context.Context, args []string, read func(string) ([]byte, error), maintain maintenanceOpener) error {
+	var installedOutput bytes.Buffer
+	if handled, err := installedElevationDispatch(ctx, args, func(operationCtx context.Context) error {
+		return runCurrentInstalled(operationCtx, []string{"--maintenance=" + uninstallCurrent}, &installedOutput)
+	}); handled {
+		if err != nil {
+			return err
+		}
+		// The parent/token/image owners must pass and close before the child
+		// publishes completion. The unelevated parent reports via its exit code.
+		if installedOutput.Len() != 0 {
+			_, err = os.Stdout.Write(installedOutput.Bytes())
+		}
+		return err
+	}
 	if decommissionRequested(args) {
 		return runDecommission(ctx, args, read, openDecommissionNative, launcher.CallDecommissionNative, os.Stdout)
 	}

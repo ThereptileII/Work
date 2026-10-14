@@ -53,24 +53,70 @@ func (s *installedInventorySink) WriteEvidence(ctx context.Context, name string,
 	if ctx == nil || ctx.Err() != nil || digest(raw) != sha {
 		return errors.New("original authenticated installed evidence required")
 	}
+	names, err := installedEvidenceTargets(name)
+	if err != nil {
+		return err
+	}
+	for _, target := range names {
+		s.members[target] = installedApprovedMember{sha, int64(len(raw))}
+	}
+	return ctx.Err()
+}
+
+func installedEvidenceTargets(name string) ([]string, error) {
 	switch {
 	case name == "FILE_SHA256.json":
-		return nil // Importer has authenticated original inventory; never trust local copies.
+		return nil, nil // Never trust local copies of the original inventory.
 	case name == "installer/package.json":
-		s.members["maintenance/package.json"] = installedApprovedMember{sha, int64(len(raw))}
+		return []string{"maintenance/package.json"}, nil
 	case baselineevidence.IsEngineHelper(name):
 		base := strings.TrimPrefix(name, "installer/engine/")
-		s.members[base] = installedApprovedMember{sha, int64(len(raw))}
+		targets := []string{base}
 		if base != "Lifecycle.ps1" {
-			s.members["maintenance/"+base] = installedApprovedMember{sha, int64(len(raw))}
+			targets = append(targets, "maintenance/"+base)
 		}
+		return targets, nil
 	case baselineevidence.IsCommissioningHelper(name):
 		// Commissioning originals authenticate broker evidence, not a Lifecycle
 		// copy mapping. They authorize no additional installed deletion target.
+		return nil, nil
 	default:
-		return errors.New("unknown original installed evidence namespace")
+		return nil, errors.New("unknown original installed evidence namespace")
 	}
-	return ctx.Err()
+}
+
+// Only the private completed-installation path calls this read-only inspection.
+// It does not reset bootstrap expiry for fresh enrollment or authorize writes.
+func collectRetainedInstalledInventory(ctx context.Context, authority maintenanceAuthority, source ApprovedClientBaseline) (map[string]installedApprovedMember, error) {
+	if source == nil || source.Validate() != nil {
+		return nil, errors.New("original completed baseline source required")
+	}
+	members, err := verifier.InspectRetainedApprovedBaseline(ctx, authority.client.OriginalBytes(), authority.client.RequestSHA256, source, source.Size())
+	if err != nil {
+		return nil, err
+	}
+	result := make(map[string]installedApprovedMember)
+	for _, member := range members {
+		var targets []string
+		if strings.HasPrefix(member.Name, "app/") || strings.HasPrefix(member.Name, "docs/") {
+			if !installedRelativePath(member.Name) || member.Name == "app/OPENNAV_PORTABLE_PREVIEW" {
+				return nil, errors.New("closed retained payload required")
+			}
+			targets = []string{member.Name}
+		} else {
+			targets, err = installedEvidenceTargets(member.Name)
+			if err != nil {
+				return nil, err
+			}
+		}
+		for _, name := range targets {
+			if _, exists := result[name]; exists {
+				return nil, errors.New("ambiguous retained installed target")
+			}
+			result[name] = installedApprovedMember{member.SHA256, member.Size}
+		}
+	}
+	return result, source.Validate()
 }
 
 func collectInstalledInventory(ctx context.Context, authority maintenanceAuthority, source ApprovedClientBaseline) (map[string]installedApprovedMember, error) {

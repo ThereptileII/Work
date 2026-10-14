@@ -56,8 +56,10 @@ func startupFileIdentity(ctx context.Context, pin *enrollmentPin, sha string) (s
 // This is called only by the original publisher AFTER all three moves. The
 // pre-move publication.json remains unchanged. Failed/partial publication never
 // calls this writer; a failed completion write remains uncertain and is retained.
-// The completed record still needs separate independent approval and future
-// retained native/cold-state authority before any restoration operation.
+// The explicit operator path still needs separate independent approval. The
+// original installation transaction may instead preserve this exact publisher's
+// completion in its machine-protected installed-maintenance record. Both paths
+// still require retained native/cold-state authority before restoration.
 func completeStartupPublicationBinding(ctx context.Context, owner *nativeStartupPublication, menu, recovery *enrollmentPin, client *brokerregistration.Request, sd *windows.SECURITY_DESCRIPTOR) error {
 	if ctx == nil || ctx.Err() != nil || owner == nil || owner.files == nil || client == nil || menu == nil || recovery == nil || menu.file || recovery.file || sd == nil || owner.binding != nil {
 		return errors.New("fresh original completed shortcut publication required")

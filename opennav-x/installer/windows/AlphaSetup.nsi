@@ -268,8 +268,25 @@ Function un.MaintenanceLeave
   ${NSD_GetText} $ActionControl $Action
 FunctionEnd
 Section "Uninstall"
+  ; The machine-protected helper owns its own same-account elevation and native
+  ; uninstall conversation. This user-level wizard supplies only a fixed action,
+  ; never an elevated script, approval hash, SID, package or cleanup destination.
+  ${If} $Action == "Uninstall"
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_uninstall
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance
+protected_uninstall:
+    SetOutPath "$PROGRAMFILES32\SKAGER\UpdateBroker"
+    nsExec::ExecToLog '"$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" --maintenance=uninstall-current'
+    Pop $Result
+    Goto maintenance_result
+protected_uninstall_missing:
+    StrCpy $Result 1
+    Goto maintenance_result
+  ${EndIf}
+legacy_maintenance:
   nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$INSTDIR\Lifecycle.ps1" -Action "$Action" -Report "$ReportPath"'
   Pop $Result
+maintenance_result:
   ${If} $Result != 0
     SetErrorLevel 1
     MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the SKAGER installation logs." /SD IDOK
