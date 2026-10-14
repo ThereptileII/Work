@@ -1,6 +1,24 @@
 # SKAGER status — 2026-10-14
 
-## Original shortcut custody passes; genuine customer host remains unqualified
+## Installer receipt preflight passes; one corrected Staging candidate running
+
+Exact `1107c04f55a5a51660e424493bf083fc83106443` passes
+[native helper run 38548714640](https://github.com/ThereptileII/Work/actions/runs/38548714640):
+**44 tests**, plus the native file-metadata probe. Original artifact bytes and
+all CRCs are authenticated. Independent path/descriptor mutation baselines
+preserve identity, link, reparse, size and checksum protections. The failed first
+focused check and corrected Windows path/newline fixtures remain recorded in
+[the evidence](evidence/scrum27-installer-receipt-20261014/README.md).
+
+That exact revision is now the one selected full
+[Staging candidate, run 38549237034](https://github.com/ThereptileII/Work/actions/runs/38549237034),
+with committed private-Staging trust enabled and extended/design checks off.
+The receipt contracts now run on both platforms before application compilation.
+The candidate remains **pending and unqualified**. Later evidence-only commits
+do not replace its source identity. Genuine customer installation/recovery,
+boat acceptance and public readiness still require their own evidence.
+
+## Earlier candidate: compiled checks pass; installer receipt failed
 
 One combined full Staging candidate, exact
 `faa211b568f0e79e1d1065ba3fb76c3b1e801fd6`, failed after native installer compilation in
