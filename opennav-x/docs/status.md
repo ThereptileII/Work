@@ -1,5 +1,24 @@
 # SKAGER status — 2026-10-14
 
+## Original shortcut custody passes; genuine customer host remains unqualified
+
+Exact `404cc83bd0873a6aa4231c1ba2ae2e4a1f8a3499` passes
+[focused run 38528886583](https://github.com/ThereptileII/Work/actions/runs/38528886583):
+Linux **143 top-level / 422 nested**, native Win32 Windows **216 top-level /
+574 nested**, zero failures and three existing Windows platform skips.
+Original artifacts and source closure are authenticated. All three original
+shortcut roles survive publication and restoration through their retained
+native handles. The failed exact-error assertion and its stronger state-based
+replacement remain recorded in [the evidence](evidence/scrum27-original-shortcuts-20261014/README.md).
+
+The B0 driver now uses genuine Setup and the original same-account customer
+launch; the earlier driver limitation below is historical. Its actual installed
+journey is still pending. The read-only hosted probe confirms a real limitation:
+GitHub's built-in Administrator has no linked normal token and cannot qualify
+ordinary customer/UAC behavior. No host policy was weakened. A suitable disposable
+interactive host, authenticated live enrollment, complete application package,
+installed recovery journeys and boat acceptance remain required. SCRUM-27 stays open.
+
 ## Fixed customer maintenance passes focused Linux and native Windows
 
 Exact source `91d647c383ce662815b0e4e9fab79c5ad0f32ad6` passes

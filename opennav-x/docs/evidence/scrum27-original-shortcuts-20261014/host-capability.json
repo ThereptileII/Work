@@ -1,0 +1,64 @@
+{
+  "capability": {
+    "consentPromptAcceptance": false,
+    "consentPromptAvailable": false,
+    "nativeCustomerAcceptance": false,
+    "normalTokenAvailable": false,
+    "observations": {
+      "current": {
+        "elevated": true,
+        "elevationType": 1,
+        "integrity": "S-1-16-12288",
+        "session": 2,
+        "tokenType": 1,
+        "builtInAdministratorRID500": true
+      },
+      "desktop": {
+        "input": "Default",
+        "station": "WinSta0",
+        "thread": "Default",
+        "visible": true
+      },
+      "linked": null,
+      "linkedError": 1312,
+      "policy": {
+        "consentPromptBehaviorAdmin": 0,
+        "enableLUA": 1,
+        "promptOnSecureDesktop": 1
+      }
+    },
+    "reason": "normal-linked-token-unavailable",
+    "route": "interactive-disposable-split-token-windows-required",
+    "schema": 1,
+    "state": "blocked"
+  },
+  "consentPromptAcceptance": false,
+  "nativeCustomerAcceptance": false,
+  "reason": "normal-linked-token-unavailable",
+  "run": {
+    "attempt": "1",
+    "event": "workflow_dispatch",
+    "id": "38528270601",
+    "imageOS": "win22",
+    "imageVersion": "20261004.326.1",
+    "job": "host-capability",
+    "pythonVersion": "3.12.10",
+    "runnerEnvironment": "github-hosted",
+    "runnerOS": "Windows"
+  },
+  "schema": 1,
+  "source": {
+    "checkoutCommit": "67fadaae08eda62687f8701b5b1002a0f43db6dc",
+    "helperSHA256": "67e76e9463af611f738f32733f2375f140845aacf7f701d64b300b55d80f0a9c",
+    "repository": "ThereptileII/Work",
+    "requestedCommit": "67fadaae08eda62687f8701b5b1002a0f43db6dc"
+  },
+  "state": "blocked",
+  "artifact": {
+    "id": 11876293396,
+    "bytes": 832,
+    "sha256": "32fc185d392b8e1b74faa033de5e15d2dd3e751bb1f87130b74a60adf5a1d6d7",
+    "zipCRCVerified": true,
+    "reportSanitized": true
+  }
+}

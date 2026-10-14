@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "sourceCommit": "404cc83bd0873a6aa4231c1ba2ae2e4a1f8a3499",
+  "runId": 38528886583,
+  "attempt": 1,
+  "runURL": "https://github.com/ThereptileII/Work/actions/runs/38528886583",
+  "conclusion": "success",
+  "platforms": [
+    {
+      "platform": "Windows",
+      "artifactId": 11877296719,
+      "bytes": 39800,
+      "sha256": "c8441c92477ebfe8c256ab7da7940051715f3ec54d25ced24e080239e65e5a01",
+      "zipCRCVerified": true,
+      "topLevelPassed": 216,
+      "nestedPassed": 574,
+      "topLevelFailed": 0,
+      "topLevelSkipped": 3,
+      "nativeReplacementRefusals": [
+        "startup_windows_test.go:581: foreign replacement refused before publication: Access is denied.",
+        "startup_windows_test.go:581: foreign replacement refused before publication: Access is denied.",
+        "startup_windows_test.go:581: foreign replacement refused before publication: Access is denied."
+      ]
+    },
+    {
+      "platform": "Linux",
+      "artifactId": 11877052073,
+      "bytes": 36048,
+      "sha256": "be57fd8f92d110c0665df7b85bd65ce6f176938faad8e7d134e939e6bbdd98eb",
+      "zipCRCVerified": true,
+      "topLevelPassed": 143,
+      "nestedPassed": 422,
+      "topLevelFailed": 0,
+      "topLevelSkipped": 0,
+      "nativeReplacementRefusals": []
+    }
+  ],
+  "fullApplicationAccepted": false,
+  "installedJourneyAccepted": false,
+  "boatAccepted": false
+}

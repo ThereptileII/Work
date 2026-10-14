@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "sourceCommit": "16896c077cea42fde88137320e0366841f1cbcaa",
+  "runId": 38527620607,
+  "attempt": 1,
+  "conclusion": "failure",
+  "windowsArtifact": {
+    "id": 11876129238,
+    "bytes": 39789,
+    "sha256": "7a2028467fc2d7d6062f0a9c6e5de54f5077df76e74b89f5ad50a2d3fd343efe",
+    "zipCRCVerified": true
+  },
+  "windows": {
+    "topLevelPassed": 215,
+    "topLevelFailed": 1,
+    "topLevelSkipped": 3
+  },
+  "failure": "TestNativeStartupOriginalCustodyExcludesLateSubstitution in all three roles required ERROR_SHARING_VIOLATION for a replacement; actual error was not retained in the failed fixture.",
+  "correction": "Require refusal and independently verify original/foreign identities, locations, bytes and absent backup before publication; the replacement run records Access is denied for all three attempts.",
+  "discardedOldRun": {
+    "id": 38526469464,
+    "sourceCommitPrefix": "43df77fa",
+    "reason": "Dispatched after rejected workflow push; not evidence for integrated changes."
+  }
+}
