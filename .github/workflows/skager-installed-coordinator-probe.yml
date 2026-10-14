@@ -1,0 +1,72 @@
+name: SKAGER installed journey coordinator probe
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-coordinator:
+    name: Native approval custody and Python streaming
+    if: github.repository == 'ThereptileII/Work'
+    runs-on: windows-2022
+    timeout-minutes: 10
+    env:
+      GOARCH: '386'
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Verify focused coordinator contracts
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-installed-updater-coordinator.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-installed-updater-coordinator-native-contract.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Execute native one-use ownership and real Python streaming
+        shell: bash
+        working-directory: opennav-x/tools/update-verifier
+        run: |
+          set -o pipefail
+          mkdir -p ../../build/coordinator-native
+          go test -count=1 -json ./brokerenroll -run '^Test(Native)?QualificationChallenge' | tee ../../build/coordinator-native/tests.jsonl
+      - name: Require every native group without skipped subcases
+        shell: python
+        run: |
+          import json, os
+          from pathlib import Path
+          folder = Path('opennav-x/build/coordinator-native')
+          rows = [json.loads(line) for line in (folder / 'tests.jsonl').read_text(encoding='utf-8').splitlines() if line]
+          required = {
+              'TestNativeQualificationChallengeOriginalParentAndExclusiveDurableRecord',
+              'TestNativeQualificationChallengeReadyEOFHasNoDurableEffect',
+              'TestNativeQualificationChallengeExistingEmptyOrPartialPermanentlyRefuses',
+              'TestNativeQualificationChallengeMutableOrRedirectedParentNeverReady',
+              'TestNativeQualificationChallengePythonAdapterStreaming',
+          }
+          passed = {r['Test'] for r in rows if r.get('Action') == 'pass' and r.get('Test')}
+          if not required <= passed or any(r.get('Action') in {'fail', 'skip'} for r in rows):
+              raise SystemExit('Required native ownership/streaming evidence missing, failed or skipped')
+          (folder / 'scope.json').write_text(json.dumps({
+              'schema': 1, 'commit': os.environ['GITHUB_SHA'],
+              'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+              'architecture': '386', 'scope': 'qualification-only coordinator native adapter',
+              'productInstallAttempted': False, 'customerUacAcceptance': False,
+              'nativeProductAcceptance': False,
+              'topLevelPasses': len([x for x in passed if '/' not in x]),
+              'requiredNativePasses': sorted(required),
+          }, indent=2) + '\n', encoding='utf-8')
+      - name: Preserve focused original evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: installed-coordinator-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/coordinator-native
+          if-no-files-found: warn
