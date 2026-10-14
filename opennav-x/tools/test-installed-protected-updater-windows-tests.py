@@ -672,5 +672,95 @@ class NavigationTests(unittest.TestCase):
         self.assertNotIn('3eb685db-65f9-4cf6-a03a-e3ef65729f3d', folders)
 
 
+class CustomerPhaseLaunchTests(unittest.TestCase):
+    """Exercise the actual phase method; replace only native OS observations."""
+
+    def fixture(self, phase, *, refuse_token=None, refuse_close=False):
+        import ctypes.wintypes as w
+        events = []
+        native = object.__new__(driver.Native)
+        native.sid, native.profile_root = 'S-1-5-21-1-2-3-1001', Path('/inert-profile')
+        generation = 'c' * 32
+        product = dict(startup_launcher_sha256='a' * 64, executable_sha256='b' * 64)
+        native.p = dict(request={'installed': {'generation': generation}},
+                        b0=dict(version='0.4.0-beta2.4', commit='a' * 40, product=product,
+                                inventory={'app/skager-update-prompt.exe': 'd' * 64}),
+                        b1=dict(version='0.4.0-beta2.5', commit='b' * 40, product=product))
+        target = native.p['b1' if phase in ('now', 'offline') else 'b0']
+        native.history = lambda: dict(generation=generation, version=target['version'], commit=target['commit'])
+        native.w = w
+        native.no_existing_clients = lambda: None
+        native.image = lambda generation, name: Path('/inert') / generation / name
+        native.pin_image = lambda *args: events.append('pin-image')
+        native.process = lambda pid, *args: pid
+        native.wait_exit = lambda handle, timeout: 10 if handle == 11 and phase == 'now' else 0
+        native.runtime = SimpleNamespace(startup_log=lambda *args: 'before',
+                                         wait_startup_ready=lambda *args: events.append('startup-ready'))
+        screens = [[]]
+        if phase in ('later', 'now'):
+            screens.append([(101, 11, 'SKAGER software update')])
+        screens.append([(102, 12, 'SKAGER / OpenCPN')])
+
+        def window_owner(window, pointer):
+            pointer._obj.value = 11 if window == 101 else 12
+
+        def check_token(handle):
+            events.append(('token', handle))
+            if handle == refuse_token:
+                raise ValueError('inert wrong child token')
+
+        def close():
+            events.append('close-owner')
+            if refuse_close:
+                raise RuntimeError('inert retained owner close failure')
+
+        native.ui = SimpleNamespace(kernel=object(), declare=lambda *args: lambda *args: None,
+                                    windows=lambda: screens.pop(0),
+                                    children=lambda window: [(201, 'LATER' if phase == 'later' else 'UPDATE NOW')],
+                                    IsWindowEnabled=lambda *args: True,
+                                    GetWindowThreadProcessId=window_owner,
+                                    WaitForSingleObject=lambda *args: 258,
+                                    PostMessageW=lambda *args: events.append(('message', args[0], args[1])) or True,
+                                    CloseHandle=lambda handle: events.append(('close-handle', handle)) or True)
+        owner = SimpleNamespace(poll=lambda: 0, check_process_token=check_token, close=close)
+        return native, owner, events, generation
+
+    def test_every_real_phase_uses_fixed_limited_owner_and_checks_children_before_input(self):
+        for phase in driver.PHASES:
+            with self.subTest(phase=phase):
+                native, owner, events, generation = self.fixture(phase)
+                with patch.object(driver, 'open_same_account_protected_startup', return_value=owner) as launch, \
+                        patch.object(driver.subprocess, 'Popen', side_effect=AssertionError('elevated fallback forbidden')):
+                    native.start_and_close(phase, {'generation': generation})
+                launch.assert_called_once_with(generation, native.sid)
+                self.assertEqual(events[-1], 'close-owner')
+                self.assertLess(events.index(('token', 12)), events.index('startup-ready'))
+                self.assertLess(events.index(('token', 12)), events.index(('message', 102, 0x0010)))
+                if phase in ('later', 'now'):
+                    self.assertLess(events.index(('token', 11)), events.index(('message', 201, 0x0201)))
+
+    def test_wrong_prompt_token_prevents_button_input_and_closes_original_owner(self):
+        native, owner, events, generation = self.fixture('now', refuse_token=11)
+        with patch.object(driver, 'open_same_account_protected_startup', return_value=owner), self.assertRaises(ValueError):
+            native.start_and_close('now', {'generation': generation})
+        self.assertFalse(any(isinstance(item, tuple) and item[0] == 'message' for item in events))
+        self.assertIn(('close-handle', 11), events)
+        self.assertEqual(events[-1], 'close-owner')
+
+    def test_wrong_application_token_prevents_close_input_and_acceptance(self):
+        native, owner, events, generation = self.fixture('no-update', refuse_token=12)
+        with patch.object(driver, 'open_same_account_protected_startup', return_value=owner), self.assertRaises(ValueError):
+            native.start_and_close('no-update', None)
+        self.assertNotIn('startup-ready', events)
+        self.assertIn(('close-handle', 12), events)
+        self.assertEqual(events[-1], 'close-owner')
+
+    def test_owner_cleanup_failure_is_not_a_passing_phase(self):
+        native, owner, events, generation = self.fixture('offline', refuse_close=True)
+        with patch.object(driver, 'open_same_account_protected_startup', return_value=owner), self.assertRaises(RuntimeError):
+            native.start_and_close('offline', None)
+        self.assertEqual(events[-1], 'close-owner')
+
+
 if __name__ == '__main__':
     unittest.main()

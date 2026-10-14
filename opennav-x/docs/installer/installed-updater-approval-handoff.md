@@ -11,8 +11,10 @@ writer, polling operation, installer invocation or automatic grant.
 now provides bounded polling and artifact-verification composition through
 caller-supplied read-only API/download callbacks. It reuses the existing GitHub
 provenance verifiers and passes authenticated originals to the byte binder.
-A bounded HTTP client and the live workflow/orchestration are still missing;
-this is not an executable enrollment workflow or an approval producer. Portable
+[`tools/installed_updater_approval_http.py`](../../tools/installed_updater_approval_http.py)
+provides the bounded HTTPS callbacks as `GitHubReads(explicit_read_only_token)`.
+The live workflow/orchestration is still missing; these modules are not an
+executable enrollment workflow or an approval producer. Portable
 checks do not establish hosted-runner, native installed-updater or four-phase
 acceptance. The [existing phase driver](../../tools/test-installed-protected-updater-windows.md)
 retains every original gate.
@@ -288,7 +290,7 @@ alone does not supply these bounded HTTP callbacks.
 
 ## Remaining live orchestration and native gates
 
-A coordinator still needs to wire the bounded HTTP callbacks, independently
+A coordinator still needs to wire the implemented bounded HTTP callbacks, independently
 authorized approval producer and one live disposable Windows journey. The
 pending Windows job must retain its actual account/SID, original files and
 challenge throughout the postproduction approval wait; starting a new Windows
@@ -323,10 +325,27 @@ release, boat or public access.
 ## Focused checks
 
 The focused inert checks are `python tools/test-installed-updater-approval.py -v`
-and `python tools/test-installed-updater-approval-transport.py -v`. They exercise
+and `python tools/test-installed-updater-approval-transport.py -v`, with actual
+HTTP framing exercised by `python tools/test-installed-updater-approval-http.py -v`.
+They exercise
 original-byte retention, immutable ownership, Setup/policy binding, separate
 pins, changed runner/producer/artifact provenance, stale challenges,
 postproduction ordering, expiry, cancellation, deadlines, strict schemas,
 ZIP membership/digest/CRC, tampering and resource bounds. Their API callbacks and
 archives are fixtures. No test produces genuine approval or contacts GitHub,
 Tailscale, a signing service, a Windows installation or the boat.
+
+The HTTP adapter permits only the fixed repository's expected run-attempt,
+jobs-page, artifact metadata and archive endpoints. Its single storage redirect
+is restricted to GitHub's reviewed `productionresultssa<digits>.blob.core.windows.net`
+host family under `/actions-results/`, without forwarding the API credential.
+Unknown storage backends refuse. DNS, connect, TLS, headers, body and redirect
+share a deadline; one unresolved DNS worker is allowed process-wide. Header and
+body sizes are bounded during reads. Ambiguous framing, trailers, chunk
+extensions, malformed JSON and nonfinite values refuse. Public errors suppress
+credential and signed-URL details. The adapter neither acquires a token nor
+publishes, retries, creates approval or consumes a challenge.
+
+Socketpair fixtures test actual HTTP framing, resource limits and composition
+with the original approval transport. They replace the connection function, so
+they do not qualify a live TLS handshake, GitHub transfer or native enrollment.

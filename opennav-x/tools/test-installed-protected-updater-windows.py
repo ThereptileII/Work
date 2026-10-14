@@ -34,6 +34,7 @@ import xml.etree.ElementTree as ET
 import updater_package as updater
 from product_version import windows_product_version
 from hardware_output_policy import require_product_output_policy
+from installed_customer_launch import open_same_account_protected_startup
 
 OPT_IN = 'SCRUM-311-disposable-installed-protected-updater'
 PHASES = ('no-update', 'later', 'now', 'offline')
@@ -816,70 +817,76 @@ class Native:
         started = self.w.FILETIME()
         ui.declare(ui.kernel, 'GetSystemTimeAsFileTime', None, ctypes.POINTER(self.w.FILETIME))(ctypes.byref(started))
         self.started = (started.dwHighDateTime << 32) | started.dwLowDateTime
-        parent = subprocess.Popen([str(launcher), '--broker-start=' + baseline], cwd=launcher.parent,
-                                  stdin=subprocess.DEVNULL, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL)
-        # Never kill on failure. The exact installed state and original processes
-        # remain available for operator recovery on this disposable machine.
-        if phase in ('later', 'now'):
-            deadline, prompt = time.monotonic() + 30, None
+        parent = open_same_account_protected_startup(baseline, self.sid)
+        try:
+            # Never kill on failure. The exact installed state and original processes
+            # remain available for operator recovery on this disposable machine.
+            if phase in ('later', 'now'):
+                deadline, prompt = time.monotonic() + 30, None
+                while time.monotonic() < deadline:
+                    matches = [(h, pid) for h, pid, title in ui.windows() if title == 'SKAGER software update']
+                    require(len(matches) <= 1)
+                    if matches:
+                        prompt = matches[0]
+                        break
+                    time.sleep(.1)
+                require(prompt is not None)
+                window, pid = prompt
+                image = self.image(before['generation'], 'skager-update-prompt.exe')
+                handle = self.process(pid, image, self.p['b0']['inventory']['app/skager-update-prompt.exe'])
+                try:
+                    parent.check_process_token(handle)
+                    label = 'LATER' if phase == 'later' else 'UPDATE NOW'
+                    matches = [h for h, caption in ui.children(window) if caption == label and ui.IsWindowEnabled(h)]
+                    require(len(matches) == 1 and ui.IsWindowEnabled(window))
+                    owner = self.w.DWORD()
+                    ui.GetWindowThreadProcessId(window, ctypes.byref(owner))
+                    require(owner.value == pid and ui.WaitForSingleObject(handle, 0) == 258)
+                    # Actual custom-button mouse messages, matching the existing
+                    # native popup fixture; never synthesize an exit/consent result.
+                    for message, flags in ((0x0201, 1), (0x0202, 0)):
+                        require(ui.PostMessageW(matches[0], message, flags, (20 << 16) | 20))
+                    require(self.wait_exit(handle, 30000) == (0 if phase == 'later' else 10))
+                finally:
+                    if handle is not None:
+                        require(ui.CloseHandle(handle))
+            deadline = time.monotonic() + 180
+            while parent.poll() is None and time.monotonic() < deadline:
+                if phase in ('no-update', 'offline'):
+                    require(not any(title == 'SKAGER software update' for _, _, title in ui.windows()))
+                time.sleep(.1)
+            require(parent.poll() == 0)
+            selected = self.history()  # Actual Now health+closed facts precede ordinary selection.
+            target = self.p['b1' if phase in ('now', 'offline') else 'b0']
+            require(selected['version'] == target['version'] and selected['commit'] == target['commit'])
+            deadline, found = time.monotonic() + 30, None
             while time.monotonic() < deadline:
-                matches = [(h, pid) for h, pid, title in ui.windows() if title == 'SKAGER software update']
+                matches = [(h, pid) for h, pid, title in ui.windows() if title == 'SKAGER / OpenCPN']
                 require(len(matches) <= 1)
                 if matches:
-                    prompt = matches[0]
+                    found = matches[0]
                     break
                 time.sleep(.1)
-            require(prompt is not None)
-            window, pid = prompt
-            image = self.image(before['generation'], 'skager-update-prompt.exe')
-            handle = self.process(pid, image, self.p['b0']['inventory']['app/skager-update-prompt.exe'])
+            require(found is not None)
+            window, pid = found
+            app = self.image(selected['generation'], 'opencpn.exe')
+            handle = self.process(pid, app, target['product']['executable_sha256'])
             try:
-                label = 'LATER' if phase == 'later' else 'UPDATE NOW'
-                matches = [h for h, caption in ui.children(window) if caption == label and ui.IsWindowEnabled(h)]
-                require(len(matches) == 1 and ui.IsWindowEnabled(window))
+                parent.check_process_token(handle)
+                self.runtime.wait_startup_ready(self.profile_root, before_log)
+                require(ui.IsWindowEnabled(window) and ui.WaitForSingleObject(handle, 0) == 258)
                 owner = self.w.DWORD()
                 ui.GetWindowThreadProcessId(window, ctypes.byref(owner))
-                require(owner.value == pid and ui.WaitForSingleObject(handle, 0) == 258)
-                # Actual custom-button mouse messages, matching the existing
-                # native popup fixture; never synthesize an exit/consent result.
-                for message, flags in ((0x0201, 1), (0x0202, 0)):
-                    require(ui.PostMessageW(matches[0], message, flags, (20 << 16) | 20))
-                require(self.wait_exit(handle, 30000) == (0 if phase == 'later' else 10))
+                require(owner.value == pid)
+                require(ui.PostMessageW(window, 0x0010, 0, 0))
+                require(self.wait_exit(handle, 30000) == 0)
             finally:
                 if handle is not None:
                     require(ui.CloseHandle(handle))
-        deadline = time.monotonic() + 180
-        while parent.poll() is None and time.monotonic() < deadline:
-            if phase in ('no-update', 'offline'):
-                require(not any(title == 'SKAGER software update' for _, _, title in ui.windows()))
-            time.sleep(.1)
-        require(parent.poll() == 0)
-        selected = self.history()  # Actual Now health+closed facts precede ordinary selection.
-        target = self.p['b1' if phase in ('now', 'offline') else 'b0']
-        require(selected['version'] == target['version'] and selected['commit'] == target['commit'])
-        deadline, found = time.monotonic() + 30, None
-        while time.monotonic() < deadline:
-            matches = [(h, pid) for h, pid, title in ui.windows() if title == 'SKAGER / OpenCPN']
-            require(len(matches) <= 1)
-            if matches:
-                found = matches[0]
-                break
-            time.sleep(.1)
-        require(found is not None)
-        window, pid = found
-        app = self.image(selected['generation'], 'opencpn.exe')
-        handle = self.process(pid, app, target['product']['executable_sha256'])
-        try:
-            self.runtime.wait_startup_ready(self.profile_root, before_log)
-            require(ui.IsWindowEnabled(window) and ui.WaitForSingleObject(handle, 0) == 258)
-            owner = self.w.DWORD()
-            ui.GetWindowThreadProcessId(window, ctypes.byref(owner))
-            require(owner.value == pid)
-            require(ui.PostMessageW(window, 0x0010, 0, 0))
-            require(self.wait_exit(handle, 30000) == 0)
         finally:
-            if handle is not None:
-                require(ui.CloseHandle(handle))
+            # The same original limited-token owner remains held through prompt
+            # and ordinary-app observations; close never kills or retries them.
+            parent.close()
 
     def wait_exit(self, handle, timeout):
         # Keep ownership until our checked CloseHandle in the caller's finally.

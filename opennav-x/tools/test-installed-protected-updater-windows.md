@@ -21,8 +21,18 @@ supplies installation authority.
 The installed broker and staged diagnostic executable must include the real
 `--maintenance=selected-history` endpoint (introduced by source commit
 `6e182d0b`). The registered user running the driver must have an actual elevated,
-nonimpersonated primary token. This test does not cover unelevated ordinary-user
-startup. The native endpoint independently authenticates the actual client and
+nonimpersonated primary token for the diagnostic observations. Startup itself
+now uses only that account's original linked LIMITED primary token through
+`open_same_account_protected_startup`; an elevated `Popen` fallback is forbidden.
+The protected image path is rebuilt from actual ProgramFilesX86, current SID and
+the approved generation, with only `--broker-start=<generation>`. The original
+limited-token logon identity and handles remain retained through prompt/app
+observations. Actual prompt/app tokens must match that limited logon, SID and
+session and be primary, medium-integrity and unelevated before UI input or
+readiness acceptance. Explicit `WinSta0\\Default` avoids implicit desktop-access
+additions. This code still needs native execution on a suitable signed-in
+disposable host; injected-OS tests do not establish ordinary-user acceptance.
+The native endpoint independently authenticates the actual client and
 original protected selected history; printed diagnostic fields are observations,
 not authority to mutate anything.
 
