@@ -70,6 +70,14 @@ func UpgradeEnrolledCode(ctx context.Context, r CodeUpgradeRequest) error {
 	})
 }
 func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeUpgradeOperations) (result error) {
+	cleanupFailure := func(err error) {
+		if errors.Is(result, ErrCodeUpgradeAborted) {
+			// Terminal recovery is qualified only after every retained owner drains.
+			// Preserve cleanup causes, but revoke the verified-abort classification.
+			result = ErrCodeUpgradeUncertain
+		}
+		result = errors.Join(result, ErrCleanup, err)
+	}
 	if ctx == nil || ctx.Err() != nil || !validPin(r.PolicySHA256) || !validPin(r.ProvisionerSHA256) || !validPin(r.TrustConfigSHA256) || !validPin(r.OriginalCompletionSHA256) || r.BootstrapCacheDir == "" || r.ArtifactDirectory == "" || len(r.TrustConfiguration) < 1 || len(r.TrustConfiguration) > maxTrustConfigurationBytes || op.trust == nil || op.hold == nil || op.verify == nil || op.source == nil || (!r.Resume && (op.acquire == nil || op.open == nil)) || (r.Resume && op.openResume == nil) {
 		return errors.New("live complete independently authenticated code upgrade inputs required")
 	}
@@ -87,7 +95,7 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	if inputs != nil {
 		defer func() {
 			if e := inputs.Close(); e != nil {
-				result = errors.Join(result, ErrCleanup, e)
+				cleanupFailure(e)
 			}
 		}()
 	}
@@ -106,7 +114,7 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	if source != nil {
 		defer func() {
 			if e := source.Close(); e != nil {
-				result = errors.Join(result, ErrCleanup, e)
+				cleanupFailure(e)
 			}
 		}()
 	}
@@ -121,7 +129,7 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 		if owner != nil {
 			defer func() {
 				if e := owner.close(); e != nil {
-					result = errors.Join(result, ErrCleanup, e)
+					cleanupFailure(e)
 				}
 			}()
 		}
@@ -146,7 +154,7 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	if broker != nil {
 		defer func() {
 			if e := broker.Close(); e != nil {
-				result = errors.Join(result, ErrCleanup, e)
+				cleanupFailure(e)
 			}
 		}()
 	}
@@ -157,7 +165,7 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	if owner != nil {
 		defer func() {
 			if e := owner.close(); e != nil {
-				result = errors.Join(result, ErrCleanup, e)
+				cleanupFailure(e)
 			}
 		}()
 	}

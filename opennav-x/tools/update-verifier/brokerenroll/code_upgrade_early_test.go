@@ -5,6 +5,7 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"io"
 	"strings"
 	"testing"
 
@@ -167,7 +168,49 @@ func TestCodeUpgradeEarlyAbortPostEffectCustodyLossRemainsUncertain(t *testing.T
 	}
 }
 
-type earlyAbortedFixture struct{ loseAfterAbort, aborted bool }
+func TestCodeUpgradeEarlyAbortDeferredCleanupFailureRevokesTerminalClassification(t *testing.T) {
+	for _, fault := range []string{"owner", "source", "inputs", "all"} {
+		t.Run(fault, func(t *testing.T) {
+			r, op, _, _ := upgradeFixture(t)
+			r.Resume = true
+			ownerErr, sourceErr, inputErr := errors.New("owner drain uncertain"), errors.New("source drain uncertain"), errors.New("input drain uncertain")
+			owner := &earlyAbortedFixture{}
+			if fault == "owner" || fault == "all" {
+				owner.closeErr = ownerErr
+			}
+			source := &maintenanceImageFixture{Reader: bytes.NewReader(nil), testOwner: &testOwner{}}
+			if fault == "source" || fault == "all" {
+				source.closeErr = sourceErr
+			}
+			inputs := &testOwner{}
+			if fault == "inputs" || fault == "all" {
+				inputs.closeErr = inputErr
+			}
+			op.openResume = func(context.Context, releasepolicy.BrokerCodeUpgradePolicy, []byte, []byte, string) (codeUpgradeResumeOwner, error) {
+				return owner, nil
+			}
+			op.source = func(context.Context, releasepolicy.Artifact) (maintenanceImageSource, error) { return source, nil }
+			op.hold = func(string, string) (io.Closer, error) { return inputs, nil }
+			err := upgradeEnrolledCodeWith(context.Background(), r, op)
+			if !errors.Is(err, ErrCodeUpgradeUncertain) || !errors.Is(err, ErrCleanup) || errors.Is(err, ErrCodeUpgradeAborted) {
+				t.Fatal("post-effect cleanup uncertainty reported terminal recovery", err)
+			}
+			for _, cause := range []error{owner.closeErr, source.closeErr, inputs.closeErr} {
+				if cause != nil && !errors.Is(err, cause) {
+					t.Fatal("original cleanup cause lost", err)
+				}
+			}
+			if !owner.aborted || !source.closed || !inputs.closed {
+				t.Fatal("cleanup did not drain all owners after abort")
+			}
+		})
+	}
+}
+
+type earlyAbortedFixture struct {
+	loseAfterAbort, aborted bool
+	closeErr                error
+}
 
 func (f *earlyAbortedFixture) check(context.Context) error {
 	if f.aborted && f.loseAfterAbort {
@@ -175,7 +218,7 @@ func (f *earlyAbortedFixture) check(context.Context) error {
 	}
 	return nil
 }
-func (*earlyAbortedFixture) close() error { return nil }
+func (f *earlyAbortedFixture) close() error { return f.closeErr }
 func (f *earlyAbortedFixture) resume(context.Context) error {
 	f.aborted = true
 	return ErrCodeUpgradeAborted
