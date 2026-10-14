@@ -108,7 +108,7 @@ readback/rebinding fails can leave an uncertain path; the explicit resume entry
 re-observes actual known positions instead of blindly retrying that mutation.
 
 Explicit resume reauthenticates the **same** target, new provisioner, unchanged
-trust and original completion. Native observations select one of two bounded
+trust and original completion. Native observations select one of three bounded
 phases. Disabled rename recovery requires the full reservation and protected
 clean-old-exit record, checks that the recorded original PID/creation identity
 has not unexpectedly survived, and retains the original service/registry/config
@@ -147,7 +147,24 @@ temporary TOKEN_IMPERSONATE addition to the exact query-only descriptor. Abrupt
 process death can leave that shared-token addition, an inherited limitation of
 this readiness mechanism. Finalization does not add a new grant or cleanup path.
 
-This implementation supports the four disabled rename boundaries and terminal
+A separate stopped-start owner accepts exact AUTO_START plus clean STOPPED
+with the same complete authenticated pair closure and absent ready marker. Its
+service rights are START, QUERY_CONFIG, QUERY_STATUS and READ_CONTROL only. Before
+the sole normal StartService call it exclusively creates, flushes and reads back
+canonical protected `.code-successor.start-attempt.json`, binding original
+completion, approved policy, successor receipt and complete-pair digests. Original
+normal activation writes this same fence before its StartService call. Any existing
+namespace, including an empty or partial write, forbids another START across
+invocations. DISABLED recovery rejects any attempt namespace; RUNNING finalization
+and public successor readers permit absence for legacy transactions or an exact
+matching attempt. A start error, including already-running or timeout, consumes
+the attempt and refuses adoption. Stopped-start failure never disables, stops,
+replaces code or runs verify-store. Clean SCM STOPPED is not process-exit proof.
+After successful start, the first actual RUNNING process is bound once and retained
+through query-only readiness/publication; process loss never rebinds a later instance.
+
+This implementation supports the four disabled rename boundaries, one fenced
+normal start from an exact automatic clean-stopped successor, and terminal
 finalization of an already-running automatic successor with an absent ready
 marker. It deliberately **does not claim recovery of every phase**:
 
@@ -156,8 +173,8 @@ marker. It deliberately **does not claim recovery of every phase**:
   the same transaction refuses adoption; it is not silently repaired.
 - Process loss after DEMAND_START is selected for `verify-store` refuses the
   DISABLED-only recovery entry.
-- AUTO_START with STOPPED/pending state (including interruption before normal
-  StartService completes) refuses; finalization cannot start or stop a broker.
+- AUTO_START with pending/unclean STOPPED or any previous start-attempt namespace
+  refuses another start; a failed or uncertain StartService is never retried.
 
 Those phases require additional authenticated abort/service-phase recovery before
 normal customer Setup activation. Actual installed SCM/UAC/IPC and customer

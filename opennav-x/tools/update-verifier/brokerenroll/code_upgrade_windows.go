@@ -569,6 +569,26 @@ func (n *nativeCodeUpgrade) activate(ctx context.Context) (resultErr error) {
 	if err := n.setStart(ctx, windows.SERVICE_AUTO_START); err != nil {
 		return err
 	}
+	// The original normal activation consumes the same durable attempt as the
+	// stopped recovery entry. An uncertain first start can never be retried there.
+	successorRaw, err := installedReadPin(ctx, n.successor, maxCodeUpgradeRecordBytes)
+	if err != nil {
+		return err
+	}
+	sd, err := clientRequestDescriptor(n.backend.brokerSID, false)
+	if err != nil {
+		return err
+	}
+	attemptRaw := codeStartAttemptBytes(digest(n.original.originalRaw), digest(n.rawPolicy), digest(successorRaw), digest(codeSuccessorMarker(digest(successorRaw))))
+	if len(attemptRaw) == 0 {
+		return errors.New("exact original activation attempt required")
+	}
+	if _, err = n.write(ctx, n.original.requestParent, n.original.clientSID+codeStartAttemptSuffix, sd, attemptRaw); err != nil {
+		return err
+	}
+	if err = n.check(ctx); err != nil {
+		return err
+	}
 	if err := windows.StartService(n.backend.service.service, 0, nil); err != nil {
 		return err
 	}
@@ -684,7 +704,7 @@ func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceA
 	sid := c.clientSID
 	intentAbsent := startupRestorationAbsent(parent, sid+codeIntentSuffix) == nil
 	if intentAbsent {
-		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix} {
+		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix} {
 			if startupRestorationAbsent(parent, sid+suffix) != nil {
 				return original, errors.New("partial code successor state")
 			}
@@ -748,6 +768,18 @@ func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceA
 	pairRaw, err := installedReadPin(ctx, pair, maxInstalledCompletionMarkerBytes)
 	if err != nil || !bytes.Equal(pairRaw, codeSuccessorMarker(digest(raw))) {
 		return original, errors.New("code pair selection is incomplete")
+	}
+	// Legacy completed successors have no start fence. Any present fence must
+	// match the exact authenticated original/policy/successor/complete pair.
+	if startupRestorationAbsent(parent, sid+codeStartAttemptSuffix) != nil {
+		attempt, e := maintenanceHoldFile(c.files, parent, sid+codeStartAttemptSuffix, recordSD, maxCodeUpgradeRecordBytes)
+		if e != nil {
+			return original, e
+		}
+		attemptRaw, e := installedReadPin(ctx, attempt, maxCodeUpgradeRecordBytes)
+		if e != nil || !bytes.Equal(attemptRaw, codeStartAttemptBytes(digest(originalRaw), r.PolicySHA256, digest(raw), digest(pairRaw))) {
+			return original, errors.New("start attempt differs from exact successor closure")
+		}
 	}
 	// Only independently authenticated running finalization may request the
 	// pending-ready closure. Any ready namespace presence still refuses it.
@@ -888,6 +920,9 @@ func resumeCodeUpgradeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgr
 	c, ok := in.completion.(*nativeInstalledMaintenanceAuthority)
 	if !ok {
 		return nil, errors.New("native original recovery completion required")
+	}
+	if startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix) != nil {
+		return nil, errors.Join(errors.New("start attempt forbids disabled recovery"), c.close())
 	}
 	n := &nativeCodeUpgrade{inputs: in, original: c, policy: p, rawPolicy: bytes.Clone(raw), files: &nativeEnrollmentFiles{}, recovering: true, staged: true, reserved: true, disabled: true, stopped: true}
 	defer func() {

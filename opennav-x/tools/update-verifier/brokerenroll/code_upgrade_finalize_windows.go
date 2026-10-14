@@ -54,7 +54,7 @@ func (n *nativeCodeFinalizeBackend) close() error {
 	return n.service.close()
 }
 
-func openCodeFinalizeObserverNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, brokerSID string) (result *nativeCodeFinalizeBackend, resultErr error) {
+func openCodeFinalizeObserverNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, brokerSID string, startCapability ...bool) (result *nativeCodeFinalizeBackend, resultErr error) {
 	n := &nativeCodeFinalizeBackend{original: c, brokerSID: brokerSID}
 	defer func() {
 		if resultErr != nil {
@@ -75,7 +75,11 @@ func openCodeFinalizeObserverNative(ctx context.Context, c *nativeInstalledMaint
 		}
 	}
 	name, _ := windows.UTF16PtrFromString(serviceName)
-	n.service.service, err = windows.OpenService(n.service.scm, name, codeFinalizeServiceRights)
+	rights := uint32(codeFinalizeServiceRights)
+	if len(startCapability) == 1 && startCapability[0] {
+		rights |= windows.SERVICE_START
+	}
+	n.service.service, err = windows.OpenService(n.service.scm, name, rights)
 	if err != nil {
 		return nil, err
 	}
@@ -142,6 +146,9 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 		return nil, err
 	}
 	if observer.service.expectedStart == windows.SERVICE_DISABLED {
+		if startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix) != nil {
+			return nil, errors.New("start attempt forbids disabled recovery")
+		}
 		if !serviceCompleted(state) {
 			return nil, errors.New("disabled recovery still requires original clean stopped state")
 		}
@@ -153,8 +160,9 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 		transferred = true
 		return resumeCodeUpgradeNative(ctx, p, raw, trust, originalSHA)
 	}
-	if !maintenanceRunning(state, state.processID) {
-		return nil, errors.New("automatic finalization requires normally running successor")
+	stopped := serviceCompleted(state)
+	if !stopped && !maintenanceRunning(state, state.processID) {
+		return nil, errors.New("automatic resume requires clean stopped or normally running successor")
 	}
 	recordSD, err := clientRequestDescriptor(broker.String(), false)
 	if err != nil {
@@ -170,6 +178,27 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 	}
 	observer.image = image
 	publication := &nativeCodeFinalizePublication{original: c, files: &nativeEnrollmentFiles{}, parent: c.requestParent, name: c.clientSID + codeSuccessorMarkerSuffix, descriptor: recordSD, raw: readyRaw}
+	if stopped {
+		if err = startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix); err != nil {
+			return nil, errors.New("existing start attempt forbids another start")
+		}
+		if err = observer.close(); err != nil {
+			return nil, err
+		}
+		observer, err = openCodeFinalizeObserverNative(ctx, c, broker.String(), true)
+		if err != nil {
+			return nil, err
+		}
+		observer.image = image
+		start := &nativeCodeStartBackend{nativeCodeFinalizeBackend: observer, publication: publication}
+		owner := &codeUpgradeStarter{backend: start, publication: publication, call: launcher.CallMaintenanceNative}
+		owner.self = owner
+		transferred = true
+		if err = owner.check(ctx); err != nil {
+			return nil, errors.Join(err, owner.close())
+		}
+		return owner, nil
+	}
 	transferred = true // openCodeFinalizerWith owns cleanup, including failure.
 	return openCodeFinalizerWith(ctx, observer, publication, launcher.CallMaintenanceNative)
 }
