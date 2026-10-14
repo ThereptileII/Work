@@ -1,6 +1,26 @@
 # SKAGER status — 2026-10-14
 
-## Running successor finalization: focused native gate passes
+## Stopped successor recovery: focused native gate passes
+
+Exact `9b12442d9de9ad1fd91780f74cdfa43eba261dc6` passes
+[run 38615096156](https://github.com/ThereptileII/Work/actions/runs/38615096156):
+**344 Windows x86 / 240 Linux passes**, zero failures. Five earlier explicit
+Windows skips remain; all 91/67 mandatory maintenance cases pass. Original
+activation and clean AUTO_START/STOPPED recovery now share an exclusive durable
+single-start fence. Query-only finalization retains the same actual process;
+configuration downgrade and repeated uncertain starts refuse. The initial empty
+fixture-construction failure and its exact-byte evidence remain recorded.
+[Scope and receipts](evidence/scrum311-stopped-start-20261014/README.md).
+
+One full private Staging candidate at this source is running in
+[38615517743](https://github.com/ThereptileII/Work/actions/runs/38615517743), reusing
+the unchanged authenticated SDK subject to same-job environment verification.
+No design/extended run was requested. Full application/installed/boat acceptance
+is pending. Customer Setup activation, early partial staging and DEMAND validation
+recovery remain open; bounded native primitives are not complete customer recovery.
+
+## Earlier running successor finalization gate
+
 
 SCRUM-311 now recovers the bounded interruption after an exact complete successor
 pair is already AUTO_START/RUNNING but before final ready publication. A separate

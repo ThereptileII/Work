@@ -1,0 +1,114 @@
+{
+  "commit": "9b12442d9de9ad1fd91780f74cdfa43eba261dc6",
+  "run": "38615096156",
+  "platform": "linux",
+  "artifactId": 11919430757,
+  "archiveBytes": 66234,
+  "archiveSha256": "5101978487d9569df5426982c69709225a57d901c99cc73946867509f384eeac",
+  "testCounts": {
+    "pass": 240
+  },
+  "receipt": {
+    "schema": 1,
+    "sourceCommit": "9b12442d9de9ad1fd91780f74cdfa43eba261dc6",
+    "run": "38615096156",
+    "attempt": "1",
+    "requiredMaintenanceTests": {
+      "launcher": [
+        "TestMaintenanceClientCustodyOrderingAndFailures",
+        "TestMaintenanceClientJoinsIndependentCleanupErrors",
+        "TestMaintenanceClientPreflightHasNoGrantOrTransport",
+        "TestSelectedHistoryUsesOriginalNativeCustodyAndNeverRetries",
+        "TestSharedMaintenanceClientRefusesCrossOperationFieldsBeforeGrant"
+      ],
+      "brokerpipe": [
+        "TestMaintenanceProtocolStrictBindings",
+        "TestSelectedHistoryStrictPagesAndNoManualWireChange",
+        "TestPreviousQualifiedStrictOptionalProtocolAndOldWireIsolation",
+        "TestRepairWireRejectsCallerAuthorityAndFalseHealth",
+        "TestRepairedHistorySeparatesOriginalQualificationAndClosesSchema"
+      ],
+      "brokerhost": [
+        "TestSelectedHistoryPagesOriginalQualificationWithoutMutation",
+        "TestPreviousQualifiedWalksOriginalLineageNotLexicalGeneration",
+        "TestPreviousQualifiedAfterManualSelectionUsesPreviousActualRelease",
+        "TestPreviousQualifiedRefusesMissingAmbiguousOrUnqualifiedHistory",
+        "TestRepairSelectionStartupHistoryAndUninstallRemainDistinctFromHealth",
+        "TestRepairIncompleteOrMismatchedAuthorityCannotSelect",
+        "TestPreviousQualifiedRefusesHistoricalRepairWithoutInventingQualification",
+        "TestRepairColdCustodyRequiresFrozenProfileWithoutInventingProcessExit",
+        "TestRepairCustodyEveryPresentUncertainKeeperRefusesColdFallback",
+        "TestRepairWarmCustodyKeepsExactOriginalUntilFinishAndNeverOwnsProfile",
+        "TestRepairCustodyLateAppearanceReplacementProfileOrContextFailurePoisonsOwner",
+        "TestRepairCustodyCaptureAndPostProfileObservationRefusalsDoNotConsumeOwners",
+        "TestRepairCustodyWarmDrainFailureRetainsTombstoneAndCannotRetry",
+        "TestInterruptedRepairContinuesOnlyWithFreshExactLinkedJournal",
+        "TestRepairRecoveryRejectsForkMismatchAndOrdinaryPendingTransactions",
+        "TestRepairEmptyOriginIsPendingProvenanceAndNeverHealth",
+        "TestRepairContinuationEmptyBornJournalSupersedesOnlyItsExactPrior"
+      ],
+      "cmd/skager-update-provisioner": [
+        "TestCustomerRollbackConfirmsOneOriginalTargetThenReadsBack",
+        "TestCustomerRollbackElevationFixedActionsAndOriginalOwners",
+        "TestCustomerRollbackNSISRoutesProtectedActionWithoutLegacyFallback",
+        "TestCustomerRepairOneMutationAndStrictFreshReadback",
+        "TestCustomerRepairFixedSameAccountElevationAndNSISJoin",
+        "TestCodeUpgradeOperatorExplicitUpgradeAndResume",
+        "TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs"
+      ],
+      "brokerstore": [
+        "TestRepairRestoresExactSelectedBytesAfterDamageWithoutAdoptingOrOverwriting",
+        "TestRepairRejectsSourceTamperingBeforeReservationAndPreservesFailedAttempt",
+        "TestRepairProvenanceCannotChangeCodeOrNestHistoricalRepair",
+        "TestRepairBootstrapRequiresOriginalBaselineLauncherAndRetainedSourceCustody",
+        "TestCompletedRepairWithoutCommittedJournalBlocksFreshAttempt",
+        "TestInterruptedRepairDiscoveryOnlyAcceptsOneExactOwnedCopy",
+        "TestInterruptedRepairStillRequiresStrictPublicPayloadReopen",
+        "TestRepairRecoveryJournalBornLinkSurvivesZeroFactsAndFurtherContinuation",
+        "TestRepairRecoveryJournalRejectsUnownedClosedOrChangedPriorBeforeReservation"
+      ],
+      ".": [
+        "TestBrokerCodeUpgradeSignedTargetIsolation"
+      ],
+      "releasepolicy": [
+        "TestBrokerCodeUpgradeDistinctPurposeAndExactPair"
+      ],
+      "repository": [
+        "TestBrokerCodeUpgradePublicationAndRetention",
+        "TestBrokerCodeUpgradeCombinedEnrollmentAndArtifactReuse",
+        "TestBrokerCodeUpgradeRefusalDoesNotReserve",
+        "TestBrokerCodeUpgradeOldPairUsesPrepublicationHistory",
+        "TestBrokerCodeUpgradeVersionChainAndConflict",
+        "TestBrokerCodeUpgradeRetainedCorruptionRefusesBeforeReservation",
+        "TestBrokerCodeUpgradeInterruptedPublicationRetainsAuthority"
+      ],
+      "cmd/skager-repository": [
+        "TestCodeUpgradeCLIFlagsRefuseBeforePrivateKeyRead",
+        "TestCodeUpgradeCLIActualSignedPublicationAndOrdinaryRetention"
+      ],
+      "brokerenroll": [
+        "TestCodeUpgradeCustodyPurposeSequenceAndSingleEffects",
+        "TestCodeUpgradeFailureNeverContinuesOrRetries",
+        "TestCodeUpgradeExactVerifiedBytesBeforeMachineOpen",
+        "TestCodeUpgradeRecordPreservesExactPairAndRefusesSubstitution",
+        "TestCodeUpgradeDrainProofRequiresExactCleanOriginalProcess",
+        "TestCodeUpgradeStoppedStartFenceBeforeSingleStartAndSameProcessFinalizer",
+        "TestCodeUpgradeStoppedStartFenceAndStartErrorsConsumeAttempt",
+        "TestCodeUpgradeStartAttemptBindsEveryDigest",
+        "TestCodeUpgradeFinalizePublishesOnceAndClosesBorrowedProcessFirst",
+        "TestCodeUpgradeFinalizeRevocationWithholdsReadyPublication",
+        "TestCodeUpgradeFinalizeRejectsPendingStoppedOrExistingReadyBeforeQuery",
+        "TestCodeUpgradeFinalizeCleanupFailureRetainsUncertainty",
+        "TestCodeUpgradeResumeSelectsNativePhaseWithoutReplacementAcquisition"
+      ]
+    },
+    "requiredMaintenanceTopLevelCount": 67,
+    "goTestStreamSha256": "7b0cb193755df996c7c9ef984fec322a4c27bcbb2874939d78014e2a23217468",
+    "passed": true,
+    "nativeWindows": false,
+    "applicationBuild": false,
+    "productAcceptance": false,
+    "boatAcceptance": false,
+    "scope": "Maintenance contracts and native ownership primitives; actual customer UAC/dialog, broker conversation and historical app journey remain separate."
+  }
+}

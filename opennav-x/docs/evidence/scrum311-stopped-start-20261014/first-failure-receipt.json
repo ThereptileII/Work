@@ -1,0 +1,33 @@
+{
+  "run": "38614545234",
+  "commit": "c626dce6f97ccdb0fb804f753e925394bd880faa",
+  "artifacts": [
+    {
+      "platform": "windows",
+      "artifactId": 11919445210,
+      "archiveBytes": 65839,
+      "archiveSha256": "3131d4603fdff3c7aad409e7fa54da948f2ec995d0f02b15f20cb3a9899d1afc",
+      "testCounts": {
+        "pass": 343,
+        "skip": 5,
+        "fail": 1
+      },
+      "failures": [
+        {
+          "test": "TestNativeCodeUpgradeStartFenceExclusiveDurableAndPairBound/empty",
+          "output": "    code_upgrade_start_windows_test.go:35: bounded startup file required\n"
+        }
+      ]
+    },
+    {
+      "platform": "linux",
+      "artifactId": 11919137323,
+      "archiveBytes": 66065,
+      "archiveSha256": "d06a2bbe63024ba195339a53ba5c057b6479331b3b5255d4e3bde78155bb8562",
+      "testCounts": {
+        "pass": 240
+      },
+      "failures": []
+    }
+  ]
+}
