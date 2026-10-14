@@ -5,6 +5,7 @@ import ctypes
 from pathlib import Path
 import subprocess
 import installed_b0_fixture as fixture
+from installed_customer_launch import CustomerLaunchRefused
 import sys
 import tempfile
 from types import SimpleNamespace
@@ -362,6 +363,8 @@ class GenuineMaintainCompletion(unittest.TestCase):
         self.events, self.finish, self.exit_code, self.close_failure = [], False, 0, False
         self.owner = SimpleNamespace(pid=20, created=100, sid='actual-current-user', elevated=False,
             capability={'normalTokenAvailable': True, 'consentPromptAvailable': False}, check=lambda: None,
+            launch_evidence=dict(pid=20, threadId=22, created=100, resumeAttempted=True,
+                                 resumeResult=1, state='original-child-resumed'),
             wait=lambda timeout: self.events.append(('wrapper-exit', timeout)) or 0,
             close=lambda: self.events.append('wrapper-close'))
         self.observer = SimpleNamespace()
@@ -399,7 +402,8 @@ class GenuineMaintainCompletion(unittest.TestCase):
             self.events.append('launch-normal')
             return self.owner
         self.patch = mock.patch.dict(sys.modules, {'installed_customer_launch': SimpleNamespace(
-            open_same_account_launch=launch, inspect_customer_capability=lambda: self.owner.capability)})
+            CustomerLaunchRefused=CustomerLaunchRefused, open_same_account_launch=launch,
+            inspect_customer_capability=lambda: self.owner.capability)})
         self.patch.start()
         self.addCleanup(self.patch.stop)
 
@@ -414,6 +418,7 @@ class GenuineMaintainCompletion(unittest.TestCase):
         result = self.f.customer_uninstall()
         self.assertEqual(result['state'], 'original-relocated-maintain-exited-cleanly')
         self.assertFalse(result['consentPromptAcceptance'])
+        self.assertEqual(result['launchEvidence'], self.owner.launch_evidence)
         self.assertEqual([event for event in self.events if isinstance(event, tuple) and event[0] == 'original-exit'],
                          [('original-exit', 101, 30000), ('original-exit', 102, 30000)])
         self.assertEqual(self.events[-3:], [('close', 101), ('close', 102), 'wrapper-close'])
@@ -445,6 +450,94 @@ class GenuineMaintainCompletion(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.f.customer_uninstall()
         self.assertEqual(self.events[-3:], [('close', 101), ('close', 102), 'wrapper-close'])
+
+
+    def refuse_launch(self, evidence, winerror=5):
+        class UnprintableRefusal(CustomerLaunchRefused):
+            def __str__(self):
+                raise AssertionError('Exception text must never become evidence')
+        error = UnprintableRefusal('private exception text')
+        error.__cause__ = RuntimeError('private cause and environment')
+        error.launchEvidence, error.winerror = evidence, winerror
+        def launch(*args):
+            self.events.append('launch-refused')
+            raise error
+        sys.modules['installed_customer_launch'].open_same_account_launch = launch
+        return error
+
+    def test_launch_refusal_persists_only_bounded_facts_and_preserves_original_exception(self):
+        facts = dict(pid=20, threadId=22, created=100, resumeAttempted=True,
+                     resumeResult=0xffffffff, state='resume-effect-uncertain')
+        error = self.refuse_launch(dict(facts, path='private path', environment={'secret': 'private value'},
+                                       cause=object()))
+        self.close_failure = True
+        with self.assertRaises(CustomerLaunchRefused) as caught:
+            self.f.customer_uninstall()
+        self.assertIs(caught.exception, error)
+        self.assertEqual(self.events, ['launch-refused', ('close', 102)])
+        raw = (self.root / 'customer-launch-failure.json').read_bytes()
+        self.assertLessEqual(len(raw), 1024)
+        self.assertEqual(json.loads(raw), {'schema': 1, 'state': 'customer-launch-refused',
+                                          'launchEvidence': facts, 'winerror': 5})
+        self.assertNotIn(b'private', raw)
+        self.assertFalse(self.finish)
+
+    def test_existing_failure_evidence_is_preserved_and_no_launch_is_retried(self):
+        path = self.root / 'customer-launch-failure.json'
+        path.write_bytes(b'original failure evidence')
+        error = self.refuse_launch(self.owner.launch_evidence)
+        with self.assertRaises(CustomerLaunchRefused) as caught:
+            self.f.customer_uninstall()
+        self.assertIs(caught.exception, error)
+        self.assertEqual(path.read_bytes(), b'original failure evidence')
+        self.assertEqual(self.events, ['launch-refused', ('close', 102)])
+
+    def test_invalid_failure_facts_refuse_serialization_without_replacing_original_error(self):
+        error = self.refuse_launch(dict(self.owner.launch_evidence, state='private arbitrary string'))
+        self.observer.ui.CloseHandle = mock.Mock(side_effect=OSError('private close error'))
+        with self.assertRaises(CustomerLaunchRefused) as caught:
+            self.f.customer_uninstall()
+        self.assertIs(caught.exception, error)
+        self.observer.ui.CloseHandle.assert_called_once_with(102)
+        self.assertFalse((self.root / 'customer-launch-failure.json').exists())
+
+    def test_evidence_write_failure_preserves_original_refusal(self):
+        error = self.refuse_launch(self.owner.launch_evidence)
+        with mock.patch.object(fixture.os, 'fsync', side_effect=OSError('private storage failure')):
+            with self.assertRaises(CustomerLaunchRefused) as caught:
+                self.f.customer_uninstall()
+        self.assertIs(caught.exception, error)
+        self.assertEqual(self.events, ['launch-refused', ('close', 102)])
+
+    def test_success_evidence_must_match_original_wrapper_before_ui_click(self):
+        self.owner.launch_evidence['pid'] += 1
+        with self.assertRaises(ValueError):
+            self.f.customer_uninstall()
+        self.assertEqual(self.events, ['launch-normal', ('close', 102), 'wrapper-close'])
+        self.assertFalse(self.finish)
+
+
+class CustomerLaunchEvidenceProjection(unittest.TestCase):
+    def test_malformed_native_fields_are_refused_without_string_coercion(self):
+        good = dict(pid=20, threadId=22, created=100, resumeAttempted=True,
+                    resumeResult=1, state='original-child-resumed')
+        for field, value in [('pid', True), ('pid', -1), ('pid', 1 << 32), ('threadId', 'private'),
+                             ('created', 0), ('created', 1 << 64), ('created', True),
+                             ('resumeAttempted', 1), ('resumeResult', -1), ('resumeResult', 1 << 32),
+                             ('resumeResult', False), ('state', object())]:
+            with self.subTest(field=field, value_type=type(value).__name__):
+                with self.assertRaises(ValueError):
+                    fixture.customer_launch_evidence(dict(good, **{field: value}))
+
+    def test_numeric_error_bounds_are_enforced_before_creating_file(self):
+        with tempfile.TemporaryDirectory() as directory:
+            for value in (True, -1, 1 << 32, 'private error text', object()):
+                error = SimpleNamespace(winerror=value, launchEvidence=dict(pid=0, threadId=0, created=None,
+                    resumeAttempted=False, resumeResult=None, state='not-created'))
+                with self.subTest(value_type=type(value).__name__):
+                    with self.assertRaises(ValueError):
+                        fixture.write_customer_launch_refusal(Path(directory), error)
+            self.assertEqual(list(Path(directory).iterdir()), [])
 
 
 class NativeUninstallPostconditions(unittest.TestCase):

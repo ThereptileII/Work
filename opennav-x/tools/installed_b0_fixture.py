@@ -10,6 +10,7 @@ import json
 import os
 from pathlib import Path
 import subprocess
+import sys
 import time
 
 
@@ -21,6 +22,40 @@ PROGRAM_FILES_X86 = '7c5a40ef-a0fb-4bfc-874a-c0f2e0b9fa8e'
 def require(condition):
     if not condition:
         raise ValueError('Genuine B0 Setup/Maintain observation refused; preserve original state, processes and evidence.')
+
+
+def customer_launch_evidence(value):
+    # Project only native facts with fixed bounds. Never serialize an exception,
+    # its cause, caller additions, paths or environment into failure evidence.
+    require(type(value) is dict)
+    result = {name: value.get(name) for name in
+              ('pid', 'threadId', 'created', 'resumeAttempted', 'resumeResult', 'state')}
+    for name in ('pid', 'threadId'):
+        require(type(result[name]) is int and 0 <= result[name] <= 0xffffffff)
+    require(result['created'] is None or
+            (type(result['created']) is int and 0 < result['created'] <= 0xffffffffffffffff))
+    require(type(result['resumeAttempted']) is bool)
+    require(result['resumeResult'] is None or
+            (type(result['resumeResult']) is int and 0 <= result['resumeResult'] <= 0xffffffff))
+    require(type(result['state']) is str and result['state'] in
+            ('not-created', 'creation-effect-uncertain', 'original-child-suspended',
+             'resume-effect-uncertain', 'original-child-resumed'))
+    return result
+
+
+def write_customer_launch_refusal(evidence_directory, error):
+    facts = customer_launch_evidence(getattr(error, 'launchEvidence', None))
+    winerror = getattr(error, 'winerror', None)
+    require(winerror is None or (type(winerror) is int and 0 <= winerror <= 0xffffffff))
+    raw = (json.dumps({'schema': 1, 'state': 'customer-launch-refused',
+                       'launchEvidence': facts, 'winerror': winerror}, sort_keys=True) + '\n').encode('ascii')
+    require(len(raw) <= 1024)
+    # The enclosing fixture already requires a fresh evidence directory. A
+    # collision remains untouched; diagnostics cannot authorize a launch retry.
+    with (evidence_directory / 'customer-launch-failure.json').open('xb') as stream:
+        stream.write(raw)
+        stream.flush()
+        os.fsync(stream.fileno())
 
 
 def setup_command(setup, stock, report):
@@ -228,7 +263,7 @@ class InstalledB0Fixture:
         ui.MouseEvent(4, 0, 0, 0, 0)
 
     def customer_uninstall(self):
-        from installed_customer_launch import inspect_customer_capability, open_same_account_launch
+        from installed_customer_launch import CustomerLaunchRefused, inspect_customer_capability, open_same_account_launch
         require(self.phase.stamp(self.maintain) == self.maintain_stamp and
                 self.phase.updater._hash(self.maintain) == self.maintain_sha)
         self.machine_recovery_before = self.inventory(self.machine_recovery)
@@ -247,8 +282,21 @@ class InstalledB0Fixture:
         require(not any(title == 'SKAGER Maintenance' for _, _, title in ui.windows()))
         broker, child, wrapper = self.service_process(), None, None
         try:
-            wrapper = open_same_account_launch([str(self.maintain), '/ACTION=Uninstall'], self.n.sid)
+            try:
+                wrapper = open_same_account_launch([str(self.maintain), '/ACTION=Uninstall'], self.n.sid)
+            except CustomerLaunchRefused as error:
+                try:
+                    write_customer_launch_refusal(self.evidence, error)
+                except Exception:
+                    # Preserve the original native refusal even if diagnostics
+                    # are malformed, unavailable or already present.
+                    pass
+                raise
             require(wrapper.sid == self.n.sid and not wrapper.elevated)
+            launch = customer_launch_evidence(wrapper.launch_evidence)
+            require(launch['state'] == 'original-child-resumed' and launch['pid'] == wrapper.pid and
+                    launch['created'] == wrapper.created and launch['threadId'] > 0 and
+                    launch['resumeAttempted'] and launch['resumeResult'] == 1)
             wrapper.check()
             frame, pid = ui.wait_window('SKAGER Maintenance', timeout=45)
             require([(h, process) for h, process, title in ui.windows() if title == 'SKAGER Maintenance'] == [(frame, pid)])
@@ -286,18 +334,24 @@ class InstalledB0Fixture:
             require(self.wait_exit(child, 30000) == 0 and wrapper.wait(timeout=30) == 0)
             require(self.wait_exit(broker, 30000) == 0)
             return {'state': 'original-relocated-maintain-exited-cleanly', 'originalWrapperPid': wrapper.pid,
-                    'originalWizardPid': pid, 'capability': wrapper.capability, 'consentPromptAcceptance': False}
+                    'originalWizardPid': pid, 'launchEvidence': launch, 'capability': wrapper.capability,
+                    'consentPromptAcceptance': False}
         finally:
+            pending = sys.exc_info()[0] is not None
             failed = False
-            if child is not None:
-                failed = not ui.CloseHandle(child) or failed
-            failed = not ui.CloseHandle(broker) or failed
+            for handle in (child, broker):
+                if handle is not None:
+                    try:
+                        failed = not ui.CloseHandle(handle) or failed
+                    except Exception:
+                        failed = True
             if wrapper is not None:
                 try:
                     wrapper.close()
                 except Exception:
                     failed = True
-            require(not failed)
+            if not pending:
+                require(not failed)
 
     def wait_exit(self, handle, timeout):
         require(self.n.ui.WaitForSingleObject(handle, timeout) == 0)
