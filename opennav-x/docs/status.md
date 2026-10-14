@@ -11,11 +11,19 @@ and downloads remain closed. No OTP, email body or credential was captured.
 
 The approved `SKAGERFRIENDS` attempt returns the exact generic `Unavailable`
 response, which the deployed handler emits when its configuration validation
-fails before Stripe I/O. The nonsecret origin, price and coupon/promotion binding
-digests match their expected values. The remaining validation failure is under
-investigation; no order, payment, entitlement, refund or download success is
-claimed. Source/deployments remain those recorded below. Jira SCRUM-43 comment
-11681 records this live checkpoint.
+fails before Stripe I/O. A server-only static diagnostic now identifies
+`STRIPE_TEST_SECRET_KEY` as the first rejected binding. This proves a local
+format-check rejection, not a Stripe authentication response. The key value was
+not inspected; the owner correction form is prepared. Other nonsecret binding
+digests match their expected values.
+
+Exact diagnostic source `5be97309474a54e463119d65a92fed9a0838f9ac` passes
+[CI 38600049762](https://github.com/ThereptileII/Work/actions/runs/38600049762):
+**208 tests** (88 Django / 120 Edge), plus disposable SQL and migrations.
+The 78,865-byte server bundle has complete byte-identical editor readback before
+deployment and after reload. No frontend redeploy was needed: its bytes remain
+identical to active Cloudflare `ac34d9d4`. No order, payment, entitlement, refund
+or download success is claimed. [Evidence](evidence/scrum43-commerce-diagnostic-20261014/README.md).
 
 ## Earlier checkpoint: frontend published; invited sign-in reached code verification
 
