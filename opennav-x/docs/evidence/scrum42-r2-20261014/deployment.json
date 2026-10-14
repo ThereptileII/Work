@@ -41,14 +41,32 @@
     "status": 404,
     "error": "Downloads unavailable."
   },
-  "betaOriginHealth": {
-    "status": 403,
-    "contentType": "text/plain; charset=UTF-8",
-    "providerError": 1010,
-    "applicationResponse": false
-  },
   "liveR2AuthenticationAccepted": false,
   "liveDownloadAccepted": false,
   "publicAccessEnabled": false,
-  "qualifiedReleaseCatalogEntries": 0
+  "qualifiedReleaseCatalogEntries": 0,
+  "betaOriginHealthEarlierUrllib": {
+    "status": 403,
+    "contentType": "text/plain; charset=UTF-8",
+    "providerError": 1010,
+    "applicationResponse": false,
+    "client": "Python urllib"
+  },
+  "betaOriginHealthLatestCurl": {
+    "receipt": "curl-health.json",
+    "observedAtUtc": "2026-10-14T07:27:03.856085+00:00",
+    "client": "curl 8.22.0",
+    "userAgentSelection": "unmodified curl default",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8",
+    "server": "cloudflare",
+    "cfRay": "a4a4dbfff978bd27-ARN",
+    "applicationResponse": true,
+    "ready": false
+  },
+  "browserPreview": {
+    "client": "Chrome UI preview",
+    "error": "ERR_BLOCKED_BY_CLIENT",
+    "observedHttpResponse": false
+  }
 }

@@ -18,9 +18,11 @@ Invalid account/bucket configuration fails closed without a provider fallback.
 
 The owner activated R2. Dashboard inspection confirmed the new
 `skager-private-releases` bucket is private and empty; `provider-state.json`
-records that separate provider observation. A bucket-scoped read-only credential
-form is prepared for the owner to create and enter directly into Supabase Edge
-Secrets. No credential value is stored in this evidence, Git or client code.
+records that separate provider observation. The owner has since confirmed saving
+the R2 credentials directly in Supabase Edge Secrets, and
+their binding names are present in the provider list. Configuration presence does
+not establish valid R2 authentication. No credential value is stored in this
+evidence, Git or client code.
 
 ## Provider deployment and owner credential handoff
 
@@ -38,15 +40,25 @@ stored in repository evidence. This confirms configuration presence, not valid
 R2 authentication or an authorized download.
 
 Live direct-backend checks returned health 200 with `ready:false` and downloads
-404 with `Downloads unavailable.` The same health request on the public beta
-origin returned a Cloudflare text 403/1010, not an application response. The
-dashboard preview is also browser-blocked; neither result is counted as proxy or
-customer-journey acceptance. Provider activation and direct backend checks do
-not establish successful email, payment, R2 signing or portal behavior.
+404 with `Downloads unavailable.` An earlier Python urllib health request on the
+public beta origin returned text HTTP 403 with error 1010 rather than the
+application's health JSON. That failure remains recorded separately in
+`deployment.json`. Chrome UI preview reported `ERR_BLOCKED_BY_CLIENT`, a distinct
+client-side observation without an observed HTTP response.
+
+One later ordinary curl 8.22.0 GET, using its unmodified default User-Agent and
+following no redirects, returned HTTP/2 **200** at
+**2026-10-14 07:27:03 UTC**, with the expected private-beta health JSON and
+`ready:false`. Cloudflare Ray ID was `a4a4dbfff978bd27-ARN`.
+`curl-health.json` retains the sanitized method, URL, client, timestamp, selected
+response headers and exact body. This confirms public health reachability for
+that request. It does not establish the cause of the earlier client/time-specific
+failure or successful email, payment, R2 authentication, signing or portal
+behavior. No provider security settings were changed.
 
 The qualified desktop release catalog remains empty and downloads stay OFF.
 Pending gates include authorized object upload and integrity/custody checks,
-actual beta-origin access, live entitlement/expiry/cross-account tests, and
-independent desktop package qualification. Public account/payment/download
+actual browser/customer-journey access, live entitlement/expiry/cross-account
+tests, and independent desktop package qualification. Public account/payment/download
 access remains closed; this checkpoint neither qualifies the Windows application
 nor authorizes public release.
