@@ -142,6 +142,15 @@ func bindDecommissionSnapshotWith(m *MaintenanceOwner, ctx context.Context, fenc
 		}
 		m.startupBound = true
 	}
+	if m.installedAttempted {
+		if m.installed == nil || snapshot == nil || !validPin(snapshot.RetirementSHA256) || !m.startupBound {
+			return errors.New("prepared original installed retirement witness required")
+		}
+		if err := m.installed.check(ctx); err != nil {
+			return err
+		}
+		m.installedBound = true
+	}
 	return m.check(ctx)
 }
 
@@ -150,6 +159,10 @@ func bindDecommissionSnapshotWith(m *MaintenanceOwner, ctx context.Context, fenc
 // Any uncertain effect permanently revokes this owner; no retry, repair or
 // cleanup is attempted.
 func (m *MaintenanceOwner) Decommission(ctx context.Context) (result DecommissionResult, resultErr error) {
+	return m.decommissionMode(ctx, false)
+}
+
+func (m *MaintenanceOwner) decommissionMode(ctx context.Context, installed bool) (result DecommissionResult, resultErr error) {
 	if m == nil || m.self != m {
 		return result, errors.New("original decommission owner required")
 	}
@@ -157,6 +170,9 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 	defer m.mu.Unlock()
 	if !m.decommission || m.closed || m.failed || m.fence == nil || m.disableAttempted || m.stopAttempted || m.deleteAttempted || m.startupPrepared && !m.startupBound {
 		return result, errors.New("fresh bound decommission attempt required")
+	}
+	if m.installedAttempted != installed || installed && (!m.installedBound || m.installed == nil) {
+		return result, errors.New("installed preparation requires its matching terminal cleanup path")
 	}
 	defer func() {
 		if resultErr != nil {
@@ -209,6 +225,22 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 			return result, err
 		}
 	}
+	if installed {
+		startup, ok := m.startup.(installedStartupRestorationBackend)
+		if !ok {
+			return result, errors.New("original prepared installed startup owner required")
+		}
+		if err := m.installed.check(ctx); err != nil {
+			return result, err
+		}
+		m.dispatched = true
+		if err := startup.retireInstalled(ctx, m.startupGuard); err != nil {
+			return result, err
+		}
+		if err := errors.Join(m.startupGuard(ctx), m.startup.check(ctx), m.installed.check(ctx)); err != nil {
+			return result, err
+		}
+	}
 	// Set dispatched before the first SCM call. A failure may occur after the
 	// SCM applied the start-type change; it is never safe to infer no effect.
 	m.disableAttempted, m.dispatched = true, true
@@ -231,6 +263,17 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 	}
 	if m.startupBound {
 		if err := m.startup.check(ctx); err != nil {
+			return result, err
+		}
+	}
+	if installed {
+		if err := m.installedPostStopGuard(ctx); err != nil {
+			return result, err
+		}
+		if err := m.installed.cleanup(ctx, m.installedPostStopGuard); err != nil {
+			return result, err
+		}
+		if err := m.installedPostStopGuard(ctx); err != nil {
 			return result, err
 		}
 	}

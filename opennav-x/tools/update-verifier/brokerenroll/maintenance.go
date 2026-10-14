@@ -68,29 +68,31 @@ type maintenanceOperations struct {
 // No service database lock is claimed: it has no effect since Windows Vista.
 // https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-lockservicedatabase
 type MaintenanceOwner struct {
-	self                            *MaintenanceOwner
-	mu                              sync.Mutex
-	authority                       maintenanceAuthority
-	op                              maintenanceOperations
-	backend                         maintenanceBackend
-	process                         maintenanceProcess
-	pid                             uint32
-	stopAttempted                   bool
-	dispatched                      bool
-	quiescent                       bool
-	failed                          bool
-	closed                          bool
-	closeErr                        error
-	decommission                    bool
-	disableAttempted                bool
-	deleteAttempted                 bool
-	fence                           decommissionFence
-	startupBound                    bool
-	startupPrepared                 bool
-	startupDrainAttempted           bool
-	startupRestored, startupDrained bool
-	startupFenceSnapshot            *brokerpipe.DecommissionSnapshot
-	startup                         startupRestorationBackend
+	self                               *MaintenanceOwner
+	mu                                 sync.Mutex
+	authority                          maintenanceAuthority
+	op                                 maintenanceOperations
+	backend                            maintenanceBackend
+	process                            maintenanceProcess
+	pid                                uint32
+	stopAttempted                      bool
+	dispatched                         bool
+	quiescent                          bool
+	failed                             bool
+	closed                             bool
+	closeErr                           error
+	decommission                       bool
+	disableAttempted                   bool
+	deleteAttempted                    bool
+	fence                              decommissionFence
+	startupBound                       bool
+	startupPrepared                    bool
+	startupDrainAttempted              bool
+	startupRestored, startupDrained    bool
+	startupFenceSnapshot               *brokerpipe.DecommissionSnapshot
+	startup                            startupRestorationBackend
+	installedAttempted, installedBound bool
+	installed                          installedUninstallBackend
 }
 
 // OpenMaintenance observes only the exact existing normal-running broker as
@@ -218,6 +220,13 @@ func (m *MaintenanceOwner) Check(ctx context.Context) error {
 			err = m.startup.check(ctx)
 		}
 	}
+	if err == nil && m.installedAttempted {
+		if m.installed == nil {
+			err = errors.New("prepared original installed owners missing")
+		} else {
+			err = m.installed.check(ctx)
+		}
+	}
 	if err != nil {
 		m.failed = true
 		if m.dispatched {
@@ -310,6 +319,10 @@ func (m *MaintenanceOwner) closeLocked() error {
 		return m.closeErr
 	}
 	m.closed = true
+	if m.installed != nil {
+		m.closeErr = errors.Join(m.closeErr, m.installed.close())
+		m.installed = nil
+	}
 	if m.startup != nil {
 		m.closeErr = errors.Join(m.closeErr, m.startup.close())
 		m.startup = nil
