@@ -154,7 +154,7 @@ jobs:
         run: |
           import subprocess, sys
           for script in ("test-smoke-startup.py", "test-skager-pe-brand.py",
-                         "test-smoke-pilot-policy.py"):
+                         "test-smoke-pilot-policy.py", "test-installer-package-receipt.py"):
               subprocess.run([sys.executable, "opennav-x/tools/" + script],
                              check=True, timeout=120)
       - name: Verify explicit private-Staging trust workflow dataflow
