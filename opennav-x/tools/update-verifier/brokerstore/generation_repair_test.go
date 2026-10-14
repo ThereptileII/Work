@@ -14,6 +14,7 @@ import (
 // Windows physical IDs, ownership descriptors or customer/native acceptance.
 type memoryRepairStore struct {
 	*memoryReopenStore
+	reopenOverride          generationReopenBackend
 	source                  *memoryRepairSource
 	current, original       generationRecord
 	currentRaw, originalRaw []byte
@@ -320,4 +321,11 @@ func TestCompletedRepairWithoutCommittedJournalBlocksFreshAttempt(t *testing.T) 
 	if err = validateRepairHistoryRecords(originals, map[string]string{gen.record.Generation: strings.Repeat("f", 64)}); err == nil {
 		t.Fatal("mismatched repair history admitted")
 	}
+}
+
+func (b *memoryRepairStore) openReadOnlyGeneration(ctx context.Context, client, generation string) (generationReopenBackend, generationReopenEvidence, error) {
+	if b.reopenOverride != nil {
+		return b.reopenOverride, b.memoryReopenStore.evidence, nil
+	}
+	return b.memoryReopenStore.openReadOnlyGeneration(ctx, client, generation)
 }

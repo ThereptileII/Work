@@ -185,11 +185,7 @@ func manualRollbackOriginalAttempts(selected *nativeSelectedExecution) ([]execut
 		if err != nil || s.ClientSID != selected.registration.ClientSID {
 			return nil, errors.Join(ErrManualRollbackRefused, err)
 		}
-		facts := make([]executionSelectionFact, 0, len(s.Facts))
-		for _, f := range s.Facts {
-			facts = append(facts, executionSelectionFact{f.Kind, f.Original})
-		}
-		a, err := parseExecutionSelectionAttempt(s.ClientSID, s.ExecutionID, s.Generation, s.CompletionSHA256, s.GenerationPurpose, s.JournalSHA256, facts)
+		a, err := executionSelectionFromSnapshot(s)
 		if err != nil {
 			return nil, err
 		}

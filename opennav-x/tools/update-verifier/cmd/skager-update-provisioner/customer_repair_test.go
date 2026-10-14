@@ -14,7 +14,7 @@ import (
 )
 
 func TestCustomerRepairOneMutationAndStrictFreshReadback(t *testing.T) {
-	for _, fault := range []string{"", "decline", "old-broker", "lost-parent", "ambiguous-mutation", "changed-version", "same-generation", "readback-health", "readback-head", "close"} {
+	for _, fault := range []string{"", "resume-owned-copy", "decline", "old-broker", "lost-parent", "ambiguous-mutation", "changed-version", "same-generation", "readback-health", "readback-head", "close"} {
 		t.Run(fault, func(t *testing.T) {
 			owner := &rollbackFixtureOwner{closeError: fault == "close"}
 			out := &bytes.Buffer{}
@@ -48,6 +48,9 @@ func TestCustomerRepairOneMutationAndStrictFreshReadback(t *testing.T) {
 					}
 					r.State = "repair-selected"
 					newGeneration = q.RequestID
+					if fault == "resume-owned-copy" {
+						newGeneration = strings.Repeat("e", 32)
+					}
 					r.Generation = newGeneration
 					r.CompletionSHA256 = strings.Repeat("f", 64)
 					r.SelectedHeadSHA256 = strings.Repeat("0", 64)
@@ -88,7 +91,7 @@ func TestCustomerRepairOneMutationAndStrictFreshReadback(t *testing.T) {
 			if mutations > 1 || !owner.closed {
 				t.Fatal("retry or leaked original owner")
 			}
-			success := fault == "" || fault == "decline"
+			success := fault == "" || fault == "decline" || fault == "resume-owned-copy"
 			if success != (err == nil) {
 				t.Fatalf("completion mismatch: %v", err)
 			}

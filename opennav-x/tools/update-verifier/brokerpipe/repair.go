@@ -28,5 +28,5 @@ func validRepairResult(r MaintenanceResult, q MaintenanceRequest) bool {
 	if q.Operation == RepairInspect {
 		return r.State == RepairInspect
 	}
-	return r.State == "repair-selected" && r.Generation == q.RequestID && r.SelectedHeadSHA256 != q.ExpectedSelectedHeadSHA256
+	return r.State == "repair-selected" && r.SelectedHeadSHA256 != q.ExpectedSelectedHeadSHA256
 }

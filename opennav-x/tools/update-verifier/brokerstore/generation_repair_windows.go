@@ -159,23 +159,36 @@ func (r *nativeRepairSource) validateRepairHistory(ctx context.Context, complete
 	return r.current.validateRepairHistory(ctx, completed)
 }
 func (g *nativeReopenedGeneration) validateRepairHistory(ctx context.Context, completed map[string]string) error {
+	records, err := g.repairHistoryRecords(ctx)
+	if err != nil {
+		return err
+	}
+	return validateRepairHistoryRecords(records, completed)
+}
+func (r *nativeRepairSource) repairHistoryRecords(ctx context.Context) ([][]byte, error) {
+	if err := r.check(); err != nil {
+		return nil, err
+	}
+	return r.current.repairHistoryRecords(ctx)
+}
+func (g *nativeReopenedGeneration) repairHistoryRecords(ctx context.Context) ([][]byte, error) {
 	if ctx == nil {
-		return ErrClosed
+		return nil, ErrClosed
 	}
 	if err := errors.Join(ctx.Err(), g.check(), g.checkHeldDigests()); err != nil {
-		return err
+		return nil, err
 	}
 	records := [][]byte{}
 	for _, held := range g.held {
 		if strings.HasPrefix(held.file.pin.name, g.registry.name+`\`) && strings.HasSuffix(held.file.pin.name, ".json") {
 			raw, err := decommissionReadExact(held.file, held.length, nil)
 			if err != nil {
-				return err
+				return nil, err
 			}
 			records = append(records, raw)
 		}
 	}
-	return validateRepairHistoryRecords(records, completed)
+	return records, ctx.Err()
 }
 
 func (r *nativeRepairSource) retainMembers(files map[string]candidateFile) {

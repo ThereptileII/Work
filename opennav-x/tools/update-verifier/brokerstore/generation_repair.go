@@ -139,6 +139,8 @@ func (r *RepairSource) validateLocked(ctx context.Context) error {
 	return ctx.Err()
 }
 func (r *RepairSource) Validate(ctx context.Context) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if r == nil || ctx == nil {
 		return ErrClosed
 	}
@@ -333,6 +335,8 @@ func (s *Store) BeginRepairJournal(ctx context.Context, generation *ReadOnlyGene
 // The caller must independently resolve complete selected history before relay;
 // this image capability supplies no selection, app launch or qualification.
 func (r *RepairSource) OriginalBaselineExecutorImage(ctx context.Context) (*GenerationExecutorImage, error) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if ctx == nil || r == nil {
 		return nil, ErrClosed
 	}
@@ -359,6 +363,8 @@ func (r *RepairSource) OriginalBaselineExecutorImage(ctx context.Context) (*Gene
 	return &GenerationExecutorImage{repairBootstrap: r}, nil
 }
 func (r *RepairSource) matchBaselineExecutor(ctx context.Context, pid uint32, created uint64) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if r == nil || ctx == nil || pid == 0 || created == 0 {
 		return ErrClosed
 	}
@@ -387,6 +393,8 @@ func (r *RepairSource) matchBaselineExecutor(ctx context.Context, pid uint32, cr
 // journal owners. An orphan completed repair is preserved and blocks another
 // attempt, rather than being silently treated as an unused staged Upgrade.
 func (r *RepairSource) ValidateHistory(ctx context.Context, completed map[string]string) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if err := r.Validate(ctx); err != nil {
 		return err
 	}
@@ -403,6 +411,8 @@ func (r *RepairSource) ValidateHistory(ctx context.Context, completed map[string
 	return b.validateRepairHistory(ctx, completed)
 }
 func (r *ReopenedGeneration) ValidateRepairHistory(ctx context.Context, completed map[string]string) error {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
 	if ctx == nil {
 		return ErrClosed
 	}

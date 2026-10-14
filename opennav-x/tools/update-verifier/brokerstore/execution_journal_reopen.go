@@ -25,6 +25,7 @@ type ExecutionJournalFact struct {
 // No parsed field, original completion or fact can reconstruct a native owner.
 type ExecutionJournalReadSnapshot struct {
 	ExecutionJournalSnapshot
+	RepairRecovery     *RepairRecoveryLink
 	GenerationPurpose  string
 	OriginalCompletion []byte
 	Facts              []ExecutionJournalFact
@@ -187,6 +188,10 @@ func (r *ExecutionJournalReader) Snapshot() (result ExecutionJournalReadSnapshot
 		CompletionSHA256: p.origin.CompletionSHA256, JournalSHA256: registrationDigest(p.raw),
 		OriginalFence: bytes.Clone(p.fence), OriginalJournal: bytes.Clone(p.raw), FactCount: len(p.facts)},
 		GenerationPurpose: p.origin.GenerationPurpose, OriginalCompletion: bytes.Clone(p.origin.OriginalCompletion)}
+	if p.origin.RepairRecovery != nil {
+		copy := *p.origin.RepairRecovery
+		result.RepairRecovery = &copy
+	}
 	for _, fact := range p.facts {
 		result.Facts = append(result.Facts, ExecutionJournalFact{fact.Kind, bytes.Clone(fact.Original)})
 	}

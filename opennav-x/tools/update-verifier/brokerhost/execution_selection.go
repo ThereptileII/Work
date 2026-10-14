@@ -73,6 +73,7 @@ type executionSelectionAttempt struct {
 	recovery       *executionSelectionRecovery
 	manual         *executionManualRollbackBegin
 	repair         *executionRepairBegin
+	repairEmpty    bool
 	health, closed string
 }
 
@@ -105,7 +106,7 @@ func parseExecutionSelectionAttempt(sid, executionID, generation, completion, ge
 	if json.Unmarshal(facts[0].original, &purpose) != nil {
 		return refuse()
 	}
-	if purpose.Purpose == "broker-selected-repair-v1" {
+	if purpose.Purpose == "broker-selected-repair-v1" || purpose.Purpose == "broker-selected-repair-recovery-v1" {
 		return parseExecutionRepair(sid, executionID, generation, completion, generationPurpose, journalDigest, facts)
 	}
 	if purpose.Purpose == "broker-selected-recovery-v1" {
@@ -297,8 +298,34 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 	}
 	// Every recovery (including an incomplete one) must name exactly one
 	// original pre-spawn attempt. One target cannot be retried or superseded by
-	// another recovery, and recovery journals can never themselves be targets.
+	// another ordinary recovery. Ordinary recovery journals cannot themselves be
+	// targets; separate no-launch Repair continuations permit bounded exact chains.
 	resolved, targeted := map[string]bool{}, map[string]bool{}
+	for _, a := range attempts {
+		if a.repair == nil || a.repair.PriorExecutionID == "" {
+			continue
+		}
+		chain := map[string]bool{a.begin.ExecutionID: true}
+		for id := a.repair.PriorExecutionID; id != ""; {
+			if chain[id] || len(chain) > 128 {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+			chain[id] = true
+			prior, exists := byID[id]
+			if !exists || prior.repair == nil {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+			id = prior.repair.PriorExecutionID
+		}
+		prior, exists := byID[a.repair.PriorExecutionID]
+		if !exists || targeted[a.repair.PriorExecutionID] || !repairRecoveryMatches(prior, a.repair) {
+			return executionSelectedVersion{}, nil, errExecutionSelection
+		}
+		targeted[a.repair.PriorExecutionID] = true
+		// A valid fresh recovery preparation irrevocably supersedes only this
+		// exact no-launch prefix. The recovery remains pending until terminal.
+		resolved[a.repair.PriorExecutionID] = true
+	}
 	for _, a := range attempts {
 		r := a.recovery
 		if r == nil {
@@ -399,7 +426,19 @@ func foldExecutionSelection(attempts []executionSelectionAttempt, baselineGenera
 				return executionSelectedVersion{}, nil, errExecutionSelection
 			}
 		}
-		if a.repair != nil {
+		if a.repairEmpty {
+			found := false
+			for _, ancestor := range qualifiedAtHead {
+				b := *a.repair
+				b.SourceQualifiedHeadSHA256 = ancestor.head
+				if repairQualified(ancestor, &b) {
+					found = true
+				}
+			}
+			if !found {
+				return executionSelectedVersion{}, nil, errExecutionSelection
+			}
+		} else if a.repair != nil {
 			ancestor, exists := qualifiedAtHead[a.repair.SourceQualifiedHeadSHA256]
 			ancestorOrder, reached := headOrder[a.repair.SourceQualifiedHeadSHA256]
 			parentOrder, parentReached := headOrder[parent]

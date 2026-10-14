@@ -78,6 +78,7 @@ func sameExecutionJournalIDs(a, b executionJournalIDs) bool {
 }
 
 type executionJournalOrigin struct {
+	RepairRecovery     *RepairRecoveryLink `json:"repairRecovery,omitempty"`
 	Schema             int                 `json:"schema"`
 	Purpose            string              `json:"purpose"`
 	ExecutionID        string              `json:"executionId"`
@@ -112,6 +113,11 @@ func validateExecutionJournalBytes(fence, raw []byte) error {
 	if err != nil || !bytes.Equal(canonical, fence) || origin.Schema != 1 || origin.Purpose != "protected-execution-facts" || !validHex(origin.ExecutionID, 32) || !brokerregistration.IsCanonicalUserSID(origin.ClientSID) || !validHex(origin.Generation, 32) ||
 		(origin.GenerationPurpose != "signed-candidate-generation" && origin.GenerationPurpose != approvedBaselineGenerationPurpose && origin.GenerationPurpose != string(GenerationPurposeRepaired)) || len(origin.OriginalCompletion) == 0 || len(origin.OriginalCompletion) > maxGenerationRecordBytes || origin.CompletionSHA256 != registrationDigest(origin.OriginalCompletion) || !origin.Identities.valid() {
 		return errors.New("noncanonical or unbound execution journal origin")
+	}
+	if link := origin.RepairRecovery; link != nil {
+		if origin.GenerationPurpose != string(GenerationPurposeRepaired) || !validHex(link.PriorExecutionID, 32) || link.PriorExecutionID == origin.ExecutionID || !validHex(link.PriorJournalSHA256, 64) {
+			return ErrExecutionJournalUncertain
+		}
 	}
 	prefix := len(fence) + 1
 	for sequence := 1; prefix < len(raw); sequence++ {
@@ -191,7 +197,10 @@ func (s *Store) BeginBaselineQualificationJournal(ctx context.Context, generatio
 	return s.beginExecutionJournal(ctx, generation.owner, executionID, approvedBaselineGenerationPurpose)
 }
 
-func (s *Store) beginExecutionJournal(ctx context.Context, generation *ReadOnlyGeneration, executionID, purpose string) (result *ExecutionJournal, resultErr error) {
+func (s *Store) beginExecutionJournal(ctx context.Context, generation *ReadOnlyGeneration, executionID, purpose string) (*ExecutionJournal, error) {
+	return s.beginExecutionJournalWithRepairRecovery(ctx, generation, executionID, purpose, nil)
+}
+func (s *Store) beginExecutionJournalWithRepairRecovery(ctx context.Context, generation *ReadOnlyGeneration, executionID, purpose string, prior *ExecutionJournalReader) (result *ExecutionJournal, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	s.mu.Lock()
@@ -221,6 +230,22 @@ func (s *Store) beginExecutionJournal(ctx context.Context, generation *ReadOnlyG
 	if len(g.raw) == 0 || len(g.raw) > maxGenerationRecordBytes {
 		return nil, errors.New("bounded original generation completion required")
 	}
+	var recovery *RepairRecoveryLink
+	if prior != nil {
+		p := prior.state
+		if p == nil || p.store != s || purpose != string(GenerationPurposeRepaired) {
+			return nil, ErrNativeRequired
+		}
+		p.mu.Lock()
+		defer p.mu.Unlock()
+		if err := p.ready(); err != nil {
+			return nil, err
+		}
+		if p.origin.GenerationPurpose != purpose || p.origin.ClientSID != g.record.ClientSID || p.origin.Generation != g.record.Generation || !bytes.Equal(p.origin.OriginalCompletion, g.raw) || p.origin.ExecutionID == executionID {
+			return nil, ErrExecutionJournalUncertain
+		}
+		recovery = &RepairRecoveryLink{p.origin.ExecutionID, registrationDigest(p.raw)}
+	}
 	b, ok := s.backend.(executionJournalStoreBackend)
 	if !ok {
 		return nil, ErrNativeRequired
@@ -244,7 +269,7 @@ func (s *Store) beginExecutionJournal(ctx context.Context, generation *ReadOnlyG
 	if err != nil || !ids.valid() {
 		return nil, errors.Join(errors.New("original full journal and ancestry identities required"), err)
 	}
-	j.origin = executionJournalOrigin{Schema: 1, Purpose: "protected-execution-facts", ExecutionID: executionID, ClientSID: g.record.ClientSID, Generation: g.record.Generation,
+	j.origin = executionJournalOrigin{RepairRecovery: recovery, Schema: 1, Purpose: "protected-execution-facts", ExecutionID: executionID, ClientSID: g.record.ClientSID, Generation: g.record.Generation,
 		GenerationPurpose: purpose, OriginalCompletion: bytes.Clone(g.raw), CompletionSHA256: registrationDigest(g.raw), Identities: ids}
 	j.fence, err = json.Marshal(j.origin)
 	if err != nil || len(j.fence) > maxExecutionFenceBytes {

@@ -90,16 +90,11 @@ func selectedHistoryOriginalAttempts(selected *nativeSelectedExecution) ([]execu
 		if err != nil || snapshot.ClientSID != selected.registration.ClientSID {
 			return nil, errExecutionSelection
 		}
-		facts := make([]executionSelectionFact, 0, len(snapshot.Facts))
-		for _, fact := range snapshot.Facts {
-			facts = append(facts, executionSelectionFact{fact.Kind, fact.Original})
-		}
-		attempt, err := parseExecutionSelectionAttempt(snapshot.ClientSID, snapshot.ExecutionID, snapshot.Generation,
-			snapshot.CompletionSHA256, snapshot.GenerationPurpose, snapshot.JournalSHA256, facts)
+		a, err := executionSelectionFromSnapshot(snapshot)
 		if err != nil {
 			return nil, err
 		}
-		attempts = append(attempts, attempt)
+		attempts = append(attempts, a)
 	}
 	if len(attempts) > 128 {
 		return nil, brokerstore.ErrExecutionJournalUncertain

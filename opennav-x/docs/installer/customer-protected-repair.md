@@ -14,11 +14,16 @@ broker/helper. No broker replacement, migration or re-enrollment is implemented.
 The existing-installation upgrade remains a separate design/native blocker.
 
 The customer closes SKAGER, chooses Repair, accepts actual same-account UAC and
-confirms the displayed selected version/build. The broker retains its original
-ordinary application process/token owner to prove that exact selected generation
-exited, alongside the actual elevated operator, original stock owner, armed-state
-barrier and CURRENT frozen profile. Missing application custody after SCM restart
-refuses; a PID scan cannot replace that owner. Repair stops no process/control.
+confirms the displayed selected version/build. Warm Repair retains the exact
+original ordinary application process/token owner and proves it exited. After an
+SCM/OS restart, Repair can instead use a separate native cold custody only when
+that SID has **no** keeper-map entry. Existing live/unknown/nil/mismatched or
+cleanup-failed entries still refuse. Cold custody borrows the actual complete
+frozen CURRENT profile: original file deny-write/delete handles, full identities
+and metadata/content, recursive namespace watch, and process corroboration stay
+required through readback. Entry absence or a PID scan alone grants nothing.
+The actual elevated operator, original stock owner and armed-state barrier remain
+retained. Repair stops no process/control and writes no profile data.
 
 ## Exact restoration authority
 
@@ -50,10 +55,39 @@ profile, authors new health/closed facts or claims restored code is freshly
 healthy with today's profile. It compares the same frozen current profile and
 performs fresh full selected readback. The helper repeats that readback and only
 reports completion after retained owners drain successfully. Failure, timeout or
-lost reply preserves state and reports uncertainty. A completed copy without
-its committed repair journal blocks startup and a later repair attempt; it is
-never treated as a reusable staged Upgrade. No automatic retry, cleanup,
-rollback or re-enrollment occurs.
+lost reply preserves state and reports uncertainty. There is no automatic retry,
+cleanup, rollback or re-enrollment.
+
+## Explicit interrupted-repair continuation
+
+A later explicit customer Repair can continue **one exact authenticated complete
+copy** interrupted before its selection committed. The retained metadata must
+bind the same original source bytes and current selected predecessor
+generation/completion/head. The broker fully reopens all of that copy's original
+member IDs, bytes and namespace before use. It never overwrites/adopts unknown
+files, chooses a lexical directory, or deletes the interrupted copy. Multiple,
+unrelated, changed or corrupt copies refuse. The old selection and CURRENT
+profile remain until the fresh terminal edge is read back.
+
+A complete copy with no journal can receive a fresh journal. A complete durable
+journal origin with zero facts, or valid Preparation/payload-restored prefix, can
+only be superseded by a fresh exact linked no-launch Repair continuation. It never
+reopens the old journal for append. `BeginRepairRecoveryJournal` consumes the
+actual same-Store original readonly journal owner and puts its execution ID and
+original journal digest into the new immutable fence **before initialization and
+before any Preparation**. Therefore another interruption immediately after the
+new origin still retains the exact prior link. Nonempty recovery facts must
+match that born link. Forks, cycles, changed sources/completions/heads and ordinary
+interrupted Upgrade/qualification transactions refuse. Only the latest exact
+prefix remains pending; source health never becomes new-generation health.
+
+This supports complete, authenticated durable boundaries. Incomplete generation
+publication, partial reservation/fence initialization, truncated/torn appends,
+malformed records, lost private authority and invalid ownership still refuse.
+Those ambiguous physical-write states are preserved for explicit diagnostics;
+this implementation does not claim they were healed or safely adopted. Ordinary
+startup stays blocked while Repair is pending; the fixed Repair action alone may
+inspect and continue the exact no-launch state under the native guards above.
 
 ## Existing consumers
 
@@ -90,7 +124,14 @@ source copy → strict restored-generation reopening, source/provenance refusal,
 permanent reservation/no-retry, owner lifetime, pending/ordered repair history,
 explicit historical health, current selection, rollback derivation, fallback
 facts, uninstall lineage, fixed customer confirmation/readback, wire closure and
-NSIS source routing. Windows x86 compile/vet are static checks only. Fresh
+NSIS source routing. Additional portable tests cover exact orphan discovery, corruption/unknown
+addition/ID refusal, valid empty/prefix continuation, repeated interruption,
+fork/cycle/mismatch refusal, typed prior-reader revocation, and initial durable
+origin links before first Preparation. Real NTFS fixture cases cover baseline and
+signed source/copy custody plus durable zero-fact journal birth/read; four cold
+profile kernel cases exercise deny-write/watch custody. These Windows cases have
+only been crosscompiled here, not executed. Windows x86 compile/vet are static
+checks only. Fresh
 matching native enrollment, real same-account UAC, corruption/restore/startup,
 current-profile preservation, unknown-file retirement and actual installed
 customer acceptance remain pending on a suitable genuine interactive Windows

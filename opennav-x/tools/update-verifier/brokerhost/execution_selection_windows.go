@@ -20,6 +20,8 @@ type nativeSelectedExecution struct {
 	readers            []*brokerstore.ExecutionJournalReader
 	generation         *brokerstore.ReopenedGeneration
 	repairSource       *brokerstore.RepairSource
+	repairPending      *executionSelectionAttempt
+	interruptedRepair  *brokerstore.RepairCompletionBinding
 	selected           executionSelectedVersion
 	closed             bool
 	closeErr           error
@@ -74,17 +76,17 @@ func captureSelectedOwnerNative(ctx context.Context, store *brokerstore.Store, r
 		if err != nil || snapshot.ClientSID != r.ClientSID || snapshot.ExecutionID != entry.ExecutionID {
 			return nil, errExecutionSelection
 		}
-		facts := make([]executionSelectionFact, 0, len(snapshot.Facts))
-		for _, fact := range snapshot.Facts {
-			facts = append(facts, executionSelectionFact{fact.Kind, fact.Original})
-		}
-		attempt, err := parseExecutionSelectionAttempt(r.ClientSID, snapshot.ExecutionID, snapshot.Generation, snapshot.CompletionSHA256, snapshot.GenerationPurpose, snapshot.JournalSHA256, facts)
+		attempt, err := executionSelectionFromSnapshot(snapshot)
 		if err != nil {
 			return nil, err
 		}
 		attempts = append(attempts, attempt)
 	}
-	owner.selected, _, err = foldExecutionSelection(attempts, r.Installed.Generation)
+	if repairOnly {
+		owner.selected, owner.repairPending, err = foldExecutionRepairSelection(attempts, r.Installed.Generation)
+	} else {
+		owner.selected, _, err = foldExecutionSelection(attempts, r.Installed.Generation)
+	}
 	if err != nil {
 		return nil, err
 	}
@@ -99,8 +101,12 @@ func captureSelectedOwnerNative(ctx context.Context, store *brokerstore.Store, r
 		if err != nil {
 			return nil, err
 		}
-		if err = owner.repairSource.ValidateHistory(ctx, repairHistory); err != nil {
+		owner.interruptedRepair, err = owner.repairSource.FindInterruptedRepair(ctx, owner.selected.head, repairHistory)
+		if err != nil {
 			return nil, err
+		}
+		if owner.repairPending != nil && (owner.interruptedRepair == nil || owner.repairPending.begin.Generation != owner.interruptedRepair.Generation || owner.repairPending.begin.CompletionSHA256 != owner.interruptedRepair.CompletionSHA256) {
+			return nil, errExecutionSelection
 		}
 		c, e := owner.repairSource.Snapshot(ctx)
 		if e != nil || c.CompletionSHA256 != owner.selected.completion || c.Identity.Version != owner.selected.installed.Version || c.Identity.Commit != owner.selected.installed.Commit {
@@ -153,7 +159,7 @@ func captureSelectedOwnerNative(ctx context.Context, store *brokerstore.Store, r
 		}
 		matched := false
 		for _, a := range attempts {
-			if a.repair != nil && a.begin.Generation == owner.selected.generation && a.begin.CompletionSHA256 == owner.selected.completion {
+			if a.repair != nil && a.terminal == "repair-selected" && a.begin.Generation == owner.selected.generation && a.begin.CompletionSHA256 == owner.selected.completion {
 				if matched || origin.SourceCompletionSHA256 != a.repair.SourceCompletionSHA256 || origin.PreviousGeneration != a.begin.PreviousGeneration || origin.PreviousCompletionSHA256 != a.repair.PreviousCompletionSHA256 || origin.PreviousSelectedHeadSHA256 != a.begin.PreviousHeadSHA256 {
 					return nil, errExecutionSelection
 				}
@@ -238,4 +244,33 @@ func (s *nativeSelectedExecution) Close() error {
 		s.closeErr = errors.Join(s.closeErr, s.readers[i].Close())
 	}
 	return s.closeErr
+}
+
+func executionSelectionFromSnapshot(s brokerstore.ExecutionJournalReadSnapshot) (executionSelectionAttempt, error) {
+	var a executionSelectionAttempt
+	var err error
+	if len(s.Facts) == 0 && s.GenerationPurpose == string(brokerstore.GenerationPurposeRepaired) {
+		a, err = parseExecutionRepairEmpty(s.ClientSID, s.ExecutionID, s.Generation, s.CompletionSHA256, s.JournalSHA256, s.OriginalCompletion)
+		if err == nil && s.RepairRecovery != nil {
+			a.repair.PriorExecutionID = s.RepairRecovery.PriorExecutionID
+			a.repair.PriorJournalSHA256 = s.RepairRecovery.PriorJournalSHA256
+		}
+		return a, err
+	}
+	facts := make([]executionSelectionFact, 0, len(s.Facts))
+	for _, f := range s.Facts {
+		facts = append(facts, executionSelectionFact{f.Kind, f.Original})
+	}
+	a, err = parseExecutionSelectionAttempt(s.ClientSID, s.ExecutionID, s.Generation, s.CompletionSHA256, s.GenerationPurpose, s.JournalSHA256, facts)
+	if err != nil {
+		return a, err
+	}
+	if s.RepairRecovery != nil {
+		if a.repair == nil || a.repair.PriorExecutionID != s.RepairRecovery.PriorExecutionID || a.repair.PriorJournalSHA256 != s.RepairRecovery.PriorJournalSHA256 {
+			return executionSelectionAttempt{}, errExecutionSelection
+		}
+	} else if a.repair != nil && a.repair.PriorExecutionID != "" {
+		return executionSelectionAttempt{}, errExecutionSelection
+	}
+	return a, nil
 }
