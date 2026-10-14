@@ -1,10 +1,11 @@
-"""Disposable installed-fixture normal-token launch; never approves UAC.
+"""Disposable installed-fixture normal-token launches; never approves UAC.
 
-The caller authenticates original Maintain bytes and owns relocated UI/process
-observations and uninstall postconditions. This helper accepts only the current
-account's fixed integration Maintain command. It does not alter policy, enable
-privileges, manufacture tokens, use credentials or invoke a private elevated
-product action. A timeout never kills or retries a possibly effective operation.
+The caller authenticates original image bytes and owns UI/process observations
+and product postconditions. The two separate routes accept only the current
+account's fixed integration Maintain or protected B0 startup command. Neither
+alters policy, enables privileges, manufactures tokens, uses credentials nor
+invokes a private elevated product action. A timeout never kills or retries a
+possibly effective operation.
 
 Hosted images currently configure silent admin elevation; live observations
 below take precedence over this image default:
@@ -43,6 +44,19 @@ def _command(command, local):
              relative[1] == 'generations' and re.fullmatch('[a-f0-9]{32}', relative[2]) and relative[3] == 'Maintain.exe',
              'Maintain must belong to this actual current account integration')
     return [image, '/ACTION=Uninstall']
+
+
+def _protected_startup_command(generation, sid, program):
+    _require(isinstance(generation, str) and re.fullmatch('[a-f0-9]{32}', generation),
+             'Exact protected baseline generation required')
+    _require(isinstance(sid, str) and re.fullmatch(r'S-1-5-21-(?:[1-9][0-9]*-){3}[1-9][0-9]*', sid),
+             'Actual current account SID required')
+    _require(isinstance(program, str) and ntpath.isabs(program) and len(program) < 400 and
+             len(program) >= 3 and program[1:3] == ':\\' and ntpath.normpath(program) == program and
+             not any(c in program for c in '\r\n\x00"'), 'Actual ProgramFilesX86 required')
+    image = ntpath.join(program, 'SKAGER', 'Applications', sid, 'generations', generation,
+                        'app', 'skager-start.exe')
+    return [image, '--broker-start=' + generation]
 
 
 def _normal(current, linked):
@@ -137,6 +151,20 @@ class NativeCustomerProcess:
             raise self.close_error
 
 
+class NativeProtectedStartupProcess(NativeCustomerProcess):
+    """Original limited launcher owner; observed child handles remain caller-owned."""
+    def check_process_token(self, process_handle):
+        """Corroborate a caller's retained prompt/app handle against the LIMITED logon.
+
+        This checks only its actual token, not its image, birth, ancestry or exit.
+        The phase observer must separately authenticate those original facts.
+        """
+        self.check()
+        result = self.native.check_process_token(process_handle)
+        self.check()
+        return result
+
+
 def open_same_account_launch(command, expected_sid, *, _native_factory=None):
     """Launch only Maintain using the ORIGINAL actual same-account linked token.
 
@@ -154,6 +182,34 @@ def open_same_account_launch(command, expected_sid, *, _native_factory=None):
         fixed = _command(command, native.local)
         child = native.create(fixed)
         owner = NativeCustomerProcess(native, child, fixed, capability)
+        owner.check()
+        return owner
+    except BaseException:
+        native.close()
+        raise
+
+
+def open_same_account_protected_startup(generation, expected_sid, *, _native_factory=None):
+    """Start only the fixed protected B0 launcher using the ORIGINAL LIMITED token.
+
+    The caller authenticates and retains the original launcher image before this
+    single invocation. Generation and expected_sid only veto mismatches; neither
+    chooses an account, executable root, command nor elevation route. No product,
+    profile, selected-history, human consent or installed acceptance is inferred.
+    """
+    _require(_native_factory is not None or sys.platform == 'win32', 'Native Windows customer launch required')
+    _require(isinstance(generation, str) and re.fullmatch('[a-f0-9]{32}', generation),
+             'Exact protected baseline generation required')
+    native = (_native_factory or _ProtectedStartupNative)()
+    try:
+        capability = _capability(native.observed)
+        _require(capability['state'] == 'available', capability['reason'])
+        actual_sid = native.observed['current']['sid']
+        _require(isinstance(expected_sid, str) and expected_sid == actual_sid,
+                 'Approved client comparison differs from actual current account')
+        fixed = _protected_startup_command(generation, actual_sid, native.program)
+        child = native.create(fixed)
+        owner = NativeProtectedStartupProcess(native, child, fixed, capability)
         owner.check()
         return owner
     except BaseException:
@@ -326,6 +382,7 @@ class _Native:
             _fields_ = [('process', W.HANDLE), ('thread', W.HANDLE), ('pid', W.DWORD), ('tid', W.DWORD)]
         startup, process = Startup(), Process()
         startup.cb = C.sizeof(startup)
+        startup.desktop = self._startup_desktop()
         line = C.create_unicode_buffer(subprocess.list2cmdline(command))
         # Pass the ORIGINAL linked primary token. No duplication, credentials,
         # privilege adjustment, policy write or elevation verb is used here.
@@ -382,6 +439,9 @@ class _Native:
                 raise failure from error
             raise
 
+    def _startup_desktop(self):
+        return None  # Preserve the original Maintain route's desktop behavior.
+
     def check(self, child):
         _require(not self.closed, 'Original native launch owners closed')
         _require(self._token(self.current) == self.observed['current'] and self._token(self.linked) == self.observed['linked'],
@@ -422,6 +482,59 @@ class _Native:
         if failures:
             self.close_error = CustomerLaunchRefused('Original native owner close failed: ' + ','.join(map(str, failures)))
             raise self.close_error
+
+
+class _ProtectedStartupNative(_Native):
+    def __init__(self):
+        super().__init__()
+        try:
+            _require(_normal(self.observed['current'], self.observed['linked']),
+                     'Original linked normal token unavailable')
+            self.program = self._folder('7c5a40ef-a0fb-4bfc-874a-c0f2e0b9fa8e')
+            # UAC's FULL and LIMITED tokens need not have the same logon ID.
+            # Bind the actual retained LIMITED token, never infer it from FULL.
+            self.authentication_id = self._authentication_id(self.linked)
+        except BaseException:
+            self.close()
+            raise
+
+    def _startup_desktop(self):
+        # An explicit existing desktop avoids the API's implicit desktop-access
+        # additions. The capability observer still requires visible WinSta0 and
+        # Default input/thread desktops; this never changes their ACLs.
+        return 'WinSta0\\Default'
+
+    def _authentication_id(self, token):
+        class Luid(C.Structure):
+            _fields_ = [('low', C.c_uint32), ('high', C.c_int32)]
+        class Statistics(C.Structure):
+            _fields_ = [('tokenId', Luid), ('authenticationId', Luid), ('expiration', C.c_int64),
+                        ('tokenType', C.c_uint32), ('impersonationLevel', C.c_uint32),
+                        ('dynamicCharged', C.c_uint32), ('dynamicAvailable', C.c_uint32),
+                        ('groupCount', C.c_uint32), ('privilegeCount', C.c_uint32), ('modifiedId', Luid)]
+        value = self._info(token, 10, Statistics())
+        identity = (value.authenticationId.high & 0xffffffff) << 32 | value.authenticationId.low
+        _require(value.tokenType == 1 and identity != 0, 'Original primary limited-token logon required')
+        return identity
+
+    def _check_startup_token(self, token):
+        _require(self._authentication_id(self.linked) == self.authentication_id,
+                 'Original limited-token logon changed')
+        observed = self._token(token)
+        _require(_normal(self.observed['current'], observed) and
+                 self._authentication_id(token) == self.authentication_id,
+                 'Protected startup process differs from the actual same-account limited logon')
+        return dict(observed, authenticationId=self.authentication_id)
+
+    def check(self, child):
+        super().check(child)
+        self._check_startup_token(child['tokenHandle'])
+
+    def check_process_token(self, process_handle):
+        _require(not self.closed and process_handle, 'Retained original observed process handle required')
+        # Use the supplied original process handle only, never a PID lookup.
+        # Retain its query token with this owner until checked close/drain.
+        return self._check_startup_token(self._process_token(process_handle))
 
 
 if __name__ == '__main__':

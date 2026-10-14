@@ -11,6 +11,10 @@ import installed_customer_launch as customer
 SID = 'S-1-5-21-123-456-789-1001'
 LOCAL = r'C:\Users\Fixture\AppData\Local'
 COMMAND = [LOCAL + '\\OpenNavXAlpha1\\generations\\' + 'a' * 32 + r'\Maintain.exe', '/ACTION=Uninstall']
+PROGRAM = r'C:\Program Files (x86)'
+GENERATION = 'b' * 32
+STARTUP = [PROGRAM + '\\SKAGER\\Applications\\' + SID + '\\generations\\' + GENERATION + r'\app\skager-start.exe',
+           '--broker-start=' + GENERATION]
 
 
 def observations(consent=0):
@@ -82,6 +86,8 @@ class SequenceNative(customer._Native):
             if name == 'CreateProcessWithTokenW':
                 assert args[0] is self.linked, 'Original linked token was substituted'
                 assert args[4] == 0x4, 'NSIS wrapper must start suspended'
+                if type(self) is SequenceNative:
+                    assert args[-2]._obj.desktop is None, 'Maintain desktop behavior changed'
                 process = args[-1]._obj
                 process.process, process.thread = 0x111, 0x112
                 process.pid, process.tid = 42, 43
@@ -180,6 +186,209 @@ class SuspendedCustomerLaunchTests(unittest.TestCase):
                 self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
                 if previous == 0xFFFFFFFF:
                     self.assertEqual(caught.exception.winerror, 5)
+
+
+class ProtectedSequenceNative(SequenceNative, customer._ProtectedStartupNative):
+    """Run the actual protected checks/create sequence without native execution."""
+    def __init__(self, fault=None, resume_result=1):
+        SequenceNative.__init__(self, fault, resume_result)
+        self.program = PROGRAM
+        self.authentication_id = 0x123400005678
+        self.linked_logon_changed = False
+        self.observed_token = None
+        self.observed_authentication = self.authentication_id
+
+    def _fn(self, dll, name, result, *types):
+        call = super()._fn(dll, name, result, *types)
+        if name != 'CreateProcessWithTokenW':
+            return call
+        def create(*args):
+            assert args[2] == STARTUP[0]
+            assert args[3].value == subprocess.list2cmdline(STARTUP)
+            assert args[-2]._obj.desktop == 'WinSta0\\Default'
+            return call(*args)
+        return create
+
+    def _image(self, handle):
+        self.events.append('verify-image')
+        return STARTUP[0] + ('.foreign' if self.fault == 'image' else '')
+
+    def _authentication_id(self, token):
+        value = self.value(token)
+        self.events.append(('limited-authentication', value))
+        if value == 16:
+            return 0x999  # The FULL coordinator's logon is deliberately different.
+        if value == 32 and self.linked_logon_changed:
+            return self.authentication_id + 1
+        if value == 48 and self.fault == 'launcher-logon':
+            return self.authentication_id + 1
+        return self.observed_authentication if value == 64 else self.authentication_id
+
+    def _process_token(self, handle):
+        if self.value(handle) == 0x221:
+            self.events.append('capture-observed-token')
+            token = ctypes.c_void_p(64)
+            self.owned.append((token, self.close_handle))
+            return token
+        return super()._process_token(handle)
+
+    def _token(self, token):
+        if self.value(token) == 64 and self.observed_token is not None:
+            return copy.deepcopy(self.observed_token)
+        return super()._token(token)
+
+
+class ProtectedStartupLaunchTests(unittest.TestCase):
+    def launch(self, native):
+        return customer.open_same_account_protected_startup(GENERATION, SID, _native_factory=lambda: native)
+
+    def test_fixed_original_limited_launcher_corroborated_before_single_resume(self):
+        native = ProtectedSequenceNative()
+        owner = self.launch(native)
+        self.assertEqual(owner.command, STARTUP)
+        self.assertEqual((owner.sid, owner.session, owner.elevated), (SID, 1, False))
+        self.assertLess(native.events.index(('limited-authentication', 48)), native.events.index('ResumeThread'))
+        self.assertNotIn(('limited-authentication', 16), native.events)
+        self.assertEqual(owner.poll(), 0)
+        self.assertEqual(owner.wait(0), 0)
+        self.assertFalse(owner.capability['nativeCustomerAcceptance'])
+        self.assertFalse(owner.capability['consentPromptAcceptance'])
+        owner.close()
+        self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
+
+    def test_generation_cannot_supply_an_executable_or_another_argument(self):
+        for generation in (None, b'b' * 32, '', 'B' * 32, 'b' * 31, 'b' * 33,
+                           GENERATION + ' --maintenance=uninstall-current', '..\\' + GENERATION,
+                           GENERATION + '\n', GENERATION + '\x00'):
+            factory = mock.Mock()
+            with self.subTest(generation=generation), self.assertRaises(customer.CustomerLaunchRefused):
+                customer.open_same_account_protected_startup(generation, SID, _native_factory=factory)
+            factory.assert_not_called()
+
+    def test_actual_sid_is_only_a_veto_and_maintain_route_stays_exclusive(self):
+        native = ProtectedSequenceNative()
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            customer.open_same_account_protected_startup(GENERATION, SID + '1', _native_factory=lambda: native)
+        self.assertNotIn('CreateProcessWithTokenW', native.events)
+        self.assertTrue(native.closed)
+        native = FakeNative()
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            customer.open_same_account_launch(STARTUP, SID, _native_factory=lambda: native)
+        self.assertEqual(native.creates, 0)
+
+    def test_program_folder_cannot_redirect_the_fixed_route(self):
+        for program in (None, '', r'\\server\share', r'\Program Files', r'C:/Program Files',
+                        r'C:\Program Files\..\mutable', 'C:\\bad\nfolder', 'C:\\bad"folder'):
+            native = ProtectedSequenceNative()
+            native.program = program
+            with self.subTest(program=program), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertNotIn('CreateProcessWithTokenW', native.events)
+            self.assertTrue(native.closed)
+
+    def test_missing_limited_token_or_interactive_desktop_never_launches(self):
+        for fault in ('missing', 'elevated', 'session', 'primary', 'desktop', 'secure'):
+            native = ProtectedSequenceNative()
+            if fault == 'missing': native.observed['linked'] = None
+            elif fault == 'elevated': native.observed['linked']['elevated'] = True
+            elif fault == 'session': native.observed['linked']['session'] = 0
+            elif fault == 'primary': native.observed['linked']['tokenType'] = 2
+            elif fault == 'desktop': native.observed['desktop']['visible'] = False
+            elif fault == 'secure': native.observed['desktop']['input'] = 'Winlogon'
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertNotIn('CreateProcessWithTokenW', native.events)
+            self.assertTrue(native.closed)
+
+    def test_changed_launcher_logon_refuses_before_resume_with_original_handles(self):
+        native = ProtectedSequenceNative(fault='launcher-logon')
+        with self.assertRaises(customer.CustomerLaunchRefused) as caught:
+            self.launch(native)
+        self.assertFalse(caught.exception.launchEvidence['resumeAttempted'])
+        self.assertEqual(native.resumes, 0)
+        self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
+
+    def test_capture_and_resume_uncertainty_have_no_fallback_retry_or_kill(self):
+        for fault in ('create', 'interrupt-after-create', 'thread', 'thread-id', 'token', 'image'):
+            native = ProtectedSequenceNative(fault=fault)
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertEqual(native.resumes, 0)
+            self.assertEqual(native.events.count('CreateProcessWithTokenW'), 1)
+            self.assertTrue(native.closed)
+        for count in (0xFFFFFFFF, 0, 2):
+            native = ProtectedSequenceNative(resume_result=count)
+            with self.subTest(count=count), self.assertRaises(customer.CustomerLaunchRefused):
+                self.launch(native)
+            self.assertEqual(native.resumes, 1)
+            self.assertTrue(native.closed)
+
+    def test_original_observed_handle_token_bound_to_limited_logon(self):
+        native = ProtectedSequenceNative()
+        owner = self.launch(native)
+        facts = owner.check_process_token(ctypes.c_void_p(0x221))
+        self.assertEqual(facts, dict(native.observed['linked'], authenticationId=native.authentication_id))
+        self.assertEqual(native.events.count('capture-observed-token'), 1)
+        self.assertFalse(native.closed)
+        owner.close()
+        self.assertEqual(native.closed_handles, [64, 48, 0x112, 0x111, 32, 16])
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            owner.check_process_token(ctypes.c_void_p(0x221))
+
+    def test_foreign_or_elevated_observed_token_and_logon_refuse(self):
+        for fault in ('sid', 'session', 'elevated', 'type', 'integrity', 'logon'):
+            native = ProtectedSequenceNative()
+            owner = self.launch(native)
+            native.observed_token = copy.deepcopy(native.observed['linked'])
+            if fault == 'sid': native.observed_token['sid'] = SID + '1'
+            elif fault == 'session': native.observed_token['session'] = 2
+            elif fault == 'elevated': native.observed_token['elevated'] = True
+            elif fault == 'type': native.observed_token['tokenType'] = 2
+            elif fault == 'integrity': native.observed_token['integrity'] = 'S-1-16-12288'
+            elif fault == 'logon': native.observed_authentication += 1
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                owner.check_process_token(ctypes.c_void_p(0x221))
+            self.assertEqual(native.resumes, 1)
+            owner.close()
+
+    def test_linked_logon_change_refuses_original_owner_without_new_launch(self):
+        native = ProtectedSequenceNative()
+        owner = self.launch(native)
+        native.linked_logon_changed = True
+        with self.assertRaises(customer.CustomerLaunchRefused): owner.poll()
+        self.assertEqual(native.events.count('CreateProcessWithTokenW'), 1)
+        owner.close()
+
+    def test_timeout_keeps_original_startup_owner_without_retry_or_termination(self):
+        native = ProtectedSequenceNative()
+        owner = self.launch(native)
+        native._state = lambda child: 258
+        with self.assertRaises(subprocess.TimeoutExpired): owner.wait(0)
+        self.assertEqual(native.events.count('CreateProcessWithTokenW'), 1)
+        self.assertEqual(native.resumes, 1)
+        self.assertFalse(native.closed)
+        owner.close()
+
+    def test_primary_statistics_use_fixed_win32_layout_and_nonzero_original_logon(self):
+        native = object.__new__(customer._ProtectedStartupNative)
+        def info(token, kind, value):
+            self.assertEqual(kind, 10)
+            self.assertEqual(ctypes.sizeof(value), 56)
+            self.assertEqual(type(value).authenticationId.offset, 8)
+            self.assertEqual(type(value).modifiedId.offset, 48)
+            value.tokenType = 1
+            value.authenticationId.high, value.authenticationId.low = -1, 0x1234
+            return value
+        native._info = info
+        self.assertEqual(native._authentication_id(32), 0xffffffff00001234)
+        for fault in ('zero', 'impersonation'):
+            def wrong(token, kind, value):
+                value.tokenType = 2 if fault == 'impersonation' else 1
+                value.authenticationId.low = 1 if fault == 'impersonation' else 0
+                return value
+            native._info = wrong
+            with self.subTest(fault=fault), self.assertRaises(customer.CustomerLaunchRefused):
+                native._authentication_id(32)
 
 
 class CustomerLaunchTests(unittest.TestCase):
