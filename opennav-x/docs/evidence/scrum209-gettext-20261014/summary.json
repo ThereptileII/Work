@@ -1,0 +1,40 @@
+{
+  "passed": true,
+  "nativeProductAcceptance": false,
+  "candidate": "edd04b37b4a257f0f4307f5e240342fe3529a0f7",
+  "inputs": {
+    "tools/windows_gettext.py": {
+      "bytes": 9960,
+      "sha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+    },
+    "tools/test-windows-gettext-native.py": {
+      "bytes": 3565,
+      "sha256": "46837d2e65ce3fad64169e8841d857a7fa9b28d1f54dea975ab7f2d0aa29da8e"
+    },
+    "tests/windows_gettext_tests.py": {
+      "bytes": 13867,
+      "sha256": "fa206b79325d5b665475278bff04f40a650152887843fa3ff1c2b2ba99e932cf"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "bytes": 31323,
+      "sha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+    }
+  },
+  "receipt": {
+    "bytes": 2167,
+    "sha256": "96fa7bc77a7e2afb86db1143c2016807ff558ce6f30ab100b2ef624bf4b45106"
+  },
+  "catalog": {
+    "bytes": 150,
+    "sha256": "d7b9a541b36eb7939cecebf61ad6e5417ef6ed4f269cd9bd63b53a19104bec51"
+  },
+  "mergedCatalog": {
+    "bytes": 114,
+    "sha256": "ad23c11f41fd044cbe6c3de51ec92a582ba4e5b666cfc27bebe9ba09847772df"
+  },
+  "functionalTranslation": "passed",
+  "limits": [
+    "No app or dependency compilation",
+    "No product runtime, GUI, installer or boat acceptance"
+  ]
+}

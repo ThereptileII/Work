@@ -9,7 +9,10 @@ No application/dependency build or changed acquisition policy.
 Original artifact `11904036367`, 10,888 bytes, SHA-256
 `2de4973d6e2eb675ae98d0a1117c5712cb21e0af2667d7dbb81dffbc4a0ac1fb`.
 Authenticated GitHub metadata and downloaded bytes agree; all 30 member CRCs pass.
-The retained summary's four input hashes also match the checked-out source.
+The retained summary's four input hashes match the exact Git source after its
+Windows CRLF checkout transformation. Direct comparison to Linux LF files first
+refused, as it should; all four original lengths/hashes then matched with only
+LF-to-CRLF conversion. `input-checkout-mapping.json` records both identities.
 `summary.json` and `gettext.json` retain the original receipt bytes.
 
 Twenty-five prerequisite contract tests pass. Poedit 3.9.1 installation from

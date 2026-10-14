@@ -1,0 +1,30 @@
+{
+  "tools/windows_gettext.py": {
+    "gitBytes": 9750,
+    "gitSha256": "05679f075120edc2cd82f553249a48a0ea25ab89fe12a0aa714263afd5095894",
+    "windowsCheckoutBytes": 9960,
+    "windowsCheckoutSha256": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36",
+    "mapping": "LF git blob to Windows CRLF checkout, no other byte changes"
+  },
+  "tools/test-windows-gettext-native.py": {
+    "gitBytes": 3509,
+    "gitSha256": "1a3152973db9b198d8f28b32f87a6464b9e858ef3ecb8965bb2c4dd8bd8f23b4",
+    "windowsCheckoutBytes": 3565,
+    "windowsCheckoutSha256": "46837d2e65ce3fad64169e8841d857a7fa9b28d1f54dea975ab7f2d0aa29da8e",
+    "mapping": "LF git blob to Windows CRLF checkout, no other byte changes"
+  },
+  "tests/windows_gettext_tests.py": {
+    "gitBytes": 13663,
+    "gitSha256": "489a176612140de410de69f9b7ba9e36f140d5986c56b90b1e33877f50115c0f",
+    "windowsCheckoutBytes": 13867,
+    "windowsCheckoutSha256": "fa206b79325d5b665475278bff04f40a650152887843fa3ff1c2b2ba99e932cf",
+    "mapping": "LF git blob to Windows CRLF checkout, no other byte changes"
+  },
+  "tools/build-pristine-windows.ps1": {
+    "gitBytes": 30860,
+    "gitSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3",
+    "windowsCheckoutBytes": 31323,
+    "windowsCheckoutSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344",
+    "mapping": "LF git blob to Windows CRLF checkout, no other byte changes"
+  }
+}
