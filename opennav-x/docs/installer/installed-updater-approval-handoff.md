@@ -316,8 +316,11 @@ alone does not supply these bounded HTTP callbacks.
 
 ## Remaining live orchestration and native gates
 
-A coordinator still needs to wire the implemented bounded HTTP callbacks, independently
-authorized approval producer and one live disposable Windows journey. The
+The [live coordinator API](installed-updater-live-coordinator.md) now composes the
+bounded HTTP callbacks, independent approval binding, original input checks,
+native one-use consumption and one joined disposable Windows journey. Its
+native streaming gate and actual independently approved installed run remain
+separate acceptance requirements. The
 pending Windows job must retain its actual account/SID, original files and
 challenge throughout the postproduction approval wait; starting a new Windows
 job after approval changes the native context. Artifact discovery or an
@@ -326,8 +329,11 @@ independent postproduction approval channel.
 
 Before the single B0 invocation, the coordinator must recheck original native
 file identities, approved bytes, current job/challenge and both expiry windows,
-then reserve/consume the challenge exactly once. Neither module provides durable
-one-use enforcement. A timeout or ambiguous effect must retain state and evidence
+then reserve/consume the challenge exactly once. The transport modules alone
+provide no durable one-use enforcement: the qualification-only native owner now
+retains the same protected parent through READY/approval and exclusively writes
+the challenge record with flush/readback before the journey. A timeout or
+ambiguous effect must retain state and evidence
 for review rather than trigger another enrollment or cleanup attempt.
 
 The hosted Windows job also needs the approved tailnet connection and access to

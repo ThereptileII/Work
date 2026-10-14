@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-14
 
+## Installed journey coordinator integrated; native streaming qualification pending
+
+`e0f20d1e` / `fc76ee9e` / `03e5bcc1` join the existing approval transport and
+original-input checks to a native one-use record and one maintained installed
+journey. The qualification-only native helper retains the same protected parent
+across the approval wait. The Python adapter observes the original receipt file
+through an independent cursor on the same native object. Existing/partial records,
+changed originals, timeout or uncertain effects refuse without retry/reset.
+
+Focused portable checks pass **18 coordinator groups, 3 streaming-contract groups,
+5 native-bridge groups / 17 subcases**. Windows x86 test-executable compilation
+passes. The one focused native streaming run is
+[38636051433](https://github.com/ThereptileII/Work/actions/runs/38636051433) at
+`6424f9706341e8132b359ec316a8f8fb78114255`; actual installed/UAC acceptance is
+not granted by that fixture. These later helper revisions do not change the frozen
+application candidate `e538bbc8` / [38633971333](https://github.com/ThereptileII/Work/actions/runs/38633971333).
+[Coordinator contract](installer/installed-updater-live-coordinator.md).
+
 ## Combined candidate blocked by obsolete assertion; corrected local suite passes
 
 Exact `f30b92e70b5357e505925547015155ef38837e73` in
