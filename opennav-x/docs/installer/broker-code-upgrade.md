@@ -108,7 +108,8 @@ readback/rebinding fails can leave an uncertain path; the explicit resume entry
 re-observes actual known positions instead of blindly retrying that mutation.
 
 Explicit resume reauthenticates the **same** target, new provisioner, unchanged
-trust and original completion. It requires the full reservation and protected
+trust and original completion. Native observations select one of two bounded
+phases. Disabled rename recovery requires the full reservation and protected
 clean-old-exit record, checks that the recorded original PID/creation identity
 has not unexpectedly survived, and retains the original service/registry/config
 with exact DISABLED and clean STOPPED state. Only the original/new native IDs,
@@ -119,19 +120,49 @@ read-only initialized-store/readiness qualification before terminal completion.
 Existing successor/pair publications may be reused only if their exact bytes
 match this same transaction. Already completed invocation is not a second upgrade.
 
-This implementation supports interruption at the four disabled rename boundaries.
-It deliberately **does not claim recovery of every phase**:
+A separate terminal finalizer handles AUTO_START with the exact successor already
+normally RUNNING, the complete pair/receipt present and ready marker genuinely
+absent. It independently checks the original completion, exact approved policy,
+intent/reservation/clean-exit/pair closure, retained old backup identities and
+both actual fixed successor identities. It binds the actual running successor
+process, creation time, primary token and image, performs an authenticated
+registered-client selected-history query, then rechecks the same process and
+native custody immediately before exclusive ready-marker creation and after
+flush/readback. Any existing ready namespace (including empty, partial, foreign
+or already-completed state) refuses; it is never adopted or overwritten.
+
+Finalization has a separate capability and a service handle limited to
+QUERY_CONFIG, QUERY_STATUS and READ_CONTROL. It cannot configure, start or stop
+the service, and failure/cleanup releases owners without changing its running
+state. It neither downloads replacement broker bytes, renames code nor reruns
+verify-store. The complete pair marker and actual running broker's authenticated
+history response remain required; SCM RUNNING alone is insufficient. Public
+installed readers continue to require the final ready marker.
+
+These query-only **service rights** do not mean zero machine effects. Completion
+publishes the immutable ready marker and uses the established cooperative
+executor-query access for authenticated readiness. Its process/TOKEN_QUERY ACEs
+remain for those objects' lifetime; normal folder-query cleanup restores the
+temporary TOKEN_IMPERSONATE addition to the exact query-only descriptor. Abrupt
+process death can leave that shared-token addition, an inherited limitation of
+this readiness mechanism. Finalization does not add a new grant or cleanup path.
+
+This implementation supports the four disabled rename boundaries and terminal
+finalization of an already-running automatic successor with an absent ready
+marker. It deliberately **does not claim recovery of every phase**:
 
 - Interrupted intent/partial staging before full reservation/clean exit refuses.
 - A partial immutable successor/marker write whose bytes do not exactly match
   the same transaction refuses adoption; it is not silently repaired.
 - Process loss after DEMAND_START is selected for `verify-store` refuses the
   DISABLED-only recovery entry.
-- Process loss after AUTO_START/normal activation but before ready completion
-  also refuses that entry.
+- AUTO_START with STOPPED/pending state (including interruption before normal
+  StartService completes) refuses; finalization cannot start or stop a broker.
 
 Those phases require additional authenticated abort/service-phase recovery before
-normal customer Setup activation. An uncertain SCM configuration effect is never
+normal customer Setup activation. Actual installed SCM/UAC/IPC and customer
+journey qualification for terminal finalization remains separate from inert
+NTFS/process-observation fixtures. An uncertain SCM configuration effect is never
 blindly retried by cleanup. A failed live operation attempts containment only
 after rechecking the same authenticated service/config custody; otherwise it
 reports uncertainty and preserves all evidence. Do not delete namespaces,

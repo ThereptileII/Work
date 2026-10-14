@@ -180,8 +180,11 @@ func (n *nativeCodeUpgrade) stage(ctx context.Context, broker io.Reader, helper 
 	return err
 }
 func mustCodeBrokerSID(s string) *windows.SID { sid, _ := windows.StringToSid(s); return sid }
-func (n *nativeCodeUpgrade) write(ctx context.Context, parent *enrollmentPin, name string, sd *windows.SECURITY_DESCRIPTOR, raw []byte) (pin *enrollmentPin, resultErr error) {
-	file, pin, err := n.files.newFile(parent, name, sd)
+func (n *nativeCodeUpgrade) write(ctx context.Context, parent *enrollmentPin, name string, sd *windows.SECURITY_DESCRIPTOR, raw []byte) (*enrollmentPin, error) {
+	return writeCodeUpgradeFileNative(ctx, n.files, parent, name, sd, raw)
+}
+func writeCodeUpgradeFileNative(ctx context.Context, files *nativeEnrollmentFiles, parent *enrollmentPin, name string, sd *windows.SECURITY_DESCRIPTOR, raw []byte) (pin *enrollmentPin, resultErr error) {
+	file, pin, err := files.newFile(parent, name, sd)
 	if err != nil {
 		return nil, err
 	}
@@ -213,7 +216,7 @@ func (n *nativeCodeUpgrade) write(ctx context.Context, parent *enrollmentPin, na
 		return nil, err
 	}
 	pin.dos = filepath.Join(parent.dos, name)
-	n.files.pins = append(n.files.pins, pin)
+	files.pins = append(files.pins, pin)
 	return pin, errors.Join(pin.check(), startupHashPin(ctx, pin, digest(raw)))
 }
 func (n *nativeCodeUpgrade) stageImage(ctx context.Context, name string, source io.Reader, a releasepolicy.Artifact, sd *windows.SECURITY_DESCRIPTOR, helper bool) (f startupRestorationFile, resultErr error) {
@@ -676,7 +679,7 @@ func (n *nativeCodeUpgrade) close() error {
 // Original completion stays immutable. Exact absence selects original code;
 // ANY intent/reservation/successor presence requires the completed exact tuple.
 // Malformed, partial, mixed and unknown state never falls back to old code.
-func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, original installedCompletionRecord, originalRaw []byte, recordSD, imageSD *windows.SECURITY_DESCRIPTOR) (installedCompletionRecord, error) {
+func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, original installedCompletionRecord, originalRaw []byte, recordSD, imageSD *windows.SECURITY_DESCRIPTOR, pendingReady ...bool) (installedCompletionRecord, error) {
 	parent := c.requestParent
 	sid := c.clientSID
 	intentAbsent := startupRestorationAbsent(parent, sid+codeIntentSuffix) == nil
@@ -746,13 +749,22 @@ func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceA
 	if err != nil || !bytes.Equal(pairRaw, codeSuccessorMarker(digest(raw))) {
 		return original, errors.New("code pair selection is incomplete")
 	}
-	marker, err := maintenanceHoldFile(c.files, parent, sid+codeSuccessorMarkerSuffix, recordSD, maxInstalledCompletionMarkerBytes)
-	if err != nil {
-		return original, err
-	}
-	markerRaw, err := installedReadPin(ctx, marker, maxInstalledCompletionMarkerBytes)
-	if err != nil || !bytes.Equal(markerRaw, codeSuccessorMarker(digest(raw))) {
-		return original, errors.New("code successor is incomplete")
+	// Only independently authenticated running finalization may request the
+	// pending-ready closure. Any ready namespace presence still refuses it.
+	if len(pendingReady) == 1 && pendingReady[0] {
+		if err := startupRestorationAbsent(parent, sid+codeSuccessorMarkerSuffix); err != nil {
+			return original, errors.New("ready marker must be absent for finalization")
+		}
+	} else {
+		marker, err := maintenanceHoldFile(c.files, parent, sid+codeSuccessorMarkerSuffix, recordSD, maxInstalledCompletionMarkerBytes)
+		if err != nil {
+			return original, err
+		}
+		markerRaw, err := installedReadPin(ctx, marker, maxInstalledCompletionMarkerBytes)
+		if err != nil || !bytes.Equal(markerRaw, codeSuccessorMarker(digest(raw))) {
+			return original, errors.New("code successor is incomplete")
+		}
+
 	}
 	codeParent, err := startupDirectoryIdentity(c.codeParent)
 	if err != nil {
@@ -866,7 +878,7 @@ func restoreOwnedCodePair(ctx context.Context, parent *enrollmentPin, oldBroker,
 // Resume requires the exact authenticated ORIGINAL completion and the original
 // transaction's immutable intent/reservation/clean-exit proof. It never treats
 // SCM STOPPED, a current pathname or an adjacent self hash as that proof.
-func resumeCodeUpgradeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgradePolicy, raw, trust []byte, originalSHA string) (result codeUpgradeOwner, resultErr error) {
+func resumeCodeUpgradeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgradePolicy, raw, trust []byte, originalSHA string) (result *nativeCodeUpgrade, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	in, err := readInstalledCompletionModeNative(ctx, false, true)
@@ -1130,4 +1142,18 @@ func resumeOwnedCodePair(ctx context.Context, guard func(context.Context) error,
 		}
 	}
 	return nil
+}
+
+// The disabled recovery sequence is unchanged. Native phase observation and
+// authentication choose this owner; a running finalizer never obtains it.
+func (n *nativeCodeUpgrade) resume(ctx context.Context) error {
+	for _, step := range []func(context.Context) error{n.replace, n.validateStore, n.activate, n.ready, n.complete} {
+		if err := n.check(ctx); err != nil {
+			return err
+		}
+		if err := step(ctx); err != nil {
+			return err
+		}
+	}
+	return n.check(ctx)
 }

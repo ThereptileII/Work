@@ -27,7 +27,7 @@ type CodeUpgradeRequest struct {
 	OriginalCompletionSHA256 string
 }
 
-var ErrCodeUpgradeUncertain = errors.New("broker code upgrade reserved or effect uncertain; preserve disabled service and owned recovery files")
+var ErrCodeUpgradeUncertain = errors.New("broker code upgrade reserved or effect uncertain; preserve service state and owned recovery files")
 
 type codeUpgradeOwner interface {
 	check(context.Context) error
@@ -42,12 +42,13 @@ type codeUpgradeOwner interface {
 	close() error
 }
 type codeUpgradeOperations struct {
-	trust   func(context.Context, []byte, string) (repository.Trust, error)
-	hold    func(string, string) (io.Closer, error)
-	verify  func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerCodeUpgradePolicy, []byte, error)
-	source  func(context.Context, releasepolicy.Artifact) (maintenanceImageSource, error)
-	acquire func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
-	open    func(context.Context, releasepolicy.BrokerCodeUpgradePolicy, []byte, []byte, string) (codeUpgradeOwner, error)
+	openResume func(context.Context, releasepolicy.BrokerCodeUpgradePolicy, []byte, []byte, string) (codeUpgradeResumeOwner, error)
+	trust      func(context.Context, []byte, string) (repository.Trust, error)
+	hold       func(string, string) (io.Closer, error)
+	verify     func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerCodeUpgradePolicy, []byte, error)
+	source     func(context.Context, releasepolicy.Artifact) (maintenanceImageSource, error)
+	acquire    func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
+	open       func(context.Context, releasepolicy.BrokerCodeUpgradePolicy, []byte, []byte, string) (codeUpgradeOwner, error)
 }
 
 // UpgradeEnrolledCode changes only the fixed broker/helper pair. It never calls
@@ -57,18 +58,19 @@ type codeUpgradeOperations struct {
 // transaction. Ordinary maintenance has no upgrade capability.
 func UpgradeEnrolledCode(ctx context.Context, r CodeUpgradeRequest) error {
 	return upgradeEnrolledCodeWith(ctx, r, codeUpgradeOperations{
+		openResume: openCodeResumeNative,
 		trust: func(ctx context.Context, raw []byte, pin string) (repository.Trust, error) {
 			return codeUpgradeTrustNativeMode(ctx, raw, pin, r.Resume)
 		}, hold: holdOperatorDirectories, verify: verifier.VerifyBrokerCodeUpgrade, source: openMaintenanceImageNative,
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, o, d string) (acquiredBroker, error) {
 			return verifier.DownloadArtifact(ctx, a, o, d)
 		}, open: func(ctx context.Context, p releasepolicy.BrokerCodeUpgradePolicy, raw, trust []byte, pin string) (codeUpgradeOwner, error) {
-			return openCodeUpgradeNativeMode(ctx, p, raw, trust, pin, r.Resume)
+			return openCodeUpgradeNativeMode(ctx, p, raw, trust, pin, false)
 		},
 	})
 }
 func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeUpgradeOperations) (result error) {
-	if ctx == nil || ctx.Err() != nil || !validPin(r.PolicySHA256) || !validPin(r.ProvisionerSHA256) || !validPin(r.TrustConfigSHA256) || !validPin(r.OriginalCompletionSHA256) || r.BootstrapCacheDir == "" || r.ArtifactDirectory == "" || len(r.TrustConfiguration) < 1 || len(r.TrustConfiguration) > maxTrustConfigurationBytes || op.trust == nil || op.hold == nil || op.verify == nil || op.source == nil || op.acquire == nil || op.open == nil {
+	if ctx == nil || ctx.Err() != nil || !validPin(r.PolicySHA256) || !validPin(r.ProvisionerSHA256) || !validPin(r.TrustConfigSHA256) || !validPin(r.OriginalCompletionSHA256) || r.BootstrapCacheDir == "" || r.ArtifactDirectory == "" || len(r.TrustConfiguration) < 1 || len(r.TrustConfiguration) > maxTrustConfigurationBytes || op.trust == nil || op.hold == nil || op.verify == nil || op.source == nil || (!r.Resume && (op.acquire == nil || op.open == nil)) || (r.Resume && op.openResume == nil) {
 		return errors.New("live complete independently authenticated code upgrade inputs required")
 	}
 	ctx, cancel := context.WithTimeout(ctx, maxEnrollmentTime)
@@ -114,6 +116,26 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	if err = source.Check(ctx); err != nil {
 		return err
 	}
+	if r.Resume {
+		owner, err := op.openResume(ctx, p, bytes.Clone(raw), trustBytes, r.OriginalCompletionSHA256)
+		if owner != nil {
+			defer func() {
+				if e := owner.close(); e != nil {
+					result = errors.Join(result, ErrCleanup, e)
+				}
+			}()
+		}
+		if err != nil || owner == nil {
+			return errors.Join(errors.New("exact same-transaction native resume owner required"), err)
+		}
+		if err := errors.Join(ctx.Err(), source.Check(ctx), owner.check(ctx)); err != nil {
+			return err
+		}
+		if err := owner.resume(ctx); err != nil {
+			return errors.Join(ErrCodeUpgradeUncertain, err)
+		}
+		return errors.Join(ctx.Err(), source.Check(ctx), owner.check(ctx))
+	}
 	broker, err := op.acquire(ctx, p.Bootstrap.Broker, trust.ArtifactOrigin, r.ArtifactDirectory)
 	if broker != nil {
 		defer func() {
@@ -139,17 +161,6 @@ func upgradeEnrolledCodeWith(ctx context.Context, r CodeUpgradeRequest, op codeU
 	check := func() error { return errors.Join(ctx.Err(), source.Check(ctx), owner.check(ctx)) }
 	if err = check(); err != nil {
 		return err
-	}
-	if r.Resume {
-		for _, step := range []func(context.Context) error{owner.replace, owner.validateStore, owner.activate, owner.ready, owner.complete} {
-			if err = check(); err != nil {
-				return errors.Join(ErrCodeUpgradeUncertain, err)
-			}
-			if err = step(ctx); err != nil {
-				return errors.Join(ErrCodeUpgradeUncertain, err)
-			}
-		}
-		return check()
 	}
 	// Reserve before the first SCM/code effect. Any subsequent failure must never
 	// be reported as an untouched machine or retried as a new enrollment.
