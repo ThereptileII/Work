@@ -1,0 +1,9 @@
+# Limited-account capability progress — 2026-10-14
+
+The bounded diagnostic helper change passes **42 probe / 34 customer-launch** portable tests. It emits fixed flushed stderr markers, preserving the stdout JSON contract, and retains only sanitized progress, bounded byte counts and final-document presence on refusal. Original identity, token, desktop, one-resume, 60-second limit, verified-exit requirement and deferred cleanup stay unchanged. It grants no product/UAC acceptance.
+
+Native [38630784527](https://github.com/ThereptileII/Work/actions/runs/38630784527), attempt 1 at `66ec07eebb99586b34a31183a6758794b86051d3`, remains **blocked**. Original run/source/workflow/artifact length/SHA-256/CRC and fixed helper checkout bytes authenticate. The child resumed once but did not prove exit. Neither stdout nor stderr received bytes; the flushed module-entry marker and final capability document were not observed. Original uncertain process/account state was left for disposable-job destruction. No product installation was attempted.
+
+This narrows the unobserved boundary to child initialization or diagnostic delivery, not a named Python function or product failure. [Microsoft's CreateProcessWithTokenW contract](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw) permits return before initialization, does not grant desktop access merely by naming it, and does not validate supplied standard handles. The evidence does not prove a specific defect or permanent platform impossibility.
+
+Do not repeat this unchanged probe, widen permissions or increase timeouts to manufacture acceptance. Actual installed customer/UAC qualification remains required on a suitable interactive Windows host. Complete original diagnostic artifacts remain private; the committed receipt omits disposable account identifiers.

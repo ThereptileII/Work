@@ -93,9 +93,10 @@ unsigned, rolled-back, delegated or advertised-but-missing responses remain
 failures; callers must not classify go-tuf error strings as "no update". Focused
 tests cover each distinction. After a signed v2-to-v1 reproduction, direct
 discovery now reads the retained root before constructing go-tuf; damaged or
-missing existing roots refuse without reset. Focused continuity checks pass;
-native customer qualification and shared cache-refresh serialization remain
-pending. A protected directory identity alone does not prove either of those.
+missing existing roots refuse without reset. The combined native gate at
+`7dde3b15` covers continuity and shared cache-refresh serialization; the actual
+installed customer journey remains pending. Directory identity alone is not proof
+of retained metadata continuity.
 
 The local original-completion pin and genuine protected native completion bind
 this transition to the actual user, original request/baseline/publication and

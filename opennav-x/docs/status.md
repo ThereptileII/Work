@@ -1,5 +1,21 @@
 # SKAGER status — 2026-10-14
 
+## Fresh enrollment cache preparation is integrated for the next candidate
+
+`924787ec` adds the explicit independently approved operator preparation missing
+from the maintained fresh-B0 journey. It exclusively creates an absent protected
+cache and exact original root, with flush/readback; existing, damaged, partial or
+redirected caches refuse. Existing customer discovery never initializes or resets
+trust state. The joined journey forwards this step before Setup/enrollment.
+Independent source review found no blocking defect.
+
+Focused Go preparation/parser tests, **39** B0 composition cases, **12** joined
+journey cases and **12/14** broker/provisioner source-package cases pass. Windows
+x86 compilation passes; the two new native fixture cases still require execution
+in the combined candidate. CI must fail rather than skip them if elevation is
+unavailable. No separate full build was requested per subtask.
+[Preparation contract](installer/broker-bootstrap-policy.md).
+
 ## Installed customer component update passes focused native gate
 
 Admission `04ea88e1`, command/native launch `7391a0a0`/`fc5733b7`, and
@@ -25,6 +41,18 @@ NSIS wizard behavior, actual installed UAC/SCM journey, full application packagi
 and boat acceptance remain pending. No public
 or boat deployment has been performed for this path.
 [Updated contract](installer/broker-code-upgrade.md).
+
+## Hosted ordinary-account probe remains unavailable
+
+The diagnostic-only change `66ec07ee` passes **42/34** focused portable cases.
+Native [38630784527](https://github.com/ThereptileII/Work/actions/runs/38630784527)
+resumes the original limited child once, but observes neither its flushed entry
+marker nor an exit before the unchanged timeout. Authenticated original artifacts
+retain the bounded zero-byte progress and deferred cleanup. No SKAGER install was
+attempted, and no concrete product defect or stall function is established.
+Actual customer/UAC acceptance stays pending on a suitable interactive host;
+unchanged probe retries and permission/timeout weakening are not selected.
+[Evidence](evidence/scrum311-limited-host-progress-20261014/README.md).
 
 ## Customer discovery: retained-root correction passes focused checks
 
@@ -100,7 +128,11 @@ The explicit dependency-only refresh passed at source `68c83517` in
 [38618335277](https://github.com/ThereptileII/Work/actions/runs/38618335277) on
 `20261012.333.1`. Original artifact `11924018896`, its SHA-256, full inventory,
 source/recipe inputs and native dependency test evidence verify. The lock now
-selects this exact SDK; fresh native consumption remains pending.
+selects this exact SDK. Fresh native reuse passes at `6752261e` in
+[38630308437 attempt 2](https://github.com/ThereptileII/Work/actions/runs/38630308437),
+including five native tool reprobes and runtime checks, with no dependency or
+application compilation. Attempt 1 correctly refused the older concurrent hosted
+image before setup; its evidence remains preserved.
 [Artifact audit](evidence/scrum209-sdk-refresh-20261014/README.md). The new guard passes five
 focused actual-workflow-program checks. It does
 not force GitHub's allocation or bypass the consumer's exact environment checks.

@@ -19,6 +19,9 @@ import (
 func freshCacheNativeParent(t *testing.T) (*nativeEnrollmentFiles, *enrollmentPin) {
 	t.Helper()
 	if !windows.GetCurrentProcessToken().IsElevated() {
+		if os.Getenv("GITHUB_ACTIONS") == "true" {
+			t.Fatal("required native fresh-cache cases must execute in CI; elevated fixture unavailable")
+		}
 		t.Skip("fresh protected cache fixture requires elevation; not a native pass")
 	}
 	data, err := windows.KnownFolderPath(windows.FOLDERID_ProgramData, 0)

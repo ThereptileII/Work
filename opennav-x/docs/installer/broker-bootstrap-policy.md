@@ -189,11 +189,23 @@ The CLI requires all six explicit, nonduplicated inputs: `--trust-config`,
 `--provisioner-sha256` and `--trust-config-sha256`. No environment-derived pins,
 adjacent self-described manifest or checkbox authenticates first execution.
 The protected cache must already contain its original `metadata/root.json`.
-At independently approved first cache creation, seed that file exclusively from
-the pinned public trust input, flush it and retain the protected directory. This
-is an operator preparation step, not a fallback performed by verification. A
-missing or corrupt root in an existing cache is lost trust state and must refuse;
-never replace it with the original anchor to make enrollment or an upgrade pass.
+The separate operator action `--prepare-bootstrap-cache=true` implements first
+creation with exactly `--trust-config`, `--trust-config-sha256`,
+`--provisioner-sha256` and `--bootstrap-cache`. Authenticate the final running
+provisioner independently before elevation. It verifies the approved public trust,
+current signed root and actual running provisioner/loader, retains the already
+protected parent, and exclusively creates an absent cache child, `metadata` and
+exact original `root.json` bytes with admin/SYSTEM protection, flush and native
+identity/hash readback. Existing empty, populated, partial or redirected caches
+refuse. Post-effect or cleanup uncertainty preserves the namespace; no retry,
+adoption, ACL repair or reset is performed.
+
+The maintained fresh-B0 qualification composition invokes this explicit step once
+before Setup/enrollment, then retains the new cache identity. Existing-customer
+verification never invokes it. This is operator preparation, not a fallback
+performed by verification or an implicit schema-1 migration. A missing or corrupt
+root in an existing cache is lost trust state and must refuse; never replace it
+with the original anchor to make enrollment or an upgrade pass.
 Previously accepted rotated roots remain authoritative even if their old remote
 rotation files are no longer available. Existing customer/code-upgrade operations
 have no cache initializer or reset switch.

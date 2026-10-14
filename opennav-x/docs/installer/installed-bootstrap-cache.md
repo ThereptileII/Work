@@ -15,8 +15,8 @@ The native reopening seam requires a genuine original completion owner, reopens
 that exact path with existing ancestry checks and compares the complete original
 directory identity. A different protected directory is not a replacement cache.
 Existing TUF metadata and rollback floors remain in the original `metadata` and
-`targets` locations. This component does not yet wire customer Setup/Maintain or
-admit/execute a downloaded successor.
+`targets` locations. The later admission and command integration below connects the dedicated
+Setup/Maintain component action; actual installed customer acceptance remains pending.
 
 Schema-1 completion bytes remain unchanged and accepted for existing maintenance
 and explicit operator operations. Existing installations, including any boat
@@ -32,6 +32,16 @@ Portable tests cover schema-2 binding, missing/tampered identity/path refusal an
 unchanged schema-1 serialization. Inert Windows component tests cover original
 versus replacement directory identities and missing producer custody; these do
 not qualify installed cache migration, SCM, UAC or the customer journey.
+
+## Explicit fresh preparation
+
+Fresh enrollment requires an independently authenticated original provisioner and
+an absent cache under a protected parent. Its explicit operator preparation step
+creates and verifies the original root before enrollment; it is distinct from
+this completion binding. See [bootstrap preparation](broker-bootstrap-policy.md).
+No existing-cache verification, installed customer action or schema-1 reader can
+invoke preparation as a recovery shortcut. Native first-enrollment and installed
+customer acceptance remain separate from the new focused helper checks.
 
 ## Authenticated successor admission
 
@@ -73,6 +83,6 @@ verification lock before the existing upgrade engine acquires the same common
 operator lock and freshly verifies again; cache and running-image custody remain.
 Portable tests cover admission/rejection, exact tuple ownership, cancellation,
 no-change classification and release ordering. Native lock fixtures cover
-exclusive/reusable custody and malformed objects; they require native execution
-before qualification. This component and command wiring still require combined
-native Windows/customer-journey acceptance.
+exclusive/reusable custody and malformed objects. The combined component/command
+native gate passes at `7dde3b15` in run `38628998074`; this does not replace
+actual installed Windows/customer-journey acceptance.

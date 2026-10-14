@@ -1,0 +1,64 @@
+{
+  "schemaVersion": 1,
+  "repository": "ThereptileII/Work",
+  "runId": "38630308437",
+  "runAttempt": "2",
+  "source": "6752261e3af20a9b81504f92b9e8c5807d23f370",
+  "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+  "jobId": "116080721304",
+  "conclusion": "success",
+  "artifactId": "11926540017",
+  "artifactName": "windows-dependency-evidence-6752261e3af20a9b81504f92b9e8c5807d23f370-run38630308437-attempt2",
+  "artifactBytes": 12199187,
+  "artifactDigest": "sha256:be93cb8378120afe8a2f698a2d3216cda8ed1374116a2f77b9195985f5fa9f62",
+  "crcVerifiedMembers": {
+    "verify-attempt2-original-evidence.zip": 5094,
+    "verify-attempt2-original-logs.zip": 15
+  },
+  "producerSelection": {
+    "repository": "ThereptileII/Work",
+    "runId": "38618335277",
+    "runAttempt": "1",
+    "headSha": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+    "artifactId": "11924018896",
+    "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38618335277-attempt1",
+    "artifactDigest": "sha256:08f4fa9ca058564822ba9b69ef19aca0cbf3ea84953657d838e054709ab83ca9"
+  },
+  "bundleSha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5",
+  "fingerprint": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+  "toolchainSha256": "978e7a154c8e8d6dc388af73c247ecb6f32636c389f02e80f2d0f29a12018bfb",
+  "runner": {
+    "ImageOS": "win22",
+    "ImageVersion": "20261012.333.1",
+    "RUNNER_ARCH": "X64",
+    "RUNNER_OS": "Windows"
+  },
+  "currentSourceInputCount": 30,
+  "allCurrentSourceInputsMatchProducerGitBlobs": true,
+  "nativeToolReprobes": {
+    "openssl-parent": "d1c80ae09d70731585f023ccdb45a154e1e5fc3925569b304b401990d5561f4d",
+    "openssl-child": "b4a1e68516facedab66122d4f7b80bcd992fe044cfb331e4bc1642fe2a6dde83",
+    "zlib-parent": "509c3eab11dfe7e492e0d22f586b62d2d414c7346ffe6098f128dc690f27184d",
+    "zlib-child": "5d73a282d258d2f05f781f85896073fa75b51457878d40bc313a8803237baec6",
+    "curl-parent": "9c4656726ac160355b69d87d0e07a69c9a5685ac46e9ea5058ca6f3b3439fe96"
+  },
+  "pythonIdentityMatches": true,
+  "opensslConsumerRuntime": "passed",
+  "sourcePreflightPassed": true,
+  "curlSourceDependencyCompiled": false,
+  "producerBuildSkipped": true,
+  "applicationBuild": false,
+  "timing": {
+    "runAttempt": "2",
+    "runId": "38630308437",
+    "elapsedSeconds": 77.0826673,
+    "mode": "verified-reuse",
+    "applicationBuild": false,
+    "commit": "6752261e3af20a9b81504f92b9e8c5807d23f370"
+  },
+  "nativeReuseVerified": true,
+  "freshNativeConsumptionPerformed": true,
+  "applicationOrInstalledAcceptance": false,
+  "proofLogSha256": "59f8bd138bbcca58d29151e7e1d8847ade35753d565bd3e6bbf67a6eaf8913fb",
+  "logsArchiveSha256": "50d44f46a7982b04fc3bc173a97564ba1db3c4ab5ef72236f996696511749319"
+}

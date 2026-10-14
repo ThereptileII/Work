@@ -10,9 +10,9 @@ legacy Lifecycle.
 This increment requires fresh matching broker/helper enrollment. Older brokers
 reject the additive `repair-inspect` / `repair-current` operations before mutation;
 older helpers reject the action. Application B1 does **not** replace the fixed B0
-broker/helper. A separate [explicit code-upgrade operator foundation](broker-code-upgrade.md)
-now exists, but is not wired into ordinary Setup/Maintain and does not qualify
-the installed customer journey. No re-enrollment or trust reset is permitted.
+broker/helper. The separate [code-upgrade path](broker-code-upgrade.md) now has a dedicated
+**Update service components** action in Setup/Maintain. Its focused native gate
+passes; the actual installed customer journey is not yet qualified. No re-enrollment or trust reset is permitted.
 The existing-installation upgrade remains a separate native/customer blocker.
 
 The customer closes SKAGER, chooses Repair, accepts actual same-account UAC and
