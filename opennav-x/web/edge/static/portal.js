@@ -98,8 +98,12 @@ if (typeof document !== "undefined") {
   let sessionEnded = false;
   const content = document.getElementById("portal-content");
   const message = document.getElementById("portal-message");
-  const tell = text => { message.textContent = text; };
-  const sessionError = () => Object.assign(new Error("Your session has ended. Please sign in."), { status: 401 });
+  const sessionMessage = "Your session has ended. Please sign in.";
+  const tell = text => { message.textContent = sessionEnded ? sessionMessage : text; };
+  const sessionError = () => Object.assign(new Error(sessionMessage), { status: 401 });
+  function checkSession() {
+    if (sessionEnded) throw sessionError();
+  }
   function endSession() {
     if (sessionEnded) return;
     sessionEnded = true;
@@ -107,7 +111,7 @@ if (typeof document !== "undefined") {
     content.innerHTML = "";
     content.setAttribute("aria-busy", "false");
     document.getElementById("logout").hidden = true;
-    tell("Your session has ended. Please sign in.");
+    tell(sessionMessage);
     location.assign("/auth/login/");
   }
   const page = location.pathname.split("/").filter(Boolean)[1] || "dashboard";
@@ -115,17 +119,18 @@ if (typeof document !== "undefined") {
   document.querySelector("h1").textContent = titles[page] || titles.dashboard;
   document.querySelector(`[data-page="${Object.hasOwn(titles, page) ? page : "dashboard"}"]`)?.setAttribute("aria-current", "page");
   async function api(path, body) {
-    if (sessionEnded) throw sessionError();
+    checkSession();
     const response = await fetch(path, { credentials: "same-origin", cache: "no-store", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify(body) }) });
     if (response.status === 401) { endSession(); throw sessionError(); }
     const data = await response.json().catch(() => ({}));
-    if (sessionEnded) throw sessionError();
+    checkSession();
     if (!response.ok) throw Object.assign(new Error(data.error || "This service is temporarily unavailable. Please try again."), { status: response.status });
     return data;
   }
   async function load() {
     try {
       const session = await api("/api/auth/session");
+      checkSession();
       if (!session.account) { endSession(); return false; }
       if (typeof session.csrfToken !== "string" || !session.csrfToken) throw new Error("A secure session could not be started. Please reload this page.");
       csrfToken = session.csrfToken;
@@ -140,6 +145,9 @@ if (typeof document !== "undefined") {
             : "Release information is temporarily unavailable. Please try again later." };
         }
       }
+      // A second request can end the session after api resolves but before
+      // this caller resumes. Guard each private effect at its await boundary.
+      checkSession();
       content.innerHTML = renderDashboard(data, page, downloads);
       content.setAttribute("aria-busy", "false");
       document.getElementById("logout").hidden = false;
@@ -152,6 +160,7 @@ if (typeof document !== "undefined") {
             const artifact = release?.artifacts.find(item => item.id === button.dataset.artifactId);
             if (!artifact) throw new Error("Please refresh release information before downloading.");
             const result = await api("/api/portal/downloads", { releaseId: release.id, artifactId: artifact.id });
+            checkSession();
             const link = document.createElement("a");
             link.href = downloadTarget(result, release, artifact);
             link.rel = "noreferrer";
@@ -169,7 +178,7 @@ if (typeof document !== "undefined") {
         event.preventDefault();
         const button = event.currentTarget.querySelector("button");
         button.disabled = true;
-        try { await api("/api/portal/boats", { name: document.getElementById("boat-name").value }); if (await load()) tell("Your boat has been added."); }
+        try { await api("/api/portal/boats", { name: document.getElementById("boat-name").value }); if (await load()) { checkSession(); tell("Your boat has been added."); } }
         catch (error) { tell(error.message); button.disabled = false; }
       });
       document.getElementById("checkout")?.addEventListener("click", async event => {
@@ -178,6 +187,7 @@ if (typeof document !== "undefined") {
           const checkout = await api("/api/checkout/start", { discountCode: document.getElementById("discount-code")?.value.trim() || "" });
           const target = new URL(checkout.url);
           if (target.protocol !== "https:" || target.hostname !== "checkout.stripe.com") throw new Error("Checkout is unavailable. Please try again.");
+          checkSession();
           location.assign(target.href);
         } catch (error) { tell(error.message); event.target.disabled = false; }
       });

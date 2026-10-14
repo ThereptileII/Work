@@ -383,3 +383,98 @@ test('authorized download obtains a fresh selection-bound link only on click and
   assert.equal(browser.download.disabled, false);
   assert.deepEqual(browser.navigations, []);
 });
+
+function deferredJSON() {
+  let complete!: (value: any) => void;
+  let entered!: () => void;
+  const waiting = new Promise<void>(resolve => { entered = resolve; });
+  const body = new Promise<any>(resolve => { complete = resolve; });
+  const response = browserJSON({});
+  response.json = () => { entered(); return body; };
+  return { response, waiting, complete };
+}
+
+test('same-turn logout and download JSON completion cannot start a bearer-link download', async () => {
+  const { release, signed } = browserDownload();
+  const downloadBody = deferredJSON(), logoutBody = deferredJSON();
+  const browser = await portalBrowser('/portal/downloads/', async (path, init) => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return browserJSON(browserAccount);
+    if (path === '/api/auth/logout') return logoutBody.response;
+    assert.equal(path, '/api/portal/downloads');
+    return init.method === 'POST' ? downloadBody.response : browserJSON({ available: true, releases: [release] });
+  });
+  const downloading = browser.download.dispatch('click');
+  const loggingOut = browser.logout.dispatch('click');
+  await Promise.all([downloadBody.waiting, logoutBody.waiting]);
+  logoutBody.complete({ ok: true });
+  downloadBody.complete(signed);
+  await Promise.all([downloading, loggingOut]);
+  assert.equal(browser.anchors.length, 0);
+  assert.equal(browser.content.innerHTML, '');
+  assert.equal(browser.logout.hidden, true);
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+});
+
+test('same-turn logout and refreshed dashboard JSON completion cannot restore private DOM', async () => {
+  const dashboardBody = deferredJSON(), logoutBody = deferredJSON();
+  let dashboards = 0;
+  const browser = await portalBrowser('/portal/boats/', async path => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return ++dashboards === 1 ? browserJSON(browserAccount) : dashboardBody.response;
+    if (path === '/api/auth/logout') return logoutBody.response;
+    assert.equal(path, '/api/portal/boats'); return browserJSON({ boat: { name: 'Private vessel' } }, 201);
+  });
+  const saving = browser.boatForm.dispatch('submit');
+  await dashboardBody.waiting;
+  const loggingOut = browser.logout.dispatch('click');
+  await logoutBody.waiting;
+  logoutBody.complete({ ok: true });
+  dashboardBody.complete({ ...browserAccount, boats: [{ name: 'Private vessel', createdAt: created }] });
+  await Promise.all([saving, loggingOut]);
+  assert.equal(browser.content.innerHTML, '');
+  assert.equal(browser.logout.hidden, true);
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+  assert.doesNotMatch(browser.message.textContent, /has been added/);
+});
+
+test('same-turn logout and checkout JSON completion cannot navigate to checkout', async () => {
+  const checkoutBody = deferredJSON(), logoutBody = deferredJSON();
+  const browser = await portalBrowser('/portal/account/', async path => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return browserJSON({ ...browserAccount, betaAccess: 'inactive', checkoutAvailable: true });
+    if (path === '/api/auth/logout') return logoutBody.response;
+    assert.equal(path, '/api/checkout/start'); return checkoutBody.response;
+  });
+  const checkingOut = browser.checkout.dispatch('click');
+  const loggingOut = browser.logout.dispatch('click');
+  await Promise.all([checkoutBody.waiting, logoutBody.waiting]);
+  logoutBody.complete({ ok: true });
+  checkoutBody.complete({ url: 'https://checkout.stripe.com/c/pay/cs_test_fixture' });
+  await Promise.all([checkingOut, loggingOut]);
+  assert.equal(browser.content.innerHTML, '');
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+});
+
+test('fetch rejection after successful logout cannot overwrite sign-in guidance', async () => {
+  const { release } = browserDownload();
+  let rejectDownload!: (reason: Error) => void;
+  const pending = new Promise<Response>((resolve, reject) => { rejectDownload = reject; });
+  const browser = await portalBrowser('/portal/downloads/', async (path, init) => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return browserJSON(browserAccount);
+    if (path === '/api/auth/logout') return browserJSON({ ok: true });
+    assert.equal(path, '/api/portal/downloads');
+    return init.method === 'POST' ? pending : browserJSON({ available: true, releases: [release] });
+  });
+  const downloading = browser.download.dispatch('click');
+  await browser.logout.dispatch('click');
+  rejectDownload(new Error('Network disconnected.'));
+  await downloading;
+  assert.equal(browser.content.innerHTML, '');
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+});
