@@ -142,6 +142,8 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerenroll/installed_uninstall_windows.go',
     'brokerenroll/installed_completion.go', 'brokerenroll/installed_completion_other.go',
     'brokerenroll/installed_completion_windows.go',
+    'brokerenroll/fresh_bootstrap_cache.go', 'brokerenroll/fresh_bootstrap_cache_other.go',
+    'brokerenroll/fresh_bootstrap_cache_windows.go',
     'brokerenroll/installed_bootstrap_cache.go', 'brokerenroll/installed_bootstrap_cache_other.go',
     'brokerenroll/installed_bootstrap_cache_windows.go',
     'brokerenroll/installed_code_admission.go', 'brokerenroll/installed_code_admission_other.go',

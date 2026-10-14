@@ -34,6 +34,9 @@ func openMaintenanceNative(ctx context.Context, req brokerenroll.MaintenanceRequ
 }
 
 func runOperator(ctx context.Context, args []string, read func(string) ([]byte, error), enroll, activate func(context.Context, brokerenroll.Request) error, maintain maintenanceOpener) (bool, error) {
+	if freshBootstrapCacheRequested(args) {
+		return true, runFreshBootstrapCache(ctx, args, read, brokerenroll.PrepareFreshBootstrapCache)
+	}
 	if codeUpgradeRequested(args) {
 		return true, runCodeUpgrade(ctx, args, read, brokerenroll.UpgradeEnrolledCode)
 	}

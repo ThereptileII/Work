@@ -158,6 +158,14 @@ class JoinedTests(unittest.TestCase):
         prepared.update(provisionerSha256=self.pins['provisioner'], brokerSha256=self.pins['broker'])
         return destination / 'skager-update-provisioner.exe'
 
+    def prepare_cache(self, command):
+        self.assertIn('--prepare-bootstrap-cache=true', command)
+        self.assertIn('stage-authenticated', self.state.trace)
+        self.assertNotIn('setup', self.state.trace)
+        self.assertNotIn('enroll', self.state.trace)
+        self.state.trace.append('prepare-cache')
+        self.initial['cache'].mkdir()  # Inert result of the separately mocked native operation.
+
     def handoff(self, name, head):
         assert not self.state.active, 'Handoff occurred with image owners retained'
         self.state.trace.append(('handoff', name, head))
@@ -170,7 +178,7 @@ class JoinedTests(unittest.TestCase):
             phase_native_factory=phase_native_factory or (lambda p, exe: Native(self.state, p, exe, 'phase-' +
                 [item[1] for item in self.state.trace if isinstance(item, tuple) and item[0] == 'handoff'][-1])),
             preflight_factory=lambda p: Before(self.state, p), stage=self.stage,
-            publish=lambda *args: None, enroll=lambda command: self.state.trace.append('enroll'),
+            publish=lambda *args: None, enroll=lambda command: self.state.trace.append('enroll'), prepare_cache=self.prepare_cache,
             fixture_factory=lambda before, p, phase: Fixture(self.state, before, p, phase), broker_factory=Broker)
 
     def test_one_setup_enrollment_and_original_profile_four_phases_then_maintain(self):
@@ -179,6 +187,10 @@ class JoinedTests(unittest.TestCase):
         trace = self.state.trace
         self.assertEqual(trace.count('setup'), 1)
         self.assertEqual(trace.count('enroll'), 1)
+        self.assertEqual(trace.count('prepare-cache'), 1)
+        self.assertLess(trace.index('stage-authenticated'), trace.index('prepare-cache'))
+        self.assertLess(trace.index('prepare-cache'), trace.index('setup'))
+        self.assertLess(trace.index('prepare-cache'), trace.index('enroll'))
         self.assertEqual(trace.count('maintain'), 1)
         self.assertEqual([(item[1], item[2]) for item in trace if isinstance(item, tuple) and item[0] == 'handoff'],
                          [('no-update', '3' * 64), ('later', '3' * 64), ('now', '3' * 64), ('offline', '4' * 64),
@@ -291,6 +303,7 @@ class JoinedTests(unittest.TestCase):
     def test_uncertain_owner_drain_never_advances_or_retries_close(self):
         for label in ('initial', 'phase-later'):
             with self.subTest(label=label):
+                self.setUp()  # Independent fresh admission; never reset a consumed cache.
                 self.output = self.root / ('evidence-' + label) / 'result.json'
                 self.state = State(self.root)
                 self.state.fail_close = label
@@ -302,6 +315,7 @@ class JoinedTests(unittest.TestCase):
     def test_different_observed_account_or_profile_refuses_before_phase_launch(self):
         for mismatch in ('sid', 'profile'):
             with self.subTest(mismatch=mismatch):
+                self.setUp()  # Each refusal scenario owns a different fresh cache.
                 self.output = self.root / ('evidence-' + mismatch) / 'result.json'
                 self.state = State(self.root)
                 def factory(prepared, provisioner):

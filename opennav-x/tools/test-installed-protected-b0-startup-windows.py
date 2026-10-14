@@ -49,6 +49,26 @@ def approved_directory(value):
     return path, (before.st_dev, before.st_ino)
 
 
+def approved_new_cache(value):
+    """Read-only admission of an absent child, never creation or ACL repair."""
+    require(isinstance(value, str))
+    path = Path(value)
+    require(path.is_absolute() and os.path.normpath(str(path)) == str(path) and path.parent != path)
+    parent, identity = approved_directory(str(path.parent))
+    try:
+        path.lstat()
+    except FileNotFoundError:
+        return path, (parent, identity)
+    raise ValueError(FAILURE)  # Existing, partial and broken-link caches refuse.
+
+
+def bind_prepared_cache(prepared):
+    require(not prepared.get('cacheSeeded', False))
+    cache, identity = approved_directory(str(prepared['cache']))
+    prepared['directories'] = (*prepared['directories'], (cache, identity))
+    prepared['cacheSeeded'] = True
+
+
 def approved_setup(record, baseline, retained):
     path, identity = phase.approved_file(record, 1 << 30)
     release_policy = phase.strict(baseline['paths']['policy'].read_bytes())
@@ -96,7 +116,7 @@ def prepare(path, sha, approved_request, approved_policy):
     stock_path, identity = phase.approved_file({'path': stock['path'], 'sha256': stock['executableSha256']}, 1 << 30)
     retained.append((stock_path, identity, stock['executableSha256']))
     artifact, artifact_id = approved_directory(declaration['artifactDirectory'])
-    cache, cache_id = approved_directory(declaration['bootstrapCache'])
+    cache, cache_parent = approved_new_cache(declaration['bootstrapCache'])
     require(cache != artifact and cache not in artifact.parents and artifact not in cache.parents)
     baseline_record = declaration['approvedBaseline']
     baseline_path, identity = phase.approved_file(baseline_record, 4 << 30)
@@ -135,11 +155,19 @@ def prepare(path, sha, approved_request, approved_policy):
         seen.add(pair)
     return dict(b0=b0, setup=setup_path, setupSha256=declaration['setup']['sha256'], request=request, kit=kit_path, brokerPolicy=policy, retained=retained, settings=settings,
                 requestPath=request_path, trustPath=trust_path, cache=cache, artifact=artifact,
-                directories=((cache, cache_id), (artifact, artifact_id)))
+                directories=(cache_parent, (artifact, artifact_id)), cacheSeeded=False)
 
 
 def unchanged(prepared):
     phase.unchanged(prepared)
+    if not prepared.get('cacheSeeded', False):
+        try:
+            prepared['cache'].lstat()
+        except FileNotFoundError:
+            pass
+        else:
+            raise ValueError(FAILURE)
+
     for path, identity in prepared['directories']:
         updater._plain(path)
         current = path.stat()
@@ -153,6 +181,14 @@ class BeforeEnrollment(phase.Native):
         self.profile_root = self.folder(phase.PROGRAM_DATA) / 'opencpn'
         self.sid = self.actual_sid()
         require(self.sid == prepared['request']['clientSid'])
+
+
+def cache_preparation_command(provisioner, prepared, provisioner_sha):
+    return [str(provisioner), '--prepare-bootstrap-cache=true',
+            '--trust-config=' + str(prepared['trustPath']),
+            '--trust-config-sha256=' + prepared['b0']['trustSha256'],
+            '--provisioner-sha256=' + provisioner_sha,
+            '--bootstrap-cache=' + str(prepared['cache'])]
 
 
 def enrollment_command(provisioner, prepared, policy_sha, provisioner_sha, request_sha):
@@ -191,8 +227,9 @@ def qualified_b0(history, prepared):
 
 def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=BeforeEnrollment,
         stage=phase.stage_operator, publish=phase.publication, enroll=enroll_once, fixture_factory=InstalledB0Fixture,
-        *, before_uninstall=None):
+        *, prepare_cache=enroll_once, before_uninstall=None):
     require(before_uninstall is None or callable(before_uninstall))
+    require(callable(prepare_cache) and not prepared.get('cacheSeeded', False))
     native, before, fixture = None, None, None
     before_closed = False
     try:
@@ -214,6 +251,11 @@ def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=B
                 prepared['brokerPolicy']['provisioner']['sha256'] == pins['provisioner'] and
                 prepared['brokerPolicy']['broker']['sha256'] == pins['broker'])
         before.pin_image(provisioner, pins['provisioner'])
+        unchanged(prepared)
+        # Explicit approved native preparation, never verifier fallback. The
+        # final executable is already retained before its first elevated effect.
+        prepare_cache(cache_preparation_command(provisioner, prepared, pins['provisioner']))
+        bind_prepared_cache(prepared)
         unchanged(prepared)
         setup = fixture.install_setup(output.parent)
         require(phase.profile_preserved(profile, before.profile()))

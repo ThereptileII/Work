@@ -37,6 +37,10 @@ func main() {
 }
 
 func reportMaintenanceCompletion(args []string, output io.Writer) error {
+	if freshBootstrapCacheRequested(args) {
+		_, err := fmt.Fprintln(output, "SKAGER original bootstrap cache prepared. Enrollment and application installation have not run.")
+		return err
+	}
 	if _, successor, _ := parseInstalledCodeSuccessor(args); successor {
 		return nil // The private successor reports only its bound exit status.
 	}

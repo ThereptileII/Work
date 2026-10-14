@@ -95,7 +95,7 @@ class InitialB0Tests(unittest.TestCase):
     def setUp(self):
         FakeNative.instances = []
         FakeFixture.instances = []
-        self.run = lambda *args, **kwargs: b0.run(*args, fixture_factory=FakeFixture, **kwargs)
+        self.run = lambda *args, **kwargs: b0.run(*args, fixture_factory=FakeFixture, prepare_cache=self.seed_cache, **kwargs)
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.base = Path(self.temp.name)
@@ -111,6 +111,13 @@ class InitialB0Tests(unittest.TestCase):
         }
         self.pins = {'request': 'e' * 64, 'policy': 'f' * 64, 'provisioner': '1' * 64,
                      'broker': '2' * 64, 'timestamp': '3' * 64}
+
+    def seed_cache(self, command):
+        self.assertIn('--prepare-bootstrap-cache=true', command)
+        self.assertIn('--trust-config-sha256=' + self.prepared['b0']['trustSha256'], command)
+        self.assertIn('--provisioner-sha256=' + self.pins['provisioner'], command)
+        self.assertFalse(self.prepared['cache'].exists())
+        self.prepared['cache'].mkdir()  # Inert fake for native operation success.
 
     def stage(self, prepared, destination):
         self.assertEqual(destination.parent, self.base / 'artifact')
@@ -145,7 +152,7 @@ class InitialB0Tests(unittest.TestCase):
                 raise ValueError('actual Setup failed; do not substitute extracted files')
         attempts = []
         with self.assertRaises(ValueError):
-            b0.run(self.prepared, self.pins, self.base / 'result.json', fixture_factory=FailedSetup,
+            b0.run(self.prepared, self.pins, self.base / 'result.json', fixture_factory=FailedSetup, prepare_cache=self.seed_cache,
                    native_factory=FakeNative, preflight_factory=FakeBefore, stage=self.stage,
                    publish=lambda *args: None, enroll=lambda command: attempts.append(command))
         self.assertFalse(attempts)
@@ -197,7 +204,7 @@ class InitialB0Tests(unittest.TestCase):
                 raise ValueError('original relocated wizard refused')
         attempts = []
         with self.assertRaises(ValueError):
-            b0.run(self.prepared, self.pins, self.base / 'result.json', fixture_factory=FailedMaintain,
+            b0.run(self.prepared, self.pins, self.base / 'result.json', fixture_factory=FailedMaintain, prepare_cache=self.seed_cache,
                    native_factory=FakeNative, preflight_factory=FakeBefore, stage=self.stage,
                    publish=lambda *args: None, enroll=lambda command: attempts.append(command))
         self.assertEqual(len(attempts), 1)
@@ -312,6 +319,66 @@ class InitialB0Tests(unittest.TestCase):
                         publish=lambda *args: None, enroll=lambda command: None)
         self.assertTrue(result['nativeInitialB0Acceptance'])
         self.assertFalse(result['nativeProductAcceptance'])
+
+
+    def test_explicit_fresh_cache_preparation_precedes_setup_and_enrollment(self):
+        events = []
+        def prepare_cache(command):
+            events.append(('prepare-cache', command))
+            self.assertEqual(FakeFixture.instances[0].events, [])
+            self.assertEqual(FakeFixture.instances[0].before.pinned[1], self.pins['provisioner'])
+            self.seed_cache(command)
+        b0.run(self.prepared, self.pins, self.base / 'prepared-cache-result.json',
+               fixture_factory=FakeFixture, native_factory=FakeNative,
+               preflight_factory=FakeBefore, stage=self.stage,
+               publish=lambda *args: events.append(('publication', args[1])),
+               prepare_cache=prepare_cache, enroll=lambda command: events.append(('enroll', command)))
+        self.assertEqual([event[0] for event in events], ['publication', 'prepare-cache', 'enroll', 'publication'])
+        preparation, enrollment = events[1][1], events[2][1]
+        self.assertEqual(len(preparation), 6)
+        self.assertIn('--prepare-bootstrap-cache=true', preparation)
+        self.assertNotIn('--prepare-bootstrap-cache=true', enrollment)
+        self.assertTrue(self.prepared['cacheSeeded'])
+        self.assertEqual(self.prepared['directories'][-1][0], self.prepared['cache'])
+        with self.assertRaises(ValueError):
+            self.run(self.prepared, self.pins, self.base / 'second-result.json')
+        self.assertEqual(len(FakeNative.instances), 1)
+
+    def test_partial_native_cache_preparation_never_retries_setup_or_enrollment(self):
+        attempts = []
+        def partial(command):
+            attempts.append(command)
+            self.prepared['cache'].mkdir()
+            raise ValueError('native cache effect uncertain; preserve it')
+        for _ in range(2):
+            with self.assertRaises(ValueError):
+                b0.run(self.prepared, self.pins, self.base / 'partial-result.json',
+                       fixture_factory=FakeFixture, native_factory=FakeNative,
+                       preflight_factory=FakeBefore, stage=self.stage, publish=lambda *args: None,
+                       prepare_cache=partial, enroll=lambda command: self.fail('partial seed reached enrollment'))
+        self.assertEqual(len(attempts), 1)
+        self.assertEqual(FakeFixture.instances[0].events, [])
+        self.assertTrue(self.prepared['cache'].is_dir())
+        self.assertFalse(self.prepared.get('cacheSeeded', False))
+        self.assertFalse(FakeNative.instances)
+
+    def test_fresh_cache_admission_refuses_existing_partial_and_broken_link(self):
+        missing = self.base / 'fresh-cache'
+        path, parent = b0.approved_new_cache(str(missing))
+        self.assertEqual(path, missing)
+        self.assertEqual(parent[0], self.base)
+        for name in ('empty', 'partial', 'broken-link'):
+            path = self.base / name
+            if name == 'broken-link':
+                path.symlink_to(self.base / 'absent-target', target_is_directory=True)
+            else:
+                path.mkdir()
+                if name == 'partial':
+                    (path / 'metadata').mkdir()
+                    (path / 'metadata' / 'root.json').write_bytes(b'ORIGINAL PARTIAL')
+            with self.subTest(name=name), self.assertRaises(ValueError):
+                b0.approved_new_cache(str(path))
+        self.assertEqual((self.base / 'partial' / 'metadata' / 'root.json').read_bytes(), b'ORIGINAL PARTIAL')
 
 
 class GenuineSetupCompletion(unittest.TestCase):

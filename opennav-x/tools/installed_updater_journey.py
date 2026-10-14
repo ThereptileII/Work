@@ -79,7 +79,7 @@ def _evidence(output, initial, phases):
 def run_joined(initial, phases, pins, output, *, handoff,
                initial_native_factory=phase.Native, phase_native_factory=phase.Native,
                preflight_factory=admission.BeforeEnrollment, stage=phase.stage_operator,
-               publish=phase.publication, enroll=admission.enroll_once,
+               publish=phase.publication, enroll=admission.enroll_once, prepare_cache=admission.enroll_once,
                fixture_factory=admission.InstalledB0Fixture, broker_factory=_OriginalBroker):
     """Setup/enroll once, four startup phases, explicit B0 rollback, Maintain LAST.
 
@@ -183,7 +183,7 @@ def run_joined(initial, phases, pins, output, *, handoff,
 
     try:
         installed = admission.run(initial, pins, output, initial_native_factory, preflight_factory,
-                                  stage, publish, enroll, fixture_factory, before_uninstall=before_uninstall)
+                                  stage, publish, enroll, fixture_factory, prepare_cache=prepare_cache, before_uninstall=before_uninstall)
         result.update(installed)
         result['state'] = 'genuine-setup-b0-four-phases-manual-rollback-maintain-uninstalled'
         return result
