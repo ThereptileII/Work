@@ -89,8 +89,9 @@ payload checks fail before dependency or application compilation. The later
 restore and fresh native tool reprobes still run in that same application job.
 An image mismatch requires an explicit selection/dispatch decision; it never
 triggers a cold fallback or automatic retry. The lock selects producer run
-`38552041879`, attempt `1`, artifact `11890887394`, whose original job and bundle
-both record image `20261004.326.1`; this selection does not qualify a newer image.
+`38618335277`, attempt `1`, artifact `11924018896`, whose original job and bundle
+both record image `20261012.333.1`; this selection does not qualify another image.
+[Original artifact audit](evidence/scrum209-sdk-refresh-20261014/README.md).
 
 For an explicit dependency refresh during a hosted-image rollout, supply the
 dependency workflow's `expected_image` input with the observed exact

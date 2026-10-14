@@ -96,9 +96,12 @@ The original job log is retained
 privately; the missing evidence-directory upload is a secondary failure after
 that early refusal.
 
-An explicit dependency-only refresh is running at source `68c83517` in
-[38618335277](https://github.com/ThereptileII/Work/actions/runs/38618335277); its
-early expected-image guard passed for `20261012.333.1`. The new guard passes five
+The explicit dependency-only refresh passed at source `68c83517` in
+[38618335277](https://github.com/ThereptileII/Work/actions/runs/38618335277) on
+`20261012.333.1`. Original artifact `11924018896`, its SHA-256, full inventory,
+source/recipe inputs and native dependency test evidence verify. The lock now
+selects this exact SDK; fresh native consumption remains pending.
+[Artifact audit](evidence/scrum209-sdk-refresh-20261014/README.md). The new guard passes five
 focused actual-workflow-program checks. It does
 not force GitHub's allocation or bypass the consumer's exact environment checks.
 No duplicate full application build or blind retry is authorized by this result.
