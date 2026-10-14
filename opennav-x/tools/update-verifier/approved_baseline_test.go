@@ -8,6 +8,7 @@ import (
 	"crypto/sha256"
 	"encoding/json"
 	"errors"
+	"hash/crc32"
 	"io"
 	"strings"
 	"testing"
@@ -21,6 +22,156 @@ import (
 )
 
 var approvedBaselineNow = time.Date(2030, 1, 2, 12, 0, 0, 0, time.UTC)
+
+func TestInspectRetainedApprovedBaselineOutlivesExpiryWithExactOwnedNamespace(t *testing.T) {
+	f := newApprovedBaselineFixture(t, func(entries map[string][]byte) {
+		for name, raw := range recoveryEngineFixture() {
+			entries[name] = raw
+		}
+		for name, raw := range recoveryCommissioningFixture() {
+			entries[name] = raw
+		}
+	})
+	sink := newApprovedBaselineSink()
+	if _, err := importFixture(context.Background(), f, sink); err != nil {
+		t.Fatal(err)
+	}
+	expired := expiredApprovedBaselineRequest(t, f)
+	originalRequest, originalArchive := bytes.Clone(expired), bytes.Clone(f.archive)
+	members, err := InspectRetainedApprovedBaseline(context.Background(), expired, recoveryDigest(expired), bytes.NewReader(f.archive), int64(len(f.archive)))
+	if err != nil {
+		t.Fatal("historical inventory refused after bootstrap expiry", err)
+	}
+	want := map[string]RetainedBaselineMember{}
+	for _, namespace := range []map[string][]byte{sink.files, sink.evidence} {
+		for name, raw := range namespace {
+			want[name] = RetainedBaselineMember{Name: name, Size: int64(len(raw)), SHA256: recoveryDigest(raw)}
+		}
+	}
+	if len(members) != len(want) {
+		t.Fatal("retained namespace differs from original import", len(members), len(want))
+	}
+	for i, member := range members {
+		if member != want[member.Name] || i > 0 && members[i-1].Name >= member.Name {
+			t.Fatal("retained member identity or deterministic order differs", member)
+		}
+	}
+	if !bytes.Equal(expired, originalRequest) || !bytes.Equal(f.archive, originalArchive) {
+		t.Fatal("read-only inspection mutated original request/archive")
+	}
+	// A caller changing its owned result cannot affect a later inspection.
+	members[0] = RetainedBaselineMember{Name: "caller-owned mutation"}
+	again, err := InspectRetainedApprovedBaseline(context.Background(), expired, recoveryDigest(expired), bytes.NewReader(f.archive), int64(len(f.archive)))
+	if err != nil || len(again) != len(want) || again[0] != want[again[0].Name] {
+		t.Fatal("returned metadata shared mutable state", err)
+	}
+	fresh := newApprovedBaselineSink()
+	if identity, err := ImportApprovedBaseline(context.Background(), expired, recoveryDigest(expired), bytes.NewReader(f.archive), int64(len(f.archive)), fresh); err == nil || identity != (RecoveryIdentity{}) || len(fresh.files) != 0 || len(fresh.evidence) != 0 {
+		t.Fatal("retained inspection relaxed fresh initial enrollment", err)
+	}
+}
+
+func TestInspectRetainedApprovedBaselineRejectsChangedMembersAndOriginalPins(t *testing.T) {
+	for _, fault := range []string{"request pin", "changed request", "payload hash", "self-consistent inventory", "sidecar pin", "excluded profile hash", "excluded profile CRC", "unknown helper", "trailing bytes", "truncated archive"} {
+		t.Run(fault, func(t *testing.T) {
+			f := newApprovedBaselineFixture(t, nil)
+			pin := recoveryDigest(f.raw)
+			switch fault {
+			case "request pin":
+				pin = strings.Repeat("0", 64)
+			case "changed request":
+				f.raw = append(f.raw, ' ')
+			case "payload hash", "self-consistent inventory":
+				f.entries["app/opencpn.exe"] = []byte("changed original executable")
+				if fault == "self-consistent inventory" {
+					inventory := map[string]string{}
+					for name, raw := range f.entries {
+						if name != "FILE_SHA256.json" {
+							inventory[name] = recoveryDigest(raw)
+						}
+					}
+					f.entries["FILE_SHA256.json"] = recoveryJSON(t, inventory)
+					var request brokerregistration.Request
+					if err := json.Unmarshal(f.raw, &request); err != nil {
+						t.Fatal(err)
+					}
+					request.Installed.InventorySHA256 = recoveryDigest(f.entries["FILE_SHA256.json"])
+					f.raw = recoveryJSON(t, request)
+					pin = recoveryDigest(f.raw)
+				}
+				f.archive = recoveryArchive(t, f.entries, nil)
+			case "sidecar pin":
+				f.entries["installer/package.json"] = append(f.entries["installer/package.json"], ' ')
+				f.archive = recoveryArchive(t, f.entries, nil)
+			case "excluded profile hash":
+				f.entries["profile/opencpn.conf"] = []byte("changed excluded profile must still be consumed")
+				f.archive = recoveryArchive(t, f.entries, nil)
+			case "excluded profile CRC":
+				var raw bytes.Buffer
+				z := zip.NewWriter(&raw)
+				for _, name := range recoveryNames(f.entries) {
+					data := f.entries[name]
+					checksum := crc32.ChecksumIEEE(data)
+					if name == "profile/opencpn.conf" {
+						checksum ^= 1
+					}
+					header := &zip.FileHeader{Name: recoveryPrefix + name, Method: zip.Store, CRC32: checksum, CompressedSize64: uint64(len(data)), UncompressedSize64: uint64(len(data))}
+					member, err := z.CreateRaw(header)
+					if err != nil {
+						t.Fatal(err)
+					}
+					if _, err := member.Write(data); err != nil {
+						t.Fatal(err)
+					}
+				}
+				if err := z.Close(); err != nil {
+					t.Fatal(err)
+				}
+				f.archive = raw.Bytes()
+			case "unknown helper":
+				f = newApprovedBaselineFixture(t, func(entries map[string][]byte) { entries["installer/engine/unknown.ps1"] = []byte("unknown helper") })
+				pin = recoveryDigest(f.raw)
+			case "trailing bytes":
+				f.archive = append(f.archive, 0)
+			case "truncated archive":
+				f.archive = f.archive[:len(f.archive)-1]
+			}
+			members, err := InspectRetainedApprovedBaseline(context.Background(), f.raw, pin, bytes.NewReader(f.archive), int64(len(f.archive)))
+			if err == nil || members != nil {
+				t.Fatal("failed historical source returned member identities", err, members)
+			}
+		})
+	}
+}
+
+func TestInspectRetainedApprovedBaselineBoundsAndCancellation(t *testing.T) {
+	f := newApprovedBaselineFixture(t, nil)
+	for _, size := range []int64{-1, 0, 21, maxDownloadBytes + 1} {
+		if members, err := InspectRetainedApprovedBaseline(context.Background(), f.raw, recoveryDigest(f.raw), bytes.NewReader(f.archive), size); err == nil || members != nil {
+			t.Fatal("unbounded retained source accepted", size, err)
+		}
+	}
+	if members, err := InspectRetainedApprovedBaseline(nil, f.raw, recoveryDigest(f.raw), bytes.NewReader(f.archive), int64(len(f.archive))); err == nil || members != nil {
+		t.Fatal("nil retained context accepted")
+	}
+	if members, err := InspectRetainedApprovedBaseline(context.Background(), f.raw, recoveryDigest(f.raw), nil, int64(len(f.archive))); err == nil || members != nil {
+		t.Fatal("nil retained source accepted")
+	}
+	for _, duringRead := range []bool{false, true} {
+		ctx, cancel := context.WithCancel(context.Background())
+		var source io.ReaderAt = bytes.NewReader(f.archive)
+		if duringRead {
+			source = cancelBaselineReaderAt{bytes.NewReader(f.archive), cancel}
+		} else {
+			cancel()
+		}
+		members, err := InspectRetainedApprovedBaseline(ctx, f.raw, recoveryDigest(f.raw), source, int64(len(f.archive)))
+		cancel()
+		if !errors.Is(err, context.Canceled) || members != nil {
+			t.Fatal("retained inspection lost cancellation or returned metadata", err)
+		}
+	}
+}
 
 type approvedBaselineFixture struct {
 	entries      map[string][]byte
@@ -415,8 +566,8 @@ func TestRetainedBaselineEvidenceRequiresExactObservedPayload(t *testing.T) {
 	}
 }
 
-func TestImportApprovedBaselineProductionClockAndSourceBounds(t *testing.T) {
-	f := newApprovedBaselineFixture(t, nil)
+func expiredApprovedBaselineRequest(t *testing.T, f approvedBaselineFixture) []byte {
+	t.Helper()
 	var request brokerregistration.Request
 	if err := json.Unmarshal(f.raw, &request); err != nil {
 		t.Fatal(err)
@@ -436,7 +587,12 @@ func TestImportApprovedBaselineProductionClockAndSourceBounds(t *testing.T) {
 	trust.BootstrapRoot = bytesOf(t, root)
 	request.TrustConfiguration = recoveryJSON(t, trust)
 	request.TrustConfigSHA256 = recoveryDigest(request.TrustConfiguration)
-	expired := recoveryJSON(t, request)
+	return recoveryJSON(t, request)
+}
+
+func TestImportApprovedBaselineProductionClockAndSourceBounds(t *testing.T) {
+	f := newApprovedBaselineFixture(t, nil)
+	expired := expiredApprovedBaselineRequest(t, f)
 	if _, err := ImportApprovedBaseline(context.Background(), expired, recoveryDigest(expired), bytes.NewReader(f.archive), int64(len(f.archive)), newApprovedBaselineSink()); err == nil {
 		t.Fatal("production initial enrollment ignored actual expiry")
 	}

@@ -52,21 +52,7 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 	if err != nil {
 		return empty, err
 	}
-	r := approvedBaselineReaderAt{ctx, io.NewSectionReader(source, 0, size)}
-	contents, err := parseRecoveryContents(ctx, r, size, releasepolicy.Policy{Version: request.Installed.Version, Commit: request.Installed.Commit, SupportedOpenCpn: []releasepolicy.OpenCpn{request.Stock.Identity()}})
-	if canceled := ctx.Err(); canceled != nil {
-		return empty, canceled
-	}
-	if err != nil {
-		return empty, err
-	}
-	observed := map[string]string{}
-	for name, hash := range contents.inventory {
-		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name) {
-			observed[name] = hash
-		}
-	}
-	identity, payload, err := baselineevidence.Validate(ctx, contents.inventoryBytes, contents.packageBytes, contents.productBytes, observed, request.Installed)
+	contents, identity, payload, err := verifiedApprovedBaselineContents(ctx, request, source, size)
 	if err != nil {
 		return empty, err
 	}
@@ -128,6 +114,83 @@ func importApprovedBaselineAt(ctx context.Context, rawRequest []byte, independen
 		return empty, err
 	}
 	return identity, nil
+}
+
+// verifiedApprovedBaselineContents has no sink or external callback. Both callers
+// establish their own request authority before sharing the same bounded archive,
+// full-member hash/CRC and exact original evidence verification.
+func verifiedApprovedBaselineContents(ctx context.Context, request brokerregistration.Request, source io.ReaderAt, size int64) (recoveryContents, RecoveryIdentity, map[string]string, error) {
+	r := approvedBaselineReaderAt{ctx, io.NewSectionReader(source, 0, size)}
+	contents, err := parseRecoveryContents(ctx, r, size, releasepolicy.Policy{Version: request.Installed.Version, Commit: request.Installed.Commit, SupportedOpenCpn: []releasepolicy.OpenCpn{request.Stock.Identity()}})
+	if canceled := ctx.Err(); canceled != nil {
+		return recoveryContents{}, RecoveryIdentity{}, nil, canceled
+	}
+	if err != nil {
+		return recoveryContents{}, RecoveryIdentity{}, nil, err
+	}
+	observed := map[string]string{}
+	for name, hash := range contents.inventory {
+		if ((strings.HasPrefix(name, "app/") || strings.HasPrefix(name, "docs/")) && name != "app/OPENNAV_PORTABLE_PREVIEW") || baselineevidence.IsEngineHelper(name) || baselineevidence.IsCommissioningHelper(name) {
+			observed[name] = hash
+		}
+	}
+	identity, payload, err := baselineevidence.Validate(ctx, contents.inventoryBytes, contents.packageBytes, contents.productBytes, observed, request.Installed)
+	if err != nil {
+		return recoveryContents{}, RecoveryIdentity{}, nil, err
+	}
+	if err := ctx.Err(); err != nil {
+		return recoveryContents{}, RecoveryIdentity{}, nil, err
+	}
+	return contents, identity, payload, nil
+}
+
+// RetainedBaselineMember is an owned value describing an authenticated original
+// app/docs member or evidence/helper member. It contains no source handle,
+// executable bytes, destination, or authority to mutate an installation.
+type RetainedBaselineMember struct {
+	Name   string
+	Size   int64
+	SHA256 string
+}
+
+// InspectRetainedApprovedBaseline checks original baseline bytes against a
+// separately approved request retained by a completed protected registration.
+// Original bootstrap expiry is irrelevant to this historical identity check;
+// initial enrollment must still use ImportApprovedBaseline with its live clock.
+//
+// Every archive member, including excluded profile/portable members, is consumed
+// and checked for exact length, hash and CRC. The returned sorted, caller-owned
+// values describe only the importer's app/docs and original evidence/helper
+// namespace. They grant no install, delete, launch, enrollment or trust authority.
+// This function performs no writes and invokes no sink or external callback.
+// The caller must retain original source custody and forbid concurrent mutation.
+func InspectRetainedApprovedBaseline(ctx context.Context, rawRequest []byte, approvedSHA256 string, source io.ReaderAt, size int64) ([]RetainedBaselineMember, error) {
+	if ctx == nil || source == nil || size < 22 || size > maxDownloadBytes {
+		return nil, errors.New("bounded retained approved baseline source required")
+	}
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	request, err := brokerregistration.ParseRetainedApprovedRequest(rawRequest, approvedSHA256)
+	if err != nil {
+		return nil, err
+	}
+	contents, identity, payload, err := verifiedApprovedBaselineContents(ctx, request, source, size)
+	if err != nil {
+		return nil, err
+	}
+	members := make([]RetainedBaselineMember, 0, len(payload)+2)
+	for name, hash := range payload {
+		members = append(members, RetainedBaselineMember{Name: name, Size: int64(contents.files[name].UncompressedSize64), SHA256: hash})
+	}
+	members = append(members,
+		RetainedBaselineMember{Name: "FILE_SHA256.json", Size: int64(len(contents.inventoryBytes)), SHA256: identity.InventorySHA256},
+		RetainedBaselineMember{Name: "installer/package.json", Size: int64(len(contents.packageBytes)), SHA256: identity.LifecycleManifestSHA256})
+	sort.Slice(members, func(i, j int) bool { return members[i].Name < members[j].Name })
+	if err := ctx.Err(); err != nil {
+		return nil, err
+	}
+	return members, nil
 }
 
 type approvedBaselineReaderAt struct {
