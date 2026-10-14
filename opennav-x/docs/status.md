@@ -12,6 +12,12 @@ metadata (25 focused checks). A short fresh-account probe produced real split
 tokens but refused their primary/impersonation type mismatch; its own cleanup
 passed. Failed evidence is retained below and the ordinary-customer gate stays open.
 
+The actual boat now reaches the private HTTPS origin with native certificate
+validation: HTTP 200, no redirect, and all 1,577 public-root bytes match the
+retained SHA-256. [Read-only evidence](evidence/scrum311-private-origin-20261014/README.md).
+This resolves boat HTTPS reachability only; hosted CI connectivity and actual
+installed update/recovery acceptance remain separate.
+
 Exact `404cc83bd0873a6aa4231c1ba2ae2e4a1f8a3499` passes
 [focused run 38528886583](https://github.com/ThereptileII/Work/actions/runs/38528886583):
 Linux **143 top-level / 422 nested**, native Win32 Windows **216 top-level /
