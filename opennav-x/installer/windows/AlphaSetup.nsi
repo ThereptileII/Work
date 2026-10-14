@@ -22,6 +22,10 @@ Var SupervisedArgument
 Var ReportPath
 Var FailurePoint
 Var StockControl
+Var BrowseControl
+Var SourceDescriptionControl
+Var FinishTitle
+Var FinishText
 Var ActionControl
 Var Result
 Var StatusControl
@@ -45,15 +49,17 @@ Page custom OptionsPage OptionsLeave
 Page custom ReadyPage
 !insertmacro MUI_PAGE_INSTFILES
 !define MUI_FINISHPAGE_RUN
-!define MUI_FINISHPAGE_RUN_TEXT "Launch SKAGER Beta 2"
+!define MUI_FINISHPAGE_TITLE "$FinishTitle"
+!define MUI_FINISHPAGE_TEXT "$FinishText"
+!define MUI_FINISHPAGE_RUN_TEXT "Open SKAGER"
 !define MUI_FINISHPAGE_RUN_FUNCTION LaunchXNav
 !insertmacro MUI_PAGE_FINISH
 UninstPage custom un.MaintenancePage un.MaintenanceLeave
 !define MUI_PAGE_HEADER_TEXT "Applying SKAGER maintenance"
 !define MUI_PAGE_HEADER_SUBTEXT "Original OpenCPN and navigation data are preserved."
 !insertmacro MUI_UNPAGE_INSTFILES
-!define MUI_FINISHPAGE_TITLE "SKAGER maintenance complete"
-!define MUI_FINISHPAGE_TEXT "The selected maintenance action has completed.$\r$\n$\r$\nYour original OpenCPN and navigation data are preserved."
+!define MUI_FINISHPAGE_TITLE "$FinishTitle"
+!define MUI_FINISHPAGE_TEXT "$FinishText"
 !insertmacro MUI_UNPAGE_FINISH
 !insertmacro MUI_LANGUAGE "English"
 
@@ -65,6 +71,8 @@ Function .onInit
   SetShellVarContext current
   InitPluginsDir
   StrCpy $Action "Install"
+  StrCpy $FinishTitle "SKAGER setup complete"
+  StrCpy $FinishText "SKAGER setup has completed. Your original OpenCPN and navigation data are preserved."
   StrCpy $LegacyShortcut ${BST_CHECKED}
   StrCpy $SafeShortcut ${BST_CHECKED}
   StrCpy $ShortcutModes ""
@@ -98,6 +106,14 @@ Function .onInit
   WriteUninstaller "$PLUGINSDIR\Maintain.exe"
 FunctionEnd
 Function CheckSource
+  ; A component action never enters legacy application Preflight. Presence here
+  ; is UI availability only; the fixed helper establishes all native authority.
+  ${If} $Action == "Update service components"
+    StrCpy $Result 1
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" 0 +2
+      StrCpy $Result 0
+    Return
+  ${EndIf}
   Delete "$PLUGINSDIR\preflight.ini"
   nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\Lifecycle.ps1" -Action Preflight -OpenCpn "$StockPath" -PackageDirectory "$PLUGINSDIR" -ManifestSha256 "${MANIFEST_SHA256}" -SummaryPath "$PLUGINSDIR\preflight.ini"'
   Pop $Result
@@ -113,21 +129,17 @@ Function CheckSource
 FunctionEnd
 Function SourcePage
   !insertmacro MUI_HEADER_TEXT "OpenCPN detected" "Confirm the OpenCPN installation you use aboard."
-  Call CheckSource
   nsDialogs::Create 1018
   Pop $0
   ${NSD_CreateLabel} 0 0 100% 28u "OpenCPN must be installed separately. Select its original application. Setup verifies the exact version and files before making changes."
-  Pop $0
+  Pop $SourceDescriptionControl
   ${NSD_CreateText} 0 35u 78% 14u "$StockPath"
   Pop $StockControl
   ${NSD_CreateBrowseButton} 80% 34u 20% 16u "Browse..."
-  Pop $0
-  ${NSD_OnClick} $0 BrowseStock
+  Pop $BrowseControl
+  ${NSD_OnClick} $BrowseControl BrowseStock
   ${NSD_CreateLabel} 0 60u 100% 28u "Choose a supported OpenCPN installation to continue. No files have been changed."
   Pop $StatusControl
-  ${If} $Result == 0
-    ${NSD_SetText} $StatusControl "OpenCPN $DetectedVersion - Compatible$\r$\nYour existing charts and settings will be used."
-  ${EndIf}
   ${NSD_CreateLabel} 0 96u 100% 12u "Installation action"
   Pop $0
   ${NSD_CreateDropList} 0 113u 100% 65u ""
@@ -135,10 +147,44 @@ Function SourcePage
   ${NSD_CB_AddString} $ActionControl "Install"
   ${NSD_CB_AddString} $ActionControl "Update"
   ${NSD_CB_AddString} $ActionControl "Repair"
+  ${NSD_CB_AddString} $ActionControl "Update service components"
   ${NSD_CB_SelectString} $ActionControl "$Action"
+  ${NSD_OnChange} $ActionControl SourceActionChanged
   ${NSD_CreateLabel} 0 145u 100% 25u "Built on OpenCPN, with thanks to its developers. SKAGER installs for this Windows user; original OpenCPN stays available."
   Pop $0
+  Call UpdateSourceAction
   nsDialogs::Show
+FunctionEnd
+Function SourceActionChanged
+  Pop $0
+  Call UpdateSourceAction
+FunctionEnd
+Function UpdateSourceAction
+  ${NSD_GetText} $StockControl $StockPath
+  ${NSD_GetText} $ActionControl $Action
+  Call CheckSource
+  ${If} $Action == "Update service components"
+    !insertmacro MUI_HEADER_TEXT "Update service components" "Application updates are offered when you open SKAGER normally."
+    ${NSD_SetText} $SourceDescriptionControl "Check the installed update service for a verified component update. Application updates are offered separately when you open SKAGER normally."
+    EnableWindow $StockControl 0
+    EnableWindow $BrowseControl 0
+    ${If} $Result == 0
+      ${NSD_SetText} $StatusControl "Installed service maintenance is available. Verification happens when you continue."
+    ${Else}
+      ${NSD_SetText} $StatusControl "The installed service helper is unavailable. Service component maintenance cannot continue."
+    ${EndIf}
+  ${Else}
+    !insertmacro MUI_HEADER_TEXT "OpenCPN detected" "Confirm the OpenCPN installation you use aboard."
+    ${NSD_SetText} $SourceDescriptionControl "OpenCPN must be installed separately. Select its original application. Setup verifies the exact version and files before making changes."
+    EnableWindow $StockControl 1
+    EnableWindow $BrowseControl 1
+    ${NSD_SetText} $StockControl "$StockPath"
+    ${If} $Result == 0
+      ${NSD_SetText} $StatusControl "OpenCPN $DetectedVersion - Compatible$\r$\nYour existing charts and settings will be used."
+    ${Else}
+      ${NSD_SetText} $StatusControl "Application setup is unavailable. Protected installations use normal SKAGER startup for application updates, or Update service components for the service."
+    ${EndIf}
+  ${EndIf}
 FunctionEnd
 Function BrowseStock
   nsDialogs::SelectFileDialog open "$StockPath" "OpenCPN executable|opencpn.exe"
@@ -152,12 +198,26 @@ Function SourceLeave
   ${NSD_GetText} $StockControl $StockPath
   ${NSD_GetText} $ActionControl $Action
   Call CheckSource
+  ${If} $Action == "Update service components"
+    ${If} $Result != 0
+      MessageBox MB_ICONSTOP "The installed service helper is unavailable. Service component maintenance cannot continue. Preserve the installation for recovery."
+      Abort
+    ${EndIf}
+    StrCpy $FinishTitle "Service components checked"
+    StrCpy $FinishText "The service-component check completed. Open SKAGER normally to check for an application update. Your original OpenCPN and navigation data are preserved."
+    Return
+  ${EndIf}
+  StrCpy $FinishTitle "SKAGER setup complete"
+  StrCpy $FinishText "SKAGER setup has completed. Your original OpenCPN and navigation data are preserved."
   ${If} $Result != 0
-    MessageBox MB_ICONSTOP "This OpenCPN installation is not supported, or required files are unavailable. No installation or profile files have been changed. Select the original supported OpenCPN application and retry. See setup details."
+    MessageBox MB_ICONSTOP "This OpenCPN installation is not supported, or required files are unavailable. No installation or profile files have been changed. For a protected service installation, open SKAGER normally for application updates or choose Update service components. Otherwise select the original supported OpenCPN application and retry. See setup details."
     Abort
   ${EndIf}
 FunctionEnd
 Function BackupPage
+  ${If} $Action == "Update service components"
+    Abort
+  ${EndIf}
   !insertmacro MUI_HEADER_TEXT "Your recovery backup" "Your navigation data stays in OpenCPN."
   nsDialogs::Create 1018
   Pop $0
@@ -172,6 +232,9 @@ Function BackupPage
   nsDialogs::Show
 FunctionEnd
 Function OptionsPage
+  ${If} $Action == "Update service components"
+    Abort
+  ${EndIf}
   !insertmacro MUI_HEADER_TEXT "Start menu shortcuts" "Choose convenient ways to open SKAGER."
   nsDialogs::Create 1018
   Pop $0
@@ -201,6 +264,17 @@ Function OptionsLeave
   ${EndIf}
 FunctionEnd
 Function ReadyPage
+  ${If} $Action == "Update service components"
+    !insertmacro MUI_HEADER_TEXT "Ready to check service components" "Application versions and navigation data are preserved."
+    nsDialogs::Create 1018
+    Pop $0
+    ${NSD_CreateLabel} 0 0 100% 45u "The installed update service will check for a verified component update and apply it if available. Windows may ask you to approve the change for this Windows account."
+    Pop $0
+    ${NSD_CreateLabel} 0 60u 100% 45u "Application versions, original OpenCPN and navigation data are preserved. Open SKAGER normally to check for an application update."
+    Pop $0
+    nsDialogs::Show
+    Return
+  ${EndIf}
   !insertmacro MUI_HEADER_TEXT "Ready to install" "Files and startup prerequisites will be checked automatically."
   nsDialogs::Create 1018
   Pop $0
@@ -215,10 +289,25 @@ Function ReadyPage
   nsDialogs::Show
 FunctionEnd
 Section "SKAGER Beta integration"
+  ${If} $Action == "Update service components"
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" 0 setup_components_missing
+    SetOutPath "$PROGRAMFILES32\SKAGER\UpdateBroker"
+    nsExec::ExecToLog '"$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" --maintenance=code-upgrade-current'
+    Pop $Result
+    Goto setup_result
+setup_components_missing:
+    StrCpy $Result 1
+    Goto setup_result
+  ${EndIf}
   nsExec::ExecToLog '"$SYSDIR\WindowsPowerShell\v1.0\powershell.exe" -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "$PLUGINSDIR\Lifecycle.ps1" -Action "$Action" -OpenCpn "$StockPath" -PackageDirectory "$PLUGINSDIR" -ManifestSha256 "${MANIFEST_SHA256}" -Report "$ReportPath" -FailurePoint "$FailurePoint" -ShortcutModes "$ShortcutModes" $SupervisedArgument'
   Pop $Result
+setup_result:
   ${If} $Result != 0
     SetErrorLevel 1
+    ${If} $Action == "Update service components"
+      MessageBox MB_ICONSTOP "The service-component check did not complete. Preserve the installation and recovery evidence; no application update was performed by Setup." /SD IDOK
+      Abort
+    ${EndIf}
     MessageBox MB_ICONSTOP "SKAGER setup did not complete. Existing application generations and navigation data are preserved. Inspect the setup details, then run Setup again. If SKAGER is already installed, choose Diagnostics in SKAGER Maintenance to collect a report." /SD IDOK
     Abort
   ${EndIf}
@@ -230,6 +319,8 @@ FunctionEnd
 Function un.onInit
   SetShellVarContext current
   StrCpy $Action "Repair"
+  StrCpy $FinishTitle "SKAGER maintenance complete"
+  StrCpy $FinishText "The selected maintenance action has completed. Your original OpenCPN and navigation data are preserved."
   StrCpy $ReportPath ""
   ${GetParameters} $0
   ${GetOptions} $0 "/ACTION=" $Action
@@ -241,6 +332,7 @@ Function un.onInit
   ${AndIf} $Action != "Rollback"
   ${AndIf} $Action != "Diagnostics"
   ${AndIf} $Action != "Repair"
+  ${AndIf} $Action != "Update service components"
     MessageBox MB_ICONSTOP "Use the original Setup download for Repair or Update."
     Abort
   ${EndIf}
@@ -257,8 +349,9 @@ Function un.MaintenancePage
   ${NSD_CB_AddString} $ActionControl "Rollback"
   ${NSD_CB_AddString} $ActionControl "Uninstall"
   ${NSD_CB_AddString} $ActionControl "Diagnostics"
+  ${NSD_CB_AddString} $ActionControl "Update service components"
   ${NSD_CB_SelectString} $ActionControl "$Action"
-  ${NSD_CreateLabel} 0 100u 100% 40u "Close all OpenCPN modes before repair, rollback or uninstall. Choose Diagnostics to save a SKAGER installation report. To update, download and run the newer SKAGER Setup."
+  ${NSD_CreateLabel} 0 100u 100% 65u "Close all OpenCPN modes before repair, rollback or uninstall. Choose Diagnostics to save a SKAGER installation report. Choose Update service components to check the installed update service. For protected application updates, open SKAGER normally; other installations use the newer Setup."
   Pop $0
   GetDlgItem $0 $HWNDPARENT 1
   SendMessage $0 ${WM_SETTEXT} 0 "STR:Continue"
@@ -266,11 +359,28 @@ Function un.MaintenancePage
 FunctionEnd
 Function un.MaintenanceLeave
   ${NSD_GetText} $ActionControl $Action
+  ${If} $Action == "Update service components"
+    StrCpy $FinishTitle "Service components checked"
+    StrCpy $FinishText "The service-component check completed. Open SKAGER normally to check for an application update. Your original OpenCPN and navigation data are preserved."
+  ${Else}
+    StrCpy $FinishTitle "SKAGER maintenance complete"
+    StrCpy $FinishText "The selected maintenance action has completed. Your original OpenCPN and navigation data are preserved."
+  ${EndIf}
 FunctionEnd
 Section "Uninstall"
   ; The machine-protected helper owns its own same-account elevation and native
   ; maintenance conversation. This user-level wizard supplies only a fixed action,
   ; never an elevated script, approval hash, SID, package or cleanup destination.
+  ${If} $Action == "Update service components"
+    IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" 0 protected_components_missing
+    SetOutPath "$PROGRAMFILES32\SKAGER\UpdateBroker"
+    nsExec::ExecToLog '"$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" --maintenance=code-upgrade-current'
+    Pop $Result
+    Goto maintenance_result
+protected_components_missing:
+    StrCpy $Result 1
+    Goto maintenance_result
+  ${EndIf}
   ${If} $Action == "Repair"
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\skager-update-provisioner.exe" protected_repair
     IfFileExists "$PROGRAMFILES32\SKAGER\UpdateBroker\*" protected_uninstall_missing legacy_maintenance
@@ -307,6 +417,10 @@ legacy_maintenance:
 maintenance_result:
   ${If} $Result != 0
     SetErrorLevel 1
+    ${If} $Action == "Update service components"
+      MessageBox MB_ICONSTOP "The service-component check did not complete. Preserve the installation and recovery evidence; no application update was performed by Maintenance." /SD IDOK
+      Abort
+    ${EndIf}
     MessageBox MB_ICONSTOP "Maintenance failed. OpenCPN and retained recovery generations are preserved. Inspect the SKAGER installation logs." /SD IDOK
     Abort
   ${EndIf}
