@@ -1,0 +1,76 @@
+name: SKAGER installed customer host capability
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  host-capability:
+    name: Read-only hosted Windows token and desktop capability
+    if: github.repository == 'ThereptileII/Work'
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - name: Prepare explicit blocked evidence before probing
+        shell: pwsh
+        run: |
+          $directory = Join-Path $env:RUNNER_TEMP 'installed-host-probe'
+          New-Item -ItemType Directory -Path $directory | Out-Null
+          $report = @{schema=1; state='blocked'; reason='probe-not-completed'; nativeCustomerAcceptance=$false; consentPromptAcceptance=$false;
+            source=@{repository=$env:GITHUB_REPOSITORY; requestedCommit=$env:GITHUB_SHA};
+            run=@{id=$env:GITHUB_RUN_ID; attempt=$env:GITHUB_RUN_ATTEMPT; job=$env:GITHUB_JOB; event=$env:GITHUB_EVENT_NAME;
+              runnerOS=$env:RUNNER_OS; runnerEnvironment=$env:RUNNER_ENVIRONMENT; imageOS=$env:ImageOS; imageVersion=$env:ImageVersion}}
+          $report | ConvertTo-Json -Depth 5 | Set-Content -Path (Join-Path $directory 'result.json') -Encoding utf8
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Observe native capability without launching customer maintenance
+        shell: python
+        run: |
+          import contextlib, hashlib, io, json, os, platform, runpy, subprocess, sys
+          from pathlib import Path
+          output = Path(os.environ['RUNNER_TEMP']) / 'installed-host-probe/result.json'
+          report = json.loads(output.read_text(encoding='utf-8-sig'))
+          available = False
+          try:
+              if (sys.platform != 'win32' or os.environ['GITHUB_EVENT_NAME'] != 'workflow_dispatch' or
+                  os.environ['GITHUB_REPOSITORY'] != 'ThereptileII/Work' or
+                  os.environ['RUNNER_ENVIRONMENT'] != 'github-hosted'):
+                  raise ValueError('host context refused')
+              root = Path(os.environ['GITHUB_WORKSPACE'])
+              actual = subprocess.check_output(['git', 'rev-parse', 'HEAD'], cwd=root, text=True, timeout=10).strip()
+              if actual != os.environ['GITHUB_SHA']:
+                  raise ValueError('checkout differs')
+              helper = root / 'opennav-x/tools/installed_customer_launch.py'
+              report['source'].update(checkoutCommit=actual, helperSHA256=hashlib.sha256(helper.read_bytes()).hexdigest())
+              report['run']['pythonVersion'] = platform.python_version()
+              # Execute exactly the helper's no-argument capability CLI. Its
+              # launch API is never called and no extra native process is made.
+              captured = io.StringIO()
+              sys.argv = [str(helper)]
+              with contextlib.redirect_stdout(captured):
+                  runpy.run_path(str(helper), run_name='__main__')
+              capability = json.loads(captured.getvalue())
+              if (capability.get('schema') != 1 or capability.get('state') not in ('available', 'blocked') or
+                  capability.get('nativeCustomerAcceptance') is not False or
+                  capability.get('consentPromptAcceptance') is not False):
+                  raise ValueError('capability contract refused')
+              report.update(state=capability['state'], reason=capability['reason'], capability=capability)
+              available = capability['state'] == 'available'
+          except (Exception, SystemExit):
+              # No raw exception, environment dump, account paths or captured
+              # output is retained when structured observation fails.
+              report.update(state='blocked', reason='native-capability-probe-refused')
+          output.write_text(json.dumps(report, sort_keys=True, indent=2) + '\n', encoding='utf-8')
+          print('Host capability: ' + report['state'] + '; customer and UAC acceptance remain unqualified.')
+          raise SystemExit(0 if available else 1)
+      - name: Retain sanitized capability evidence even when blocked
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: installed-host-probe-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/installed-host-probe/result.json
+          if-no-files-found: error
