@@ -7,9 +7,14 @@ declaration produced for one live disposable runner job**. It performs no file,
 network, key, GitHub, profile, service or process operations. It has no approval
 writer, polling operation, installer invocation or automatic grant.
 
-The module is not yet connected to a workflow. Its passing portable checks are
-not hosted-runner, native installed-updater or four-phase acceptance. The
-[existing phase driver](../../tools/test-installed-protected-updater-windows.md)
+[`tools/installed_updater_approval_transport.py`](../../tools/installed_updater_approval_transport.py)
+now provides bounded polling and artifact-verification composition through
+caller-supplied read-only API/download callbacks. It reuses the existing GitHub
+provenance verifiers and passes authenticated originals to the byte binder.
+A bounded HTTP client and the live workflow/orchestration are still missing;
+this is not an executable enrollment workflow or an approval producer. Portable
+checks do not establish hosted-runner, native installed-updater or four-phase
+acceptance. The [existing phase driver](../../tools/test-installed-protected-updater-windows.md)
 retains every original gate.
 
 ## Authority stays outside the records
@@ -47,19 +52,26 @@ Before calling `bind_approval`, the coordinator must separately authenticate:
   bytes with the existing retained-artifact/package verifiers. The module checks
   equality with supplied observations; it does not query GitHub or authenticate
   a locally declared artifact or qualification record.
+- The original B0 application release-policy bytes against the independently
+  approved `b0.policySha256`, and the actual original Setup file's local path,
+  SHA-256 and size. Neither a declared path nor an adjacent checksum supplies
+  those observations. Setup's identity must match the original policy installer.
 - The challenge held by this live pending job, retained independently of the
   submitted approval, and a trusted current UTC clock.
 
-A separately reviewed operator-owned GitHub artifact or immutable commit could
-carry the original approval, but authenticating its uploader/author, write access,
-exact producer/commit, byte identity and reviewer independence remains a required
-coordinator decision. A repository path, artifact name, adjacent checksum,
-approval-looking JSON or local file creation is insufficient. This module does
-not choose that transport, poll it or provision its permissions.
+The implemented artifact transport accepts only an independently authorized
+`ApprovalSource` from the operator's authenticated channel. Its expected producer
+commit, actors and artifact pins must never come from the pending runner's
+proposed envelope, artifact-name discovery or its own calculated hashes. The
+transport verifies that expected identity against GitHub; it does not establish
+which operator is authorized or authorize a workflow merely because it exists.
+Reviewer independence, trusted producer source and write permissions remain
+external prerequisites. A repository path, commit author name, adjacent checksum,
+approval-looking JSON or local file creation is insufficient.
 
 ## Bounded canonical envelopes
 
-Both new envelope types are UTF-8 JSON objects, serialized with sorted keys,
+The request and approval envelopes are UTF-8 JSON objects, serialized with sorted keys,
 no spaces, ASCII escapes and exactly one final LF:
 
 ```python
@@ -112,12 +124,27 @@ the caller's authority; the submitted fields cannot authenticate themselves.
 
 ## Module interface and original driver inputs
 
-`prepare_request(record, client_request=<original bytes>,
-declaration=<original bytes>)` owns and validates a proposed envelope and its
-links to both originals. It returns a frozen `Request`, including canonical
-`original_bytes` and an informational `request_sha256`. It writes nothing and
-does not produce approval. Keep original files and actual creation identities
-retained separately on the runner.
+`prepare_request` requires the original client request, Setup-first admission
+declaration, approved B0 application release policy and independently verified
+Setup metadata:
+
+```python
+request = prepare_request(
+    record,
+    client_request=original_client_request_bytes,
+    declaration=original_b0_declaration_bytes,
+    release_policy=original_b0_application_policy_bytes,
+    expected_setup=verified_original_setup,  # exactly {path, sha256, bytes}
+)
+```
+
+It owns and validates the proposed envelope and links to those originals, then
+returns a frozen `Request`, including canonical `original_bytes` and an
+informational `request_sha256`. It writes nothing and produces no approval.
+Keep original files and actual creation identities retained separately on the
+runner. The declaration must contain exactly `setup: {path, sha256}` in addition
+to the current admission driver's other fields; the former declaration without
+`setup` refuses rather than falling back to an older form.
 
 `bind_approval` requires keyword arguments:
 
@@ -127,6 +154,8 @@ bound = bind_approval(
     approval_bytes=original_operator_approval_bytes,
     client_request=original_client_request_bytes,
     declaration=original_b0_declaration_bytes,
+    release_policy=original_b0_application_policy_bytes,
+    expected_setup=verified_original_setup,  # exactly {path, sha256, bytes}
     approved_request_sha256=independently_approved_envelope_pin,
     approved_approval_sha256=independently_authenticated_approval_pin,
     approved_pins=independently_approved_six_pins,
@@ -138,19 +167,28 @@ bound = bind_approval(
 )
 ```
 
-The two existing originals are bounded at 1 MiB for the client request and
-64 KiB for the declaration. Their exact bytes are pinned, strictly parsed for
-duplicate keys and linked to the proposed B0 version/commit, trust, recovery,
-source, application policy, kit, bootstrap policy and baseline. Their original
-serialization is preserved; they are never canonicalized or regenerated.
-The existing admission driver and native provisioner still perform full stock,
-trust, protected-file, package inventory, profile, SID and actual-token checks.
-This byte module neither replaces those validators nor validates local paths.
+The client request is bounded at 1 MiB, the declaration at 64 KiB and the original
+application release policy at 32 KiB. Their exact bytes are pinned, strictly
+parsed for duplicate keys and linked to the proposed B0 version/commit, trust,
+recovery, source, application policy, kit, bootstrap policy and baseline. Their
+original serialization is preserved; they are never canonicalized or regenerated.
+
+The original policy must select the exact installer target
+`artifacts/<B0 commit>/SKAGER-Beta2-Setup.exe`. Its SHA-256 and positive integer
+size, at most 1 GiB, must match the independently verified original Setup metadata;
+that metadata's local path and SHA-256 must match the declared `setup`. Existing
+policy and declaration pins bind these values; no additional self-approving
+Setup pin is introduced. The binder compares these supplied observations without
+opening the file or granting local-path authority. The admission driver still
+checks the actual Setup file against that original policy before execution.
+The existing driver and native provisioner retain full stock, trust,
+protected-file, package inventory, profile, SID and actual-token checks.
 
 Successful binding returns only a deeply immutable owned `BoundApproval`: frozen
 nested context/artifact records, tuple pins, original request/approval bytes and
-the original client/declaration bytes. No `passed`, installed acceptance or
-execution permission flag is emitted. The six pins map directly to the initial
+the original client/declaration/release-policy bytes, and a frozen
+`Setup(path, sha256, size)` value. No `passed`, installed acceptance or execution
+permission flag is emitted. The six pins map directly to the initial
 driver's declaration/request, bootstrap-policy, provisioner, broker and timestamp
 arguments. Recheck the original files/identities, live context and both expiries
 immediately before the driver's single invocation; a stored parsed result does
@@ -165,11 +203,130 @@ fences and the existing one-enrollment driver retain their independent protectio
 Timeout, expiry, missing independent approval or uncertainty stops execution and
 retains original state for review; it never resets trust or deletes namespaces.
 
+## Bounded GitHub artifact transport
+
+`receive_approval` accepts one exact externally authorized approval producer and
+returns the existing immutable `BoundApproval`:
+
+```python
+bound = receive_approval(
+    source=trusted_approval_source,  # ApprovalSource from the operator channel
+    read_api=bounded_read_only_github_json,
+    download_archive=bounded_original_github_zip,
+    bind_arguments={
+        "request_bytes": original_request_envelope_bytes,
+        "client_request": original_client_request_bytes,
+        "declaration": original_b0_declaration_bytes,
+        "release_policy": original_b0_application_policy_bytes,
+        "expected_setup": verified_original_setup,
+        "expected_runner": authenticated_live_runner_identity,
+        "expected_challenge": retained_pending_job_challenge,
+        "expected_candidate_artifact": authenticated_original_candidate_artifact,
+        "expected_operator_kit_artifact": authenticated_original_kit_artifact,
+    },
+    timeout_seconds=3600,
+    poll_seconds=5,
+    cancelled=is_cancelled,
+)
+```
+
+`bind_arguments` contains exactly those nine entries. The caller supplies original
+bytes and independently authenticated expected context/artifacts. The module
+copies that context before polling. Approval pins come from the separately
+operator-authorized artifact, never from the runner's proposed `pins` record.
+
+`ApprovalSource` is a frozen value containing exactly `repository`, `commit`,
+`run_id`, `run_attempt`, `actor_id`, `triggering_actor_id`, `job_id`, `artifact_id`,
+`artifact_name`, `artifact_digest` and `artifact_bytes`. Numeric IDs use canonical
+positive decimal strings. `commit` identifies the independently reviewed approval
+producer source; it need not equal the B0 product or pending harness commit.
+The transport requires:
+
+- Repository `ThereptileII/Work`, a separate approval run from the pending runner,
+  and the exact workflow path `.github/workflows/skager-installed-approval.yml`
+  with event `workflow_dispatch`. This is the transport's fixed producer contract,
+  not a claim that the workflow has been implemented or dispatched.
+- Exact approved commit, run, attempt, numeric actor and triggering-actor IDs;
+  GitHub's run creation time must follow the pending request's creation time.
+- A successful run with exactly one successful job named
+  `Approve installed B0 originals`, matching the approved numeric job ID and
+  attempt. Artifact metadata does not directly identify its producing job;
+  single-job provenance, the exact artifact pin/name and creation time within
+  that attempt's job interval provide the required corroboration.
+- The exact unexpired artifact ID, digest and length, at most 64 KiB. Its name is
+  `installed-b0-approval-<run ID>-attempt<attempt>-<full request SHA-256>`, produced
+  by `artifact_name(run_id, run_attempt, request_sha256)`. A matching name alone
+  is never authority. The downloaded original ZIP must match the pinned length
+  and SHA-256 before its members are used.
+
+The ZIP contains exactly three nonempty regular files, each at most 16 KiB:
+
+| Member | Exact original content |
+| --- | --- |
+| `request.json` | Byte-for-byte equal to the pending job's retained original request envelope. |
+| `approval.json` | The independently authored canonical approval envelope described above. |
+| `approval-pins.json` | Canonical JSON with exactly `schema: 1`, `purpose: "installed-updater-b0-transport-pins"`, `requestSha256`, `approvalSha256` and `pins` containing the six separately approved original pins. |
+
+The transport rejects extra, duplicate, aliased, linked, directory, encrypted or
+oversized members, and consumes every member to EOF to check original size and
+CRC. It passes the original bytes and authenticated pins to `bind_approval`,
+rechecks the producer after downloading, then checks cancellation and expiry
+before returning. It creates no approval, writes no files, consumes no challenge
+and invokes no installer, enrollment or native process.
+
+The `read_api(endpoint, timeout_seconds=..., max_bytes=...)` callback returns
+strictly decoded GitHub JSON; the corresponding `download_archive` callback
+returns original ZIP bytes. Both must enforce the supplied deadline and byte cap
+**during I/O**, with no API writes, arbitrary URL following or automatic retry of
+failed operations. Checking size or truncating only after an unbounded read does
+not satisfy this contract. The module bounds API responses at 256 KiB and each
+I/O timeout at thirty seconds or the shorter remaining deadline. Total waiting
+is at most one hour, further limited by request expiry; polling intervals are at
+most thirty seconds. It polls only the exact expected pending run and refuses
+failed, cancelled or uncertain outcomes. The existing generic GitHub CLI wrapper
+alone does not supply these bounded HTTP callbacks.
+
+## Remaining live orchestration and native gates
+
+A coordinator still needs to wire the bounded HTTP callbacks, independently
+authorized approval producer and one live disposable Windows journey. The
+pending Windows job must retain its actual account/SID, original files and
+challenge throughout the postproduction approval wait; starting a new Windows
+job after approval changes the native context. Artifact discovery or an
+environment approval granted before request production cannot replace the
+independent postproduction approval channel.
+
+Before the single B0 invocation, the coordinator must recheck original native
+file identities, approved bytes, current job/challenge and both expiry windows,
+then reserve/consume the challenge exactly once. Neither module provides durable
+one-use enforcement. A timeout or ambiguous effect must retain state and evidence
+for review rather than trigger another enrollment or cleanup attempt.
+
+The hosted Windows job also needs the approved tailnet connection and access to
+the selected private HTTPS origin, independently authenticated candidate/kit and
+stock installation, protected cache/acquisition inputs, and an explicitly
+prepared disconnected disposable profile with nonempty navigation and approved
+stable settings. Enabling the origin does not establish the runner's route.
+The driver does not seed or repair the profile. No origin/allowlist, UAC policy
+or authority change follows from either helper.
+
+The existing B0 driver performs genuine default Setup, protected enrollment,
+original B0 startup/normal close and installed customer Maintain uninstall. Live
+native evidence must establish the actual linked limited token, desktop access,
+original process ownership, relocation/exit observations and preservation
+postconditions. Hosted silent elevation cannot establish user-consent acceptance.
+This journey ends with retirement/uninstall; a later B1 four-phase journey cannot
+continue against that retired installation. Preserve original failed evidence;
+portable helper checks or component passes do not qualify the complete journey,
+release, boat or public access.
+
 ## Focused checks
 
-Run `python tools/test-installed-updater-approval.py -v`. The inert tests exercise
-original-byte retention, immutable ownership, separate pins, changed runtime and
-artifact provenance, stale challenges, postproduction ordering, both expiry
-windows, strict schemas/serialization, duplicate keys, tampering and resource
-bounds. No test produces a genuine approval or contacts GitHub, Tailscale, a
-signing service, a Windows installation or the boat.
+The focused inert checks are `python tools/test-installed-updater-approval.py -v`
+and `python tools/test-installed-updater-approval-transport.py -v`. They exercise
+original-byte retention, immutable ownership, Setup/policy binding, separate
+pins, changed runner/producer/artifact provenance, stale challenges,
+postproduction ordering, expiry, cancellation, deadlines, strict schemas,
+ZIP membership/digest/CRC, tampering and resource bounds. Their API callbacks and
+archives are fixtures. No test produces genuine approval or contacts GitHub,
+Tailscale, a signing service, a Windows installation or the boat.
