@@ -2,6 +2,7 @@
 """Data-only receipt tests; no NSIS, application execution or native acceptance."""
 import ast
 import hashlib
+import importlib.util
 import json
 import os
 from pathlib import Path
@@ -41,6 +42,151 @@ def pe():
     struct.pack_into('<H', raw, 68, 0x14c)
     struct.pack_into('<H', raw, 88, 0x10b)
     return bytes(raw)
+
+
+class ReadStatBaselines(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.path = Path(temporary.name) / 'inert-Setup.exe'
+        self.raw = b'inert package input; never executed'
+        self.path.write_bytes(self.raw)
+
+    def distinct_sources(self):
+        info = self.path.lstat()
+        fields = ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns',
+                  'st_ctime_ns', 'st_nlink', 'st_file_attributes')
+        path = types.SimpleNamespace(**{name: getattr(info, name, 0) for name in fields})
+        path.st_mode |= 0o111
+        descriptor = types.SimpleNamespace(**vars(path))
+        descriptor.st_mode &= ~0o111
+        descriptor.st_ctime_ns += 1000
+        return path, descriptor
+
+    def read_with(self, before, opened, after_path=None, after_descriptor=None, **kwargs):
+        original = Path.lstat
+        path_calls = 0
+        def path_stat(path):
+            nonlocal path_calls
+            if path != self.path:
+                return original(path)
+            path_calls += 1
+            return before if path_calls == 1 else (after_path or before)
+        with mock.patch.object(Path, 'lstat', path_stat), mock.patch.object(receipt.os, 'fstat',
+                side_effect=[opened, after_descriptor or opened]):
+            return receipt._read(self.path, **kwargs)
+
+    def test_distinct_stable_windows_metadata_sources_allow_hash_collect_and_copy(self):
+        import io
+        for kind in ('hash', 'collect', 'copy'):
+            with self.subTest(kind=kind):
+                before, opened = self.distinct_sources()
+                target = io.BytesIO() if kind == 'copy' else None
+                result = self.read_with(before, opened, collect=kind == 'collect', target=target)
+                self.assertEqual(result, self.raw if kind == 'collect' else sha(self.raw))
+                if target is not None:
+                    self.assertEqual(target.getvalue(), self.raw)
+
+    def test_before_open_common_identity_file_type_link_and_reparse_mismatches_refuse(self):
+        for field in ('st_dev', 'st_ino', 'st_size', 'st_mtime_ns', 'st_nlink', 'st_mode', 'st_file_attributes'):
+            with self.subTest(field=field):
+                before, opened = self.distinct_sources()
+                setattr(opened, field, stat.S_IFDIR | 0o600 if field == 'st_mode' else
+                        0x400 if field == 'st_file_attributes' else getattr(opened, field) + 1)
+                with self.assertRaisesRegex(ValueError, 'changed before read'):
+                    self.read_with(before, opened)
+
+    def test_each_complete_source_baseline_detects_metadata_change(self):
+        for source in ('path', 'descriptor'):
+            for field in ('st_dev', 'st_ino', 'st_mode', 'st_size', 'st_mtime_ns',
+                          'st_ctime_ns', 'st_nlink', 'st_file_attributes'):
+                with self.subTest(source=source, field=field):
+                    before, opened = self.distinct_sources()
+                    changed = types.SimpleNamespace(**vars(before if source == 'path' else opened))
+                    setattr(changed, field, getattr(changed, field) ^ 1)
+                    with self.assertRaises((ValueError, OSError)):
+                        self.read_with(before, opened, **{'after_' + source: changed})
+
+    def test_actual_growth_in_target_callback_refuses_even_when_metadata_is_replayed(self):
+        before, opened = self.distinct_sources()
+        mutated = False
+        def append(_):
+            nonlocal mutated
+            if not mutated:
+                mutated = True
+                with self.path.open('ab') as stream:
+                    stream.write(b'late extra input')
+        with self.assertRaisesRegex(ValueError, 'changed during read'):
+            self.read_with(before, opened, limit=128, target=types.SimpleNamespace(write=append))
+
+    def test_actual_same_byte_path_replacement_during_copy_refuses(self):
+        replacement = self.path.with_name('replacement.exe')
+        replacement.write_bytes(self.raw)
+        before = receipt._signature(self.path.lstat())
+        replaced = False
+        def replace(_):
+            nonlocal replaced
+            os.replace(replacement, self.path)
+            replaced = True
+        target = types.SimpleNamespace(write=replace)
+        try:
+            receipt._read(self.path, target=target)
+        except OSError as error:
+            # Windows CRT file handles can exclude rename/delete. Observe that
+            # native refusal explicitly; POSIX replacement is not assumed.
+            self.assertEqual(sys.platform, 'win32')
+            self.assertIn(error.winerror, (5, 32))
+            self.assertFalse(replaced)
+            self.assertEqual(receipt._signature(self.path.lstat()), before)
+        except ValueError as error:
+            self.assertRegex(str(error), '(changed|replaced) during read')
+            self.assertTrue(replaced)
+        else:
+            self.fail('Same-byte replacement or its native exclusion must refuse the read')
+        self.assertEqual(self.path.read_bytes(), self.raw)
+
+    def test_link_inputs_are_still_refused_before_open(self):
+        alias = self.path.with_name('alias.exe')
+        for kind in ('hardlink', 'symlink'):
+            with self.subTest(kind=kind):
+                if alias.exists() or alias.is_symlink():
+                    alias.unlink()
+                if kind == 'hardlink':
+                    os.link(self.path, alias)
+                else:
+                    try:
+                        alias.symlink_to(self.path)
+                    except OSError:
+                        continue  # Windows may deny symlink creation; no acceptance claim.
+                with self.assertRaises(ValueError):
+                    receipt._read(alias)
+
+    def probe_module(self):
+        spec = importlib.util.spec_from_file_location('receipt_stat_probe',
+            Path(__file__).with_name('probe-installer-receipt-stat-windows.py'))
+        module = importlib.util.module_from_spec(spec)
+        spec.loader.exec_module(module)
+        return module
+
+    def test_stat_probe_exercises_real_receipt_reader_and_reports_bounded_metadata_names(self):
+        probe = self.probe_module()
+        with mock.patch.object(receipt, '_read', wraps=receipt._read) as read:
+            record = probe.observe(self.path, 'inert.exe')
+        read.assert_called_once_with(self.path)
+        self.assertEqual(record['sha256'], sha(self.raw))
+        self.assertEqual(record['bytes'], len(self.raw))
+        self.assertTrue(record['commonIdentityMatched'] and record['completeBaselinesStable'])
+        self.assertTrue(set(record['differingStatFields']) <= set(probe.FIELDS))
+        self.assertNotIn(str(self.path), json.dumps(record))
+
+    def test_stat_probe_keeps_its_outer_descriptor_baseline_independent(self):
+        probe = self.probe_module()
+        actual = os.stat(self.path)
+        changed = types.SimpleNamespace(**{field: getattr(actual, field, 0) for field in probe.FIELDS})
+        changed.st_ctime_ns += 1
+        with mock.patch.object(receipt.os, 'fstat', side_effect=[actual, actual, actual, changed]):
+            with self.assertRaisesRegex(ValueError, 'Original native descriptor changed'):
+                probe.observe(self.path, 'inert.exe')
 
 
 class Receipt(unittest.TestCase):

@@ -105,7 +105,16 @@ def _local(path, directory=False):
 
 
 def _signature(info):
-    return info.st_dev, info.st_ino, info.st_size, info.st_mtime_ns, info.st_ctime_ns
+    return (info.st_dev, info.st_ino, info.st_mode, info.st_size, info.st_mtime_ns,
+            info.st_ctime_ns, info.st_nlink, getattr(info, 'st_file_attributes', 0))
+
+
+def _common_signature(info):
+    # Windows lstat/fstat can disagree on suffix-derived executable mode bits
+    # and ctime semantics. Match common identity, then retain each source's
+    # complete metadata baseline independently, as plugin-input capture does.
+    return (info.st_dev, info.st_ino, stat.S_IFMT(info.st_mode), info.st_size,
+            info.st_mtime_ns, info.st_nlink, bool(getattr(info, 'st_file_attributes', 0) & 0x400))
 
 
 def _read(path, limit=MAX_FILE, collect=False, target=None):
@@ -116,7 +125,8 @@ def _read(path, limit=MAX_FILE, collect=False, target=None):
     digest = hashlib.sha256()
     chunks = []
     with os.fdopen(os.open(path, flags), 'rb') as source:
-        if _signature(os.fstat(source.fileno())) != _signature(before):
+        opened = os.fstat(source.fileno())
+        if _common_signature(opened) != _common_signature(before):
             raise ValueError('Package input changed before read')
         total = 0
         while chunk := source.read(1024 * 1024):
@@ -128,7 +138,7 @@ def _read(path, limit=MAX_FILE, collect=False, target=None):
                 chunks.append(chunk)
             if target is not None:
                 target.write(chunk)
-        if total != before.st_size or _signature(os.fstat(source.fileno())) != _signature(before):
+        if total != before.st_size or _signature(os.fstat(source.fileno())) != _signature(opened):
             raise ValueError('Package input changed during read')
     if _signature(_plain(path)) != _signature(before):
         raise ValueError('Package input replaced during read')
