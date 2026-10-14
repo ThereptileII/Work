@@ -1,6 +1,23 @@
 # SKAGER status — 2026-10-14
 
-## Private email header repaired; SMTP credential correction pending
+## Checkout returns repaired; private email still awaits owner credential entry
+
+Exact `af986f7416bebb638c0e59dfbf98e58732a21157` passes
+[web CI 38547971840](https://github.com/ThereptileII/Work/actions/runs/38547971840):
+**193 tests** (88 Django and 105 Edge), plus disposable SQL checks. The deployed
+server now returns TEST checkout success to the existing orders page and cancel
+to the existing portal, removing two unpublished/404 destinations. Return
+navigation does not grant entitlement. Full server readback before deployment
+and after reload matches the retained 77,896-byte bundle. Frontend bytes remain
+unchanged; no redundant frontend deployment occurred.
+[Deployment and verification](evidence/scrum36-checkout-returns-20261014/README.md).
+
+The owner is away and required SMTP credential entry remains pending after the
+observed Resend authentication refusal. No additional invitation was sent. Public
+signup, TEST checkout, portal access and downloads remain closed as previously
+configured; no payment or login completion is claimed.
+
+## Earlier checkpoint: private email header repaired
 
 Resend's separate `auth.skager.app` sender is verified with enforced TLS.
 The owner completed the credential handoff; custom SMTP is persisted enabled.
