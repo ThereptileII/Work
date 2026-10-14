@@ -83,3 +83,12 @@ live children remain mandatory. Portable fake-API checks grant no native pass.
 Full application packaging, actual installed B0/B1, same-account customer/UAC,
 repair/rollback/uninstall/profile preservation and boat acceptance remain open.
 These component results do not close SCRUM-27 or authorize public release.
+
+### Limited-primary native result
+
+The dedicated fixed read-only child probe at `51ef8373` reached actual LIMITED
+PRIMARY process creation, identity checks and one resume, but timed out awaiting
+its exit. Original FULL SecurityIdentification level 1 is now directly observed.
+No token conversion or policy change occurred; uncertain child/account/profile
+state was preserved for disposable-job destruction. This does not supply customer
+or UAC acceptance. [Exact scope and sanitized receipt](../scrum311-limited-host-20261014/README.md).

@@ -1,0 +1,23 @@
+{
+  "commit": "51ef8373d43ab2a32d2f6df712f72f188f1dcb67",
+  "run": "38615961316",
+  "artifactId": 11919801692,
+  "bytes": 831,
+  "sha256": "ff6f1fbf82213a1b38c548c5131a03c0c1757e53bf7bbc065265fec0fb3f5f8c",
+  "state": "blocked",
+  "reason": "original-capability-child-timeout",
+  "stage": "original-limited-primary-fixed-capability-child",
+  "cleanup": {
+    "reason": "original-process-or-handle-outcome-uncertain",
+    "state": "deferred-to-disposable-job"
+  },
+  "fullTokenType": 2,
+  "fullImpersonationLevel": 1,
+  "limitedTokenType": 1,
+  "limitedImpersonationLevel": 2,
+  "childResumeAttempted": true,
+  "childResumeResult": 1,
+  "nativeCustomerAcceptance": false,
+  "consentPromptAcceptance": false,
+  "productInstallAttempted": false
+}
