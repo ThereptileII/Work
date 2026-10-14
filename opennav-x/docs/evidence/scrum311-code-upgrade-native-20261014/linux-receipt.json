@@ -1,0 +1,17 @@
+{
+  "platform": "linux",
+  "run": 38597858395,
+  "sourceCommit": "eceef0843df49d8a930623cf4edaf83406eabec7",
+  "artifactId": 11912475407,
+  "zipBytes": 64143,
+  "zipSha256": "048923cfe63a4685ea1ea25329130b8b107e6adc62b7b646839891d04e3d0f38",
+  "testStreamSha256": "8e6337eb167aed164ff69ca6325ae7a76850a0cc839a004c04312e2690274dd4",
+  "counts": {
+    "pass": 232
+  },
+  "requiredCases": 59,
+  "allRequiredPassed": true,
+  "applicationBuild": false,
+  "installedCustomerAcceptance": false,
+  "boatAcceptance": false
+}

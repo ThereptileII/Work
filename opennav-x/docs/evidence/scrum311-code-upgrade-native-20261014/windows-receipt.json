@@ -1,0 +1,18 @@
+{
+  "platform": "windows",
+  "run": 38597858395,
+  "sourceCommit": "eceef0843df49d8a930623cf4edaf83406eabec7",
+  "artifactId": 11910622239,
+  "zipBytes": 64666,
+  "zipSha256": "458a8039e26f54e4954bd209ebd1a2c1dac6b6b8eab84fff0255c10066cd2f7e",
+  "testStreamSha256": "137733576f6927b4601780b130fd269010074d9e97442456e1f54a5f289b027f",
+  "counts": {
+    "pass": 331,
+    "skip": 5
+  },
+  "requiredCases": 78,
+  "allRequiredPassed": true,
+  "applicationBuild": false,
+  "installedCustomerAcceptance": false,
+  "boatAcceptance": false
+}

@@ -5,6 +5,30 @@ application build, installed SCM/customer journey, boat test or public release.
 The [contract](../../installer/broker-code-upgrade.md) retains its explicit
 one-successor and recovery-phase limits; normal Setup remains unwired.
 
+## Corrected focused gate passes
+
+Exact source `eceef0843df49d8a930623cf4edaf83406eabec7`,
+[run 38597858395](https://github.com/ThereptileII/Work/actions/runs/38597858395),
+passes **331 Windows x86 / 232 Linux amd64** top-level cases, with zero failures.
+The five existing Windows platform/opt-in skips are not acceptance. All
+**78 Windows / 59 Linux mandatory cases** actually ran and passed, with no
+skipped or failed required subcases. Source closure checks also passed.
+
+Fixture fix `3449a203` releases the refusing probe's DELETE owner before the
+ordinary reread. It additionally requires the foreign file's exact original full
+native binding, while preserving both refusal assertions and byte equality.
+Production sharing/custody behavior is unchanged. The required-case map now
+matches the publisher's pre-existing Linux-only platform contract; all prior
+native Windows requirements remain mandatory.
+
+The original authenticated ZIP downloads match GitHub size/digest and ZIP CRCs;
+their `tests.json` hashes match the embedded exact-source receipts.
+[Windows receipt](windows-receipt.json) and [Linux receipt](linux-receipt.json)
+record artifact IDs, counts, sizes and hashes. This gate qualifies the selected
+native primitives and readers only. Actual SCM transition, same-account UAC,
+installed old/new customer journey, remaining recovery phases, full product
+candidate and boat acceptance are still open.
+
 ## Preserved first run
 
 Exact source `6b28fccfc5982e8f678c6cca5c4f0e55c67f8f4d`,

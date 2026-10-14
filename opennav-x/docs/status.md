@@ -19,12 +19,16 @@ claimed. Focused native kernel/reader tests are required separately from the
 actual SCM, same-account UAC, installed upgrade and boat journeys.
 [Contract and explicit limits](installer/broker-code-upgrade.md).
 
-The first focused native run at `6b28fccf` passed 232 Linux tests and 330 Windows
-tests, but failed one Windows fixture's final foreign-file reread because its
-own retained DELETE handle still excluded that reader. The new publisher-case
-requirements also need to honor their existing Linux-only platform contract.
-No passing Windows upgrade gate is claimed from that run.
-[Preserved failure and artifact custody](evidence/scrum311-code-upgrade-native-20261014/README.md).
+Exact `eceef0843df49d8a930623cf4edaf83406eabec7` passes focused native
+[run 38597858395](https://github.com/ThereptileII/Work/actions/runs/38597858395):
+**331 Windows x86 / 232 Linux passes**, zero failures. All 78/59 mandatory cases
+ran and passed; five existing explicit Windows skips remain unaccepted. The
+first run's foreign-file reread conflicted with its own retained DELETE handle;
+the fixture now releases that probe and additionally compares the original full
+file identity. Publisher-case requirements match their Linux-only lock contract;
+all earlier Windows controls remain. No full application build or installed
+customer acceptance is inferred.
+[Passing receipts and preserved first failure](evidence/scrum311-code-upgrade-native-20261014/README.md).
 
 ## Customer Repair integrated; focused native gate passes
 
