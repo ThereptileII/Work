@@ -81,6 +81,88 @@ func TestNativeStartupMaintenanceImageSourceBindsActualRunningOriginal(t *testin
 	}
 }
 
+func TestNativeStartupMaintenanceImageOriginalAliasKeepsStrictNativeIdentity(t *testing.T) {
+	path, err := maintenanceCurrentImagePath(0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	pointer, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	short := make([]uint16, 32768)
+	count, err := windows.GetShortPathName(pointer, &short[0], uint32(len(short)))
+	if err != nil || count == 0 || count >= uint32(len(short)) {
+		t.Fatal("independent process short path unavailable", err)
+	}
+	alias := windows.UTF16ToString(short[:count])
+	// Volumes may not generate 8.3 names. An explicit case alias still exercises
+	// normalization from the original handle without requiring machine settings.
+	alias = strings.ToUpper(alias)
+	expected, err := windows.CreateFile(pointer, windows.FILE_READ_ATTRIBUTES|windows.READ_CONTROL, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer windows.CloseHandle(expected)
+	info, id, err := enrollmentInfo(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	physical, err := enrollmentPhysicalPath(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dos, err := maintenanceOriginalDOSPath(expected)
+	if err != nil {
+		t.Fatal(err)
+	}
+	if alias == dos {
+		t.Fatal("alias fixture did not change original path spelling")
+	}
+	user, err := windows.GetCurrentProcessToken().GetTokenUser()
+	if err != nil {
+		t.Fatal(err)
+	}
+	files := &nativeEnrollmentFiles{}
+	defer files.Close()
+	pin, err := maintenanceHoldOriginalImage(files, alias, user.User.Sid.String())
+	if err != nil {
+		t.Fatal("original image alias failed canonical retention", err)
+	}
+	if pin.id != id || pin.info.CreationTime != info.CreationTime || pin.physical != physical || pin.dos != dos {
+		t.Fatal("canonical spelling lost original native file identity")
+	}
+	foreign := filepath.Join(t.TempDir(), "foreign-original.exe")
+	if err := os.WriteFile(foreign, []byte("inert different file"), 0600); err != nil {
+		t.Fatal(err)
+	}
+	original := *pin
+	for _, field := range []string{"full ID", "creation", "physical name", "length", "DOS replacement"} {
+		t.Run(field, func(t *testing.T) {
+			*pin = original
+			switch field {
+			case "full ID":
+				pin.id.ID[0] ^= 1
+			case "creation":
+				pin.info.CreationTime.LowDateTime ^= 1
+			case "physical name":
+				pin.physical += "-foreign"
+			case "length":
+				pin.length++
+			case "DOS replacement":
+				pin.dos = foreign
+			}
+			if err := pin.check(); err == nil {
+				t.Fatal("changed original identity accepted")
+			}
+			*pin = original
+			if err := pin.check(); err != nil {
+				t.Fatal("refused identity changed the original", err)
+			}
+		})
+	}
+}
+
 func TestNativeStartupMaintenanceImagePublicationRetainsOriginalAndRefusesExistingOrRetry(t *testing.T) {
 	for _, existing := range []bool{false, true} {
 		name := "fresh"
@@ -100,8 +182,17 @@ func TestNativeStartupMaintenanceImagePublicationRetainsOriginalAndRefusesExisti
 			if err != nil {
 				t.Fatal(err)
 			}
-			ancestor, err := startupHoldAncestry(files, t.TempDir(), user.User.Sid.String())
+			// Retain the fixture directory first; TempDir may contain RUNNER~1.
+			// Obtain its normalized spelling from that original directory handle.
+			ancestor, err := files.pinDirectory(t.TempDir(), "", "", nil, false, user.User.Sid.String())
 			if err != nil {
+				t.Fatal(err)
+			}
+			ancestor.dos, err = maintenanceOriginalDOSPath(ancestor.handle)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := ancestor.check(); err != nil {
 				t.Fatal(err)
 			}
 			broker, err := enrollmentBrokerSID()

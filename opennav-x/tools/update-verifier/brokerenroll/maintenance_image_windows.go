@@ -48,11 +48,7 @@ func openMaintenanceImageNative(ctx context.Context, artifact releasepolicy.Arti
 			resultErr = errors.Join(resultErr, n.Close())
 		}
 	}()
-	parent, err := startupHoldAncestry(n.files, filepath.Dir(path), user.User.Sid.String())
-	if err != nil {
-		return nil, err
-	}
-	n.pin, err = startupOpenFile(n.files, parent, filepath.Base(path), false, maxBrokerBytes)
+	n.pin, err = maintenanceHoldOriginalImage(n.files, path, user.User.Sid.String())
 	if err != nil {
 		return nil, err
 	}
@@ -73,6 +69,71 @@ func openMaintenanceImageNative(ctx context.Context, artifact releasepolicy.Arti
 		return nil, err
 	}
 	return n, nil
+}
+
+// Process image spellings can retain 8.3/case aliases (including RUNNER~1 on
+// Windows hosted runners). Obtain both normalized names from the FIRST held
+// source handle before constructing ancestry. Its original full identity is
+// never replaced with the identity of an independently reopened pathname.
+func maintenanceHoldOriginalImage(files *nativeEnrollmentFiles, path, sid string) (*enrollmentPin, error) {
+	pointer, err := windows.UTF16PtrFromString(path)
+	if err != nil {
+		return nil, err
+	}
+	handle, err := windows.CreateFile(pointer, windows.GENERIC_READ|windows.READ_CONTROL, windows.FILE_SHARE_READ, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	if err != nil {
+		return nil, err
+	}
+	pin := &enrollmentPin{handle: handle, file: true, broker: sid}
+	files.pins = append(files.pins, pin) // Own partial opens before any query.
+	pin.info, pin.id, err = enrollmentInfo(handle)
+	if err != nil {
+		return nil, err
+	}
+	pin.length = int64(uint64(pin.info.FileSizeHigh)<<32 | uint64(pin.info.FileSizeLow))
+	if pin.length < 1 || pin.length > maxBrokerBytes {
+		return nil, errors.New("bounded original running image required")
+	}
+	pin.physical, err = enrollmentPhysicalPath(handle)
+	if err != nil {
+		return nil, err
+	}
+	pin.dos, err = maintenanceOriginalDOSPath(handle)
+	if err != nil {
+		return nil, err
+	}
+	if err := enrollmentSecurity(handle, nil, false, sid); err != nil {
+		return nil, err
+	}
+	pin.descriptor, err = windows.GetSecurityInfo(handle, windows.SE_FILE_OBJECT, windows.OWNER_SECURITY_INFORMATION|windows.DACL_SECURITY_INFORMATION)
+	if err != nil {
+		return nil, err
+	}
+	parent, err := startupHoldAncestry(files, filepath.Dir(pin.dos), sid)
+	if err != nil {
+		return nil, err
+	}
+	if parent.physical+`\`+filepath.Base(pin.dos) != pin.physical || parent.info.VolumeSerialNumber != pin.info.VolumeSerialNumber {
+		return nil, errors.New("original source escaped retained canonical ancestry")
+	}
+	return pin, pin.check()
+}
+
+func maintenanceOriginalDOSPath(handle windows.Handle) (string, error) {
+	buffer := make([]uint16, 32768)
+	n, err := windows.GetFinalPathNameByHandle(handle, &buffer[0], uint32(len(buffer)), 0)
+	if err != nil || n == 0 || n >= uint32(len(buffer)) {
+		return "", errors.Join(errors.New("original source canonical DOS path unavailable"), err)
+	}
+	path := windows.UTF16ToString(buffer[:n])
+	if !strings.HasPrefix(path, `\\?\`) {
+		return "", errors.New("original source local DOS namespace required")
+	}
+	path = strings.TrimPrefix(path, `\\?\`)
+	if len(path) < 4 || path[1:3] != `:\` || filepath.Clean(path) != path || strings.ContainsAny(path[3:], ":/\x00") {
+		return "", errors.New("original source canonical local path required")
+	}
+	return path, nil
 }
 
 func maintenanceCurrentImagePath(flags uint32) (string, error) {
