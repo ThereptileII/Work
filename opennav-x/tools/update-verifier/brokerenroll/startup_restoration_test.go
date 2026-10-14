@@ -89,6 +89,12 @@ func restorePreparedFixture(t *testing.T, owner *MaintenanceOwner, snapshot brok
 }
 
 func TestPreparedStartupRestoresAndDrainsBeforeRetirementAndSCM(t *testing.T) {
+	t.Run("baseline selected", func(t *testing.T) { preparedStartupComposition(t, false) })
+	t.Run("successor selected", func(t *testing.T) { preparedStartupComposition(t, true) })
+}
+
+func preparedStartupComposition(t *testing.T, selectedSuccessor bool) {
+	t.Helper()
 	d := newDecommissionFixture(t)
 	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
 	if err != nil {
@@ -107,6 +113,9 @@ func TestPreparedStartupRestoresAndDrainsBeforeRetirementAndSCM(t *testing.T) {
 	}
 	witness := &decommissionFenceFixture{events: &d.events}
 	snapshot := preparedRetirementSnapshot(t, owner)
+	if selectedSuccessor {
+		snapshot.Generation = strings.Repeat("c", 32)
+	}
 	if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
 		t.Fatal(err)
 	}

@@ -139,10 +139,18 @@ func (e *engine) prepareOriginalDecommission(ctx context.Context, peer brokerpip
 		}
 		binding := brokerstore.DecommissionBinding{RequestID: q.RequestID, ClientSID: registered.ClientSID, RegistrationSHA256: registrationDigest, SelectedHeadSHA256: selected.selected.head, GenerationID: selected.selected.generation, CompletionSHA256: selected.selected.completion, ProfileSHA256: frozen.contents, ProfileIdentitySHA256: frozen.identity}
 		if q.Operation == brokerpipe.PrepareUninstall {
+			attempts, err := selectedHistoryOriginalAttempts(selected)
+			if err != nil {
+				return err
+			}
+			lineage, err := retirementLineage(attempts, registered.Installed.Generation, selected.selected)
+			if err != nil {
+				return err
+			}
 			// Capture original physical identities and protected parent custody while
 			// the full selected owner still validates. Only then release its read-only
 			// generation/journal handles, which cannot coexist with DELETE custody.
-			preparation, err := adapter.Store.PrepareRetiringDecommission(ctx, binding, guard)
+			preparation, err := adapter.Store.PrepareRetiringDecommissionLineage(ctx, binding, lineage, guard)
 			if err != nil {
 				return err
 			}

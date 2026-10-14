@@ -16,9 +16,9 @@ import (
 
 // Uses only disposable inert bytes and the existing elevated native fixture.
 // No installed menu, SCM service, executable or profile is touched.
-func startupCompletedBindingFixture(t *testing.T) (*nativeStartupPublication, *enrollmentPin, *enrollmentPin, *brokerregistration.Request) {
+func startupCompletedBindingFixture(t *testing.T, original ...[]byte) (*nativeStartupPublication, *enrollmentPin, *enrollmentPin, *brokerregistration.Request) {
 	t.Helper()
-	owner, menu, recovery, sd := startupThreeLinkFixture(t)
+	owner, menu, recovery, sd := startupThreeLinkFixture(t, original...)
 	_, _, inert, _ := startupFlowFixture(t)
 	raw := bytes.Replace(inert.OriginalBytes(), []byte(inertClientSID), []byte(owner.clientSID), 1)
 	if bytes.Equal(raw, inert.OriginalBytes()) {

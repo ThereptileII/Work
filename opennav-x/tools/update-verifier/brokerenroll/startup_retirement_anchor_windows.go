@@ -215,11 +215,13 @@ func (a *startupRetirementAnchor) bind(ctx context.Context, snapshot brokerpipe.
 			a.failed = true
 		}
 	}()
-	if snapshot.Generation != a.generation || !startupRetirementID(snapshot.RequestID) || !validPin(snapshot.RetirementSHA256) {
-		return errors.New("same baseline completed retirement required")
+	if !startupRetirementID(snapshot.Generation) || !startupRetirementID(snapshot.RequestID) || !validPin(snapshot.RetirementSHA256) {
+		return errors.New("completed original lineage retirement required")
 	}
-	// Matches brokerstore's fixed original retirement schema. No caller path or
-	// selected alternative can choose this destination.
+	// The sealed Store witness covers the exact closed original lineage. Its
+	// selected generation may be B1; this retained startup root is still B0.
+	// Rebind only that original B0 identity at its fixed retirement destination.
+	// No selected alternative or caller path can choose a different root.
 	name := "retired-" + snapshot.RequestID + "-" + a.generation
 	physical, dos := a.parent.physical+`\`+name, filepath.Join(a.parent.dos, name)
 	if a.pins[0] == nil || a.pins[1] != nil || a.pins[2] != nil {

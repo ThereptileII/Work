@@ -32,7 +32,8 @@ type preparedStartupRestorationBackend interface {
 // before the broker can retire its generation. It grants no shortcut or SCM
 // mutation. RestoreStartupAndDrain restores while the original generation is
 // still present; BindDecommission then finalizes the same root at its fixed
-// retirement location. This is baseline-only.
+// retirement location. The original approved startup belongs to the baseline,
+// even when a later qualified generation is currently selected.
 func (m *MaintenanceOwner) PrepareStartupRestoration(ctx context.Context, approved *ApprovedStartupPublication) error {
 	return prepareStartupRestorationWith(m, ctx, approved, prepareStartupRestorationNative)
 }
@@ -115,7 +116,7 @@ func restoreStartupAndDrainWith(m *MaintenanceOwner, ctx context.Context, fence 
 		return errors.New("original prepared native startup drain witness required")
 	}
 	protected, err := brokerregistration.EncodeProtectedRecord(m.authority.client)
-	if err != nil || snapshot.ClientSID != m.authority.client.ClientSID || snapshot.RegistrationSHA256 != digest(protected) || snapshot.Generation != m.authority.client.Installed.Generation || !manualStartupRequestID(snapshot.RequestID) || !validPin(snapshot.FenceSHA256) || snapshot.RetirementSHA256 != "" {
+	if err != nil || snapshot.ClientSID != m.authority.client.ClientSID || snapshot.RegistrationSHA256 != digest(protected) || !manualStartupRequestID(snapshot.Generation) || !manualStartupRequestID(snapshot.RequestID) || !validPin(snapshot.FenceSHA256) || snapshot.RetirementSHA256 != "" {
 		return errors.Join(errors.New("interim original startup fence binding differs"), err)
 	}
 	birth, ok := m.process.(maintenanceProcessBirth)

@@ -292,17 +292,21 @@ func TestNativeStartupPublicationRefusesUnknownDestinationAndCancellation(t *tes
 	}
 }
 
-func startupThreeLinkFixture(t *testing.T) (*nativeStartupPublication, *enrollmentPin, *enrollmentPin, *windows.SECURITY_DESCRIPTOR) {
+func startupThreeLinkFixture(t *testing.T, original ...[]byte) (*nativeStartupPublication, *enrollmentPin, *enrollmentPin, *windows.SECURITY_DESCRIPTOR) {
 	t.Helper()
 	owner, menu, recovery, sd := startupNativeFixture(t)
 	ctx := context.Background()
 	var err error
-	owner.original, err = startupWriteFile(ctx, owner.files, menu, "Skager.lnk", []byte("ORIGINAL-NORMAL"), sd, true)
+	originalBytes := []byte("ORIGINAL-NORMAL")
+	if len(original) != 0 {
+		originalBytes = original[0]
+	}
+	owner.original, err = startupWriteFile(ctx, owner.files, menu, "Skager.lnk", originalBytes, sd, true)
 	if err != nil {
 		t.Fatal(err)
 	}
-	owner.originalSHA = digest([]byte("ORIGINAL-NORMAL"))
-	if _, err := startupWriteFile(ctx, owner.files, recovery, "original.lnk.bytes", []byte("ORIGINAL-NORMAL"), sd, false); err != nil {
+	owner.originalSHA = digest(originalBytes)
+	if _, err := startupWriteFile(ctx, owner.files, recovery, "original.lnk.bytes", originalBytes, sd, false); err != nil {
 		t.Fatal(err)
 	}
 	owner.additional = []*nativeStartupPublication{

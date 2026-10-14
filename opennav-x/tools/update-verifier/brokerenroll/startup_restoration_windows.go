@@ -30,6 +30,9 @@ type nativeStartupRestoration struct {
 	restored, attempted                      bool
 	raw                                      []byte
 	anchor                                   *startupRetirementAnchor
+	installedPrepared, installedEligible     bool
+	installedAttempted, installedFailed      bool
+	originalRetired                          bool
 }
 
 func openStartupRestorationNative(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte) (result startupRestorationBackend, resultErr error) {
@@ -195,7 +198,7 @@ func (file startupRestorationFile) checkAlias() error {
 func (n *nativeStartupRestoration) check(ctx context.Context) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if ctx == nil || ctx.Err() != nil || n == nil || n.files == nil {
+	if ctx == nil || ctx.Err() != nil || n == nil || n.files == nil || n.installedFailed {
 		return errors.New("live original shortcut custody required")
 	}
 	if (n.original == nil) != (n.record.Links[0].Original == nil) {
@@ -237,7 +240,7 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 		parent, name := n.menu, spec.name
 		if n.retired[i] {
 			parent, name = n.recovery, startupRetirementName(startupShortcutMode(i))
-			if i != 0 || !n.restored {
+			if i != 0 || !n.restored || n.originalRetired {
 				if err := startupRestorationAbsent(n.menu, spec.name); err != nil {
 					return err
 				}
@@ -259,10 +262,14 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 	if n.original != nil {
 		spec, _ := startupNormal.spec()
 		parent := n.recovery
+		name := spec.name
 		if n.restored {
 			parent = n.menu
 		}
-		if n.original.pin == nil || n.original.pin.physical != parent.physical+`\`+spec.name || n.original.dos != filepath.Join(parent.dos, spec.name) {
+		if n.originalRetired {
+			parent, name = n.recovery, installedOriginalStartupName
+		}
+		if n.original.pin == nil || n.original.pin.physical != parent.physical+`\`+name || n.original.dos != filepath.Join(parent.dos, name) {
 			return errors.New("fixed original normal backup location differs")
 		}
 		if err := n.original.checkAlias(); err != nil {
@@ -420,7 +427,7 @@ func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot 
 	if n == nil || n.anchor == nil || !n.attempted || !n.anchor.drained || n.retired != [3]bool{true, true, true} || n.original != nil && !n.restored {
 		return errors.New("original prepared baseline startup custody required")
 	}
-	if snapshot.ClientSID != n.clientSID || snapshot.Generation != n.record.Generation {
+	if snapshot.ClientSID != n.clientSID || !startupRetirementID(snapshot.Generation) || n.anchor.generation != n.record.Generation {
 		n.anchor.failed = true
 		return errors.New("original prepared baseline startup binding differs")
 	}

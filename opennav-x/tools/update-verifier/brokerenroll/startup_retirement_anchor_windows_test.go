@@ -66,9 +66,9 @@ func prepareStartupFixtureRetirement(t *testing.T, a *startupRetirementAnchor, r
 	}
 }
 
-func nativePreparedStartupMaintenanceFixture(t *testing.T) (*nativeStartupRestoration, *MaintenanceOwner, *decommissionFixture) {
+func nativePreparedStartupMaintenanceFixture(t *testing.T, original ...[]byte) (*nativeStartupRestoration, *MaintenanceOwner, *decommissionFixture) {
 	t.Helper()
-	n, request := startupRestorationNativeFixtureMode(t, true)
+	n, request := startupRestorationNativeFixtureMode(t, true, original...)
 	ctx := context.Background()
 	// Only the existing fake SCM/process observation is substituted. Startup
 	// preflight, retained handles, native generation move, relocation checks and
@@ -112,6 +112,12 @@ func nativePreparedStartupMaintenanceFixture(t *testing.T) (*nativeStartupRestor
 }
 
 func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
+	t.Run("baseline selected", func(t *testing.T) { nativePreparedStartupComposition(t, false) })
+	t.Run("successor selected keeps baseline anchor", func(t *testing.T) { nativePreparedStartupComposition(t, true) })
+}
+
+func nativePreparedStartupComposition(t *testing.T, selectedSuccessor bool) {
+	t.Helper()
 	n, owner, d := nativePreparedStartupMaintenanceFixture(t)
 	ctx := context.Background()
 	var originalHandles [3]windows.Handle
@@ -124,6 +130,12 @@ func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
 		t.Fatal(err)
 	}
 	snapshot := preparedRetirementSnapshot(t, owner)
+	if selectedSuccessor {
+		snapshot.Generation = strings.Repeat("c", 32)
+		if snapshot.Generation == n.anchor.generation {
+			t.Fatal("fixture successor must differ from original startup")
+		}
+	}
 	rename := prepareStartupFixtureRetirement(t, n.anchor, snapshot.RequestID)
 	// Keep the actual failed NTFS boundary as an assertion: descendants open
 	// with FILE_SHARE_DELETE still prevent rename of the original directory.

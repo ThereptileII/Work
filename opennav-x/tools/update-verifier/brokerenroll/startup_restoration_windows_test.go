@@ -22,9 +22,9 @@ func startupRestorationNativeFixture(t *testing.T) *nativeStartupRestoration {
 	return n
 }
 
-func startupRestorationNativeFixtureMode(t *testing.T, preparing bool) (*nativeStartupRestoration, *brokerregistration.Request) {
+func startupRestorationNativeFixtureMode(t *testing.T, preparing bool, originalBytes ...[]byte) (*nativeStartupRestoration, *brokerregistration.Request) {
 	t.Helper()
-	owner, oldMenu, oldRecovery, request := startupCompletedBindingFixture(t)
+	owner, oldMenu, oldRecovery, request := startupCompletedBindingFixture(t, originalBytes...)
 	var generations *enrollmentPin
 	if preparing {
 		// Put the publication's actual ORIGINAL launcher in an inert generation

@@ -78,7 +78,7 @@ not call the old Lifecycle uninstall or bypass its guard using this CLI result;
 a bounded authenticated terminal-cleanup handoff is still required.
 
 The fixed authenticated pipe uses the distinct `prepare-uninstall` operation.
-While the selected owner still validates, `PrepareRetiringDecommission` retains
+While the selected owner still validates, `PrepareRetiringDecommissionLineage` retains
 its original physical identities and protected parents. The host requires a clean
 selected-generation/journal-reader close. Commit then acquires matching DELETE
 owners **before** creating the terminal fence. Fixed recovery destinations must
@@ -123,3 +123,45 @@ for explicit operator recovery. Do not rerun with a new request ID, clean partia
 state, recreate registration or reset trust. Native Windows/MSVC and an actual
 installed end-to-end transaction with exact candidate bytes are still required;
 portable protocol/ordering faults and cross-compilation cannot grant acceptance.
+
+## Closed updated lineage and original startup identity
+
+The host now derives retirement comparisons from every retained original
+execution journal, after the existing selection reducer has proved a closed,
+nonforking history and exactly the same selected head/completion/version.
+Pending or unexecuted staged candidates are not inferred qualified. The list is
+baseline first, with remaining distinct generation IDs sorted deterministically;
+the selected generation need only be a member. Consequently completed automatic
+or manual rollback can select B0 while B1 still requires retirement. Resolved
+no-spawn candidates also remain in the exact comparison set. Conflicting
+completion hashes for one generation refuse.
+
+The native Store independently requires the completed generation namespace to
+equal that set. It checks original approved-baseline and signed-candidate
+purposes, original completion bytes, completed stage seals, parent identities
+and every retained root. Extra, pending, partial or changed objects refuse.
+Schema-2 started/completed records bind the explicit baseline and all ordered
+generation/purpose/completion/root identities. Registration and all generation
+DELETE handles remain held across the same startup-drain callback; every move
+uses its original handle and fixed non-replacing retirement name. Unknown
+children move with their original root and are preserved. The existing
+baseline-only adapter retains schema 1 for its bounded callers.
+
+Original startup publication still owns B0's original launcher and root, even
+when the sealed interim/final result reports selected B1. The operator binds the
+same original B0 root at `retired-<request>-<B0>`; it neither substitutes B1 nor
+reopens drained descendants. Exact interim/final conversation matching remains
+mandatory. These component changes do not make the old Lifecycle uninstall safe
+to run or qualify the installed maintenance UI.
+
+Installed teardown also needs to avoid restoring a link whose target is then
+removed. Its startup boundary classifies the already-held original shortcut
+before fencing, using the Windows system ShellLink implementation with an
+in-memory stream. It never resolves or executes a link, consults mutable COM
+registration, or opens a target path. Malformed/truncated fields refuse.
+Only an exact authenticated integration-target comparison permits retirement;
+stock and unknown targets are preserved. After final witness binding, while
+that witness is still live, the same original link handle moves non-replacing
+to `retired-original-Skager.lnk` in the already-held recovery directory. Its
+bytes and identity stay retained through SCM shutdown. This is a private join
+for installed teardown, not a callable receipt-based cleanup mechanism.
