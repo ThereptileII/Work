@@ -1,5 +1,20 @@
 # SKAGER status — 2026-10-14
 
+## Customer discovery: retained-root security correction in progress
+
+Independent signed-fixture reproduction found direct bootstrap/code-upgrade
+discovery can overwrite retained root v2 with the original v1 anchor when the
+remote rotation link disappears. Ordinary installed release checks preserve v2
+through their authenticated generation state. SCRUM-311 records the finding;
+customer discovery is not qualified until retained-root continuity is fixed.
+No public or boat deployment uses this new customer path.
+
+Optional-target absence is now a typed result only after live authenticated
+nondelegated targets prove absence. Offline, expiry, signatures, rollback,
+delegation and missing advertised bytes remain errors. The focused discovery
+absence regression passes all eight cases locally; it awaits the next combined
+native customer-admission gate.
+
 ## Authenticated upgrade recovery and original cache: focused native gate passes
 
 Exact `3039528767aa71b801a63f258e4fb3d829e21e6e` passes
@@ -44,7 +59,8 @@ Candidate `9b12442d9de9ad1fd91780f74cdfa43eba261dc6`,
 received hosted image `20261012.333.1`. Its early SDK gate correctly refused the
 selected producer's `20261004.326.1`; native application compilation and packaging
 were not reached. This is an environment qualification failure, not an observed
-application crash. Linux continues separately. The original job log is retained
+application crash. The Linux integrated regression job completed successfully.
+The original job log is retained
 privately; the missing evidence-directory upload is a secondary failure after
 that early refusal.
 

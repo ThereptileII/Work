@@ -14,12 +14,19 @@ import (
 	"sync/atomic"
 	"time"
 
+	"github.com/theupdateframework/go-tuf/v2/metadata"
 	"github.com/theupdateframework/go-tuf/v2/metadata/config"
 	"github.com/theupdateframework/go-tuf/v2/metadata/updater"
 )
 
 const maxTargetBytes = 32 << 10
 const maxOperationTime = 30 * time.Second
+
+// ErrAuthenticatedTargetAbsent is returned only after a successful live TUF
+// refresh proves the target absent from signed top-level metadata with no
+// delegations. Network, expiry, rollback, delegation and target-download errors
+// never mean that an optional update is absent.
+var ErrAuthenticatedTargetAbsent = errors.New("target absent from authenticated nondelegated metadata")
 
 type metadataLimitKey struct{}
 
@@ -238,6 +245,12 @@ func verifyTargetWithClientAt(req Request, deadline time.Time, injected *http.Cl
 	}
 	if err := up.Refresh(); err != nil {
 		return nil, fmt.Errorf("TUF refresh: %w", err)
+	}
+	trusted := up.GetTrustedMetadataSet()
+	if top := trusted.Targets[metadata.TARGETS]; top != nil && top.Signed.Delegations == nil {
+		if _, present := top.Signed.Targets[req.TargetPath]; !present {
+			return nil, ErrAuthenticatedTargetAbsent
+		}
 	}
 	target, err := up.GetTargetInfo(req.TargetPath)
 	if err != nil || target == nil {

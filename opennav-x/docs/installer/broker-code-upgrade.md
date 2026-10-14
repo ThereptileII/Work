@@ -47,6 +47,15 @@ is not implemented by target discovery alone. No second per-customer manual
 approval channel is required by this design, and no untrusted local file supplies
 its approval.
 
+An optional successor is absent only when a successful live TUF refresh proves
+the exact target missing from signed top-level targets with no delegations.
+`ErrAuthenticatedTargetAbsent` carries that narrow result. Offline, expired,
+unsigned, rolled-back, delegated or advertised-but-missing responses remain
+failures; callers must not classify go-tuf error strings as "no update". Focused
+tests cover each distinction. Retained-root continuity in direct discovery is
+under repair after a signed v2-to-v1 reproduction; this distinction does not
+qualify customer discovery until that separate security defect is closed.
+
 The local original-completion pin and genuine protected native completion bind
 this transition to the actual user, original request/baseline/publication and
 full old code identities. The exact original trust bytes must match. An expired

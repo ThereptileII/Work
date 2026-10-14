@@ -2,10 +2,13 @@ package verifier
 
 import (
 	"bytes"
+	"errors"
 	"example.com/opennav-update-verifier/releasepolicy"
 	"strings"
 	"testing"
 	"time"
+
+	"github.com/theupdateframework/go-tuf/v2/metadata"
 )
 
 func TestBrokerCodeUpgradeSignedTargetIsolation(t *testing.T) {
@@ -99,6 +102,63 @@ func TestBrokerCodeUpgradeDiscoveryAuthenticatedSuccessor(t *testing.T) {
 			original.ApprovedPolicySHA256 = strings.Repeat("1", 64)
 			if _, data, err := verifyBrokerCodeUpgradeWithClient(original, time.Now().Add(maxOperationTime), f.server.Client()); err == nil || data != nil {
 				t.Fatal("discovery bypassed independent operator approval")
+			}
+		})
+	}
+}
+
+func TestBrokerCodeUpgradeDiscoveryAbsenceRequiresFreshNondelegatedSignedMetadata(t *testing.T) {
+	for _, fault := range []string{"absent", "expired", "offline", "missing-timestamp", "unsigned-absence", "delegated", "advertised-target-missing", "rollback"} {
+		t.Run(fault, func(t *testing.T) {
+			f, b, original := bootstrapFixture(t)
+			req := BrokerCodeUpgradeDiscoveryRequest{MetadataURL: original.MetadataURL, TrustedRoot: original.TrustedRoot, CacheDir: original.CacheDir, Channel: original.Channel, ArtifactOrigin: original.ArtifactOrigin, TrustConfigSHA256: original.TrustConfigSHA256}
+			p := releasepolicy.BrokerCodeUpgradePolicy{Schema: 1, Purpose: releasepolicy.BrokerCodeUpgradePurpose, PreviousBrokerSHA256: strings.Repeat("e", 64), PreviousHelperSHA256: strings.Repeat("f", 64), Bootstrap: b}
+			raw := bootstrapBytes(t, p)
+			identity := bootstrapIdentity(b)
+			identity.Purpose = releasepolicy.BrokerCodeUpgradePurpose
+			upgradePath, _ := releasepolicy.BrokerCodeUpgradeTargetPath("beta")
+			otherPath, _ := releasepolicy.BrokerBootstrapTargetPath("beta")
+			if fault == "rollback" {
+				publishBootstrap(t, f, 3, raw, bootstrapBytes(t, identity), upgradePath, false)
+				if _, _, err := discoverBrokerCodeUpgradeWithClient(req, time.Now().Add(maxOperationTime), f.server.Client()); err != nil {
+					t.Fatal("cannot establish authenticated floor", err)
+				}
+			}
+			path := otherPath
+			if fault == "advertised-target-missing" || fault == "unsigned-absence" {
+				path = upgradePath
+			}
+			publishBootstrap(t, f, 2, raw, bootstrapBytes(t, identity), path, fault == "expired")
+			switch fault {
+			case "offline":
+				f.server.Close()
+			case "missing-timestamp":
+				delete(f.files, "/timestamp.json")
+			case "advertised-target-missing":
+				delete(f.files, "/targets/"+upgradePath)
+			case "delegated", "unsigned-absence":
+				targets, err := metadata.Targets().FromBytes(f.files["/targets.json"])
+				if err != nil {
+					t.Fatal(err)
+				}
+				if fault == "delegated" {
+					targets.Signed.Delegations = &metadata.Delegations{Keys: map[string]*metadata.Key{}}
+					targets.Signatures = nil
+					sign(t, targets, f.keys["targets"])
+				} else {
+					delete(targets.Signed.Targets, upgradePath) // Deliberately unsigned mutation.
+				}
+				f.files["/targets.json"] = bytesOf(t, targets)
+			}
+			got, data, err := discoverBrokerCodeUpgradeWithClient(req, time.Now().Add(maxOperationTime), f.server.Client())
+			if err == nil || data != nil || got != (releasepolicy.BrokerCodeUpgradePolicy{}) {
+				t.Fatal("absence or failed discovery fabricated a successor", err)
+			}
+			if errors.Is(err, ErrAuthenticatedTargetAbsent) != (fault == "absent") {
+				t.Fatal("only fresh signed nondelegated absence may become no update", fault, err)
+			}
+			if fault == "delegated" && !strings.HasPrefix(err.Error(), "target metadata: ") {
+				t.Fatal("delegated fixture must pass refresh before its refused absence", err)
 			}
 		})
 	}
