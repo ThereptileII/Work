@@ -1,5 +1,25 @@
 # SKAGER status — 2026-10-14
 
+## Installed customer component update joined; native gate pending
+
+Admission `04ea88e1`, command/native launch `7391a0a0`/`fc5733b7`, and
+Setup/Maintain action `f08b2911` now join the fixed installed helper to its
+independently verified successor. The dedicated **Update service components**
+action never invokes legacy application mutation or claims an application update.
+Normal protected application updates retain the existing startup offer and consent.
+
+Independent review caught a detached failure-drain goroutine that would lose
+custody at command exit. The corrected path keeps the command alive until the
+original child handle proves exit; no resumed kill or retry is introduced.
+Shared native cache refresh locking also preserves retained-root continuity.
+
+Combined focused Linux checks pass **22 top-level / 82 including subcases**,
+zero failures/skips. Broker/provisioner source-closure suites pass **12/14**.
+Native Windows component tests, NSIS wizard behavior, actual installed UAC/SCM
+journey, full application packaging and boat acceptance remain pending. No public
+or boat deployment has been performed for this path.
+[Updated contract](installer/broker-code-upgrade.md).
+
 ## Customer discovery: retained-root correction passes focused checks
 
 Independent signed-fixture reproduction found direct bootstrap/code-upgrade
@@ -8,8 +28,8 @@ remote rotation link disappears. Ordinary installed release checks preserve v2
 through their authenticated generation state. Fix `cfb9fc64` preserves the
 retained root before go-tuf construction; damaged existing caches refuse without
 reset. Focused Linux checks pass **20 top-level / 96 subcases**, no failures or
-skips. Windows x86 compilation passes; native customer qualification and shared
-cache-refresh serialization remain pending. No public or boat deployment uses
+skips. Windows x86 compilation passes; native customer qualification remains pending. Shared cache-refresh
+serialization is now integrated in the customer increment above. No public or boat deployment uses
 this new customer path. [Evidence](evidence/scrum311-root-continuity-20261014/README.md).
 
 Optional-target absence is now a typed result only after live authenticated

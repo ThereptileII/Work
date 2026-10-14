@@ -1,7 +1,9 @@
 # Existing-enrollment broker/helper code transition
 
-This is an **unqualified explicit operator foundation for SCRUM-311**. It is not
-wired to ordinary Setup Update, Maintain, application startup or public downloads.
+This is an **unqualified operator and installed-customer foundation for SCRUM-311**.
+The customer path uses the fixed installed helper, not caller-supplied approval
+files. Ordinary application updates remain the separate authenticated startup
+offer; a broker/helper update must not claim that the application was updated.
 Native installed-service, installer, profile-preservation and boat qualification
 remain required. The inert NTFS tests exercise disposable files and reader
 selection; they do not install or qualify a service or execute the installed
@@ -39,13 +41,50 @@ original application's version.
 `DiscoverBrokerCodeUpgrade` now provides owned exact verified target bytes and
 the parsed successor tuple without a premanufactured successor pin. It reuses
 the existing signed target, purpose, expiry, floor, origin and schema checks;
-the explicit operator API still requires all independent pins. A future customer
-entry may derive admission from the already authenticated installed helper's
-original protected trust/cache and completion, then retain the exact downloaded
-image and loader through execution. That customer admission/elevation handoff
-is not implemented by target discovery alone. No second per-customer manual
-approval channel is required by this design, and no untrusted local file supplies
-its approval.
+the explicit operator API still requires all independent pins. Customer admission
+derives its authority from the authenticated fixed installed helper's original
+protected trust/cache and completion, then retains the exact downloaded image and
+validated loader through execution. A copied snapshot contains comparisons only;
+the native launch requires the original opaque admission owner. No second
+per-customer manual approval channel is required, and no untrusted local file
+supplies approval.
+
+The customer action `--maintenance=code-upgrade-current` uses same-account UAC.
+Its elevated fixed helper consumes admission explicitly, releasing original-code
+pins before replacement while retaining the downloaded image and original cache.
+The new image is created suspended under the existing elevated token; the actual
+returned process/thread handles, birth, account, session and logon are checked
+before one resume. The private successor accepts four digest comparisons plus
+original parent PID/birth, never paths, caller identity or resume authority. It
+independently reopens the genuine completion/cache, verifies the live signed target
+and its own image, then enters the existing fresh-only upgrade engine.
+
+Only this action permits deletion sharing on original helper image owners, while
+still denying writes and retaining protected ancestry, hashes and full native
+identity. A move is accepted only from the fixed helper name to its exact
+`helper.previous.exe` identity. Parent/self process and primary-token owners remain
+retained and monitored. An uncertain child wait keeps the command alive with its
+acquisition until the original process handle proves exit; a detached goroutine
+cannot preserve custody after command exit. No resumed process is killed or
+relaunched. Cleanup failures prevent success.
+
+Customer discovery and explicit operator verification serialize root selection
+and refresh with the same exclusive native lock in the original protected cache.
+The preliminary child refresh releases that lock before the upgrade engine takes
+it and verifies afresh. Existing cache state is never reset. Authenticated absence
+and a fully verified already-current successor are distinct no-change results;
+offline, invalid, partial or uncertain state is not a successful no-op. Schema-1
+installations without original cache identity do not acquire an implicit migration.
+
+Setup and Maintain expose a separate **Update service components** action. It
+passes only the fixed action to the protected installed helper. Missing/partial
+helper installations refuse without a legacy script fallback. Component mode
+does not run application Preflight/Install/Update or change shortcuts; its finish
+page says components were checked, covering both verified update and authenticated
+no-change. It directs the user to open SKAGER normally for the existing application
+update offer. The original protected-installation refusal in legacy Lifecycle
+remains unchanged. Native wizard and complete installed-journey acceptance are
+still required; source-contract tests do not prove that journey.
 
 An optional successor is absent only when a successful live TUF refresh proves
 the exact target missing from signed top-level targets with no delegations.
