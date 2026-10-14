@@ -6,6 +6,8 @@ import (
 	"context"
 	"encoding/json"
 	"errors"
+	"sync/atomic"
+	"time"
 
 	"golang.org/x/sys/windows"
 )
@@ -16,6 +18,20 @@ import (
 // invariants; read-only diagnostics still hold original selected history.
 // Refusal discloses no filesystem path, registry value or internal error.
 func ServeMaintenance(ctx context.Context, handler MaintenanceHandler) error {
+	return serveMaintenance(ctx, handler, nil)
+}
+
+// ServeMaintenanceWithProtectedUninstall adds the explicit two-phase protected
+// uninstall handler. Ordinary ServeMaintenance always refuses that operation;
+// no final-only handler can bypass the original operator's restore/drain phase.
+func ServeMaintenanceWithProtectedUninstall(ctx context.Context, ordinary MaintenanceHandler, uninstall ProtectedUninstallHandler) error {
+	if uninstall == nil {
+		return ErrRefused
+	}
+	return serveMaintenance(ctx, ordinary, uninstall)
+}
+
+func serveMaintenance(ctx context.Context, handler MaintenanceHandler, uninstall ProtectedUninstallHandler) error {
 	if ctx == nil || handler == nil {
 		return ErrRefused
 	}
@@ -39,7 +55,7 @@ func ServeMaintenance(ctx context.Context, handler MaintenanceHandler) error {
 		if err != nil {
 			return errors.Join(ErrUnavailable, err)
 		}
-		err = serveMaintenanceConnection(ctx, h, handler, replay, server)
+		err = serveMaintenanceConnection(ctx, h, handler, uninstall, replay, server)
 		if ctx.Err() != nil {
 			return ctx.Err()
 		}
@@ -48,7 +64,7 @@ func ServeMaintenance(ctx context.Context, handler MaintenanceHandler) error {
 		}
 	}
 }
-func serveMaintenanceConnection(ctx context.Context, h windows.Handle, handler MaintenanceHandler, replay map[string]struct{}, server *serverIdentity) (resultErr error) {
+func serveMaintenanceConnection(ctx context.Context, h windows.Handle, handler MaintenanceHandler, uninstall ProtectedUninstallHandler, replay map[string]struct{}, server *serverIdentity) (resultErr error) {
 	defer func() {
 		err := windows.DisconnectNamedPipe(h)
 		if err == windows.ERROR_PIPE_NOT_CONNECTED || err == windows.ERROR_NO_DATA || err == windows.ERROR_BROKEN_PIPE {
@@ -58,11 +74,12 @@ func serveMaintenanceConnection(ctx context.Context, h windows.Handle, handler M
 	}()
 	_, err := overlapped(ctx, h, func(o *windows.Overlapped) error { return windows.ConnectNamedPipe(h, o) })
 	if err == nil {
-		serveMaintenanceOne(ctx, h, handler, replay, server)
+		serveMaintenanceOne(ctx, h, handler, uninstall, replay, server)
 	}
 	return err
 }
-func serveMaintenanceOne(parent context.Context, h windows.Handle, handler MaintenanceHandler, replay map[string]struct{}, server *serverIdentity) {
+func serveMaintenanceOne(parent context.Context, h windows.Handle, handler MaintenanceHandler, uninstall ProtectedUninstallHandler, replay map[string]struct{}, server *serverIdentity) {
+	started := time.Now()
 	handshake, cancel := context.WithTimeout(parent, handshakeTimeout)
 	raw, err := readFrame(pipeIO{handshake, h})
 	if err != nil {
@@ -71,6 +88,10 @@ func serveMaintenanceOne(parent context.Context, h windows.Handle, handler Maint
 	}
 	request, err := decodeMaintenanceRequest(raw)
 	if err != nil {
+		cancel()
+		return
+	}
+	if request.Operation == PrepareUninstall && uninstall == nil {
 		cancel()
 		return
 	}
@@ -84,9 +105,14 @@ func serveMaintenanceOne(parent context.Context, h windows.Handle, handler Maint
 	if deadline != nil || server.check() != nil || client.live() != nil {
 		return
 	}
-	operation, stop := context.WithTimeout(parent, operationTimeout)
+	deadlineAt := started.Add(operationTimeout)
+	if request.Operation == PrepareUninstall {
+		deadlineAt = started.Add(protectedUninstallTimeout)
+	}
+	operation, stop := context.WithDeadline(parent, deadlineAt)
 	defer stop()
-	native := &nativePeerCapability{pipe: h, client: client, checkServer: server.check}
+	var incoming atomic.Bool
+	native := &nativePeerCapability{pipe: h, client: client, checkServer: server.check, allowInput: &incoming}
 	ctx, capability := withPeerCapability(operation, nativePeerEvidence(client), native)
 	defer capability.Close()
 	peer := Peer{SID: client.token.sid, SessionID: client.token.session, ProcessID: client.pid}
@@ -101,7 +127,20 @@ func serveMaintenanceOne(parent context.Context, h windows.Handle, handler Maint
 	replay[request.RequestID] = struct{}{}
 	join := executionWatcher(ctx, stop, native.check)
 	defer join()
-	result, err := handler(ctx, peer, request)
+	var result MaintenanceResult
+	if request.Operation == PrepareUninstall {
+		check := func(checkCtx context.Context) error {
+			if checkCtx == nil {
+				return ErrRefused
+			}
+			// The host's outer maintenance callback can own the capability mutex
+			// here. Check retained native custody without reentering that lock.
+			return errors.Join(ctx.Err(), checkCtx.Err(), native.check(), maintenanceOperatorToken(native, nativePeerEvidence(client), peer.SID))
+		}
+		result, err = invokeProtectedUninstallHandler(ctx, peer, request, uninstall, executionNativeConnection{h}, check, &incoming)
+	} else {
+		result, err = handler(ctx, peer, request)
+	}
 	join()
 	if err != nil || !validMaintenanceResult(result, request) || capability.WithMaintenanceOperator(ctx, peer.SID, func(PeerIdentity) error { return nil }) != nil {
 		return

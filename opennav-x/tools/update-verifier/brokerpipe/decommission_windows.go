@@ -6,6 +6,7 @@ import (
 	"context"
 	"errors"
 	"runtime"
+	"sync/atomic"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
@@ -122,13 +123,38 @@ func (n *nativeDecommissionWitness) close() error {
 // process/token/image handles transfer into a nonserializable witness. A lost
 // response can mean a permanent fence; never retry or infer an absent fence.
 func CallDecommission(ctx context.Context, q MaintenanceRequest) (witness *DecommissionWitness, resultErr error) {
-	if ctx == nil || ctx.Err() != nil || (q.Operation != PrepareDecommission && q.Operation != PrepareUninstall) {
+	if q.Operation != PrepareDecommission {
+		return nil, ErrRefused
+	}
+	return callDecommission(ctx, q, nil)
+}
+
+// CallProtectedUninstall performs one original authenticated pipe conversation.
+// restoreAndDrain receives a borrowed fence witness to restore original shortcut
+// bytes and release app/launcher descendant handles before file retirement. Only
+// the final matching retirement result can transfer native custody for SCM use.
+// The entire action is bounded to 90 seconds; it never reconnects or replays.
+func CallProtectedUninstall(ctx context.Context, q MaintenanceRequest, restoreAndDrain func(context.Context, *UninstallFenceWitness) error) (*DecommissionWitness, error) {
+	if q.Operation != PrepareUninstall || restoreAndDrain == nil {
+		return nil, ErrRefused
+	}
+	return callDecommission(ctx, q, restoreAndDrain)
+}
+
+func callDecommission(ctx context.Context, q MaintenanceRequest, restoreAndDrain func(context.Context, *UninstallFenceWitness) error) (witness *DecommissionWitness, resultErr error) {
+	if ctx == nil || ctx.Err() != nil {
 		return nil, ErrRefused
 	}
 	raw, err := encodeMaintenanceRequest(q)
 	if err != nil {
 		return nil, err
 	}
+	timeout := operationTimeout
+	if q.Operation == PrepareUninstall {
+		timeout = protectedUninstallTimeout
+	}
+	operation, cancel := context.WithTimeout(ctx, timeout)
+	defer cancel()
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	if err = maintenanceNoThreadImpersonation(); err != nil {
@@ -150,8 +176,6 @@ func CallDecommission(ctx context.Context, q MaintenanceRequest) (witness *Decom
 	if err != nil {
 		return nil, err
 	}
-	operation, cancel := context.WithTimeout(ctx, operationTimeout)
-	defer cancel()
 	h, err := openFixedPipe(operation, MaintenancePipeName)
 	if err != nil {
 		return nil, err
@@ -178,26 +202,49 @@ func CallDecommission(ctx context.Context, q MaintenanceRequest) (witness *Decom
 	if err = n.check(operation); err != nil {
 		return nil, err
 	}
-	handshake, stop := context.WithTimeout(operation, handshakeTimeout)
-	err = writeFrame(pipeIO{handshake, h}, raw)
-	stop()
-	if err != nil {
-		return nil, errors.Join(ErrRefused, err)
-	}
-	response, err := readFrame(pipeIO{operation, h})
-	if err != nil {
-		return nil, errors.Join(ErrRefused, err)
-	}
-	var actual uint32
-	if err = windows.GetNamedPipeServerProcessId(h, &actual); err != nil || actual != pid {
-		return nil, errors.Join(ErrRefused, err)
-	}
-	if err = n.check(operation); err != nil {
-		return nil, err
-	}
-	result, err := decodeMaintenanceResult(response, q)
-	if err != nil || result.ClientSID != n.caller.token.sid {
-		return nil, errors.Join(ErrRefused, err)
+	creation := uint64(n.server.process.created.HighDateTime)<<32 | uint64(n.server.process.created.LowDateTime)
+	var result MaintenanceResult
+	if q.Operation == PrepareUninstall {
+		var incoming atomic.Bool
+		check := func(checkCtx context.Context) error {
+			if checkCtx == nil {
+				return ErrRefused
+			}
+			var actual uint32
+			if windows.GetNamedPipeServerProcessId(h, &actual) != nil || actual != pid {
+				return ErrRefused
+			}
+			return errors.Join(operation.Err(), n.check(checkCtx), executionPipeIdle(h, incoming.Load()))
+		}
+		join := executionWatcher(operation, cancel, func() error { return check(operation) })
+		defer join()
+		result, err = callProtectedUninstallConversation(operation, q, n.caller.token.sid, pid, creation, executionNativeConnection{h}, check, &incoming, restoreAndDrain)
+		join() // Stop before ACK: the server may disconnect immediately after it.
+		if err != nil {
+			return nil, err
+		}
+	} else {
+		handshake, stop := context.WithTimeout(operation, handshakeTimeout)
+		err = writeFrame(pipeIO{handshake, h}, raw)
+		stop()
+		if err != nil {
+			return nil, errors.Join(ErrRefused, err)
+		}
+		response, err := readFrame(pipeIO{operation, h})
+		if err != nil {
+			return nil, errors.Join(ErrRefused, err)
+		}
+		var actual uint32
+		if err = windows.GetNamedPipeServerProcessId(h, &actual); err != nil || actual != pid {
+			return nil, errors.Join(ErrRefused, err)
+		}
+		if err = n.check(operation); err != nil {
+			return nil, err
+		}
+		result, err = decodeMaintenanceResult(response, q)
+		if err != nil || result.ClientSID != n.caller.token.sid {
+			return nil, errors.Join(ErrRefused, err)
+		}
 	}
 	ack, ackStop := context.WithTimeout(operation, handshakeTimeout)
 	err = writeFrame(pipeIO{ack, h}, maintenanceAck(q))
@@ -212,13 +259,15 @@ func CallDecommission(ctx context.Context, q MaintenanceRequest) (witness *Decom
 	if err != nil {
 		return nil, err
 	}
-	if err = n.check(ctx); err != nil {
+	if err = errors.Join(operation.Err(), n.check(ctx)); err != nil {
 		return nil, err
 	}
-	creation := uint64(n.server.process.created.HighDateTime)<<32 | uint64(n.server.process.created.LowDateTime)
 	witness, err = newDecommissionWitness(ctx, q, result, pid, creation, n)
 	if err != nil {
 		return nil, err
+	}
+	if err = operation.Err(); err != nil {
+		return nil, err // Native validation/minting cannot outlast the pipe budget.
 	}
 	transferred = true
 	return witness, nil

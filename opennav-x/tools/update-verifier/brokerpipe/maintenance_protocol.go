@@ -59,6 +59,11 @@ type MaintenanceResult struct {
 }
 type MaintenanceHandler func(context.Context, Peer, MaintenanceRequest) (MaintenanceResult, error)
 
+// ProtectedUninstallHandler retains its original host owners across one pipe
+// conversation. publishFence is one-shot and waits for the same operator's
+// exact continuation before returning; only then may the handler retire files.
+type ProtectedUninstallHandler func(context.Context, Peer, MaintenanceRequest, func(context.Context, MaintenanceResult) error) (MaintenanceResult, error)
+
 func validMaintenanceRequest(q MaintenanceRequest) bool {
 	if q.Schema != 1 || !id32.MatchString(q.RequestID) {
 		return false

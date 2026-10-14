@@ -4,6 +4,7 @@ package brokerpipe
 
 import (
 	"golang.org/x/sys/windows"
+	"sync/atomic"
 	"unsafe"
 )
 
@@ -13,12 +14,15 @@ type nativePeerCapability struct {
 	pipe        windows.Handle
 	client      *processIdentity
 	checkServer func() error
+	allowInput  *atomic.Bool // armed only during an exact challenged exchange
 }
 
-func (p *nativePeerCapability) check() error { return p.checkInput(false) }
+func (p *nativePeerCapability) check() error {
+	return p.checkInput(p.allowInput != nil && p.allowInput.Load())
+}
 
-// Staging always supplies false. Only the separate execution session arms input
-// while its own bounded reader consumes one exact challenged report.
+// Staging supplies false. Protected uninstall arms input only while its bounded
+// reader consumes the one exact same-connection continuation.
 func (p *nativePeerCapability) checkInput(allowInput bool) error {
 	if p == nil || p.pipe == 0 || p.pipe == windows.InvalidHandle || p.client == nil || p.checkServer == nil {
 		return ErrRefused

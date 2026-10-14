@@ -73,3 +73,37 @@ func TestDecommissionClientRestoresTemporaryGrantBeforeQueryCleanup(t *testing.T
 	}
 
 }
+
+func TestProtectedUninstallCannotUseOldNativeDecommissionWrapper(t *testing.T) {
+	q := brokerpipe.MaintenanceRequest{Schema: 1, Operation: brokerpipe.PrepareUninstall, RequestID: strings.Repeat("1", 32), ExpectedSelectedHeadSHA256: strings.Repeat("2", 64)}
+	if witness, err := CallDecommissionNative(context.Background(), q); witness != nil || !errors.Is(err, brokerpipe.ErrRefused) {
+		t.Fatal("legacy native wrapper admitted protected uninstall", witness, err)
+	}
+}
+
+func TestProtectedUninstallClientCleanupUncertaintyWithholdsFinalWitness(t *testing.T) {
+	q := brokerpipe.MaintenanceRequest{Schema: 1, Operation: brokerpipe.PrepareUninstall, RequestID: strings.Repeat("1", 32), ExpectedSelectedHeadSHA256: strings.Repeat("2", 64)}
+	for _, fault := range []string{"folder.close", "query.close"} {
+		t.Run(fault, func(t *testing.T) {
+			var events []string
+			prepare := func(name string) maintenanceClientPrepare {
+				return func(context.Context) (maintenanceClientCustody, error) {
+					return &decommissionClientFixture{name, &events, fault}, nil
+				}
+			}
+			calls := 0
+			witness, err := callDecommissionWithCustody(context.Background(), q, prepare("query"), prepare("folder"), func(context.Context, brokerpipe.MaintenanceRequest) (*brokerpipe.DecommissionWitness, error) {
+				calls++
+				// This inert value has no native authority. Its failed Close also
+				// demonstrates cleanup cannot retain a caller-supplied witness.
+				return &brokerpipe.DecommissionWitness{}, nil
+			})
+			if err == nil || witness != nil || calls != 1 || !strings.Contains(err.Error(), fault) {
+				t.Fatal("cleanup uncertainty returned authority/retried", witness, err, calls)
+			}
+			if !strings.HasSuffix(strings.Join(events, ","), "folder.close,query.close") {
+				t.Fatal("temporary folder grant cleanup reordered", events)
+			}
+		})
+	}
+}
