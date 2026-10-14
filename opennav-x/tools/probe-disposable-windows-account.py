@@ -2,10 +2,11 @@
 """One real account on an exact disposable GitHub-hosted job; no product action.
 
 No caller command, password arguments/files/environment, privilege enablement,
-restricted tokens, policy writes or desktop ACL changes. Only an original OS
-FULL impersonation token can be converted to primary with DuplicateTokenEx,
-preserving its security context and AuthenticationId. The only
-child command is the original installed_customer_launch.py noargs capability CLI.
+restricted tokens, policy writes or desktop ACL changes. The original OS LIMITED
+PRIMARY logon token launches only the original installed_customer_launch.py
+noargs capability CLI. The linked FULL token is observed, never converted or
+used by this entry. Original token statistics survive refusal. Limited-child
+desktop observations do not enable the elevated-parent customer launch API.
 Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
 window-station/desktop permission additions. Failures preserve uncertain live
 process/account/profile state for disposable-job destruction rather than kill.
@@ -108,6 +109,34 @@ def project_capability(raw, expected_sid):
     return result
 
 
+def project_limited_capability(raw, expected_child):
+    """Observe the LIMITED child; never grant the elevated-parent launch API."""
+    result = project_capability(raw, expected_child['sid'])
+    observed = result['observations']
+    if result['reason'] == 'native-capability-observation-refused':
+        return dict(result, route='limited-primary-read-only-child', limitedPrimaryChildObserved=False,
+                    elevatedParentLaunchAvailable=False, sameAccountElevationTested=False)
+    current = observed['current']
+    require(current == expected_child and current['tokenType'] == 1 and
+            current['elevationType'] == 3 and current['elevated'] is False and
+            current['integrity'] == 'S-1-16-8192' and current['session'] > 0,
+            'original-limited-child-observation-mismatch')
+    desktop = observed['desktop']
+    interactive = (desktop['station'] == 'WinSta0' and desktop['visible'] is True and
+                   desktop['input'] == 'Default' and desktop['thread'] == 'Default' and
+                   desktop['nativeError'] is None)
+    # The existing noargs helper correctly refuses its elevated-parent route
+    # from a limited process. This separate projection reports only what the
+    # original limited child actually observed, not usable FULL-token custody.
+    return dict(schema=1, state='available' if interactive else 'blocked',
+                route='limited-primary-read-only-child',
+                reason='limited-primary-interactive-desktop-observed' if interactive else
+                       'limited-primary-interactive-desktop-unavailable',
+                limitedPrimaryChildObserved=True, interactiveDesktopObserved=interactive,
+                elevatedParentLaunchAvailable=False, sameAccountElevationTested=False,
+                nativeCustomerAcceptance=False, consentPromptAcceptance=False, observations=observed)
+
+
 def hosted_context():
     require(sys.platform == 'win32' and len(sys.argv) == 1 and
             os.environ.get('GITHUB_ACTIONS') == 'true' and
@@ -186,9 +215,13 @@ class AccountProbe:
         require(before == expected and before['sid'] == self.sid and before['elevationType'] == 2 and
                 before['elevated'] and before['integrity'] == 'S-1-16-12288', 'original-full-token-changed')
         statistics = self.token_statistics(original)
+        # Keep discriminating native facts even when DuplicateTokenEx refuses.
+        # A linked FULL may be identification-only; that is not launch authority.
+        self.facts['originalFullStatistics'] = statistics
         require(statistics['tokenType'] == before['tokenType'], 'original-full-token-statistics-refused')
         if before['tokenType'] == 1:
             return original
+        require(statistics['impersonationLevel'] >= 2, 'original-full-token-not-launchable')
         # Native 38531935235 proved the OS-linked FULL can be impersonation.
         # Convert that exact retained FULL only; never create FULL from LIMITED.
         primary = W.HANDLE()
@@ -307,10 +340,28 @@ class AccountProbe:
         self.own(linked)
         partner = token_fact(self.native._token(linked))
         self.facts['originalLinkedToken'] = partner
+        self.select_limited(token, linked, first, partner)
+
+    def select_limited(self, token, linked, first, partner):
         selected = original_full(first, partner, self.sid)
-        self.full = self.full_primary((token, linked)[selected], (first, partner)[selected])
+        full = (token, linked)[selected]
+        self.facts['originalFullStatistics'] = self.token_statistics(full)
+        self.limited = (token, linked)[1 - selected]
+        self.limited_fact = (first, partner)[1 - selected]
+        self.limited_statistics = self.token_statistics(self.limited)
+        self.facts['originalLimitedStatistics'] = self.limited_statistics
+        require(self.limited_statistics['tokenType'] == 1, 'original-limited-primary-required')
+
+    def check_limited(self):
+        require(token_fact(self.native._token(self.limited)) == self.limited_fact and
+                self.limited_fact['sid'] == self.sid and self.limited_fact['tokenType'] == 1 and
+                self.limited_fact['elevationType'] == 3 and not self.limited_fact['elevated'] and
+                self.limited_fact['integrity'] == 'S-1-16-8192' and
+                self.token_statistics(self.limited) == self.limited_statistics,
+                'original-limited-primary-changed')
 
     def observe(self):
+        self.check_limited()
         class Security(C.Structure):
             _fields_ = [('length', W.DWORD), ('descriptor', C.c_void_p), ('inherit', W.BOOL)]
         class Startup(C.Structure):
@@ -339,11 +390,12 @@ class AccountProbe:
         command = [sys.executable, '-I', '-B', str(self.helper)]
         line = C.create_unicode_buffer(subprocess.list2cmdline(command))
         require(len(line) < 1024, 'fixed-helper-command-bound-refused')
+        self.check_limited()
         self.profile_attempted, self.launch_effect = True, 'uncertain'
         try:
             result = self.fn(self.native.adv, 'CreateProcessWithTokenW', W.BOOL, W.HANDLE, W.DWORD, W.LPCWSTR,
                 W.LPWSTR, W.DWORD, C.c_void_p, W.LPCWSTR, C.POINTER(Startup), C.POINTER(Process))(
-                self.full, 1, sys.executable, line, 4, None, str(self.helper.parent), C.byref(startup), C.byref(process))
+                self.limited, 1, sys.executable, line, 4, None, str(self.helper.parent), C.byref(startup), C.byref(process))
             error = C.get_last_error()
             self.launch_effect = 'created' if result else 'refused-no-child'
         finally:
@@ -352,14 +404,18 @@ class AccountProbe:
             if process.thread:
                 self.thread = self.own(process.thread)
         if not result:
-            raise Refused('original-full-token-fixed-probe-launch-refused', number(error))
+            raise Refused('original-limited-token-fixed-probe-launch-refused', number(error))
         require(self.process and self.thread and process.pid > 0 and process.tid > 0,
                 'original-probe-child-handles-refused')
         child_token = self.native._process_token(self.process)
         child = token_fact(self.native._token(child_token))
+        child_statistics = self.token_statistics(child_token)
         self.facts['originalChild'] = dict(pid=process.pid, threadId=process.tid,
-            created=self.native._created(self.process), token=child, resumeAttempted=False)
-        require(child['sid'] == self.sid and child['elevated'] and child['elevationType'] == 2 and
+            created=self.native._created(self.process), token=child, statistics=child_statistics, resumeAttempted=False)
+        self.check_limited()
+        require(child['sid'] == self.sid and not child['elevated'] and child['elevationType'] == 3 and
+                child['tokenType'] == 1 and child['integrity'] == 'S-1-16-8192' and
+                child_statistics['authenticationId'] == self.limited_statistics['authenticationId'] and
                 child['session'] == self.native.observed['current']['session'] and
                 self.fn(self.native.kernel, 'GetProcessId', W.DWORD, W.HANDLE)(self.process) == process.pid and
                 self.fn(self.native.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(self.thread) == process.pid and
@@ -402,7 +458,8 @@ class AccountProbe:
                 break
             require(time.monotonic() < deadline, 'original-capability-child-timeout')
         require(self.verify_profile() is not None, 'original-profile-load-unobserved')
-        return project_capability(bytes(output), self.sid)
+        self.check_limited()
+        return project_limited_capability(bytes(output), child)
 
     def cleanup(self):
         # No delete/kill if creation was interrupted or the original process may
@@ -452,7 +509,7 @@ def run_probe(helper, factory=AccountProbe):
         owner = factory(helper)
         report['stage'] = 'fresh-account-interactive-logon'
         owner.prepare()
-        report['stage'] = 'original-full-token-fixed-capability-child'
+        report['stage'] = 'original-limited-primary-fixed-capability-child'
         capability = owner.observe()
         report.update(state=capability['state'], reason=capability['reason'], capability=capability)
     except Refused as error:
@@ -477,6 +534,7 @@ def run_probe(helper, factory=AccountProbe):
 
 
 def main():
+    require(len(sys.argv) == 1, 'no-caller-arguments-permitted')
     # No mutations, including account creation, before exact hosted/source gate.
     _, helper, source = hosted_context()
     directory = Path(os.environ['RUNNER_TEMP']) / 'disposable-account-probe'
@@ -489,7 +547,8 @@ def main():
     with (directory / 'result.json').open('x', encoding='utf-8') as stream:
         json.dump(result, stream, sort_keys=True, indent=2)
         stream.write('\n')
-    print('Disposable real-account capability: ' + result['state'] + '; customer/UAC acceptance remains unqualified.')
+    print('Disposable limited-primary read-only desktop capability: ' + result['state'] +
+          '; elevation and customer/UAC acceptance remain unqualified.')
     return 0 if result['state'] == 'available' else 1
 
 

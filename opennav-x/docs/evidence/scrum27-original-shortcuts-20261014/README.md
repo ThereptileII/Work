@@ -58,6 +58,28 @@ stops here. Do not change impersonation levels, privileges, desktop ACLs or UAC
 to force acceptance. A genuine authorized ordinary interactive Windows session
 or disposable VM remains necessary for the unqualified customer path.
 
+The failed conversion report did not retain the original FULL token's
+`TOKEN_STATISTICS.ImpersonationLevel`. Error 1346 therefore establishes refusal
+of that conversion, not impossibility of every genuine ordinary-account route.
+The bounded follow-up probe records original FULL and LIMITED token statistics
+before launch or conversion refusal. Its primary path uses the already genuine
+LIMITED PRIMARY logon token directly, with unchanged security context and
+AuthenticationId, for the fixed read-only `installed_customer_launch.py` noargs
+child. It does not convert or launch with the linked FULL token.
+
+The original child token/session/image and token AuthenticationId are checked
+before its sole resume. Its actual WinSta0/Default observations are projected
+separately as `limited-primary-read-only-child`; an inaccessible input desktop
+stays blocked. `available` means only that this limited child observed the
+interactive desktop. `elevatedParentLaunchAvailable`,
+`sameAccountElevationTested`, `nativeCustomerAcceptance` and
+`consentPromptAcceptance` remain false. The existing elevated-parent customer
+launcher contract is unchanged. No UAC or product operation occurs. The explicit
+desktop spelling avoids implicit permission additions; it does not grant the new
+account desktop access. Native execution remains required to establish whether
+that access exists. Original-account/profile cleanup and preservation of uncertain
+live children remain mandatory. Portable fake-API checks grant no native pass.
+
 Full application packaging, actual installed B0/B1, same-account customer/UAC,
 repair/rollback/uninstall/profile preservation and boat acceptance remain open.
 These component results do not close SCRUM-27 or authorize public release.

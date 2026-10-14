@@ -124,6 +124,19 @@ class OriginalFullPrimaryConversion(unittest.TestCase):
                          ('original-full-primary-conversion-refused', 5))
         owner.duplicate.assert_called_once()
         self.assertEqual([handle.value for handle in owner.owned], [11, 22])
+        self.assertEqual(owner.facts['originalFullStatistics']['impersonationLevel'], 2)
+
+    def test_identification_full_statistics_survive_refusal_without_conversion(self):
+        owner = self.owner()
+        owner.token_statistics.return_value = None
+        owner.token_statistics.side_effect = lambda handle: dict(authenticationId=17, tokenType=2,
+                                                                impersonationLevel=1)
+        with self.assertRaises(probe.Refused) as caught:
+            owner.full_primary(owner.original, owner.before.copy())
+        self.assertEqual(caught.exception.reason, 'original-full-token-not-launchable')
+        self.assertEqual(owner.facts['originalFullStatistics'],
+                         dict(authenticationId=17, tokenType=2, impersonationLevel=1))
+        owner.fn.assert_not_called()
 
     def test_interrupted_return_still_retains_new_token_for_original_cleanup(self):
         owner = self.owner()
@@ -171,6 +184,43 @@ class SanitizedCapability(unittest.TestCase):
                     b'{"schema":1,"schema":1}', b'x'*16385]:
             with self.assertRaises(probe.Refused):
                 probe.project_capability(raw, SID)
+
+    def test_limited_child_desktop_is_separate_from_elevated_parent_availability(self):
+        expected = dict(LIMITED, session=2)
+        value = customer._capability(dict(current=expected, linked=dict(FULL, session=2, tokenType=2),
+            linkedError=None, policy=dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1),
+            desktop=dict(station='WinSta0', visible=True, input='Default', thread='Default')))
+        self.assertEqual(value['state'], 'blocked')  # Existing launch contract stays unchanged.
+        value['privatePath'] = 'secret'
+        result = probe.project_limited_capability(json.dumps(value).encode(), expected)
+        self.assertEqual(result['state'], 'available')
+        self.assertEqual(result['route'], 'limited-primary-read-only-child')
+        for key in ('elevatedParentLaunchAvailable', 'sameAccountElevationTested',
+                    'nativeCustomerAcceptance', 'consentPromptAcceptance'):
+            self.assertFalse(result[key])
+        self.assertNotIn('secret', json.dumps(result))
+        self.assertFalse(customer._normal(expected, value['observations']['linked']))
+
+    def test_limited_child_unreadable_desktop_is_blocked_even_with_actual_primary(self):
+        expected = dict(LIMITED, session=2)
+        observed = dict(current=expected, linked=None, linkedError=1312,
+            policy=dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1),
+            desktop=dict(station='WinSta0', visible=True, input=None, thread='Default', nativeError=5))
+        result = probe.project_limited_capability(json.dumps(customer._capability(observed)).encode(), expected)
+        self.assertEqual(result['state'], 'blocked')
+        self.assertTrue(result['limitedPrimaryChildObserved'])
+        self.assertFalse(result['interactiveDesktopObserved'])
+        self.assertEqual(result['observations']['desktop']['nativeError'], 5)
+
+    def test_limited_projection_rejects_elevated_foreign_session_or_changed_child(self):
+        expected = dict(LIMITED, session=2)
+        for change in ({'session': 3}, {'sid': SID[:-1]+'2'}, {'tokenType': 2},
+                       {'elevated': True, 'elevationType': 2, 'integrity': 'S-1-16-12288'}):
+            observed = dict(current=dict(expected, **change), linked=None, linkedError=1312,
+                policy=dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1),
+                desktop=dict(station='WinSta0', visible=True, input='Default', thread='Default'))
+            with self.subTest(change=change), self.assertRaises(probe.Refused):
+                probe.project_limited_capability(json.dumps(customer._capability(observed)).encode(), expected)
 
     def test_native_refusal_keeps_only_numeric_error(self):
         value = dict(schema=1, state='blocked', reason='native-capability-observation-refused',
@@ -329,10 +379,106 @@ class OriginalCleanup(unittest.TestCase):
 
 
 class FixedNativeCommand(unittest.TestCase):
-    def test_existing_full_token_profile_explicit_desktop_and_noargs_helper_only(self):
+    def child_owner(self, *, child_change=None, authentication=17, report_change=None):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
-        owner.native = SimpleNamespace(kernel='kernel', adv='adv')
-        owner.full, owner.helper, owner.owned = 987, Path('fixed-tools/installed_customer_launch.py'), []
+        owner.sid, owner.limited, owner.owned, owner.facts = SID, 987, [], {}
+        owner.limited_fact = dict(LIMITED, session=2)
+        owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
+        child = dict(owner.limited_fact, **(child_change or {}))
+        reported = dict(owner.limited_fact, **(report_change or {}))
+        value = customer._capability(dict(current=reported, linked=dict(FULL, session=2, tokenType=2),
+            linkedError=None, policy=dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1),
+            desktop=dict(station='WinSta0', visible=True, input='Default', thread='Default')))
+        output, consumed, calls = json.dumps(value).encode(), [False], []
+        owner.helper = Path('fixed-tools/installed_customer_launch.py')
+        owner.native = SimpleNamespace(kernel='kernel', adv='adv', observed={'current': {'session': 2}},
+            _token=lambda token: owner.limited_fact if token == 987 else child,
+            _process_token=lambda handle: 77, _created=lambda handle: 123,
+            _image=lambda handle: probe.sys.executable)
+        owner.token_statistics = lambda token: (owner.limited_statistics if token == 987 else
+            dict(authenticationId=authentication, tokenType=child['tokenType'], impersonationLevel=0))
+        owner.ok = lambda value: probe.require(value, 'native-failure')
+        owner.verify_profile = mock.Mock(return_value=Path('original-profile'))
+        def pipe(read, write, attributes, size):
+            read._obj.value, write._obj.value = 101, 102
+            return True
+        def create(token, flags, executable, command, creation, environment, cwd, startup, process):
+            self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
+            self.assertEqual(executable, probe.sys.executable)
+            self.assertEqual(command.value, probe.subprocess.list2cmdline(
+                [probe.sys.executable, '-I', '-B', str(owner.helper)]))
+            self.assertEqual(startup._obj.desktop, 'WinSta0\\Default')
+            process._obj.process, process._obj.thread = 201, 202
+            process._obj.pid, process._obj.tid = 301, 302
+            return True
+        def peek(read, buffer, size, read_bytes, available, left):
+            available._obj.value = 0 if consumed[0] else len(output)
+            return True
+        def read(handle, raw, length, count, overlap):
+            ctypes.memmove(raw, output, len(output))
+            count._obj.value, consumed[0] = len(output), True
+            return True
+        def exit_code(handle, code):
+            code._obj.value = 0
+            return True
+        apis = {'CreatePipe': pipe, 'SetHandleInformation': lambda *args: True,
+                'CreateFileW': lambda *args: 103, 'CreateProcessWithTokenW': create,
+                'GetProcessId': lambda *args: 301, 'GetProcessIdOfThread': lambda *args: 301,
+                'GetThreadId': lambda *args: 302, 'ResumeThread': lambda *args: 1,
+                'PeekNamedPipe': peek, 'ReadFile': read, 'WaitForSingleObject': lambda *args: 0,
+                'GetExitCodeProcess': exit_code}
+        def fn(dll, name, *args):
+            def call(*args):
+                calls.append(name)
+                return apis[name](*args)
+            return call
+        owner.fn = fn
+        return owner, calls
+
+    def test_actual_child_handles_authentication_and_readonly_report_are_bound_through_exit(self):
+        owner, calls = self.child_owner()
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            result = owner.observe()
+        self.assertEqual(result['state'], 'available')
+        self.assertEqual(result['route'], 'limited-primary-read-only-child')
+        self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
+        self.assertEqual(calls.count('ResumeThread'), 1)
+        self.assertTrue(owner.exit_observed)
+        self.assertEqual(owner.facts['originalChild']['statistics']['authenticationId'], 17)
+        self.assertFalse(result['sameAccountElevationTested'])
+
+    def test_changed_created_child_never_resumes_or_retries(self):
+        cases = [dict(child_change={'session': 3}), dict(authentication=18),
+                 dict(child_change={'tokenType': 2}), dict(child_change=dict(FULL, session=2))]
+        for case in cases:
+            owner, calls = self.child_owner(**case)
+            with self.subTest(case=case), mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+                with self.assertRaises(probe.Refused) as caught:
+                    owner.observe()
+            self.assertEqual(caught.exception.reason, 'original-probe-child-identity-refused')
+            self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
+            self.assertNotIn('ResumeThread', calls)
+            self.assertEqual(owner.launch_effect, 'created')
+            self.assertFalse(owner.facts['originalChild']['resumeAttempted'])
+
+    def test_report_cannot_replace_the_observed_original_child_session(self):
+        owner, calls = self.child_owner(report_change={'session': 3})
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.observe()
+        self.assertEqual(caught.exception.reason, 'original-limited-child-observation-mismatch')
+        self.assertEqual(calls.count('ResumeThread'), 1)
+        self.assertTrue(owner.exit_observed)
+
+    def test_original_limited_token_profile_explicit_desktop_and_noargs_helper_only(self):
+        owner = probe.AccountProbe.__new__(probe.AccountProbe)
+        owner.sid, owner.limited = SID, 987
+        owner.limited_fact = dict(LIMITED, session=2)
+        owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
+        owner.native = SimpleNamespace(kernel='kernel', adv='adv', _token=lambda token: owner.limited_fact)
+        owner.token_statistics = lambda token: owner.limited_statistics
+        owner.full_primary = mock.Mock(side_effect=AssertionError('FULL conversion forbidden'))
+        owner.helper, owner.owned = Path('fixed-tools/installed_customer_launch.py'), []
         owner.ok = lambda value: probe.require(value, 'native-failure')
         calls = []
         def pipe(read, write, attributes, size):
@@ -356,14 +502,50 @@ class FixedNativeCommand(unittest.TestCase):
         with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=1314):
             with self.assertRaises(probe.Refused) as caught:
                 owner.observe()
-        self.assertEqual(caught.exception.reason, 'original-full-token-fixed-probe-launch-refused')
+        self.assertEqual(caught.exception.reason, 'original-limited-token-fixed-probe-launch-refused')
         self.assertEqual(caught.exception.winerror, 1314)
         self.assertEqual(owner.launch_effect, 'refused-no-child')
         self.assertEqual(owner.owned, [mock.ANY, mock.ANY, 103])
         self.assertEqual(calls.count('create'), 1)
+        owner.full_primary.assert_not_called()
+
+    def test_selects_genuine_limited_primary_without_converting_identification_full(self):
+        owner = probe.AccountProbe.__new__(probe.AccountProbe)
+        owner.sid, owner.facts = SID, {}
+        owner.native = SimpleNamespace(_token=lambda token: LIMITED)
+        owner.token_statistics = lambda token: dict(authenticationId=17, tokenType=1 if token == 11 else 2,
+                                                   impersonationLevel=0 if token == 11 else 1)
+        owner.full_primary = mock.Mock(side_effect=AssertionError('FULL conversion forbidden'))
+        owner.select_limited(11, 22, LIMITED, dict(FULL, tokenType=2))
+        self.assertEqual(owner.limited, 11)
+        self.assertEqual(owner.facts['originalFullStatistics']['impersonationLevel'], 1)
+        self.assertEqual(owner.facts['originalLimitedStatistics']['tokenType'], 1)
+        owner.check_limited()
+        owner.full_primary.assert_not_called()
+
+    def test_changed_original_limited_token_refuses_before_native_child_api(self):
+        for change in ({'tokenType': 2}, {'sid': SID[:-1]+'2'}, {'session': 3}, {'elevated': True}):
+            owner = probe.AccountProbe.__new__(probe.AccountProbe)
+            owner.sid, owner.limited = SID, 11
+            owner.limited_fact = dict(LIMITED, session=2)
+            owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
+            owner.native = SimpleNamespace(_token=lambda token: dict(owner.limited_fact, **change))
+            owner.token_statistics = lambda token: owner.limited_statistics
+            owner.fn = mock.Mock()
+            with self.subTest(change=change), self.assertRaises(probe.Refused):
+                owner.observe()
+            owner.fn.assert_not_called()
 
 
 class HostGate(unittest.TestCase):
+    def test_caller_arguments_are_rejected_before_host_or_native_operations(self):
+        for arg in ('--command=anything', '--product=Setup.exe', '--sid='+SID, 'anything'):
+            with mock.patch.object(probe.sys, 'argv', ['probe.py', arg]):
+                with mock.patch.object(probe, 'hosted_context') as host:
+                    with self.assertRaises(probe.Refused):
+                        probe.main()
+                    host.assert_not_called()
+
     def test_non_windows_or_non_hosted_context_refuses_before_any_native_mutation(self):
         with mock.patch.object(probe.sys, 'platform', 'linux'):
             with mock.patch.object(probe.subprocess, 'check_output') as git:
