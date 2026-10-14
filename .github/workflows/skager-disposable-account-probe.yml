@@ -1,0 +1,29 @@
+name: SKAGER disposable ordinary-account capability
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  ordinary-account-capability:
+    name: Genuine disposable Windows account capability
+    if: github.repository == 'ThereptileII/Work'
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          ref: ${{ github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-python@a26af69be951a213d495a4c3e4e4022e16d87065
+        with:
+          python-version: '3.12'
+      - name: Probe one fresh real account without product or policy changes
+        shell: pwsh
+        run: python opennav-x/tools/probe-disposable-windows-account.py
+      - name: Retain bounded capability and cleanup evidence
+        if: always()
+        uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: disposable-account-probe-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/disposable-account-probe/result.json
+          if-no-files-found: error
