@@ -151,6 +151,45 @@ class InitialB0Tests(unittest.TestCase):
         self.assertFalse(attempts)
         self.assertFalse(FakeNative.instances)
 
+    def test_joined_boundary_runs_after_initial_drain_before_customer_maintain(self):
+        boundaries = []
+        def boundary(prepared, provisioner, selected, profile, fixture):
+            self.assertIs(prepared, self.prepared)
+            self.assertEqual(FakeNative.instances[0].events[-1], 'close')
+            self.assertFalse(fixture.before.closed)
+            self.assertEqual(fixture.events, ['setup', 'preserve'])
+            self.assertEqual(selected['selectedHeadSha256'], 'c' * 64)
+            self.assertEqual(profile, fixture.before.profile())
+            boundaries.append(provisioner)
+        result = self.run(self.prepared, self.pins, self.base / 'result.json',
+                          native_factory=FakeNative, preflight_factory=FakeBefore, stage=self.stage,
+                          publish=lambda *args: None, enroll=lambda command: None, before_uninstall=boundary)
+        self.assertEqual(len(boundaries), 1)
+        self.assertTrue(result['nativeInstalledUninstallAcceptance'])
+        self.assertEqual(FakeFixture.instances[0].events, ['setup', 'preserve', 'maintain', 'postconditions'])
+
+    def test_joined_boundary_refusal_never_uninstalls_or_retries_admission(self):
+        attempts = []
+        def boundary(*args):
+            raise ValueError('joined installed phase refused; preserve existing setup')
+        with self.assertRaises(ValueError):
+            self.run(self.prepared, self.pins, self.base / 'result.json',
+                     native_factory=FakeNative, preflight_factory=FakeBefore, stage=self.stage,
+                     publish=lambda *args: None, enroll=lambda command: attempts.append(command),
+                     before_uninstall=boundary)
+        self.assertEqual(len(attempts), 1)
+        self.assertEqual(FakeNative.instances[0].events.count('close'), 1)
+        self.assertEqual(FakeFixture.instances[0].events, ['setup', 'preserve'])
+        self.assertTrue(FakeFixture.instances[0].before.closed)
+
+    def test_invalid_joined_callback_refuses_before_setup_or_enrollment(self):
+        with self.assertRaises(ValueError):
+            self.run(self.prepared, self.pins, self.base / 'result.json',
+                     native_factory=FakeNative, preflight_factory=FakeBefore, stage=self.stage,
+                     publish=lambda *args: None, enroll=lambda command: None, before_uninstall='invalid')
+        self.assertEqual(FakeFixture.instances, [])
+        self.assertEqual(FakeNative.instances, [])
+
     def test_customer_failure_is_not_initial_b0_or_uninstall_success(self):
         class FailedMaintain(FakeFixture):
             def customer_uninstall(self):

@@ -190,7 +190,9 @@ def qualified_b0(history, prepared):
 
 
 def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=BeforeEnrollment,
-        stage=phase.stage_operator, publish=phase.publication, enroll=enroll_once, fixture_factory=InstalledB0Fixture):
+        stage=phase.stage_operator, publish=phase.publication, enroll=enroll_once, fixture_factory=InstalledB0Fixture,
+        *, before_uninstall=None):
+    require(before_uninstall is None or callable(before_uninstall))
     native, before, fixture = None, None, None
     before_closed = False
     try:
@@ -226,8 +228,13 @@ def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=B
         require(phase.profile_preserved(profile, native.profile()))
         publish(prepared, 'no-update', pins['timestamp'])
         unchanged(prepared)
-        native.close()
-        native = None
+        closed, native = native, None
+        closed.close()
+        # The joined lifecycle may run the four original installed phases here.
+        # Its fresh observers cannot inherit initial-generation READ image pins.
+        # A refusal propagates before Maintain; finally only drains our owners.
+        if before_uninstall is not None:
+            before_uninstall(prepared, provisioner, selected, profile, fixture)
         # Native.start_and_close retains READ handles to the original launcher
         # and app after exit. They must drain before broker directory retirement.
         before_closed = True
