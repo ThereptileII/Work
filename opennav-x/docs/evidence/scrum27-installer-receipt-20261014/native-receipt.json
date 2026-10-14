@@ -1,0 +1,138 @@
+{
+  "artifact": {
+    "allMemberCRCsPassed": true,
+    "apiDigest": "sha256:e19e6579d3d9ad69a26008ec12cb505563d83d89ab2c1b56fae781a2da51f553",
+    "bytes": 2589,
+    "id": 11885931109,
+    "members": [
+      {
+        "bytes": 6746,
+        "name": "helper-tests.log",
+        "sha256": "2d6cd239f909ae5430626c7a21b0cccad5def60037655997da3aea2a9d53acb3"
+      },
+      {
+        "bytes": 1225,
+        "name": "probe.log",
+        "sha256": "8c8bdc16707fdee6ec97abaf632c8b380cb5786be858704e152b79a2a9558b46"
+      },
+      {
+        "bytes": 1225,
+        "name": "probe.json",
+        "sha256": "8c8bdc16707fdee6ec97abaf632c8b380cb5786be858704e152b79a2a9558b46"
+      }
+    ],
+    "name": "installer-receipt-contracts-1107c04f55a5a51660e424493bf083fc83106443-run38548714640-attempt1",
+    "sha256": "e19e6579d3d9ad69a26008ec12cb505563d83d89ab2c1b56fae781a2da51f553"
+  },
+  "issue": "SCRUM-27",
+  "job": {
+    "completedAt": "2026-10-14T10:19:39Z",
+    "conclusion": "success",
+    "id": 115801121992,
+    "labels": [
+      "windows-2022"
+    ],
+    "probeStepPassed": true,
+    "startedAt": "2026-10-14T10:19:08Z",
+    "testStepPassed": true,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38548714640/job/115801121992"
+  },
+  "limitations": [
+    "The original Setup read failure in run 38529654044 did not log differing stat fields; its specific field cause is unproven.",
+    "This helper run built no installer, executed no inspected payload, and grants no installed-product, GUI, UAC, boat or release acceptance."
+  ],
+  "preservedFailure": {
+    "artifact": {
+      "allMemberCRCsPassed": true,
+      "apiDigest": "sha256:58081498ea2b114d8c11b87788cdf7d6350606f0b847e05aaa528d3986e0aecf",
+      "bytes": 2865,
+      "id": 11885681081,
+      "members": [
+        {
+          "bytes": 19352,
+          "name": "helper-tests.log",
+          "sha256": "cb6f8159b47f44d6b9dc8375d02f25161dcc3111739efa25ba7a92f163c2d9d6"
+        },
+        {
+          "bytes": 91,
+          "name": "probe.json",
+          "sha256": "a10e7a4f56bd01d677f0d279941622d7b7c8b575db5bbdeff236d414514c5a79"
+        }
+      ],
+      "name": "installer-receipt-contracts-1cb779eea610d88f0ddbf9a88e85d5c67ba931be-run38547844263-attempt1",
+      "sha256": "58081498ea2b114d8c11b87788cdf7d6350606f0b847e05aaa528d3986e0aecf"
+    },
+    "nativeProbeExecuted": false,
+    "runId": 38547844263,
+    "sourceCommit": "1cb779eea610d88f0ddbf9a88e85d5c67ba931be",
+    "tests": {
+      "count": 43,
+      "errors": 4,
+      "failures": 5
+    },
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38547844263"
+  },
+  "probe": {
+    "inspectedPayloadExecuted": false,
+    "installerBuilt": false,
+    "nativeHelperProbe": true,
+    "productAcceptance": false,
+    "pythonVersion": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "records": [
+      {
+        "bytes": 104952,
+        "commonIdentityMatched": true,
+        "completeBaselinesStable": true,
+        "differingStatFields": [
+          "st_mode",
+          "st_ctime_ns"
+        ],
+        "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+        "source": "actual-python-executable"
+      },
+      {
+        "bytes": 45,
+        "commonIdentityMatched": true,
+        "completeBaselinesStable": true,
+        "differingStatFields": [
+          "st_mode"
+        ],
+        "sha256": "0857bb1c800ce63f236c028417539b40b5065dca6168f2accdd69b49b3c197ad",
+        "source": "inert.exe"
+      },
+      {
+        "bytes": 45,
+        "commonIdentityMatched": true,
+        "completeBaselinesStable": true,
+        "differingStatFields": [],
+        "sha256": "0857bb1c800ce63f236c028417539b40b5065dca6168f2accdd69b49b3c197ad",
+        "source": "inert.txt"
+      }
+    ],
+    "schema": 1,
+    "scope": "receipt native path/descriptor baselines and read only"
+  },
+  "run": {
+    "attempt": 1,
+    "conclusion": "success",
+    "event": "workflow_dispatch",
+    "id": 38548714640,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38548714640",
+    "workflow": ".github/workflows/skager-native-python-contracts.yml"
+  },
+  "schema": 1,
+  "scope": "Native installer receipt helper and stat preflight only",
+  "sourceCommit": "1107c04f55a5a51660e424493bf083fc83106443",
+  "sourceGitBlobSHA256": {
+    "opennav-x/tools/installer_package_receipt.py": "6f13cc3b63b557d02466202cd36dd75596223f67c25d7ccd31c32d2376e88ccf",
+    "opennav-x/tools/probe-installer-receipt-stat-windows.py": "5b838173ed3fe5e450f64e09520db7e2347183cd41890ea28f440d4f5db2c953",
+    "opennav-x/tools/test-installer-package-receipt.py": "5e8d66e0dcaa816759b796781c41d8eef33c620f850a85bf0d9a560a57d3e60c"
+  },
+  "status": "passed",
+  "tests": {
+    "command": "python opennav-x/tools/test-installer-package-receipt.py -v",
+    "count": 44,
+    "seconds": 9.903,
+    "status": "passed"
+  }
+}
