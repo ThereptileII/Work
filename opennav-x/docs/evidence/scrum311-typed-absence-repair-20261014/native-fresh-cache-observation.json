@@ -1,0 +1,122 @@
+{
+  "runId": "38632343277",
+  "runAttempt": "1",
+  "source": "f30b92e70b5357e505925547015155ef38837e73",
+  "jobId": "116087242254",
+  "jobConclusion": "cancelled",
+  "originalJobLogBytes": 4292034,
+  "originalJobLogSha256": "fc135ea15176950597ec2f9d3784f12f329f2d3a6180c48279d0abb575d69432",
+  "freshCacheTopLevelPasses": 2,
+  "freshCacheSubcasePasses": 5,
+  "freshCacheFailures": 0,
+  "freshCacheSkips": 0,
+  "freshCacheTerminalRecords": {
+    "TestNativeFreshBootstrapCacheExactRootExclusiveCreation": [
+      {
+        "Time": "2026-10-14T20:30:20.3446376Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheExactRootExclusiveCreation"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.3719832Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheExactRootExclusiveCreation",
+        "Elapsed": 0.03
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent": [
+      {
+        "Time": "2026-10-14T20:30:20.3719832Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.4171857Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent",
+        "Elapsed": 0.05
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/empty": [
+      {
+        "Time": "2026-10-14T20:30:20.3719832Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/empty"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.3807971Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/empty",
+        "Elapsed": 0.01
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/partial": [
+      {
+        "Time": "2026-10-14T20:30:20.3807971Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/partial"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.3867742Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/partial",
+        "Elapsed": 0.01
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-cache": [
+      {
+        "Time": "2026-10-14T20:30:20.3867742Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-cache"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.4064518Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-cache",
+        "Elapsed": 0.02
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-parent": [
+      {
+        "Time": "2026-10-14T20:30:20.4064799Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-parent"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.4121114Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/symlink-parent",
+        "Elapsed": 0.01
+      }
+    ],
+    "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/mutable-parent": [
+      {
+        "Time": "2026-10-14T20:30:20.4121114Z",
+        "Action": "run",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/mutable-parent"
+      },
+      {
+        "Time": "2026-10-14T20:30:20.4171857Z",
+        "Action": "pass",
+        "Package": "example.com/opennav-update-verifier/brokerenroll",
+        "Test": "TestNativeFreshBootstrapCacheRefusesExistingPartialRedirectedOrMutableParent/mutable-parent",
+        "Elapsed": 0.01
+      }
+    ]
+  },
+  "wholeUpdaterStepPass": false,
+  "wholeCandidateAcceptance": false
+}

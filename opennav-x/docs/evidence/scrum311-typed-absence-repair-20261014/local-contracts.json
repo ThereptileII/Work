@@ -1,0 +1,20 @@
+{
+  "command": "go test -count=1 -json ./...",
+  "sourceBase": "f30b92e70b5357e505925547015155ef38837e73",
+  "change": "verifier_test.go typed absence assertion only",
+  "platform": "Linux amd64",
+  "go": "go1.27.1",
+  "exitCode": 0,
+  "streamSha256": "e8571221f4b92839204d6b48a83d5814c5e5559c9529a870ca1a70288032c0dd",
+  "topLevel": {
+    "pass": 790,
+    "fail": 0,
+    "skip": 0
+  },
+  "packages": {
+    "pass": 13,
+    "fail": 0,
+    "skip": 3
+  },
+  "candidateAcceptance": false
+}

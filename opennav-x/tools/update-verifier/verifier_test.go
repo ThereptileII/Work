@@ -5,6 +5,7 @@ import (
 	"crypto"
 	"crypto/ed25519"
 	"encoding/json"
+	"errors"
 	"net/http"
 	"net/http/httptest"
 	"path/filepath"
@@ -170,8 +171,8 @@ func TestInvalidMetadataAndExpiry(t *testing.T) {
 
 func TestRollbackAndMissingChannel(t *testing.T) {
 	f := newFixture(t)
-	if _, _, err := f.verify("stable"); err == nil || !strings.Contains(err.Error(), "target metadata") {
-		t.Fatalf("missing stable target failure expected: %v", err)
+	if release, data, err := f.verify("stable"); !errors.Is(err, ErrAuthenticatedTargetAbsent) || release != (Release{}) || len(data) != 0 {
+		t.Fatalf("authenticated missing stable target must return no release: %v", err)
 	}
 	f.publish(t, 2, "beta", []byte(`{"package":"newer"}`), false)
 	if _, _, err := f.verify("beta"); err != nil {

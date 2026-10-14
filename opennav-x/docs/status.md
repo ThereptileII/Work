@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-14
 
+## Combined candidate blocked by obsolete assertion; corrected local suite passes
+
+Exact `f30b92e70b5357e505925547015155ef38837e73` in
+[38632343277](https://github.com/ThereptileII/Work/actions/runs/38632343277)
+fails `TestRollbackAndMissingChannel`: its old text assertion does not recognize
+the authenticated-absence error type introduced by `6671af7a`. The correction
+checks that exact error type and absence of release/payload, preserving the
+existing rollback rejection. No runtime behavior changes.
+The corrected complete Linux updater suite passes **790 top-level cases** across
+**13 packages**, zero failed/skipped cases; three command packages contain no
+tests. [Failure and repair evidence](evidence/scrum311-typed-absence-repair-20261014/README.md).
+
+Original Windows job logs prove both new native fresh-cache tests and all five
+refusal subcases passed without skips before matrix fail-fast cancelled the job.
+That is bounded execution evidence, not a passing updater gate. Windows application
+integration did not reach its SDK guard. The failed candidate and original logs
+remain retained; no candidate package or boat installation is accepted from it.
+
 ## Fresh enrollment cache preparation is integrated for the next candidate
 
 `924787ec` adds the explicit independently approved operator preparation missing
