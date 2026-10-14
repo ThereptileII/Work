@@ -1,0 +1,41 @@
+{
+  "run": 38515423088,
+  "attempt": 1,
+  "source": "3eecfdeb17a5cb2fba4d56cfbc2d844e123fb777",
+  "artifacts": [
+    {
+      "platform": "linux",
+      "id": 11871566166,
+      "name": "startup-restoration-Linux-3eecfdeb17a5cb2fba4d56cfbc2d844e123fb777-run38515423088-attempt1",
+      "bytes": 27588,
+      "sha256": "383e3fa0ca006fad78ddb1c3b872bb5e5a7842e3222b22984fa01cb51372616c",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 108,
+        "nested_pass": 324
+      },
+      "failedTests": []
+    },
+    {
+      "platform": "windows",
+      "id": 11871258256,
+      "name": "startup-restoration-Windows-3eecfdeb17a5cb2fba4d56cfbc2d844e123fb777-run38515423088-attempt1",
+      "bytes": 28184,
+      "sha256": "0dc45b8ee93725a1c16990830bf0f9083a3dabe75038c57d53e2f3d7fd08d17b",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 151,
+        "nested_pass": 401,
+        "top_skip": 3,
+        "nested_fail": 3,
+        "top_fail": 1
+      },
+      "failedTests": [
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/selected_B1",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/selected_B0_after_rollback",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal/partial_final_move",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal"
+      ]
+    }
+  ]
+}

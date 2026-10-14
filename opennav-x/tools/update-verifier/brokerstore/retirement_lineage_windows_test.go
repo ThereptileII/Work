@@ -128,28 +128,29 @@ func TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal
 			ctx, cancel := context.WithCancel(context.Background())
 			defer cancel()
 			callbacks := 0
+			var observedStart diskIdentity
+			var observedStartSize uint32
+			faultReached := false
 			owner, err := p.commitWithSelectedDescriptorAndStartupDrain(ctx, p.generationSecurity, func(ctx context.Context) error { return ctx.Err() }, func(callbackCtx context.Context, fence string) error {
 				callbacks++
 				if callbackCtx != ctx || fence != registrationDigest(decommissionBytes(binding)) || !p.transferred {
 					return errors.New("original terminal drain binding changed")
 				}
-				raw, err := readRetirementFixtureRecord(filepath.Join(n.rootDOS, retirementStartedName(binding)))
-				if err != nil {
-					return errors.Join(errors.New("durable lineage start missing before drain"), err)
+				// Production intentionally owns the writer with sharing disabled.
+				// Observe only metadata here; read bytes through that same writer
+				// after commit returns, binding them to this exact original identity.
+				var observationErr error
+				observedStart, observedStartSize, observationErr = retirementFixtureRecordMetadata(filepath.Join(n.rootDOS, retirementStartedName(binding)))
+				if observationErr != nil {
+					return errors.Join(errors.New("durable lineage start missing before drain"), observationErr)
 				}
-				var start retirementLineageStartRecord
-				if json.Unmarshal(raw, &start) != nil || start.Schema != 2 || start.BaselineGeneration != lineage[0].GenerationID || len(start.Generations) != len(lineage) || start.Generation != binding.GenerationID {
-					return errors.New("durable bounded lineage start differs")
-				}
-				for i, generation := range original {
-					if start.Generations[i] != generation {
-						return errors.New("original ordered completion/root identities lost")
-					}
+				for _, generation := range original {
 					if _, err := os.Stat(filepath.Join(root, generation.Generation)); err != nil {
 						return errors.Join(errors.New("generation moved before callback"), err)
 					}
 				}
 				if stage == "lost callback" {
+					faultReached = true
 					return context.DeadlineExceeded
 				}
 				for i := len(operator) - 1; i > 0; i-- {
@@ -159,12 +160,17 @@ func TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal
 					operator[i] = 0
 				}
 				if stage == "cancelled callback" {
+					faultReached = true
 					cancel()
 				}
 				if stage == "partial final move" {
 					collision := binding
 					collision.GenerationID = lineage[1].GenerationID
-					return os.Mkdir(filepath.Join(root, retirementGenerationName(collision)), 0700)
+					if err := os.Mkdir(filepath.Join(root, retirementGenerationName(collision)), 0700); err != nil {
+						return err
+					}
+					faultReached = true
+					return nil
 				}
 				return nil
 			})
@@ -176,8 +182,31 @@ func TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal
 			if callbacks != 1 || len(r.objects) != len(lineage)+2 {
 				t.Fatal("lineage did not retain one original owner per move")
 			}
+			if r.started == nil {
+				t.Fatal("original durable started owner missing", err)
+			}
+			actualStart, identityErr := fileIdentity(r.started.pin.handle)
+			raw, readErr := decommissionReadExact(r.started, int64(observedStartSize), r.startedRaw)
+			if identityErr != nil || readErr != nil || !observedStart.valid() || actualStart != observedStart {
+				t.Fatal("original durable record differs from pre-drain observation", errors.Join(err, identityErr, readErr))
+			}
+			var start retirementLineageStartRecord
+			if json.Unmarshal(raw, &start) != nil || start.Schema != 2 || start.BaselineGeneration != lineage[0].GenerationID || len(start.Generations) != len(lineage) || start.Generation != binding.GenerationID {
+				t.Fatal("durable bounded lineage start differs")
+			}
+			for i, generation := range original {
+				if start.Generations[i] != generation {
+					t.Fatal("original ordered completion/root identities lost")
+				}
+			}
+			if stage == "lost callback" && !errors.Is(err, context.DeadlineExceeded) || stage == "cancelled callback" && !errors.Is(err, context.Canceled) {
+				t.Fatal("intended callback failure was not reached", err)
+			}
 			failed := stage == "lost callback" || stage == "cancelled callback" || stage == "partial final move"
 			if failed {
+				if !faultReached {
+					t.Fatal("an earlier failure hid the intended fault", err)
+				}
 				if !errors.Is(err, ErrRetirementUncertain) || r.completed != nil || r.completedMove {
 					t.Fatal("failed lineage emitted completion or lost uncertainty", err)
 				}
@@ -275,30 +304,26 @@ func TestNativeRetirementLineageRefusesPendingExtraPartialAndChangedOriginals(t 
 	}
 }
 
-// Test-only readback of a durable original record while its production writer
-// remains held. All sharing must be granted to that original WRITE owner;
-// os.ReadFile would refuse before exercising the retirement under test.
-func readRetirementFixtureRecord(path string) (result []byte, resultErr error) {
+// Metadata-only observation does not request file data access or relax the
+// production writer's exclusive sharing. Content is checked via its retained
+// original handle after return, against this pre-drain identity and length.
+func retirementFixtureRecordMetadata(path string) (identity diskIdentity, length uint32, resultErr error) {
 	pointer, err := windows.UTF16PtrFromString(path)
 	if err != nil {
-		return nil, err
+		return identity, 0, err
 	}
-	handle, err := windows.CreateFile(pointer, windows.GENERIC_READ, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+	handle, err := windows.CreateFile(pointer, windows.FILE_READ_ATTRIBUTES, windows.FILE_SHARE_READ|windows.FILE_SHARE_WRITE|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
 	if err != nil {
-		return nil, err
+		return identity, 0, err
 	}
 	defer func() { resultErr = errors.Join(resultErr, windows.CloseHandle(handle)) }()
 	var info windows.ByHandleFileInformation
 	if err := windows.GetFileInformationByHandle(handle, &info); err != nil {
-		return nil, err
+		return identity, 0, err
 	}
-	if info.FileSizeHigh != 0 || info.FileSizeLow == 0 || info.FileSizeLow > 256<<10 || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != 0 {
-		return nil, errors.New("bounded original fixture record required")
+	if info.NumberOfLinks != 1 || info.FileSizeHigh != 0 || info.FileSizeLow == 0 || info.FileSizeLow > 256<<10 || info.FileAttributes&(windows.FILE_ATTRIBUTE_DIRECTORY|windows.FILE_ATTRIBUTE_REPARSE_POINT) != 0 {
+		return identity, 0, errors.New("bounded original fixture record required")
 	}
-	result = make([]byte, info.FileSizeLow)
-	var read uint32
-	if err := windows.ReadFile(handle, result, &read, nil); err != nil || read != info.FileSizeLow {
-		return nil, errors.Join(errors.New("complete original fixture record required"), err)
-	}
-	return result, nil
+	identity, err = fileIdentity(handle)
+	return identity, info.FileSizeLow, err
 }

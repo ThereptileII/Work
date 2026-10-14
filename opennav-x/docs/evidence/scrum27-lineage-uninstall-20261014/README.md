@@ -21,7 +21,8 @@ The first errors identify three fixture problems:
   owner first, then verifies bytes at the fixed path after custody closes.
 - `TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal`
   similarly tries an incompatible second open of the still-held started-record
-  writer. Its readback must explicitly grant the original writer's sharing.
+  writer. The second run below disproved that adding sharing to a new reader
+  could make this exclusive original writer readable.
   Callback failures must return, rather than call `t.Fatal`, so returned partial
   native custody reaches its deterministic close path.
 - `TestNativeStartupLinkFieldsRefusesTruncatedGetterResults` tries to generate an
@@ -33,3 +34,28 @@ Do not remove exclusive original handle ownership or weaken malformed/truncated
 field rejection to make these checks green. No application build, installed
 maintenance action or boat operation was performed. Corrected native execution
 is required before this component is accepted.
+
+## Second native observation
+
+Source `3eecfdeb17a5cb2fba4d56cfbc2d844e123fb777`,
+[run 38515423088](https://github.com/ThereptileII/Work/actions/runs/38515423088),
+attempt 1, remains **failed**. Linux passes 108 top-level / 324 nested cases.
+Windows passes 151 top-level / 401 nested cases, fails one top-level / three
+nested cases, and retains the three existing non-Windows-boundary skips.
+Original artifact length, provider SHA-256 and every ZIP CRC match; metadata and
+failed names are preserved in `second-failure.json`.
+
+The original-startup retirement and bounded ShellLink reader corrections pass.
+The lineage fixture still opens the durable journal for data reading, but its
+production writer intentionally uses `share=0`. Granting every sharing flag to
+the second reader does not override that restriction. The lost/cancelled
+branches could also mistake this earlier failure for their intended fault.
+
+The next fixture revision observes only metadata before drain (bounded size,
+ordinary single-link file and full identity), closes that observer, and reads
+bytes through the **same original writer** after commit returns. It verifies the
+pre-drain identity/size, exact schema and ordered lineage on every branch. Named
+faults must prove their own branch was reached and retain deadline/cancellation
+identity. Existing direct-owner native tests already check durable journal bytes
+inside the callback. No production lock, sharing, runtime hook or safety
+assertion is relaxed. Native evidence for this revision remains pending.
