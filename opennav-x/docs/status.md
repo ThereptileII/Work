@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Installer receipt preflight passes; one corrected Staging candidate running
+## Windows SDK image drift stops candidate; dependency-only refresh running
 
 Exact `1107c04f55a5a51660e424493bf083fc83106443` passes
 [native helper run 38548714640](https://github.com/ThereptileII/Work/actions/runs/38548714640):
@@ -10,13 +10,19 @@ preserve identity, link, reparse, size and checksum protections. The failed firs
 focused check and corrected Windows path/newline fixtures remain recorded in
 [the evidence](evidence/scrum27-installer-receipt-20261014/README.md).
 
-That exact revision is now the one selected full
-[Staging candidate, run 38549237034](https://github.com/ThereptileII/Work/actions/runs/38549237034),
-with committed private-Staging trust enabled and extended/design checks off.
-The receipt contracts now run on both platforms before application compilation.
-The candidate remains **pending and unqualified**. Later helper/evidence commits
-do not replace its source identity. Genuine customer installation/recovery,
-boat acceptance and public readiness still require their own evidence.
+That exact full [Staging candidate, run38549237034](https://github.com/ThereptileII/Work/actions/runs/38549237034)
+passes the early receipt contracts, but Windows refuses the authenticated SDK:
+hosted image `20261012.333.1` differs from producer `20261004.326.1`. Windows
+application compilation and packaging were not reached. Linux continues its
+existing job; the overall candidate cannot qualify from this attempt.
+
+Root selected one dependency-only refresh at `e80f0b92`,
+[run38552041879](https://github.com/ThereptileII/Work/actions/runs/38552041879).
+It is running; its exact artifact and fresh native reuse still require verification.
+No image check was bypassed, old-lock retry or duplicate application build started.
+[Original failure and refresh scope](evidence/scrum225-image-refresh-20261014/README.md).
+Later helper/evidence commits do not replace the product's source identity.
+Genuine customer installation/recovery, boat and public readiness remain open.
 
 ## Installed updater adapters integrated; native journey remains open
 

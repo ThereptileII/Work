@@ -13,11 +13,37 @@ caller-supplied read-only API/download callbacks. It reuses the existing GitHub
 provenance verifiers and passes authenticated originals to the byte binder.
 [`tools/installed_updater_approval_http.py`](../../tools/installed_updater_approval_http.py)
 provides the bounded HTTPS callbacks as `GitHubReads(explicit_read_only_token)`.
-The live workflow/orchestration is still missing; these modules are not an
-executable enrollment workflow or an approval producer. Portable
-checks do not establish hosted-runner, native installed-updater or four-phase
+The manual [approval producer workflow](../../../.github/workflows/skager-installed-approval.yml)
+and [record-retention helper](../../tools/produce-installed-updater-approval.py)
+retain independently authored original records. They neither author approvals
+nor enroll a runner. Live orchestration and independent authorization remain
+pending. Portable checks do not establish hosted-runner, native installed-updater or four-phase
 acceptance. The [existing phase driver](../../tools/test-installed-protected-updater-windows.md)
 retains every original gate.
+
+## Manual approval producer
+
+An authorized operator supplies canonical base64 for the three already reviewed
+original records as `request_b64`, `approval_b64` and `pins_b64`. Dispatch only the
+reviewed software branch containing the helper. The workflow is manual-only,
+uses a read-only repository token, and accepts no signing key or credential.
+Inputs enter the helper through environment variables, never shell interpolation.
+
+Before writing, the helper checks canonical encoding, exact schemas, original
+request/approval hashes, runner/challenge binding, six separate pins and the
+request/approval time windows. Each record is limited to 16 KiB. The producer
+must be a different run from the pending enrollment request. It exclusively
+creates a fresh directory and preserves exactly `request.json`, `approval.json`
+and `approval-pins.json`; existing output refuses without overwriting or cleanup.
+Only those originals are uploaded, under the recipient's existing artifact-name
+contract. Failure prevents upload and emits no submitted record or exception body.
+
+Eight focused checks cover the real `main()` with mocked environment/clock,
+byte-preserving retention, refusal cases and the existing binder roundtrip.
+These are in-process checks, not a subprocess or live Actions acceptance run.
+The receiver must still independently authorize the operator and exact producer,
+authenticate the uploaded artifact and pending native context, and recheck expiry.
+Do not dispatch self-authored approvals merely to turn this evidence green.
 
 ## Authority stays outside the records
 

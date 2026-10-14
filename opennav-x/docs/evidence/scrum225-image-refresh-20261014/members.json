@@ -1,0 +1,227 @@
+[
+  {
+    "name": "curl-test-host-binding/cmake-build/ALL_BUILD.vcxproj",
+    "bytes": 42771,
+    "crc32": "1816bdbb"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeCache.txt",
+    "bytes": 13658,
+    "crc32": "2a776f73"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/ALL_BUILD.vcxproj.filters",
+    "bytes": 330,
+    "crc32": "8ba2feee"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CMakeCCompiler.cmake",
+    "bytes": 3155,
+    "crc32": "e3fd06c8"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CMakeDetermineCompilerABI_C.bin",
+    "bytes": 38912,
+    "crc32": "52b64193"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CMakeRCCompiler.cmake",
+    "bytes": 212,
+    "crc32": "a706fa52"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CMakeSystem.cmake",
+    "bytes": 395,
+    "crc32": "16e12b81"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/CMakeCCompilerId.c",
+    "bytes": 28524,
+    "crc32": "78103fad"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.exe",
+    "bytes": 12288,
+    "crc32": "73226b92"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/CompilerIdC.vcxproj",
+    "bytes": 2812,
+    "crc32": "b8268b8c"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CMakeCCompilerId.obj",
+    "bytes": 1952,
+    "crc32": "8f6085cd"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.exe.recipe",
+    "bytes": 363,
+    "crc32": "85b6be24"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/CL.command.1.tlog",
+    "bytes": 906,
+    "crc32": "72b19546"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/Cl.items.tlog",
+    "bytes": 257,
+    "crc32": "fe22aa43"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/CL.read.1.tlog",
+    "bytes": 644,
+    "crc32": "c34c17c2"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/CL.write.1.tlog",
+    "bytes": 520,
+    "crc32": "c4e588c3"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/link.command.1.tlog",
+    "bytes": 1110,
+    "crc32": "74d38570"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/CompilerIdC.lastbuildstate",
+    "bytes": 236,
+    "crc32": "002e3c25"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/link.read.1.tlog",
+    "bytes": 3522,
+    "crc32": "d6304ecd"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/link.secondary.1.tlog",
+    "bytes": 134,
+    "crc32": "679216c8"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/CompilerIdC/Debug/CompilerIdC.tlog/link.write.1.tlog",
+    "bytes": 514,
+    "crc32": "3e802a97"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/VCTargetsPath/Debug/VCTargetsPath.recipe",
+    "bytes": 355,
+    "crc32": "2295169f"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/VCTargetsPath/Debug/VCTargetsPath.tlog/VCTargetsPath.lastbuildstate",
+    "bytes": 224,
+    "crc32": "ef77d6b3"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/VCTargetsPath.txt",
+    "bytes": 84,
+    "crc32": "2e282452"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/3.31.6/VCTargetsPath.vcxproj",
+    "bytes": 1261,
+    "crc32": "0e6e1416"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/92c3a2fe6131e1133c1ef23504f2e280/generate.stamp.rule",
+    "bytes": 24,
+    "crc32": "49aace5a"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/cmake.check_cache",
+    "bytes": 86,
+    "crc32": "741e88bf"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/generate.stamp.depend",
+    "bytes": 8005,
+    "crc32": "76f7a70f"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/generate.stamp",
+    "bytes": 55,
+    "crc32": "aa041036"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/CMakeConfigureLog.yaml",
+    "bytes": 10820,
+    "crc32": "865ddffc"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/generate.stamp.list",
+    "bytes": 102,
+    "crc32": "bb28ce50"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/CMakeFiles/TargetDirectories.txt",
+    "bytes": 309,
+    "crc32": "9f5ac1dd"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/curl_test_host_binding.sln",
+    "bytes": 3224,
+    "crc32": "0544f129"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/cmake_install.cmake",
+    "bytes": 2050,
+    "crc32": "89335dca"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/libcurl_shared.vcxproj",
+    "bytes": 53407,
+    "crc32": "986d7e56"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/xnav-native-cmake-tools.txt",
+    "bytes": 723,
+    "crc32": "1ef44051"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/libcurl_shared.vcxproj.filters",
+    "bytes": 663,
+    "crc32": "82044c8a"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/ZERO_CHECK.vcxproj",
+    "bytes": 42834,
+    "crc32": "ea7dc97c"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-build/ZERO_CHECK.vcxproj.filters",
+    "bytes": 566,
+    "crc32": "18c418e3"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-source/CMakeLists.txt",
+    "bytes": 145,
+    "crc32": "35dc4a2a"
+  },
+  {
+    "name": "curl-test-host-binding/msys-cert-path.json",
+    "bytes": 179,
+    "crc32": "f32934bc"
+  },
+  {
+    "name": "curl-test-host-binding/curl-test-host-facts.json",
+    "bytes": 7767,
+    "crc32": "1ffebebd"
+  },
+  {
+    "name": "curl-test-host-binding/cmake-source/marker.c",
+    "bytes": 45,
+    "crc32": "60015087"
+  },
+  {
+    "name": "curl-test-host-binding/path-fixture/certs/genserv.pl",
+    "bytes": 140,
+    "crc32": "d6dba27e"
+  },
+  {
+    "name": "curl-test-host-binding/path-fixture/certs/test-ca.prm",
+    "bytes": 30,
+    "crc32": "b64ff7a2"
+  }
+]

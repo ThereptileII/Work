@@ -1,0 +1,28 @@
+{
+  "schema": 1,
+  "repository": "ThereptileII/Work",
+  "runId": "38549237034",
+  "runAttempt": "1",
+  "commit": "1107c04f55a5a51660e424493bf083fc83106443",
+  "jobId": "115809490540",
+  "jobConclusion": "failure",
+  "failedStep": "Prepare authenticated AIS inputs before application compilation",
+  "firstCausalError": "Immutable Windows dependency bundle rejected: current Windows runner image differs; fresh producer required",
+  "consumerImageVersion": "20261012.333.1",
+  "previousDependencyProducer": {
+    "runId": "37824634218",
+    "jobId": "113474187733",
+    "commit": "49f9f07407cbf640f6186757a3fe3582c114b895",
+    "imageVersion": "20261004.326.1"
+  },
+  "classification": "environment/input provenance drift before application compilation",
+  "originalJobLogSha256": "7aade5fe896899686caa3d2c518671ae3c239252d16dd79df76127762b9a548b",
+  "sanitizedOriginalLines": [
+    "2026-10-14T10:40:55.3152076Z Version: 20261012.333.1",
+    "2026-10-14T10:42:24.4005183Z Immutable Windows dependency bundle rejected: current Windows runner image differs; fresh producer required"
+  ],
+  "applicationCompilation": "skipped",
+  "candidateQualification": "failed/not-qualified",
+  "artifactAuthorityFile": "artifact-authority.json",
+  "artifactMembersFile": "members.json"
+}
