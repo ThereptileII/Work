@@ -80,12 +80,12 @@ test('invalid trusted service binding refuses instead of accepting caller JWT ro
   ]) assert.equal((await result(request(patch.SUPABASE_SERVICE_ROLE_KEY || service), { ...env, ...patch })).response.status, 503);
 });
 
-test('caller paths, query, origins, methods and bodies cannot select an operation', async () => {
+test('caller paths, query, methods and bodies cannot select an operation', async () => {
   for (const path of ['/functions/v1/skager-r2-probe?bucket=other', '/functions/v1/skager-r2-probe/other',
     '/functions/v1/skager-r2-probe/', '/api/health', '/api/portal/downloads', '/skager-r2-probe?method=PUT']) {
     assert.equal((await result(request(service, path))).response.status, 404);
   }
-  assert.equal((await result(new Request('https://other.supabase.co/skager-r2-probe', { headers: { Authorization: 'Bearer ' + service } }))).response.status, 404);
+  assert.equal((await result(new Request('https://other.supabase.co/skager-r2-probe'))).response.status, 401);
   for (const method of ['POST', 'PUT', 'DELETE', 'HEAD', 'OPTIONS']) {
     assert.equal((await result(request(service, '/skager-r2-probe', { method }))).response.status, 405);
   }
@@ -93,6 +93,27 @@ test('caller paths, query, origins, methods and bodies cannot select an operatio
   let cancelled = false;
   Object.defineProperty(req, 'body', { value: new ReadableStream({ cancel() { cancelled = true; } }) });
   assert.equal((await result(req)).response.status, 400); assert.equal(cancelled, true);
+});
+
+test('gateway-rewritten HTTP origins preserve fixed routing and exact service-key authorization', async () => {
+  for (const runtimeOrigin of ['http://functions:9000', 'http://localhost:9999', origin]) {
+    for (const path of ['/skager-r2-probe', '/functions/v1/skager-r2-probe']) {
+      let calls = 0;
+      const transport: typeof fetch = async input => {
+        calls++;
+        assert.equal((input as Request).url, target);
+        assert.equal((input as Request).method, 'HEAD');
+        return new Response(null, { status: 200 });
+      };
+      const make = (key: string) => new Request(runtimeOrigin + path, { headers: { Authorization: 'Bearer ' + key } });
+      assert.equal((await result(make(service), env, transport)).response.status, 200);
+      assert.equal(calls, 1);
+      for (const key of [env.SUPABASE_ANON_KEY, jwt({ role: 'authenticated' }), service.slice(0, -1) + 'b']) {
+        assert.equal((await result(make(key), env, noIO)).response.status, 401);
+      }
+      assert.equal((await result(make(service), { ...env, SUPABASE_URL: 'https://other.supabase.co' })).response.status, 503);
+    }
+  }
 });
 
 test('missing or changed R2 bindings cannot trigger provider I/O', async () => {

@@ -47,7 +47,11 @@ async function authorized(request: Request, expected: string): Promise<boolean> 
 export async function handleProbe(request: Request, env: Env, transport: typeof fetch = fetch): Promise<Response> {
   try {
     const url = new URL(request.url);
-    if (url.origin !== ORIGIN || !['/skager-r2-probe', '/functions/v1/skager-r2-probe'].includes(url.pathname)
+    // The gateway may replace the public origin with an internal HTTP origin.
+    // Project identity comes from the trusted service binding, not this URL;
+    // the incoming origin never selects an outbound host or credential.
+    if (!['http:', 'https:'].includes(url.protocol) || url.username || url.password
+      || !['/skager-r2-probe', '/functions/v1/skager-r2-probe'].includes(url.pathname)
       || url.search || url.hash) return reply(404, { error: 'Not found.' });
     if (request.method !== 'GET') return reply(405, { error: 'GET required.' });
     if (request.body !== null) {

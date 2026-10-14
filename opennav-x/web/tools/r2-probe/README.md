@@ -16,6 +16,14 @@ it. New opaque secret-key formats are deliberately unsupported. No new key,
 permission or disabling of verification follows from this tool. Never place an
 admin credential in browser JavaScript, chat, logs, screenshots or saved files.
 
+Routing accepts only `/skager-r2-probe` or `/functions/v1/skager-r2-probe`.
+The incoming HTTP(S) origin is transport metadata: Supabase's gateway can
+rewrite the public URL before forwarding the request. It never selects a
+provider endpoint or credential. Project identity remains pinned in the
+trusted `SUPABASE_URL` and service binding. The existing website handler uses
+the same function-prefix approach. The exact hosted internal URL has not been
+observed; source regressions do not establish a successful live invocation.
+
 After authorization, the existing approved R2 bindings must match the fixed
 account `7869adcf376c630b175c94729321e016` and bucket
 `skager-private-releases`. One header-signed HTTPS **HeadBucket** request uses
@@ -31,6 +39,8 @@ Official references checked 2026-10-14:
 
 - [Supabase platform-injected legacy service key](https://supabase.com/docs/guides/functions/secrets).
 - [Supabase authorization headers and the separate handler boundary](https://supabase.com/docs/guides/functions/auth-headers).
+- [Supabase function-name-prefixed routing](https://supabase.com/docs/guides/functions/routing).
+- [Upstream gateway strips the public prefix and proxies to the internal runtime](https://github.com/supabase/supabase/blob/master/docker/volumes/api/kong.yml).
 - [Cloudflare R2 S3 compatibility, including HeadBucket and auto region](https://developers.cloudflare.com/r2/api/s3/api/).
 - [HeadBucket success and no response body](https://docs.aws.amazon.com/AmazonS3/latest/API/API_HeadBucket.html).
 
