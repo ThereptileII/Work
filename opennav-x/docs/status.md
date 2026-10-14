@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Installed customer component update joined; native gate pending
+## Installed customer component update passes focused native gate
 
 Admission `04ea88e1`, command/native launch `7391a0a0`/`fc5733b7`, and
 Setup/Maintain action `f08b2911` now join the fixed installed helper to its
@@ -15,8 +15,14 @@ Shared native cache refresh locking also preserves retained-root continuity.
 
 Combined focused Linux checks pass **22 top-level / 82 including subcases**,
 zero failures/skips. Broker/provisioner source-closure suites pass **12/14**.
-Native Windows component tests, NSIS wizard behavior, actual installed UAC/SCM
-journey, full application packaging and boat acceptance remain pending. No public
+Exact `7dde3b150bddfbb1e8a6c41a7439928227ddbf8d` passes
+[38628998074](https://github.com/ThereptileII/Work/actions/runs/38628998074):
+**391 Windows x86 / 275 Linux top-level passes**, no failures. All **138/102**
+mandatory cases pass without skipped subcases; five earlier Windows skips remain.
+Original artifact/stream/source receipts verify.
+[Evidence](evidence/scrum311-installed-customer-20261014/README.md).
+NSIS wizard behavior, actual installed UAC/SCM journey, full application packaging
+and boat acceptance remain pending. No public
 or boat deployment has been performed for this path.
 [Updated contract](installer/broker-code-upgrade.md).
 
