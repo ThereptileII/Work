@@ -10,7 +10,7 @@ desktop observations do not enable the elevated-parent customer launch API.
 Bounded flushed progress and the final report use one child-created fixed file
 in the actual-token profile. No stdout/stderr handles, environment paths or
 handle inheritance are assumed. Original verified exit remains necessary.
-Only this file-only capability child is console-detached; GUI/customer/UAC
+Only this file-only capability child uses Python's GUI entrypoint; GUI/customer/UAC
 acceptance is not inferred from its progress or desktop observations.
 This fresh-account-only probe requests documented Windows-managed per-user
 access to the caller's inherited desktop with lpDesktop=NULL. Actual caller
@@ -37,6 +37,7 @@ import os
 from pathlib import Path
 import re
 import secrets
+import stat
 import subprocess
 import sys
 import time
@@ -685,6 +686,56 @@ class AccountProbe:
                 if completed:
                     raise
 
+    def pin_pythonw(self):
+        """Retain only the fixed current interpreter's same-directory GUI sibling."""
+        import msvcrt
+        original = Path(sys.executable)
+        require(original.is_absolute() and original.name.casefold() == 'python.exe' and
+                original.resolve(strict=True) == original, 'fixed-python-runtime-refused')
+        image = original.with_name('pythonw.exe')
+        require(image.resolve(strict=True) == image and image.is_file() and
+                not image.is_symlink() and not image.is_junction(), 'fixed-pythonw-sibling-refused')
+        handle = self.fn(self.native.kernel, 'CreateFileW', W.HANDLE, W.LPCWSTR, W.DWORD, W.DWORD,
+            C.c_void_p, W.DWORD, W.DWORD, W.HANDLE)(str(image), 0x80000000, 1, None, 3, 0x00200000, None)
+        self.ok(handle not in (None, C.c_void_p(-1).value))
+        try:
+            descriptor = msvcrt.open_osfhandle(handle, os.O_RDONLY | os.O_BINARY)
+        except BaseException:
+            self.ok(self.native.close_handle(handle))
+            raise
+        try:
+            stream = os.fdopen(descriptor, 'rb')
+        except BaseException:
+            os.close(descriptor)
+            raise
+        self.pythonw_pin = stream  # Cleanup owns the original stream, including on later refusal.
+        self.pythonw_image = str(image)
+        value = os.fstat(stream.fileno())
+        require(stat.S_ISREG(value.st_mode) and value.st_nlink == 1 and
+                0 < value.st_size <= 16 * 1024 * 1024 and
+                not getattr(value, 'st_file_attributes', 0) & 0x400,
+                'plain-bounded-pythonw-image-required')
+        self.pythonw_identity = self._pythonw_stat(value)
+        self.pythonw_sha256 = hashlib.file_digest(stream, 'sha256').hexdigest()
+        self.check_pythonw()
+        return self.pythonw_image
+
+    @staticmethod
+    def _pythonw_stat(value):
+        return (value.st_dev, value.st_ino, value.st_mode, value.st_nlink, value.st_size,
+                value.st_mtime_ns, value.st_ctime_ns)
+
+    def check_pythonw(self):
+        import msvcrt
+        require(self._pythonw_stat(os.fstat(self.pythonw_pin.fileno())) == self.pythonw_identity,
+                'original-pythonw-image-changed')
+        path = C.create_unicode_buffer(1024)
+        length = self.fn(self.native.kernel, 'GetFinalPathNameByHandleW', W.DWORD,
+            W.HANDLE, W.LPWSTR, W.DWORD, W.DWORD)(msvcrt.get_osfhandle(self.pythonw_pin.fileno()), path, len(path), 0)
+        require(0 < length < len(path) and
+                os.path.normcase(path.value) == os.path.normcase('\\\\?\\' + self.pythonw_image),
+                'original-pythonw-canonical-image-changed')
+
     def _observe(self):
         self.check_limited()
         class Startup(C.Structure):
@@ -702,20 +753,23 @@ class AccountProbe:
         startup.cb, startup.desktop = C.sizeof(startup), None
         # No STARTF_USESTDHANDLES or inherited NUL/pipes. Do not infer destination
         # from lpEnvironment=NULL: only the original token chooses its profile.
-        command = [sys.executable, '-I', '-B', str(self.helper), customer.PROFILE_CAPABILITY_MODE]
+        image = self.pin_pythonw()
+        command = [image, '-I', '-B', str(self.helper), customer.PROFILE_CAPABILITY_MODE]
         line = C.create_unicode_buffer(subprocess.list2cmdline(command))
         require(len(line) < 1024, 'fixed-helper-command-bound-refused')
         self.check_limited()
         self.check_disposable_host('beforeLaunch')
         self.facts['hostDesktopProvisioning']['permissionAdditionsRequested'] = True
-        creation_flags = 0x00000004 | 0x00000008  # CREATE_SUSPENDED | DETACHED_PROCESS
+        self.check_pythonw()
+        creation_flags = 0x00000004  # CREATE_SUSPENDED; fixed GUI-subsystem interpreter.
         self.facts['capabilityLaunch'] = dict(creationFlags=creation_flags,
-                                            scope='non-console-file-only-capability')
+            scope='file-only-gui-subsystem-capability', imageName='pythonw.exe',
+            imageSHA256=self.pythonw_sha256, canonicalImageIdentityVerified=True)
         self.profile_attempted, self.launch_effect = True, 'uncertain'
         try:
             result = self.fn(self.native.adv, 'CreateProcessWithTokenW', W.BOOL, W.HANDLE, W.DWORD, W.LPCWSTR,
                 W.LPWSTR, W.DWORD, C.c_void_p, W.LPCWSTR, C.POINTER(Startup), C.POINTER(Process))(
-                self.limited, 1, sys.executable, line, creation_flags, None,
+                self.limited, 1, image, line, creation_flags, None,
                 str(self.helper.parent), C.byref(startup), C.byref(process))
             error = C.get_last_error()
             self.launch_effect = 'created' if result else 'refused-no-child'
@@ -735,6 +789,7 @@ class AccountProbe:
             created=self.native._created(self.process), token=child, statistics=child_statistics, resumeAttempted=False)
         def check_created_child():
             self.check_limited()
+            self.check_pythonw()
             require(child['sid'] == self.sid and not child['elevated'] and child['elevationType'] == 3 and
                     child['tokenType'] == 1 and child['integrity'] == 'S-1-16-8192' and
                     child_statistics['authenticationId'] == self.limited_statistics['authenticationId'] and
@@ -745,7 +800,7 @@ class AccountProbe:
                     self.fn(self.native.kernel, 'GetProcessId', W.DWORD, W.HANDLE)(self.process) == process.pid and
                     self.fn(self.native.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(self.thread) == process.pid and
                     self.fn(self.native.kernel, 'GetThreadId', W.DWORD, W.HANDLE)(self.thread) == process.tid and
-                    os.path.normcase(self.native._image(self.process)) == os.path.normcase(sys.executable),
+                    os.path.normcase(self.native._image(self.process)) == os.path.normcase(image),
                     'original-probe-child-identity-refused')
         check_created_child()
         profile = self.verify_profile()
@@ -780,6 +835,7 @@ class AccountProbe:
                         self.process, C.byref(code)))
                     self.facts['originalChild']['exitCode'] = code.value
                     require(code.value == 0, 'original-capability-child-exit-refused')
+                    self.check_pythonw()
                     break
                 if time.monotonic() >= deadline:
                     self.facts['childStartupObservation']['onTimeout'] = startup_observer.collect(check_created_child)
@@ -803,6 +859,11 @@ class AccountProbe:
         if getattr(self, 'diagnostic', None) is not None:
             try:
                 self.diagnostic.close()
+            except BaseException:
+                closed = False
+        if getattr(self, 'pythonw_pin', None) is not None:
+            try:
+                self.pythonw_pin.close()
             except BaseException:
                 closed = False
         C.memset(self.password, 0, C.sizeof(self.password))

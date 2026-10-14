@@ -4,6 +4,7 @@ import ctypes
 import importlib.util
 import json
 import struct
+import tempfile
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -20,6 +21,13 @@ LIMITED = dict(FULL, integrity='S-1-16-8192', elevationType=3, elevated=False)
 CALLER = dict(FULL, sid='S-1-5-21-123-456-789-500', session=2, elevationType=1)
 DESKTOP = dict(station='WinSta0', visible=True, input='Default', thread='Default')
 POLICY = dict(enableLUA=1, consentPromptBehaviorAdmin=0, promptOnSecureDesktop=1)
+PYTHONW = r'C:\FixedRuntime\pythonw.exe'
+PYTHONW_SHA = 'a' * 64
+
+
+def gui_launch_fact():
+    return dict(creationFlags=4, scope='file-only-gui-subsystem-capability',
+                imageName='pythonw.exe', imageSHA256=PYTHONW_SHA, canonicalImageIdentityVerified=True)
 
 
 def capability():
@@ -435,6 +443,8 @@ class FixedNativeCommand(unittest.TestCase):
                     raw_output=None, raw_diagnostics=None, wait_state=0, exit_status=0):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
         owner.sid, owner.limited, owner.owned, owner.facts = SID, 987, [], {}
+        owner.pin_pythonw, owner.check_pythonw = mock.Mock(return_value=PYTHONW), mock.Mock()
+        owner.pythonw_sha256 = PYTHONW_SHA
         owner.limited_fact = dict(LIMITED, session=2)
         owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
         child = dict(owner.limited_fact, **(child_change or {}))
@@ -459,16 +469,16 @@ class FixedNativeCommand(unittest.TestCase):
             _desktop=mock.Mock(side_effect=lambda: DESKTOP.copy()), _policy=mock.Mock(side_effect=lambda: POLICY.copy()),
             _token=lambda token: owner.limited_fact if token == 987 else CALLER.copy() if token == 876 else child,
             _process_token=lambda handle: 77, _created=lambda handle: 123,
-            _image=lambda handle: probe.sys.executable)
+            _image=lambda handle: PYTHONW)
         owner.token_statistics = lambda token: (owner.limited_statistics if token == 987 else
             dict(authenticationId=authentication, tokenType=child['tokenType'], impersonationLevel=0))
         owner.ok = lambda value: probe.require(value, 'native-failure')
         owner.verify_profile = mock.Mock(return_value=Path('original-profile'))
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
-            self.assertEqual((token, flags, creation, environment), (987, 1, 0xC, None))
-            self.assertEqual(executable, probe.sys.executable)
+            self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
+            self.assertEqual(executable, PYTHONW)
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
-                [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
+                [PYTHONW, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
             self.assertIsNone(startup._obj.desktop)
             self.assertEqual(startup._obj.flags, 0)
             self.assertEqual((startup._obj.stdin, startup._obj.stdout, startup._obj.stderr), (None, None, None))
@@ -516,8 +526,7 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertTrue(all(s['checksPassed'] for s in provisioning['observations'].values()))
         self.assertFalse(result['consentPromptAcceptance'])
         self.assertFalse(result['nativeCustomerAcceptance'])
-        self.assertEqual(owner.facts['capabilityLaunch'], dict(creationFlags=0xC,
-            scope='non-console-file-only-capability'))
+        self.assertEqual(owner.facts['capabilityLaunch'], gui_launch_fact())
 
     def test_unsuitable_caller_refuses_before_launch_or_fresh_account_creation(self):
         for change in ({'station': 'service-station'}, {'visible': False}, {'input': 'Winlogon'},
@@ -641,6 +650,16 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertNotIn('ResumeThread', calls)
         self.assertFalse(owner.exit_observed)
 
+    def test_foreign_process_image_cannot_replace_the_pinned_pythonw_child(self):
+        owner, calls = self.child_owner()
+        owner.native._image = lambda handle: r'C:\OtherRuntime\pythonw.exe'
+        with mock.patch.object(probe.C, 'get_last_error', create=True, return_value=0):
+            with self.assertRaises(probe.Refused) as caught:
+                owner.observe()
+        self.assertEqual(caught.exception.reason, 'original-probe-child-identity-refused')
+        self.assertEqual(calls.count('CreateProcessWithTokenW'), 1)
+        self.assertNotIn('ResumeThread', calls)
+
     def test_timeout_retains_progress_even_with_complete_document_but_never_accepts_it(self):
         for output, diagnostics, last, document in (
                 (b'', b'', None, False),
@@ -664,8 +683,7 @@ class FixedNativeCommand(unittest.TestCase):
                 self.assertNotIn('capability', result)
                 self.assertFalse(owner.exit_observed)
                 progress = result['originalFacts']['capabilityProgress']
-                self.assertEqual(result['originalFacts']['capabilityLaunch'], dict(creationFlags=0xC,
-                    scope='non-console-file-only-capability'))
+                self.assertEqual(result['originalFacts']['capabilityLaunch'], gui_launch_fact())
                 self.assertEqual(progress['lastMarker'], last)
                 self.assertEqual(progress['finalDocumentPresent'], document)
                 self.assertNotIn('secret', json.dumps(result))
@@ -755,6 +773,8 @@ class FixedNativeCommand(unittest.TestCase):
     def test_original_limited_token_profile_managed_desktop_and_fixed_worker_only(self):
         owner = probe.AccountProbe.__new__(probe.AccountProbe)
         owner.sid, owner.limited = SID, 987
+        owner.pin_pythonw, owner.check_pythonw = mock.Mock(return_value=PYTHONW), mock.Mock()
+        owner.pythonw_sha256 = PYTHONW_SHA
         owner.limited_fact = dict(LIMITED, session=2)
         owner.limited_statistics = dict(authenticationId=17, tokenType=1, impersonationLevel=0)
         owner.native = SimpleNamespace(kernel='kernel', adv='adv', current=876, observed={'current': CALLER},
@@ -768,10 +788,10 @@ class FixedNativeCommand(unittest.TestCase):
         calls = []
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
             calls.append('create')
-            self.assertEqual((token, flags, creation, environment), (987, 1, 0xC, None))
+            self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
-                [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
-            self.assertEqual(executable, probe.sys.executable)
+                [PYTHONW, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
+            self.assertEqual(executable, PYTHONW)
             self.assertIsNone(startup._obj.desktop)
             self.assertEqual(startup._obj.flags, 0)
             self.assertEqual((startup._obj.stdin, startup._obj.stdout, startup._obj.stderr), (None, None, None))
@@ -786,8 +806,7 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertEqual(caught.exception.reason, 'original-limited-token-fixed-probe-launch-refused')
         self.assertEqual(caught.exception.winerror, 1314)
         self.assertEqual(owner.launch_effect, 'refused-no-child')
-        self.assertEqual(owner.facts['capabilityLaunch'], dict(creationFlags=0xC,
-            scope='non-console-file-only-capability'))
+        self.assertEqual(owner.facts['capabilityLaunch'], gui_launch_fact())
         self.assertEqual([handle.value if hasattr(handle, 'value') else handle for handle in owner.owned],
                          [])
         self.assertEqual(calls.count('create'), 1)
@@ -819,6 +838,96 @@ class FixedNativeCommand(unittest.TestCase):
             with self.subTest(change=change), self.assertRaises(probe.Refused):
                 owner.observe()
             owner.fn.assert_not_called()
+
+
+class FixedPythonwPin(unittest.TestCase):
+    def setUp(self):
+        temporary = tempfile.TemporaryDirectory()
+        self.addCleanup(temporary.cleanup)
+        self.original = Path(temporary.name).resolve() / 'python.exe'
+        self.image = self.original.with_name('pythonw.exe')
+        self.original.write_bytes(b'console fixture')
+        self.image.write_bytes(b'fixed gui image fixture')
+        self.canonical, self.opens = str(self.image), []
+        self.owner = probe.AccountProbe.__new__(probe.AccountProbe)
+        self.owner.native = SimpleNamespace(kernel='kernel', close_handle=mock.Mock(side_effect=self.close_handle))
+        self.owner.ok = lambda value: probe.require(value, 'native-pin-refused')
+        self.owner.fn = self.fn
+        self.ms = SimpleNamespace(open_osfhandle=lambda handle, flags: handle, get_osfhandle=lambda fd: fd)
+        patches = [mock.patch.object(probe.sys, 'executable', str(self.original)),
+                   mock.patch.dict(probe.sys.modules, {'msvcrt': self.ms}),
+                   mock.patch.object(probe.os, 'O_BINARY', getattr(probe.os, 'O_BINARY', 0), create=True)]
+        for patch in patches:
+            patch.start()
+            self.addCleanup(patch.stop)
+        self.addCleanup(lambda: getattr(self.owner, 'pythonw_pin', None) and self.owner.pythonw_pin.close())
+
+    @staticmethod
+    def close_handle(handle):
+        probe.os.close(handle)
+        return True
+
+    def fn(self, dll, name, result, *types):
+        self.assertEqual(dll, 'kernel')
+        if name == 'CreateFileW':
+            def create(path, access, share, security, disposition, flags, template):
+                self.assertEqual(path, str(self.image))
+                self.assertEqual((access, share, security, disposition, flags, template),
+                                 (0x80000000, 1, None, 3, 0x00200000, None))
+                handle = probe.os.open(path, probe.os.O_RDONLY)
+                self.opens.append(handle)
+                return handle
+            return create
+        self.assertEqual(name, 'GetFinalPathNameByHandleW')
+        def canonical(handle, path, count, flags):
+            self.assertEqual(handle, self.owner.pythonw_pin.fileno())
+            self.assertEqual((count, flags), (1024, 0))
+            path.value = '\\\\?\\' + self.canonical
+            return len(path.value)
+        return canonical
+
+    def test_fixed_sibling_hash_and_original_owner_survive_until_cleanup(self):
+        self.assertEqual(self.owner.pin_pythonw(), str(self.image))
+        self.assertEqual(self.owner.pythonw_sha256, probe.hashlib.sha256(b'fixed gui image fixture').hexdigest())
+        self.assertFalse(self.owner.pythonw_pin.closed)
+        self.owner.check_pythonw()
+        cleanup = OriginalCleanup.owner(self, effect='created', exited=False)
+        cleanup.pythonw_pin = self.owner.pythonw_pin
+        self.assertEqual(cleanup.cleanup()['state'], 'deferred-to-disposable-job')
+        self.assertTrue(self.owner.pythonw_pin.closed)
+        cleanup.account_sid.assert_not_called()
+
+    def test_absent_or_redirected_sibling_never_opens_a_fallback(self):
+        self.image.unlink()
+        with self.assertRaises(FileNotFoundError):
+            self.owner.pin_pythonw()
+        self.image.symlink_to(self.original)
+        with self.assertRaises(probe.Refused):
+            self.owner.pin_pythonw()
+        self.assertEqual(self.opens, [])
+
+    def test_changed_bytes_or_canonical_path_refuses_and_preserves_pin_for_cleanup(self):
+        self.owner.pin_pythonw()
+        self.canonical = str(self.image.with_name('moved.exe'))
+        with self.assertRaises(probe.Refused):
+            self.owner.check_pythonw()
+        self.canonical = str(self.image)
+        original_stat = probe.os.fstat(self.owner.pythonw_pin.fileno())
+        with mock.patch.object(probe.os, 'fstat', return_value=SimpleNamespace(
+                **{key: getattr(original_stat, key) for key in
+                   ('st_dev', 'st_ino', 'st_mode', 'st_nlink', 'st_mtime_ns', 'st_ctime_ns')},
+                st_size=original_stat.st_size + 1)):
+            with self.assertRaises(probe.Refused):
+                self.owner.check_pythonw()
+        self.assertFalse(self.owner.pythonw_pin.closed)
+
+    def test_conversion_refusal_closes_the_original_native_handle(self):
+        self.ms.open_osfhandle = mock.Mock(side_effect=OSError('conversion refused'))
+        with self.assertRaises(OSError):
+            self.owner.pin_pythonw()
+        self.owner.native.close_handle.assert_called_once_with(self.opens[0])
+        with self.assertRaises(OSError):
+            probe.os.fstat(self.opens[0])
 
 
 class ChildStartupQueries(unittest.TestCase):
