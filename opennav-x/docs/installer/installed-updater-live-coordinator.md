@@ -184,3 +184,25 @@ signals, incomplete pagination, API failures and timeouts refuse. A signal URL i
 never followed. There are no publication retries, status writes, signing keys,
 network changes or automatic later-phase continuation. Actual interactive UAC,
 customer Repair/automatic fallback and boat acceptance remain outside this CLI.
+
+`tools/prepare-installed-updater-profile-windows.py
+--disposable-opt-in=SCRUM-311-disposable-create-installed-profile` prepares only a
+new disposable fixture at the actual Windows ProgramData known folder plus
+`opencpn`. It requires the same manual GitHub-hosted Windows/repository guards;
+there is no profile-path override. An existing profile, including an empty or
+partial fixture, or redirected/reparse ancestry refuses without reset or cleanup.
+It retains native directory identities and uses
+[`NtCreateFile` `FILE_CREATE`](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntcreatefile)
+for exclusive children relative to those original handles, reuses
+`mode-persistence.gpx` and the maintained
+disabled-connection constant, writes the real `opencpn.ini`, disables the four
+bundled stock plugins and online AIS/weather, and observes navigation/settings
+through the existing installed driver. Its JSON reports scoped observations and
+the `preserveSettings` declaration entries; it supplies no approval or product
+acceptance. No app is launched, ACL changed or existing profile read/copied.
+Portable `test-prepare-installed-updater-profile.py` checks do not qualify the
+native known-folder/handle-relative creation calls: those, Windows profile
+loading/migration and the actual installed journey still need disposable Windows
+execution. The pinned OpenCPN `model/src/base_platform.cpp` (`GetHomeDir`,
+`GetConfigFileName`) and broker `execution_child_profile_windows.go` define the
+Windows `.ini` path; the helper does not introduce another storage format.
