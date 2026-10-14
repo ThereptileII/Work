@@ -46,3 +46,44 @@ token, privilege, desktop/ACL, launch flags or 60-second budget is changed.
 This is a prepared discriminator for missing diagnostic delivery, not evidence
 that standard handles caused either retained timeout. Native observation and
 actual interactive customer/UAC acceptance remain separate and pending.
+
+
+## Fixed actual-token profile diagnostic channel
+
+The subsequent native standard-handle observation proved all three supplied
+numeric slots invalid in the original suspended child (error 6, no resume).
+The maintained correction retains `CreateProcessWithTokenW`, `LOGON_WITH_PROFILE`,
+the original LIMITED PRIMARY token, explicit desktop, original process/thread
+checks, one suspended child/one resume, verified exit and the 60-second bound.
+It supplies no standard handles and performs no handle injection, ACL changes,
+privilege enablement, token conversion or fallback launch.
+
+Only the literal `--disposable-profile-capability` worker mode changes delivery;
+the existing noargs CLI remains unchanged. The worker resolves its destination
+with `GetUserProfileDirectoryW` on its actual current process token. The parent
+resolves it from the retained original LIMITED token and compares it with the
+existing exact fresh-account SID/profile registration. Neither side chooses a
+path from arguments or environment variables; no environment ownership is
+inferred from profile loading or `lpEnvironment=NULL`.
+
+The child exclusively creates one fixed basename with default inherited security.
+Both sides retain no-reparse ancestor handles against rename. The parent retains
+one original deny-delete file owner across bounded reads, checking full native
+file ID, actual fresh SID owner, one link and append-only prefixes. No overwrite,
+path-based replacement adoption or permission repair is allowed. Each fixed
+marker and final JSON document is flushed. The first file marker proves worker
+dispatch and successful diagnostic-file opening after module imports; it does
+not prove earlier interpreter progress. Timeout/refusal retains only sanitized
+bounded marker/count/document-presence facts. Capability still requires the
+original child's verified exit 0, stable final file and actual-child identity
+comparison; file bytes alone cannot supply acceptance. Diagnostic owners drain
+before the existing own-account/profile cleanup, and uncertainty still defers
+cleanup to disposable-job destruction.
+
+This fixes the proven invalid standard-handle request. Native execution is still
+required; it does not establish the earlier timeout cause, usable interactive
+customer/UAC capability, installed product acceptance or SCRUM-311 completion.
+
+Primary contracts: [CreateProcessWithTokenW](https://learn.microsoft.com/en-us/windows/win32/api/winbase/nf-winbase-createprocesswithtokenw),
+[GetUserProfileDirectoryW](https://learn.microsoft.com/en-us/windows/win32/api/userenv/nf-userenv-getuserprofiledirectoryw),
+[CreateFileW](https://learn.microsoft.com/en-us/windows/win32/api/fileapi/nf-fileapi-createfilew).

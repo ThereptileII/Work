@@ -4,14 +4,12 @@
 No caller command, password arguments/files/environment, privilege enablement,
 restricted tokens, policy writes or desktop ACL changes. The original OS LIMITED
 PRIMARY logon token launches only the original installed_customer_launch.py
-noargs capability CLI. The linked FULL token is observed, never converted or
+fixed literal profile-file capability worker (the noargs CLI is unchanged). The linked FULL token is observed, never converted or
 used by this entry. Original token statistics survive refusal. Limited-child
 desktop observations do not enable the elevated-parent customer launch API.
-Fixed stderr progress labels and bounded stdout-document presence survive
-refusal/timeout; neither diagnostic supplies capability or exit acceptance.
-Before resume, supplied standard-handle slots are observed from the original
-child process and compared with the retained parent pipe/NUL objects. This
-diagnostic duplicates handles only back into the parent, never into the child.
+Bounded flushed progress and the final report use one child-created fixed file
+in the actual-token profile. No stdout/stderr handles, environment paths or
+handle inheritance are assumed. Original verified exit remains necessary.
 Explicit WinSta0\\Default avoids CreateProcessWithTokenW's implicit inherited
 window-station/desktop permission additions. Failures preserve uncertain live
 process/account/profile state for disposable-job destruction rather than kill.
@@ -99,6 +97,22 @@ def capability_progress(output, diagnostics):
                 len(observed) == len(customer.CAPABILITY_PROGRESS_MARKERS),
                 stdoutBytes=len(output), stderrBytes=len(diagnostics), finalDocumentPresent=final_document)
 
+
+
+def file_capability_parts(raw):
+    require(len(raw) <= customer.PROFILE_CAPABILITY_BOUND, 'capability-file-bound-refused')
+    parts = raw.split(b'\n', 3)
+    if len(parts) < 4:
+        return b'', raw
+    return parts[3], b'\n'.join(parts[:3]) + b'\n'
+
+
+def file_capability_progress(raw):
+    output, markers = file_capability_parts(raw)
+    result = capability_progress(output, markers)
+    result['reportBytes'] = result.pop('stdoutBytes')
+    result['markerBytes'] = result.pop('stderrBytes')
+    return dict(result, channel='actual-token-profile-file', fileBytes=len(raw))
 
 def project_capability(raw, expected_sid):
     require(len(raw) <= 16384, 'capability-output-bound-refused')
@@ -195,9 +209,7 @@ class AccountProbe:
             self.fn, self.ok = self.native._fn, self.native._ok
             self.net = C.WinDLL('netapi32.dll', use_last_error=True, winmode=0x800)
             self.env = C.WinDLL('userenv.dll', use_last_error=True, winmode=0x800)
-            self.kernelbase = C.WinDLL('kernelbase.dll', use_last_error=True, winmode=0x800)
-            # Resolve the read-only comparator before creating the fresh account.
-            self.fn(self.kernelbase, 'CompareObjectHandles', W.BOOL, W.HANDLE, W.HANDLE)
+            self.diagnostic = None
             self.name = 'skgprobe' + secrets.token_hex(6)
             self.sid, self.account_created = None, False
             self.launch_effect, self.process, self.thread = 'not-attempted', None, None
@@ -393,40 +405,8 @@ class AccountProbe:
                 self.token_statistics(self.limited) == self.limited_statistics,
                 'original-limited-primary-changed')
 
-    def observe_child_standard_handles(self, startup, originals):
-        # CreateProcessWithTokenW copies STARTF_USESTDHANDLES fields unchanged.
-        # Observe those slots through the ORIGINAL returned child handle. Only
-        # the parent receives duplicates; SAME_ACCESS never grants more rights
-        # and CLOSE_SOURCE is never used. Existing cleanup owns every duplicate.
-        records = self.facts['originalChild']['standardHandles'] = {}
-        parent = self.fn(self.native.kernel, 'GetCurrentProcess', W.HANDLE)()
-        duplicate = self.fn(self.native.kernel, 'DuplicateHandle', W.BOOL,
-            W.HANDLE, W.HANDLE, W.HANDLE, C.POINTER(W.HANDLE), W.DWORD, W.BOOL, W.DWORD)
-        compare = self.fn(self.kernelbase, 'CompareObjectHandles', W.BOOL, W.HANDLE, W.HANDLE)
-        for name, original in zip(('stdin', 'stdout', 'stderr'), originals, strict=True):
-            record = records[name] = dict(duplicateSucceeded=False, sameObject=False,
-                                         duplicateError=None, comparisonError=None)
-            observed = W.HANDLE()
-            try:
-                C.set_last_error(0)
-                ok = duplicate(self.process, getattr(startup, name), parent,
-                               C.byref(observed), 0, False, 2)  # DUPLICATE_SAME_ACCESS
-                record['duplicateError'] = None if ok else number(C.get_last_error())
-            finally:
-                if observed.value:
-                    self.own(observed)
-            record['duplicateSucceeded'] = bool(ok and observed.value)
-            if record['duplicateSucceeded']:
-                C.set_last_error(0)
-                record['sameObject'] = bool(compare(original, observed))
-                record['comparisonError'] = None if record['sameObject'] else number(C.get_last_error())
-        require(all(record['duplicateSucceeded'] and record['sameObject'] for record in records.values()),
-                'original-probe-standard-handles-refused')
-
     def observe(self):
         self.check_limited()
-        class Security(C.Structure):
-            _fields_ = [('length', W.DWORD), ('descriptor', C.c_void_p), ('inherit', W.BOOL)]
         class Startup(C.Structure):
             _fields_ = [('cb', W.DWORD), ('reserved', W.LPWSTR), ('desktop', W.LPWSTR), ('title', W.LPWSTR),
                 ('x', W.DWORD), ('y', W.DWORD), ('width', W.DWORD), ('height', W.DWORD),
@@ -435,28 +415,11 @@ class AccountProbe:
                 ('stdin', W.HANDLE), ('stdout', W.HANDLE), ('stderr', W.HANDLE)]
         class Process(C.Structure):
             _fields_ = [('process', W.HANDLE), ('thread', W.HANDLE), ('pid', W.DWORD), ('tid', W.DWORD)]
-        sa, read, write = Security(C.sizeof(Security), None, True), W.HANDLE(), W.HANDLE()
-        self.ok(self.fn(self.native.kernel, 'CreatePipe', W.BOOL, C.POINTER(W.HANDLE), C.POINTER(W.HANDLE),
-                       C.POINTER(Security), W.DWORD)(C.byref(read), C.byref(write), C.byref(sa), 0))
-        self.own(read)
-        self.own(write)
-        self.ok(self.fn(self.native.kernel, 'SetHandleInformation', W.BOOL, W.HANDLE, W.DWORD, W.DWORD)(read, 1, 0))
-        diagnostic_read, diagnostic_write = W.HANDLE(), W.HANDLE()
-        self.ok(self.fn(self.native.kernel, 'CreatePipe', W.BOOL, C.POINTER(W.HANDLE), C.POINTER(W.HANDLE),
-                       C.POINTER(Security), W.DWORD)(C.byref(diagnostic_read), C.byref(diagnostic_write), C.byref(sa), 0))
-        self.own(diagnostic_read)
-        self.own(diagnostic_write)
-        self.ok(self.fn(self.native.kernel, 'SetHandleInformation', W.BOOL, W.HANDLE, W.DWORD, W.DWORD)(diagnostic_read, 1, 0))
-        null = self.fn(self.native.kernel, 'CreateFileW', W.HANDLE, W.LPCWSTR, W.DWORD, W.DWORD,
-                       C.POINTER(Security), W.DWORD, W.DWORD, W.HANDLE)('NUL', 0xc0000000, 3, C.byref(sa), 3, 0, None)
-        require(null and null != C.c_void_p(-1).value, 'native-null-stream-refused')
-        self.own(null)
         startup, process = Startup(), Process()
-        startup.cb, startup.desktop, startup.flags = C.sizeof(startup), 'WinSta0\\Default', 0x100
-        startup.stdin, startup.stdout, startup.stderr = null, write, diagnostic_write
-        # No password/environment/caller command. Existing interpreter + exact
-        # committed noargs helper only; profile/environment supplied by Windows.
-        command = [sys.executable, '-I', '-B', str(self.helper)]
+        startup.cb, startup.desktop = C.sizeof(startup), 'WinSta0\\Default'
+        # No STARTF_USESTDHANDLES or inherited NUL/pipes. Do not infer destination
+        # from lpEnvironment=NULL: only the original token chooses its profile.
+        command = [sys.executable, '-I', '-B', str(self.helper), customer.PROFILE_CAPABILITY_MODE]
         line = C.create_unicode_buffer(subprocess.list2cmdline(command))
         require(len(line) < 1024, 'fixed-helper-command-bound-refused')
         self.check_limited()
@@ -496,45 +459,26 @@ class AccountProbe:
                     os.path.normcase(self.native._image(self.process)) == os.path.normcase(sys.executable),
                     'original-probe-child-identity-refused')
         check_created_child()
-        require(self.verify_profile() is not None, 'original-profile-load-unobserved')
-        self.observe_child_standard_handles(startup, (null, write, diagnostic_write))
+        profile = self.verify_profile()
+        require(profile is not None, 'original-profile-load-unobserved')
+        self.diagnostic = customer._ProfileCapabilityFile(self.limited, expected_profile=profile, expected_sid=self.sid)
         check_created_child()
         self.facts['originalChild']['resumeAttempted'] = True
         previous = self.fn(self.native.kernel, 'ResumeThread', W.DWORD, W.HANDLE)(self.thread)
         self.facts['originalChild']['resumeResult'] = previous
         require(previous == 1, 'original-probe-resume-effect-uncertain')
-        output, diagnostics, deadline = bytearray(), bytearray(), time.monotonic() + 60
-
-        def drain(handle, buffer, limit):
-            available = W.DWORD()
-            self.ok(self.fn(self.native.kernel, 'PeekNamedPipe', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
-                    C.POINTER(W.DWORD), C.POINTER(W.DWORD), C.POINTER(W.DWORD))(
-                    handle, None, 0, None, C.byref(available), None))
-            if len(buffer) + available.value > limit:
-                self.facts['capabilityProgress']['outputBoundRefused'] = True
-                raise Refused('capability-output-bound-refused')
-            if available.value:
-                raw, count = C.create_string_buffer(available.value), W.DWORD()
-                self.ok(self.fn(self.native.kernel, 'ReadFile', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
-                        C.POINTER(W.DWORD), C.c_void_p)(handle, raw, len(raw), C.byref(count), None))
-                require(count.value <= len(raw), 'capability-read-bound-refused')
-                buffer.extend(raw.raw[:count.value])
-            return bool(available.value)
-
-        self.facts['capabilityProgress'] = capability_progress(output, diagnostics)
+        raw, deadline = b'', time.monotonic() + 60
+        self.facts['capabilityProgress'] = file_capability_progress(raw)
         try:
             while True:
-                drain(read, output, 16384)
-                drain(diagnostic_read, diagnostics, 1024)
+                raw = self.diagnostic.read()
                 state = self.fn(self.native.kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)(self.process, 25)
                 require(state in (0, 258), 'original-probe-wait-refused')
                 if state == 0:
                     self.exit_observed = True
-                    # Drain both streams written immediately before original exit.
-                    more_output = drain(read, output, 16384)
-                    more_diagnostics = drain(diagnostic_read, diagnostics, 1024)
-                    if more_output or more_diagnostics:
-                        continue
+                    # Final file size/prefix must be stable on the retained
+                    # original file, after proven original-process exit only.
+                    raw = self.diagnostic.read(final=True)
                     code = W.DWORD()
                     self.ok(self.fn(self.native.kernel, 'GetExitCodeProcess', W.BOOL, W.HANDLE, C.POINTER(W.DWORD))(
                         self.process, C.byref(code)))
@@ -543,20 +487,22 @@ class AccountProbe:
                     break
                 require(time.monotonic() < deadline, 'original-capability-child-timeout')
         finally:
-            bounded = self.facts['capabilityProgress'].get('outputBoundRefused', False)
-            self.facts['capabilityProgress'] = capability_progress(output, diagnostics)
-            if bounded:
-                self.facts['capabilityProgress']['outputBoundRefused'] = True
+            self.facts['capabilityProgress'] = file_capability_progress(raw)
         require(self.facts['capabilityProgress']['markerSequenceComplete'], 'capability-progress-contract-refused')
         require(self.verify_profile() is not None, 'original-profile-load-unobserved')
         self.check_limited()
-        return project_limited_capability(bytes(output), child)
+        return project_limited_capability(file_capability_parts(raw)[0], child)
 
     def cleanup(self):
         # No delete/kill if creation was interrupted or the original process may
         # still run. The entire job is disposable; never reinterpret PID reuse.
         safe = self.launch_effect in ('not-attempted', 'refused-no-child') or self.exit_observed
         closed = True
+        if getattr(self, 'diagnostic', None) is not None:
+            try:
+                self.diagnostic.close()
+            except BaseException:
+                closed = False
         C.memset(self.password, 0, C.sizeof(self.password))
         try:
             self.native.close()

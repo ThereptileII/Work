@@ -16,7 +16,8 @@ https://github.com/actions/runner-images/blob/main/images/windows/scripts/build/
 # precedes native/import work, while stdout remains one capability JSON object.
 if __name__ == '__main__':
     import sys
-    print('SKAGER_CAPABILITY_PROGRESS/1 helper-entry', file=sys.stderr, flush=True)
+    if len(sys.argv) == 1:
+        print('SKAGER_CAPABILITY_PROGRESS/1 helper-entry', file=sys.stderr, flush=True)
 
 import ctypes as C
 from ctypes import wintypes as W
@@ -40,6 +41,9 @@ class CustomerLaunchRefused(RuntimeError):
 STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 CAPABILITY_PROGRESS_MARKERS = ('helper-entry', 'observation-begin', 'observation-end')
 CAPABILITY_PROGRESS_PREFIX = 'SKAGER_CAPABILITY_PROGRESS/1 '
+PROFILE_CAPABILITY_MODE = '--disposable-profile-capability'
+PROFILE_CAPABILITY_FILE = 'skager-disposable-capability-v1.jsonl'
+PROFILE_CAPABILITY_BOUND = 17408
 
 
 def _require(value, message):
@@ -633,7 +637,187 @@ class _StockNative(_ProtectedStartupNative):
         return super().create(command)
 
 
+class _ProfileCapabilityFile:
+    """One token-derived diagnostic file; no caller-selected destination.
+
+    Ancestors and the original file deny deletion for their entire owned life.
+    A reader permits the original writer, not replacement/reopen or truncation.
+    This is a diagnostic channel, never token/process/desktop authority.
+    """
+    _fn, _ok, _buffer, _sid = staticmethod(_Native._fn), staticmethod(_Native._ok), _Native._buffer, _Native._sid
+
+    def __init__(self, token=None, *, expected_profile=None, expected_sid=None):
+        self.owned, self.file, self.identity, self.previous = [], None, None, b''
+        self.writer, self.written = token is None, 0
+        self.kernel = C.WinDLL('kernel32.dll', use_last_error=True, winmode=0x800)
+        self.adv = C.WinDLL('advapi32.dll', use_last_error=True, winmode=0x800)
+        self.env = C.WinDLL('userenv.dll', use_last_error=True, winmode=0x800)
+        self.close_handle = self._fn(self.kernel, 'CloseHandle', W.BOOL, W.HANDLE)
+        try:
+            if token is None:
+                token = W.HANDLE()
+                try:
+                    opened = self._fn(self.adv, 'OpenProcessToken', W.BOOL, W.HANDLE, W.DWORD, C.POINTER(W.HANDLE))(
+                        self._fn(self.kernel, 'GetCurrentProcess', W.HANDLE)(), 8, C.byref(token))
+                finally:
+                    if token:
+                        self.owned.append(token)
+                self._ok(opened)
+            user = self._buffer(token, 1)
+            self.sid = self._sid(C.cast(user, C.POINTER(C.c_void_p))[0])
+            _require(expected_sid is None or self.sid == expected_sid, 'Diagnostic token differs from original account')
+            raw, count = C.create_unicode_buffer(1024), W.DWORD(1024)
+            self._ok(self._fn(self.env, 'GetUserProfileDirectoryW', W.BOOL, W.HANDLE, W.LPWSTR, C.POINTER(W.DWORD))(
+                token, raw, C.byref(count)))
+            self.profile = raw.value
+            _require(3 < len(self.profile) < 960 and re.match(r'^[A-Za-z]:\\', self.profile) and
+                     ntpath.normpath(self.profile) == self.profile and ':' not in self.profile[2:] and
+                     not any(c in self.profile for c in '\r\n\x00/'), 'Canonical actual-token profile required')
+            _require(expected_profile is None or ntpath.normcase(str(expected_profile)) == ntpath.normcase(self.profile),
+                     'Diagnostic profile differs from original fresh account')
+            self.directories = []
+            drive, tail = ntpath.splitdrive(self.profile)
+            path = drive + '\\'
+            for component in ['', *tail.strip('\\').split('\\')]:
+                if component:
+                    path = ntpath.join(path, component)
+                handle = self._open(path, 0x80, 3, 3, 0x02200000)
+                self.owned.append(handle)
+                self.directories.append((handle, path, self._check_file(handle, path, directory=True)))
+            self.path = ntpath.join(self.profile, PROFILE_CAPABILITY_FILE)
+            if self.writer:
+                self.file = self._open(self.path, 0x40000000 | 0x20000, 1, 1, 0x00200000)
+                self.owned.append(self.file)
+                self.identity = self._check_file(self.file, self.path)
+            else:
+                # The fresh child alone creates this file after its sole resume.
+                _require(not self._open_reader(), 'Preexisting capability file refused')
+        except BaseException:
+            self.close()
+            raise
+
+    def _open(self, path, access, share, disposition, flags, *, absent=False):
+        handle = self._fn(self.kernel, 'CreateFileW', W.HANDLE, W.LPCWSTR, W.DWORD, W.DWORD,
+                          C.c_void_p, W.DWORD, W.DWORD, W.HANDLE)(path, access, share, None, disposition, flags, None)
+        if handle in (None, C.c_void_p(-1).value):
+            if absent and C.get_last_error() == 2:
+                return None
+            self._ok(False)
+        return handle
+
+    def _check_file(self, handle, path, directory=False):
+        class Attribute(C.Structure):
+            _fields_ = [('attributes', C.c_uint32), ('tag', C.c_uint32)]
+        class Identity(C.Structure):
+            _fields_ = [('volume', C.c_uint64), ('id', C.c_ubyte * 16)]
+        class Standard(C.Structure):
+            _fields_ = [('allocated', C.c_int64), ('size', C.c_int64), ('links', C.c_uint32),
+                        ('deleting', C.c_ubyte), ('directory', C.c_ubyte)]
+        info = self._fn(self.kernel, 'GetFileInformationByHandleEx', W.BOOL, W.HANDLE, C.c_int, C.c_void_p, W.DWORD)
+        attributes, identity, standard = Attribute(), Identity(), Standard()
+        for kind, value in ((9, attributes), (18, identity), (1, standard)):
+            self._ok(info(handle, kind, C.byref(value), C.sizeof(value)))
+        _require(not attributes.attributes & 0x400 and bool(attributes.attributes & 0x10) == directory and
+                 bool(standard.directory) == directory and not standard.deleting and
+                 identity.volume != 0 and any(identity.id),
+                 'Plain retained diagnostic object required')
+        final = C.create_unicode_buffer(1024)
+        length = self._fn(self.kernel, 'GetFinalPathNameByHandleW', W.DWORD, W.HANDLE, W.LPWSTR, W.DWORD, W.DWORD)(
+            handle, final, len(final), 0)
+        _require(0 < length < len(final) and ntpath.normcase(final.value) == ntpath.normcase('\\\\?\\' + path),
+                 'Diagnostic object differs from fixed profile path')
+        if not directory:
+            _require(standard.links == 1 and 0 <= standard.size <= PROFILE_CAPABILITY_BOUND,
+                     'Bounded singly linked diagnostic file required')
+            owner, descriptor = C.c_void_p(), C.c_void_p()
+            status = self._fn(self.adv, 'GetSecurityInfo', W.DWORD, W.HANDLE, C.c_int, W.DWORD,
+                C.POINTER(C.c_void_p), C.c_void_p, C.c_void_p, C.c_void_p, C.POINTER(C.c_void_p))(
+                handle, 1, 1, C.byref(owner), None, None, None, C.byref(descriptor))
+            try:
+                _require(status == 0 and owner and self._sid(owner) == self.sid,
+                         'Diagnostic file owner differs from original account')
+            finally:
+                if descriptor:
+                    _require(not self._fn(self.kernel, 'LocalFree', W.HANDLE, C.c_void_p)(descriptor),
+                             'Diagnostic security buffer close failed')
+        return (identity.volume, bytes(identity.id)), standard.size
+
+    def _check_directories(self):
+        for handle, path, original in self.directories:
+            _require(self._check_file(handle, path, directory=True)[0] == original[0],
+                     'Original diagnostic ancestry changed')
+
+    def _open_reader(self):
+        handle = self._open(self.path, 0x80000000 | 0x20000, 3, 3, 0x00200000, absent=True)
+        if handle is None:
+            return False
+        self.file = handle
+        self.owned.append(handle)
+        self.identity = self._check_file(handle, self.path)
+        return True
+
+    def read(self, *, final=False):
+        _require(not self.writer, 'Diagnostic reader required')
+        self._check_directories()
+        if self.file is None and not self._open_reader():
+            return b''
+        before = self._check_file(self.file, self.path)
+        _require(before[0] == self.identity[0], 'Original diagnostic file changed')
+        self._ok(self._fn(self.kernel, 'SetFilePointerEx', W.BOOL, W.HANDLE, C.c_int64, C.c_void_p, W.DWORD)(
+            self.file, 0, None, 0))
+        raw, count = C.create_string_buffer(before[1]), W.DWORD()
+        self._ok(self._fn(self.kernel, 'ReadFile', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
+                         C.POINTER(W.DWORD), C.c_void_p)(self.file, raw, before[1], C.byref(count), None))
+        after = self._check_file(self.file, self.path)
+        data = raw.raw[:count.value]
+        _require(count.value == before[1] and after[0] == before[0] and after[1] >= before[1] and
+                 (not final or after[1] == before[1]) and data.startswith(self.previous),
+                 'Diagnostic prefix changed or final file remains uncertain')
+        self.previous = data
+        return data
+
+    def write(self, data):
+        _require(self.writer and type(data) is bytes and self.written + len(data) <= PROFILE_CAPABILITY_BOUND,
+                 'Bounded diagnostic writer required')
+        self._check_directories()
+        _require(self._check_file(self.file, self.path)[0] == self.identity[0], 'Original diagnostic file changed')
+        count = W.DWORD()
+        self._ok(self._fn(self.kernel, 'WriteFile', W.BOOL, W.HANDLE, C.c_void_p, W.DWORD,
+                         C.POINTER(W.DWORD), C.c_void_p)(self.file, data, len(data), C.byref(count), None))
+        _require(count.value == len(data), 'Complete diagnostic write required')
+        self.written += count.value
+        self._ok(self._fn(self.kernel, 'FlushFileBuffers', W.BOOL, W.HANDLE)(self.file))
+
+    def close(self):
+        handles, self.owned = self.owned, []
+        valid = True
+        for handle in reversed(handles):
+            try:
+                valid = bool(self.close_handle(handle)) and valid
+            except BaseException:
+                valid = False
+        _require(valid, 'Diagnostic native owners did not drain')
+
+
+def _run_profile_capability_worker():
+    owner = _ProfileCapabilityFile()
+    try:
+        # Unlike the noargs stderr label, this proves worker dispatch AND a
+        # successfully opened actual-token profile file, after module imports.
+        for marker in CAPABILITY_PROGRESS_MARKERS[:2]:
+            owner.write((CAPABILITY_PROGRESS_PREFIX + marker + '\n').encode('ascii'))
+        result = inspect_customer_capability()
+        owner.write((CAPABILITY_PROGRESS_PREFIX + 'observation-end\n').encode('ascii'))
+        encoded = (json.dumps(result, sort_keys=True) + '\n').encode('utf-8')
+        _require(len(encoded) <= 16384, 'Bounded final capability document required')
+        owner.write(encoded)
+    finally:
+        owner.close()
+
+
 def _run_capability_cli():
+    if sys.argv[1:] == [PROFILE_CAPABILITY_MODE]:
+        return _run_profile_capability_worker()
     _require(len(sys.argv) == 1, 'Capability inspection accepts no identity or launch arguments')
     print(CAPABILITY_PROGRESS_PREFIX + 'observation-begin', file=sys.stderr, flush=True)
     result = inspect_customer_capability()
@@ -642,4 +826,11 @@ def _run_capability_cli():
 
 
 if __name__ == '__main__':
-    _run_capability_cli()
+    if sys.argv[1:] == [PROFILE_CAPABILITY_MODE]:
+        try:
+            _run_capability_cli()
+        except BaseException:
+            # Worker diagnostics have no stdio channel, including tracebacks.
+            raise SystemExit(1) from None
+    else:
+        _run_capability_cli()

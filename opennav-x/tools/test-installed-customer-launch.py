@@ -644,6 +644,178 @@ class CustomerLaunchTests(unittest.TestCase):
         self.assertFalse(result['normalTokenAvailable'])
 
 
+class ProfileDiagnosticNative(customer._ProfileCapabilityFile):
+    """Run actual profile/file ownership code against a fixed inert Win32 API."""
+    def __init__(self, *, writer=False, existing=False, redirected=False):
+        self.calls, self.objects, self.closed, self.error = [], {}, [], 0
+        self.data, self.exists, self.redirected = b'', existing, redirected
+        self.file_owner, self.links, self.file_id = SID, 1, 99
+        self.token_used = []
+        with mock.patch.object(customer.C, 'WinDLL', create=True, return_value=object()), \
+                mock.patch.object(customer.C, 'get_last_error', create=True, side_effect=lambda: self.error):
+            super().__init__(None if writer else 987,
+                expected_profile=None if writer else r'C:\Users\Fresh', expected_sid=None if writer else SID)
+
+    def _buffer(self, token, kind):
+        self.token_used.append(token.value if hasattr(token, 'value') else token)
+        return ctypes.pointer(ctypes.c_void_p(123))
+
+    def _sid(self, pointer):
+        return self.file_owner if getattr(pointer, 'value', pointer) == 456 else SID
+
+    @staticmethod
+    def _ok(value):
+        customer._require(value, 'Inert native failure')
+
+    def _fn(self, dll, name, result, *types):
+        def call(*args):
+            self.calls.append((name, args))
+            if name == 'GetCurrentProcess': return 901
+            if name == 'OpenProcessToken':
+                assert args[:2] == (901, 8)
+                args[2]._obj.value = 45
+                return True
+            if name == 'GetUserProfileDirectoryW':
+                self.token_used.append(args[0].value if hasattr(args[0], 'value') else args[0])
+                args[1].value = r'C:\Users\Fresh'
+                return True
+            if name == 'CreateFileW':
+                path, access, share, security, disposition, flags, template = args
+                assert security is None and template is None
+                is_file = path.endswith(customer.PROFILE_CAPABILITY_FILE)
+                if is_file and (disposition == 1 and self.exists or disposition == 3 and not self.exists):
+                    self.error = 80 if self.exists else 2
+                    return ctypes.c_void_p(-1).value
+                if is_file:
+                    assert (access, share, flags) == ((0x40020000, 1, 0x00200000) if disposition == 1 else
+                                                     (0x80020000, 3, 0x00200000))
+                    self.exists = True
+                else:
+                    assert (access, share, disposition, flags) == (0x80, 3, 3, 0x02200000)
+                handle = 100 + len(self.objects)
+                self.objects[handle] = (path, is_file)
+                return handle
+            if name == 'GetFileInformationByHandleEx':
+                handle, kind, target, size = args
+                path, is_file = self.objects[handle]
+                value = target._obj
+                if kind == 9:
+                    value.attributes = (0 if is_file else 0x10) | (0x400 if not is_file and self.redirected else 0)
+                elif kind == 18:
+                    assert size == 24
+                    value.volume, value.id[0] = 7, self.file_id if is_file else handle
+                elif kind == 1:
+                    value.size, value.links, value.directory = len(self.data) if is_file else 0, self.links, not is_file
+                return True
+            if name == 'GetFinalPathNameByHandleW':
+                args[1].value = '\\\\?\\' + self.objects[args[0]][0]
+                return len(args[1].value)
+            if name == 'GetSecurityInfo':
+                assert args[1:3] == (1, 1)
+                args[3]._obj.value, args[7]._obj.value = 456, 789
+                return 0
+            if name == 'LocalFree': return None
+            if name == 'SetFilePointerEx':
+                assert args[1:] == (0, None, 0)
+                return True
+            if name == 'ReadFile':
+                data = self.data[:args[2]]
+                ctypes.memmove(args[1], data, len(data))
+                args[3]._obj.value = len(data)
+                return True
+            if name == 'WriteFile':
+                self.data += args[1]
+                args[3]._obj.value = len(args[1])
+                return True
+            if name == 'FlushFileBuffers': return True
+            if name == 'CloseHandle':
+                self.closed.append(args[0].value if hasattr(args[0], 'value') else args[0])
+                return True
+            raise AssertionError('Unexpected native API: ' + name)
+        return call
+
+
+class ProfileDiagnosticCustody(unittest.TestCase):
+    def test_reader_uses_actual_original_token_and_retains_one_file_across_reads(self):
+        owner = ProfileDiagnosticNative()
+        self.assertEqual(owner.token_used, [987, 987])
+        self.assertIsNone(owner.file)
+        owner.exists, owner.data = True, b'entry\n'
+        self.assertEqual(owner.read(), b'entry\n')
+        handle = owner.file
+        owner.data += b'final\n'
+        self.assertEqual(owner.read(final=True), b'entry\nfinal\n')
+        self.assertEqual(owner.file, handle)
+        opens = [a for name, a in owner.calls if name == 'CreateFileW' and a[0].endswith(customer.PROFILE_CAPABILITY_FILE)]
+        self.assertEqual(len(opens), 2)  # Initial absence; one original read open.
+        original = owner.owned.copy()
+        owner.close()
+        self.assertEqual(owner.closed, list(reversed(original)))
+        owner.close()
+        self.assertEqual(owner.closed, list(reversed(original)))
+
+    def test_stale_file_redirected_ancestry_foreign_owner_and_hardlinks_refuse(self):
+        for options in (dict(existing=True), dict(redirected=True)):
+            with self.subTest(options=options), self.assertRaises(customer.CustomerLaunchRefused):
+                ProfileDiagnosticNative(**options)
+        for key, value in (('file_owner', SID + '2'), ('links', 2), ('data', b'x' * (customer.PROFILE_CAPABILITY_BOUND + 1))):
+            owner = ProfileDiagnosticNative()
+            owner.exists = True
+            setattr(owner, key, value)
+            with self.subTest(key=key), self.assertRaises(customer.CustomerLaunchRefused):
+                owner.read()
+            owner.close()
+
+    def test_changed_prefix_or_original_full_file_identity_refuses_without_reopen(self):
+        for key, value in (('data', b'foreign\n'), ('file_id', 100)):
+            owner = ProfileDiagnosticNative()
+            owner.exists, owner.data = True, b'original\n'
+            owner.read()
+            count = len([1 for name, _ in owner.calls if name == 'CreateFileW'])
+            setattr(owner, key, value)
+            with self.subTest(key=key), self.assertRaises(customer.CustomerLaunchRefused):
+                owner.read(final=True)
+            self.assertEqual(len([1 for name, _ in owner.calls if name == 'CreateFileW']), count)
+            owner.close()
+
+    def test_writer_creates_only_fixed_actual_token_profile_file_and_flushes_every_record(self):
+        with mock.patch.dict(os.environ, {'USERPROFILE': r'C:\Foreign', 'LOCALAPPDATA': r'C:\Foreign'}):
+            owner = ProfileDiagnosticNative(writer=True)
+        self.assertEqual(owner.token_used, [45, 45])
+        owner.write(b'constant-marker\n')
+        owner.write(b'{"schema":1}\n')
+        self.assertEqual(owner.data, b'constant-marker\n{"schema":1}\n')
+        self.assertEqual([n for n, _ in owner.calls].count('FlushFileBuffers'), 2)
+        self.assertFalse(any('Environment' in n or 'Privilege' in n or 'Duplicate' in n for n, _ in owner.calls))
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            owner.write(b'x' * customer.PROFILE_CAPABILITY_BOUND)
+        self.assertEqual([n for n, _ in owner.calls].count('WriteFile'), 2)
+        owner.close()
+        self.assertEqual(owner.closed[-1], 45)
+
+    def test_stable_final_read_refuses_growth_during_read_and_writer_never_overwrites_existing(self):
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            ProfileDiagnosticNative(writer=True, existing=True)
+        owner = ProfileDiagnosticNative()
+        owner.exists, owner.data = True, b'original\n'
+        owner.read()
+        fn = owner._fn
+        def growing(dll, name, *types):
+            call = fn(dll, name, *types)
+            if name != 'ReadFile':
+                return call
+            def read(*args):
+                result = call(*args)
+                owner.data += b'changed\n'
+                return result
+            return read
+        owner._fn = growing
+        with self.assertRaises(customer.CustomerLaunchRefused):
+            owner.read(final=True)
+        self.assertEqual(owner.previous, b'original\n')
+        owner.close()
+
+
 class CapabilityCLIProgress(unittest.TestCase):
     def test_fixed_entry_precedes_imports_and_exposes_no_native_observations(self):
         import builtins
@@ -681,6 +853,53 @@ class CapabilityCLIProgress(unittest.TestCase):
                 customer._run_capability_cli()
         inspect.assert_not_called()
         write.assert_not_called()
+
+    def test_literal_worker_uses_only_profile_file_and_flushes_final_report_without_stdio(self):
+        owner = SimpleNamespace(write=mock.Mock(), close=mock.Mock())
+        result = dict(schema=1, state='blocked', nativeCustomerAcceptance=False, consentPromptAcceptance=False)
+        with mock.patch.object(customer.sys, 'argv', ['fixed-helper.py', customer.PROFILE_CAPABILITY_MODE]), \
+                mock.patch.object(customer, '_ProfileCapabilityFile', return_value=owner) as opened, \
+                mock.patch.object(customer, 'inspect_customer_capability', return_value=result), \
+                mock.patch('builtins.print') as printed:
+            customer._run_capability_cli()
+        opened.assert_called_once_with()
+        self.assertEqual(owner.write.call_args_list, [mock.call((customer.CAPABILITY_PROGRESS_PREFIX + m + '\n').encode())
+            for m in customer.CAPABILITY_PROGRESS_MARKERS] + [mock.call((json.dumps(result, sort_keys=True) + '\n').encode())])
+        owner.close.assert_called_once_with()
+        printed.assert_not_called()
+
+    def test_worker_cannot_accept_path_identity_or_extra_arguments(self):
+        for args in ([customer.PROFILE_CAPABILITY_MODE, r'C:\foreign'],
+                     [customer.PROFILE_CAPABILITY_MODE + '=C:\\foreign'], ['--profile=C:\\foreign']):
+            with self.subTest(args=args), mock.patch.object(customer.sys, 'argv', ['fixed-helper.py', *args]), \
+                    mock.patch.object(customer, '_ProfileCapabilityFile') as opened, \
+                    mock.patch.object(customer, 'inspect_customer_capability') as inspect:
+                with self.assertRaises(customer.CustomerLaunchRefused):
+                    customer._run_capability_cli()
+                opened.assert_not_called()
+                inspect.assert_not_called()
+
+    def test_worker_observation_failure_preserves_flushed_entry_and_begin_but_no_final_claim(self):
+        owner = SimpleNamespace(write=mock.Mock(), close=mock.Mock())
+        with mock.patch.object(customer, '_ProfileCapabilityFile', return_value=owner), \
+                mock.patch.object(customer, 'inspect_customer_capability', side_effect=RuntimeError('private failure')), \
+                mock.patch('builtins.print') as printed:
+            with self.assertRaises(RuntimeError):
+                customer._run_profile_capability_worker()
+        self.assertEqual(owner.write.call_count, 2)
+        self.assertEqual(owner.write.call_args.args[0], (customer.CAPABILITY_PROGRESS_PREFIX + 'observation-begin\n').encode())
+        owner.close.assert_called_once_with()
+        printed.assert_not_called()
+
+    def test_worker_entry_failure_exits_nonzero_without_stdio_or_private_traceback(self):
+        output, diagnostic = io.StringIO(), io.StringIO()
+        with mock.patch.object(sys, 'argv', ['fixed-helper.py', customer.PROFILE_CAPABILITY_MODE]), \
+                mock.patch.object(ctypes, 'WinDLL', create=True, side_effect=OSError('private native detail')), \
+                contextlib.redirect_stdout(output), contextlib.redirect_stderr(diagnostic):
+            with self.assertRaises(SystemExit) as caught:
+                runpy.run_path(str(Path(customer.__file__)), run_name='__main__')
+        self.assertEqual(caught.exception.code, 1)
+        self.assertEqual((output.getvalue(), diagnostic.getvalue()), ('', ''))
 
 
 if __name__ == '__main__':
