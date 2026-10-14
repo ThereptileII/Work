@@ -10,8 +10,8 @@
   "placement": "Eastern Europe (automatic)",
   "publicAccess": "disabled",
   "objects": 0,
-  "credentials": "read-only single-bucket form prepared; owner handoff pending",
-  "runtimeDeployed": false,
+  "credentials": "owner reports saved; names verified in Supabase Edge Secrets; values excluded",
+  "runtimeDeployed": true,
   "artifactUploaded": false,
   "liveDownloadAccepted": false,
   "publicLaunchAuthorized": false

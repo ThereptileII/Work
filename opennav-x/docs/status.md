@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Private R2 storage enabled; download adapter passes source gates
+## Private R2 adapter deployed; live customer flow remains closed
 
 Exact web source `1acc781ed1ba50d565201911c15cdab00c24a364` passes
 [web CI 38512040319](https://github.com/ThereptileII/Work/actions/runs/38512040319):
@@ -12,11 +12,15 @@ entitlement and CSRF checks. The pinned signing SDK and MIT notice are included
 only in the server package.
 
 The owner activated R2, and `skager-private-releases` was created with public
-access disabled and no objects. The read-only single-bucket credential handoff
-is pending. Both exact web bundles are packaged, **not deployed**; live Supabase
-remains `251c88be` and Cloudflare `e18a9fb4`. Download access remains OFF and the
-reviewed release catalog empty. Live R2 custody/download/expiry tests and desktop
-package qualification remain pending. No public launch acceptance is claimed.
+access disabled and no objects. The owner saved the read-only credential in
+Supabase Edge Secrets; the nonsecret R2 account/bucket/backend bindings are also
+saved. Both exact bundles are now deployed: Cloudflare `33f77360` is Active,
+and Supabase deployment 13 has a full byte-identical server readback. Direct
+backend health is 200/`ready:false`; downloads are 404/unavailable. The beta
+origin health probe receives Cloudflare 403/1010, so proxy/customer acceptance
+remains unproven. Download access stays OFF and the reviewed release catalog is
+empty. Live R2 authentication/custody/download/expiry tests and desktop package
+qualification remain pending. No public launch acceptance is claimed.
 [Exact source, package, CI and provider evidence](evidence/scrum42-r2-20261014/README.md).
 
 ## Earlier checkpoint: private downloads integrated; provider storage limit remained

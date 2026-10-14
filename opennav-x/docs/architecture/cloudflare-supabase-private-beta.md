@@ -17,8 +17,10 @@ On 2026-10-14 the owner activated Cloudflare R2 for private release files. The
 Supabase Free project's 50 MB object limit cannot hold the Windows release set.
 R2 therefore replaces only download-object storage: Supabase remains the auth,
 database, commerce and entitlement backend. The newly created bucket is private
-and empty. A server-only R2 signer and portal URL checks are implemented, with
-credentials, deployed behavior and real artifact qualification still pending.
+and empty. A server-only R2 signer and portal URL checks are implemented and
+deployed. The owner saved its read-only credential in server secrets. Live
+authentication/download behavior and real artifact qualification remain pending;
+configuration presence alone does not establish them.
 See [private downloads](private-downloads.md); this change enables no public access.
 
 This replaces the Django/Render runtime selected in
