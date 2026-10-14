@@ -34,9 +34,16 @@ source review. [Implementation evidence](evidence/scrum311-live-adapters-2026101
 
 The exact frozen product's Linux repository operator is prepared and its public
 trust matches the existing repository; no signing/publication was performed.
-A suitable disposable signed-in Windows host and coherent live admission/update
-journey remain pending. Portable tests are not native installed acceptance.
-The running full candidate is unchanged; no extra application build was started.
+The joined admission/update journey is now implemented at `3b879097`: one
+Setup/enrollment, initial B0, no-update/Later/Now/offline, then Maintain uninstall.
+It uses explicit external publication/connectivity handoffs, fresh native
+observers, original-profile comparisons and retained broker ownership; refusals
+stop without retry or cleanup. **69 focused portable tests pass**, with independent
+source review. The [driver contract](../tools/test-installed-protected-updater-windows.md#joined-installed-journey)
+records its scope. A suitable disposable signed-in Windows host and actual
+native execution remain pending; portable tests are not installed acceptance.
+The manual approval-record producer is registered at `c907d876`, but no live
+approval has been authored or dispatched. No extra application build was started.
 
 ## Earlier candidate: compiled checks pass; installer receipt failed
 
