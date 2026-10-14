@@ -3,15 +3,26 @@
 ## Original shortcut custody passes; genuine customer host remains unqualified
 
 One combined full Staging candidate, exact
-`faa211b568f0e79e1d1065ba3fb76c3b1e801fd6`, is running in
+`faa211b568f0e79e1d1065ba3fb76c3b1e801fd6`, failed after native installer compilation in
 [CI 38529654044](https://github.com/ThereptileII/Work/actions/runs/38529654044).
 The authenticated Linux integration job passes: both application suites have
 **154 cases, zero failures and zero skips**; applicable integration steps pass.
 [Partial Linux receipt](evidence/scrum209-27-candidate-linux-38529654044/README.md).
-Windows remains pending; the full candidate is not accepted. Extended preview
+Both native Windows builds and their **146-case suites** passed, with no failures
+or skips. NSIS then produced an installer, but the receipt helper refused its
+path/descriptor metadata before recording the package hash. The failed job
+does not retain that Setup or the final package; the full candidate is not
+accepted. A focused native helper check is repairing this boundary before any
+new application build. Extended preview
 scenarios and endurance were deliberately skipped; design remains off. Later
-approval/host helper corrections
-do not replace that packaged source revision or request another application build.
+approval/host helper corrections do not replace that compiled source revision.
+The authenticated prepackage recovery contains both compiled applications and
+16,790 verified files, but no final Setup, payload or source/recovery ZIP. Safe
+delivery from it would require a new cross-run packaging/source/sealing contract;
+it is not the existing sealed-input retest path. The coordinator selects one
+new candidate through the existing workflow **after focused native helper
+qualification**, rather than adding that new release mechanism during this gate.
+The original failed run and retained compiled identities remain preserved.
 Setup approval now binds original policy, installer hash/size and local file
 metadata (25 focused checks). A short fresh-account probe produced real split
 tokens but refused their primary/impersonation type mismatch; its own cleanup
