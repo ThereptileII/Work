@@ -60,7 +60,18 @@ and boat acceptance remain pending. No public
 or boat deployment has been performed for this path.
 [Updated contract](installer/broker-code-upgrade.md).
 
-## Hosted ordinary-account probe remains unavailable
+## Hosted ordinary-account probe identifies invalid child standard handles
+
+The next bounded diagnostic `fe21e95a` passes **45/34** focused portable cases.
+Native [38634616586](https://github.com/ThereptileII/Work/actions/runs/38634616586)
+checks the original suspended child before resume: all three supplied stdin,
+stdout and stderr handle values refuse duplication with `ERROR_INVALID_HANDLE`.
+Original child identity checks passed; it was not resumed. This establishes a
+handle-binding defect, not the cause of the older timeout or usable UAC/desktop
+capability. No SKAGER installation or boat mutation occurred.
+[Authenticated observation](evidence/scrum311-limited-child-handles-20261014/README.md).
+
+### Earlier missing-progress observation
 
 The diagnostic-only change `66ec07ee` passes **42/34** focused portable cases.
 Native [38630784527](https://github.com/ThereptileII/Work/actions/runs/38630784527)

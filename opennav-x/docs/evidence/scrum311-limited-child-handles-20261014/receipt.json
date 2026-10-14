@@ -1,0 +1,15 @@
+{
+  "repository": "ThereptileII/Work",
+  "workflow": ".github/workflows/skager-disposable-account-probe.yml",
+  "workflowId": 384078462,
+  "commit": "fe21e95add675a0bd1118086d4b8e3d51ad4bcbe",
+  "run": 38634616586,
+  "attempt": 1,
+  "artifactId": 11927587837,
+  "bytes": 900,
+  "sha256": "129e342dcded2bdfad056f58dbad887ce6db615bafb4a5adfc2da2f0bfa96f79",
+  "resultBytes": 2483,
+  "resultCRC32": "5417d9dc",
+  "helperSHA256": "d51c4e172bbcebd4919535062288493c2bbffcc91ddb26adb390f0e9e9b608c2",
+  "conclusion": "failure"
+}
