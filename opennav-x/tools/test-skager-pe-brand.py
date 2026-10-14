@@ -111,6 +111,33 @@ class BrandResourceTests(unittest.TestCase):
                 self.assertEqual(version['fixedStructureVersion'], 0)
                 self.assertEqual(version['fixed'], {'file': (0,4,0,2), 'product': (0,4,0,2)})
 
+    @unittest.skipUnless(os.name == 'nt', 'Actual setup script compilation requires native Windows')
+    def test_native_real_setup_script_compiles_before_application_build(self):
+        # Compile the real wizard and maintenance sections with inert payloads.
+        # This catches NSIS syntax/label/plugin failures in the early contracts
+        # job, rather than after the full application build. Never run this EXE.
+        compiler = Path(os.environ.get('ProgramFiles(x86)', 'C:/Program Files (x86)')) / 'NSIS/makensis.exe'
+        self.assertTrue(compiler.is_file(), 'Native package compiler required for setup preflight')
+        with tempfile.TemporaryDirectory() as directory:
+            path = Path(directory)
+            setup = path / 'compile-only.exe'
+            (path / 'package.json').write_text('{}\n', encoding='utf-8')
+            (path / 'payload.zip').write_bytes(b'inert compile-only payload; never install')
+            engine = ROOT / 'installer/windows'
+            subprocess.run([
+                str(compiler), '/V2', f'/DOUTPUT={setup}',
+                '/DPRODUCT_VERSION=0.4.0-beta2.2', '/DPRODUCT_VERSION_NUMERIC=0.4.0.2',
+                f'/DPACKAGE={path}', f'/DENGINE={engine / "Lifecycle.ps1"}',
+                f'/DUPDATE_TRANSACTION={engine / "UpdateTransaction.ps1"}',
+                f'/DUPDATE_SUPERVISOR={engine / "UpdateSupervisor.ps1"}',
+                f'/DBRAND_ICON={ROOT / "resources/branding/skager.ico"}',
+                '/DMANIFEST_SHA256=' + '0' * 64,
+                str(engine / 'AlphaSetup.nsi')], check=True, timeout=90)
+            self.assertGreater(setup.stat().st_size, 0)
+            brand.inspect(setup, self.frames,
+                          brand.expected_metadata((engine / 'AlphaSetup.nsi').read_text(), setup=True),
+                          brand.expected_versions('0.4.0-beta2.2', setup=True))
+
     def test_numeric_versions_reject_wrong_identity_and_malformed_data(self):
         expected = brand.expected_versions('0.4.0-beta2.1')['fixed']
         for data in [fixed_bytes(product=(0, 4, 0, 0)), fixed_bytes(file=(5, 12, 3, 0)),
