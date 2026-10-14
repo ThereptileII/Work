@@ -71,6 +71,22 @@ refuses error 87 before creating a child. No fallback occurs; owned disposable
 cleanup passes, caller desktop/UAC stays unchanged and profile preparation passes.
 This rejected flag combination will not be retried; it grants no acceptance.
 
+The fixed, retained `pythonw.exe` sibling follow-up `7d0e051a` /
+[38647259035](https://github.com/ThereptileII/Work/actions/runs/38647259035)
+passes 73 focused checks and independent review. Native Windows creates and
+resumes the matching original LIMITED child once, then records exit 1 with no
+file markers/report. The exact worker failure remains unproved; cleanup and
+disconnected profile preparation pass. Both original archives authenticate.
+
+Further hosted launch variants are not selected for customer-UAC acceptance:
+independent review confirms the unchanged hosted policy silently elevates and
+the genuine signed-in customer FULL/LIMITED primary-token context is absent.
+That acceptance needs an explicitly admitted disposable interactive Windows
+host with normal human secure-desktop consent, qualified B0/B1 and the same
+account/profile through the journey. Do not use the boat as a disposable host
+or spoof the current hosted-only admission. This is a test-host limitation,
+not a passing installed-product gate or evidence of a SKAGER crash.
+
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
 operator approval and performs no signing, publication or connectivity changes.

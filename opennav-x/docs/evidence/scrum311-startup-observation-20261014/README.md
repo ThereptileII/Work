@@ -85,3 +85,42 @@ rechecked both archives' provider hashes, lengths, CRCs and sole members.
 The result does not prove the original timeout's console cause, a usable
 non-console setup or any installed/customer acceptance. The application candidate
 remains unchanged. Do not repeat this rejected flag combination.
+
+## Fixed GUI-entrypoint result and host boundary
+
+Helper `7d0e051abe4709e505f0c30323633bbfff797d29`,
+[run 38647259035 attempt 1](https://github.com/ThereptileII/Work/actions/runs/38647259035),
+job `116137096731`, uses only the actual interpreter's fixed same-directory
+`pythonw.exe` sibling and `CREATE_SUSPENDED` (4). The original executable is
+retained read-only with deny-write/delete sharing, hashed, and checked for
+canonical path and stable file identity across launch and original-child exit.
+All 73 focused probe checks pass; independent source/test review found no
+material findings. The installed customer launcher and application are unchanged.
+
+This native execution creates the matching LIMITED-primary child, resumes it
+once (return 1), and observes original exit code 1. It no longer times out or
+fails the process-creation call, but produces zero file-marker/report bytes.
+The exact exception/startup cause is unproved; do not call this worker success.
+Owned-account/profile cleanup and separate disconnected profile preparation pass.
+Caller desktop and UAC policy stay unchanged. Root independently verifies both
+original archives' lengths, provider hashes, CRCs and sole result members.
+[Sanitized original receipt](pythonw-receipt.json).
+
+Independently of this file-worker result, the recorded hosted environment cannot
+qualify the actual customer/UAC gate. Its policy is `1/0/1`; Microsoft defines
+[`ConsentPromptBehaviorAdmin=0`](https://learn.microsoft.com/en-us/windows/security/application-security/application-control/user-account-control/settings-and-configuration)
+as elevation without prompting. The required genuine signed-in split-token
+customer session is not established: the fresh account's FULL partner is an
+identification-level impersonation token, not the original FULL primary context
+required by `installed_customer_launch.py::_normal`. File-worker success would
+not resolve either boundary. No further launch variants or diagnostic layers
+are selected to qualify customer UAC on this unchanged hosted configuration.
+
+The remaining interactive acceptance needs a disposable non-boat Windows VM/PC
+with a real signed-in non-RID500 administrator, its original FULL/LIMITED primary
+token pair, normal secure-desktop consent and human access to approve it. Retain
+the same account/installation across qualified B0, B1, rollback and uninstall.
+The maintained journey currently admits only explicitly opted-in GitHub-hosted
+jobs; another host needs an explicit reviewed admission path, not environment
+spoofing or weaker token/approval/package checks. Native component/build results
+remain useful and separate from this outstanding installed-customer acceptance.

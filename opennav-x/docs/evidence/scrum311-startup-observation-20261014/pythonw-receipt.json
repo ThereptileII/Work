@@ -1,0 +1,145 @@
+{
+  "artifacts": [
+    {
+      "artifactBytes": 594,
+      "artifactId": 11932298777,
+      "artifactSha256": "ce0d4e0da472cc5df038ad882365cf3f90ccef686fa55e0486d5f747ee814727",
+      "attempt": 1,
+      "jobId": 116137096731,
+      "kind": "profile",
+      "resultBytes": 780,
+      "resultCrc32": "65eaf723",
+      "runId": 38647259035,
+      "sourceCommit": "7d0e051abe4709e505f0c30323633bbfff797d29",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    },
+    {
+      "artifactBytes": 1557,
+      "artifactId": 11932208692,
+      "artifactSha256": "056463f19fc5c5141df0b528a08b04cb56af34fe6038ecff882d0825153c5ce8",
+      "attempt": 1,
+      "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+      "jobId": 116137096731,
+      "kind": "account",
+      "resultBytes": 5759,
+      "resultCrc32": "afa6d4b6",
+      "runId": 38647259035,
+      "sourceCommit": "7d0e051abe4709e505f0c30323633bbfff797d29",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    }
+  ],
+  "observations": {
+    "attempt": 1,
+    "callerChecksPassed": {
+      "afterObservation": true,
+      "beforeAccount": true,
+      "beforeLaunch": true,
+      "beforeResume": true
+    },
+    "callerDesktop": {
+      "input": "Default",
+      "nativeError": null,
+      "station": "WinSta0",
+      "thread": "Default",
+      "visible": true
+    },
+    "callerPolicy": {
+      "consentPromptBehaviorAdmin": 0,
+      "enableLUA": 1,
+      "promptOnSecureDesktop": 1
+    },
+    "capabilityLaunch": {
+      "canonicalImageIdentityVerified": true,
+      "creationFlags": 4,
+      "imageName": "pythonw.exe",
+      "imageSHA256": "d72294fb338bc2fc8896d25a7395a4db466425427e1559e77185d5135a830681",
+      "scope": "file-only-gui-subsystem-capability"
+    },
+    "cleanup": {
+      "state": "own-account-and-profile-removed"
+    },
+    "consentPromptAcceptance": false,
+    "jobId": 116137096731,
+    "knownCustomerHostAdmissionBlocker": {
+      "genuineInteractiveSplitTokenCustomerSessionEstablished": false,
+      "humanConsentAcceptance": false,
+      "note": "File-only probe does not establish the separately required customer/UAC host context.",
+      "policyConsent": "silent-admin-elevation",
+      "state": "blocked"
+    },
+    "nativeCustomerAcceptance": false,
+    "nativeError": null,
+    "observation": {
+      "beforeResume": {
+        "modules": {
+          "nativeError": 299,
+          "state": "unavailable"
+        },
+        "originalIdentityVerified": true,
+        "pendingIO": {
+          "pending": false,
+          "state": "observed"
+        },
+        "state": "observed",
+        "systemThread": {
+          "originalPrimaryThreadState": 5,
+          "originalPrimaryWaitReason": 5,
+          "originalProcessThreadCount": 1,
+          "queryStatus": 0,
+          "state": "observed"
+        },
+        "threadTimes": {
+          "kernel100ns": 0,
+          "state": "observed",
+          "user100ns": 0
+        },
+        "windows": {
+          "boundReached": false,
+          "state": "observed",
+          "windows": []
+        }
+      }
+    },
+    "originalChild": {
+      "exitCode": 1,
+      "matchesRetainedLimitedToken": true,
+      "resumeAttempted": true,
+      "resumeResult": 1,
+      "token": {
+        "elevated": false,
+        "elevationType": 3,
+        "integrityLevel": "medium",
+        "session": 2,
+        "tokenType": 1
+      }
+    },
+    "producerCommit": "7d0e051abe4709e505f0c30323633bbfff797d29",
+    "productInstallAttempted": false,
+    "profileState": "disposable-profile-created",
+    "progress": {
+      "channel": "actual-token-profile-file",
+      "fileBytes": 0,
+      "finalDocumentPresent": false,
+      "lastMarker": null,
+      "markerBytes": 0,
+      "markerProtocolValid": true,
+      "markerSequenceComplete": false,
+      "markers": [],
+      "reportBytes": 0
+    },
+    "reason": "original-capability-child-exit-refused",
+    "runId": 38647259035,
+    "state": "blocked",
+    "unchangedChildHelperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+    "unresolvedFileWorkerFailure": {
+      "exactCauseEstablished": false,
+      "fileBytes": 0,
+      "finalDocumentPresent": false,
+      "markerObserved": false,
+      "originalExitCode": 1
+    }
+  },
+  "rootReverifiedArchiveSizeDigestCrcMember": true
+}
