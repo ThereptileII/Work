@@ -1,0 +1,24 @@
+{
+  "issue": "SCRUM-311",
+  "implementationCommit": "cfb9fc64",
+  "agentOriginalCommit": "805bb834add15e498dcebacea1776d63bf6fbc43",
+  "testStreamSha256": "1f6d85dd4f9f136a1e5fe8a700f9d675a1408cf5d9317a90b817c8dd41a7836c",
+  "counts": {
+    "pass": {
+      "topLevel": 20,
+      "subcases": 96
+    },
+    "fail": {
+      "topLevel": 0,
+      "subcases": 0
+    },
+    "skip": {
+      "topLevel": 0,
+      "subcases": 0
+    }
+  },
+  "windowsX86CrossCompile": true,
+  "nativeWindowsAccepted": false,
+  "installedCustomerAccepted": false,
+  "boatAccepted": false
+}

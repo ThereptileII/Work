@@ -1,13 +1,16 @@
 # SKAGER status — 2026-10-14
 
-## Customer discovery: retained-root security correction in progress
+## Customer discovery: retained-root correction passes focused checks
 
 Independent signed-fixture reproduction found direct bootstrap/code-upgrade
 discovery can overwrite retained root v2 with the original v1 anchor when the
 remote rotation link disappears. Ordinary installed release checks preserve v2
-through their authenticated generation state. SCRUM-311 records the finding;
-customer discovery is not qualified until retained-root continuity is fixed.
-No public or boat deployment uses this new customer path.
+through their authenticated generation state. Fix `cfb9fc64` preserves the
+retained root before go-tuf construction; damaged existing caches refuse without
+reset. Focused Linux checks pass **20 top-level / 96 subcases**, no failures or
+skips. Windows x86 compilation passes; native customer qualification and shared
+cache-refresh serialization remain pending. No public or boat deployment uses
+this new customer path. [Evidence](evidence/scrum311-root-continuity-20261014/README.md).
 
 Optional-target absence is now a typed result only after live authenticated
 nondelegated targets prove absence. Offline, expiry, signatures, rollback,
