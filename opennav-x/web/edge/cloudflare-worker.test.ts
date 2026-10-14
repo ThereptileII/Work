@@ -1,14 +1,19 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { registerHooks } from 'node:module';
+import { readFileSync } from 'node:fs';
 
-// Public assets are generated at packaging time. Load the actual Worker module
-// with an empty asset inventory; API tests never enter its static-page branch.
+// These are the original member assets copied by the packager. Load the actual
+// Worker routing against their bytes without a build or any provider access.
+const assets = Object.fromEntries(['portal.html', 'portal.js', 'portal.css'].map(name => [
+  '/' + name, { type: name.endsWith('.html') ? 'text/html' : name.endsWith('.css') ? 'text/css' : 'text/javascript',
+    body: readFileSync(new URL('./static/' + name, import.meta.url)).toString('base64') },
+]));
 const workerURL = new URL('./cloudflare-worker.mjs', import.meta.url).href;
 const hook = registerHooks({
   resolve(specifier, context, nextResolve) {
     if (specifier === './generated-assets.mjs' && context.parentURL === workerURL) {
-      return { url: 'data:text/javascript,export default Object.freeze({});', shortCircuit: true };
+      return { url: 'data:text/javascript,' + encodeURIComponent('export default Object.freeze(' + JSON.stringify(assets) + ');'), shortCircuit: true };
     }
     return nextResolve(specifier, context);
   },
@@ -17,6 +22,22 @@ const { handleWorker } = await import(workerURL);
 hook.deregister();
 
 const secret = 'synthetic-private-cookie-and-provider-error';
+test('checkout return destinations serve the published member shell and its assets without granting access', async () => {
+  const noBackend = async () => assert.fail('a return navigation cannot settle an order or query private data');
+  for (const path of ['/portal/orders/', '/portal/']) {
+    const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);
+    assert.equal(response.status, 200);
+    assert.equal(response.headers.get('Content-Type'), 'text/html');
+    assert.equal(response.headers.get('Cache-Control'), 'no-store');
+    assert.equal(await response.text(), readFileSync(new URL('./static/portal.html', import.meta.url), 'utf8'));
+    assert.equal(response.headers.has('Set-Cookie'), false);
+  }
+  for (const path of ['/portal.js', '/portal.css']) {
+    const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);
+    assert.equal(response.status, 200);
+    assert.equal(await response.text(), readFileSync(new URL('./static' + path, import.meta.url), 'utf8'));
+  }
+});
 test('download query parameters never get silently discarded or reach the backend', async () => {
   for (const method of ['GET', 'POST']) {
     const response = await handleWorker(new Request('https://beta.skager.app/api/portal/downloads?path=other-account', { method }), async () => assert.fail('no upstream call'));

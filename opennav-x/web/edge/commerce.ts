@@ -483,8 +483,9 @@ export async function handleCommerce(req: Request, ctx: CommerceContext): Promis
     const form = new URLSearchParams({ mode: 'payment', currency: 'usd',
       'line_items[0][price]': config.price, 'line_items[0][quantity]': '1',
       client_reference_id: order.order_id, 'metadata[order_id]': order.order_id,
-      success_url: config.origin + '/checkout/test/success/',
-      cancel_url: config.origin + '/checkout/test/cancel/' });
+      // Return to published member pages. Only verified webhook settlement grants access.
+      success_url: config.origin + '/portal/orders/',
+      cancel_url: config.origin + '/portal/' });
     if (promotion) form.set('discounts[0][promotion_code]', promotion.promotion_id);
     // These parameters are mutually exclusive even with an explicit false.
     // Without allow_promotion_codes, hosted promotion entry remains disabled.

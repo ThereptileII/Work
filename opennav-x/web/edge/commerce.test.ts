@@ -457,6 +457,8 @@ test('checkout start binds authenticated account and returns only hosted URL', a
       assert.equal((init.body as URLSearchParams).get('client_reference_id'), order);
       assert.equal((init.body as URLSearchParams).get('allow_promotion_codes'), 'false');
       assert.equal((init.body as URLSearchParams).has('discounts[0][promotion_code]'), false);
+      assert.equal((init.body as URLSearchParams).get('success_url'), 'https://beta.skager.app/portal/orders/');
+      assert.equal((init.body as URLSearchParams).get('cancel_url'), 'https://beta.skager.app/portal/');
       return new Response(JSON.stringify({ ...session(), status: 'open',
         url: `https://checkout.stripe.com/c/pay/${sessionId}#test` }),
         { status: 200, headers: { 'Content-Type': 'application/json' } });
