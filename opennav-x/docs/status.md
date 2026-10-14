@@ -1,5 +1,29 @@
 # SKAGER status — 2026-10-14
 
+## Private provider credential check; no live-flow acceptance
+
+The current frontend candidate `8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`
+passes [web CI 38553897564](https://github.com/ThereptileII/Work/actions/runs/38553897564)
+with **204 tests** (88 Django and 116 Edge), plus disposable SQL checks.
+Its frontend upload remains pending; active Cloudflare is still `f5508044`.
+Its server bundle is byte-identical to the already deployed `af986f74` bundle.
+
+Standalone administrative probe `f0178102cb7321f3e19e7c0f6695b86ffc807858`
+passes 19 focused tests and independent review. Exact deployed probe SHA-256:
+`33464cce2aa7195985a7f5bce88601eac9bb17fd833d34a7287a11d0f2f1b571`
+(19,460 bytes). Legacy JWT verification stays enabled. One dashboard GET returned
+**401 Administrative credential required**, before R2 I/O. This does not identify
+an R2 credential failure. No objects, permissions or product access flags changed.
+The existing credential field and clipboard were cleared after the test.
+[Investigation evidence](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-42?focusedCommentId=11649).
+
+SMTP host/port/user/sender were visually verified; the last actual send still
+failed with `535 Authentication credentials invalid`. The Stripe TEST server and
+webhook secret bindings are absent from Supabase. New/replacement credential entry
+requires owner handoff under the browser policy; the owner is currently away.
+No additional invitation or TEST payment was sent. Login, R2 authentication,
+checkout, entitlement and customer download acceptance remain pending.
+
 ## Checkout returns repaired; private email still awaits owner credential entry
 
 Exact `af986f7416bebb638c0e59dfbf98e58732a21157` passes
