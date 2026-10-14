@@ -32,11 +32,11 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
-          import json, os
+          import hashlib, json, os
           from pathlib import Path
           events = [json.loads(line) for line in Path('opennav-x/build/startup-restoration/tests.json').read_text().splitlines()]
           passed = {event.get('Test') for event in events if event.get('Action') == 'pass'}
@@ -58,6 +58,39 @@ jobs:
                       'TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects',
                       'TestOperatorProtectedUninstallRetirementFailureNeverStopsOrRetries',
                       'TestOperatorProtectedUninstallMissingStartupEvidenceRefusesBeforeReading'}
+          maintenance = {
+              'launcher': ['TestMaintenanceClientCustodyOrderingAndFailures',
+                           'TestMaintenanceClientJoinsIndependentCleanupErrors',
+                           'TestMaintenanceClientPreflightHasNoGrantOrTransport',
+                           'TestSelectedHistoryUsesOriginalNativeCustodyAndNeverRetries',
+                           'TestSharedMaintenanceClientRefusesCrossOperationFieldsBeforeGrant'],
+              'brokerpipe': ['TestMaintenanceProtocolStrictBindings',
+                             'TestSelectedHistoryStrictPagesAndNoManualWireChange',
+                             'TestPreviousQualifiedStrictOptionalProtocolAndOldWireIsolation'],
+              'brokerhost': ['TestSelectedHistoryPagesOriginalQualificationWithoutMutation',
+                             'TestPreviousQualifiedWalksOriginalLineageNotLexicalGeneration',
+                             'TestPreviousQualifiedAfterManualSelectionUsesPreviousActualRelease',
+                             'TestPreviousQualifiedRefusesMissingAmbiguousOrUnqualifiedHistory'],
+              'cmd/skager-update-provisioner': ['TestCustomerRollbackConfirmsOneOriginalTargetThenReadsBack',
+                                              'TestCustomerRollbackElevationFixedActionsAndOriginalOwners',
+                                              'TestCustomerRollbackNSISRoutesProtectedActionWithoutLegacyFallback']}
+          if os.environ['RUNNER_OS'] == 'Windows':
+              maintenance['launcher'] += ['TestNativeMaintenanceFolderAccessExactGrantAndRestore',
+                                          'TestNativeMaintenanceFolderAccessCancellationStillRestores',
+                                          'TestNativeMaintenanceFolderAccessDescriptorDriftRefusesBlindRestore',
+                                          'TestNativeMaintenanceFolderAccessOriginalCustodyMismatchRefusesRestore']
+              maintenance['brokerpipe'] += ['TestNativeMaintenanceFolderTokenUsesExactOriginalPrimaryToken',
+                                            'TestNativeMaintenanceFolderTokenRefusesLostOrDifferentOriginalCustody',
+                                            'TestMaintenanceOperatorActualNativeTokenAndLifetime',
+                                            'TestMaintenanceOperatorCheckedLeaseRefusesCancellationOtherThreadAndLostToken',
+                                            'TestMaintenanceOperatorLocationActualOriginalTokenAndCallbackLifetime',
+                                            'TestMaintenanceOperatorLocationCheckedExpiresAfterCallback']
+              maintenance['brokerhost'] += ['TestNativeExecutionManualRollbackRetainsCurrentProfileThroughReadback',
+                                            'TestNativeExecutionManualRollbackNewNavigationAdditionRefusesWithoutErasingIt']
+              maintenance['cmd/skager-update-provisioner'] += ['TestNativeInstalledElevationBindingRetainsActualProcessAndToken',
+                                                              'TestNativeInstalledElevationDecommissionSameAccountComparison',
+                                                              'TestNativeInstalledElevationStartupProtectedCodeDACL']
+          required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
                            'TestNativeBindingRecordsExistingMenuDescriptor',
@@ -81,6 +114,25 @@ jobs:
               native = {test for package, test in passed_cases if package == module + 'brokerstore' and test.startswith('TestNativeRetirement')}
               if len(native) < 3:
                   raise SystemExit('Native protected retirement case minimum not met')
+          # Match exact package/test identities, and refuse skipped native
+          # positive cases even when the surrounding package reports PASS.
+          for package, names in maintenance.items():
+              rows = [event for event in events if event.get('Package') == module+package]
+              if not any(row.get('Action') == 'pass' and 'Test' not in row for row in rows):
+                  raise SystemExit('Required maintenance package did not pass: '+package)
+              for name in names:
+                  if sum(row.get('Action') == 'run' and row.get('Test') == name for row in rows) != 1 or sum(row.get('Action') == 'pass' and row.get('Test') == name for row in rows) != 1:
+                      raise SystemExit('Required maintenance test did not run/pass exactly once: '+name)
+                  if any(row.get('Action') in ('skip', 'fail') and (row.get('Test') == name or row.get('Test', '').startswith(name+'/')) for row in rows):
+                      raise SystemExit('Required maintenance test or subcase skipped/failed: '+name)
+          source = Path('opennav-x/build/startup-restoration/tests.json')
+          receipt = {'schema': 1, 'sourceCommit': os.environ['GITHUB_SHA'], 'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                     'requiredMaintenanceTests': maintenance, 'requiredMaintenanceTopLevelCount': sum(map(len, maintenance.values())),
+                     'goTestStreamSha256': hashlib.sha256(source.read_bytes()).hexdigest(), 'passed': True,
+                     'nativeWindows': os.environ['RUNNER_OS'] == 'Windows', 'applicationBuild': False, 'productAcceptance': False, 'boatAcceptance': False,
+                     'scope': 'Maintenance contracts and native ownership primitives; actual customer UAC/dialog, broker conversation and historical app journey remain separate.'}
+          with source.with_name('maintenance-contracts.json').open('x', encoding='utf-8') as stream:
+              stream.write(json.dumps(receipt, indent=2)+'\n')
       - name: Verify exact broker source closure
         shell: python
         run: |
