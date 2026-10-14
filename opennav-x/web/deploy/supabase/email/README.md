@@ -21,9 +21,28 @@ not substitute for that application flow.
 
 On 2026-10-14 the live Supabase UI reported **custom SMTP is required to edit
 templates**, and emails still use the default templates. Do not infer that those
-defaults expose the code. The owner's email-provider signup/login and SMTP
-handoff remain separate prerequisites; preparing these files accepts no terms,
-creates no account, configures no sender and changes no provider setting.
+defaults expose the code. The selected sender is Resend on the separate
+`auth.skager.app` subdomain. The owner completed account access; the sending
+domain is created but remains unverified. DNS activation awaits action-time
+approval. The prepared SMTP form has not been saved, no new sending credential
+has been created, and these templates have not been uploaded. Preparing the
+files is not provider acceptance.
+
+The current provider UI requests a DKIM TXT record at
+`resend._domainkey.auth`, plus DNS-only CNAMEs `rsend.auth` to
+`rsend-euw1.forge.rmta.net` and `send.auth` to `send.forge.rmta.net`.
+Read the public DKIM value from the selected domain's current setup page.
+Do not replace existing domain mail routing or assume older MX-based recipes.
+Receiving stays disabled; disable link/open tracking for authentication mail.
+
+The prepared Supabase SMTP settings are sender `login@auth.skager.app`, display
+name `SKAGER`, host `smtp.resend.com`, implicit TLS port `465`, username `resend`
+and minimum interval `60` seconds. The owner must create a sending-only key
+restricted to the verified `auth.skager.app` domain, then enter it directly in
+Supabase's SMTP password field and save. The unverified domain is currently
+absent from Resend's key scope selector; do not substitute All domains.
+Leave provider and application rate limits intact. These are prepared settings,
+not evidence that custom SMTP or delivery is active.
 
 1. Complete the owner-authorized email-provider setup and verify its sender and
    required DNS authentication. Enter SMTP credentials directly through the

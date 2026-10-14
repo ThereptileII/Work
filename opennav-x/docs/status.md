@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-14
 
+## Private login email preparation; provider activation pending
+
+Source `a6a1768d01963388416d48ab1d51dd191d9288db` adds code-only Supabase
+Invitation/Magic Link templates and fixes optional trailing-slash auth routing.
+The focused portal checks pass **21 cases**; this newer frontend is not deployed.
+Resend account access is available and `auth.skager.app` is created but
+unverified. The three proposed DNS records await owner approval, and the custom
+SMTP form is prepared but unsaved. No new sending key, invitation or live login
+has been created. The [email deployment guide](../web/deploy/supabase/email/README.md)
+records the restricted sender setup and remaining live checks. Public access
+remains closed.
+
 ## Private R2 adapter deployed; live customer flow remains closed
 
 Exact web source `1acc781ed1ba50d565201911c15cdab00c24a364` passes
@@ -17,8 +29,10 @@ Supabase Edge Secrets; the nonsecret R2 account/bucket/backend bindings are also
 saved. Both exact bundles are now deployed: Cloudflare `33f77360` is Active,
 and Supabase deployment 13 has a full byte-identical server readback. Direct
 backend health is 200/`ready:false`; downloads are 404/unavailable. The beta
-origin health probe receives Cloudflare 403/1010, so proxy/customer acceptance
-remains unproven. Download access stays OFF and the reviewed release catalog is
+origin's later ordinary curl health request returned HTTP/2 200 with the expected
+private-beta JSON at 07:27:03 UTC. Earlier urllib 403/1010 and Chrome client-side
+blocking remain recorded separately; customer-flow acceptance is unproven.
+Download access stays OFF and the reviewed release catalog is
 empty. Live R2 authentication/custody/download/expiry tests and desktop package
 qualification remain pending. No public launch acceptance is claimed.
 [Exact source, package, CI and provider evidence](evidence/scrum42-r2-20261014/README.md).
