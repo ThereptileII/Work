@@ -4,7 +4,10 @@ package main
 
 import (
 	"context"
+	"crypto/sha256"
 	"errors"
+	"io"
+	"os"
 	"path/filepath"
 	"runtime"
 	"strings"
@@ -31,10 +34,13 @@ type installedElevationCodePin struct {
 	info                       windows.ByHandleFileInformation
 	id                         installedElevationFileID
 	directory, allowAdds       bool
+	previousPhysical           string
+	imageSHA256                [32]byte
 }
 type installedElevationCode struct {
 	pins             []*installedElevationCodePin
 	image, directory string
+	allowPrevious    bool
 	closed           bool
 	closeErr         error
 }
@@ -102,13 +108,51 @@ func (p *installedElevationCodePin) check() error {
 	if err != nil {
 		return err
 	}
-	if id != p.id || info.CreationTime != p.info.CreationTime || name != p.physical || info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 || (info.FileAttributes&windows.FILE_ATTRIBUTE_DIRECTORY != 0) != p.directory || sd.String() != p.descriptor {
+	renamed := name != p.physical
+	if id != p.id || (!renamed && info.CreationTime != p.info.CreationTime) || (renamed && !p.allowedOriginalAlias(name)) || info.FileAttributes&windows.FILE_ATTRIBUTE_REPARSE_POINT != 0 || (info.FileAttributes&windows.FILE_ATTRIBUTE_DIRECTORY != 0) != p.directory || sd.String() != p.descriptor {
 		return errors.New("original maintenance code identity changed")
 	}
 	if !p.directory && (info.NumberOfLinks != 1 || info.FileSizeHigh != p.info.FileSizeHigh || info.FileSizeLow != p.info.FileSizeLow) {
 		return errors.New("original maintenance image links/length changed")
 	}
-	return installedElevationSecurity(sd, p.allowAdds)
+	if err := installedElevationSecurity(sd, p.allowAdds); err != nil {
+		return err
+	}
+	if renamed {
+		// Known original handle, full ID, immutable bytes and protected parent are
+		// retained. NTFS tunneling may change creation time on this exact move.
+		digest, err := installedElevationImageDigest(p.handle, int64(info.FileSizeLow))
+		if err != nil || digest != p.imageSHA256 {
+			return errors.Join(errors.New("original renamed maintenance bytes differ"), err)
+		}
+		p.physical, p.info.CreationTime = name, info.CreationTime
+	}
+	return nil
+}
+func (p *installedElevationCodePin) allowedOriginalAlias(name string) bool {
+	if p.directory || p.previousPhysical == "" {
+		return false
+	}
+	fixed := strings.TrimSuffix(p.previousPhysical, `helper.previous.exe`) + installedElevationImage
+	return strings.EqualFold(name, fixed) || strings.EqualFold(name, p.previousPhysical)
+}
+func installedElevationImageDigest(handle windows.Handle, size int64) (digest [32]byte, resultErr error) {
+	var duplicate windows.Handle
+	if err := windows.DuplicateHandle(windows.CurrentProcess(), handle, windows.CurrentProcess(), &duplicate, 0, false, windows.DUPLICATE_SAME_ACCESS); err != nil {
+		return digest, err
+	}
+	file := os.NewFile(uintptr(duplicate), "retained-original-maintenance-image")
+	if file == nil {
+		return digest, errors.Join(errors.New("retained image reader required"), windows.CloseHandle(duplicate))
+	}
+	defer func() { resultErr = errors.Join(resultErr, file.Close()) }()
+	h := sha256.New()
+	n, err := io.Copy(h, io.NewSectionReader(file, 0, size))
+	if err != nil || n != size {
+		return digest, errors.Join(errors.New("complete original image read required"), err)
+	}
+	copy(digest[:], h.Sum(nil))
+	return digest, nil
 }
 func (c *installedElevationCode) check(ctx context.Context) error {
 	if ctx == nil || ctx.Err() != nil || c == nil || c.closed {
@@ -134,7 +178,10 @@ func (c *installedElevationCode) close() error {
 	}
 	return c.closeErr
 }
-func openInstalledElevationCode(ctx context.Context) (c *installedElevationCode, resultErr error) {
+func openInstalledElevationCode(ctx context.Context) (*installedElevationCode, error) {
+	return openInstalledElevationCodeMode(ctx, false)
+}
+func openInstalledElevationCodeMode(ctx context.Context, allowPrevious bool) (c *installedElevationCode, resultErr error) {
 	if ctx == nil || ctx.Err() != nil {
 		return nil, errors.New("live fixed code custody required")
 	}
@@ -145,7 +192,7 @@ func openInstalledElevationCode(ctx context.Context) (c *installedElevationCode,
 	if len(base) < 4 || filepath.Clean(base) != base || base[1:3] != `:\` || strings.ContainsAny(base[3:], ":/\x00") {
 		return nil, errors.New("fixed local ProgramFilesX86 required")
 	}
-	c = &installedElevationCode{directory: filepath.Join(base, "SKAGER", "UpdateBroker")}
+	c = &installedElevationCode{allowPrevious: allowPrevious, directory: filepath.Join(base, "SKAGER", "UpdateBroker")}
 	c.image = filepath.Join(c.directory, installedElevationImage)
 	defer func() {
 		if resultErr != nil {
@@ -173,6 +220,9 @@ func openInstalledElevationCode(ctx context.Context) (c *installedElevationCode,
 			rights = windows.GENERIC_READ | windows.READ_CONTROL
 			flags = windows.FILE_FLAG_OPEN_REPARSE_POINT
 			share = windows.FILE_SHARE_READ
+			if allowPrevious {
+				share |= windows.FILE_SHARE_DELETE
+			}
 		}
 		pin.handle, err = windows.CreateFile(ptr, rights, share, nil, windows.OPEN_EXISTING, flags, 0)
 		if err != nil {
@@ -207,6 +257,13 @@ func openInstalledElevationCode(ctx context.Context) (c *installedElevationCode,
 		}
 		if !directory && (info.FileSizeHigh != 0 || info.FileSizeLow == 0 || info.FileSizeLow > 512<<20) {
 			return c, errors.New("bounded original maintenance image required")
+		}
+		if !directory && allowPrevious {
+			pin.previousPhysical = strings.TrimSuffix(c.pins[i-1].physical, `\`) + `\helper.previous.exe`
+			pin.imageSHA256, err = installedElevationImageDigest(pin.handle, int64(info.FileSizeLow))
+			if err != nil {
+				return c, err
+			}
 		}
 		if err := pin.check(); err != nil {
 			return c, err
@@ -373,7 +430,7 @@ func (p *installedElevationProcess) checkLocked(ctx context.Context) error {
 		return errors.Join(errors.New("original process primary token changed"), queryErr, closeErr)
 	}
 	image, err := installedElevationImagePath(p.handle)
-	if err != nil || !strings.EqualFold(image, p.image) {
+	if err != nil || !strings.EqualFold(image, p.image) && !(p.code != nil && p.code.allowPrevious && strings.EqualFold(image, filepath.Join(p.code.directory, "helper.previous.exe"))) {
 		return errors.New("original fixed process image differs")
 	}
 	if p.code != nil {
@@ -421,7 +478,10 @@ func (p *installedElevationProcess) wait(ctx context.Context) (uint32, error) {
 func installedElevationNativeOperations() installedElevationOperations {
 	return installedElevationOperations{openSelf: openInstalledElevationSelf, openParent: openInstalledElevationParent, launch: launchInstalledElevation}
 }
-func openInstalledElevationSelf(ctx context.Context) (result installedElevationSelf, resultErr error) {
+func openInstalledElevationSelf(ctx context.Context) (installedElevationSelf, error) {
+	return openInstalledElevationSelfMode(ctx, false)
+}
+func openInstalledElevationSelfMode(ctx context.Context, allowPrevious bool) (result installedElevationSelf, resultErr error) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
 	// Remove mutable working-directory/PATH DLL searches before loading shell32.
@@ -432,7 +492,7 @@ func openInstalledElevationSelf(ctx context.Context) (result installedElevationS
 	if err := installedElevationNoImpersonation(); err != nil {
 		return result, err
 	}
-	code, err := openInstalledElevationCode(ctx)
+	code, err := openInstalledElevationCodeMode(ctx, allowPrevious)
 	if err != nil {
 		return result, err
 	}
@@ -445,7 +505,10 @@ func openInstalledElevationSelf(ctx context.Context) (result installedElevationS
 	return result, p.check(ctx)
 }
 func openInstalledElevationParent(ctx context.Context, q installedElevationRequest, self installedElevationIdentity) (installedElevationOwner, error) {
-	code, err := openInstalledElevationCode(ctx)
+	return openInstalledElevationParentMode(ctx, q, self, false)
+}
+func openInstalledElevationParentMode(ctx context.Context, q installedElevationRequest, self installedElevationIdentity, allowPrevious bool) (installedElevationOwner, error) {
+	code, err := openInstalledElevationCodeMode(ctx, allowPrevious)
 	if err != nil {
 		return nil, err
 	}
@@ -484,10 +547,13 @@ type installedElevationShellInfo struct {
 }
 
 func launchInstalledElevation(ctx context.Context, parent installedElevationIdentity, args []string) (installedElevationChild, error) {
+	return launchInstalledElevationMode(ctx, parent, args, false)
+}
+func launchInstalledElevationMode(ctx context.Context, parent installedElevationIdentity, args []string, allowPrevious bool) (installedElevationChild, error) {
 	if ctx == nil || ctx.Err() != nil {
 		return nil, errors.New("live bounded UAC launch required")
 	}
-	code, err := openInstalledElevationCode(ctx)
+	code, err := openInstalledElevationCodeMode(ctx, allowPrevious)
 	if err != nil {
 		return nil, err
 	}
@@ -543,6 +609,9 @@ func launchInstalledElevation(ctx context.Context, parent installedElevationIden
 		// Adopt the returned ORIGINAL child handle, rather than reopen a PID after UAC.
 		p := &installedElevationProcess{handle: info.process, image: code.image, allowExit: true}
 		child = p
+		if allowPrevious {
+			p.code, code = code, nil
+		}
 		pid, err := windows.GetProcessId(p.handle)
 		if err != nil {
 			launchErr = err

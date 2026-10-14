@@ -2,7 +2,9 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"errors"
+	"io"
 	"strconv"
 	"strings"
 	"time"
@@ -100,4 +102,106 @@ func installedCodeSuccessorDispatchWith(ctx context.Context, args []string, op i
 		return true, err
 	}
 	return true, runWithInstalledParent(ctx, parent, self.owner, func(ctx context.Context) error { return op.run(ctx, q.pins) })
+}
+
+type installedCodeSnapshot struct {
+	path, directory string
+	pins            installedCodeComparisons
+}
+type installedCodeLaunchOwner interface {
+	installedElevationOwner
+	snapshot(context.Context) (installedCodeSnapshot, error)
+}
+type installedCodeAdmissionOwner interface {
+	installedCodeLaunchOwner
+	consume(context.Context) (installedCodeLaunchOwner, error)
+}
+type installedCodeCustomerOperations struct {
+	acquire func(context.Context) (installedCodeAdmissionOwner, error)
+	launch  func(context.Context, installedCodeLaunchOwner, installedCodeSnapshot) (installedElevationChild, error)
+	// Called only after a launch returned an original process whose exit is not
+	// proven. It transfers custody, and must preserve the admitted image/cache
+	// until that exact process exits; it never kills or retries the child.
+	retainUntilExit      func(installedElevationChild, installedCodeLaunchOwner) error
+	current, unavailable error
+}
+
+func runCustomerCodeUpgradeWith(ctx context.Context, output io.Writer, op installedCodeCustomerOperations) (resultErr error) {
+	if ctx == nil || ctx.Err() != nil || output == nil || op.acquire == nil || op.launch == nil || op.retainUntilExit == nil {
+		return errors.New("live native installed code admission required")
+	}
+	state := ""
+	owner, err := op.acquire(ctx)
+	if owner == nil {
+		if op.current != nil && errors.Is(err, op.current) {
+			state = "broker-code-current"
+		}
+		if op.unavailable != nil && errors.Is(err, op.unavailable) {
+			state = "broker-code-update-unavailable"
+		}
+		if state == "" || ctx.Err() != nil {
+			return errors.Join(errors.New("installed code admission refused"), err, ctx.Err())
+		}
+		return json.NewEncoder(output).Encode(struct {
+			State string `json:"state"`
+		}{state})
+	}
+	defer func() { resultErr = errors.Join(resultErr, owner.close()) }()
+	if err != nil {
+		return err
+	}
+	if err := owner.check(ctx); err != nil {
+		return err
+	}
+	before, err := owner.snapshot(ctx)
+	if err != nil {
+		return err
+	}
+	launchOwner, err := owner.consume(ctx)
+	var child installedElevationChild
+	exited := false
+	defer func() {
+		if child != nil && !exited {
+			resultErr = errors.Join(resultErr, op.retainUntilExit(child, launchOwner))
+			return
+		}
+		if child != nil {
+			resultErr = errors.Join(resultErr, child.close())
+		}
+		if launchOwner != nil {
+			resultErr = errors.Join(resultErr, launchOwner.close())
+		}
+	}()
+	if err != nil || launchOwner == nil {
+		return errors.Join(errors.New("installed code launch admission refused"), err)
+	}
+	if err := launchOwner.check(ctx); err != nil {
+		return err
+	}
+	after, err := launchOwner.snapshot(ctx)
+	if err != nil || before != after || !pin(after.pins.policy) || !pin(after.pins.provisioner) || !pin(after.pins.trust) || !pin(after.pins.completion) {
+		return errors.Join(errors.New("installed code launch comparisons changed"), err)
+	}
+	child, err = op.launch(ctx, launchOwner, after)
+	if err != nil || child == nil {
+		return errors.Join(errors.New("original admitted successor launch refused"), err)
+	}
+	if err := errors.Join(launchOwner.check(ctx), child.check(ctx)); err != nil {
+		return err
+	}
+	exit, err := child.wait(ctx)
+	if err == nil {
+		exited = true
+	}
+	if err != nil || exit != 0 {
+		return errors.Join(errors.New("original admitted successor did not complete"), err)
+	}
+	if err := errors.Join(launchOwner.check(ctx), child.check(ctx), ctx.Err()); err != nil {
+		return err
+	}
+	// Emit into the caller's private buffer only. Outer native owners and all
+	// deferred cleanup must pass before that buffer reaches customer stdout.
+	return json.NewEncoder(output).Encode(struct {
+		State string `json:"state"`
+	}{"broker-code-upgraded"})
 }
