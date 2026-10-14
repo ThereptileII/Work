@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Explicit first protected B0 enrollment and qualification on a disposable host.
+"""Genuine Setup-first B0 enrollment and customer Maintain on a disposable host.
 
 Approval, protected operator inputs, stock OpenCPN and the user profile exist
 before this program starts. A refused or uncertain operation is never retried.
@@ -16,6 +16,7 @@ import subprocess
 import sys
 
 import updater_package as updater
+from installed_b0_fixture import InstalledB0Fixture
 
 
 def phase_driver():
@@ -48,6 +49,18 @@ def approved_directory(value):
     return path, (before.st_dev, before.st_ino)
 
 
+def approved_setup(record, baseline, retained):
+    path, identity = phase.approved_file(record, 1 << 30)
+    release_policy = phase.strict(baseline['paths']['policy'].read_bytes())
+    installer = release_policy['installer']
+    phase.keys(installer, ('path', 'url', 'sha256', 'bytes'))
+    require(installer['path'] == 'artifacts/' + baseline['commit'] + '/SKAGER-Beta2-Setup.exe' and
+            installer['sha256'] == record['sha256'] and type(installer['bytes']) is int and
+            installer['bytes'] == path.stat().st_size)
+    retained.append((path, identity, record['sha256']))
+    return path
+
+
 def prepare(path, sha, approved_request, approved_policy):
     phase.pin(sha)
     phase.pin(approved_request)
@@ -55,13 +68,14 @@ def prepare(path, sha, approved_request, approved_policy):
     path, identity = phase.approved_file({'path': str(path), 'sha256': sha}, 64 << 10)
     retained = [(path, identity, sha)]
     declaration = phase.strict(path.read_bytes())
-    phase.keys(declaration, ('schema', 'b0', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
+    phase.keys(declaration, ('schema', 'b0', 'setup', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
                              'trustConfig', 'bootstrapCache', 'artifactDirectory', 'preserveSettings'))
     require(type(declaration['schema']) is int and declaration['schema'] == 1)
     b0 = phase.fixture(declaration['b0'], retained)
     request_record = declaration['clientRequest']
     phase.keys(request_record, ('path', 'sha256'))
     require(request_record['sha256'] == approved_request)
+    setup_path = approved_setup(declaration['setup'], b0, retained)
     request_path, identity = phase.approved_file(request_record, 1 << 20)
     retained.append((request_path, identity, approved_request))
     request = phase.strict(request_path.read_bytes())
@@ -119,7 +133,7 @@ def prepare(path, sha, approved_request, approved_policy):
         pair = item['section'], item['key']
         require(pair not in seen)
         seen.add(pair)
-    return dict(b0=b0, request=request, kit=kit_path, brokerPolicy=policy, retained=retained, settings=settings,
+    return dict(b0=b0, setup=setup_path, setupSha256=declaration['setup']['sha256'], request=request, kit=kit_path, brokerPolicy=policy, retained=retained, settings=settings,
                 requestPath=request_path, trustPath=trust_path, cache=cache, artifact=artifact,
                 directories=((cache, cache_id), (artifact, artifact_id)))
 
@@ -176,13 +190,15 @@ def qualified_b0(history, prepared):
 
 
 def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=BeforeEnrollment,
-        stage=phase.stage_operator, publish=phase.publication, enroll=enroll_once):
-    native, before = None, None
+        stage=phase.stage_operator, publish=phase.publication, enroll=enroll_once, fixture_factory=InstalledB0Fixture):
+    native, before, fixture = None, None, None
+    before_closed = False
     try:
         unchanged(prepared)
         before = preflight_factory(prepared)
         profile = before.profile()
         require(before.sid == prepared['request']['clientSid'])
+        fixture = fixture_factory(before, prepared, phase)
         publish(prepared, 'no-update', pins['timestamp'])
         unchanged(prepared)
         # The acquisition parent is a separately provisioned protected operator
@@ -197,6 +213,10 @@ def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=B
                 prepared['brokerPolicy']['broker']['sha256'] == pins['broker'])
         before.pin_image(provisioner, pins['provisioner'])
         unchanged(prepared)
+        setup = fixture.install_setup(output.parent)
+        require(phase.profile_preserved(profile, before.profile()))
+        preservation = fixture.prepare_preservation()
+        unchanged(prepared)
         enroll(enrollment_command(provisioner, prepared, pins['policy'], pins['provisioner'], pins['request']))
         unchanged(prepared)
         native = native_factory(prepared, provisioner)
@@ -208,15 +228,24 @@ def run(prepared, pins, output, native_factory=phase.Native, preflight_factory=B
         unchanged(prepared)
         native.close()
         native = None
-        return {'schema': 1, 'state': 'first-b0-qualified', 'nativeInitialB0Acceptance': True,
+        # Native.start_and_close retains READ handles to the original launcher
+        # and app after exit. They must drain before broker directory retirement.
+        before_closed = True
+        before.close()
+        customer = fixture.customer_uninstall()
+        observed = fixture.verify_uninstall(preservation)
+        require(phase.profile_preserved(profile, before.profile()))
+        unchanged(prepared)
+        return {'schema': 1, 'state': 'genuine-setup-b0-maintain-uninstalled', 'nativeInitialB0Acceptance': True,
+                'nativeInstalledUninstallAcceptance': True, 'customerUacAcceptance': False,
                 'nativeProductAcceptance': False, 'selected': selected,
-                'preservation': profile}
+                'preservation': profile, 'setup': setup, 'customer': customer, 'uninstall': observed}
     finally:
         try:
             if native is not None:
                 native.close()
         finally:
-            if before is not None:
+            if before is not None and not before_closed:
                 before.close()
 
 
@@ -238,6 +267,7 @@ def main(argv=None):
                  'approved-broker-sha256', 'timestamp-sha256', 'evidence', 'disposable-opt-in'):
         parser.add_argument('--' + name, required=True, action=Once)
     report = {'schema': 1, 'state': 'refused', 'nativeInitialB0Acceptance': False,
+              'nativeInstalledUninstallAcceptance': False, 'customerUacAcceptance': False,
               'nativeProductAcceptance': False}
     output = None
     result_code = 1
