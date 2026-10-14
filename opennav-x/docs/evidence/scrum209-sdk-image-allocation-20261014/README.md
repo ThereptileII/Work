@@ -10,6 +10,24 @@ application compilation. The original job log identifies hosted Windows image
 The immutable-input preflight correctly refused this mismatch. This is an
 environment allocation failure, not evidence of a program crash or test failure.
 
+The successful updater job's original test stream records **1,060 top-level Go
+passes and 14 skips** (4,697 pass events including subtests), plus **133 Python
+packaging checks** across nine suites. Native armed-barrier, actual-Lifecycle
+fixture and explicit fresh SCM enrollment checks also pass. These are component
+results; real certificate/TSA signing and the complete installed customer journey
+are not established by them.
+
+Its protected operator kit has consistent GitHub API/upload-log metadata:
+artifact `11930226852`, 160,913,325 outer bytes, SHA-256
+`7bdcff553c1f2e6eb3b26304ae5734414c4c6461aac95b46a8be0ac6c3a8b4e7`.
+The producer records the inner ZIP as 160,886,913 bytes with SHA-256
+`474d0faf4b66a6eff3e3a0dd16ef7f564363327ca51e47c4622291346f91dc72`.
+The archive was subsequently downloaded once and authenticated: outer/inner CRC,
+exact nine-payload inventory, all hashes/bounds, 30,862 corresponding-source
+members and embedded PE32/Go build identities pass. See the
+[sanitized receipt](operator-kit-receipt.json). Its paired application launcher
+prerequisite remains unverified; these component bytes alone do not qualify B0.
+
 The original log SHA-256 is
 `134a6ddf4a1019ca8d0f569f38443778a6eac5b67369d08fe0a06d18287247a9`.
 Original job metadata and annotations were retained with it. The missing local
