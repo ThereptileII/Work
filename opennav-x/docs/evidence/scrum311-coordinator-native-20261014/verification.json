@@ -1,0 +1,20 @@
+{
+  "schema": 1,
+  "run": 38636051433,
+  "attempt": 1,
+  "commit": "6424f9706341e8132b359ec316a8f8fb78114255",
+  "artifactID": 11927399575,
+  "artifactBytes": 2562,
+  "artifactDigest": "sha256:c15e96b60508311cacd6da0985a2101c6d0ceafff98789be7a3559b413de0661",
+  "nativeTopLevelPasses": 10,
+  "nativeIncludingSubcasePasses": 31,
+  "requiredNativeGroups": 5,
+  "failed": 0,
+  "skipped": 0,
+  "coordinatorPythonGroups": 18,
+  "nativeFixturePortableGroups": 3,
+  "actualPythonStreamingPassed": true,
+  "productInstallAttempted": false,
+  "customerUacAcceptance": false,
+  "nativeProductAcceptance": false
+}

@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Installed journey coordinator integrated; native streaming qualification pending
+## Installed journey coordinator passes focused native streaming gate
 
 `e0f20d1e` / `fc76ee9e` / `03e5bcc1` join the existing approval transport and
 original-input checks to a native one-use record and one maintained installed
@@ -13,8 +13,11 @@ Focused portable checks pass **18 coordinator groups, 3 streaming-contract group
 5 native-bridge groups / 17 subcases**. Windows x86 test-executable compilation
 passes. The one focused native streaming run is
 [38636051433](https://github.com/ThereptileII/Work/actions/runs/38636051433) at
-`6424f9706341e8132b359ec316a8f8fb78114255`; actual installed/UAC acceptance is
-not granted by that fixture. These later helper revisions do not change the frozen
+`6424f9706341e8132b359ec316a8f8fb78114255` and passes **10 native top-level
+groups / 31 including subcases**, all five mandatory groups, zero failed/skipped.
+The actual Python streaming adapter passes; original archive hash, length, CRC
+and member bytes verify. [Native evidence](evidence/scrum311-coordinator-native-20261014/README.md).
+Actual installed/UAC acceptance is not granted by that fixture. These later helper revisions do not change the frozen
 application candidate `e538bbc8` / [38633971333](https://github.com/ThereptileII/Work/actions/runs/38633971333).
 [Coordinator contract](installer/installed-updater-live-coordinator.md).
 

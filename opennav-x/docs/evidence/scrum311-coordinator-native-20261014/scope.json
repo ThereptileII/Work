@@ -1,0 +1,19 @@
+{
+  "schema": 1,
+  "commit": "6424f9706341e8132b359ec316a8f8fb78114255",
+  "run": "38636051433",
+  "attempt": "1",
+  "architecture": "386",
+  "scope": "qualification-only coordinator native adapter",
+  "productInstallAttempted": false,
+  "customerUacAcceptance": false,
+  "nativeProductAcceptance": false,
+  "topLevelPasses": 10,
+  "requiredNativePasses": [
+    "TestNativeQualificationChallengeExistingEmptyOrPartialPermanentlyRefuses",
+    "TestNativeQualificationChallengeMutableOrRedirectedParentNeverReady",
+    "TestNativeQualificationChallengeOriginalParentAndExclusiveDurableRecord",
+    "TestNativeQualificationChallengePythonAdapterStreaming",
+    "TestNativeQualificationChallengeReadyEOFHasNoDurableEffect"
+  ]
+}
