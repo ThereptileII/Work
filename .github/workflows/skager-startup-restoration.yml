@@ -32,7 +32,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json . ./releasepolicy ./repository ./cmd/skager-repository ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|InstalledCompletion|InstalledBootstrapCache|EnrollmentOriginalCache|Repair|CodeUpgrade)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json . ./releasepolicy ./repository ./cmd/skager-repository ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|InstalledCompletion|InstalledBootstrapCache|EnrollmentOriginalCache|InstalledCode|TUFProtectedCache|Repair|CodeUpgrade)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -89,7 +89,10 @@ jobs:
                                             'TestNativeExecutionManualRollbackNewNavigationAdditionRefusesWithoutErasingIt']
               maintenance['cmd/skager-update-provisioner'] += ['TestNativeInstalledElevationBindingRetainsActualProcessAndToken',
                                                               'TestNativeInstalledElevationDecommissionSameAccountComparison',
-                                                              'TestNativeInstalledElevationStartupProtectedCodeDACL']
+                                                              'TestNativeInstalledElevationStartupProtectedCodeDACL',
+                                                              'TestNativeInstalledCodeOriginalGuardOnlyRetainedFixedPreviousAlias',
+                                                              'TestNativeInstalledCodeOtherMaintenanceRemainsFixedOnly',
+                                                              'TestNativeInstalledCodeElevatedParentBindingAndOpaqueLaunch']
           # Repair keeps original source, cold profile custody and interrupted
           # journal recovery separate from launch/health qualification.
           maintenance['brokerstore'] = [
@@ -134,7 +137,12 @@ jobs:
                   'TestNativeRepairColdCustodyDetectsNamespaceChangeAndNeverErasesIt',
                   'TestNativeRepairColdCustodyRefusesReleasedUnwatchedOrProcessUncheckedSource']
           maintenance['.'] = ['TestBrokerCodeUpgradeSignedTargetIsolation',
-                              'TestBrokerCodeUpgradeDiscoveryAuthenticatedSuccessor']
+                              'TestBrokerCodeUpgradeDiscoveryAuthenticatedSuccessor',
+                              'TestBrokerCodeUpgradeDiscoveryAbsenceRequiresFreshNondelegatedSignedMetadata',
+                              'TestTUFProtectedCacheRetainsRevokedRootKeyAcrossRepeatedPurposeChecks',
+                              'TestTUFProtectedCacheRetainsRotationObservedDuringLaterRefreshFailure',
+                              'TestTUFProtectedCacheUsesValidCurrentRootAfterOriginalAnchorExpires',
+                              'TestTUFProtectedCacheDamageRefusesBeforeNetworkWithoutReset']
           maintenance['releasepolicy'] = ['TestBrokerCodeUpgradeDistinctPurposeAndExactPair']
           # Repository publication is a Linux operator tool; its native lock
           # deliberately refuses unsupported platforms. Windows exercises consumers.
@@ -177,10 +185,25 @@ jobs:
               'TestCodeUpgradeEarlyAbortPostEffectCustodyLossRemainsUncertain',
               'TestCodeUpgradeEarlyAbortDeferredCleanupFailureRevokesTerminalClassification',
               'TestInstalledCompletionOriginalCacheVersionCompatibility',
-              'TestEnrollmentOriginalCacheBindingPrecedesServiceInitialization']
+              'TestEnrollmentOriginalCacheBindingPrecedesServiceInitialization',
+              'TestInstalledCodeAdmissionRetainsExactTupleThroughExplicitConsume',
+              'TestInstalledCodeAdmissionRefusesBeforeExecutionAndDrainsPartialOwners',
+              'TestInstalledCodeAdmissionNoChangeRequiresAuthenticatedAbsenceOrReadyPair',
+              'TestInstalledCodeAdmissionConsumeFailureInvalidatesAndPreservesCleanupCause',
+              'TestInstalledCodeSuccessorReopensThenReleasesOriginalPinsBeforeEngine']
           maintenance['cmd/skager-update-provisioner'] += [
               'TestCodeUpgradeOperatorExplicitUpgradeAndResume',
-              'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs']
+              'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs',
+              'TestInstalledCodeSuccessorStrictComparisonArguments',
+              'TestInstalledCodeSuccessorRetainsOriginalOwnersAndComparisons',
+              'TestInstalledCodeSuccessorParentLossAndCleanupCannotReportSuccess',
+              'TestInstalledCodeCurrentActionAndPrivateReporting',
+              'TestInstalledCodeCustomerConsumeRetainsAdmissionUntilOriginalExit',
+              'TestInstalledCodeCustomerOnlyAuthenticatedNoChangeIsSuccess',
+              'TestInstalledCodeFailureCannotReturnBeforeOriginalChildExit',
+              'TestInstalledCodeSetupComponentRoutesNeverReachLegacyMutation',
+              'TestInstalledCodeSetupDedicatedPreflightAndPageState',
+              'TestInstalledCodeSetupCompletionIsDistinctAndOrdinaryGuardRemains']
           if os.environ['RUNNER_OS'] == 'Windows':
               maintenance['brokerenroll'] += [
                   'TestNativeCodeUpgradeResumeEveryRenameBoundary',
@@ -199,7 +222,9 @@ jobs:
                   'TestNativeCodeUpgradeEarlyAbortRefusesUnprovablePartialAndForeignStages',
                   'TestNativeCodeUpgradeEarlyAbortRejectsPartialOrForeignTerminalRecord',
                   'TestNativeInstalledBootstrapCacheMissingAndReplacementIdentityRefuse',
-                  'TestNativeInstalledCompletionCannotPublishWithoutOriginalCacheCustody']
+                  'TestNativeInstalledCompletionCannotPublishWithoutOriginalCacheCustody',
+                  'TestNativeInstalledCodeRefreshExclusiveAndReusableWithoutReset',
+                  'TestNativeInstalledCodeRefreshRefusesForeignLockBytesOrDescriptor']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
