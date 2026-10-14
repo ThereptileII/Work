@@ -1,4 +1,4 @@
-# SKAGER status — 2026-10-14
+# SKAGER status — 2026-10-15
 
 ## Replacement candidate after native updater job timeout
 
@@ -16,11 +16,16 @@ unchanged. The superseded run's remaining Linux compilation was cancelled;
 no separate verifier-only build or dependency rebuild was selected.
 [Failure, bounded component evidence and correction](evidence/scrum311-updater-budget-20261014/README.md).
 
-Replacement attempt 1 passes the Windows updater job. Its application job was
+Replacement attempt 1 passes Linux integration, including the fixture-free
+build/loader gate, and the Windows updater job. Its application job was
 allocated older hosted image `20261004.326.1` and correctly refuses the SDK's
-required `20261012.333.1` before compilation. Linux continues. The next action is
-only a failed-Windows-job rerun on this same frozen candidate after the run ends;
-no dependency rebuild or image-check relaxation is selected.
+required `20261012.333.1` before compilation. After the original run ended,
+the coordinator requested only failed Windows job `116117298706` and its
+dependent jobs again. Attempt 2 job `116128956769` passes the exact SDK
+image/Python/source preflight and continues toward native compilation on the
+same frozen candidate. Successful Linux/updater results are retained; Linux
+records **154 fixture CTests, 154 fixture-free CTests and 19 Python tests**.
+No dependency rebuild or image-check relaxation is selected.
 [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261014/README.md).
 
 ## Disposable desktop provisioning remains insufficient
@@ -47,6 +52,13 @@ among the seven retained module names. This narrows the startup observation but
 does not identify an exact wait/cause or a SKAGER crash. Both original artifacts
 verify. No equivalent retry, application rebuild or boat change is selected.
 [Native observation and boundaries](evidence/scrum311-startup-observation-20261014/README.md).
+
+Helper `90ef6cf9` adds a bounded, read-only `SystemProcessInformation` query at
+those same two observation points. It reports only the original process thread
+count, primary-thread state and conditional wait reason, with original-handle
+identity/liveness checks before and after. **68 focused probe tests pass**;
+independent source review found no material findings. Native execution remains
+pending. No launch policy, privileges or application inputs changed.
 
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
