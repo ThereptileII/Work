@@ -51,6 +51,7 @@ type nativeDecommission struct {
 	extraInventories             map[*nativePin]map[string]bool
 	owners                       []func() error
 	opened                       map[string]*nativeReopenedGeneration
+	generationEvidence           map[string]generationReopenEvidence
 }
 
 func (n *nativeStore) singletonRegistration(ctx context.Context, sid, digest string) (resultErr error) {

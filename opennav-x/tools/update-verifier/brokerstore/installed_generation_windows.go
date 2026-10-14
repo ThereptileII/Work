@@ -12,8 +12,6 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-const maxProtectedGenerations = 128
-
 type generationParents struct {
 	Schema      int
 	ClientSID   string

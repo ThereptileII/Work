@@ -15,6 +15,7 @@ import (
 )
 
 const maxGenerationRecordBytes = 16 << 20
+const maxProtectedGenerations = 128
 
 var ErrInstalledGenerationUncertain = errors.New("installed generation publication uncertain")
 

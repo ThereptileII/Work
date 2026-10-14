@@ -14,6 +14,41 @@ var ErrRetirementUncertain = errors.New("original protected retirement uncertain
 type retirementStoreBackend interface {
 	prepareRetirement(context.Context, DecommissionBinding) (retirementPreparationBackend, error)
 }
+type retirementLineageStoreBackend interface {
+	prepareRetirementLineage(context.Context, DecommissionBinding, []RetirementGeneration) (retirementPreparationBackend, error)
+}
+
+// RetirementGeneration is a comparison from the host's retained, closed
+// selected-history reducer. Completion and ordering alone grant no authority.
+// The original approved baseline is first; remaining IDs are sorted and unique.
+type RetirementGeneration struct {
+	GenerationID     string
+	CompletionSHA256 string
+}
+
+func validateRetirementLineage(binding DecommissionBinding, lineage []RetirementGeneration) error {
+	if len(lineage) < 1 || len(lineage) > maxProtectedGenerations {
+		return errors.New("bounded completed retirement lineage required")
+	}
+	seen, selected := map[string]bool{}, false
+	for i, generation := range lineage {
+		if !validHex(generation.GenerationID, 32) || !validHex(generation.CompletionSHA256, 64) || seen[generation.GenerationID] || i > 1 && lineage[i-1].GenerationID >= generation.GenerationID {
+			return errors.New("unique canonical deterministic retirement lineage required")
+		}
+		seen[generation.GenerationID] = true
+		if generation.GenerationID == binding.GenerationID {
+			if generation.CompletionSHA256 != binding.CompletionSHA256 {
+				return errors.New("original selected completion differs from retirement lineage")
+			}
+			selected = true
+		}
+	}
+	if !selected {
+		return errors.New("original selected generation outside completed retirement lineage")
+	}
+	return nil
+}
+
 type retirementPreparationBackend interface {
 	check() error
 	commit(context.Context) (retirementBackend, error)
@@ -45,7 +80,30 @@ type RetirementPreparation struct {
 // PrepareRetiringDecommission is separate from service-only decommission. The
 // original guard must validate the same selected host owner while it is still
 // live. It runs outside Store locks and cannot manufacture native file custody.
+// This adapter is baseline-only; completed update history uses the explicit
+// PrepareRetiringDecommissionLineage comparison scope.
 func (s *Store) PrepareRetiringDecommission(ctx context.Context, binding DecommissionBinding, originalGuard func(context.Context) error) (result *RetirementPreparation, resultErr error) {
+	return s.prepareRetiringDecommission(ctx, binding, nil, originalGuard)
+}
+
+// PrepareRetiringDecommissionLineage consumes comparisons derived by the host
+// from its SAME retained selected history after rejecting pending/forked or
+// unresolved attempts. originalGuard must revalidate that history and scope.
+// Native readers independently verify every original completed root/record and
+// reject extra or partial generations/stages. No history is inferred from a
+// completed generation, client list, stage receipt or filesystem scan alone.
+func (s *Store) PrepareRetiringDecommissionLineage(ctx context.Context, binding DecommissionBinding, lineage []RetirementGeneration, originalGuard func(context.Context) error) (*RetirementPreparation, error) {
+	if len(lineage) < 1 || len(lineage) > maxProtectedGenerations {
+		return nil, errors.New("bounded completed retirement lineage required")
+	}
+	lineage = append([]RetirementGeneration(nil), lineage...)
+	if err := validateRetirementLineage(binding, lineage); err != nil {
+		return nil, err
+	}
+	return s.prepareRetiringDecommission(ctx, binding, lineage, originalGuard)
+}
+
+func (s *Store) prepareRetiringDecommission(ctx context.Context, binding DecommissionBinding, lineage []RetirementGeneration, originalGuard func(context.Context) error) (result *RetirementPreparation, resultErr error) {
 	if s == nil || ctx == nil || originalGuard == nil || !binding.valid() {
 		return nil, errors.New("original protected retirement binding required")
 	}
@@ -59,6 +117,12 @@ func (s *Store) PrepareRetiringDecommission(ctx context.Context, binding Decommi
 	if _, ok := s.backend.(retirementStoreBackend); !ok {
 		s.mu.Unlock()
 		return nil, ErrNativeRequired
+	}
+	if lineage != nil {
+		if _, ok := s.backend.(retirementLineageStoreBackend); !ok {
+			s.mu.Unlock()
+			return nil, ErrNativeRequired
+		}
 	}
 	if err := s.backend.check(); err != nil {
 		s.mu.Unlock()
@@ -77,7 +141,13 @@ func (s *Store) PrepareRetiringDecommission(ctx context.Context, binding Decommi
 	if err := s.backend.check(); err != nil {
 		return nil, err
 	}
-	b, err := s.backend.(retirementStoreBackend).prepareRetirement(ctx, binding)
+	var b retirementPreparationBackend
+	var err error
+	if lineage == nil {
+		b, err = s.backend.(retirementStoreBackend).prepareRetirement(ctx, binding)
+	} else {
+		b, err = s.backend.(retirementLineageStoreBackend).prepareRetirementLineage(ctx, binding, lineage)
+	}
 	if err != nil || b == nil {
 		return nil, errors.Join(errors.New("original protected retirement owner unavailable"), err)
 	}

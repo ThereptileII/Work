@@ -48,6 +48,22 @@ type retirementCompleteRecord struct {
 	RegistrationJSON    diskIdentity `json:"registrationJson"`
 	GenerationDirectory diskIdentity `json:"generationDirectory"`
 }
+type retirementGenerationRecord struct {
+	Generation       string       `json:"generation"`
+	Purpose          string       `json:"purpose"`
+	CompletionSHA256 string       `json:"completionSha256"`
+	Directory        diskIdentity `json:"directory"`
+}
+type retirementLineageStartRecord struct {
+	retirementStartRecord
+	BaselineGeneration string                       `json:"baselineGeneration"`
+	Generations        []retirementGenerationRecord `json:"generations"`
+}
+type retirementLineageCompleteRecord struct {
+	retirementCompleteRecord
+	BaselineGeneration string                       `json:"baselineGeneration"`
+	Generations        []retirementGenerationRecord `json:"generations"`
+}
 
 type nativeRetirementPreparation struct {
 	store                                            *nativeStore
@@ -57,6 +73,8 @@ type nativeRetirementPreparation struct {
 	generationSecurity                               *windows.SECURITY_DESCRIPTOR
 	registrationOnce, registrationJSON, generationID diskIdentity
 	closed, transferred                              bool
+	lineage                                          []retirementGenerationRecord
+	explicitLineage                                  bool
 }
 type retirementObject struct {
 	handle    windows.Handle
@@ -70,7 +88,9 @@ type nativeRetirement struct {
 	store                               *nativeStore
 	binding                             DecommissionBinding
 	generationParent                    *nativePin
-	objects                             [3]*retirementObject
+	objects                             []*retirementObject
+	lineage                             []retirementGenerationRecord
+	explicitLineage                     bool
 	marker, started, completed          *nativeFile
 	markerRaw, startedRaw, completedRaw []byte
 	terminal, completedMove, closed     bool
@@ -81,9 +101,17 @@ func (n *nativeStore) prepareRetirement(ctx context.Context, binding Decommissio
 	return n.prepareRetirementWithOpeners(ctx, binding, decommissionInventoryOpeners{n.openReadOnlyGeneration, n.openStageSeal})
 }
 
+func (n *nativeStore) prepareRetirementLineage(ctx context.Context, binding DecommissionBinding, lineage []RetirementGeneration) (retirementPreparationBackend, error) {
+	return n.prepareRetirementLineageWithOpeners(ctx, binding, lineage, decommissionInventoryOpeners{n.openReadOnlyGeneration, n.openStageSeal})
+}
+
 // Inert native fixtures replace only the fixed Program Files opener; every
 // actual original registration/inventory/identity rule remains shared.
 func (n *nativeStore) prepareRetirementWithOpeners(ctx context.Context, binding DecommissionBinding, openers decommissionInventoryOpeners) (retirementPreparationBackend, error) {
+	return n.prepareRetirementLineageWithOpeners(ctx, binding, nil, openers)
+}
+
+func (n *nativeStore) prepareRetirementLineageWithOpeners(ctx context.Context, binding DecommissionBinding, lineage []RetirementGeneration, openers decommissionInventoryOpeners) (retirementPreparationBackend, error) {
 	if ctx == nil || ctx.Err() != nil || !binding.valid() || !validHex(binding.GenerationID, 32) {
 		return nil, errors.New("original selected retirement binding required")
 	}
@@ -104,15 +132,22 @@ func (n *nativeStore) prepareRetirementWithOpeners(ctx context.Context, binding 
 	if !d.rootInventory.deployed || d.opened == nil || d.opened[binding.GenerationID] == nil {
 		return nil, errors.New("actual completed selected generation required")
 	}
-	// This first retirement owns the original baseline deployment only. A
-	// signed successor or pending stage needs an explicit lineage-wide recovery
-	// policy before any selected directory can move out of its registry.
-	if binding.GenerationID != d.baseline || len(d.opened) != 1 || len(d.rootInventory.stages) != 0 {
-		return nil, errors.New("retirement of updated or pending generation ancestry is unsupported")
-	}
 	g := d.opened[binding.GenerationID]
-	if len(g.siblings) != 0 {
-		return nil, errors.New("retirement of generation history is unsupported")
+	if lineage == nil {
+		// The original adapter deliberately stays baseline-only. A completed
+		// stage alone never grants closed selected-history retirement scope.
+		if binding.GenerationID != d.baseline || len(d.opened) != 1 || len(d.rootInventory.stages) != 0 || len(g.siblings) != 0 {
+			return nil, errors.New("baseline adapter refuses updated or pending generation ancestry")
+		}
+	} else {
+		if err := validateRetirementLineage(binding, lineage); err != nil {
+			return nil, err
+		}
+		p.explicitLineage = true
+		p.lineage, err = originalRetirementLineage(ctx, d, g, lineage)
+		if err != nil {
+			return nil, err
+		}
 	}
 	root := g.tree.directories[""]
 	if root == nil || g.generations == nil || g.tree.securityDir == nil || root.name != g.generations.name+`\`+binding.GenerationID {
@@ -137,6 +172,9 @@ func (n *nativeStore) prepareRetirementWithOpeners(ctx context.Context, binding 
 	if err != nil {
 		return nil, err
 	}
+	if lineage == nil {
+		p.lineage = []retirementGenerationRecord{{Generation: binding.GenerationID, Directory: p.generationID}}
+	}
 	// Acquire a second parent pin while the original read owner still proves the
 	// complete inventory. This pin outlives that owner's controlled close and
 	// keeps the original physical parent/ACL identity through DELETE acquisition.
@@ -153,6 +191,72 @@ func (n *nativeStore) prepareRetirementWithOpeners(ctx context.Context, binding 
 	}
 	ok = true
 	return p, nil
+}
+
+// The selected native reader has independently opened every sibling's original
+// completion pair and root; validateGenerationReopenEvidence corroborates each
+// against the SAME protected registration/baseline. Reuse that retained custody
+// rather than multiplying complete history readers for every generation.
+func originalRetirementLineage(ctx context.Context, d *nativeDecommission, g *nativeReopenedGeneration, lineage []RetirementGeneration) ([]retirementGenerationRecord, error) {
+	if len(lineage) == 0 || lineage[0].GenerationID != d.baseline || len(g.siblings)+1 != len(lineage) {
+		return nil, errors.New("retirement scope must exactly cover original baseline and completed native generation registry")
+	}
+	wanted := map[string]bool{}
+	for _, item := range lineage {
+		wanted[item.GenerationID] = true
+	}
+	stages := map[string]bool{}
+	for _, stage := range d.rootInventory.stages {
+		if !wanted[stage] || stage == d.baseline || d.opened[stage] == nil {
+			return nil, errors.New("pending or unowned stage outside closed retirement lineage")
+		}
+		stages[stage] = true
+	}
+	evidence, ok := d.generationEvidence[g.stage]
+	if !ok {
+		return nil, errors.New("original selected generation evidence required")
+	}
+	result := make([]retirementGenerationRecord, 0, len(lineage))
+	for i, item := range lineage {
+		if err := ctx.Err(); err != nil {
+			return nil, err
+		}
+		root := g.siblings[item.GenerationID]
+		if item.GenerationID == g.stage {
+			root = g.tree.directories[""]
+		}
+		if root == nil || root.name != g.generations.name+`\`+item.GenerationID {
+			return nil, errors.New("retirement generation outside original held parent")
+		}
+		var raw []byte
+		for _, held := range g.held {
+			if held.file.pin.name == g.registry.name+`\`+item.GenerationID+".json" {
+				var err error
+				raw, err = decommissionReadExact(held.file, held.length, nil)
+				if err != nil {
+					return nil, err
+				}
+				break
+			}
+		}
+		if len(raw) == 0 || registrationDigest(raw) != item.CompletionSHA256 {
+			return nil, errors.New("original retirement completion differs from closed history comparison")
+		}
+		evidence.completion = raw
+		record, err := validateGenerationReopenEvidence(evidence, d.binding.ClientSID, item.GenerationID)
+		if err != nil {
+			return nil, err
+		}
+		if i == 0 && record.Purpose != approvedBaselineGenerationPurpose || i > 0 && (record.Purpose != string(GenerationPurposeSignedCandidate) || !stages[item.GenerationID]) {
+			return nil, errors.New("original baseline or sealed signed lineage purpose differs")
+		}
+		id, err := fileIdentity(root.handle)
+		if err != nil || !id.valid() || id != record.Directories[""] || id != g.pins[root] {
+			return nil, errors.Join(errors.New("original retirement lineage full root identity differs"), err)
+		}
+		result = append(result, retirementGenerationRecord{item.GenerationID, record.Purpose, item.CompletionSHA256, id})
+	}
+	return result, ctx.Err()
 }
 
 func (p *nativeRetirementPreparation) check() error {
@@ -227,9 +331,10 @@ func (p *nativeRetirementPreparation) commitWithSelectedDescriptorAndStartupDrai
 	if err := p.check(); err != nil {
 		return nil, err
 	}
-	r := &nativeRetirement{store: p.store, binding: p.binding, generationParent: p.generationParent}
+	r := &nativeRetirement{store: p.store, binding: p.binding, generationParent: p.generationParent,
+		objects: make([]*retirementObject, 2+len(p.lineage)), lineage: append([]retirementGenerationRecord(nil), p.lineage...), explicitLineage: p.explicitLineage}
 	// Closing the read-only inventory is a controlled pre-marker handoff. The
-	// protected parent remains held; fresh DELETE handles must match all three
+	// protected parent remains held; fresh DELETE handles must match every
 	// full original file IDs before any terminal or retirement record is created.
 	if err := p.original.close(); err != nil {
 		return nil, err
@@ -254,7 +359,15 @@ func (p *nativeRetirementPreparation) commitWithSelectedDescriptorAndStartupDrai
 	}{
 		{p.store.registrations, p.binding.ClientSID + ".once", p.registrationOnce, false, privateFile},
 		{p.store.registrations, p.binding.ClientSID + ".json", p.registrationJSON, false, privateFile},
-		{r.generationParent, p.binding.GenerationID, p.generationID, true, selectedSD},
+	}
+	for _, generation := range p.lineage {
+		items = append(items, struct {
+			parent *nativePin
+			name   string
+			id     diskIdentity
+			dir    bool
+			sd     *windows.SECURITY_DESCRIPTOR
+		}{r.generationParent, generation.Generation, generation.Directory, true, selectedSD})
 	}
 	for i, item := range items {
 		r.objects[i], err = openRetirementObject(item.parent, item.name, item.id, item.dir, item.sd)
@@ -405,6 +518,9 @@ func (r *nativeRetirement) originalCheck() error {
 	if r == nil || r.closed || r.generationParent == nil {
 		return ErrClosed
 	}
+	if len(r.objects) < 3 || len(r.objects) > maxProtectedGenerations+2 || len(r.lineage) > 0 && len(r.objects) != len(r.lineage)+2 || r.selectedRoot() == nil {
+		return errors.New("complete bounded original retirement lineage handles required")
+	}
 	r.store.mu.Lock()
 	err := r.store.checkCustodyLocked()
 	r.store.mu.Unlock()
@@ -427,13 +543,53 @@ func (r *nativeRetirement) originalCheck() error {
 		{r.store.root, retirementCompletedName(r.binding)},
 		{r.store.registrations, retirementRegistrationName(r.binding, "once")},
 		{r.store.registrations, retirementRegistrationName(r.binding, "json")},
-		{r.generationParent, retirementGenerationName(r.binding)},
 	} {
 		if err = retirementAbsent(item.parent, item.name); err != nil {
 			return err
 		}
 	}
+	for _, destination := range r.destinations()[2:] {
+		if err = retirementAbsent(r.generationParent, destination); err != nil {
+			return err
+		}
+	}
 	return nil
+}
+
+func (r *nativeRetirement) destinations() []string {
+	result := []string{retirementRegistrationName(r.binding, "once"), retirementRegistrationName(r.binding, "json")}
+	if len(r.lineage) == 0 {
+		return append(result, retirementGenerationName(r.binding))
+	}
+	for _, generation := range r.lineage {
+		binding := r.binding
+		binding.GenerationID = generation.Generation
+		result = append(result, retirementGenerationName(binding))
+	}
+	return result
+}
+
+func (r *nativeRetirement) selectedRoot() *retirementObject {
+	if len(r.lineage) == 0 {
+		if len(r.objects) != 3 {
+			return nil
+		}
+		return r.objects[2]
+	}
+	for i, generation := range r.lineage {
+		if generation.Generation == r.binding.GenerationID && i+2 < len(r.objects) {
+			return r.objects[i+2]
+		}
+	}
+	return nil
+}
+
+func (r *nativeRetirement) lineageRecords() []retirementGenerationRecord {
+	result := append([]retirementGenerationRecord(nil), r.lineage...)
+	for i := range result {
+		result[i].Directory = r.objects[i+2].id
+	}
+	return result
 }
 
 func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Context) error, drain func(context.Context, string) error) (resultErr error) {
@@ -460,8 +616,13 @@ func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Contex
 	if err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}
-	start := retirementStartRecord{1, r.binding.RequestID, r.binding.ClientSID, r.binding.GenerationID, r.binding.RegistrationSHA256, r.binding.SelectedHeadSHA256, r.objects[0].id, r.objects[1].id, r.objects[2].id}
-	r.startedRaw, err = json.Marshal(start)
+	start := retirementStartRecord{1, r.binding.RequestID, r.binding.ClientSID, r.binding.GenerationID, r.binding.RegistrationSHA256, r.binding.SelectedHeadSHA256, r.objects[0].id, r.objects[1].id, r.selectedRoot().id}
+	if r.explicitLineage {
+		start.Schema = 2
+		r.startedRaw, err = json.Marshal(retirementLineageStartRecord{start, r.lineage[0].Generation, r.lineageRecords()})
+	} else {
+		r.startedRaw, err = json.Marshal(start)
+	}
 	if err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}
@@ -495,7 +656,7 @@ func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Contex
 			return errors.Join(ErrRetirementUncertain, err)
 		}
 	}
-	for i, destination := range []string{retirementRegistrationName(r.binding, "once"), retirementRegistrationName(r.binding, "json"), retirementGenerationName(r.binding)} {
+	for i, destination := range r.destinations() {
 		// The startup-drain path remains cancellable after the handoff. The
 		// low-level no-drain adapter retains its original terminal completion
 		// policy; both paths preserve any partial moves for manual recovery.
@@ -513,7 +674,7 @@ func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Contex
 			return errors.Join(ErrRetirementUncertain, err)
 		}
 	}
-	complete := retirementCompleteRecord{1, r.binding.RequestID, registrationDigest(r.startedRaw), registrationDigest(r.markerRaw), r.objects[0].id, r.objects[1].id, r.objects[2].id}
+	complete := retirementCompleteRecord{1, r.binding.RequestID, registrationDigest(r.startedRaw), registrationDigest(r.markerRaw), r.objects[0].id, r.objects[1].id, r.selectedRoot().id}
 	completeCtx := context.WithoutCancel(ctx)
 	if drain != nil {
 		completeCtx = ctx
@@ -521,7 +682,12 @@ func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Contex
 			return errors.Join(ErrRetirementUncertain, err)
 		}
 	}
-	r.completedRaw, err = json.Marshal(complete)
+	if r.explicitLineage {
+		complete.Schema = 2
+		r.completedRaw, err = json.Marshal(retirementLineageCompleteRecord{complete, r.lineage[0].Generation, r.lineageRecords()})
+	} else {
+		r.completedRaw, err = json.Marshal(complete)
+	}
 	if err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}

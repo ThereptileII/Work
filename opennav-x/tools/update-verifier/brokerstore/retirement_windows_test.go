@@ -146,7 +146,7 @@ func nativeRetirementDrainFixture(t *testing.T) (*nativeRetirement, []windows.Ha
 	if err != nil {
 		t.Fatal(err)
 	}
-	r := &nativeRetirement{store: n, binding: binding, generationParent: parent}
+	r := &nativeRetirement{store: n, binding: binding, generationParent: parent, objects: make([]*retirementObject, 3)}
 	t.Cleanup(func() {
 		if err := r.close(); err != nil {
 			t.Error(err)

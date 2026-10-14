@@ -50,6 +50,7 @@ func (d *nativeDecommission) retainOwnedInventory(ctx context.Context, openers d
 	}
 	generations := map[string]*nativeReopenedGeneration{}
 	d.opened = generations
+	d.generationEvidence = map[string]generationReopenEvidence{}
 	records := map[string][]byte{}
 	openGeneration := func(stage string) (*nativeReopenedGeneration, error) {
 		if g := generations[stage]; g != nil {
@@ -68,6 +69,7 @@ func (d *nativeDecommission) retainOwnedInventory(ctx context.Context, openers d
 		}
 		d.owners = append(d.owners, g.close)
 		generations[stage] = g
+		d.generationEvidence[stage] = e
 		records[stage] = bytes.Clone(e.completion)
 		for _, held := range g.held {
 			if strings.HasPrefix(held.file.pin.name, g.registry.name+`\`) && strings.HasSuffix(held.file.pin.name, ".json") {

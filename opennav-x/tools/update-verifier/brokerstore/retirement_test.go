@@ -18,6 +18,7 @@ type retirementTestStore struct {
 	terminal                                                 bool
 	started, completed                                       bool
 	moves                                                    int
+	lineage                                                  []RetirementGeneration
 }
 
 func (s *retirementTestStore) check() error {
@@ -32,6 +33,74 @@ func (s *retirementTestStore) prepareRetirement(_ context.Context, _ Decommissio
 		return nil, s.prepareErr
 	}
 	return &retirementTestPreparation{s: s}, nil
+}
+func (s *retirementTestStore) prepareRetirementLineage(ctx context.Context, binding DecommissionBinding, lineage []RetirementGeneration) (retirementPreparationBackend, error) {
+	s.lineage = append([]RetirementGeneration(nil), lineage...)
+	return s.prepareRetirement(ctx, binding)
+}
+
+func TestRetirementLineageComparisonsAreBoundedCopiedAndKeepSelectedAsMember(t *testing.T) {
+	binding := decommissionTestBinding()
+	baseline := RetirementGeneration{binding.GenerationID, binding.CompletionSHA256}
+	successor := RetirementGeneration{digest("successor")[:32], digest("successor completion")}
+	for _, selected := range []string{"updated", "rolled back"} {
+		t.Run(selected, func(t *testing.T) {
+			sb := &retirementTestStore{}
+			s := &Store{backend: sb}
+			defer s.Close()
+			b := binding
+			if selected == "updated" {
+				b.GenerationID, b.CompletionSHA256 = successor.GenerationID, successor.CompletionSHA256
+			}
+			lineage := []RetirementGeneration{baseline, successor}
+			p, err := s.PrepareRetiringDecommissionLineage(context.Background(), b, lineage, func(context.Context) error {
+				// The host guard must not be able to alter the already captured
+				// original comparison scope through the caller's backing array.
+				lineage[1].CompletionSHA256 = digest("mutated caller array")
+				return nil
+			})
+			if err != nil || p == nil || sb.prepareCount != 1 || len(sb.lineage) != 2 || sb.lineage[1] != successor {
+				t.Fatal("original closed lineage was aliased or selected-last was assumed", err)
+			}
+		})
+	}
+}
+
+func TestRetirementLineageRejectsInvalidScopeBeforeGuardOrPreparation(t *testing.T) {
+	binding := decommissionTestBinding()
+	base := RetirementGeneration{binding.GenerationID, binding.CompletionSHA256}
+	low := RetirementGeneration{"11111111111111111111111111111111", digest("low")}
+	high := RetirementGeneration{"22222222222222222222222222222222", digest("high")}
+	for _, fault := range []string{"empty", "duplicate", "unsorted", "selected missing", "selected completion", "invalid id", "invalid completion", "exhausted"} {
+		t.Run(fault, func(t *testing.T) {
+			sb := &retirementTestStore{}
+			s := &Store{backend: sb}
+			defer s.Close()
+			lineage := []RetirementGeneration{base, low, high}
+			switch fault {
+			case "empty":
+				lineage = nil
+			case "duplicate":
+				lineage[2] = base
+			case "unsorted":
+				lineage[1], lineage[2] = high, low
+			case "selected missing":
+				lineage = []RetirementGeneration{low, high}
+			case "selected completion":
+				lineage[0].CompletionSHA256 = digest("wrong selected")
+			case "invalid id":
+				lineage[1].GenerationID = "../outside"
+			case "invalid completion":
+				lineage[1].CompletionSHA256 = "not-completion"
+			case "exhausted":
+				lineage = make([]RetirementGeneration, maxProtectedGenerations+1)
+			}
+			p, err := s.PrepareRetiringDecommissionLineage(context.Background(), binding, lineage, func(context.Context) error { t.Fatal("invalid lineage reached original host guard"); return nil })
+			if err == nil || p != nil || sb.prepareCount != 0 || sb.terminal {
+				t.Fatal("invalid retirement lineage reached mutation", err)
+			}
+		})
+	}
 }
 
 type retirementTestPreparation struct {
