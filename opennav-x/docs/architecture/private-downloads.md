@@ -2,8 +2,9 @@
 
 This is the Supabase Edge backend contract, not the retained Django application.
 The default release catalog is empty and `SKAGER_DOWNLOADS_ENABLED` is disabled.
-No package, qualification decision, bucket, provider configuration, credential or
-public download is created by this increment. Configuration is not qualification.
+The private R2 bucket is created as recorded below; no package upload, credential,
+qualified catalog entry or public download follows from that setup. Configuration
+is not qualification.
 
 ## Requests and authorization
 
@@ -29,12 +30,12 @@ invalid UTF-8 and bodies larger than 1 KiB. Reading the selection has a one-seco
 deadline. Exact beta Origin and double-submit CSRF are checked in the module as
 well as the router. An unknown server selection is 404. A successful response is
 `{url,expiresAt,releaseId,artifactId,name,bytes,sha256}`, with an ISO expiry time.
-The same current subject and entitlement are checked again after Storage returns;
+The same current subject and entitlement are checked again after local signing;
 logout, refund, suspension, account changes or uncertainty withhold the bearer.
 Only a valid selected signing request consumes the existing atomic
 `skager_auth_throttle` quota: `download:account:{verifiedSubject}`, ten requests
 per sixty seconds. Only boolean `true` authorizes Storage; `false` returns 429,
-and malformed results or database errors return 503 without a Storage call.
+and malformed results or database errors return 503 without signing.
 Listings, unknown selections and rejected access do not consume this signing
 quota. No SQL is changed. The separate key cannot consume auth send/verify
 counters, but the existing function shares its table, expiry cleanup and advisory
@@ -52,16 +53,16 @@ record path and its SHA-256. All five artifact kinds are required: `installer`,
 filename, positive bounded byte length and SHA-256. Production entries are not
 admitted by this private staging handler.
 
-The fixed proposed private bucket is `skager-private-releases`, on the already
-pinned `kelwgubkuvditalsbqpr.supabase.co` project. No bucket is created here. Object
-keys are derived only from reviewed metadata:
+The private bucket is `skager-private-releases` on the source-pinned Cloudflare R2
+account. Supabase remains the identity and entitlement authority. Object keys are
+derived only from reviewed metadata:
 
 `staging/{sourceCommit}/{releaseId}/{artifactId}/{sha256}/{filename}`.
 
 Before adding a real catalog entry, independently establish the exact candidate's
 qualification, corresponding-source/license completeness, supported platform and
 artifact identities, then authenticate uploads against those hashes/lengths and
-verify private bucket/RLS and read/sign permissions. Preserve immutable objects:
+verify private bucket and read/sign permissions. Preserve immutable objects:
 hash-named keys alone do not prevent a privileged overwrite. The handler does not
 download multi-gigabyte objects to rehash them on each request, and neither the
 qualification record fields nor successful signing prove stored bytes or release
@@ -106,46 +107,43 @@ frontend/backend have not been replaced by that work. Downloads remain disabled
 and the reviewed catalog remains empty. A private empty bucket is not proof of
 authenticated delivery, signed-link expiry or exact artifact integrity.
 
-## Storage signing and limits
+## R2 signing and limits
 
-Supabase documents [time-limited private downloads](https://supabase.com/docs/guides/storage/serving/downloads)
-and [`createSignedUrl(path, expiresIn)` in seconds](https://supabase.com/docs/reference/javascript/storage-from-createsignedurl).
-The reviewed server implementation at
-[`supabase/storage@27c5b7eb`](https://github.com/supabase/storage/blob/27c5b7ebebe08959be67be291b0fd7384529355c/src/http/routes/object/getSignedURL.ts)
-defines `POST /storage/v1/object/sign/{bucket}/{object}` with
-`{expiresIn:60}`, returning `{signedURL:"/object/sign/...?...token=..."}`.
-Its [object signer](https://github.com/supabase/storage/blob/27c5b7ebebe08959be67be291b0fd7384529355c/src/storage/object.ts)
-binds the token to bucket/object; its
-[JWT signer](https://github.com/supabase/storage/blob/27c5b7ebebe08959be67be291b0fd7384529355c/src/internal/auth/jwt.ts)
-adds issued-at and expiry. These source references establish the API contract,
-not the live project's deployed Storage revision or actual delivery acceptance.
+The R2 adapter supersedes the earlier Supabase Storage signer because the actual
+Free project's per-object capacity cannot accommodate the release set. There is
+no automatic provider fallback. [Cloudflare documents S3 presigned URLs](https://developers.cloudflare.com/r2/api/s3/presigned-urls/)
+for temporary access to private objects; these use the S3 endpoint, not a public
+bucket or custom domain.
 
-Only the pinned HTTPS project is called, with the server-only service binding.
-The call uses manual redirects and requires HTTP 200 without redirection or URL
-substitution. JSON has a 16 KiB bound, strict decoding and duplicate-key refusal;
-encoded responses and inconsistent content lengths are refused. The request and
-response-body read share an eight-second deadline. Exceptions, provider bodies,
-credentials, subjects and tokens are never logged or included in refusal replies.
+The server requires `SKAGER_DOWNLOAD_BACKEND=r2`, the exact `R2_ACCOUNT_ID` and
+`R2_DOWNLOAD_BUCKET` pins, plus `R2_ACCESS_KEY_ID` and `R2_SECRET_ACCESS_KEY` in
+Supabase Edge Secrets. Only the single-bucket **Object Read only** credential
+belongs in this runtime. Upload access must be separate. Missing or mismatched
+configuration refuses signing; no caller may override the account, bucket,
+region, object key, filename or method.
 
-The returned URL must be the exact relative signing path for the selected object,
-with a single token and no fragment, alternate origin, path alias or extra query.
-Its bounded JWT must name the exact bucket/object, carry issued-at and expiry,
-and have download scope when a scope is present. Legacy scope-less download
-tokens remain compatible with the documented API. Expiry is at most 60 seconds
-after issuance, with at most five seconds of provider clock skew. Claims are
-constraints on an authenticated HTTPS Storage response; parsing them is not
-independent JWT signature verification. Storage authenticates its signature when
-the bearer is redeemed. The server appends the reviewed filename using Supabase's
-documented `download` parameter; caller filenames are not accepted.
+The adapter uses byte-identical `aws4fetch@1.0.20` ESM distribution, vendored with
+its MIT license, upstream revision, official npm integrity and file hashes in
+`web/edge/vendor/aws4fetch-1.0.20/manifest.json`. Packaging verifies those files,
+bundles the dependency only into the server artifact and retains the full MIT
+notice and dependency provenance. No runtime dependency download is required.
 
-Responses use private/no-store/no-cache and no-referrer safeguards. The portal
-must retain its no-referrer document policy and use a fresh POST for every click;
-do not persist, log, prefetch or share signed URLs. A signed URL is a transferable
-bearer until expiry: a completed entitlement revocation stops new URLs, while an
-already issued URL can remain usable for the short remaining lifetime (including
-the bounded clock allowance). A transfer already in progress is not interrupted
-by a later refund, and already downloaded files are not revoked. Supabase notes
-that Auth-key rotation does not revoke these Storage URLs.
+`AwsClient.sign()` signs a GET locally with S3 region `auto`, a fixed attachment
+filename and a 60-second expiry. It makes no network signing request and never
+signs an upload, delete or alternate method. The output is checked against the
+exact HTTPS origin, object path, allowed SigV4 parameters, credential scope,
+issued time and expiry; unexpected headers, body, URL aliases or parameters
+refuse. The overall signing call has an eight-second deadline, and the same
+session and entitlement must still be valid before the link is returned.
+
+Exceptions, secret values and signed URLs are never logged. The portal validates
+the matching artifact/path/expiry before navigation, retains no-referrer policy,
+and obtains a fresh authorized POST for each click. Replies are private/no-store.
+A signed URL is a transferable bearer until its short expiry: revoking access
+stops new links but cannot revoke an already downloaded file or necessarily stop
+a transfer in progress. A client clock substantially different from the server
+can cause the portal to refuse an otherwise valid link. R2's actual signature,
+expiry, private access and stored-byte behavior still need live qualification.
 
 ## Integration and remaining acceptance
 
@@ -155,9 +153,9 @@ loads the dedicated authorized catalog on Downloads instead of relying on a
 hardcoded dashboard availability claim. It safely renders version/channel/commit
 and hash/length metadata, requires a fresh authorized POST for each click, checks
 the pinned returned URL and expiry, and handles OFF/empty/unauthorized states.
-These source changes are packaged, not yet deployed or provider-qualified.
+The R2 source changes are not yet deployed or provider-qualified.
 
-This increment's tests use synthetic catalog entries, tokens and Storage replies.
+This increment's tests use synthetic catalog entries and credentials, independent SigV4 checks and controlled SDK faults.
 They do not qualify a package or real signed URL. Actual private Storage setup,
 object custody, native release qualification, download/expiry/refund behavior,
 privacy/egress handling and independent combined integration review remain gates.

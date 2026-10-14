@@ -13,6 +13,14 @@ and portal API. Supabase Auth supplies email proof and canonical identities;
 Supabase PostgreSQL stores private application state. Stripe Checkout remains
 restricted to its test environment.
 
+On 2026-10-14 the owner activated Cloudflare R2 for private release files. The
+Supabase Free project's 50 MB object limit cannot hold the Windows release set.
+R2 therefore replaces only download-object storage: Supabase remains the auth,
+database, commerce and entitlement backend. The newly created bucket is private
+and empty. A server-only R2 signer and portal URL checks are implemented, with
+credentials, deployed behavior and real artifact qualification still pending.
+See [private downloads](private-downloads.md); this change enables no public access.
+
 This replaces the Django/Render runtime selected in
 [public-beta web and commerce](public-beta-web-commerce.md) and the Django
 runtime retained in the earlier [Supabase/Stripe decision](supabase-stripe-decision.md).
@@ -37,6 +45,7 @@ No paid upgrade or live-payment enablement follows from this decision.
 | Supabase Auth | An allowlisted server-side invitation sends a code without auto-confirming identity. `/verify` and canonical `/user` proof precede every application login. Public signups stay disabled and email confirmation stays required. |
 | Supabase PostgreSQL | `skager_private` contains sessions, challenges, limits, orders, settlements, effects, entitlements and boat names. The schema stays outside exposed Data API schemas, with no `anon`/`authenticated` access. RLS and fixed-search-path SECURITY DEFINER RPCs restricted to `service_role` enforce the server boundary. |
 | Stripe test Checkout/webhooks | Hosts the test payment form. Server-selected price and immutable order/session binding constrain fulfillment. Bounded raw-body signature verification, provider re-fetch and transactional SQL determine effects. Browser redirects never grant access. |
+| Cloudflare R2 | Private, hash-named qualified release objects. The Supabase handler checks the current session and entitlement before signing a 60-second GET and again before returning it. Its credential is read-only for the single release bucket; upload custody is separate. |
 
 The implementation lives in `web/edge/`: `cloudflare-worker.mjs` is the frontend
 router, `index.ts` and `platform.ts` compose the backend, and `auth`, `commerce`
@@ -104,7 +113,8 @@ The portal fetches availability from this handler instead of assuming access fro
 the dashboard. Links are minted only after a user selects a qualified artifact,
 expire after sixty seconds, and are not embedded in catalog HTML. Query parameters
 are rejected at both Worker and Edge boundaries before routing can discard them.
-No bucket, release object or catalog entry is provisioned by this implementation.
+The owner-activated R2 bucket is private and empty; no release object or catalog
+entry is provisioned by the runtime implementation.
 Downloads therefore remain unavailable until exact package qualification and
 private Storage custody are independently completed. See the
 [private download contract](private-downloads.md). Public distribution still
