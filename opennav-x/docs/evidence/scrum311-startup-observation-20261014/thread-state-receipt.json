@@ -1,0 +1,133 @@
+{
+  "artifacts": [
+    {
+      "artifactBytes": 1539,
+      "artifactId": 11933045252,
+      "artifactSha256": "d9c6786ccdf3cc2b5b3bde1317aba08e4013d2b95e7edc33031c2a0107c2be13",
+      "attempt": 1,
+      "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+      "jobId": 116129891765,
+      "kind": "account",
+      "resultBytes": 6539,
+      "resultCrc32": "808b3c63",
+      "runId": 38645101455,
+      "sourceCommit": "f35b52768d3d7596b538ad5379d40890215caf57",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    },
+    {
+      "artifactBytes": 594,
+      "artifactId": 11932775480,
+      "artifactSha256": "b9dae7caf3ce2ccdbc432eb3f6fe754483396f4a6063ecfb8dd862d031b06fe4",
+      "attempt": 1,
+      "jobId": 116129891765,
+      "kind": "profile",
+      "resultBytes": 780,
+      "resultCrc32": "65eaf723",
+      "runId": 38645101455,
+      "sourceCommit": "f35b52768d3d7596b538ad5379d40890215caf57",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    }
+  ],
+  "observations": {
+    "attempt": 1,
+    "cleanup": {
+      "reason": "original-process-or-handle-outcome-uncertain",
+      "state": "deferred-to-disposable-job"
+    },
+    "consentPromptAcceptance": false,
+    "jobId": 116129891765,
+    "nativeCustomerAcceptance": false,
+    "observation": {
+      "beforeResume": {
+        "modules": {
+          "nativeError": 299,
+          "state": "unavailable"
+        },
+        "originalIdentityVerified": true,
+        "pendingIO": {
+          "pending": false,
+          "state": "observed"
+        },
+        "state": "observed",
+        "systemThread": {
+          "originalPrimaryThreadState": 5,
+          "originalPrimaryWaitReason": 5,
+          "originalProcessThreadCount": 1,
+          "queryStatus": 0,
+          "state": "observed"
+        },
+        "threadTimes": {
+          "kernel100ns": 0,
+          "state": "observed",
+          "user100ns": 0
+        },
+        "windows": {
+          "boundReached": false,
+          "state": "observed",
+          "windows": []
+        }
+      },
+      "onTimeout": {
+        "modules": {
+          "present": {
+            "_ctypes.pyd": false,
+            "kernel32.dll": false,
+            "kernelbase.dll": false,
+            "ntdll.dll": true,
+            "python312.dll": false,
+            "ucrtbase.dll": false,
+            "user32.dll": false
+          },
+          "state": "observed"
+        },
+        "originalIdentityVerified": true,
+        "pendingIO": {
+          "pending": false,
+          "state": "observed"
+        },
+        "state": "observed",
+        "systemThread": {
+          "originalPrimaryThreadState": 5,
+          "originalPrimaryWaitReason": 17,
+          "originalProcessThreadCount": 1,
+          "queryStatus": 0,
+          "state": "observed"
+        },
+        "threadTimes": {
+          "kernel100ns": 0,
+          "state": "observed",
+          "user100ns": 156250
+        },
+        "windows": {
+          "boundReached": false,
+          "state": "observed",
+          "windows": []
+        }
+      }
+    },
+    "originalChild": {
+      "resumeAttempted": true,
+      "resumeResult": 1
+    },
+    "productInstallAttempted": false,
+    "profileState": "disposable-profile-created",
+    "progress": {
+      "channel": "actual-token-profile-file",
+      "fileBytes": 0,
+      "finalDocumentPresent": false,
+      "lastMarker": null,
+      "markerBytes": 0,
+      "markerProtocolValid": true,
+      "markerSequenceComplete": false,
+      "markers": [],
+      "reportBytes": 0
+    },
+    "reason": "original-capability-child-timeout",
+    "runId": 38645101455,
+    "sourceCommit": "f35b52768d3d7596b538ad5379d40890215caf57",
+    "state": "blocked"
+  },
+  "rootReverifiedArchiveSizeDigestCrcMember": true
+}

@@ -42,3 +42,27 @@ not the new parent observer. Private original evidence stays outside Git.
 
 Application candidate `89854110b41286cab0c6bf9748f37882a595a366` remains unchanged.
 Native installed/UAC, joined update/recovery and boat acceptance remain pending.
+
+## Original primary-thread state follow-up
+
+Helper `f35b52768d3d7596b538ad5379d40890215caf57`,
+[run 38645101455 attempt 1](https://github.com/ThereptileII/Work/actions/runs/38645101455),
+job `116129891765`, adds the bounded read-only Windows process/thread snapshot.
+The 68 focused probe tests pass and independent source review found no material
+findings. The native job still fails on the original child timeout; disconnected
+profile preparation passes. Root independently verifies both original archives'
+size, provider digest, CRC and sole member against the retained originals.
+[Sanitized follow-up receipt](thread-state-receipt.json).
+
+Both native queries succeed with status 0 and report exactly one thread in the
+original process. Before the sole resume, primary state is 5 and wait reason 5.
+At timeout, primary state is 5 and wait reason 17. Accounted user CPU increases
+from 0 to 156,250 units of 100 ns (15.625 ms); kernel CPU remains 0. Original
+identity checks pass, `ResumeThread` returns 1 once, and no file marker or exit
+is observed. Module/I/O/window observations remain as above.
+
+The changed wait category and nonzero accounted CPU rule out describing this
+execution as never resumed or never scheduled. They do not identify the blocking
+server, exact function, missing permission, console cause or a SKAGER defect.
+No extra resume, privileged debugger, policy change or application rebuild is
+authorized by this diagnostic. Cleanup remains deferred to disposable retirement.

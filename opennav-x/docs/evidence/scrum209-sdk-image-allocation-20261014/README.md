@@ -40,3 +40,12 @@ authenticate the actual producing attempt for every later artifact. Do not
 rebuild the SDK, relax the image/toolchain check, cancel successful independent
 work, or create a new candidate for this allocation mismatch. A scheduled rerun
 is not evidence that it obtained the required image or passed its gates.
+
+The original run is now terminal. Linux job `116109494323` succeeds, including
+154 fixture CTests, 154 fixture-free CTests and 19 Python tests; endurance remains
+explicitly skipped. Original Linux log SHA-256:
+`3d354227181ab47fc57a8deb06cef423dc608af9d86d38693b1bf9bb3397868c`.
+The coordinator requested only failed Windows job `116117298706` again.
+Attempt 2 job `116128956769` passes the strict SDK image/Python/source preflight
+at 22:03:19Z and continues. This is preflight evidence only; the native build,
+packaging and installed-product gates are still pending.

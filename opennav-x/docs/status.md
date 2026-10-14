@@ -57,8 +57,12 @@ Helper `90ef6cf9` adds a bounded, read-only `SystemProcessInformation` query at
 those same two observation points. It reports only the original process thread
 count, primary-thread state and conditional wait reason, with original-handle
 identity/liveness checks before and after. **68 focused probe tests pass**;
-independent source review found no material findings. Native execution remains
-pending. No launch policy, privileges or application inputs changed.
+independent source review found no material findings. Native
+[38645101455](https://github.com/ThereptileII/Work/actions/runs/38645101455)
+still times out but the query succeeds: one original thread, waiting state 5,
+wait reason 5 before resume and 17 at timeout, with 15.625 ms accounted user CPU.
+This rules out calling it never resumed/scheduled; the blocking cause remains
+unidentified. No launch policy, privileges or application inputs changed.
 
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
