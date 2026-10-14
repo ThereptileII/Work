@@ -81,6 +81,17 @@ and boat acceptance remain pending. No public
 or boat deployment has been performed for this path.
 [Updated contract](installer/broker-code-upgrade.md).
 
+## Limited-account standard-handle repair does not resolve hosted startup
+
+Helper `ad274297` removes the proven invalid supplied standard handles and uses a
+bounded fixed file in the actual token's new profile. Focused checks pass
+**43 customer / 45 probe cases**. Native [38636933058](https://github.com/ThereptileII/Work/actions/runs/38636933058)
+still times out after one verified resume, with zero diagnostic bytes and no
+observed exit. The original artifact and exact-source hashes verify. This is not
+a diagnosed SKAGER failure or usable interactive-host acceptance. No unchanged
+probe retry is selected; next diagnosis must distinguish a native startup block.
+[Evidence](evidence/scrum311-limited-profile-file-20261014/README.md).
+
 ## Hosted ordinary-account probe identifies invalid child standard handles
 
 The next bounded diagnostic `fe21e95a` passes **45/34** focused portable cases.

@@ -1,0 +1,41 @@
+{
+  "schema": 1,
+  "commit": "ad274297bdd87c2ecfb15d051fce2c3c045c7015",
+  "run": {
+    "attempt": 1,
+    "id": 38636933058
+  },
+  "artifactId": 11929280638,
+  "artifactBytes": 954,
+  "artifactSha256": "dc3325f355877f9773beaa3a99eef098a9cd976d35d94f3b6059f088e6fd9f2d",
+  "resultBytes": 2269,
+  "resultCrc32": "9ba23a42",
+  "state": "blocked",
+  "reason": "original-capability-child-timeout",
+  "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+  "originalChild": {
+    "resumeAttempted": true,
+    "resumeResult": 1,
+    "tokenElevated": false,
+    "tokenElevationType": 3,
+    "tokenType": 1
+  },
+  "capabilityProgress": {
+    "channel": "actual-token-profile-file",
+    "fileBytes": 0,
+    "finalDocumentPresent": false,
+    "lastMarker": null,
+    "markerBytes": 0,
+    "markerProtocolValid": true,
+    "markerSequenceComplete": false,
+    "markers": [],
+    "reportBytes": 0
+  },
+  "cleanup": {
+    "reason": "original-process-or-handle-outcome-uncertain",
+    "state": "deferred-to-disposable-job"
+  },
+  "productInstallAttempted": false,
+  "nativeCustomerAcceptance": false,
+  "consentPromptAcceptance": false
+}
