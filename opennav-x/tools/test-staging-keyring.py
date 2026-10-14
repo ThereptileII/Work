@@ -187,6 +187,70 @@ class Tests(unittest.TestCase):
             '--broker-bootstrap-policy-sha256', 'b' * 64, '--keys-stdin'])
         self.assertEqual(set(keys), {'targets', 'snapshot', 'timestamp'})
 
+    def test_code_upgrade_pair_and_combined_bootstrap_forward_exact_online_roles(self):
+        for combined in (False, True):
+            store = self.publish_store()
+            args = copy.copy(self.publish)
+            args.broker_code_upgrade_policy = str(Path(self.temp.name) / 'approved-upgrade.json')
+            args.broker_code_upgrade_policy_sha256 = 'c' * 64
+            expected = []
+            if combined:
+                args.broker_bootstrap_policy = self.publish.policy
+                args.broker_bootstrap_policy_sha256 = 'b' * 64
+                expected += ['--broker-bootstrap-policy', self.publish.policy,
+                             '--broker-bootstrap-policy-sha256', 'b' * 64]
+            expected += ['--broker-code-upgrade-policy', args.broker_code_upgrade_policy,
+                         '--broker-code-upgrade-policy-sha256', 'c' * 64, '--keys-stdin']
+            tool = Tool()
+            keyring.operate(args, store, tool, lambda _: self.fail('Generated during publish'))
+            self.assertEqual(store.loads, ['1', '2', '3'])
+            self.assertEqual(store.creates, [])
+            command, keys = tool.calls[0]
+            self.assertEqual(command[-len(expected):], expected)
+            self.assertEqual(set(keys), {'targets', 'snapshot', 'timestamp'})
+
+    def test_code_upgrade_partial_malformed_duplicate_and_abbreviated_refuse_before_store(self):
+        self.publish_store()
+        argv = ['--tool', '/reviewed/tool', '--tool-sha256', 'f' * 64, 'publish',
+                '--repository', self.repo, '--assets', self.temp.name, '--policy', self.publish.policy,
+                '--selection', self.publish.selection, '--selection-sha256', 'a' * 64]
+        paired = ['--broker-code-upgrade-policy', self.publish.policy,
+                  '--broker-code-upgrade-policy-sha256', 'c' * 64]
+        invalid = [argv + paired[:2], argv + paired[2:],
+                   argv + paired + paired[:2], argv + paired + paired[2:],
+                   argv + ['--broker-code-upgrade-policy', 'relative.json'] + paired[2:],
+                   argv + paired[:2] + ['--broker-code-upgrade-policy-sha256', 'C' * 64],
+                   argv + paired[:2] + ['--broker-code-upgrade-policy-sha256', 'c' * 63],
+                   argv + ['--broker-code-upgrade-policy-sha', 'c' * 64]]
+        for args in invalid:
+            with self.subTest(args=args), patch.object(keyring, 'SecretStore') as store, \
+                    patch.object(keyring, 'PinnedTool') as tool, \
+                    patch.object(keyring.resource, 'setrlimit') as limits, \
+                    contextlib.redirect_stderr(io.StringIO()) as err:
+                self.assertEqual(keyring.main(args), 1)
+                store.assert_not_called()
+                tool.assert_not_called()
+                limits.assert_not_called()
+                self.assertEqual(err.getvalue(), keyring.FAILURE + '\n')
+
+    def test_cli_code_upgrade_pair_reaches_pinned_tool_without_root(self):
+        store = self.publish_store()
+        argv = ['--tool', '/reviewed/tool', '--tool-sha256', 'f' * 64, 'publish',
+                '--repository', self.repo, '--assets', self.temp.name, '--policy', self.publish.policy,
+                '--selection', self.publish.selection, '--selection-sha256', 'a' * 64,
+                '--broker-code-upgrade-policy=' + self.publish.policy,
+                '--broker-code-upgrade-policy-sha256', 'c' * 64]
+        with patch.object(keyring, 'SecretStore', return_value=store), \
+                patch.object(keyring, 'PinnedTool', return_value=self.tool), \
+                patch.object(keyring, 'custody_lock', return_value=contextlib.nullcontext()), \
+                patch.object(keyring.resource, 'setrlimit'), contextlib.redirect_stdout(io.StringIO()):
+            self.assertEqual(keyring.main(argv), 0)
+        self.assertEqual(store.loads, ['1', '2', '3'])
+        command, keys = self.tool.calls[0]
+        self.assertEqual(command[-5:], ['--broker-code-upgrade-policy', self.publish.policy,
+            '--broker-code-upgrade-policy-sha256', 'c' * 64, '--keys-stdin'])
+        self.assertEqual(set(keys), {'targets', 'snapshot', 'timestamp'})
+
     def test_locked_duplicate_partial_misbound_and_unknown_state_rejected_before_load(self):
         store = self.publish_store()
         variants = []

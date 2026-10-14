@@ -250,14 +250,16 @@ def delegate(args):
     require(args.command == 'publish' and os.path.isdir(repository) and PIN.fullmatch(args.selection_sha256))
     existing = open_plain(repository, os.O_RDONLY | os.O_DIRECTORY)
     os.close(existing)
-    bootstrap = getattr(args, 'broker_bootstrap_policy', None)
-    bootstrap_sha = getattr(args, 'broker_bootstrap_policy_sha256', None)
-    require((bootstrap is None) == (bootstrap_sha is None))
     paired = []
-    if bootstrap is not None:
-        require(isinstance(bootstrap_sha, str) and PIN.fullmatch(bootstrap_sha))
-        paired = ['--broker-bootstrap-policy', absolute(bootstrap),
-                  '--broker-bootstrap-policy-sha256', bootstrap_sha]
+    for purpose in ('broker-bootstrap', 'broker-code-upgrade'):
+        attr = purpose.replace('-', '_')
+        policy = getattr(args, attr + '_policy', None)
+        pin = getattr(args, attr + '_policy_sha256', None)
+        require((policy is None) == (pin is None))
+        if policy is not None:
+            require(isinstance(pin, str) and PIN.fullmatch(pin))
+            paired += ['--' + purpose + '-policy', absolute(policy),
+                       '--' + purpose + '-policy-sha256', pin]
     return ['publish'] + common + ['--assets', absolute(args.assets), '--policy', absolute(args.policy),
                                   '--selection', absolute(args.selection), '--selection-sha256',
                                   args.selection_sha256] + paired + ['--keys-stdin']
@@ -314,8 +316,9 @@ def main(argv=None):
     publish = commands.add_parser('publish')
     for option in ('repository', 'assets', 'policy', 'selection', 'selection-sha256'):
         publish.add_argument('--' + option, required=True, action=Once)
-    publish.add_argument('--broker-bootstrap-policy', action=Once)
-    publish.add_argument('--broker-bootstrap-policy-sha256', action=Once)
+    for purpose in ('broker-bootstrap', 'broker-code-upgrade'):
+        publish.add_argument('--' + purpose + '-policy', action=Once)
+        publish.add_argument('--' + purpose + '-policy-sha256', action=Once)
     try:
         require(sys.platform == 'linux')
         args = parser.parse_args(argv)

@@ -24,14 +24,15 @@ import (
 )
 
 type state struct {
-	Schema          int                   `json:"schema"`
-	ConfigSHA256    string                `json:"configSha256"`
-	Version         int64                 `json:"version"`
-	ProductVersion  string                `json:"productVersion"`
-	ProductCommit   string                `json:"productCommit"`
-	PolicySHA256    string                `json:"policySha256"`
-	SelectionSHA256 string                `json:"selectionSha256"`
-	BrokerBootstrap *brokerBootstrapState `json:"brokerBootstrap,omitempty"`
+	Schema            int                     `json:"schema"`
+	ConfigSHA256      string                  `json:"configSha256"`
+	Version           int64                   `json:"version"`
+	ProductVersion    string                  `json:"productVersion"`
+	ProductCommit     string                  `json:"productCommit"`
+	PolicySHA256      string                  `json:"policySha256"`
+	SelectionSHA256   string                  `json:"selectionSha256"`
+	BrokerBootstrap   *brokerBootstrapState   `json:"brokerBootstrap,omitempty"`
+	BrokerCodeUpgrade *brokerCodeUpgradeState `json:"brokerCodeUpgrade,omitempty"`
 }
 
 func sign[T metadata.Roles](m *metadata.Metadata[T], key ed25519.PrivateKey) ([]byte, error) {
@@ -261,6 +262,14 @@ func load(directory string, now time.Time) (Trust, state, *metadata.Metadata[met
 			return fail()
 		}
 	}
+	if s.BrokerCodeUpgrade != nil {
+		if s.Version == 0 {
+			return fail()
+		}
+		if _, e = retainedCodeUpgrade(s.BrokerCodeUpgrade, t, s.ConfigSHA256); e != nil {
+			return fail()
+		}
+	}
 	root, e := rootMetadata(t.BootstrapRoot, now)
 	if e != nil {
 		return fail()
@@ -374,6 +383,10 @@ func publish(directory, assets string, selection, policy []byte, selectionSHA st
 }
 
 func publishBatch(directory, assets string, selection, policy []byte, selectionSHA string, bootstrap []byte, bootstrapSHA string, keys Keys, now time.Time, checkpoint func(string) error) (int64, error) {
+	return publishBatchWithCodeUpgrade(directory, assets, selection, policy, selectionSHA, bootstrap, bootstrapSHA, nil, "", keys, now, checkpoint)
+}
+
+func publishBatchWithCodeUpgrade(directory, assets string, selection, policy []byte, selectionSHA string, bootstrap []byte, bootstrapSHA string, upgrade []byte, upgradeSHA string, keys Keys, now time.Time, checkpoint func(string) error) (int64, error) {
 	if e := requireOperator(); e != nil {
 		return 0, e
 	}
@@ -405,6 +418,11 @@ func publishBatch(directory, assets string, selection, policy []byte, selectionS
 	if e != nil {
 		return 0, e
 	}
+	upgradePolicy, nextUpgrade, upgradeCopies, e := selectCodeUpgrade(directory, assets, upgrade, upgradeSHA, s, trust, p, bootstrapPolicy, nextBootstrap)
+	if e != nil {
+		return 0, e
+	}
+	s.BrokerCodeUpgrade = nextUpgrade
 	// Reserve bootstrap declaration and floor together with the app floor. An
 	// omitted input never clears a retained or partially published declaration.
 	s.BrokerBootstrap = nextBootstrap
@@ -432,7 +450,7 @@ func publishBatch(directory, assets string, selection, policy []byte, selectionS
 			return 0, e
 		}
 	}
-	for _, entry := range bootstrapCopies {
+	for _, entry := range append(bootstrapCopies, upgradeCopies...) {
 		if e = copyArtifact(entry.source, entry.dest, entry.artifact); e != nil {
 			return 0, e
 		}
@@ -467,6 +485,9 @@ func publishBatch(directory, assets string, selection, policy []byte, selectionS
 		bt.Custom = &identity
 		targets.Signed.Targets[bootstrapTargetPath] = bt
 	}
+	if e = addCodeUpgradeTarget(targets, upgradePolicy, nextUpgrade); e != nil {
+		return 0, e
+	}
 	targetBytes, e := sign(targets, keys["targets"])
 	if e != nil {
 		return 0, e
@@ -494,6 +515,9 @@ func publishBatch(directory, assets string, selection, policy []byte, selectionS
 		if e = atomic(name, nextBootstrap.Policy, false); e != nil {
 			return 0, e
 		}
+	}
+	if e = writeCodeUpgradeTarget(directory, upgradePolicy, nextUpgrade); e != nil {
+		return 0, e
 	}
 	for _, file := range []struct {
 		name string
