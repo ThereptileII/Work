@@ -82,6 +82,16 @@ current native tool/environment reprobes. Verify the restored producer prefixes,
 headers, import libraries, runtime DLLs, source archives, notices and test evidence.
 A matching name or cache key cannot replace those checks.
 
+The application job authenticates the selected SDK immediately after checkout,
+then runs the existing read-only bundle verification before installing MSYS2 or
+preparing upstream sources. Exact hosted image, Python, workspace, source/ABI and
+payload checks fail before dependency or application compilation. The later
+restore and fresh native tool reprobes still run in that same application job.
+An image mismatch requires an explicit selection/dispatch decision; it never
+triggers a cold fallback or automatic retry. The lock selects producer run
+`38552041879`, attempt `1`, artifact `11890887394`, whose original job and bundle
+both record image `20261004.326.1`; this selection does not qualify a newer image.
+
 Reject mismatched, missing, expired, tampered or relocated inputs. Select or build
 a valid SDK explicitly rather than silently accepting partial restoration.
 Keep same-job fixture-success receipts separate from cross-run SDK provenance.

@@ -322,6 +322,33 @@ class WorkflowPolicy(unittest.TestCase):
             with self.subTest(workflow=path.name):
                 yaml.load(path.read_text(), Loader=StrictLoader)
 
+    def test_sdk_preflight_stops_before_native_setup_in_the_build_job(self):
+        steps = workflow('opennav-baseline.yml')['jobs']['windows-integration']['steps']
+        self.assertTrue(steps[0]['uses'].startswith('actions/checkout@'))
+        authenticate, verify = steps[1:3]
+        self.assertIn('fetch_ci_inputs.py dependencies --selection ', authenticate['run'])
+        self.assertEqual(verify['run'],
+                         'python opennav-x/tools/windows_dependency_bundle.py verify '
+                         '--root opennav-x --bundle dependency-bundle '
+                         '--provenance dependency-provenance.json')
+        for step in (authenticate, verify):
+            self.assertNotIn('if', step)
+            self.assertFalse(step.get('continue-on-error', False))
+        commands = [step.get('run', '') for step in steps]
+        self.assertEqual(sum('fetch_ci_inputs.py dependencies ' in text for text in commands), 1)
+        native_setup = next(i for i, step in enumerate(steps)
+                            if step.get('uses', '').startswith('msys2/setup-msys2@'))
+        restore = next(i for i, text in enumerate(commands)
+                       if 'windows_dependency_bundle.py restore ' in text)
+        ais = next(i for i, text in enumerate(commands)
+                   if 'test-ais-runtime-windows.py --dependency-bundle ' in text)
+        compile_app = next(i for i, text in enumerate(commands)
+                           if 'build-pristine-windows.ps1' in text)
+        self.assertLess(2, native_setup)
+        self.assertLess(native_setup, restore)
+        self.assertLess(restore, ais)
+        self.assertLess(ais, compile_app)
+
     def test_updater_reuses_same_run_verified_native_package(self):
         data = workflow('opennav-baseline.yml')
         job = data['jobs']['windows-integration']

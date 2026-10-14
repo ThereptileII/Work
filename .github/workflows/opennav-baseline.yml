@@ -604,6 +604,12 @@ jobs:
       producer_attempt: ${{ steps.identity.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Authenticate immutable producer dependencies
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+      - name: Verify immutable SDK image, Python and source before native setup
+        run: python opennav-x/tools/windows_dependency_bundle.py verify --root opennav-x --bundle dependency-bundle --provenance dependency-provenance.json
       - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
         shell: pwsh
         run: |
@@ -632,10 +638,6 @@ jobs:
         run: |
           git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Authenticate immutable producer dependencies
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
       - name: Prepare authenticated AIS inputs before application compilation
         run: |
           python opennav-x/tools/prepare-integration.py
