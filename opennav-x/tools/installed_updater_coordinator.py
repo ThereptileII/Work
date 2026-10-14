@@ -16,6 +16,7 @@ from pathlib import Path
 import installed_updater_approval as binding
 import installed_updater_approval_http as http
 import installed_updater_approval_transport as transport
+import installed_updater_approval_rendezvous as rendezvous
 import installed_updater_journey as journey
 
 FAILURE = 'Installed updater coordinator refused; preserve original state and evidence.'
@@ -229,7 +230,7 @@ class Coordinator:
     def __init__(self, *, source, bind_arguments, initial, phases, output, handoff,
                  consumer, reads, cancelled=lambda: False,
                  utcnow=lambda: datetime.now(timezone.utc)):
-        require(type(source) is transport.ApprovalSource and callable(handoff) and
+        require(type(source) in (transport.ApprovalSource, rendezvous.TrustedStatusLocator) and callable(handoff) and
                 type(consumer) is NativeConsumption and type(reads) is http.GitHubReads)
         self.source, self.arguments = source, deepcopy(bind_arguments)
         self.initial, self.phases = deepcopy(initial), deepcopy(phases)
@@ -242,6 +243,14 @@ class Coordinator:
         require(not self.attempted)
         self.attempted = True
         owner = None
+        deadline = time.monotonic() + 3600
+        request = binding._request(self.arguments['request_bytes'])
+        def remaining():
+            value = min(deadline - time.monotonic(),
+                        (request.expires_at - binding._clock(self.utcnow())).total_seconds())
+            require(not self.cancelled() and request.created_at <= self.utcnow() and value > 0)
+            return value
+        resolved = None
         try:
             require(not self.cancelled())
             # Keep the actual account and original deny-write executable owner
@@ -250,7 +259,13 @@ class Coordinator:
             require(owner.sid == self.initial['request']['clientSid'])
             profile = owner.profile()
             self.consumer.pin(owner)
-            approval = transport.receive_approval(source=self.source,
+            source = self.source
+            if type(source) is rendezvous.TrustedStatusLocator:
+                resolved = rendezvous.resolve_source(locator=source, request=request,
+                    read_api=self.reads.read_api, timeout_seconds=remaining(),
+                    cancelled=self.cancelled, utcnow=self.utcnow, check=self.consumer.check)
+                source = resolved.source
+            approval = transport.receive_approval(source=source, timeout_seconds=remaining(),
                 read_api=self.reads.read_api, download_archive=self.reads.download_archive,
                 bind_arguments=self.arguments, cancelled=self.cancelled, utcnow=self.utcnow)
             self.consumer.check()
@@ -258,6 +273,16 @@ class Coordinator:
             require(owner.actual_sid() == owner.sid and
                     journey.phase.profile_preserved(profile, owner.profile()) and not self.cancelled())
             approval = _rebind(approval, self.arguments, self.utcnow())
+            if resolved is not None:
+                rendezvous.resolve_source(locator=self.source, request=request,
+                    read_api=self.reads.read_api, timeout_seconds=remaining(),
+                    cancelled=self.cancelled, utcnow=self.utcnow, check=self.consumer.check,
+                    expected=resolved)
+            remaining()
+            # A paginated status recheck may consume time from the shorter
+            # independent approval lifetime as well as the request deadline.
+            approval = _rebind(approval, self.arguments, self.utcnow())
+            self.consumer.check()
             self.consumer.consume(consumption_record(approval))
             # Expiration/cancellation after consumption permanently refuses this
             # attempt. Never turn an uncertain native effect into another call.

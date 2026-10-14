@@ -145,6 +145,86 @@ class CoordinatorTests(unittest.TestCase):
                 self.consumer.consume.assert_called_once()
                 coordinator.journey.run_joined.assert_called_once()
 
+    def deferred(self):
+        c = self.make()
+        c.source = coordinator.rendezvous.TrustedStatusLocator('88', '9' * 40, '10', '10')
+        request = coordinator.binding._request(c.arguments['request_bytes'])
+        status = dict(id=900, context=coordinator.rendezvous.status_context(request), state='success',
+            creator=dict(id=88), created_at='2026-10-13T12:01:40Z', updated_at='2026-10-13T12:01:40Z',
+            target_url=coordinator.rendezvous.source_target_url(self.f.source))
+        old = self.reads.read_api
+        self.status_calls = 0
+        def read(endpoint, **kwargs):
+            self.assertTrue(self.consumer.pin.called, 'source resolved before native READY')
+            if '/statuses?' in endpoint:
+                self.status_calls += 1
+                return [deepcopy(status)]
+            return old(endpoint, **kwargs)
+        self.reads.read_api = read
+        return c, status
+
+    def test_deferred_locator_resolves_inside_ready_owner_and_rechecks_before_consume(self):
+        c, _ = self.deferred()
+        def consume(_):
+            self.assertEqual(self.status_calls, 2)
+            self.owner.close.assert_not_called()
+            self.consumer.close.assert_not_called()
+        self.consumer.consume.side_effect = consume
+        self.assertEqual(c.run(), {'state': 'observed'})
+        self.assertEqual(self.status_calls, 2)
+        self.owner.close.assert_called_once()
+        self.consumer.close.assert_called_once()
+
+    def test_changed_status_after_authenticated_download_prevents_consumption(self):
+        c, status = self.deferred()
+        old = self.reads.download_archive
+        def download(*args, **kwargs):
+            result = old(*args, **kwargs)
+            status['id'] = 901
+            return result
+        self.reads.download_archive = download
+        with self.assertRaises(ValueError): c.run()
+        self.consumer.consume.assert_not_called()
+        coordinator.journey.run_joined.assert_not_called()
+        self.owner.close.assert_called_once()
+        self.consumer.close.assert_called_once()
+
+    def test_locator_time_counts_against_same_overall_receiver_budget(self):
+        c, _ = self.deferred()
+        tick = [0]
+        old = self.reads.read_api
+        def read(*args, **kwargs):
+            result = old(*args, **kwargs)
+            if '/statuses?' in args[0]: tick[0] = 300
+            return result
+        self.reads.read_api = read
+        original = coordinator.transport.receive_approval
+        with patch.object(coordinator.time, 'monotonic', side_effect=lambda: tick[0]), \
+             patch.object(coordinator.transport, 'receive_approval', wraps=original) as receive:
+            c.run()
+            self.assertEqual(receive.call_args.kwargs['timeout_seconds'], 3300)
+
+    def test_approval_expiry_during_status_recheck_prevents_native_effect(self):
+        c, _ = self.deferred()
+        old = self.reads.read_api
+        def read(*args, **kwargs):
+            result = old(*args, **kwargs)
+            if self.status_calls == 2:
+                self.now += timedelta(minutes=30)
+            return result
+        self.reads.read_api = read
+        with self.assertRaises(ValueError): c.run()
+        self.consumer.consume.assert_not_called()
+        coordinator.journey.run_joined.assert_not_called()
+
+    def test_original_native_owner_loss_during_locator_refuses_before_download(self):
+        c, _ = self.deferred()
+        self.consumer.check.side_effect = ValueError('original child lost')
+        with self.assertRaises(ValueError): c.run()
+        self.assertEqual(self.f.downloads, [])
+        self.consumer.consume.assert_not_called()
+        self.owner.close.assert_called_once()
+
 
 class OriginalBytesTests(unittest.TestCase):
     def test_exact_approved_originals_and_changed_file_refusal(self):

@@ -381,3 +381,49 @@ publishes, retries, creates approval or consumes a challenge.
 Socketpair fixtures test actual HTTP framing, resource limits and composition
 with the original approval transport. They replace the connection function, so
 they do not qualify a live TLS handshake, GitHub transfer or native enrollment.
+
+## Fixed operator-authored status rendezvous
+
+The independently authenticated external channel may now be one explicitly
+preauthorized GitHub commit-status locator. This is an extension of the channel
+contract, not permission to discover expected pins from artifact names. The
+operator must independently review the original pending request and records,
+authorize the existing producer, then post the exact complete `ApprovalSource`
+descriptor. Neither this reader nor its serialization helper grants approval.
+
+`installed_updater_approval_rendezvous.TrustedStatusLocator` requires four
+independently supplied values: numeric status creator ID, reviewed producer
+commit, numeric producer actor ID and numeric triggering actor ID. There are no
+current-actor/repository-owner defaults. Repository and producer workflow remain
+fixed to `ThereptileII/Work` and the existing approval workflow. Repository write
+access alone does not establish that the user is an authorized operator.
+
+The exact pending harness commit is the status endpoint. `status_context(request)`
+derives a lowercase context from the original runner tuple, challenge and complete
+request digest. The authorized operator posts exactly one success status after
+request production, with `target_url=source_target_url(approved_source)`. That
+helper only serializes an already approved descriptor. Its fixed GitHub actions
+run URL fragment contains canonical base64url descriptor bytes; no URL is followed.
+The independently supplied descriptor carries the exact artifact ID/digest/size;
+no artifact listing or matching-name inference is permitted. Existing producer,
+job, actor, original-record and archive authentication remains unchanged.
+
+Only the exact commit-status listing endpoint is allowed, with 100 entries per
+page and at most five pages. Each HTTP response remains bounded to 256 KiB and
+thirty seconds or the remaining deadline. A complete terminal page is required
+before accepting a match. Foreign creators, case variants, changed timestamps,
+malformed descriptors, multiple matching attestations, missing recheck records,
+partial pagination and bounds/expiry/cancellation failures refuse. The original
+attestation ID/context/creator/state/timestamps/URL is rechecked before native
+consumption; a replacement is never accepted. Mutable avatar/profile fields are
+not authorization fields. Unrelated status contexts confer no authority.
+
+The receiver needs only actions-read and commit-statuses-read permissions, never
+status-write, workflow-dispatch, signing keys or a new signing secret. Actual
+status creation stays with the independently authorized operator. GitHub's
+[status API](https://docs.github.com/en/rest/commits/statuses) documents URL/context
+fields, creator identities and separate read/write permissions. The implementation
+bounds contexts below 100 characters and target URLs to 2048 ASCII characters.
+The documented API has no stated URL length/fragment restriction; live acceptance
+of the chosen descriptor URL has not been exercised by these read-only/portable
+checks and must not be inferred from them.

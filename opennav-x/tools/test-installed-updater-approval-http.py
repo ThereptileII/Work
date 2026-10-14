@@ -92,6 +92,26 @@ class HttpTests(unittest.TestCase):
         self.assertIn(b'Authorization: Bearer fixture-token\r\n', request)
         self.assertIn(b'Accept-Encoding: identity\r\n', request)
 
+    def test_only_fixed_status_endpoint_accepts_bounded_top_level_list(self):
+        endpoint = 'repos/ThereptileII/Work/commits/' + 'a' * 40 + '/statuses?per_page=100&page=1'
+        with self.connection(lambda *args: reply(b'[{"context":"fixed"}]')):
+            self.assertEqual(self.reads.read_api(endpoint, timeout_seconds=1, max_bytes=1024), [{'context': 'fixed'}])
+        for path, raw in ((ENDPOINT, b'[]'), (endpoint, b'{}'),
+                          (endpoint, json.dumps([{}] * 101).encode())):
+            with self.subTest(path=path, body=raw[:10]):
+                with self.connection(lambda *args: reply(raw)):
+                    with self.assertRaises(ValueError):
+                        self.reads.read_api(path, timeout_seconds=1, max_bytes=4096)
+
+    def test_status_locator_endpoint_has_no_repository_ref_or_pagination_escape(self):
+        endpoint = 'repos/ThereptileII/Work/commits/' + 'a' * 40 + '/statuses?per_page=100&page=1'
+        for path in (endpoint.replace('page=1', 'page=0'), endpoint.replace('&page=1', '&page=6'),
+                     endpoint.replace('a' * 40, 'main'), endpoint.replace('ThereptileII/Work', 'other/repo'),
+                     endpoint + '&extra=1', endpoint.replace('per_page=100', 'per_page=50')):
+            with self.subTest(path=path), patch.object(client, '_connect') as connect:
+                with self.assertRaises(ValueError): self.reads.read_api(path, timeout_seconds=1, max_bytes=1024)
+                connect.assert_not_called()
+
     def test_receive_approval_composes_existing_original_binding_over_http(self):
         f = fixture.TransportTests()
         f.setUp()

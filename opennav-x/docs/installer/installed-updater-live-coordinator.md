@@ -66,3 +66,45 @@ Windows qualification must execute the real same-object ReOpenFile streaming
 adapter against the native helper, including READY, EOF-without-effect, exact
 consumption and permanent replay refusal. Linux fd-based inert fixtures prove
 composition only and are not that native adapter evidence.
+
+## Deferred external source resolution
+
+The existing `source=ApprovalSource(...)` API is unchanged. Alternatively pass an
+explicit trusted locator; resolution occurs only after the same original native
+consumer emits READY, while the original account/profile observer, helper image
+and protected parent remain retained. It never begins a different job/process or
+reopens another parent to continue approval. One overall hour includes native
+READY, locator wait, approval transport and final locator recheck, additionally
+bounded by original request expiry. Approval expiry is checked again after the
+status recheck and immediately before consumption.
+
+Example for the future callable CLI (no CLI/workflow is added by this increment):
+
+```python
+from installed_updater_approval_rendezvous import TrustedStatusLocator
+
+run_live(
+    source=TrustedStatusLocator(
+        status_creator_id=authorized_operator_id,
+        producer_commit=independently_reviewed_producer_commit,
+        producer_actor_id=authorized_producer_actor_id,
+        producer_triggering_actor_id=authorized_triggering_actor_id,
+    ),
+    bind_arguments=original_pending_binding_arguments,
+    initial=prepared_initial_declaration,
+    phases=prepared_phase_declaration,
+    output=fresh_journey_result_path,
+    handoff=existing_authorized_phase_handoff,
+    read_only_token=explicit_read_only_token,
+    consumer_executable=original_native_qualification_executable,
+    consumer_sha256=independently_authenticated_consumer_sha256,
+    qualification_parent=original_protected_qualification_parent,
+    consumption_receipt=separate_absent_receipt_path,
+)
+```
+
+The operator independently computes `status_context(original_request)` and
+`source_target_url(independently_approved_source)` using the same module. These
+functions format observations/data, never approve or post them. No producer or
+artifact-name discovery, approval authoring, publication, connectivity mutation,
+profile preparation or automatic execution retry is introduced.

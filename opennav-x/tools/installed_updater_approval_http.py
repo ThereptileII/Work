@@ -31,6 +31,7 @@ BASE = 'repos/' + transport.binding.REPOSITORY + '/actions/'
 ID = r'[1-9][0-9]{0,19}'
 API_PATH = re.compile(re.escape(BASE) + rf'(?:runs/{ID}/attempts/{ID}(?:/jobs\?per_page=100&page=1)?|artifacts/{ID})')
 ZIP_PATH = re.compile(re.escape(BASE) + rf'artifacts/{ID}/zip')
+STATUS_PATH = re.compile(r'repos/ThereptileII/Work/commits/[a-f0-9]{40}/statuses\?per_page=100&page=[1-5]')
 MAX_OVERHEAD = 64 << 10
 # A stuck OS DNS resolver may outlive its caller. Only one exists process-wide;
 # later calls time out waiting for this slot rather than accumulating threads.
@@ -282,13 +283,13 @@ class GitHubReads:
 
     def read_api(self, endpoint, *, timeout_seconds, max_bytes):
         try:
-            require(type(endpoint) is str and API_PATH.fullmatch(endpoint))
+            require(type(endpoint) is str and (API_PATH.fullmatch(endpoint) or STATUS_PATH.fullmatch(endpoint)))
             require(type(max_bytes) is int and 0 < max_bytes <= transport.MAX_API_BYTES)
             deadline = _Deadline(timeout_seconds)
             raw = _get('api.github.com', '/' + endpoint, self._headers, deadline, max_bytes)
             result = json.loads(raw.decode('utf-8'), object_pairs_hook=_pairs,
                                 parse_constant=_invalid_constant, parse_float=_finite_float)
-            require(type(result) is dict)
+            require(type(result) is list and len(result) <= 100 if STATUS_PATH.fullmatch(endpoint) else type(result) is dict)
             deadline.remaining()
             return result
         except (OSError, ValueError, http.client.HTTPException, RecursionError, OverflowError):
