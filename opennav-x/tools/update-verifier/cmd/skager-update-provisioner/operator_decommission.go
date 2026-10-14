@@ -10,10 +10,12 @@ import (
 	"flag"
 	"io"
 	"strings"
+	"time"
 
 	"example.com/opennav-update-verifier/brokerenroll"
 	"example.com/opennav-update-verifier/brokerpipe"
 	"example.com/opennav-update-verifier/brokerregistration"
+	"example.com/opennav-update-verifier/launcher"
 )
 
 const decommissionService = "decommission-service"
@@ -29,17 +31,20 @@ type decommissionOwner interface {
 	BindDecommission(context.Context, *brokerpipe.DecommissionWitness) error
 	BindStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error
 	PrepareStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error
+	RestoreStartupAndDrain(context.Context, *brokerpipe.UninstallFenceWitness) error
 	Decommission(context.Context) (brokerenroll.DecommissionResult, error)
 	Close() error
 }
 
 type decommissionOpener func(context.Context, brokerenroll.MaintenanceRequest) (decommissionOwner, error)
 type decommissionCaller func(context.Context, brokerpipe.MaintenanceRequest) (*brokerpipe.DecommissionWitness, error)
+type protectedUninstallCaller func(context.Context, brokerpipe.MaintenanceRequest, func(context.Context, *brokerpipe.UninstallFenceWitness) error) (*brokerpipe.DecommissionWitness, error)
 type startupPublicationParser func([]byte, string, []byte, string) (*brokerenroll.ApprovedStartupPublication, error)
 
 type decommissionOperations struct {
 	parse        startupPublicationParser
 	closeWitness func(*brokerpipe.DecommissionWitness) error
+	uninstall    protectedUninstallCaller
 }
 
 func openDecommissionNative(ctx context.Context, request brokerenroll.MaintenanceRequest) (decommissionOwner, error) {
@@ -68,7 +73,8 @@ func decommissionRequested(args []string) bool {
 // The native witness is never reconstructed from JSON.
 func runDecommission(ctx context.Context, args []string, read func(string) ([]byte, error), open decommissionOpener, call decommissionCaller, output io.Writer) (resultErr error) {
 	return runDecommissionWith(ctx, args, read, open, call, output, decommissionOperations{
-		parse: brokerenroll.ParseApprovedStartupPublication,
+		parse:     brokerenroll.ParseApprovedStartupPublication,
+		uninstall: launcher.CallProtectedUninstallNative,
 		closeWitness: func(witness *brokerpipe.DecommissionWitness) error {
 			return witness.Close()
 		},
@@ -125,6 +131,17 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if *action == uninstallProtected && !hasPublication {
 		return refused
 	}
+	if *action == uninstallProtected && op.uninstall == nil {
+		return refused
+	}
+	if *action == uninstallProtected {
+		// Keep one bounded context alive through preparation, the callback,
+		// final witness binding and the last SCM effect. The final native
+		// witness must not inherit an already-cancelled nested call context.
+		var cancel context.CancelFunc
+		ctx, cancel = context.WithTimeout(ctx, 90*time.Second)
+		defer cancel()
+	}
 	if hasPublication && (!seen["original-startup-publication"] || !seen["original-startup-publication-sha256"] || *publicationPath == "" || !pin(*publicationSHA)) {
 		return refused
 	}
@@ -173,8 +190,16 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if *action == uninstallProtected {
 		operation = brokerpipe.PrepareUninstall
 	}
-	witness, err := call(ctx, brokerpipe.MaintenanceRequest{Schema: 1, Operation: operation,
-		RequestID: *requestID, ExpectedSelectedHeadSHA256: *head})
+	request := brokerpipe.MaintenanceRequest{Schema: 1, Operation: operation, RequestID: *requestID, ExpectedSelectedHeadSHA256: *head}
+	var witness *brokerpipe.DecommissionWitness
+	if *action == uninstallProtected {
+		// One original conversation publishes the terminal fence, synchronously
+		// restores/drains original startup owners, then returns completed native
+		// retirement. No service-only fallback or second broker call is allowed.
+		witness, err = op.uninstall(ctx, request, owner.RestoreStartupAndDrain)
+	} else {
+		witness, err = call(ctx, request)
+	}
 	if witness != nil {
 		defer func() { resultErr = errors.Join(resultErr, op.closeWitness(witness)) }()
 	}

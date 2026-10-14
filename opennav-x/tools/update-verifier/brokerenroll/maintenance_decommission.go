@@ -55,7 +55,7 @@ func OpenDecommissionMaintenance(ctx context.Context, req MaintenanceRequest) (*
 // asserted success cannot construct a witness.
 func (m *MaintenanceOwner) BindDecommission(ctx context.Context, witness *brokerpipe.DecommissionWitness) error {
 	if witness == nil {
-		return errors.New("original native broker decommission witness required")
+		return bindDecommissionSnapshotWith(m, ctx, nil, "", "", nil)
 	}
 	snapshot := witness.Snapshot()
 	if err := bindDecommissionSnapshotWith(m, ctx, witness, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
@@ -89,6 +89,11 @@ func bindDecommissionSnapshotWith(m *MaintenanceOwner, ctx context.Context, fenc
 	}
 	m.mu.Lock()
 	defer m.mu.Unlock()
+	defer func() {
+		if resultErr != nil && m.startupPrepared {
+			m.failed = true
+		}
+	}()
 	if !m.decommission || m.closed || m.failed || m.fence != nil || m.disableAttempted || fence == nil {
 		return errors.New("fresh original decommission fence binding required")
 	}
@@ -121,8 +126,13 @@ func bindDecommissionSnapshotWith(m *MaintenanceOwner, ctx context.Context, fenc
 	}
 	if m.startupPrepared {
 		prepared, ok := m.startup.(preparedStartupRestorationBackend)
-		if !ok || snapshot == nil || !validPin(snapshot.RetirementSHA256) || snapshot.Generation != m.authority.client.Installed.Generation {
-			return errors.New("original baseline retirement witness required for prepared startup")
+		if !ok || !m.startupRestored || !m.startupDrained || m.startupFenceSnapshot == nil || snapshot == nil || !validPin(snapshot.RetirementSHA256) {
+			return errors.New("restored and drained original baseline retirement witness required")
+		}
+		comparison := *snapshot
+		comparison.RetirementSHA256 = ""
+		if comparison != *m.startupFenceSnapshot {
+			return errors.New("final retirement differs from original interim fence conversation")
 		}
 		if err := prepared.bindRetirement(ctx, *snapshot); err != nil {
 			return err
@@ -180,10 +190,17 @@ func (m *MaintenanceOwner) Decommission(ctx context.Context) (result Decommissio
 		if err := m.startup.check(ctx); err != nil {
 			return result, err
 		}
-		// Restoration may have durable effects even when its call returns an error.
-		m.dispatched = true
-		if err := m.startup.restore(ctx, m.startupGuard); err != nil {
-			return result, err
+		if m.startupPrepared {
+			if !m.startupRestored || !m.startupDrained {
+				return result, errors.New("prepared original startup restoration and drain incomplete")
+			}
+		} else {
+			// Service-only optional restoration keeps its original live-fence
+			// sequence. Protected uninstall already restored before tree rename.
+			m.dispatched = true
+			if err := m.startup.restore(ctx, m.startupGuard); err != nil {
+				return result, err
+			}
 		}
 		if err := m.startup.check(ctx); err != nil {
 			return result, err

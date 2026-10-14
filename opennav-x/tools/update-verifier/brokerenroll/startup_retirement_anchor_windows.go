@@ -12,17 +12,19 @@ import (
 )
 
 // This private reader holds the original generation/app/launcher BEFORE the
-// broker's one retirement call. Delete sharing permits that broker's retained
-// DELETE owner to rename the tree; no write/delete access is granted here.
+// broker's one retirement call. Delete sharing permits acquisition of the
+// broker's DELETE owner. Descendant handles must drain before tree rename;
+// the original root remains held. No write/delete access is granted here.
 // Ordinary enrollment pins keep their existing, immovable policy.
 type startupRetirementAnchor struct {
-	parent                *enrollmentPin // borrowed fixed generations parent
-	generation            string
-	launcher              startupFileBinding
-	pins                  [3]*enrollmentPin
-	dos                   [3]string
-	bound, failed, closed bool
-	closeErr              error
+	parent                  *enrollmentPin // borrowed fixed generations parent
+	generation              string
+	launcher                startupFileBinding
+	pins                    [3]*enrollmentPin
+	dos                     [3]string
+	bound, failed, closed   bool
+	drainAttempted, drained bool
+	closeErr                error
 }
 
 func startupRetirementID(value string) bool {
@@ -129,6 +131,12 @@ func (a *startupRetirementAnchor) checkPins(ctx context.Context, pins [3]*enroll
 		return err
 	}
 	for i, pin := range pins {
+		if a.drained && i > 0 {
+			if pin != nil {
+				return errors.New("drained original startup descendants remain held")
+			}
+			continue
+		}
 		if pin == nil {
 			return errors.New("complete original startup anchor required")
 		}
@@ -136,9 +144,11 @@ func (a *startupRetirementAnchor) checkPins(ctx context.Context, pins [3]*enroll
 			return err
 		}
 	}
-	image, err := startupFileIdentity(ctx, pins[2], a.launcher.SHA256)
-	if err != nil || image != a.launcher {
-		return errors.Join(errors.New("original startup launcher identity differs"), err)
+	if !a.drained {
+		image, err := startupFileIdentity(ctx, pins[2], a.launcher.SHA256)
+		if err != nil || image != a.launcher {
+			return errors.Join(errors.New("original startup launcher identity differs"), err)
+		}
 	}
 	return errors.Join(a.parent.check(), ctx.Err())
 }
@@ -154,12 +164,50 @@ func (a *startupRetirementAnchor) check(ctx context.Context) error {
 	return nil
 }
 
+// drain closes only the original app/launcher descendants after their last
+// full identity/hash check. The original root and parent stay held throughout.
+func (a *startupRetirementAnchor) drain(ctx context.Context, guard func(context.Context) error) (resultErr error) {
+	if a == nil || a.closed || a.failed || a.bound || a.drainAttempted || guard == nil {
+		return errors.New("fresh original startup descendant drain required")
+	}
+	a.drainAttempted = true
+	defer func() {
+		if resultErr != nil {
+			a.failed = true
+		}
+	}()
+	if err := errors.Join(guard(ctx), a.check(ctx)); err != nil {
+		return err
+	}
+	for i := len(a.pins) - 1; i > 0; i-- {
+		if err := errors.Join(ctx.Err(), guard(ctx), a.parent.check(), startupAnchorAlias(a.pins[0], a.dos[0])); err != nil {
+			return err
+		}
+		if a.pins[i] == nil {
+			return errors.New("original startup descendant missing before drain")
+		}
+		if err := a.pins[i].check(); err != nil {
+			return err
+		}
+		if err := enrollmentCleanup(windows.CloseHandle(a.pins[i].handle)); err != nil {
+			return err
+		}
+		a.pins[i] = nil
+		if err := errors.Join(ctx.Err(), guard(ctx), a.parent.check(), startupAnchorAlias(a.pins[0], a.dos[0])); err != nil {
+			return err
+		}
+	}
+	a.drained = true
+	return errors.Join(guard(ctx), a.check(ctx))
+}
+
 // Called only after MaintenanceOwner has checked its sealed native uninstall
 // witness against the SAME original broker process and approved registration.
 // There is no path fallback or existing retirement receipt import. Rebind only
-// the original handles; alias opens corroborate them and never supply bytes.
+// the original ROOT; its alias open corroborates it and never supplies bytes.
+// Drained descendants are neither reopened nor adopted at the retired path.
 func (a *startupRetirementAnchor) bind(ctx context.Context, snapshot brokerpipe.DecommissionSnapshot) (resultErr error) {
-	if a == nil || a.closed || a.failed || a.bound || a.parent == nil {
+	if a == nil || a.closed || a.failed || a.bound || !a.drained || a.parent == nil {
 		return errors.New("fresh original startup retirement binding required")
 	}
 	defer func() {
@@ -174,35 +222,22 @@ func (a *startupRetirementAnchor) bind(ctx context.Context, snapshot brokerpipe.
 	// selected alternative can choose this destination.
 	name := "retired-" + snapshot.RequestID + "-" + a.generation
 	physical, dos := a.parent.physical+`\`+name, filepath.Join(a.parent.dos, name)
-	var rebound [3]*enrollmentPin
-	var aliases [3]string
-	for i, suffix := range []string{"", "app", "skager-start.exe"} {
-		if suffix != "" {
-			physical += `\` + suffix
-			dos = filepath.Join(dos, suffix)
-		}
-		if a.pins[i] == nil {
-			return errors.New("original startup anchor missing")
-		}
-		pin := *a.pins[i]
-		pin.physical = physical
-		if i == 0 {
-			info, id, err := enrollmentInfo(pin.handle)
-			if err != nil || id != pin.id {
-				return errors.Join(errors.New("retired original generation identity differs"), err)
-			}
-			// Only the renamed root can tunnel creation time. Descendant directory
-			// and launcher creation times remain their original exact baselines.
-			pin.info.CreationTime = info.CreationTime
-		}
-		rebound[i], aliases[i] = &pin, dos
+	if a.pins[0] == nil || a.pins[1] != nil || a.pins[2] != nil {
+		return errors.New("same original root and drained descendants required")
 	}
+	pin := *a.pins[0]
+	pin.physical = physical
+	info, id, err := enrollmentInfo(pin.handle)
+	if err != nil || id != pin.id {
+		return errors.Join(errors.New("retired original generation identity differs"), err)
+	}
+	// Only the renamed root can tunnel creation time.
+	pin.info.CreationTime = info.CreationTime
+	rebound, aliases := [3]*enrollmentPin{&pin}, [3]string{dos}
 	if err := a.checkPins(ctx, rebound, aliases); err != nil {
 		return err
 	}
-	for i := range a.pins {
-		*a.pins[i] = *rebound[i]
-	}
+	*a.pins[0] = *rebound[0]
 	a.dos, a.bound = aliases, true
 	return nil
 }

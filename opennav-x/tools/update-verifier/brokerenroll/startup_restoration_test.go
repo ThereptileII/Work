@@ -24,6 +24,8 @@ type preparedRestorationFixture struct {
 	*startupRestorationFixture
 	bound, bindFault bool
 	binds            int
+	drains           int
+	drainFault       bool
 }
 
 func (s *preparedRestorationFixture) bindRetirement(context.Context, brokerpipe.DecommissionSnapshot) error {
@@ -36,10 +38,24 @@ func (s *preparedRestorationFixture) bindRetirement(context.Context, brokerpipe.
 	return nil
 }
 func (s *preparedRestorationFixture) restore(ctx context.Context, guard func(context.Context) error) error {
-	if !s.bound {
-		return errors.New("original retirement not bound")
+	if s.bound {
+		return errors.New("restoration cannot follow retirement binding")
 	}
 	return s.startupRestorationFixture.restore(ctx, guard)
+}
+func (s *preparedRestorationFixture) drain(ctx context.Context, guard func(context.Context) error) error {
+	if s.moves != 4 || s.drains != 0 {
+		return errors.New("original restoration incomplete or drain repeated")
+	}
+	s.drains++
+	s.d.events = append(s.d.events, "drain-startup")
+	if err := guard(ctx); err != nil {
+		return err
+	}
+	if s.drainFault {
+		return errors.New("original descendant close uncertain")
+	}
+	return ctx.Err()
 }
 
 func prepareRestorationFixture(t *testing.T, owner *MaintenanceOwner, fixture *preparedRestorationFixture) error {
@@ -61,10 +77,18 @@ func preparedRetirementSnapshot(t *testing.T, owner *MaintenanceOwner) brokerpip
 		t.Fatal(err)
 	}
 	return brokerpipe.DecommissionSnapshot{RequestID: strings.Repeat("1", 32), ClientSID: owner.authority.client.ClientSID,
-		RegistrationSHA256: digest(raw), Generation: owner.authority.client.Installed.Generation, RetirementSHA256: strings.Repeat("a", 64)}
+		RegistrationSHA256: digest(raw), Generation: owner.authority.client.Installed.Generation, RetirementSHA256: strings.Repeat("a", 64),
+		CompletionSHA256: strings.Repeat("b", 64), SelectedHeadSHA256: strings.Repeat("c", 64), CurrentProfileSHA256: strings.Repeat("d", 64),
+		CurrentProfileIdentitySHA256: strings.Repeat("e", 64), FenceSHA256: strings.Repeat("f", 64), SourcePID: owner.pid, SourceCreation: 42}
 }
 
-func TestPreparedStartupRequiresOriginalRetirementBeforeRestorationAndSCM(t *testing.T) {
+func restorePreparedFixture(t *testing.T, owner *MaintenanceOwner, snapshot brokerpipe.DecommissionSnapshot, events *[]string) error {
+	t.Helper()
+	snapshot.RetirementSHA256 = ""
+	return restoreStartupAndDrainWith(owner, context.Background(), &decommissionFenceFixture{events: events}, snapshot)
+}
+
+func TestPreparedStartupRestoresAndDrainsBeforeRetirementAndSCM(t *testing.T) {
 	d := newDecommissionFixture(t)
 	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
 	if err != nil {
@@ -83,10 +107,13 @@ func TestPreparedStartupRequiresOriginalRetirementBeforeRestorationAndSCM(t *tes
 	}
 	witness := &decommissionFenceFixture{events: &d.events}
 	snapshot := preparedRetirementSnapshot(t, owner)
+	if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
+		t.Fatal(err)
+	}
 	if err := bindDecommissionSnapshotWith(owner, context.Background(), witness, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
 		t.Fatal(err)
 	}
-	if s.binds != 1 || s.moves != 0 || d.disables != 0 || !owner.startupBound {
+	if s.binds != 1 || s.moves != 4 || s.drains != 1 || d.disables != 0 || !owner.startupBound {
 		t.Fatal("binding did not only finalize original startup custody")
 	}
 	if _, err := owner.Decommission(context.Background()); err != nil {
@@ -105,13 +132,13 @@ func TestPreparedStartupRequiresOriginalRetirementBeforeRestorationAndSCM(t *tes
 			disable = i
 		}
 	}
-	if prepared < 0 || bound <= prepared || lastMove <= bound || disable <= lastMove || s.binds != 1 || s.moves != 4 || s.closes != 1 {
+	if prepared < 0 || lastMove <= prepared || bound <= lastMove || disable <= bound || s.binds != 1 || s.moves != 4 || s.drains != 1 || s.closes != 1 {
 		t.Fatal("original prepared ownership or effect order lost", d.events)
 	}
 }
 
 func TestPreparedStartupRefusalsConsumeOwnerWithoutSCMOrFallback(t *testing.T) {
-	for _, fault := range []string{"no-snapshot", "service-only", "wrong-generation", "bind", "witness", "zero-native-witness", "no-preparation"} {
+	for _, fault := range []string{"no-snapshot", "service-only", "wrong-generation", "bind", "witness", "zero-native-witness", "no-preparation", "no-drain", "wrong-fence", "wrong-head", "wrong-process"} {
 		t.Run(fault, func(t *testing.T) {
 			d := newDecommissionFixture(t)
 			owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
@@ -127,6 +154,12 @@ func TestPreparedStartupRefusalsConsumeOwnerWithoutSCMOrFallback(t *testing.T) {
 			}
 			witness := &decommissionFenceFixture{events: &d.events}
 			snapshot := preparedRetirementSnapshot(t, owner)
+			if fault != "no-preparation" && fault != "no-drain" {
+				if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
+					t.Fatal(err)
+				}
+			}
+			movesBeforeBinding := s.moves
 			receipt := &snapshot
 			switch fault {
 			case "no-snapshot":
@@ -137,6 +170,12 @@ func TestPreparedStartupRefusalsConsumeOwnerWithoutSCMOrFallback(t *testing.T) {
 				snapshot.Generation = strings.Repeat("f", 32)
 			case "witness":
 				witness.failAt = 1
+			case "wrong-fence":
+				snapshot.FenceSHA256 = strings.Repeat("a", 64)
+			case "wrong-head":
+				snapshot.SelectedHeadSHA256 = strings.Repeat("b", 64)
+			case "wrong-process":
+				snapshot.SourceCreation++
 			}
 			if fault == "zero-native-witness" {
 				err = owner.BindDecommission(context.Background(), &brokerpipe.DecommissionWitness{})
@@ -146,7 +185,7 @@ func TestPreparedStartupRefusalsConsumeOwnerWithoutSCMOrFallback(t *testing.T) {
 			if err == nil {
 				t.Fatal("invalid prepared retirement bound")
 			}
-			if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || s.moves != 0 {
+			if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || s.moves != movesBeforeBinding {
 				t.Fatal("failed prepared binding bypassed by service-only decommission")
 			}
 			if err := bindRestorationFixture(t, owner, s.startupRestorationFixture); err == nil {
@@ -192,6 +231,95 @@ func TestPreparedStartupMissingOrChangedOriginalNeverAcquiresFence(t *testing.T)
 				t.Fatal("partial prepared owner not drained once")
 			}
 		})
+	}
+}
+
+func TestPreparedStartupInterimRestoreDrainFaultsNeverReachSCMOrRetry(t *testing.T) {
+	for _, fault := range []string{"nil-native", "zero-native", "wrong-registration", "wrong-process", "wrong-fence", "completed-interim", "witness", "partial-restoration", "descendant-close", "cancelled"} {
+		t.Run(fault, func(t *testing.T) {
+			d := newDecommissionFixture(t)
+			owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			defer owner.Close()
+			s := &preparedRestorationFixture{startupRestorationFixture: &startupRestorationFixture{d: d}, drainFault: fault == "descendant-close"}
+			if fault == "partial-restoration" {
+				s.failMove = 2
+			}
+			if err := prepareRestorationFixture(t, owner, s); err != nil {
+				t.Fatal(err)
+			}
+			final := preparedRetirementSnapshot(t, owner)
+			interim := final
+			interim.RetirementSHA256 = ""
+			fence := &decommissionFenceFixture{events: &d.events}
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			switch fault {
+			case "wrong-registration":
+				interim.RegistrationSHA256 = strings.Repeat("0", 64)
+			case "wrong-process":
+				interim.SourcePID++
+			case "wrong-fence":
+				interim.FenceSHA256 = ""
+			case "completed-interim":
+				interim.RetirementSHA256 = final.RetirementSHA256
+			case "witness":
+				fence.failAt = 1
+			case "cancelled":
+				cancel()
+			}
+			if fault == "nil-native" {
+				err = owner.RestoreStartupAndDrain(ctx, nil)
+			} else if fault == "zero-native" {
+				err = owner.RestoreStartupAndDrain(ctx, &brokerpipe.UninstallFenceWitness{})
+			} else {
+				err = restoreStartupAndDrainWith(owner, ctx, fence, interim)
+			}
+			if err == nil || !owner.failed || owner.startupDrained || d.disables != 0 || d.stops != 0 || d.deletes != 0 {
+				t.Fatal("failed original handoff reached service effects", err)
+			}
+			moves, drains := s.moves, s.drains
+			if fault == "partial-restoration" && (moves != 2 || drains != 0) || fault == "descendant-close" && (moves != 4 || drains != 1) {
+				t.Fatal("partial restoration/close failure evidence lost")
+			}
+			if err := restoreStartupAndDrainWith(owner, context.Background(), fence, interim); err == nil || s.moves != moves || s.drains != drains {
+				t.Fatal("failed startup handoff retried")
+			}
+			if err := bindDecommissionSnapshotWith(owner, context.Background(), &decommissionFenceFixture{events: &d.events}, final.ClientSID, final.RegistrationSHA256, &final); err == nil {
+				t.Fatal("final retirement adopted failed handoff")
+			}
+			if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || d.stops != 0 || d.deletes != 0 {
+				t.Fatal("failed handoff fell back to service-only")
+			}
+		})
+	}
+}
+
+func TestPreparedStartupDrainStillWithholdsSCMUntilFinalMatchingRetirement(t *testing.T) {
+	d := newDecommissionFixture(t)
+	owner, err := openMaintenanceModeWith(context.Background(), d.req, d.op, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	defer owner.Close()
+	s := &preparedRestorationFixture{startupRestorationFixture: &startupRestorationFixture{d: d}}
+	if err := prepareRestorationFixture(t, owner, s); err != nil {
+		t.Fatal(err)
+	}
+	snapshot := preparedRetirementSnapshot(t, owner)
+	if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || d.stops != 0 || d.deletes != 0 || owner.fence != nil {
+		t.Fatal("interim startup drain authorized SCM")
+	}
+	if err := bindDecommissionSnapshotWith(owner, context.Background(), &decommissionFenceFixture{events: &d.events}, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
+		t.Fatal(err)
+	}
+	if _, err := owner.Decommission(context.Background()); err != nil || s.moves != 4 || s.drains != 1 || d.disables != 1 || d.stops != 1 || d.deletes != 1 {
+		t.Fatal("same final retirement failed or repeated restoration", err)
 	}
 }
 

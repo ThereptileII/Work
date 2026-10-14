@@ -371,7 +371,7 @@ func startupRenameRestorationFile(ctx context.Context, file *startupRestorationF
 func (n *nativeStartupRestoration) restore(ctx context.Context, guard func(context.Context) error) error {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
-	if n == nil || n.attempted || guard == nil || n.anchor != nil && !n.anchor.bound {
+	if n == nil || n.attempted || guard == nil || n.anchor != nil && (n.anchor.bound || n.anchor.drained || n.anchor.failed) {
 		return errors.New("fresh original shortcut restoration required")
 	}
 	n.attempted = true
@@ -417,7 +417,7 @@ func (n *nativeStartupRestoration) close() error {
 }
 
 func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot brokerpipe.DecommissionSnapshot) error {
-	if n == nil || n.anchor == nil || n.attempted {
+	if n == nil || n.anchor == nil || !n.attempted || !n.anchor.drained || n.retired != [3]bool{true, true, true} || n.original != nil && !n.restored {
 		return errors.New("original prepared baseline startup custody required")
 	}
 	if snapshot.ClientSID != n.clientSID || snapshot.Generation != n.record.Generation {
@@ -425,6 +425,19 @@ func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot 
 		return errors.New("original prepared baseline startup binding differs")
 	}
 	if err := n.anchor.bind(ctx, snapshot); err != nil {
+		return err
+	}
+	return n.check(ctx)
+}
+
+func (n *nativeStartupRestoration) drain(ctx context.Context, guard func(context.Context) error) error {
+	if n == nil || n.anchor == nil || !n.attempted || n.retired != [3]bool{true, true, true} || n.original != nil && !n.restored {
+		return errors.New("completed original shortcut restoration required before descendant drain")
+	}
+	if err := n.check(ctx); err != nil {
+		return err
+	}
+	if err := n.anchor.drain(ctx, guard); err != nil {
 		return err
 	}
 	return n.check(ctx)

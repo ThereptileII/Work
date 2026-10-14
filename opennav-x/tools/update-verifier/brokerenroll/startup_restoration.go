@@ -6,6 +6,7 @@ import (
 	"errors"
 
 	"example.com/opennav-update-verifier/brokerpipe"
+	"example.com/opennav-update-verifier/brokerregistration"
 )
 
 // ErrStartupRestorationUncertain means a retained shortcut rename was attempted.
@@ -24,12 +25,14 @@ type startupRestorationOpener func(context.Context, maintenanceAuthority, startu
 type preparedStartupRestorationBackend interface {
 	startupRestorationBackend
 	bindRetirement(context.Context, brokerpipe.DecommissionSnapshot) error
+	drain(context.Context, func(context.Context) error) error
 }
 
 // PrepareStartupRestoration retains the ORIGINAL publication, links and launcher
 // before the broker can retire its generation. It grants no shortcut or SCM
-// mutation. Only BindDecommission's sealed uninstall witness can finalize the
-// same handles at their fixed retirement location. This is baseline-only.
+// mutation. RestoreStartupAndDrain restores while the original generation is
+// still present; BindDecommission then finalizes the same root at its fixed
+// retirement location. This is baseline-only.
 func (m *MaintenanceOwner) PrepareStartupRestoration(ctx context.Context, approved *ApprovedStartupPublication) error {
 	return prepareStartupRestorationWith(m, ctx, approved, prepareStartupRestorationNative)
 }
@@ -71,6 +74,89 @@ func prepareStartupRestorationWith(m *MaintenanceOwner, ctx context.Context, app
 		return errors.New("original move-aware startup backend required")
 	}
 	return errors.Join(m.startup.check(ctx), m.check(ctx))
+}
+
+// RestoreStartupAndDrain consumes the callback-scoped native terminal witness.
+// It restores the original shortcuts before closing only the original app and
+// launcher descendants. The original generation root, parent and all shortcut
+// recovery owners remain held for the broker's rename and final witness binding.
+// The interim witness cannot authorize SCM and is never retained after return.
+func (m *MaintenanceOwner) RestoreStartupAndDrain(ctx context.Context, witness *brokerpipe.UninstallFenceWitness) error {
+	if witness == nil {
+		return restoreStartupAndDrainWith(m, ctx, nil, brokerpipe.DecommissionSnapshot{})
+	}
+	return restoreStartupAndDrainWith(m, ctx, witness, witness.Snapshot())
+}
+
+type startupDrainFence interface {
+	Check(context.Context, uint32, uint64) error
+}
+
+func restoreStartupAndDrainWith(m *MaintenanceOwner, ctx context.Context, fence startupDrainFence, snapshot brokerpipe.DecommissionSnapshot) (resultErr error) {
+	if m == nil || m.self != m {
+		return errors.New("original decommission owner required")
+	}
+	m.mu.Lock()
+	defer m.mu.Unlock()
+	defer func() {
+		if resultErr != nil {
+			m.failed = true
+			if m.dispatched {
+				resultErr = errors.Join(ErrMaintenanceUncertain, resultErr)
+			}
+		}
+	}()
+	if !m.decommission || m.closed || m.failed || !m.startupPrepared || m.startupDrainAttempted || m.startupBound || m.fence != nil || m.disableAttempted || m.stopAttempted {
+		return errors.New("fresh prepared original startup drain required")
+	}
+	m.startupDrainAttempted = true
+	prepared, ok := m.startup.(preparedStartupRestorationBackend)
+	if !ok || fence == nil {
+		return errors.New("original prepared native startup drain witness required")
+	}
+	protected, err := brokerregistration.EncodeProtectedRecord(m.authority.client)
+	if err != nil || snapshot.ClientSID != m.authority.client.ClientSID || snapshot.RegistrationSHA256 != digest(protected) || snapshot.Generation != m.authority.client.Installed.Generation || !manualStartupRequestID(snapshot.RequestID) || !validPin(snapshot.FenceSHA256) || snapshot.RetirementSHA256 != "" {
+		return errors.Join(errors.New("interim original startup fence binding differs"), err)
+	}
+	birth, ok := m.process.(maintenanceProcessBirth)
+	if !ok || birth.birth() == 0 || snapshot.SourcePID != m.pid || snapshot.SourceCreation != birth.birth() {
+		return errors.New("interim original broker process binding differs")
+	}
+	guard := func(guardCtx context.Context) error {
+		if err := m.check(guardCtx); err != nil {
+			return err
+		}
+		return fence.Check(guardCtx, m.pid, birth.birth())
+	}
+	if err := errors.Join(guard(ctx), m.startup.check(ctx)); err != nil {
+		return err
+	}
+	m.startupFenceSnapshot = &snapshot
+	m.dispatched = true
+	if err := m.startup.restore(ctx, guard); err != nil {
+		return err
+	}
+	m.startupRestored = true
+	if err := errors.Join(guard(ctx), m.startup.check(ctx)); err != nil {
+		return err
+	}
+	if err := prepared.drain(ctx, guard); err != nil {
+		return err
+	}
+	m.startupDrained = true
+	return errors.Join(guard(ctx), m.startup.check(ctx))
+}
+
+func manualStartupRequestID(id string) bool {
+	if len(id) != 32 {
+		return false
+	}
+	for _, c := range id {
+		if !(c >= '0' && c <= '9' || c >= 'a' && c <= 'f') {
+			return false
+		}
+	}
+	return true
 }
 
 // BindStartupRestoration binds independently approved ORIGINAL publication

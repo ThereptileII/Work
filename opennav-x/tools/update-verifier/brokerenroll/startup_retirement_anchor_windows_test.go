@@ -24,7 +24,7 @@ func preparedRetirementSnapshotForNative(n *nativeStartupRestoration) brokerpipe
 // Exercise the real producer boundary: acquire a DELETE owner while the
 // consumer's original anchor is still open, then non-replacing native rename
 // relative to the SAME held parent. No executable, SCM or real profile is used.
-func retireStartupFixtureGeneration(t *testing.T, a *startupRetirementAnchor, requestID string) {
+func prepareStartupFixtureRetirement(t *testing.T, a *startupRetirementAnchor, requestID string) func() error {
 	t.Helper()
 	pointer, err := windows.UTF16PtrFromString(enrollmentPhysical(a.pins[0].physical))
 	if err != nil {
@@ -60,13 +60,14 @@ func retireStartupFixtureGeneration(t *testing.T, a *startupRetirementAnchor, re
 	header := (*renameInfo)(unsafe.Pointer(&buffer[0]))
 	header.RootDirectory, header.FileNameLength = a.parent.handle, uint32(2*len(component))
 	copy(unsafe.Slice((*uint16)(unsafe.Pointer(&buffer[offset])), len(component)), component)
-	var status windows.IO_STATUS_BLOCK
-	if err := windows.NtSetInformationFile(handle, &status, &buffer[0], uint32(len(buffer)), windows.FileRenameInformation); err != nil {
-		t.Fatal("original preflight anchor prevented native generation retirement", err)
+	return func() error {
+		var status windows.IO_STATUS_BLOCK
+		return windows.NtSetInformationFile(handle, &status, &buffer[0], uint32(len(buffer)), windows.FileRenameInformation)
 	}
 }
 
-func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
+func nativePreparedStartupMaintenanceFixture(t *testing.T) (*nativeStartupRestoration, *MaintenanceOwner, *decommissionFixture) {
+	t.Helper()
 	n, request := startupRestorationNativeFixtureMode(t, true)
 	ctx := context.Background()
 	// Only the existing fake SCM/process observation is substituted. Startup
@@ -90,7 +91,11 @@ func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
-	defer owner.Close()
+	t.Cleanup(func() {
+		if err := owner.Close(); err != nil {
+			t.Error(err)
+		}
+	})
 	approved, err := ParseApprovedStartupPublication(n.raw, digest(n.raw), request.OriginalBytes(), request.RequestSHA256)
 	if err != nil {
 		t.Fatal(err)
@@ -103,6 +108,12 @@ func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
 	}); err != nil {
 		t.Fatal(err)
 	}
+	return n, owner, d
+}
+
+func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
+	n, owner, d := nativePreparedStartupMaintenanceFixture(t)
+	ctx := context.Background()
 	var originalHandles [3]windows.Handle
 	var originalIDs [3]enrollmentFileID
 	for i, pin := range n.anchor.pins {
@@ -113,21 +124,39 @@ func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
 		t.Fatal(err)
 	}
 	snapshot := preparedRetirementSnapshot(t, owner)
-	retireStartupFixtureGeneration(t, n.anchor, snapshot.RequestID)
+	rename := prepareStartupFixtureRetirement(t, n.anchor, snapshot.RequestID)
+	// Keep the actual failed NTFS boundary as an assertion: descendants open
+	// with FILE_SHARE_DELETE still prevent rename of the original directory.
+	if err := rename(); err == nil {
+		t.Fatal("original app/launcher descendants did not prevent premature retirement")
+	}
+	if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
+		t.Fatal(err)
+	}
+	if n.anchor.pins[0].handle != originalHandles[0] || n.anchor.pins[0].id != originalIDs[0] || n.anchor.pins[1] != nil || n.anchor.pins[2] != nil || !n.anchor.drained {
+		t.Fatal("original root lost or descendants not drained")
+	}
+	if n.retired != [3]bool{true, true, true} || !n.restored {
+		t.Fatal("startup restoration did not complete before original generation rename")
+	}
+	if _, err := owner.Decommission(ctx); err == nil || d.disables != 0 || d.stops != 0 || d.deletes != 0 {
+		t.Fatal("interim restored/drained state authorized service effects")
+	}
+	if err := rename(); err != nil {
+		t.Fatal("same original broker DELETE/root owners could not retire after child drain", err)
+	}
 	if _, err := os.Stat(filepath.Join(n.anchor.parent.dos, n.record.Generation)); !errors.Is(err, os.ErrNotExist) {
 		t.Fatal("original generation still at old name", err)
 	}
-	if err := n.restore(ctx, func(context.Context) error { return nil }); err == nil || n.retired != [3]bool{} {
-		t.Fatal("native restoration preceded authenticated retirement binding")
+	if err := n.restore(ctx, func(context.Context) error { return nil }); err == nil || n.retired != [3]bool{true, true, true} {
+		t.Fatal("native restoration replayed after completed original drain")
 	}
 	witness := &decommissionFenceFixture{events: &d.events}
 	if err := bindDecommissionSnapshotWith(owner, ctx, witness, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err != nil {
 		t.Fatal(err)
 	}
-	for i, pin := range n.anchor.pins {
-		if pin.handle != originalHandles[i] || pin.id != originalIDs[i] {
-			t.Fatal("retirement reopened/adopted startup custody")
-		}
+	if n.anchor.pins[0].handle != originalHandles[0] || n.anchor.pins[0].id != originalIDs[0] || n.anchor.pins[1] != nil || n.anchor.pins[2] != nil {
+		t.Fatal("retirement reopened/adopted original root or drained descendants")
 	}
 	result, err := owner.Decommission(ctx)
 	if err != nil || result.Service != ServiceMarkedForRemoval || d.disables != 1 || d.stops != 1 || d.deletes != 1 {
@@ -147,23 +176,16 @@ func TestNativePreparedStartupRetirementAndRestorationCompose(t *testing.T) {
 func TestNativeStartupRetirementAnchorRefusesWrongLocationAndChangedOriginal(t *testing.T) {
 	for _, fault := range []string{"no-rename", "wrong-destination", "wrong-request", "wrong-generation", "service-only", "descendant-creation"} {
 		t.Run(fault, func(t *testing.T) {
-			n, _ := startupRestorationNativeFixtureMode(t, true)
-			snapshot := preparedRetirementSnapshotForNative(n)
+			n, owner, d := nativePreparedStartupMaintenanceFixture(t)
+			snapshot := preparedRetirementSnapshot(t, owner)
+			requestID := snapshot.RequestID
 			if fault == "wrong-destination" {
-				retireStartupFixtureGeneration(t, n.anchor, strings.Repeat("f", 32))
-			} else if fault != "no-rename" {
-				retireStartupFixtureGeneration(t, n.anchor, snapshot.RequestID)
+				requestID = strings.Repeat("f", 32)
 			}
-			switch fault {
-			case "wrong-request":
-				snapshot.RequestID = strings.Repeat("e", 32)
-			case "wrong-generation":
-				snapshot.Generation = strings.Repeat("f", 32)
-			case "service-only":
-				snapshot.RetirementSHA256 = ""
-			case "descendant-creation":
-				// A root rename may tunnel ROOT creation only. A changed launcher
-				// creation baseline must not be accepted during that handoff.
+			rename := prepareStartupFixtureRetirement(t, n.anchor, requestID)
+			if fault == "descendant-creation" {
+				// The launcher must validate before its original handle drains.
+				// Root creation tunneling never excuses a changed descendant.
 				image := n.anchor.pins[2]
 				name, err := enrollmentPhysicalPath(image.handle)
 				if err != nil {
@@ -184,14 +206,41 @@ func TestNativeStartupRetirementAnchorRefusesWrongLocationAndChangedOriginal(t *
 					t.Fatal(err)
 				}
 			}
-			if err := n.bindRetirement(context.Background(), snapshot); err == nil {
+			guard := func(context.Context) error { return nil }
+			if err := restorePreparedFixture(t, owner, snapshot, &d.events); err != nil {
+				if fault != "descendant-creation" || n.retired != [3]bool{} {
+					t.Fatal("original startup restoration failed before retirement", err)
+				}
+			} else {
+				if fault == "descendant-creation" {
+					t.Fatal("changed original launcher accepted before drain")
+				}
+				if fault != "no-rename" {
+					if err := rename(); err != nil {
+						t.Fatal("same original root could not rename after descendant drain", err)
+					}
+				}
+			}
+			switch fault {
+			case "wrong-request":
+				snapshot.RequestID = strings.Repeat("e", 32)
+			case "wrong-generation":
+				snapshot.Generation = strings.Repeat("f", 32)
+			case "service-only":
+				snapshot.RetirementSHA256 = ""
+			}
+			beforeRefusal := n.retired
+			if err := bindDecommissionSnapshotWith(owner, context.Background(), &decommissionFenceFixture{events: &d.events}, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err == nil {
 				t.Fatal("foreign/changed original retirement was accepted")
 			}
-			if err := n.restore(context.Background(), func(context.Context) error { return nil }); err == nil || n.retired != [3]bool{} {
-				t.Fatal("refused retirement allowed shortcut effects")
+			if err := n.restore(context.Background(), guard); err == nil || n.retired != beforeRefusal {
+				t.Fatal("refused retirement allowed repeated shortcut effects")
 			}
-			if err := n.bindRetirement(context.Background(), preparedRetirementSnapshotForNative(n)); err == nil {
+			if err := bindDecommissionSnapshotWith(owner, context.Background(), &decommissionFenceFixture{events: &d.events}, snapshot.ClientSID, snapshot.RegistrationSHA256, &snapshot); err == nil {
 				t.Fatal("refused anchor binding retried")
+			}
+			if _, err := owner.Decommission(context.Background()); err == nil || d.disables != 0 || d.stops != 0 || d.deletes != 0 || !owner.failed {
+				t.Fatal("failed composed native handoff reached SCM or left owner reusable")
 			}
 		})
 	}
@@ -219,10 +268,7 @@ func TestNativeStartupRetirementAnchorExcludesLauncherWrites(t *testing.T) {
 func TestNativePreparedStartupRetirementPartialRestorationPreservesRecovery(t *testing.T) {
 	n, _ := startupRestorationNativeFixtureMode(t, true)
 	snapshot := preparedRetirementSnapshotForNative(n)
-	retireStartupFixtureGeneration(t, n.anchor, snapshot.RequestID)
-	if err := n.bindRetirement(context.Background(), snapshot); err != nil {
-		t.Fatal(err)
-	}
+	rename := prepareStartupFixtureRetirement(t, n.anchor, snapshot.RequestID)
 	checks := 0
 	err := n.restore(context.Background(), func(context.Context) error {
 		checks++
@@ -239,6 +285,12 @@ func TestNativePreparedStartupRetirementPartialRestorationPreservesRecovery(t *t
 	}
 	if err := n.restore(context.Background(), func(context.Context) error { return nil }); err == nil {
 		t.Fatal("partial joined restoration retried")
+	}
+	if err := n.drain(context.Background(), func(context.Context) error { return nil }); err == nil || n.anchor.drained || n.anchor.pins[1] == nil || n.anchor.pins[2] == nil {
+		t.Fatal("partial restoration drained original descendants")
+	}
+	if err := rename(); err == nil {
+		t.Fatal("partial restoration permitted native generation retirement")
 	}
 	if _, err := os.Stat(filepath.Join(n.recovery.dos, startupRetirementName(startupNormal))); err != nil {
 		t.Fatal("retired published normal recovery missing", err)

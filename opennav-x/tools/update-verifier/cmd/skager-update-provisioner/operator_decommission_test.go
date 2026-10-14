@@ -10,6 +10,7 @@ import (
 	"reflect"
 	"strings"
 	"testing"
+	"time"
 
 	"example.com/opennav-update-verifier/brokerenroll"
 	"example.com/opennav-update-verifier/brokerpipe"
@@ -42,6 +43,11 @@ func (f *refusedDecommissionOwner) BindStartupRestoration(context.Context, *brok
 }
 func (f *refusedDecommissionOwner) PrepareStartupRestoration(context.Context, *brokerenroll.ApprovedStartupPublication) error {
 	return errors.New("unexpected startup preparation")
+}
+
+func (f *refusedDecommissionOwner) RestoreStartupAndDrain(context.Context, *brokerpipe.UninstallFenceWitness) error {
+	f.effects++
+	return errors.New("unexpected startup drain")
 }
 
 func TestOperatorDecommissionInvalidInputsHaveNoEffects(t *testing.T) {
@@ -217,6 +223,9 @@ type startupDecommissionFixture struct {
 	requested, fenced, bound bool
 	uninstall                bool
 	prepared                 bool
+	drained                  bool
+	interim                  *brokerpipe.UninstallFenceWitness
+	operationCtx             context.Context
 	closed, witnessClosed    bool
 	cancel                   context.CancelFunc
 }
@@ -229,7 +238,10 @@ func (f *startupDecommissionFixture) event(name string) error {
 	return nil
 }
 func (f *startupDecommissionFixture) Check(context.Context) error { return f.event("check") }
-func (f *startupDecommissionFixture) BindDecommission(_ context.Context, witness *brokerpipe.DecommissionWitness) error {
+func (f *startupDecommissionFixture) BindDecommission(ctx context.Context, witness *brokerpipe.DecommissionWitness) error {
+	if f.uninstall && (ctx != f.operationCtx || ctx.Err() != nil) {
+		f.t.Fatal("final binding lost original bounded operation context")
+	}
 	if witness != f.witness {
 		f.t.Fatal("original live fence was substituted")
 	}
@@ -238,7 +250,7 @@ func (f *startupDecommissionFixture) BindDecommission(_ context.Context, witness
 	}
 	f.fenced = true
 	if f.uninstall {
-		if !f.prepared {
+		if !f.prepared || !f.drained {
 			f.t.Fatal("retirement witness preceded original startup custody")
 		}
 		if err := f.event("bind-retirement"); err != nil {
@@ -246,6 +258,22 @@ func (f *startupDecommissionFixture) BindDecommission(_ context.Context, witness
 		}
 		f.bound = true
 	}
+	return nil
+}
+func (f *startupDecommissionFixture) RestoreStartupAndDrain(ctx context.Context, witness *brokerpipe.UninstallFenceWitness) error {
+	if !f.prepared || f.fenced || witness != f.interim || witness == nil {
+		f.t.Fatal("startup drain did not use original callback-scoped witness")
+	}
+	if err := f.event("restore-and-drain"); err != nil {
+		return err
+	}
+	if f.fault == "cancel-drain" {
+		f.cancel()
+	}
+	if err := ctx.Err(); err != nil {
+		return err
+	}
+	f.drained = true
 	return nil
 }
 func (f *startupDecommissionFixture) PrepareStartupRestoration(_ context.Context, approved *brokerenroll.ApprovedStartupPublication) error {
@@ -274,7 +302,10 @@ func (f *startupDecommissionFixture) BindStartupRestoration(_ context.Context, a
 	}
 	return nil
 }
-func (f *startupDecommissionFixture) Decommission(context.Context) (brokerenroll.DecommissionResult, error) {
+func (f *startupDecommissionFixture) Decommission(ctx context.Context) (brokerenroll.DecommissionResult, error) {
+	if f.uninstall && (ctx != f.operationCtx || ctx.Err() != nil) {
+		f.t.Fatal("final service effects lost original bounded operation context")
+	}
 	if !f.fenced || f.requested && !f.bound {
 		f.t.Fatal("mutation preceded required original fence/restoration binding")
 	}
@@ -323,7 +354,14 @@ func (f *startupDecommissionFixture) run(request, publication []byte, output *by
 			return nil, err
 		}
 		return request, nil
-	}, func(_ context.Context, r brokerenroll.MaintenanceRequest) (decommissionOwner, error) {
+	}, func(ownerCtx context.Context, r brokerenroll.MaintenanceRequest) (decommissionOwner, error) {
+		if f.uninstall {
+			deadline, ok := ownerCtx.Deadline()
+			if !ok || time.Until(deadline) <= 0 || time.Until(deadline) > 90*time.Second {
+				f.t.Fatal("original owner preparation lacks bounded operation context")
+			}
+			f.operationCtx = ownerCtx
+		}
 		if !bytes.Equal(r.ClientRegistrationRequest, request) || r.ApprovedClientRequestSHA256 != operatorRequestDigest(request) {
 			f.t.Fatal("original independently pinned request changed before opening owner")
 		}
@@ -343,6 +381,22 @@ func (f *startupDecommissionFixture) run(request, publication []byte, output *by
 		err := f.event("fence")
 		return f.witness, err
 	}, output, decommissionOperations{
+		uninstall: func(callbackCtx context.Context, q brokerpipe.MaintenanceRequest, drain func(context.Context, *brokerpipe.UninstallFenceWitness) error) (*brokerpipe.DecommissionWitness, error) {
+			if !f.uninstall || !f.prepared || q.Operation != brokerpipe.PrepareUninstall || q.ExpectedSelectedHeadSHA256 != strings.Repeat("2", 64) {
+				f.t.Fatal("protected uninstall skipped original preparation or substituted request")
+			}
+			if err := f.event("fence"); err != nil {
+				return f.witness, err
+			}
+			f.interim = &brokerpipe.UninstallFenceWitness{}
+			if err := drain(callbackCtx, f.interim); err != nil {
+				return nil, err
+			}
+			if err := f.event("retirement"); err != nil {
+				return nil, err
+			}
+			return f.witness, nil
+		},
 		parse: func(raw []byte, publicationPin string, original []byte, originalPin string) (*brokerenroll.ApprovedStartupPublication, error) {
 			if !f.requested || !bytes.Equal(raw, publication) || publicationPin != operatorRequestDigest(publication) ||
 				!bytes.Equal(original, request) || originalPin != operatorRequestDigest(request) {
@@ -443,7 +497,7 @@ func TestOperatorProtectedUninstallRequiresRetirementBeforeServiceEffects(t *tes
 	if err != nil || json.Unmarshal(output.Bytes(), &result) != nil || result["state"] != "protected-retired-service-decommissioned" || result["service"] != brokerenroll.ServiceMarkedForRemoval || result["startup"] != "original-shortcuts-restored" {
 		t.Fatalf("bad result: %s %v", output.String(), err)
 	}
-	want := []string{"read-request", "read-publication", "parse", "open", "check", "prepare-startup", "fence", "bind-fence", "bind-retirement", "decommission", "close-owner", "close-witness"}
+	want := []string{"read-request", "read-publication", "parse", "open", "check", "prepare-startup", "fence", "restore-and-drain", "retirement", "bind-fence", "bind-retirement", "decommission", "close-owner", "close-witness"}
 	if !reflect.DeepEqual(f.events, want) {
 		t.Fatal(f.events)
 	}
@@ -469,7 +523,7 @@ func TestOperatorProtectedUninstallMissingStartupEvidenceRefusesBeforeReading(t 
 }
 
 func TestOperatorProtectedUninstallPreparationAndBindingFaultsHaveNoServiceEffect(t *testing.T) {
-	for _, fault := range []string{"prepare-startup", "cancel-prepare", "bind-fence", "bind-retirement"} {
+	for _, fault := range []string{"prepare-startup", "cancel-prepare", "restore-and-drain", "cancel-drain", "retirement", "bind-fence", "bind-retirement"} {
 		t.Run(fault, func(t *testing.T) {
 			f := &startupDecommissionFixture{t: t, uninstall: true, requested: true, fault: fault}
 			var output bytes.Buffer

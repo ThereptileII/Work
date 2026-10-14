@@ -7,6 +7,7 @@ import (
 	"sync"
 	"time"
 
+	"example.com/opennav-update-verifier/brokerpipe"
 	"example.com/opennav-update-verifier/brokerregistration"
 )
 
@@ -67,26 +68,29 @@ type maintenanceOperations struct {
 // No service database lock is claimed: it has no effect since Windows Vista.
 // https://learn.microsoft.com/en-us/windows/win32/api/winsvc/nf-winsvc-lockservicedatabase
 type MaintenanceOwner struct {
-	self             *MaintenanceOwner
-	mu               sync.Mutex
-	authority        maintenanceAuthority
-	op               maintenanceOperations
-	backend          maintenanceBackend
-	process          maintenanceProcess
-	pid              uint32
-	stopAttempted    bool
-	dispatched       bool
-	quiescent        bool
-	failed           bool
-	closed           bool
-	closeErr         error
-	decommission     bool
-	disableAttempted bool
-	deleteAttempted  bool
-	fence            decommissionFence
-	startupBound     bool
-	startupPrepared  bool
-	startup          startupRestorationBackend
+	self                            *MaintenanceOwner
+	mu                              sync.Mutex
+	authority                       maintenanceAuthority
+	op                              maintenanceOperations
+	backend                         maintenanceBackend
+	process                         maintenanceProcess
+	pid                             uint32
+	stopAttempted                   bool
+	dispatched                      bool
+	quiescent                       bool
+	failed                          bool
+	closed                          bool
+	closeErr                        error
+	decommission                    bool
+	disableAttempted                bool
+	deleteAttempted                 bool
+	fence                           decommissionFence
+	startupBound                    bool
+	startupPrepared                 bool
+	startupDrainAttempted           bool
+	startupRestored, startupDrained bool
+	startupFenceSnapshot            *brokerpipe.DecommissionSnapshot
+	startup                         startupRestorationBackend
 }
 
 // OpenMaintenance observes only the exact existing normal-running broker as
