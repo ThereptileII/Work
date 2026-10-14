@@ -2,11 +2,13 @@
 package verifier
 
 import (
+	"bytes"
 	"context"
 	"errors"
 	"fmt"
 	"net/http"
 	"net/url"
+	"os"
 	"path"
 	"path/filepath"
 	"regexp"
@@ -16,11 +18,13 @@ import (
 
 	"github.com/theupdateframework/go-tuf/v2/metadata"
 	"github.com/theupdateframework/go-tuf/v2/metadata/config"
+	"github.com/theupdateframework/go-tuf/v2/metadata/trustedmetadata"
 	"github.com/theupdateframework/go-tuf/v2/metadata/updater"
 )
 
 const maxTargetBytes = 32 << 10
 const maxOperationTime = 30 * time.Second
+const maxTrustedRootBytes = 512 << 10
 
 // ErrAuthenticatedTargetAbsent is returned only after a successful live TUF
 // refresh proves the target absent from signed top-level metadata with no
@@ -187,18 +191,62 @@ func verifyTargetWithClient(req Request, deadline time.Time, injected *http.Clie
 	return verifyTargetWithClientAt(req, deadline, injected, rejectRedirects, validateIdentity, time.Time{})
 }
 
+// The protected cache's retained root is the current authority, while the
+// configured bootstrap remains its independently approved original identity.
+// go-tuf New persists the supplied root immediately: supplying the bootstrap on
+// every call would overwrite a previously verified rotation before Refresh.
+// The caller must authenticate/protect this SAME cache and its history; a valid
+// self-signature or current ACL alone cannot establish cache provenance.
+func retainedTUFRoot(req Request) ([]byte, error) {
+	if len(req.TrustedRoot) > maxTrustedRootBytes {
+		return nil, errors.New("configured trusted root exceeds hard limit")
+	}
+	anchor, err := trustedmetadata.New(req.TrustedRoot)
+	if err != nil {
+		return nil, errors.New("configured trusted root is invalid")
+	}
+	_, err = os.Lstat(req.CacheDir)
+	if os.IsNotExist(err) {
+		// Low-level probes may establish a genuinely new absent cache. Native
+		// installed/operator callers already hold an existing protected cache,
+		// which must have been explicitly seeded before invoking this verifier.
+		return bytes.Clone(req.TrustedRoot), nil
+	}
+	if err != nil || plainStatePath(req.CacheDir) != nil || plainStatePath(filepath.Join(req.CacheDir, "metadata")) != nil {
+		return nil, errors.New("retained TUF cache unavailable; explicit recovery required")
+	}
+	raw, err := boundedStateRead(filepath.Join(req.CacheDir, "metadata", "root.json"), maxTrustedRootBytes)
+	if err != nil {
+		return nil, errors.New("retained TUF root unavailable; explicit recovery required")
+	}
+	retained, err := trustedmetadata.New(raw)
+	if err != nil || retained.Root.Signed.Version < anchor.Root.Signed.Version {
+		return nil, errors.New("retained TUF root invalid or below configured anchor")
+	}
+	if retained.Root.Signed.Version == anchor.Root.Signed.Version && !bytes.Equal(raw, req.TrustedRoot) {
+		return nil, errors.New("retained TUF root differs at configured anchor version")
+	}
+	// Do not reject an expired intermediate here. go-tuf must retain its normal
+	// forward rotation and final-current-root expiry checks at the actual clock.
+	return raw, nil
+}
+
 func verifyTargetWithClientAt(req Request, deadline time.Time, injected *http.Client, rejectRedirects bool, validateIdentity func([]byte) error, referenceTime time.Time) ([]byte, error) {
 	u, err := validateTUFRequest(req)
 	if err != nil {
 		return nil, err
 	}
-	cfg, err := config.New(strings.TrimRight(req.MetadataURL, "/"), req.TrustedRoot)
+	root, err := retainedTUFRoot(req)
+	if err != nil {
+		return nil, err
+	}
+	cfg, err := config.New(strings.TrimRight(req.MetadataURL, "/"), root)
 	if err != nil {
 		return nil, err
 	}
 	cfg.LocalMetadataDir = filepath.Join(req.CacheDir, "metadata")
 	cfg.LocalTargetsDir = filepath.Join(req.CacheDir, "targets")
-	cfg.RootMaxLength = 512 << 10
+	cfg.RootMaxLength = maxTrustedRootBytes
 	cfg.TimestampMaxLength = 16 << 10
 	cfg.SnapshotMaxLength = 2 << 20
 	cfg.TargetsMaxLength = 5 << 20
