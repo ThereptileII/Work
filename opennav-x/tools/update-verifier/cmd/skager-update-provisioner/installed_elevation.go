@@ -54,12 +54,12 @@ func parseInstalledElevation(args []string) (installedElevationRequest, bool, er
 	if args[0] == "--maintenance" && len(args) > 1 {
 		action = args[1]
 	}
-	if action != installedElevationAction && action != installedElevationChildAction && action != rollbackCurrent && action != rollbackCurrent+"-elevated" && action != repairCurrent && action != repairCurrent+"-elevated" {
+	if action != installedElevationAction && action != installedElevationChildAction && action != rollbackCurrent && action != rollbackCurrent+"-elevated" && action != repairCurrent && action != repairCurrent+"-elevated" && action != codeUpgradeCurrent && action != codeUpgradeCurrent+"-elevated" {
 		return q, false, nil
 	}
 	refused := errors.New("fixed installed maintenance elevation arguments required")
 	q.action = strings.TrimSuffix(action, "-elevated")
-	if action == installedElevationAction || action == rollbackCurrent || action == repairCurrent {
+	if action == installedElevationAction || action == rollbackCurrent || action == repairCurrent || action == codeUpgradeCurrent {
 		if !(len(args) == 1 && args[0] == "--maintenance="+action || len(args) == 2 && args[0] == "--maintenance" && args[1] == action) {
 			return q, true, refused
 		}
@@ -83,7 +83,8 @@ func parseInstalledElevation(args []string) (installedElevationRequest, bool, er
 // The child callback must synchronously observe its context at every operation;
 // its authority still comes only from the actual elevated token and completion.
 func installedElevationDispatch(ctx context.Context, args []string, run func(context.Context) error) (bool, error) {
-	return installedElevationDispatchWith(ctx, args, run, installedElevationNativeOperations())
+	q, _, _ := parseInstalledElevation(args)
+	return installedElevationDispatchWith(ctx, args, run, installedElevationOperationsForAction(q.action))
 }
 
 func installedElevationDispatchWith(ctx context.Context, args []string, run func(context.Context) error, op installedElevationOperations) (handled bool, resultErr error) {
@@ -94,7 +95,11 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 	if ctx == nil || ctx.Err() != nil || run == nil || op.openSelf == nil || op.openParent == nil || op.launch == nil {
 		return true, errors.New("live fixed installed elevation required")
 	}
-	ctx, cancel := context.WithTimeout(ctx, installedElevationLimit)
+	limit := installedElevationLimit
+	if q.action == codeUpgradeCurrent {
+		limit = installedCodeUpgradeLimit
+	}
+	ctx, cancel := context.WithTimeout(ctx, limit)
 	defer cancel()
 	self, err := op.openSelf(ctx)
 	if self.owner != nil {
@@ -140,6 +145,12 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 	if err := errors.Join(parent.check(ctx), self.owner.check(ctx)); err != nil {
 		return true, err
 	}
+	return true, runWithInstalledParent(ctx, parent, self.owner, run)
+}
+
+// Both private children watch the retained original parent until their callback
+// and final observations finish. Cancellation never authorizes another attempt.
+func runWithInstalledParent(ctx context.Context, parent, self installedElevationOwner, run func(context.Context) error) error {
 	joined, stop := context.WithCancelCause(ctx)
 	done := make(chan struct{})
 	go func() {
@@ -158,7 +169,7 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 			}
 		}
 	}()
-	err = run(joined)
+	err := run(joined)
 	// Join the watcher before closing either original native process/token owner.
 	// A distinct normal-stop cause preserves a watcher failure racing callback
 	// return, even if a later native observation would happen to succeed.
@@ -169,5 +180,5 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 	if parentFailure == normalStop {
 		parentFailure = nil
 	}
-	return true, errors.Join(err, parentFailure, ctx.Err(), parent.check(ctx), self.owner.check(ctx))
+	return errors.Join(err, parentFailure, ctx.Err(), parent.check(ctx), self.check(ctx))
 }

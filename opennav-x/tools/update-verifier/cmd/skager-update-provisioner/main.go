@@ -37,6 +37,9 @@ func main() {
 }
 
 func reportMaintenanceCompletion(args []string, output io.Writer) error {
+	if _, successor, _ := parseInstalledCodeSuccessor(args); successor {
+		return nil // The private successor reports only its bound exit status.
+	}
 	if codeUpgradeRequested(args) {
 		_, err := fmt.Fprintln(output, "SKAGER enrolled broker/helper successor completed; initialized store and registered-client readiness verified.")
 		return err

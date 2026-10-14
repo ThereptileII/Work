@@ -29,9 +29,15 @@ func manualRollbackRequested(args []string) bool {
 }
 
 func runMaintenanceDispatch(ctx context.Context, args []string, read func(string) ([]byte, error), maintain maintenanceOpener) error {
+	if handled, err := installedCodeSuccessorDispatch(ctx, args); handled {
+		return err
+	}
 	var installedOutput bytes.Buffer
 	elevation, _, _ := parseInstalledElevation(args)
 	if handled, err := installedElevationDispatch(ctx, args, func(operationCtx context.Context) error {
+		if elevation.action == codeUpgradeCurrent {
+			return runCustomerCodeUpgrade(operationCtx, &installedOutput)
+		}
 		if elevation.action == repairCurrent {
 			return runCustomerRepair(operationCtx, &installedOutput)
 		}
