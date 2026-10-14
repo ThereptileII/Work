@@ -297,21 +297,43 @@ func startupThreeLinkFixture(t *testing.T, original ...[]byte) (*nativeStartupPu
 	owner, menu, recovery, sd := startupNativeFixture(t)
 	ctx := context.Background()
 	var err error
-	originalBytes := []byte("ORIGINAL-NORMAL")
-	if len(original) != 0 {
-		originalBytes = original[0]
-	}
-	owner.original, err = startupWriteFile(ctx, owner.files, menu, "Skager.lnk", originalBytes, sd, true)
-	if err != nil {
-		t.Fatal(err)
-	}
-	owner.originalSHA = digest(originalBytes)
-	if _, err := startupWriteFile(ctx, owner.files, recovery, "original.lnk.bytes", originalBytes, sd, false); err != nil {
-		t.Fatal(err)
-	}
 	owner.additional = []*nativeStartupPublication{
 		{files: owner.files, clientSID: owner.clientSID, mode: startupLegacy},
 		{files: owner.files, clientSID: owner.clientSID, mode: startupSafe},
+	}
+	originals := [3][]byte{[]byte("ORIGINAL-NORMAL")}
+	if len(original) > 3 {
+		t.Fatal("too many fixture originals")
+	}
+	copy(originals[:], original)
+	for i, raw := range originals {
+		if raw == nil {
+			continue
+		}
+		spec, _ := startupShortcutMode(i).spec()
+		created, err := startupWriteFile(ctx, owner.files, menu, spec.name, raw, sd, true)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// End the inert Setup writer's custody before the enrollment publisher
+		// captures its own original. A second stale path pin must not survive a
+		// later publisher rename and masquerade as an enrollment owner.
+		if owner.files.pins[len(owner.files.pins)-1] != created {
+			t.Fatal("fixture writer pin differs")
+		}
+		if err := windows.CloseHandle(created.handle); err != nil {
+			t.Fatal(err)
+		}
+		owner.files.pins = owner.files.pins[:len(owner.files.pins)-1]
+	}
+	// Exercise the same fixed-name capture and pre-mutation evidence producer.
+	if err := startupCaptureOriginals(owner, menu); err != nil {
+		t.Fatal(err)
+	}
+	for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+		if err := startupWriteOriginalEvidence(ctx, child, recovery, sd); err != nil {
+			t.Fatal(err)
+		}
 	}
 	for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
 		spec, err := child.mode.spec()
@@ -356,12 +378,12 @@ func startupThreeLinkFixture(t *testing.T, original ...[]byte) (*nativeStartupPu
 		if evidence.Links[i].New.FileID != child.link.id || evidence.Links[i].New.Creation != child.link.info.CreationTime || evidence.Links[i].New.SHA256 != child.linkSHA {
 			t.Fatal("new identity/hash evidence differs")
 		}
-		if i == 0 {
-			if evidence.Links[i].Original == nil || evidence.Links[i].Original.FileID != owner.original.id || evidence.Links[i].Original.Creation != owner.original.info.CreationTime || evidence.Links[i].Original.SHA256 != owner.originalSHA {
+		if child.original != nil {
+			if evidence.Links[i].Original == nil || evidence.Links[i].Original.FileID != child.original.id || evidence.Links[i].Original.Creation != child.original.info.CreationTime || evidence.Links[i].Original.SHA256 != child.originalSHA {
 				t.Fatal("original evidence lost")
 			}
 		} else if evidence.Links[i].Original != nil {
-			t.Fatal("non-normal original adopted")
+			t.Fatal("absent original invented")
 		}
 	}
 	if _, err := startupWriteFile(ctx, owner.files, recovery, "publication.json", manifest, sd, false); err != nil {
@@ -502,6 +524,9 @@ func TestNativeStartupModePreflightRefusesAmbiguousEntries(t *testing.T) {
 			}
 			if err := startupPreflightDestination(child, menu); err == nil {
 				t.Fatal("ambiguous mode target accepted")
+			}
+			if err := startupCaptureOriginals(child, menu); err == nil {
+				t.Fatal("ambiguous mode target captured as rollback original")
 			}
 			if child.original != nil {
 				t.Fatal("ambiguous mode target adopted")

@@ -114,12 +114,17 @@ func startupRestorationNativeFixtureMode(t *testing.T, preparing bool, originalB
 			t.Fatal(err)
 		}
 	}
-	spec, _ := startupNormal.spec()
-	original, err := openStartupRestorationFile(n.files, n.recovery, spec.name)
-	if err != nil {
-		t.Fatal(err)
+	for i, link := range record.Links {
+		if link.Original == nil {
+			continue
+		}
+		spec, _ := startupShortcutMode(i).spec()
+		original, err := openStartupRestorationFile(n.files, n.recovery, spec.name)
+		if err != nil {
+			t.Fatal(err)
+		}
+		n.originals[i] = &original
 	}
-	n.original = &original
 	if err := n.preflight(context.Background()); err != nil {
 		t.Fatal(err)
 	}
@@ -129,8 +134,8 @@ func startupRestorationNativeFixtureMode(t *testing.T, preparing bool, originalB
 func TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal(t *testing.T) {
 	n := startupRestorationNativeFixture(t)
 	ctx := context.Background()
-	originalID := n.original.pin.id
-	originalBytes, err := startupReadOriginal(ctx, n.original.pin)
+	originalID := n.originals[0].pin.id
+	originalBytes, err := startupReadOriginal(ctx, n.originals[0].pin)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -138,7 +143,7 @@ func TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal(t *testing.
 	if err := n.restore(ctx, func(context.Context) error { checks++; return nil }); err != nil {
 		t.Fatal(err)
 	}
-	if checks != 9 || !n.restored || n.original.pin.id != originalID {
+	if checks != 9 || !n.restored[0] || n.originals[0].pin.id != originalID {
 		t.Fatal("same live witness/original identity not preserved")
 	}
 	if err := n.check(ctx); err != nil {
@@ -154,7 +159,7 @@ func TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal(t *testing.
 			t.Fatal("post-move NTFS creation not retained", err)
 		}
 	}
-	if n.original.pin.physical != n.menu.physical+`\Skager.lnk` {
+	if n.originals[0].pin.physical != n.menu.physical+`\Skager.lnk` {
 		t.Fatal("original normal shortcut not restored")
 	}
 	if err := n.restore(ctx, func(context.Context) error { return nil }); err == nil {
@@ -171,6 +176,94 @@ func TestNativeStartupRestorationMovesSameObjectsAndRestoresOriginal(t *testing.
 		if _, err := os.Stat(filepath.Join(n.menu.dos, name)); !errors.Is(err, os.ErrNotExist) {
 			t.Fatal("protected mode link still published", name, err)
 		}
+	}
+}
+
+func TestNativeStartupRestorationPreservesSafeAndUnknownLegacyOriginals(t *testing.T) {
+	ctx := context.Background()
+	originals := [3][]byte{[]byte("ORIGINAL-NORMAL"), []byte("UNKNOWN-LEGACY"), []byte("SETUP-SAFE-MODE")}
+	n, _ := startupRestorationNativeFixtureMode(t, false, originals[:]...)
+	ids := [3]enrollmentFileID{}
+	handles := [3]windows.Handle{}
+	for i, original := range n.originals {
+		if original == nil {
+			t.Fatal("original role missing", i)
+		}
+		ids[i], handles[i] = original.pin.id, original.pin.handle
+	}
+	checks := 0
+	if err := n.restore(ctx, func(context.Context) error { checks++; return nil }); err != nil {
+		t.Fatal(err)
+	}
+	if checks != 13 || n.restored != [3]bool{true, true, true} {
+		t.Fatal("each original move did not retain both witness checks", checks)
+	}
+	for i, original := range n.originals {
+		spec, _ := startupShortcutMode(i).spec()
+		if original.pin.id != ids[i] || original.pin.handle != handles[i] || original.pin.physical != n.menu.physical+`\`+spec.name {
+			t.Fatal("original native role custody changed", i)
+		}
+		raw, err := startupReadOriginal(ctx, original.pin)
+		if err != nil || !bytes.Equal(raw, originals[i]) {
+			t.Fatal("original role bytes changed", i, err)
+		}
+	}
+	if err := n.check(ctx); err != nil {
+		t.Fatal(err)
+	}
+	if err := n.close(); err != nil {
+		t.Fatal(err)
+	}
+	for i, want := range originals {
+		spec, _ := startupShortcutMode(i).spec()
+		raw, err := os.ReadFile(filepath.Join(n.menu.dos, spec.name))
+		if err != nil || !bytes.Equal(raw, want) {
+			t.Fatal("restored original unavailable", i, err)
+		}
+		byteName := "original-" + spec.name + ".bytes"
+		if i == 0 {
+			byteName = "original.lnk.bytes"
+		}
+		raw, err = os.ReadFile(filepath.Join(n.recovery.dos, byteName))
+		if err != nil || !bytes.Equal(raw, want) {
+			t.Fatal("prepublication recovery bytes missing", i, err)
+		}
+	}
+}
+
+func TestNativeStartupRestorationSafeOriginalCollisionPreservesBothFiles(t *testing.T) {
+	n, _ := startupRestorationNativeFixtureMode(t, false, []byte("NORMAL"), nil, []byte("SAFE-ORIGINAL"))
+	ctx := context.Background()
+	safe := n.originals[startupSafe]
+	id, handle := safe.pin.id, safe.pin.handle
+	checks := 0
+	injected := false
+	err := n.restore(ctx, func(context.Context) error {
+		checks++
+		// Three broker links and the original normal have moved. This guard
+		// runs immediately before the original Safe move; no Legacy existed.
+		if checks == 10 {
+			injected = true
+			return os.WriteFile(filepath.Join(n.menu.dos, "Skager Safe Mode.lnk"), []byte("FOREIGN-SAFE"), 0600)
+		}
+		return nil
+	})
+	if !injected || !errors.Is(err, ErrStartupRestorationUncertain) || n.restored[startupSafe] {
+		t.Fatal("Safe collision did not stop original restoration", checks, err)
+	}
+	if safe.pin.id != id || safe.pin.handle != handle || safe.pin.physical != n.recovery.physical+`\Skager Safe Mode.lnk` {
+		t.Fatal("Safe collision lost original custody")
+	}
+	raw, err := startupReadOriginal(ctx, safe.pin)
+	if err != nil || !bytes.Equal(raw, []byte("SAFE-ORIGINAL")) {
+		t.Fatal("Safe collision changed original bytes", err)
+	}
+	if err := n.close(); err != nil {
+		t.Fatal(err)
+	}
+	raw, err = os.ReadFile(filepath.Join(n.menu.dos, "Skager Safe Mode.lnk"))
+	if err != nil || !bytes.Equal(raw, []byte("FOREIGN-SAFE")) {
+		t.Fatal("Safe collision overwrote unknown entry", err)
 	}
 }
 
@@ -250,7 +343,7 @@ func TestNativeStartupRestorationPartialFailurePreservesRecovery(t *testing.T) {
 		}
 		return nil
 	})
-	if !errors.Is(err, ErrStartupRestorationUncertain) || !n.retired[0] || n.retired[1] || n.restored {
+	if !errors.Is(err, ErrStartupRestorationUncertain) || !n.retired[0] || n.retired[1] || n.restored[0] {
 		t.Fatal("partial move state lost", err)
 	}
 	if err := n.check(context.Background()); err != nil {

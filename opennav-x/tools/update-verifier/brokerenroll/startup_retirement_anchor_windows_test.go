@@ -125,7 +125,7 @@ func nativePreparedStartupComposition(t *testing.T, selectedSuccessor bool) {
 	for i, pin := range n.anchor.pins {
 		originalHandles[i], originalIDs[i] = pin.handle, pin.id
 	}
-	originalLink, err := startupReadOriginal(ctx, n.original.pin)
+	originalLink, err := startupReadOriginal(ctx, n.originals[0].pin)
 	if err != nil {
 		t.Fatal(err)
 	}
@@ -148,7 +148,7 @@ func nativePreparedStartupComposition(t *testing.T, selectedSuccessor bool) {
 	if n.anchor.pins[0].handle != originalHandles[0] || n.anchor.pins[0].id != originalIDs[0] || n.anchor.pins[1] != nil || n.anchor.pins[2] != nil || !n.anchor.drained {
 		t.Fatal("original root lost or descendants not drained")
 	}
-	if n.retired != [3]bool{true, true, true} || !n.restored {
+	if n.retired != [3]bool{true, true, true} || !n.restored[0] {
 		t.Fatal("startup restoration did not complete before original generation rename")
 	}
 	if _, err := owner.Decommission(ctx); err == nil || d.disables != 0 || d.stops != 0 || d.deletes != 0 {
@@ -289,7 +289,7 @@ func TestNativePreparedStartupRetirementPartialRestorationPreservesRecovery(t *t
 		}
 		return nil
 	})
-	if !errors.Is(err, ErrStartupRestorationUncertain) || !n.retired[0] || n.retired[1] || n.restored {
+	if !errors.Is(err, ErrStartupRestorationUncertain) || !n.retired[0] || n.retired[1] || n.restored[0] {
 		t.Fatal("partial joined restoration state lost", err)
 	}
 	if err := n.check(context.Background()); err != nil {

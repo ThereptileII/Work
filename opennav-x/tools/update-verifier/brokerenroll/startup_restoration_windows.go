@@ -25,14 +25,16 @@ type nativeStartupRestoration struct {
 	record                                   startupBindingRecord
 	menu, recovery, image, manifest, receipt *enrollmentPin
 	links                                    [3]startupRestorationFile
-	original                                 *startupRestorationFile
+	originals                                [3]*startupRestorationFile
 	retired                                  [3]bool
-	restored, attempted                      bool
+	restored                                 [3]bool
+	attempted                                bool
 	raw                                      []byte
 	anchor                                   *startupRetirementAnchor
-	installedPrepared, installedEligible     bool
+	installedPrepared                        bool
+	installedEligible                        [3]bool
 	installedAttempted, installedFailed      bool
-	originalRetired                          bool
+	originalRetired                          [3]bool
 }
 
 func openStartupRestorationNative(ctx context.Context, authority maintenanceAuthority, record startupBindingRecord, raw []byte) (result startupRestorationBackend, resultErr error) {
@@ -124,13 +126,16 @@ func openStartupRestoration(ctx context.Context, authority maintenanceAuthority,
 			return result, err
 		}
 	}
-	if record.Links[0].Original != nil {
-		spec, _ := startupNormal.spec()
+	for i, link := range record.Links {
+		if link.Original == nil {
+			continue
+		}
+		spec, _ := startupShortcutMode(i).spec()
 		original, err := openStartupRestorationFile(n.files, n.recovery, spec.name)
 		if err != nil {
 			return result, err
 		}
-		n.original = &original
+		n.originals[i] = &original
 	}
 	return result, n.preflight(ctx)
 }
@@ -201,8 +206,10 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 	if ctx == nil || ctx.Err() != nil || n == nil || n.files == nil || n.installedFailed {
 		return errors.New("live original shortcut custody required")
 	}
-	if (n.original == nil) != (n.record.Links[0].Original == nil) {
-		return errors.New("complete original normal backup custody required")
+	for i, original := range n.originals {
+		if (original == nil) != (n.record.Links[i].Original == nil) {
+			return errors.New("complete original shortcut backup custody required")
+		}
 	}
 	if err := maintenanceOperatorNative(n.clientSID); err != nil {
 		return err
@@ -240,7 +247,7 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 		parent, name := n.menu, spec.name
 		if n.retired[i] {
 			parent, name = n.recovery, startupRetirementName(startupShortcutMode(i))
-			if i != 0 || !n.restored || n.originalRetired {
+			if n.originals[i] == nil || !n.restored[i] || n.originalRetired[i] {
 				if err := startupRestorationAbsent(n.menu, spec.name); err != nil {
 					return err
 				}
@@ -259,31 +266,31 @@ func (n *nativeStartupRestoration) check(ctx context.Context) error {
 			return errors.Join(errors.New("original published shortcut identity differs"), err)
 		}
 	}
-	if n.original != nil {
-		spec, _ := startupNormal.spec()
-		parent := n.recovery
-		name := spec.name
-		if n.restored {
-			parent = n.menu
+	for i, original := range n.originals {
+		spec, _ := startupShortcutMode(i).spec()
+		if original != nil {
+			parent, name := n.recovery, spec.name
+			if n.restored[i] {
+				parent = n.menu
+			}
+			if n.originalRetired[i] {
+				parent, name = n.recovery, installedOriginalStartupRetirementName(startupShortcutMode(i))
+			}
+			if original.pin == nil || original.pin.physical != parent.physical+`\`+name || original.dos != filepath.Join(parent.dos, name) {
+				return errors.New("fixed original shortcut backup location differs")
+			}
+			if err := original.checkAlias(); err != nil {
+				return err
+			}
+			actual, err := startupFileIdentity(ctx, original.pin, n.record.Links[i].Original.SHA256)
+			if err != nil || actual != *n.record.Links[i].Original {
+				return errors.Join(errors.New("original shortcut backup identity differs"), err)
+			}
 		}
-		if n.originalRetired {
-			parent, name = n.recovery, installedOriginalStartupName
-		}
-		if n.original.pin == nil || n.original.pin.physical != parent.physical+`\`+name || n.original.dos != filepath.Join(parent.dos, name) {
-			return errors.New("fixed original normal backup location differs")
-		}
-		if err := n.original.checkAlias(); err != nil {
-			return err
-		}
-		actual, err := startupFileIdentity(ctx, n.original.pin, n.record.Links[0].Original.SHA256)
-		if err != nil || actual != *n.record.Links[0].Original {
-			return errors.Join(errors.New("original normal backup identity differs"), err)
-		}
-	}
-	if n.original == nil || n.restored {
-		spec, _ := startupNormal.spec()
-		if err := startupRestorationAbsent(n.recovery, spec.name); err != nil {
-			return err
+		if original == nil || n.restored[i] {
+			if err := startupRestorationAbsent(n.recovery, spec.name); err != nil {
+				return err
+			}
 		}
 	}
 	return ctx.Err()
@@ -382,7 +389,11 @@ func (n *nativeStartupRestoration) restore(ctx context.Context, guard func(conte
 		return errors.New("fresh original shortcut restoration required")
 	}
 	n.attempted = true
-	return startupRestoreSequence(ctx, n.original != nil, func() error {
+	originals := [3]bool{}
+	for i, original := range n.originals {
+		originals[i] = original != nil
+	}
+	return startupRestoreSequence(ctx, originals, func() error {
 		if err := guard(ctx); err != nil {
 			return err
 		}
@@ -402,12 +413,14 @@ func (n *nativeStartupRestoration) restore(ctx context.Context, guard func(conte
 			n.retired[step] = true
 			n.record.Links[step].New.Creation = uint64(file.pin.info.CreationTime.HighDateTime)<<32 | uint64(file.pin.info.CreationTime.LowDateTime)
 		} else {
-			spec, _ := startupNormal.spec()
-			if err := startupRenameRestorationFile(ctx, n.original, n.menu, spec.name, n.record.Links[0].Original.SHA256); err != nil {
+			i := step - 3
+			original := n.originals[i]
+			spec, _ := startupShortcutMode(i).spec()
+			if err := startupRenameRestorationFile(ctx, original, n.menu, spec.name, n.record.Links[i].Original.SHA256); err != nil {
 				return err
 			}
-			n.restored = true
-			n.record.Links[0].Original.Creation = uint64(n.original.pin.info.CreationTime.HighDateTime)<<32 | uint64(n.original.pin.info.CreationTime.LowDateTime)
+			n.restored[i] = true
+			n.record.Links[i].Original.Creation = uint64(original.pin.info.CreationTime.HighDateTime)<<32 | uint64(original.pin.info.CreationTime.LowDateTime)
 		}
 		if err := n.check(ctx); err != nil {
 			return err
@@ -424,7 +437,7 @@ func (n *nativeStartupRestoration) close() error {
 }
 
 func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot brokerpipe.DecommissionSnapshot) error {
-	if n == nil || n.anchor == nil || !n.attempted || !n.anchor.drained || n.retired != [3]bool{true, true, true} || n.original != nil && !n.restored {
+	if n == nil || n.anchor == nil || !n.attempted || !n.anchor.drained || n.retired != [3]bool{true, true, true} || !n.originalsRestored() {
 		return errors.New("original prepared baseline startup custody required")
 	}
 	if snapshot.ClientSID != n.clientSID || !startupRetirementID(snapshot.Generation) || n.anchor.generation != n.record.Generation {
@@ -438,7 +451,7 @@ func (n *nativeStartupRestoration) bindRetirement(ctx context.Context, snapshot 
 }
 
 func (n *nativeStartupRestoration) drain(ctx context.Context, guard func(context.Context) error) error {
-	if n == nil || n.anchor == nil || !n.attempted || n.retired != [3]bool{true, true, true} || n.original != nil && !n.restored {
+	if n == nil || n.anchor == nil || !n.attempted || n.retired != [3]bool{true, true, true} || !n.originalsRestored() {
 		return errors.New("completed original shortcut restoration required before descendant drain")
 	}
 	if err := n.check(ctx); err != nil {
@@ -448,4 +461,13 @@ func (n *nativeStartupRestoration) drain(ctx context.Context, guard func(context
 		return err
 	}
 	return n.check(ctx)
+}
+
+func (n *nativeStartupRestoration) originalsRestored() bool {
+	for i, original := range n.originals {
+		if original != nil && !n.restored[i] {
+			return false
+		}
+	}
+	return true
 }

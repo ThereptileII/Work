@@ -84,7 +84,7 @@ func TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects(t *testing
 		{"missing safe link", func(r *startupBindingRecord) { r.Links[2] = startupLinkBinding{} }},
 		{"foreign normal identity", func(r *startupBindingRecord) { r.Links[0].New.FileID = r.Links[1].New.FileID }},
 		{"missing backup hash", func(r *startupBindingRecord) { r.Links[0].Original.SHA256 = "" }},
-		{"foreign backup role", func(r *startupBindingRecord) { r.Links[1].Original = r.Links[0].Original; r.Links[0].Original = nil }},
+		{"duplicate backup identity", func(r *startupBindingRecord) { r.Links[1].Original = r.Links[0].Original }},
 		{"wrong menu volume", func(r *startupBindingRecord) { r.Menu.Volume = 9 }},
 	} {
 		t.Run(tc.name, func(t *testing.T) {
@@ -100,5 +100,28 @@ func TestApprovedStartupPublicationRejectsSubstitutedOrPartialObjects(t *testing
 				t.Fatal("substituted or incomplete native identity accepted")
 			}
 		})
+	}
+}
+
+func TestApprovedStartupBindingRetainsEveryOriginalRoleAndOldRecords(t *testing.T) {
+	for mask := 0; mask < 8; mask++ {
+		record, request := startupBindingFixture(t)
+		original := *record.Links[0].Original
+		for i := range record.Links {
+			record.Links[i].Original = nil
+			if mask&(1<<i) != 0 {
+				backup := original
+				backup.FileID = [16]byte{byte(7 + i)}
+				record.Links[i].Original = &backup
+			}
+		}
+		raw, err := json.Marshal(record)
+		if err != nil {
+			t.Fatal(err)
+		}
+		approved, err := ParseApprovedStartupPublication(raw, digest(raw), request, digest(request))
+		if err != nil || !bytes.Equal(approved.OriginalBytes(), raw) {
+			t.Fatalf("original role mask %d did not retain its exact binding: %v", mask, err)
+		}
 	}
 }

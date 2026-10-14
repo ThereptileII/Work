@@ -233,7 +233,7 @@ func (m *MaintenanceOwner) startupGuard(ctx context.Context) error {
 
 // Every destination is checked before any move. Native restore rechecks complete
 // custody and the live witness before AND after each non-replacing handle move.
-func startupRestoreSequence(ctx context.Context, original bool, preflight func() error, move func(int) error) error {
+func startupRestoreSequence(ctx context.Context, originals [3]bool, preflight func() error, move func(int) error) error {
 	if ctx == nil || preflight == nil || move == nil {
 		return errors.New("original native restoration sequence required")
 	}
@@ -243,11 +243,10 @@ func startupRestoreSequence(ctx context.Context, original bool, preflight func()
 	if err := preflight(); err != nil {
 		return err
 	}
-	count := 3
-	if original {
-		count++
-	}
-	for step := 0; step < count; step++ {
+	for step := 0; step < 6; step++ {
+		if step >= 3 && !originals[step-3] {
+			continue
+		}
 		if err := ctx.Err(); err != nil {
 			return errors.Join(ErrStartupRestorationUncertain, err)
 		}

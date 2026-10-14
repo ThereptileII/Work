@@ -9,6 +9,11 @@ import (
 
 const installedOriginalStartupName = "retired-original-Skager.lnk"
 
+func installedOriginalStartupRetirementName(mode startupShortcutMode) string {
+	spec, _ := mode.spec()
+	return "retired-original-" + spec.name
+}
+
 // Classification happens before the terminal fence, from the already retained
 // original LNK bytes. The installed owner supplies only a closed, authenticated
 // target comparison; it cannot provide a new shortcut path or replacement file.
@@ -25,21 +30,23 @@ func (n *nativeStartupRestoration) prepareInstalled(ctx context.Context, owns fu
 	if err := n.check(ctx); err != nil {
 		return err
 	}
-	if n.original == nil {
-		return nil
-	}
-	raw, err := startupReadOriginal(ctx, n.original.pin)
-	if err != nil {
-		return err
-	}
-	target, arguments, working, err := startupLinkFields(raw)
-	if err != nil {
-		return errors.Join(errors.New("original normal shortcut cannot be classified safely"), err)
-	}
-	n.installedEligible = owns(target, arguments, working)
-	if n.installedEligible {
-		if err := startupRestorationAbsent(n.recovery, installedOriginalStartupName); err != nil {
+	for i, original := range n.originals {
+		if original == nil {
+			continue
+		}
+		raw, err := startupReadOriginal(ctx, original.pin)
+		if err != nil {
 			return err
+		}
+		target, arguments, working, err := startupLinkFields(raw)
+		if err != nil {
+			return errors.Join(errors.New("original shortcut cannot be classified safely"), err)
+		}
+		n.installedEligible[i] = owns(target, arguments, working)
+		if n.installedEligible[i] {
+			if err := startupRestorationAbsent(n.recovery, installedOriginalStartupRetirementName(startupShortcutMode(i))); err != nil {
+				return err
+			}
 		}
 	}
 	return n.check(ctx)
@@ -61,16 +68,25 @@ func (n *nativeStartupRestoration) retireInstalled(ctx context.Context, guard fu
 	if err := errors.Join(guard(ctx), n.check(ctx)); err != nil {
 		return err
 	}
-	if !n.installedEligible {
-		return nil
+	for i, eligible := range n.installedEligible {
+		if !eligible {
+			continue
+		}
+		original := n.originals[i]
+		if original == nil || !n.restored[i] || n.originalRetired[i] {
+			return errors.New("same restored original integration shortcut required")
+		}
+		if err := errors.Join(guard(ctx), n.check(ctx)); err != nil {
+			return err
+		}
+		if err := startupRenameRestorationFile(ctx, original, n.recovery, installedOriginalStartupRetirementName(startupShortcutMode(i)), n.record.Links[i].Original.SHA256); err != nil {
+			return err
+		}
+		n.originalRetired[i] = true
+		n.record.Links[i].Original.Creation = uint64(original.pin.info.CreationTime.HighDateTime)<<32 | uint64(original.pin.info.CreationTime.LowDateTime)
+		if err := errors.Join(n.check(ctx), guard(ctx)); err != nil {
+			return err
+		}
 	}
-	if n.original == nil || !n.restored || n.originalRetired {
-		return errors.New("same restored original integration shortcut required")
-	}
-	if err := startupRenameRestorationFile(ctx, n.original, n.recovery, installedOriginalStartupName, n.record.Links[0].Original.SHA256); err != nil {
-		return err
-	}
-	n.originalRetired = true
-	n.record.Links[0].Original.Creation = uint64(n.original.pin.info.CreationTime.HighDateTime)<<32 | uint64(n.original.pin.info.CreationTime.LowDateTime)
-	return errors.Join(n.check(ctx), guard(ctx))
+	return nil
 }

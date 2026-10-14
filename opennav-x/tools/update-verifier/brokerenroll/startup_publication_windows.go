@@ -273,22 +273,13 @@ func publishStartupNative(ctx context.Context, original enrollmentFiles, client 
 	if err != nil {
 		return publication, err
 	}
-	owner.original, err = startupOpenFile(owner.files, menu, startupShortcutName, true, maxStartupShortcutBytes)
-	if errors.Is(err, windows.ERROR_FILE_NOT_FOUND) {
-		owner.original = nil
-		err = nil
-	}
-	if err != nil {
-		return publication, err
-	}
-	// Capture the normal original, but refuse every existing Legacy/Safe target.
-	// Even an old link pointing into LocalAppData is not adopted or overwritten.
+	// Retain originals for each fixed role as rollback data, never as launch or
+	// installation authority. Every original receives the normal backup checks.
 	for mode := startupLegacy; mode <= startupSafe; mode++ {
-		child := &nativeStartupPublication{files: owner.files, clientSID: owner.clientSID, mode: mode}
-		owner.additional = append(owner.additional, child)
-		if err := startupPreflightDestination(child, menu); err != nil {
-			return publication, err
-		}
+		owner.additional = append(owner.additional, &nativeStartupPublication{files: owner.files, clientSID: owner.clientSID, mode: mode})
+	}
+	if err := startupCaptureOriginals(owner, menu); err != nil {
+		return publication, err
 	}
 	// No recovery namespace or staged bytes are created until all destinations
 	// pass preflight. Never adopt an unknown recovery directory, even if empty.
@@ -299,36 +290,10 @@ func publishStartupNative(ctx context.Context, original enrollmentFiles, client 
 	if menu.id.Volume != recovery.id.Volume {
 		return publication, errors.New("startup menu and recovery must share native volume")
 	}
-	type originalEvidence struct {
-		Schema   int              `json:"schema"`
-		Present  bool             `json:"present"`
-		ID       enrollmentFileID `json:"originalFileID"`
-		Creation windows.Filetime `json:"originalCreation"`
-		SHA256   string           `json:"originalSHA256"`
-	}
-	evidence := originalEvidence{Schema: 1, Present: owner.original != nil}
-	if owner.original != nil {
-		bytes, err := startupReadOriginal(ctx, owner.original)
-		if err != nil {
+	for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+		if err := startupWriteOriginalEvidence(ctx, child, recovery, sd); err != nil {
 			return publication, err
 		}
-		owner.originalSHA = digest(bytes)
-		evidence.ID = owner.original.id
-		evidence.Creation = owner.original.info.CreationTime
-		evidence.SHA256 = owner.originalSHA
-		if err := startupHashPin(ctx, owner.original, owner.originalSHA); err != nil {
-			return publication, err
-		}
-		if _, err := startupWriteFile(ctx, owner.files, recovery, "original.lnk.bytes", bytes, sd, false); err != nil {
-			return publication, err
-		}
-	}
-	evidenceBytes, err := json.Marshal(evidence)
-	if err != nil {
-		return publication, err
-	}
-	if _, err := startupWriteFile(ctx, owner.files, recovery, "original.json", evidenceBytes, sd, false); err != nil {
-		return publication, err
 	}
 	// All links use the SAME approved protected image; only the three fixed
 	// broker-start arguments differ. Preserve separate native IDs and hashes.
@@ -448,9 +413,6 @@ func startupPublishRenames(ctx context.Context, owner *nativeStartupPublication,
 	if err != nil {
 		return err
 	}
-	if owner.mode != startupNormal && owner.original != nil {
-		return errors.New("non-normal startup original refused")
-	}
 	if owner.link == nil {
 		return errors.New("retained pending startup shortcut required")
 	}
@@ -506,9 +468,6 @@ func startupPreflightDestination(owner *nativeStartupPublication, menu *enrollme
 		return err
 	}
 	if owner.original != nil {
-		if owner.mode != startupNormal {
-			return errors.New("non-normal startup original refused")
-		}
 		return owner.original.check()
 	}
 	path, err := windows.UTF16PtrFromString(enrollmentPhysical(menu.physical + `\` + spec.name))
@@ -562,7 +521,7 @@ func startupPublicationManifest(owner *nativeStartupPublication) ([]byte, error)
 		}
 		item := entry{Name: spec.name, Pending: spec.pending, New: identity{child.link.id, child.link.info.CreationTime, child.linkSHA}}
 		if child.original != nil {
-			if child.mode != startupNormal || !validPin(child.originalSHA) {
+			if !validPin(child.originalSHA) {
 				return nil, errors.New("startup manifest original refused")
 			}
 			item.Original = &identity{child.original.id, child.original.info.CreationTime, child.originalSHA}
@@ -573,4 +532,65 @@ func startupPublicationManifest(owner *nativeStartupPublication) ([]byte, error)
 		Schema int     `json:"schema"`
 		Links  []entry `json:"links"`
 	}{1, entries})
+}
+
+// The historical normal evidence names remain stable. Other fixed roles get
+// separate synced copies before any rename; their native originals stay held.
+func startupWriteOriginalEvidence(ctx context.Context, owner *nativeStartupPublication, recovery *enrollmentPin, sd *windows.SECURITY_DESCRIPTOR) error {
+	spec, err := owner.mode.spec()
+	if err != nil {
+		return err
+	}
+	name, byteName := "original.json", "original.lnk.bytes"
+	if owner.mode != startupNormal {
+		name, byteName = "original-"+spec.name+".json", "original-"+spec.name+".bytes"
+	}
+	type originalEvidence struct {
+		Schema   int              `json:"schema"`
+		Present  bool             `json:"present"`
+		ID       enrollmentFileID `json:"originalFileID"`
+		Creation windows.Filetime `json:"originalCreation"`
+		SHA256   string           `json:"originalSHA256"`
+	}
+	evidence := originalEvidence{Schema: 1, Present: owner.original != nil}
+	if owner.original != nil {
+		raw, err := startupReadOriginal(ctx, owner.original)
+		if err != nil {
+			return err
+		}
+		owner.originalSHA = digest(raw)
+		evidence.ID, evidence.Creation, evidence.SHA256 = owner.original.id, owner.original.info.CreationTime, owner.originalSHA
+		if err := startupHashPin(ctx, owner.original, owner.originalSHA); err != nil {
+			return err
+		}
+		if _, err := startupWriteFile(ctx, owner.files, recovery, byteName, raw, sd, false); err != nil {
+			return err
+		}
+	}
+	raw, err := json.Marshal(evidence)
+	if err != nil {
+		return err
+	}
+	_, err = startupWriteFile(ctx, owner.files, recovery, name, raw, sd, false)
+	return err
+}
+
+func startupCaptureOriginals(owner *nativeStartupPublication, menu *enrollmentPin) error {
+	for _, child := range append([]*nativeStartupPublication{owner}, owner.additional...) {
+		spec, err := child.mode.spec()
+		if err != nil {
+			return err
+		}
+		child.original, err = startupOpenFile(owner.files, menu, spec.name, true, maxStartupShortcutBytes)
+		if errors.Is(err, windows.ERROR_FILE_NOT_FOUND) {
+			child.original, err = nil, nil
+		}
+		if err != nil {
+			return err
+		}
+		if err := startupPreflightDestination(child, menu); err != nil {
+			return err
+		}
+	}
+	return nil
 }

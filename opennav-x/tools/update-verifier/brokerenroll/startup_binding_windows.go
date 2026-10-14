@@ -98,8 +98,8 @@ func completeStartupPublicationBinding(ctx context.Context, owner *nativeStartup
 			return err
 		}
 		if child.original != nil {
-			if i != 0 || child.original.physical != recovery.physical+`\`+spec.name || child.original.dos != filepath.Join(recovery.dos, spec.name) {
-				return errors.New("only the same original normal backup may complete")
+			if child.original.physical != recovery.physical+`\`+spec.name || child.original.dos != filepath.Join(recovery.dos, spec.name) {
+				return errors.New("only the same original fixed-role backup may complete")
 			}
 			identity, err := startupFileIdentity(ctx, child.original, child.originalSHA)
 			if err != nil {

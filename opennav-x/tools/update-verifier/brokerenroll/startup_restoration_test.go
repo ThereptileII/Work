@@ -341,7 +341,7 @@ func (s *startupRestorationFixture) check(context.Context) error {
 	return nil
 }
 func (s *startupRestorationFixture) restore(ctx context.Context, guard func(context.Context) error) error {
-	return startupRestoreSequence(ctx, true, func() error {
+	return startupRestoreSequence(ctx, [3]bool{true}, func() error {
 		if err := guard(ctx); err != nil {
 			return err
 		}
@@ -549,7 +549,7 @@ func TestStartupRestorationSequenceWithoutOriginalAndPartialFailures(t *testing.
 	for _, original := range []bool{false, true} {
 		for fail := -1; fail < 4; fail++ {
 			moves := []int{}
-			err := startupRestoreSequence(context.Background(), original, func() error {
+			err := startupRestoreSequence(context.Background(), [3]bool{original}, func() error {
 				if fail == -1 {
 					return errors.New("foreign target")
 				}
@@ -577,6 +577,60 @@ func TestStartupRestorationSequenceWithoutOriginalAndPartialFailures(t *testing.
 				t.Fatal("no-original transaction failed")
 			}
 		}
+	}
+}
+
+func TestStartupRestorationSequenceEveryOriginalRoleAndPartialFailure(t *testing.T) {
+	for mask := 0; mask < 8; mask++ {
+		originals := [3]bool{}
+		want := []int{0, 1, 2}
+		for i := range originals {
+			originals[i] = mask&(1<<i) != 0
+			if originals[i] {
+				want = append(want, 3+i)
+			}
+		}
+		for fail := -1; fail < len(want); fail++ {
+			moves := []int{}
+			err := startupRestoreSequence(context.Background(), originals, func() error { return nil }, func(step int) error {
+				moves = append(moves, step)
+				if len(moves)-1 == fail {
+					return errors.New("retained original move failed")
+				}
+				return nil
+			})
+			count := len(want)
+			if fail >= 0 {
+				count = fail + 1
+			}
+			if len(moves) != count {
+				t.Fatalf("mask %d moved after failure: %v", mask, moves)
+			}
+			for i, step := range moves {
+				if step != want[i] {
+					t.Fatalf("mask %d reordered original roles: %v", mask, moves)
+				}
+			}
+			if (fail >= 0) != errors.Is(err, ErrStartupRestorationUncertain) {
+				t.Fatalf("mask %d lost partial failure: %v", mask, err)
+			}
+		}
+	}
+}
+
+func TestStartupRestorationCancellationBeforeSafeOriginalMove(t *testing.T) {
+	ctx, cancel := context.WithCancel(context.Background())
+	defer cancel()
+	moves := []int{}
+	err := startupRestoreSequence(ctx, [3]bool{true, false, true}, func() error { return nil }, func(step int) error {
+		moves = append(moves, step)
+		if step == 3 {
+			cancel()
+		}
+		return nil
+	})
+	if !errors.Is(err, context.Canceled) || !errors.Is(err, ErrStartupRestorationUncertain) || len(moves) != 4 || moves[3] != 3 {
+		t.Fatal("cancellation after normal restoration continued into the original Safe move", moves, err)
 	}
 }
 

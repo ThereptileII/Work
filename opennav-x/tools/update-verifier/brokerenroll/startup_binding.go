@@ -140,8 +140,8 @@ func validateStartupBinding(r startupBindingRecord, request brokerregistration.R
 		if err != nil || link.Name != spec.name || !validStartupFile(link.New, 1<<20) || link.New.Volume != r.Menu.Volume || !add(link.New.startupDirectoryBinding) {
 			return errors.New("all three distinct fixed published shortcuts required")
 		}
-		if link.Original != nil && (i != 0 || !validStartupFile(*link.Original, 1<<20) || link.Original.Volume != r.Recovery.Volume || !add(link.Original.startupDirectoryBinding)) {
-			return errors.New("only the original normal shortcut may be retained")
+		if link.Original != nil && (!validStartupFile(*link.Original, 1<<20) || link.Original.Volume != r.Recovery.Volume || !add(link.Original.startupDirectoryBinding)) {
+			return errors.New("distinct bounded original shortcut backups required")
 		}
 	}
 	return nil
