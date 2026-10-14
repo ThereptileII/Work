@@ -35,9 +35,15 @@ class HandoffTests(unittest.TestCase):
                            trustConfiguration={'schema': 1}, trustConfigSha256='6' * 64)
         self.client_bytes = json.dumps(self.client, indent=2).encode()  # Original bytes are not canonicalized.
         file = lambda name, digest: dict(path='C:\\approved\\' + name, sha256=digest)
-        self.declaration = dict(schema=1, b0=dict(version='0.4.0-beta2.4', commit='b' * 40,
+        self.setup = dict(path=r'C:\approved\SKAGER-Beta2-Setup.exe', sha256='0' * 64, bytes=1234)
+        self.policy = dict(schema=1, product='skager', channel='beta', version='0.4.0-beta2.4', commit='b' * 40,
+                           installer=dict(path='artifacts/' + 'b' * 40 + '/SKAGER-Beta2-Setup.exe',
+                                          url='https://approved.invalid/Setup.exe', sha256=self.setup['sha256'], bytes=1234),
+                           releaseNotes={}, recovery={}, correspondingSource={}, notices={}, supportedOpenCpn=[])
+        self.policy_bytes = json.dumps(self.policy, indent=2).encode()
+        self.declaration = dict(schema=1, setup=dict(path=self.setup['path'], sha256=self.setup['sha256']), b0=dict(version='0.4.0-beta2.4', commit='b' * 40,
                                                 recovery=file('b0.zip', '7' * 64), source=file('source.zip', '8' * 64),
-                                                policy=file('beta.json', '9' * 64)),
+                                                policy=file('beta.json', handoff.sha256(self.policy_bytes))),
                                 operatorKit=file('kit.zip', 'a' * 64),
                                 clientRequest=file('client.json', handoff.sha256(self.client_bytes)),
                                 brokerBootstrapPolicy=file('broker-beta.json', 'b' * 64),
@@ -54,7 +60,7 @@ class HandoffTests(unittest.TestCase):
                             candidate=dict(artifact=self.artifact, releaseManifestSha256='1' * 64, qualificationSha256='2' * 64),
                             operatorKit=dict(artifact=self.kit, sha256='a' * 64),
                             b0=dict(version='0.4.0-beta2.4', commit='b' * 40, recoverySha256='7' * 64,
-                                    sourceSha256='8' * 64, policySha256='9' * 64, trustSha256='6' * 64), pins=self.pins)
+                                    sourceSha256='8' * 64, policySha256=handoff.sha256(self.policy_bytes), trustSha256='6' * 64), pins=self.pins)
         self.request_bytes = encode(self.request)
         self.approval = dict(schema=1, purpose=handoff.APPROVAL_PURPOSE, requestSha256=handoff.sha256(self.request_bytes),
                              runner=self.runner, challenge='f' * 64, issuedAt='2026-10-13T12:01:00Z',
@@ -65,6 +71,7 @@ class HandoffTests(unittest.TestCase):
     def inputs(self):
         return dict(request_bytes=self.request_bytes, approval_bytes=self.approval_bytes,
                     client_request=self.client_bytes, declaration=self.declaration_bytes,
+                    release_policy=self.policy_bytes, expected_setup=deepcopy(self.setup),
                     approved_request_sha256=handoff.sha256(self.request_bytes),
                     approved_approval_sha256=handoff.sha256(self.approval_bytes), approved_pins=deepcopy(self.pins),
                     expected_runner=deepcopy(self.runner), expected_challenge='f' * 64,
@@ -95,6 +102,11 @@ class HandoffTests(unittest.TestCase):
         result = self.bind()
         self.assertEqual(result.original_client_request_bytes, self.client_bytes)
         self.assertEqual(result.original_declaration_bytes, self.declaration_bytes)
+        self.assertEqual(result.original_release_policy_bytes, self.policy_bytes)
+        self.assertEqual((result.setup.path, result.setup.sha256, result.setup.size),
+                         (self.setup['path'], self.setup['sha256'], self.setup['bytes']))
+        with self.assertRaises(FrozenInstanceError):
+            result.setup.size = 99
         self.assertEqual(result.original_approval_bytes, self.approval_bytes)
         self.assertEqual(result.request.original_bytes, self.request_bytes)
         self.assertEqual(result.request.runner.job_id, '456')
@@ -103,8 +115,76 @@ class HandoffTests(unittest.TestCase):
         with self.assertRaises(TypeError):
             result.request.pins[0] = ('clientRequestSha256', '0' * 64)
 
+    def prepare_originals(self, declaration=None, policy=None):
+        # Re-pin inert changed originals to exercise semantic binding, rather
+        # than getting a refusal only because an earlier hash became stale.
+        declared = deepcopy(self.declaration if declaration is None else declaration)
+        policy_bytes = json.dumps(self.policy if policy is None else policy, indent=2).encode()
+        declared['b0']['policy']['sha256'] = handoff.sha256(policy_bytes)
+        declaration_bytes = json.dumps(declared, indent=2).encode()
+        request = deepcopy(self.request)
+        request['b0']['policySha256'] = handoff.sha256(policy_bytes)
+        request['pins']['declarationSha256'] = handoff.sha256(declaration_bytes)
+        return handoff.prepare_request(request, client_request=self.client_bytes, declaration=declaration_bytes,
+                                       release_policy=policy_bytes, expected_setup=self.setup)
+
+    def test_setup_first_declaration_requires_exact_original_setup_record(self):
+        self.assertEqual(self.prepare_originals().policy_sha256, handoff.sha256(self.policy_bytes))
+        changes = [None, {}, {'path': self.setup['path']},
+                   dict(self.declaration['setup'], unknown=1),
+                   dict(self.declaration['setup'], path=r'C:\approved\other.exe'),
+                   dict(self.declaration['setup'], sha256='f' * 64)]
+        for setup in changes:
+            declaration = deepcopy(self.declaration)
+            if setup is None:
+                del declaration['setup']  # Former declaration schema must refuse.
+            else:
+                declaration['setup'] = setup
+            with self.subTest(setup=setup), self.assertRaises(ValueError):
+                self.prepare_originals(declaration=declaration)
+
+    def test_independent_setup_metadata_must_match_policy_size_hash_and_declared_path(self):
+        for field, value in (('path', r'C:\approved\other.exe'), ('path', 'bad\npath'),
+                             ('sha256', 'f' * 64), ('bytes', 1233), ('bytes', True),
+                             ('bytes', 0), ('bytes', (1 << 30) + 1)):
+            with self.subTest(field=field, value=value), self.assertRaises(ValueError):
+                self.bind(expected_setup=dict(self.setup, **{field: value}))
+        for record in ({}, dict(self.setup, unknown=1)):
+            with self.subTest(record=record), self.assertRaises(ValueError):
+                self.bind(expected_setup=record)
+
+    def test_policy_installer_binding_refuses_changed_original_and_wrong_fixed_target(self):
+        with self.assertRaises(ValueError):
+            self.bind(release_policy=self.policy_bytes + b'\n')
+        for key, value in (('path', 'artifacts/' + 'b' * 40 + '/other.exe'),
+                           ('path', 'artifacts/' + 'a' * 40 + '/SKAGER-Beta2-Setup.exe'),
+                           ('sha256', 'f' * 64), ('bytes', 1233), ('bytes', True),
+                           ('bytes', 0), ('bytes', (1 << 30) + 1)):
+            policy = deepcopy(self.policy)
+            policy['installer'][key] = value
+            with self.subTest(key=key, value=value), self.assertRaises(ValueError):
+                self.prepare_originals(policy=policy)
+        policy = deepcopy(self.policy)
+        policy['installer']['unknown'] = 1
+        with self.assertRaises(ValueError):
+            self.prepare_originals(policy=policy)
+        for key, value in (('schema', True), ('product', 'other'), ('channel', 'stable'),
+                           ('version', '0.4.0-beta2.5'), ('commit', 'a' * 40)):
+            policy = dict(self.policy, **{key: value})
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.prepare_originals(policy=policy)
+
+    def test_setup_metadata_is_owned_and_file_io_is_not_performed(self):
+        with patch('builtins.open', side_effect=AssertionError('unexpected file access')):
+            bound = self.bind()
+        self.setup['path'] = r'C:\changed-after-binding.exe'
+        self.setup['sha256'] = 'f' * 64
+        self.setup['bytes'] = 1
+        self.assertEqual(bound.setup, handoff.Setup(r'C:\approved\SKAGER-Beta2-Setup.exe', '0' * 64, 1234))
+
     def test_prepare_returns_review_data_without_approval_and_owns_nested_inputs(self):
-        result = handoff.prepare_request(self.request, client_request=self.client_bytes, declaration=self.declaration_bytes)
+        result = handoff.prepare_request(self.request, client_request=self.client_bytes, declaration=self.declaration_bytes,
+                                         release_policy=self.policy_bytes, expected_setup=self.setup)
         self.runner['jobId'] = '999'
         self.pins['brokerSha256'] = '0' * 64
         self.assertEqual(result.runner.job_id, '456')
@@ -255,9 +335,11 @@ class HandoffTests(unittest.TestCase):
                     inputs = self.inputs_without_hashes()
                     inputs[parameter] = b'x' * (limit + 1)
                     handoff.bind_approval(**inputs)
-        prepared = handoff.prepare_request(self.request, client_request=self.client_bytes, declaration=self.declaration_bytes)
-        for parameter, limit in (('client_request', 1 << 20), ('declaration', 64 << 10)):
-            inputs = dict(client_request=self.client_bytes, declaration=self.declaration_bytes)
+        prepared = handoff.prepare_request(self.request, client_request=self.client_bytes, declaration=self.declaration_bytes,
+                                         release_policy=self.policy_bytes, expected_setup=self.setup)
+        for parameter, limit in (('client_request', 1 << 20), ('declaration', 64 << 10), ('release_policy', 32 << 10)):
+            inputs = dict(client_request=self.client_bytes, declaration=self.declaration_bytes,
+                                         release_policy=self.policy_bytes, expected_setup=self.setup)
             inputs[parameter] = b'x' * (limit + 1)
             with self.subTest(parameter=parameter), patch.object(handoff, 'sha256', side_effect=AssertionError('unexpected hash')):
                 with self.assertRaises(ValueError):
@@ -267,6 +349,7 @@ class HandoffTests(unittest.TestCase):
         # Known fixture pins avoid accidentally hashing in the test itself.
         return dict(request_bytes=self.request_bytes, approval_bytes=self.approval_bytes,
                     client_request=self.client_bytes, declaration=self.declaration_bytes,
+                    release_policy=self.policy_bytes, expected_setup=deepcopy(self.setup),
                     approved_request_sha256='0' * 64, approved_approval_sha256='0' * 64,
                     approved_pins=self.pins, expected_runner=self.runner, expected_challenge='f' * 64,
                     expected_candidate_artifact=self.artifact, expected_operator_kit_artifact=self.kit, now=self.now)
@@ -291,7 +374,8 @@ class HandoffTests(unittest.TestCase):
             request = deepcopy(self.request)
             request['pins']['declarationSha256'] = handoff.sha256(raw)
             with self.subTest(key=key), self.assertRaises(ValueError):
-                handoff.prepare_request(request, client_request=self.client_bytes, declaration=raw)
+                handoff.prepare_request(request, client_request=self.client_bytes, declaration=raw,
+                                        release_policy=self.policy_bytes, expected_setup=self.setup)
 
     def test_duplicate_or_unknown_originals_refuse_after_pin_matching(self):
         for raw in (self.client_bytes.replace(b'{', b'{"schema":1,', 1),
@@ -303,7 +387,8 @@ class HandoffTests(unittest.TestCase):
             request['pins']['clientRequestSha256'] = handoff.sha256(raw)
             request['pins']['declarationSha256'] = handoff.sha256(declaration_raw)
             with self.assertRaises(ValueError):
-                handoff.prepare_request(request, client_request=raw, declaration=declaration_raw)
+                handoff.prepare_request(request, client_request=raw, declaration=declaration_raw,
+                                        release_policy=self.policy_bytes, expected_setup=self.setup)
 
 
 if __name__ == '__main__':

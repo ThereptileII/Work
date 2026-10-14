@@ -200,12 +200,21 @@ def _request(raw):
                    _hex(value['candidate']['qualificationSha256']), _pins(value['pins']))
 
 
-def _originals(request, client_request, declaration):
+@dataclass(frozen=True, slots=True)
+class Setup:
+    path: str
+    sha256: str
+    size: int
+
+
+def _originals(request, client_request, declaration, release_policy, expected_setup):
     require(type(client_request) is bytes and 0 < len(client_request) <= 1 << 20 and
-            type(declaration) is bytes and 0 < len(declaration) <= 64 << 10)
+            type(declaration) is bytes and 0 < len(declaration) <= 64 << 10 and
+            type(release_policy) is bytes and 0 < len(release_policy) <= 32 << 10)
     pins = dict(request.pins)
     require(sha256(client_request) == pins['clientRequestSha256'] and
-            sha256(declaration) == pins['declarationSha256'])
+            sha256(declaration) == pins['declarationSha256'] and
+            sha256(release_policy) == request.policy_sha256)
     client = _json(client_request, 1 << 20)
     declared = _json(declaration, 64 << 10)
     _keys(client, ('schema', 'purpose', 'clientSid', 'installed', 'stock', 'trustConfiguration', 'trustConfigSha256'))
@@ -217,7 +226,7 @@ def _originals(request, client_request, declaration):
     for name in ('packageSha256', 'productBuildSha256', 'executableSha256', 'inventorySha256'):
         _hex(client['installed'][name])
     _keys(client['stock'], ('path', 'version', 'arch', 'executableSha256', 'upstreamCommit'))
-    _keys(declared, ('schema', 'b0', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
+    _keys(declared, ('schema', 'b0', 'setup', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
                      'trustConfig', 'bootstrapCache', 'artifactDirectory', 'preserveSettings'))
     require(type(declared['schema']) is int and declared['schema'] == 1)
     _keys(declared['b0'], ('version', 'commit', 'recovery', 'source', 'policy'))
@@ -235,18 +244,42 @@ def _originals(request, client_request, declaration):
         _keys(record, ('path', 'sha256'))
         require(type(record['path']) is str and 0 < len(record['path']) <= 32767 and
                 not any(c in record['path'] for c in '\x00\r\n') and _hex(record['sha256']) == digest)
+    policy = _json(release_policy, 32 << 10)
+    _keys(policy, ('schema', 'product', 'channel', 'version', 'commit', 'releaseNotes',
+                   'installer', 'recovery', 'correspondingSource', 'notices', 'supportedOpenCpn'))
+    require(type(policy['schema']) is int and policy['schema'] == 1 and
+            policy['product'] == 'skager' and policy['channel'] == 'beta' and
+            policy['version'] == request.version and policy['commit'] == request.commit)
+    installer = policy['installer']
+    _keys(installer, ('path', 'url', 'sha256', 'bytes'))
+    _hex(installer['sha256'])
+    require(installer['path'] == 'artifacts/' + request.commit + '/SKAGER-Beta2-Setup.exe' and
+            type(installer['bytes']) is int and
+            0 < installer['bytes'] <= 1 << 30)
+    _keys(declared['setup'], ('path', 'sha256'))
+    _keys(expected_setup, ('path', 'sha256', 'bytes'))
+    path = expected_setup['path']
+    require(type(path) is str and 0 < len(path) <= 32767 and
+            not any(c in path for c in '\x00\r\n') and
+            path == declared['setup']['path'] and
+            _hex(expected_setup['sha256']) == _hex(declared['setup']['sha256']) == installer['sha256'] and
+            type(expected_setup['bytes']) is int and expected_setup['bytes'] == installer['bytes'])
+    # File identity/size/hash observations come from the independently verified
+    # original Setup owner. This byte-only module never opens a declared path.
     # Native declaration/stock/trust/file/profile validation stays in the existing
     # admission driver and provisioner. Binding original bytes cannot replace it.
+    return Setup(path, expected_setup['sha256'], expected_setup['bytes'])
 
 
-def prepare_request(value, *, client_request, declaration):
+def prepare_request(value, *, client_request, declaration, release_policy, expected_setup):
     """Own and validate a proposed envelope; produce no approval or file.
 
-    Call only after the two original input files have been produced and retained.
+    Call only after the original client request, declaration and approved release
+    policy have been produced and retained, and Setup metadata verified separately.
     The returned digest is review data, not authority to approve those inputs.
     """
     request = _request(_encode(value))
-    _originals(request, client_request, declaration)
+    _originals(request, client_request, declaration, release_policy, expected_setup)
     return request
 
 
@@ -259,9 +292,11 @@ class BoundApproval:
     expires_at: datetime
     original_client_request_bytes: bytes
     original_declaration_bytes: bytes
+    original_release_policy_bytes: bytes
+    setup: Setup
 
 
-def bind_approval(*, request_bytes, approval_bytes, client_request, declaration,
+def bind_approval(*, request_bytes, approval_bytes, client_request, declaration, release_policy, expected_setup,
                   approved_request_sha256, approved_approval_sha256, approved_pins,
                   expected_runner, expected_challenge, expected_candidate_artifact,
                   expected_operator_kit_artifact, now):
@@ -270,6 +305,8 @@ def bind_approval(*, request_bytes, approval_bytes, client_request, declaration,
     All approved_* inputs must arrive through the caller's independently
     authenticated operator channel, not from these records or a self-hash.
     Expected context/artifacts must be independently authenticated by the caller.
+    expected_setup is the independently verified original local Setup metadata
+    {path, sha256, bytes}; release_policy retains the original approved B0 policy.
     Recheck expiry immediately before using the record. Parsing consumes no nonce.
     """
     _clock(now)
@@ -282,7 +319,7 @@ def bind_approval(*, request_bytes, approval_bytes, client_request, declaration,
             request.candidate == _artifact(expected_candidate_artifact, 16 << 30) and
             request.operator_kit == _artifact(expected_operator_kit_artifact, 768 << 20) and
             request.pins == _pins(approved_pins) and request.created_at <= now < request.expires_at)
-    _originals(request, client_request, declaration)
+    setup = _originals(request, client_request, declaration, release_policy, expected_setup)
     approval = _canonical(approval_bytes)
     _keys(approval, ('schema', 'purpose', 'requestSha256', 'runner', 'challenge', 'issuedAt', 'expiresAt'))
     require(type(approval['schema']) is int and approval['schema'] == 1 and approval['purpose'] == APPROVAL_PURPOSE and
@@ -292,4 +329,4 @@ def bind_approval(*, request_bytes, approval_bytes, client_request, declaration,
     require(request.created_at < issued <= now < expires <= request.expires_at and
             timedelta(0) < expires - issued <= MAX_APPROVAL_LIFETIME)
     return BoundApproval(request, approval_bytes, approved_approval_sha256, issued, expires,
-                         client_request, declaration)
+                         client_request, declaration, release_policy, setup)
