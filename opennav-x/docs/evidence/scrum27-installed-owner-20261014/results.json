@@ -1,0 +1,84 @@
+{
+  "run": 38516605460,
+  "attempt": 1,
+  "source": "b93da59cf0749157dfca84c562cc8c39713ece68",
+  "scope": "focused component native and portable tests; not installed or boat acceptance",
+  "artifacts": [
+    {
+      "platform": "windows",
+      "id": 11871928972,
+      "name": "startup-restoration-Windows-b93da59cf0749157dfca84c562cc8c39713ece68-run38516605460-attempt1",
+      "bytes": 31486,
+      "sha256": "4a5ef2334536147742aad5cced621a78595435b404b10a0ca962fbf3c02821c2",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 171,
+        "nested_pass": 448,
+        "top_skip": 3
+      },
+      "skips": [
+        "TestDecommissionExplicitAPIRequiresWindows",
+        "TestStartupRestorationPublicNativeBoundary",
+        "TestStartupExplicitAPIRefusesNonWindows"
+      ],
+      "requiredPassed": [
+        "TestInstalledUninstallDecommissionFaultsRemainStickyAndPreserveSCMOrdering",
+        "TestInstalledUninstallDecommissionNativeCancellationAndReplacementRefusal",
+        "TestInstalledUninstallDecommissionNativeOriginalDeletionDisposition",
+        "TestInstalledUninstallDecommissionRequiresFinalRetirementNotParsedData",
+        "TestInstalledUninstallDecommissionRetainsOriginalsAndCleansOnlyAfterExit",
+        "TestInstalledUninstallRetirementInventoryCannotAdoptMutableOwnership",
+        "TestInstalledUninstallRetirementNativeStateMovesOriginalAndPreservesCollision",
+        "TestInstalledUninstallRetirementRejectsSelfDeclaredBaselineBytes",
+        "TestInstalledUninstallRetirementStateOnlyLocatesApprovedTargets",
+        "TestNativeInstalledRegistryDecommissionCommitDeletesOnlyOriginalKey",
+        "TestNativeInstalledRegistryDecommissionRejectsUnknownChangedAndAliasedValues",
+        "TestNativeInstalledRegistryDecommissionTimeoutAbortsAndPreservesOriginal",
+        "TestNativeInstalledRegistryRetirementConflictingNontransactedMutationPreservesOriginal",
+        "TestNativeInstalledRegistryRetirementDeleteIsHiddenBeforeCommitAndCloseRollsBack",
+        "TestNativeInstalledRegistryRetirementSecurityDistinguishesNotifyFromMutation",
+        "TestNativeInstalledRegistryRetirementUnsupportedAndCancelledNeverPlainDelete",
+        "TestNativeRetirementCompletedLineageKeepsOriginalRootsAcrossDrainAndJournal",
+        "TestNativeRetirementLineageRefusesPendingExtraPartialAndChangedOriginals",
+        "TestNativeStartupInstalledPreparationRefusesUnclassifiableOriginal",
+        "TestNativeStartupInstalledRetirementPreservesOriginalShortcutCustody",
+        "TestNativeStartupLinkFieldsPreservesExactSelectionFields",
+        "TestNativeStartupLinkFieldsRefusesTruncatedGetterResults",
+        "TestNativeStartupLinkFieldsRejectsMalformedAndOversized",
+        "TestNativeStartupLinkFieldsRoundTripStockAndIntegration",
+        "TestNativeStartupLinkFieldsUTF16BoundAndTermination",
+        "TestOperatorInstalledUninstallDecommissionArtifactIsRequiredAndActionBound",
+        "TestOperatorInstalledUninstallDecommissionFaultsCannotDowngrade",
+        "TestOperatorInstalledUninstallDecommissionStaysInOneOwner",
+        "TestRetirementLineageIncludesUpdatedAndRolledBackRoots",
+        "TestRetirementLineageRefusesUnqualifiedOrChangedHistory"
+      ]
+    },
+    {
+      "platform": "linux",
+      "id": 11871427964,
+      "name": "startup-restoration-Linux-b93da59cf0749157dfca84c562cc8c39713ece68-run38516605460-attempt1",
+      "bytes": 30132,
+      "sha256": "2a9f8eb55cb4b7d806e34aafc5a72eaf776dfd6c0e62ce57e54753826c008c47",
+      "zipCRC": "verified",
+      "counts": {
+        "top_pass": 117,
+        "nested_pass": 347
+      },
+      "skips": [],
+      "requiredPassed": [
+        "TestInstalledUninstallDecommissionFaultsRemainStickyAndPreserveSCMOrdering",
+        "TestInstalledUninstallDecommissionRequiresFinalRetirementNotParsedData",
+        "TestInstalledUninstallDecommissionRetainsOriginalsAndCleansOnlyAfterExit",
+        "TestInstalledUninstallRetirementInventoryCannotAdoptMutableOwnership",
+        "TestInstalledUninstallRetirementRejectsSelfDeclaredBaselineBytes",
+        "TestInstalledUninstallRetirementStateOnlyLocatesApprovedTargets",
+        "TestOperatorInstalledUninstallDecommissionArtifactIsRequiredAndActionBound",
+        "TestOperatorInstalledUninstallDecommissionFaultsCannotDowngrade",
+        "TestOperatorInstalledUninstallDecommissionStaysInOneOwner",
+        "TestRetirementLineageIncludesUpdatedAndRolledBackRoots",
+        "TestRetirementLineageRefusesUnqualifiedOrChangedHistory"
+      ]
+    }
+  ]
+}

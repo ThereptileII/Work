@@ -59,3 +59,12 @@ faults must prove their own branch was reached and retain deadline/cancellation
 identity. Existing direct-owner native tests already check durable journal bytes
 inside the callback. No production lock, sharing, runtime hook or safety
 assertion is relaxed. Native evidence for this revision remains pending.
+
+## Qualified replacement
+
+The combined source `b93da59cf0749157dfca84c562cc8c39713ece68` passes
+[run 38516605460](https://github.com/ThereptileII/Work/actions/runs/38516605460).
+Both lineage native controls and every original-startup/reader control actually
+pass. [Authenticated combined evidence](../scrum27-installed-owner-20261014/README.md)
+preserves exact source, artifact identities, counts and limits. The two earlier
+runs remain failed; this does not relabel their evidence.

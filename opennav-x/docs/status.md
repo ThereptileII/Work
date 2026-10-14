@@ -1,5 +1,27 @@
 # SKAGER status — 2026-10-14
 
+## Installed cleanup owner passes focused Windows and Linux
+
+Exact source `b93da59cf0749157dfca84c562cc8c39713ece68` passes
+[run 38516605460](https://github.com/ThereptileII/Work/actions/runs/38516605460):
+Linux **117 top-level / 347 nested** and native Win32 Windows **171 top-level /
+448 nested** cases, zero failures. Three existing non-Windows-boundary checks
+skip on Windows; all 30 specifically required native controls pass without skips.
+Downloaded original artifacts match provider hashes, lengths and ZIP CRCs.
+
+The same owner now joins approved installed inventory, original shortcut
+retirement, closed completed generation lineage, service shutdown and bounded
+installed file/registry cleanup. Native registry transaction visibility, conflict,
+rollback, timeout and exact commit run in disposable private keys. Original
+stock, modified/unknown members and recovery are preserved by the contract.
+[Authenticated evidence and limits](evidence/scrum27-installed-owner-20261014/README.md).
+
+**Still open:** customer Maintain integration and a complete actual installed
+B0/update/rollback/uninstall journey, application package and boat acceptance.
+This component pass does not close SCRUM-27. No new full application build or
+boat operation was requested. The entries below preserve earlier failures and
+checkpoints.
+
 ## Corrected protected-uninstall sequence passes focused native Windows
 
 Exact source `d7be409dc5c3abc31b82315510891adf53de4486` passes
