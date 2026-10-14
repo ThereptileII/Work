@@ -1,0 +1,124 @@
+{
+  "artifacts": [
+    {
+      "artifactBytes": 594,
+      "artifactId": 11930833440,
+      "artifactSha256": "f53220178efe85d1c6bd38e5bc24bfd9f7cf92f0d1afcc33f331349ef568475d",
+      "attempt": 1,
+      "jobId": 116123937795,
+      "kind": "profile",
+      "resultBytes": 780,
+      "resultCrc32": "65eaf723",
+      "runId": 38643305138,
+      "sourceCommit": "1aa6275486ff6f981d3d46562c85705a3622b169",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    },
+    {
+      "artifactBytes": 1470,
+      "artifactId": 11930793327,
+      "artifactSha256": "9bec5590c87c65d42d25eecd3f8956ab685738587f974d54ca13e509a79aaade",
+      "attempt": 1,
+      "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+      "jobId": 116123937795,
+      "kind": "account",
+      "resultBytes": 6071,
+      "resultCrc32": "613a10f8",
+      "runId": 38643305138,
+      "sourceCommit": "1aa6275486ff6f981d3d46562c85705a3622b169",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    }
+  ],
+  "observations": {
+    "attempt": 1,
+    "jobId": 116123937795,
+    "observations": {
+      "beforeResume": {
+        "modules": {
+          "nativeError": 299,
+          "state": "unavailable"
+        },
+        "originalIdentityVerified": true,
+        "pendingIO": {
+          "pending": false,
+          "state": "observed"
+        },
+        "state": "observed",
+        "threadTimes": {
+          "kernel100ns": 0,
+          "state": "observed",
+          "user100ns": 0
+        },
+        "windows": {
+          "boundReached": false,
+          "state": "observed",
+          "windows": []
+        }
+      },
+      "onTimeout": {
+        "modules": {
+          "present": {
+            "_ctypes.pyd": false,
+            "kernel32.dll": false,
+            "kernelbase.dll": false,
+            "ntdll.dll": true,
+            "python312.dll": false,
+            "ucrtbase.dll": false,
+            "user32.dll": false
+          },
+          "state": "observed"
+        },
+        "originalIdentityVerified": true,
+        "pendingIO": {
+          "pending": false,
+          "state": "observed"
+        },
+        "state": "observed",
+        "threadTimes": {
+          "kernel100ns": 0,
+          "state": "observed",
+          "user100ns": 0
+        },
+        "windows": {
+          "boundReached": false,
+          "state": "observed",
+          "windows": []
+        }
+      }
+    },
+    "originalUploadLogBindingVerified": true,
+    "profileState": "disposable-profile-created",
+    "runConclusion": "failure",
+    "runId": 38643305138,
+    "sourceCommit": "1aa6275486ff6f981d3d46562c85705a3622b169",
+    "workflowPath": ".github/workflows/skager-disposable-account-probe.yml"
+  },
+  "profile": {
+    "customerUacAcceptance": false,
+    "nativeInstalledAcceptance": false,
+    "nativeProductAcceptance": false,
+    "preservation": {
+      "navigationDetailsSha256": "f7185230a58da2fd3b55f60537fe2852864af6561d0c5131975de4f7e2b5aa8b",
+      "navigationMigrationFixtureSha256": "24be1789c06aa08cbca0cd470ece1fc664b8e5f74fac8bdf27b403314e5021dc",
+      "navigationSha256": "7f4fbafa24803022f4503465672d103f1492244aad5d0818bb98cb7792e31082",
+      "navigationStore": "xml",
+      "settingsSha256": [
+        "6b86b273ff34fce19d6b804eff5a3f5747ada4eaa22f1d49c01e52ddb7875b4b",
+        "42750ef2d71390b23c5e1af80ee5f51e4da342aa061386cb2a0d90896c78ee66"
+      ]
+    },
+    "preserveSettings": [
+      {
+        "key": "ShowStatusBar",
+        "section": "Settings"
+      },
+      {
+        "key": "DataConnections",
+        "section": "Settings/NMEADataSource"
+      }
+    ],
+    "schema": 1,
+    "state": "disposable-profile-created"
+  }
+}

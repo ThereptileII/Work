@@ -39,9 +39,14 @@ thread CPU/I/O, fixed module presence and window classes before resume and at
 timeout. It changes no launch or privilege policy. A separate create-only,
 disconnected ProgramData profile adapter exercises the actual Windows `.ini`
 and navigation observer. Existing or partial profiles refuse without repair or
-cleanup. **60 probe / 17 profile-adapter checks pass**; native execution is
-pending. Both run in one short disposable job with separate artifacts and
-independent failure reporting; no application rebuild or boat changes occur.
+cleanup. **60 probe / 17 profile-adapter checks pass**. Native
+[38643305138](https://github.com/ThereptileII/Work/actions/runs/38643305138)
+passes profile preparation but the original child still times out. Its original
+primary thread reports no accounted CPU or pending I/O; only NTDLL is observed
+among the seven retained module names. This narrows the startup observation but
+does not identify an exact wait/cause or a SKAGER crash. Both original artifacts
+verify. No equivalent retry, application rebuild or boat change is selected.
+[Native observation and boundaries](evidence/scrum311-startup-observation-20261014/README.md).
 
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
