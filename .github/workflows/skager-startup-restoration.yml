@@ -32,7 +32,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|Repair)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -90,6 +90,49 @@ jobs:
               maintenance['cmd/skager-update-provisioner'] += ['TestNativeInstalledElevationBindingRetainsActualProcessAndToken',
                                                               'TestNativeInstalledElevationDecommissionSameAccountComparison',
                                                               'TestNativeInstalledElevationStartupProtectedCodeDACL']
+          # Repair keeps original source, cold profile custody and interrupted
+          # journal recovery separate from launch/health qualification.
+          maintenance['brokerstore'] = [
+              'TestRepairRestoresExactSelectedBytesAfterDamageWithoutAdoptingOrOverwriting',
+              'TestRepairRejectsSourceTamperingBeforeReservationAndPreservesFailedAttempt',
+              'TestRepairProvenanceCannotChangeCodeOrNestHistoricalRepair',
+              'TestRepairBootstrapRequiresOriginalBaselineLauncherAndRetainedSourceCustody',
+              'TestCompletedRepairWithoutCommittedJournalBlocksFreshAttempt',
+              'TestInterruptedRepairDiscoveryOnlyAcceptsOneExactOwnedCopy',
+              'TestInterruptedRepairStillRequiresStrictPublicPayloadReopen',
+              'TestRepairRecoveryJournalBornLinkSurvivesZeroFactsAndFurtherContinuation',
+              'TestRepairRecoveryJournalRejectsUnownedClosedOrChangedPriorBeforeReservation']
+          maintenance['brokerhost'] += [
+              'TestRepairSelectionStartupHistoryAndUninstallRemainDistinctFromHealth',
+              'TestRepairIncompleteOrMismatchedAuthorityCannotSelect',
+              'TestPreviousQualifiedRefusesHistoricalRepairWithoutInventingQualification',
+              'TestRepairColdCustodyRequiresFrozenProfileWithoutInventingProcessExit',
+              'TestRepairCustodyEveryPresentUncertainKeeperRefusesColdFallback',
+              'TestRepairWarmCustodyKeepsExactOriginalUntilFinishAndNeverOwnsProfile',
+              'TestRepairCustodyLateAppearanceReplacementProfileOrContextFailurePoisonsOwner',
+              'TestRepairCustodyCaptureAndPostProfileObservationRefusalsDoNotConsumeOwners',
+              'TestRepairCustodyWarmDrainFailureRetainsTombstoneAndCannotRetry',
+              'TestInterruptedRepairContinuesOnlyWithFreshExactLinkedJournal',
+              'TestRepairRecoveryRejectsForkMismatchAndOrdinaryPendingTransactions',
+              'TestRepairEmptyOriginIsPendingProvenanceAndNeverHealth',
+              'TestRepairContinuationEmptyBornJournalSupersedesOnlyItsExactPrior']
+          maintenance['brokerpipe'] += [
+              'TestRepairWireRejectsCallerAuthorityAndFalseHealth',
+              'TestRepairedHistorySeparatesOriginalQualificationAndClosesSchema']
+          maintenance['cmd/skager-update-provisioner'] += [
+              'TestCustomerRepairOneMutationAndStrictFreshReadback',
+              'TestCustomerRepairFixedSameAccountElevationAndNSISJoin']
+          if os.environ['RUNNER_OS'] == 'Windows':
+              maintenance['brokerstore'] += [
+                  'TestNativeRepairSourceDrainsPartialMembersExactlyOnce',
+                  'TestNativeRepairNTFSRestoresDamagedPublicPayloadFromOriginalPrivateSource',
+                  'TestNativeRepairNTFSRefusesTamperedOriginalPrivateSource',
+                  'TestNativeRepairRecoveryJournalRetainsBornLinkBeforeFirstPreparation']
+              maintenance['brokerhost'] += [
+                  'TestNativeRepairColdCustodyRetainsWholeTreeUntilOuterOwnerClose',
+                  'TestNativeRepairColdCustodyRefusesPreexistingWriteOrDeleteHandle',
+                  'TestNativeRepairColdCustodyDetectsNamespaceChangeAndNeverErasesIt',
+                  'TestNativeRepairColdCustodyRefusesReleasedUnwatchedOrProcessUncheckedSource']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
