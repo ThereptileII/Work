@@ -154,7 +154,12 @@ jobs:
               'TestCodeUpgradeFailureNeverContinuesOrRetries',
               'TestCodeUpgradeExactVerifiedBytesBeforeMachineOpen',
               'TestCodeUpgradeRecordPreservesExactPairAndRefusesSubstitution',
-              'TestCodeUpgradeDrainProofRequiresExactCleanOriginalProcess']
+              'TestCodeUpgradeDrainProofRequiresExactCleanOriginalProcess',
+              'TestCodeUpgradeFinalizePublishesOnceAndClosesBorrowedProcessFirst',
+              'TestCodeUpgradeFinalizeRevocationWithholdsReadyPublication',
+              'TestCodeUpgradeFinalizeRejectsPendingStoppedOrExistingReadyBeforeQuery',
+              'TestCodeUpgradeFinalizeCleanupFailureRetainsUncertainty',
+              'TestCodeUpgradeResumeSelectsNativePhaseWithoutReplacementAcquisition']
           maintenance['cmd/skager-update-provisioner'] += [
               'TestCodeUpgradeOperatorExplicitUpgradeAndResume',
               'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs']
@@ -164,7 +169,11 @@ jobs:
                   'TestNativeCodeUpgradeRestoresSameOwnedOriginalPair',
                   'TestNativeCodeUpgradeRefusesForeignRecoveryDestination',
                   'TestNativeCodeUpgradeStageUsesExactProtectedCopy',
-                  'TestNativeCodeUpgradeSuccessorReaderRequiresCompleteTransaction']
+                  'TestNativeCodeUpgradeSuccessorReaderRequiresCompleteTransaction',
+                  'TestNativeCodeUpgradeFinalizeReadyPublicationRetainsProcessAndOriginals',
+                  'TestNativeCodeUpgradeFinalizeRefusesEveryExistingReadyNamespace',
+                  'TestNativeCodeUpgradeFinalizeRechecksProcessBeforeAndAfterCreate',
+                  'TestNativeCodeUpgradeFinalizeRequiresExactPendingPairClosure']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
