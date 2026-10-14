@@ -1,12 +1,11 @@
 /** SCRUM-42: private staging downloads. No release is enabled by default. */
-import { csrfValid, SUPABASE_ORIGIN } from './platform.ts';
+import { csrfValid } from './platform.ts';
+import { signR2Download } from './r2-downloads.ts';
+export { DOWNLOAD_BUCKET, DOWNLOAD_TTL_SECONDS } from './r2-downloads.ts';
 import type { Context } from './platform.ts';
 import { strictJson } from './commerce.ts';
 
-export const DOWNLOAD_BUCKET = 'skager-private-releases';
-export const DOWNLOAD_TTL_SECONDS = 60;
 const PATH = '/api/portal/downloads';
-const STORAGE = SUPABASE_ORIGIN + '/storage/v1';
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/;
 const SHA256 = /^[0-9a-f]{64}$/;
 const ID = /^[a-z0-9][a-z0-9_-]{0,63}$/;
@@ -123,54 +122,8 @@ async function access(request: Request, ctx: DownloadContext): Promise<401 | 403
   return entitlement.status === 'active' && entitlement.environment === 'staging'
     && entitlement.product_code === 'skager-beta' ? account.id : 403;
 }
-function jwtPart(value: string): Record<string, any> {
-  requireValue(/^[A-Za-z0-9_-]{1,4096}$/.test(value));
-  const raw = atob(value.replace(/-/g, '+').replace(/_/g, '/') + '='.repeat((4 - value.length % 4) % 4));
-  return strictJson(Uint8Array.from(raw, char => char.charCodeAt(0)));
-}
-function signedLink(raw: unknown, object: string, filename: string, started: number): { url: string; expiresAt: string } {
-  requireValue(typeof raw === 'string' && raw.length <= 12000 && !/[^\x21-\x7e]/.test(raw));
-  const relative = `/object/sign/${DOWNLOAD_BUCKET}/${object}`;
-  const url = new URL(STORAGE + raw);
-  requireValue(url.origin === SUPABASE_ORIGIN && url.pathname === '/storage/v1' + relative
-    && !url.username && !url.password && !url.hash);
-  const entries = [...url.searchParams];
-  requireValue(entries.length === 1 && entries[0][0] === 'token');
-  const token = entries[0][1];
-  requireValue(raw === relative + '?token=' + token && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{16,1024}$/.test(token));
-  const [headerPart, payloadPart] = token.split('.');
-  const header = jwtPart(headerPart); const payload = jwtPart(payloadPart);
-  requireValue(['HS256', 'HS384', 'HS512', 'RS256', 'RS384', 'RS512', 'ES256', 'ES384', 'ES512', 'EdDSA'].includes(header.alg));
-  const now = Math.floor(Date.now() / 1000);
-  requireValue(payload.url === DOWNLOAD_BUCKET + '/' + object && (payload.scope === undefined || payload.scope === 'download')
-    && Number.isSafeInteger(payload.iat) && Math.abs(payload.iat - started) <= 5
-    && Number.isSafeInteger(payload.exp) && payload.exp > now && payload.exp > payload.iat
-    && payload.exp - payload.iat <= DOWNLOAD_TTL_SECONDS && payload.exp <= started + DOWNLOAD_TTL_SECONDS + 5);
-  // Claims constrain an authenticated Storage response; Storage verifies its own
-  // signature at redemption. Parsing here is not JWT signature authentication.
-  url.searchParams.set('download', filename);
-  return { url: url.href, expiresAt: new Date(payload.exp * 1000).toISOString() };
-}
 async function sign(ctx: DownloadContext, release: DownloadRelease, artifact: DownloadArtifact) {
-  requireValue(ctx.env.SUPABASE_URL === SUPABASE_ORIGIN && ctx.env.SUPABASE_SERVICE_ROLE_KEY);
-  const key = ctx.env.SUPABASE_SERVICE_ROLE_KEY;
-  const object = objectName(release, artifact);
-  const target = `${STORAGE}/object/sign/${DOWNLOAD_BUCKET}/${object}`;
-  const started = Math.floor(Date.now() / 1000);
-  return deadline(async signal => {
-    const transport = ctx.fetch;
-    const response = await transport(target, { method: 'POST', redirect: 'manual', signal,
-      headers: { 'Content-Type': 'application/json', 'Accept-Encoding': 'identity', apikey: key, Authorization: `Bearer ${key}` },
-      body: JSON.stringify({ expiresIn: DOWNLOAD_TTL_SECONDS }) });
-    try {
-      requireValue(response.status === 200 && !response.redirected && (!response.url || response.url === target)
-        && response.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() === 'application/json'
-        && ['', 'identity'].includes(response.headers.get('Content-Encoding')?.toLowerCase() ?? ''));
-      const result = await readJson(response, 16384, signal);
-      requireValue(Object.keys(result).length === 1 && Object.hasOwn(result, 'signedURL'));
-      return signedLink(result.signedURL, object, artifact.name, started);
-    } finally { void response.body?.cancel().catch(() => {}); }
-  }, 8000);
+  return deadline(() => signR2Download(ctx.env, objectName(release, artifact), artifact.name), 8000);
 }
 
 export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[]) {

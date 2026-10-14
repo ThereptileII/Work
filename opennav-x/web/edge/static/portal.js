@@ -49,14 +49,27 @@ export function downloadTarget(result, release, artifact, now = Date.now()) {
   if (!result || result.releaseId !== release.id || result.artifactId !== artifact.id || result.name !== artifact.name
     || result.bytes !== artifact.bytes || result.sha256 !== artifact.sha256 || typeof result.url !== "string") return failure();
   const expiry = Date.parse(result.expiresAt);
-  if (!Number.isFinite(expiry) || expiry <= now || expiry > now + 90000) return failure();
+  if (!Number.isFinite(expiry) || expiry <= now || expiry > now + 60000) return failure();
   let url;
   try { url = new URL(result.url); } catch { return failure(); }
-  if (url.origin !== "https://kelwgubkuvditalsbqpr.supabase.co" || url.username || url.password || url.hash
-    || !url.pathname.startsWith("/storage/v1/object/sign/skager-private-releases/")
-    || url.searchParams.getAll("token").length !== 1 || !url.searchParams.get("token")
-    || [...url.searchParams.keys()].some(key => !["token", "download"].includes(key))
-    || url.searchParams.getAll("download").length !== 1 || url.searchParams.get("download") !== artifact.name) return failure();
+  const path = `/skager-private-releases/${release.channel}/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`;
+  const keys = ["response-content-disposition", "X-Amz-Expires", "X-Amz-Date", "X-Amz-Algorithm",
+    "X-Amz-Credential", "X-Amz-SignedHeaders", "X-Amz-Signature"];
+  const date = url.searchParams.get("X-Amz-Date") || "";
+  const issued = /^\d{8}T\d{6}Z$/.test(date)
+    ? Date.parse(`${date.slice(0, 4)}-${date.slice(4, 6)}-${date.slice(6, 8)}T${date.slice(9, 11)}:${date.slice(11, 13)}:${date.slice(13, 15)}Z`) : NaN;
+  if (url.origin !== "https://7869adcf376c630b175c94729321e016.r2.cloudflarestorage.com"
+    || url.username || url.password || url.hash || url.href !== result.url || url.pathname !== path
+    || url.search.slice(1) !== url.searchParams.toString()
+    || [...url.searchParams].length !== keys.length || keys.some(key => url.searchParams.getAll(key).length !== 1)
+    || [...url.searchParams.keys()].some(key => !keys.includes(key))
+    || url.searchParams.get("response-content-disposition") !== `attachment; filename="${artifact.name}"`
+    || url.searchParams.get("X-Amz-Algorithm") !== "AWS4-HMAC-SHA256"
+    || url.searchParams.get("X-Amz-Expires") !== "60" || issued + 60000 !== expiry || issued > now
+    || !/^[0-9a-f]{32}\/\d{8}\/auto\/s3\/aws4_request$/.test(url.searchParams.get("X-Amz-Credential") || "")
+    || url.searchParams.get("X-Amz-Credential").split("/")[1] !== date.slice(0, 8)
+    || url.searchParams.get("X-Amz-SignedHeaders") !== "host"
+    || !/^[0-9a-f]{64}$/.test(url.searchParams.get("X-Amz-Signature") || "")) return failure();
   return url.href;
 }
 export function renderAccess(data) {

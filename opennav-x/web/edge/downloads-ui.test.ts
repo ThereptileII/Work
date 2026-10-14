@@ -7,10 +7,14 @@ const release = { id: 'staging-test', version: '0.4.0-beta2.5', sourceCommit: 'a
 const catalog = { available: true, releases: [release] };
 const account = { betaAccess: 'active', account: { email: 'test@example.test' }, boats: [], orders: [], checkoutAvailable: false };
 const now = Date.parse('2026-10-13T20:00:00Z');
+const target = new URL(`https://7869adcf376c630b175c94729321e016.r2.cloudflarestorage.com/skager-private-releases/staging/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`);
+for (const [key, value] of Object.entries({ 'response-content-disposition': `attachment; filename="${artifact.name}"`,
+  'X-Amz-Expires': '60', 'X-Amz-Date': '20261013T200000Z', 'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+  'X-Amz-Credential': 'f'.repeat(32) + '/20261013/auto/s3/aws4_request', 'X-Amz-SignedHeaders': 'host',
+  'X-Amz-Signature': 'e'.repeat(64) })) target.searchParams.set(key, value);
 const signed = {
   releaseId: release.id, artifactId: artifact.id, name: artifact.name, bytes: artifact.bytes, sha256: artifact.sha256,
-  expiresAt: new Date(now + 60000).toISOString(),
-  url: 'https://kelwgubkuvditalsbqpr.supabase.co/storage/v1/object/sign/skager-private-releases/release/installer?token=synthetic-token&download=SKAGER-Setup.exe',
+  expiresAt: new Date(now + 60000).toISOString(), url: target.href,
 };
 
 test('downloads remain closed for missing catalog, disabled distribution and temporary failure', () => {
@@ -30,7 +34,7 @@ test('authorized catalog shows exact release/source/file identity without pre-mi
   const html = renderDashboard(account, 'downloads', validateDownloads(catalog));
   for (const value of [release.version, release.sourceCommit, artifact.name, artifact.sha256, '1,200 bytes']) assert.ok(html.includes(value));
   assert.match(html, /data-release-id="staging-test" data-artifact-id="installer"/);
-  assert.doesNotMatch(html, /token=|object\/sign/);
+  assert.doesNotMatch(html, /X-Amz-Signature|r2\.cloudflarestorage/);
   assert.match(html, /OpenCPN is installed separately/);
   assert.match(html, /open-source licenses/);
 });
@@ -56,10 +60,16 @@ test('download navigation requires same selected identity and a short-lived fixe
     { releaseId: 'other' }, { artifactId: 'other' }, { name: 'changed.exe' }, { bytes: 2 }, { sha256: 'c'.repeat(64) },
     { expiresAt: new Date(now).toISOString() }, { expiresAt: new Date(now + 90001).toISOString() }, { expiresAt: 'invalid' },
     { url: 'javascript:alert(1)' }, { url: signed.url.replace('https:', 'http:') },
-    { url: signed.url.replace('kelwgubkuvditalsbqpr.supabase.co', 'untrusted.example.test') },
+    { url: signed.url.replace('7869adcf376c630b175c94729321e016.r2.cloudflarestorage.com', 'untrusted.example.test') },
     { url: signed.url.replace('://', '://user@') }, { url: signed.url + '#fragment' },
     { url: signed.url.replace('skager-private-releases', 'other-bucket') },
-    { url: signed.url + '&token=second' }, { url: signed.url + '&download=second.exe' },
+    { url: signed.url.replace('X-Amz-Date', '%58-Amz-Date') },
+    { url: signed.url + '&X-Amz-Signature=second' }, { url: signed.url + '&response-content-disposition=second.exe' },
+    { url: signed.url.replace('X-Amz-Expires=60', 'X-Amz-Expires=61') },
+    { url: signed.url.replace('SignedHeaders=host', 'SignedHeaders=content-type') },
+    { url: signed.url.replace('/staging/', '/other-channel/') },
+    { url: signed.url.replace('/installer/', '/source/') },
+    { url: signed.url.replace('/staging-test/', '/wrong-release/') },
     { url: signed.url + '&redirect=https://untrusted.example.test' },
     { url: signed.url.replace('SKAGER-Setup.exe', 'changed.exe') },
   ]) assert.throws(() => downloadTarget({ ...signed, ...patch }, release, artifact, now));

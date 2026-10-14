@@ -14,6 +14,7 @@ import subprocess
 import sys
 
 WEB = Path(__file__).resolve().parents[1]
+SDK = WEB/'edge/vendor/aws4fetch-1.0.20'
 
 
 def main():
@@ -49,10 +50,18 @@ def main():
         '--platform=browser', '--minify', '--outfile='+str(output/'cloudflare-upload.js')], cwd=WEB, check=True)
     subprocess.run(command + [str(WEB/'edge/index.ts'), '--bundle', '--format=esm',
         '--platform=browser', '--outfile='+str(output/'supabase-index.ts')], cwd=WEB, check=True)
+    dependency = json.loads((SDK/'manifest.json').read_text())
+    for name, expected in dependency['files'].items():
+        if hashlib.sha256((SDK/name).read_bytes()).hexdigest() != expected:
+            raise RuntimeError('Server SDK provenance mismatch')
+    # Retain the complete MIT notice in the actual uploaded server artifact.
+    server = output/'supabase-index.ts'
+    notice = '/*! aws4fetch ' + dependency['version'] + '\n' + (SDK/'LICENSE').read_text() + '*/\n'
+    server.write_text(notice + server.read_text())
     files = ['cloudflare-upload.js', 'supabase-index.ts']
     info = {'schema':1, 'sourceCommit':actual, 'environment':'private-beta',
             'hostname':'beta.skager.app', 'livePayments':False,
-            'esbuildVersion':'0.28.2', 'files':{name:hashlib.sha256((output/name).read_bytes()).hexdigest() for name in files}}
+            'esbuildVersion':'0.28.2', 'serverDependencies':{'aws4fetch':dependency}, 'files':{name:hashlib.sha256((output/name).read_bytes()).hexdigest() for name in files}}
     (output/'build-info.json').write_text(json.dumps(info, indent=2)+'\n')
     print(json.dumps(info, indent=2))
 
