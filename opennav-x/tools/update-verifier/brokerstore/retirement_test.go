@@ -16,6 +16,8 @@ type retirementTestStore struct {
 	commitEntered                                            chan struct{}
 	commitRelease                                            <-chan struct{}
 	terminal                                                 bool
+	started, completed                                       bool
+	moves                                                    int
 }
 
 func (s *retirementTestStore) check() error {
@@ -57,6 +59,23 @@ func (p *retirementTestPreparation) commit(ctx context.Context) (retirementBacke
 	}
 	p.s.terminal = true
 	return &retirementTestReceipt{s: p.s}, nil
+}
+func (p *retirementTestPreparation) commitWithStartupDrain(ctx context.Context, guard func(context.Context) error, drain func(context.Context, string) error) (retirementBackend, error) {
+	p.s.commitCount++
+	p.s.terminal, p.s.started = true, true
+	r := &retirementTestReceipt{s: p.s}
+	validate := func() error { return errors.Join(ctx.Err(), guard(ctx)) }
+	if err := validate(); err != nil {
+		return r, errors.Join(ErrRetirementUncertain, err)
+	}
+	if err := drain(ctx, digest("fence")); err != nil {
+		return r, errors.Join(ErrRetirementUncertain, err)
+	}
+	if err := validate(); err != nil {
+		return r, errors.Join(ErrRetirementUncertain, err)
+	}
+	p.s.moves, p.s.completed = 3, true
+	return r, nil
 }
 func (p *retirementTestPreparation) close() error {
 	if !p.closed {
@@ -270,5 +289,163 @@ func TestRetirementCommitAndConcurrentStoreCloseDrainOriginalReceiptOnce(t *test
 	}
 	if sb.retirementClose != 1 || sb.closes != 1 {
 		t.Fatal("second close drained original owners again")
+	}
+}
+
+func TestRetirementStartupDrainOriginalOwnerOrderAndRefusal(t *testing.T) {
+	for _, stage := range []string{"success", "initial guard", "terminal guard before", "refused", "lost callback", "cancelled", "terminal guard after"} {
+		t.Run(stage, func(t *testing.T) {
+			sb := &retirementTestStore{}
+			s := &Store{backend: sb}
+			p, err := s.PrepareRetiringDecommission(context.Background(), decommissionTestBinding(), func(context.Context) error { return nil })
+			if err != nil {
+				t.Fatal(err)
+			}
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			guards, callbacks := 0, 0
+			guard := func(context.Context) error {
+				guards++
+				if guards > 1 && (!sb.terminal || !sb.started || sb.completed || sb.moves != 0) {
+					t.Fatal("terminal guard outside durable pre-move boundary")
+				}
+				if stage == "initial guard" && guards == 1 || stage == "terminal guard before" && guards == 2 || stage == "terminal guard after" && guards == 3 {
+					return testFault
+				}
+				return nil
+			}
+			r, err := p.CommitWithStartupDrain(ctx, guard, func(callbackCtx context.Context, fence string) error {
+				callbacks++
+				if callbackCtx != ctx || fence != digest("fence") || guards != 2 || !sb.terminal || !sb.started || sb.completed || sb.moves != 0 {
+					t.Fatal("drain did not receive original cancellable terminal boundary")
+				}
+				if s.mu.TryLock() {
+					s.mu.Unlock()
+					t.Fatal("Store cleanup custody released across callback")
+				}
+				if p.mu.TryLock() {
+					p.mu.Unlock()
+					t.Fatal("preparation custody released across callback")
+				}
+				switch stage {
+				case "refused":
+					return testFault
+				case "lost callback":
+					return context.DeadlineExceeded
+				case "cancelled":
+					cancel()
+				}
+				return nil
+			})
+			if stage == "success" {
+				if err != nil || r == nil || callbacks != 1 || guards != 3 || sb.moves != 3 || !sb.completed {
+					t.Fatal("original startup drain failed", err)
+				}
+			} else {
+				if err == nil || r != nil || sb.moves != 0 || sb.completed {
+					t.Fatal("failed handoff moved or returned completed receipt", err)
+				}
+				if stage != "initial guard" && (!errors.Is(err, ErrRetirementUncertain) || !sb.terminal || !sb.started) {
+					t.Fatal("terminal failure lost recovery evidence", err)
+				}
+			}
+			if stage == "initial guard" || stage == "terminal guard before" {
+				if callbacks != 0 {
+					t.Fatal("drain ran despite guard refusal")
+				}
+			} else if callbacks != 1 {
+				t.Fatal("drain did not run once")
+			}
+			if _, err := p.CommitWithStartupDrain(ctx, guard, func(context.Context, string) error { t.Fatal("callback retried"); return nil }); !errors.Is(err, ErrClosed) {
+				t.Fatal("original attempt was reusable", err)
+			}
+			if err := s.Close(); err != nil {
+				t.Fatal(err)
+			}
+			wantReceiptClose := 1
+			if stage == "initial guard" {
+				wantReceiptClose = 0
+			}
+			if sb.prepareClose != 1 || sb.retirementClose != wantReceiptClose {
+				t.Fatal("failed original owner not retained for Store cleanup")
+			}
+		})
+	}
+}
+
+func TestRetirementStartupDrainRequiresCallback(t *testing.T) {
+	sb := &retirementTestStore{}
+	s := &Store{backend: sb}
+	defer s.Close()
+	p, err := s.PrepareRetiringDecommission(context.Background(), decommissionTestBinding(), func(context.Context) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	if _, err = p.CommitWithStartupDrain(context.Background(), func(context.Context) error { t.Fatal("nil callback reached guard"); return nil }, nil); !errors.Is(err, ErrNativeRequired) || sb.commitCount != 0 || sb.terminal {
+		t.Fatal("missing callback accepted", err)
+	}
+}
+
+func TestRetirementStartupDrainConcurrentCloseRetainsFailedOriginalOwner(t *testing.T) {
+	entered, release := make(chan struct{}), make(chan struct{})
+	sb := &retirementTestStore{receiptCloseErr: testFault}
+	s := &Store{backend: sb}
+	p, err := s.PrepareRetiringDecommission(context.Background(), decommissionTestBinding(), func(context.Context) error { return nil })
+	if err != nil {
+		t.Fatal(err)
+	}
+	commitDone := make(chan error, 1)
+	go func() {
+		_, err := p.CommitWithStartupDrain(context.Background(), func(context.Context) error { return nil }, func(context.Context, string) error {
+			close(entered)
+			<-release
+			return context.DeadlineExceeded
+		})
+		commitDone <- err
+	}()
+	select {
+	case <-entered:
+	case <-time.After(5 * time.Second):
+		t.Fatal("startup drain did not enter")
+	}
+	closeDone := make(chan error, 1)
+	go func() { closeDone <- s.Close() }()
+	deadline := time.After(5 * time.Second)
+	for {
+		if !s.closeMu.TryLock() {
+			break
+		}
+		s.closeMu.Unlock()
+		select {
+		case <-deadline:
+			t.Fatal("Store close did not overlap drain")
+		default:
+			runtime.Gosched()
+		}
+	}
+	select {
+	case err := <-closeDone:
+		t.Fatal("Store closed before callback returned", err)
+	default:
+	}
+	close(release)
+	select {
+	case err := <-commitDone:
+		if !errors.Is(err, context.DeadlineExceeded) {
+			t.Fatal("lost callback failure changed", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("drain did not return")
+	}
+	select {
+	case err := <-closeDone:
+		if !errors.Is(err, testFault) {
+			t.Fatal("failed original cleanup error lost", err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("Store did not drain original owners")
+	}
+	if sb.moves != 0 || sb.completed || sb.prepareClose != 1 || sb.retirementClose != 1 || sb.closes != 1 {
+		t.Fatal("concurrent close lost or repeated original owner cleanup")
 	}
 }

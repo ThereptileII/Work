@@ -17,6 +17,7 @@ type retirementStoreBackend interface {
 type retirementPreparationBackend interface {
 	check() error
 	commit(context.Context) (retirementBackend, error)
+	commitWithStartupDrain(context.Context, func(context.Context) error, func(context.Context, string) error) (retirementBackend, error)
 	close() error
 }
 type retirementBackend interface {
@@ -115,7 +116,30 @@ func (p *RetirementPreparation) Validate(ctx context.Context) error {
 // post-selection guard may check stock/profile/operator/application custody but
 // cannot call ordinary Store methods after the terminal marker is published.
 // A native failure after publication leaves a durable started retirement record.
+// This low-level adapter performs no startup drain; protected uninstall uses
+// CommitWithStartupDrain to close descendant app/launcher owners before rename.
 func (p *RetirementPreparation) Commit(ctx context.Context, postSelectionGuard func(context.Context) error) (result *Retirement, resultErr error) {
+	return p.commit(ctx, postSelectionGuard, nil)
+}
+
+// CommitWithStartupDrain requires the original operator to restore startup and
+// drain descendant app/launcher pins on the same authenticated conversation.
+// drain receives the published fence SHA256 exactly once, after the durable
+// started record and before any original-object move. A lost/refused/cancelled
+// handoff leaves terminal recovery evidence and cannot be retried or adopted.
+// The initial guard runs before Store.mu is acquired. The terminal guard and
+// drain run under Store.mu and the preparation lock, never nativeStore.mu.
+// Neither callback may call Store or preparation methods: after fence
+// publication only a standalone stock/profile/operator/application guard is
+// valid. Commit remains the explicit low-level adapter without a startup drain.
+func (p *RetirementPreparation) CommitWithStartupDrain(ctx context.Context, postSelectionGuard func(context.Context) error, drain func(context.Context, string) error) (*Retirement, error) {
+	if drain == nil {
+		return nil, ErrNativeRequired
+	}
+	return p.commit(ctx, postSelectionGuard, drain)
+}
+
+func (p *RetirementPreparation) commit(ctx context.Context, postSelectionGuard func(context.Context) error, drain func(context.Context, string) error) (result *Retirement, resultErr error) {
 	if p == nil || p.self != p || ctx == nil || postSelectionGuard == nil {
 		return nil, ErrNativeRequired
 	}
@@ -144,7 +168,13 @@ func (p *RetirementPreparation) Commit(ctx context.Context, postSelectionGuard f
 		p.failed = true
 		return nil, err
 	}
-	b, err := p.backend.commit(ctx)
+	var b retirementBackend
+	var err error
+	if drain == nil {
+		b, err = p.backend.commit(ctx)
+	} else {
+		b, err = p.backend.commitWithStartupDrain(ctx, postSelectionGuard, drain)
+	}
 	if b != nil {
 		r := &Retirement{store: p.store, backend: b, binding: p.binding, poisoned: err != nil}
 		r.self = r

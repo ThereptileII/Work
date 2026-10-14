@@ -185,6 +185,17 @@ func (p *nativeRetirementPreparation) close() error {
 }
 
 func (p *nativeRetirementPreparation) commit(ctx context.Context) (retirementBackend, error) {
+	return p.commitWithGuardAndDrain(ctx, nil, nil)
+}
+
+func (p *nativeRetirementPreparation) commitWithStartupDrain(ctx context.Context, guard func(context.Context) error, drain func(context.Context, string) error) (retirementBackend, error) {
+	if guard == nil || drain == nil {
+		return nil, ErrNativeRequired
+	}
+	return p.commitWithGuardAndDrain(ctx, guard, drain)
+}
+
+func (p *nativeRetirementPreparation) commitWithGuardAndDrain(ctx context.Context, guard func(context.Context) error, drain func(context.Context, string) error) (retirementBackend, error) {
 	if p == nil || p.closed || p.transferred || ctx == nil || ctx.Err() != nil {
 		return nil, ErrClosed
 	}
@@ -199,10 +210,17 @@ func (p *nativeRetirementPreparation) commit(ctx context.Context) (retirementBac
 	if err != nil {
 		return nil, err
 	}
-	return p.commitWithSelectedDescriptor(ctx, selectedSD)
+	return p.commitWithSelectedDescriptorAndStartupDrain(ctx, selectedSD, guard, drain)
 }
 
 func (p *nativeRetirementPreparation) commitWithSelectedDescriptor(ctx context.Context, selectedSD *windows.SECURITY_DESCRIPTOR) (retirementBackend, error) {
+	return p.commitWithSelectedDescriptorAndStartupDrain(ctx, selectedSD, nil, nil)
+}
+
+func (p *nativeRetirementPreparation) commitWithSelectedDescriptorAndStartupDrain(ctx context.Context, selectedSD *windows.SECURITY_DESCRIPTOR, guard func(context.Context) error, drain func(context.Context, string) error) (retirementBackend, error) {
+	if (guard == nil) != (drain == nil) {
+		return nil, ErrNativeRequired
+	}
 	if p == nil || p.closed || p.transferred || ctx == nil || ctx.Err() != nil || selectedSD == nil {
 		return nil, ErrClosed
 	}
@@ -250,7 +268,7 @@ func (p *nativeRetirementPreparation) commitWithSelectedDescriptor(ctx context.C
 	if err := ctx.Err(); err != nil {
 		return r, err
 	}
-	return r, r.retire(ctx)
+	return r, r.retire(ctx, guard, drain)
 }
 
 func openRetirementObject(parent *nativePin, name string, want diskIdentity, directory bool, sd *windows.SECURITY_DESCRIPTOR) (result *retirementObject, resultErr error) {
@@ -418,7 +436,7 @@ func (r *nativeRetirement) originalCheck() error {
 	return nil
 }
 
-func (r *nativeRetirement) retire(ctx context.Context) (resultErr error) {
+func (r *nativeRetirement) retire(ctx context.Context, guard func(context.Context) error, drain func(context.Context, string) error) (resultErr error) {
 	if err := r.originalCheck(); err != nil {
 		return err
 	}
@@ -454,15 +472,55 @@ func (r *nativeRetirement) retire(ctx context.Context) (resultErr error) {
 	if err = writeRegistrationBytes(context.WithoutCancel(ctx), r.started, 0, r.startedRaw, r.terminalMarkerCheck); err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}
+	if drain != nil {
+		// No nativeStore lock spans external I/O. Original DELETE handles and
+		// parent custody remain held, while terminal checks use the standalone
+		// custody path rather than ordinary startup-authorized Store validation.
+		validate := func() error {
+			if err := errors.Join(ctx.Err(), r.terminalCheck()); err != nil {
+				return err
+			}
+			if err := guard(ctx); err != nil {
+				return err
+			}
+			return errors.Join(ctx.Err(), r.terminalCheck())
+		}
+		if err = validate(); err != nil {
+			return errors.Join(ErrRetirementUncertain, err)
+		}
+		if err = drain(ctx, registrationDigest(r.markerRaw)); err != nil {
+			return errors.Join(ErrRetirementUncertain, err)
+		}
+		if err = validate(); err != nil {
+			return errors.Join(ErrRetirementUncertain, err)
+		}
+	}
 	for i, destination := range []string{retirementRegistrationName(r.binding, "once"), retirementRegistrationName(r.binding, "json"), retirementGenerationName(r.binding)} {
+		// The startup-drain path remains cancellable after the handoff. The
+		// low-level no-drain adapter retains its original terminal completion
+		// policy; both paths preserve any partial moves for manual recovery.
+		moveCtx := context.WithoutCancel(ctx)
+		if drain != nil {
+			moveCtx = ctx
+			if err = ctx.Err(); err != nil {
+				return errors.Join(ErrRetirementUncertain, err)
+			}
+		}
 		if err = r.terminalCheck(); err != nil {
 			return errors.Join(ErrRetirementUncertain, err)
 		}
-		if err = r.objects[i].move(context.WithoutCancel(ctx), destination); err != nil {
+		if err = r.objects[i].move(moveCtx, destination); err != nil {
 			return errors.Join(ErrRetirementUncertain, err)
 		}
 	}
 	complete := retirementCompleteRecord{1, r.binding.RequestID, registrationDigest(r.startedRaw), registrationDigest(r.markerRaw), r.objects[0].id, r.objects[1].id, r.objects[2].id}
+	completeCtx := context.WithoutCancel(ctx)
+	if drain != nil {
+		completeCtx = ctx
+		if err = ctx.Err(); err != nil {
+			return errors.Join(ErrRetirementUncertain, err)
+		}
+	}
 	r.completedRaw, err = json.Marshal(complete)
 	if err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
@@ -471,7 +529,7 @@ func (r *nativeRetirement) retire(ctx context.Context) (resultErr error) {
 	if err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}
-	if err = writeRegistrationBytes(context.WithoutCancel(ctx), r.completed, 0, r.completedRaw, r.terminalCheck); err != nil {
+	if err = writeRegistrationBytes(completeCtx, r.completed, 0, r.completedRaw, r.terminalCheck); err != nil {
 		return errors.Join(ErrRetirementUncertain, err)
 	}
 	r.completedMove = true

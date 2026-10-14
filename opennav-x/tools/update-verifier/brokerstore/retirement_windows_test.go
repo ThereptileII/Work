@@ -130,6 +130,198 @@ func TestNativeRetirementMovesEntireOriginalDirectoryOnItsHeldVolume(t *testing.
 	}
 }
 
+func nativeRetirementDrainFixture(t *testing.T) (*nativeRetirement, []windows.Handle) {
+	t.Helper()
+	n, _ := nativeRegistrationFixture(t)
+	binding := decommissionTestBinding()
+	fileSD, err := descriptor(n.broker, nil, false)
+	if err != nil {
+		t.Fatal(err)
+	}
+	dirSD, err := descriptor(n.broker, nil, true)
+	if err != nil {
+		t.Fatal(err)
+	}
+	parent, err := openPin(physical(n.registrations.name), n.registrations.name, dirSD)
+	if err != nil {
+		t.Fatal(err)
+	}
+	r := &nativeRetirement{store: n, binding: binding, generationParent: parent}
+	t.Cleanup(func() {
+		if err := r.close(); err != nil {
+			t.Error(err)
+		}
+	})
+	for i, suffix := range []string{"once", "json"} {
+		name := binding.ClientSID + "." + suffix
+		file, err := createRegistrationFile(n.registrations, name, fileSD)
+		if err != nil {
+			t.Fatal(err)
+		}
+		id, idErr := fileIdentity(file.pin.handle)
+		if err := errors.Join(idErr, file.Close()); err != nil {
+			t.Fatal(err)
+		}
+		r.objects[i], err = openRetirementObject(n.registrations, name, id, false, fileSD)
+		if err != nil {
+			t.Fatal(err)
+		}
+	}
+	creator := &nativeCandidate{store: n, securityDir: dirSD}
+	pin, err := creator.newDirectory(parent, binding.GenerationID)
+	if err != nil {
+		t.Fatal(err)
+	}
+	id, idErr := fileIdentity(pin.handle)
+	if err := errors.Join(idErr, creator.close()); err != nil {
+		t.Fatal(err)
+	}
+	r.objects[2], err = openRetirementObject(parent, binding.GenerationID, id, true, dirSD)
+	if err != nil {
+		t.Fatal(err)
+	}
+	children := make([]windows.Handle, 0, 2)
+	for _, name := range []string{"app.exe", "launcher.exe"} {
+		path := physical(parent.name + `\` + binding.GenerationID + `\` + name)
+		if err := os.WriteFile(path, []byte(name), 0600); err != nil {
+			t.Fatal(err)
+		}
+		pointer, err := windows.UTF16PtrFromString(path)
+		if err != nil {
+			t.Fatal(err)
+		}
+		// Sharing delete does not make directory rename safe while descendants
+		// remain open. Keep the actual app/launcher handles until the callback.
+		handle, err := windows.CreateFile(pointer, windows.GENERIC_READ, windows.FILE_SHARE_READ|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+		if err != nil {
+			t.Fatal(err)
+		}
+		children = append(children, handle)
+	}
+	t.Cleanup(func() {
+		for _, handle := range children {
+			if handle != 0 {
+				if err := windows.CloseHandle(handle); err != nil {
+					t.Error(err)
+				}
+			}
+		}
+	})
+	return r, children
+}
+
+func TestNativeRetirementStartupDrainKeepsOriginalRootAndRefusesFailedHandoffs(t *testing.T) {
+	runtime.LockOSThread()
+	defer runtime.UnlockOSThread()
+	for _, stage := range []string{"success", "guard before", "refused", "lost callback", "cancelled", "guard after", "changed terminal"} {
+		t.Run(stage, func(t *testing.T) {
+			r, children := nativeRetirementDrainFixture(t)
+			originalHandles := [3]windows.Handle{r.objects[0].handle, r.objects[1].handle, r.objects[2].handle}
+			originalIDs := [3]diskIdentity{r.objects[0].id, r.objects[1].id, r.objects[2].id}
+			parent := r.generationParent
+			// Preserve the real failure: FILE_SHARE_DELETE on descendants is
+			// insufficient. No root handle is closed or reopened for recovery.
+			if err := r.objects[2].move(context.Background(), "retired-blocked-fixture"); err == nil {
+				t.Fatal("directory renamed while app/launcher descendants remained open")
+			}
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			guards, callbacks := 0, 0
+			guard := func(context.Context) error {
+				guards++
+				if err := r.terminalCheck(); err != nil {
+					t.Fatal("terminal guard ran without durable marker and start", err)
+				}
+				if stage == "guard before" && guards == 1 || stage == "guard after" && guards == 2 {
+					return testFault
+				}
+				return nil
+			}
+			err := r.retire(ctx, guard, func(callbackCtx context.Context, fence string) error {
+				callbacks++
+				if callbackCtx != ctx || fence != registrationDigest(r.markerRaw) || guards != 1 || r.completed != nil {
+					t.Fatal("callback did not bind durable terminal boundary")
+				}
+				if !r.store.mu.TryLock() {
+					t.Fatal("native Store mutex held during external drain")
+				}
+				r.store.mu.Unlock()
+				for i, object := range r.objects {
+					if object.handle != originalHandles[i] || object.id != originalIDs[i] {
+						t.Fatal("original DELETE owner changed before callback")
+					}
+				}
+				if err := r.terminalCheck(); err != nil {
+					t.Fatal("callback preceded validated started record", err)
+				}
+				switch stage {
+				case "refused":
+					return testFault
+				case "lost callback":
+					return context.DeadlineExceeded
+				case "cancelled":
+					cancel()
+				case "changed terminal":
+					// Corrupt only the expected comparison bytes; native readback
+					// must still refuse the actual held started FILE_OBJECT.
+					r.startedRaw[0] ^= 1
+				}
+				for i, handle := range children {
+					if err := windows.CloseHandle(handle); err != nil {
+						return err
+					}
+					children[i] = 0
+				}
+				return nil
+			})
+			if r.generationParent != parent {
+				t.Fatal("original parent custody replaced")
+			}
+			for i, object := range r.objects {
+				if object.handle != originalHandles[i] || object.id.Volume != originalIDs[i].Volume || object.id.FileID != originalIDs[i].FileID {
+					t.Fatal("original DELETE handle or file identity replaced")
+				}
+			}
+			if stage == "success" {
+				if err != nil || callbacks != 1 || guards != 2 {
+					t.Fatal("original root rename after descendant drain", err)
+				}
+				if err := r.check(); err != nil {
+					t.Fatal("completed retirement evidence", err)
+				}
+				for _, name := range []string{"app.exe", "launcher.exe"} {
+					content, err := os.ReadFile(physical(parent.name + `\` + retirementGenerationName(r.binding) + `\` + name))
+					if err != nil || string(content) != name {
+						t.Fatal("retired descendant bytes changed", err)
+					}
+				}
+			} else {
+				if !errors.Is(err, ErrRetirementUncertain) || r.completed != nil || r.completedMove || r.marker == nil || r.started == nil {
+					t.Fatal("failed terminal handoff lost recovery custody", err)
+				}
+				for i, object := range r.objects {
+					if object.id != originalIDs[i] {
+						t.Fatal("failed callback moved original object")
+					}
+					if err := object.check(); err != nil {
+						t.Fatal("original name or native custody changed", err)
+					}
+				}
+				if _, err := os.Stat(filepath.Join(r.store.rootDOS, retirementCompletedName(r.binding))); !errors.Is(err, os.ErrNotExist) {
+					t.Fatal("failed handoff published completed evidence", err)
+				}
+			}
+			wantCallbacks := 1
+			if stage == "guard before" {
+				wantCallbacks = 0
+			}
+			if callbacks != wantCallbacks {
+				t.Fatal("callback count differs", callbacks)
+			}
+		})
+	}
+}
+
 func TestNativeRetirementCompletedOriginalRegistrationAndSelectedGeneration(t *testing.T) {
 	runtime.LockOSThread()
 	defer runtime.UnlockOSThread()
