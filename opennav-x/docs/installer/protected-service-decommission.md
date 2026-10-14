@@ -65,9 +65,10 @@ original completed startup-publication options documented in
 [original startup restoration](operator-startup-decommission.md). Omission is
 not evidence that shortcuts were never activated and refuses before input reads.
 No new approval record or serialized custody object is introduced. This action
-retires the selected protected application generation and its completed
-registration pair into fixed protected recovery names, restores original owned
-shortcuts, then disables/stops/marks the same original service for removal.
+restores original owned shortcuts, drains original descendant readers, retires
+the selected protected application generation and its completed registration pair
+into fixed protected recovery names, then disables/stops/marks the same original
+service for removal. The revised ordering is not yet native-qualified.
 Ordinary Setup/Lifecycle uninstall and installed-product qualification remain
 separate integration gates. Its protected-enrollment observation intentionally
 refuses any retained protected namespace, including this terminal recovery. Do
@@ -83,11 +84,30 @@ be absent, and every move is non-replacing. The native retirement journal preced
 the first move. No post-fence open, path scan, retry or replacement grants custody.
 The current profile, stock OpenCPN and unknown objects are preserved.
 
+`CommitWithStartupDrain` holds original retirement custody across a synchronous
+callback after the terminal marker and durable started record, before any move.
+The host sends a single sealed intermediate `uninstall-fenced` response with an
+empty retirement hash. Within the same bounded pipe conversation the original
+operator restores shortcuts and drains app/launcher descendant handles, then
+acknowledges that exact request and fence. The host rechecks standalone
+operator/profile/stock/application custody and the store checks its original
+terminal owners before continuing. No ordinary Store checks, fresh endpoint,
+second preparation, reconnect or serialized intermediate receipt can resume it.
+The borrowed intermediate capability is revoked when its callback returns and
+never permits SCM disable/STOP/removal. The protected operator action has one
+90-second deadline spanning original preparation, the pipe exchange and final SCM
+effects; the intermediate restoration exchange is additionally bounded to
+30 seconds. Expiry cannot mint a final witness or restart the operation.
+Native Windows rejects directory rename
+with open descendant handles even when they share deletion; the original failed
+run [38465784927](https://github.com/ThereptileII/Work/actions/runs/38465784927)
+is preserved rather than reclassified as a fixture failure.
+
 Only completed native retirement returns `uninstall-prepared`, including mandatory
 `retirementSha256` as well as the existing fence/binding fields. The sealed live
 broker witness binds this distinct response; fence-only service decommission
 cannot satisfy it. The provisioner binds that witness to the original retained
-SCM owner, requires the original shortcut restoration, and completes service
+SCM owner, requires the completed original shortcut restoration/drain, and completes service
 removal before closing all owners. Its result state is
 `protected-retired-service-decommissioned`, with `service` equal to
 `marked-for-removal` and `startup` equal to `original-shortcuts-restored`.

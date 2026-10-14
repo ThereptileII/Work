@@ -86,3 +86,46 @@ func commitPreparedRetirement(ctx context.Context, releaseSelected func() error,
 	}
 	return finishRetirement(ctx, receipt, standalone)
 }
+
+// The synchronous Store callback publishes one interim fence and waits for the
+// same operator to restore startup and close descendant handles. Final retirement
+// is accepted only for that exact fence. Neither an omitted callback nor a caught
+// callback failure can produce a final witness.
+func commitPreparedStartupRetirement(ctx context.Context, releaseSelected func() error, commit func(context.Context, func(context.Context, string) error) (retirementReceipt, error), standalone func(context.Context) error, publishFence func(context.Context, string) error) (string, string, error) {
+	if commit == nil || publishFence == nil || standalone == nil {
+		return "", "", brokerstore.ErrDecommissionUncertain
+	}
+	var publishedFence string
+	attempted, drained, poisoned := false, false, false
+	fence, retirement, err := commitPreparedRetirement(ctx, releaseSelected, func(ctx context.Context) (retirementReceipt, error) {
+		receipt, err := commit(ctx, func(callbackCtx context.Context, digest string) error {
+			if attempted || callbackCtx == nil || callbackCtx.Err() != nil || ctx.Err() != nil || !hashPattern.MatchString(digest) {
+				poisoned = true
+				return brokerstore.ErrDecommissionUncertain
+			}
+			attempted = true
+			if err := standalone(callbackCtx); err != nil {
+				poisoned = true
+				return errors.Join(brokerstore.ErrDecommissionUncertain, err)
+			}
+			if err := publishFence(callbackCtx, digest); err != nil {
+				poisoned = true
+				return errors.Join(brokerstore.ErrDecommissionUncertain, err)
+			}
+			if err := errors.Join(standalone(callbackCtx), callbackCtx.Err(), ctx.Err()); err != nil {
+				poisoned = true
+				return errors.Join(brokerstore.ErrDecommissionUncertain, err)
+			}
+			publishedFence, drained = digest, true
+			return nil
+		})
+		if err != nil || !drained || poisoned {
+			return nil, errors.Join(brokerstore.ErrDecommissionUncertain, err)
+		}
+		return receipt, nil
+	}, standalone)
+	if err != nil || fence != publishedFence || !drained || poisoned {
+		return "", "", errors.Join(brokerstore.ErrDecommissionUncertain, err)
+	}
+	return fence, retirement, nil
+}

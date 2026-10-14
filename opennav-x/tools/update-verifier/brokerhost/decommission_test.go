@@ -140,3 +140,75 @@ func TestProtectedUninstallHandoffAndCompletionFaults(t *testing.T) {
 		})
 	}
 }
+
+func TestProtectedUninstallStartupDrainGatesFinalWitness(t *testing.T) {
+	for _, fault := range []string{"", "release", "missing-drain", "duplicate-drain", "invalid-fence", "publish", "cancel-publish", "post-drain-guard", "commit", "different-fence", "retired"} {
+		t.Run(fault, func(t *testing.T) {
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			var events []string
+			published, guardCalls := 0, 0
+			fence, retired, err := commitPreparedStartupRetirement(ctx, func() error {
+				events = append(events, "release")
+				if fault == "release" {
+					return errors.New("uncertain release")
+				}
+				return nil
+			}, func(ctx context.Context, drain func(context.Context, string) error) (retirementReceipt, error) {
+				events = append(events, "commit")
+				if fault != "missing-drain" {
+					digest := strings.Repeat("a", 64)
+					if fault == "invalid-fence" {
+						digest = "invalid"
+					}
+					if fault == "different-fence" {
+						digest = strings.Repeat("c", 64)
+					}
+					// Deliberately ignore a callback refusal: the host must not turn
+					// a later receipt into authority after a failed/duplicate drain.
+					_ = drain(ctx, digest)
+					if fault == "duplicate-drain" {
+						_ = drain(ctx, digest)
+					}
+				}
+				if fault == "commit" {
+					return nil, errors.New("rename failed")
+				}
+				return retirementReceiptFixture{&events, fault}, nil
+			}, func(context.Context) error {
+				guardCalls++
+				events = append(events, "guard")
+				if fault == "post-drain-guard" && guardCalls == 2 {
+					return errors.New("original owner changed")
+				}
+				return nil
+			}, func(context.Context, string) error {
+				published++
+				events = append(events, "publish-drain")
+				if fault == "publish" {
+					return errors.New("operator did not drain")
+				}
+				if fault == "cancel-publish" {
+					cancel()
+				}
+				return nil
+			})
+			if fault == "" {
+				if err != nil || len(fence) != 64 || len(retired) != 64 || published != 1 || strings.Join(events, ",") != "release,commit,guard,publish-drain,guard,retired,guard,fence,retirement,retired,guard" {
+					t.Fatalf("complete transaction: %v %v", events, err)
+				}
+			} else if !errors.Is(err, brokerstore.ErrDecommissionUncertain) || fence != "" || retired != "" {
+				t.Fatalf("final witness escaped %s: %v", fault, err)
+			}
+			if published > 1 {
+				t.Fatal("operator was asked to mutate twice")
+			}
+			if (fault == "release" || fault == "missing-drain" || fault == "invalid-fence") && published != 0 {
+				t.Fatal("publication without original preparation")
+			}
+			if (fault == "publish" || fault == "duplicate-drain" || fault == "cancel-publish" || fault == "post-drain-guard" || fault == "missing-drain") && strings.Contains(strings.Join(events, ","), "retirement") {
+				t.Fatal("accepted receipt after uncertain drainage")
+			}
+		})
+	}
+}

@@ -46,30 +46,47 @@ The baseline-only `uninstall-protected` action instead calls
 retirement request. Opening the original launcher afterward would fail because
 its generation has moved. Preparation retains the original publication, menu,
 recovery, links and launcher without mutation. A private anchor holds the original
-generation, `app` directory and launcher with read access and delete sharing,
-allowing the broker's DELETE owner to rename the generation without releasing
-the launcher's original custody. Ordinary enrollment pin policy is unchanged.
+generation, `app` directory and launcher with read access and delete sharing.
+Native run [38465784927](https://github.com/ThereptileII/Work/actions/runs/38465784927)
+proved that this is insufficient for directory rename: open descendant handles
+cause `STATUS_ACCESS_DENIED`. That failed product evidence remains authoritative;
+the earlier statement that delete sharing alone permits the move was incorrect.
+Ordinary enrollment pin policy is unchanged.
 
-Only `BindDecommission` with the authenticated same-broker uninstall witness can
-finalize that anchor at `retired-<requestId>-<generation>/app/skager-start.exe`.
-It checks the same retained handles, physical IDs, descriptors and launcher bytes;
-path opens only corroborate their fixed aliases. Only the renamed generation
-root may rebind creation time for NTFS tunneling. There is no launcher reopen,
-alternative destination, adjacent-record adoption or binding retry. Preparation
-or binding failure prevents shortcut and SCM effects. After successful binding,
-the original shortcut restoration below still precedes service removal.
+The replacement source flow uses one authenticated two-phase maintenance pipe.
+The broker acquires original DELETE owners and publishes the terminal fence and
+durable started record before sending a borrowed `uninstall-fenced` witness.
+This intermediate capability permits only original shortcut restoration and
+drainage of the original `app`/launcher handles. The operator restores the links
+while their original image is still open, validates the result and closes those
+two descendant handles. It retains the original generation root, protected
+parents, menu, recovery, link and service/process owners. The intermediate witness
+expires when the callback returns and cannot authorize service removal.
+
+The same broker transaction, locks, frozen profile and original DELETE owners
+span the handoff. Only after successful same-conversation acknowledgement does
+it rename the registration pair and generation and return `uninstall-prepared`.
+`BindDecommission` requires the same binding and fence and the completed
+restoration/drain. It rebinds the retained generation **root** to the fixed
+`retired-<requestId>-<generation>` name. It does not reopen descendants or adopt a
+replacement launcher. Protected ACLs, original parent/root ownership and the
+broker transaction protect the drained interval; a bare file ID is insufficient.
+Only the renamed root may rebind creation time for NTFS tunneling. Partial
+restoration, failed close, lost continuation or mismatched final receipt leaves
+terminal recovery state and forbids SCM mutation, retry or service-only fallback.
 
 The existing focused native workflow selects all four new composed
 retirement/restoration controls. Qualification must authenticate their actual
 PASS/no-skip events from the original artifact. The explicit required-name
 addition is retained in local `db355047` but was not published because the
 current GitHub OAuth credential lacks workflow-edit scope; no existing gate was
-removed or relaxed. Native execution of this joined correction and full installed
-uninstall acceptance remain pending; Win32 cross-compilation and inert native
+removed or relaxed. The original joined run failed as recorded above. Native
+execution of the two-phase correction and full installed uninstall acceptance
+remain pending; Win32 cross-compilation and inert native
 fixture source do not supply that proof. Updated/pending lineage
 and authenticated terminal cleanup remain unsupported by this baseline join.
 
-For a bound publication, `Decommission` retires the three fixed published links
+For a bound service-only publication, `Decommission` retires the three fixed published links
 to `retired-Skager.lnk`, `retired-Skager Legacy.lnk` and
 `retired-Skager Safe Mode.lnk` in the original recovery directory, then restores
 the optional original normal shortcut to `Skager.lnk`. Each source has retained
@@ -79,7 +96,9 @@ a replacement file. All destinations pass preflight, complete native custody and
 the SAME live broker witness are rechecked around every move, and creation time
 is rebound only after our own successful rename to account for NTFS tunneling.
 No original normal backup means all three protected links are retired without
-creating a replacement normal shortcut. Unrelated menu entries remain untouched.
+creating a replacement normal shortcut. Protected uninstall performs these same
+moves during its intermediate callback, before generation retirement;
+`Decommission` must not perform them again. Unrelated menu entries remain untouched.
 
 The move uses `NtSetInformationFile(FileRenameInformation)` with the retained
 destination directory and a fixed relative filename, following Microsoft's
@@ -100,10 +119,12 @@ Successful service results remain `marked-for-removal`, and owner-close errors
 suppress success. The earlier explicit service-only API remains available when
 no publication was bound; it is not full uninstall.
 
-The witness binds the authenticated broker's terminal fence and earlier actual
-application-exit/profile-cold observation. The broker releases its profile freeze
-before returning the witness, so this shortcut-only transaction does not claim
-continuous current-profile custody and never authorizes a profile mutation. Full
+The final witness binds the authenticated broker's terminal fence and actual
+application-exit/profile-cold observation. The protected two-phase transaction
+retains the broker's profile freeze across shortcut restoration and generation
+retirement. The broker releases it before returning the final witness. The
+service-only shortcut transaction still occurs after that release; neither path
+authorizes a profile mutation. Full
 installed data-preservation acceptance, protected application cleanup, repair,
 clean uninstall, native Windows execution and release qualification remain
 separate gates. Temp-file tests do not qualify an installed menu or application.

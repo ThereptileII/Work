@@ -159,7 +159,9 @@ func (h *serviceHost) Execute(args []string, changes <-chan svc.ChangeRequest, s
 		done <- serveBrokerEndpoints(ctx,
 			func(ctx context.Context) error { return brokerpipe.Serve(ctx, e.handleNativeStaging) },
 			func(ctx context.Context) error { return brokerpipe.ServeExecution(ctx, e.handleNativeExecutionRequest) },
-			func(ctx context.Context) error { return brokerpipe.ServeMaintenance(ctx, e.handleNativeMaintenance) })
+			func(ctx context.Context) error {
+				return brokerpipe.ServeMaintenanceWithProtectedUninstall(ctx, e.handleNativeMaintenance, e.handleNativeProtectedUninstall)
+			})
 	}()
 	stop := func() (bool, uint32) {
 		cancel()

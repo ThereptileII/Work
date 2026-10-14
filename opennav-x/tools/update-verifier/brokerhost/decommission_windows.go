@@ -19,6 +19,20 @@ import (
 // restart-lost custody refuses. The current profile is frozen through publication/readback and never written. All
 // histories, code, trust floors and the untouched stock remain recovery backup.
 func (e *engine) handlePrepareDecommission(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.MaintenanceRequest) (result brokerpipe.MaintenanceResult, resultErr error) {
+	if q.Operation != brokerpipe.PrepareDecommission {
+		return result, errDecommissionRefused
+	}
+	return e.prepareOriginalDecommission(ctx, peer, q, nil)
+}
+
+func (e *engine) handleNativeProtectedUninstall(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.MaintenanceRequest, publishFence func(context.Context, brokerpipe.MaintenanceResult) error) (brokerpipe.MaintenanceResult, error) {
+	if q.Operation != brokerpipe.PrepareUninstall || publishFence == nil {
+		return brokerpipe.MaintenanceResult{}, errDecommissionRefused
+	}
+	return e.prepareOriginalDecommission(ctx, peer, q, publishFence)
+}
+
+func (e *engine) prepareOriginalDecommission(ctx context.Context, peer brokerpipe.Peer, q brokerpipe.MaintenanceRequest, publishFence func(context.Context, brokerpipe.MaintenanceResult) error) (result brokerpipe.MaintenanceResult, resultErr error) {
 	defer func() {
 		if resultErr != nil {
 			result = brokerpipe.MaintenanceResult{}
@@ -138,9 +152,14 @@ func (e *engine) handlePrepareDecommission(ctx context.Context, peer brokerpipe.
 			}
 			// Commit must match the previously captured original identities before the
 			// terminal fence; no pathname scan or post-fence reopening grants authority.
-			fence, retirement, err := commitPreparedRetirement(ctx, selected.Close, func(ctx context.Context) (retirementReceipt, error) {
-				return preparation.Commit(ctx, standalone)
-			}, standalone)
+			fence, retirement, err := commitPreparedStartupRetirement(ctx, selected.Close, func(ctx context.Context, drain func(context.Context, string) error) (retirementReceipt, error) {
+				return preparation.CommitWithStartupDrain(ctx, standalone, drain)
+			}, standalone, func(ctx context.Context, fence string) error {
+				// The interim witness permits original shortcut restoration and child
+				// handle drainage only. The same pipe waits for that acknowledgement
+				// before Store can rename; no final witness or SCM authority exists yet.
+				return publishFence(ctx, brokerpipe.MaintenanceResult{Schema: 1, RequestID: q.RequestID, State: "uninstall-fenced", Generation: binding.GenerationID, CompletionSHA256: binding.CompletionSHA256, SelectedHeadSHA256: binding.SelectedHeadSHA256, ClientSID: binding.ClientSID, RegistrationSHA256: binding.RegistrationSHA256, CurrentProfileSHA256: binding.ProfileSHA256, CurrentProfileIdentitySHA256: binding.ProfileIdentitySHA256, FenceSHA256: fence})
+			})
 			if err != nil {
 				return err
 			}
