@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Private email activated; first invitation exposed a provider-header defect
+## Private email header repaired; SMTP credential correction pending
 
 Resend's separate `auth.skager.app` sender is verified with enforced TLS.
 The owner completed the credential handoff; custom SMTP is persisted enabled.
@@ -8,14 +8,23 @@ Both code-only email templates were saved and fully read back. Exact frontend
 `a6a1768d01963388416d48ab1d51dd191d9288db` is active as Cloudflare `f5508044`;
 live `auth.js` matches the retained candidate. Its [CI 38531861920](https://github.com/ThereptileII/Work/actions/runs/38531861920)
 passes **191 tests** (88 Django and 103 Edge), plus disposable SQL checks.
-The server bundle remains byte-identical to deployed `1acc781e`.
+The new server bundle from exact `004a8472cc49e11c64bcd5ebffabe52afe791966`
+is deployed and was fully read back byte-for-byte. Its frontend is byte-identical
+to the active `f5508044` deployment; no redundant frontend replacement was made.
+[CI 38538024121](https://github.com/ThereptileII/Work/actions/runs/38538024121)
+passes **192 tests** (88 Django and 104 Edge), plus disposable SQL checks.
 
 Only the owner's explicitly authorized address is allowlisted for private
 auth testing. Checkout, portal and downloads remain off. First signup reached
 successful throttle RPCs but `/auth/v1/invite` returned 403; Auth reports a
 malformed token and Resend lists no sent email. The SDK-aligned correction uses
 the server identity in both admin-invitation headers, with **23 focused checks**
-passing. Deployment/live retry and end-to-end authentication remain pending.
+passing. After deployment the live retry reached SMTP: Auth returned
+`535 Authentication credentials invalid` instead of the malformed-token error.
+The fallback OTP correctly refused creation with public signup disabled.
+No email delivery or login has passed; the owner is correcting the SMTP
+credential directly in Supabase. No credential or recipient address is retained
+in source/evidence. [Activation and failed-live-check receipt](evidence/scrum40-private-email-20261014/README.md).
 No public-access or paid-entitlement acceptance is claimed.
 
 ## Earlier checkpoint: private login email preparation
