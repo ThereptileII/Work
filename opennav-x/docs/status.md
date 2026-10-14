@@ -10,9 +10,12 @@ This used supported whole-file drag/drop, not a partial editor paste. Independen
 provider-source byte equality was not obtained and is not claimed.
 
 The real beta homepage renders; its Login entry opens the new sign-in page.
-An authorized owner sign-in request completed with the neutral eligible-request
-message, and the email-code verification form is ready. Code entry and the
-authenticated session remain pending the owner; no OTP was read. Direct browser
+The initial neutral login response concealed a provider `/otp` 422
+`signup_disabled`: the invited account was not yet email-confirmed. The existing
+**Create an account** invitation flow subsequently sent a fresh code, confirmed
+**delivered** by Resend. Public signup remains off. The code form is ready in the
+same browser; code entry and the authenticated session remain pending the owner.
+No OTP or email body was read. Direct browser
 navigation to the JSON provenance and health URLs was client-blocked, so no new
 health/provenance response is inferred from those attempts.
 

@@ -36,9 +36,35 @@ Login navigates to `/auth/login/`, renders the email form, and the authorized
 owner sign-in request reaches the neutral eligible-request success message.
 `/auth/verify/` then renders an empty code field and Verify code button. No code,
 session credential, email body or private account data is captured here. The
-owner is completing code entry; no signed-in session is yet accepted.
+owner has not yet completed code entry; no signed-in session is accepted.
 
 ![Published email-code step](signin-code.jpg)
+
+### First invitation versus returning-user login
+
+The neutral login result above did **not** prove delivery. The provider Auth
+log at `2026-10-14T15:49:57Z` reports `/otp`, HTTP 422,
+`signup_disabled`. The authorized test account exists but has not confirmed its
+email. Supabase's ordinary OTP flow treats an unconfirmed account as signup;
+public signup correctly remains disabled. No authentication gate was weakened.
+
+The existing website **Create an account** (`/auth/signup/`) flow was then used
+for that same allowlisted address. This invokes the server-side invitation path
+and creates the application's verification challenge. Resend's sending list
+confirmed a new **delivered** `Your SKAGER account code` message. Only delivery
+metadata was inspected; the email body and code were not opened or captured.
+The owner is left at the empty code form in the same browser and must use the
+newest invitation. The earlier provider-dashboard invitation alone did not create
+an application challenge. No credential or backend deployment changed.
+
+This behavior agrees with the official Supabase Auth
+[MagicLink](https://github.com/supabase/auth/blob/master/internal/api/magic_link.go),
+[signup](https://github.com/supabase/auth/blob/master/internal/api/signup.go),
+[invite](https://github.com/supabase/auth/blob/master/internal/api/invite.go) and
+[verification](https://github.com/supabase/auth/blob/master/internal/api/verify.go)
+implementation; the observed provider error and delivered invitation are the
+live evidence, not an assumption about the hosted source revision. Successful
+code verification and an authenticated session remain pending.
 
 Browser navigation to `/preview-provenance.json` and `/api/health` returned
 `ERR_BLOCKED_BY_CLIENT`; neither produced a service response in this check.
