@@ -116,6 +116,7 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerenroll/code_upgrade_other.go', 'brokerenroll/code_upgrade_windows.go',
     'brokerenroll/code_upgrade_finalize.go', 'brokerenroll/code_upgrade_finalize_other.go',
     'brokerenroll/code_upgrade_finalize_windows.go',
+    'brokerenroll/code_upgrade_start.go', 'brokerenroll/code_upgrade_start_windows.go',
     'brokerenroll/files_windows.go', 'brokerenroll/applications_windows.go',
     'brokerenroll/programdata_guard_windows.go',
     'brokerenroll/service.go', 'brokerenroll/service_other.go',
