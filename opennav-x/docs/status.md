@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Authenticated upgrade discovery and bounded recovery integrated; native gate pending
+## Authenticated upgrade recovery: first native gate caught fixture setup error
 
 SCRUM-311 now discovers the exact signed successor through the existing TUF
 authority without manufacturing successor pins from local files. Complete,
@@ -14,9 +14,21 @@ open; these components do not qualify installed recovery by themselves.
 
 The combined focused Linux check passes **28 top-level / 94 including subcases**,
 with no failures/skips. Broker/provisioner source-closure suites pass **12/14**;
-the integrated Windows x86 test binary compiles. Native execution is still pending.
-Independent review checked shared dispatch, ownership and reader exclusions.
+the integrated Windows x86 test binary compiles. First native run
+[38619809617](https://github.com/ThereptileII/Work/actions/runs/38619809617) passed
+253 Linux and 361 Windows top-level cases, with one Windows fixture-setup failure
+and five existing skips. The empty demand-attempt fixture now creates its exact
+protected descriptor at birth; production checks and refusal assertions remain.
+Independent review checked shared dispatch, ownership and reader exclusions;
+deferred cleanup uncertainty now also revokes terminal-abort classification.
 [Contract](installer/broker-code-upgrade.md).
+
+New enrollment binds the original protected TUF cache into schema-2 completion;
+existing schema-1 maintenance stays compatible. The customer upgrade must retain
+that exact cache instead of resetting its floors. Reviewed source and focused
+portable checks pass; the corrected recovery and new native cache components
+await one combined retest. Actual customer admission/elevation is still being
+joined. [Evidence and limits](evidence/scrum311-code-recovery-20261014/README.md).
 
 ## Frozen candidate refused newer Windows host before application compilation
 

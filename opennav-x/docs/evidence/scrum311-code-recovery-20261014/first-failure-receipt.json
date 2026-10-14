@@ -1,0 +1,36 @@
+{
+  "commit": "ae5e5e6644494ccf411c262b301a480b99531655",
+  "run": "38619809617",
+  "artifacts": [
+    {
+      "platform": "linux",
+      "artifactId": 11921620942,
+      "archiveBytes": 69535,
+      "archiveSha256": "050201fce96463c3c75cc2d2e42c58cf6185cd927703ea85f1a72f6baf7de27c",
+      "goTestStreamSha256": "1952a65eb5436445688006b0ec3df0a0074b6dc94f8cb32f8865251d7d1f0b54",
+      "testCounts": {
+        "pass": 253
+      },
+      "failedCases": []
+    },
+    {
+      "platform": "windows",
+      "artifactId": 11921038150,
+      "archiveBytes": 68167,
+      "archiveSha256": "19152d8d9ba3fa5174644db27f58dd5dc4c5162a2471cc46f07fc09bf01f7bde",
+      "goTestStreamSha256": "ca513788c5c0caa103ad07c7ca4cc4e9216bd828b2a553c812b1900a7c9d5e3e",
+      "testCounts": {
+        "pass": 361,
+        "fail": 1,
+        "skip": 5
+      },
+      "failedCases": [
+        "TestNativeCodeUpgradeDemandAttemptExclusiveAndExactPairBound/empty",
+        "TestNativeCodeUpgradeDemandAttemptExclusiveAndExactPairBound"
+      ]
+    }
+  ],
+  "cause": "New empty-file fixture descriptor mismatch before production reader assertion; production assertions unchanged.",
+  "applicationAcceptance": false,
+  "boatAcceptance": false
+}
