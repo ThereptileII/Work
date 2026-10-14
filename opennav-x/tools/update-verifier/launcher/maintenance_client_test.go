@@ -177,3 +177,109 @@ func TestMaintenanceClientPreflightHasNoGrantOrTransport(t *testing.T) {
 		t.Fatal("nil transport accepted")
 	}
 }
+
+func maintenanceClientHistoryFixture(page int) (brokerpipe.MaintenanceRequest, brokerpipe.MaintenanceResult) {
+	q := brokerpipe.MaintenanceRequest{Schema: 1, Operation: brokerpipe.SelectedHistory, RequestID: strings.Repeat("1", 32), Page: &page}
+	if page > 0 {
+		q.ExpectedSelectedHeadSHA256, q.InventorySHA256 = strings.Repeat("2", 64), strings.Repeat("6", 64)
+	}
+	ancestors := []brokerpipe.MaintenanceAncestor{{Generation: strings.Repeat("7", 32), CompletionSHA256: strings.Repeat("8", 64)}}
+	r := brokerpipe.MaintenanceResult{Schema: 1, RequestID: q.RequestID, State: brokerpipe.SelectedHistory,
+		Generation: strings.Repeat("3", 32), CompletionSHA256: strings.Repeat("4", 64), SelectedHeadSHA256: strings.Repeat("2", 64),
+		Version: "1.0.0", Commit: strings.Repeat("a", 40), QualificationSHA256: strings.Repeat("b", 64), QualificationClosedSHA256: strings.Repeat("c", 64),
+		InventorySHA256: strings.Repeat("6", 64), Page: &page, Ancestors: &ancestors}
+	return q, r
+}
+
+func TestSelectedHistoryUsesOriginalNativeCustodyAndNeverRetries(t *testing.T) {
+	for _, page := range []int{0, 1} {
+		for _, fault := range []string{"", "transport", "wrong-head", "wrong-inventory", "missing-qualification", "query-after", "folder-close", "query-close"} {
+			t.Run(string(rune('0'+page))+"/"+fault, func(t *testing.T) {
+				q, expected := maintenanceClientHistoryFixture(page)
+				var events []string
+				failures := map[string]error{fault: errors.New("uncertain original owner")}
+				query := &maintenanceClientFixtureOwner{name: "query", events: &events, failures: failures}
+				folder := &maintenanceClientFixtureOwner{name: "folder", events: &events, failures: failures}
+				calls := 0
+				r, err := callMaintenanceWithCustody(context.Background(), q,
+					func(context.Context) (maintenanceClientCustody, error) { return query, nil },
+					func(context.Context) (maintenanceClientCustody, error) { return folder, nil },
+					func(_ context.Context, actual brokerpipe.MaintenanceRequest) (brokerpipe.MaintenanceResult, error) {
+						calls++
+						if actual != q {
+							t.Fatal("history request changed")
+						}
+						result := expected
+						switch fault {
+						case "wrong-head":
+							result.SelectedHeadSHA256 = "unbound"
+							if page > 0 {
+								result.SelectedHeadSHA256 = strings.Repeat("f", 64)
+							}
+						case "wrong-inventory":
+							result.InventorySHA256 = "unbound"
+							if page > 0 {
+								result.InventorySHA256 = strings.Repeat("f", 64)
+							}
+						case "missing-qualification":
+							result.QualificationClosedSHA256 = ""
+						}
+						return result, failures["transport"]
+					})
+				if calls != 1 || !reflect.DeepEqual(events, []string{"query-before", "folder-before", "query-after", "folder-after", "folder-close", "query-close"}) {
+					t.Fatal("history bypassed custody or retried", calls, events)
+				}
+				if fault == "" {
+					if err != nil || !reflect.DeepEqual(r, expected) {
+						t.Fatal(r, err)
+					}
+				} else if err == nil || r != (brokerpipe.MaintenanceResult{}) {
+					t.Fatal("unverified history escaped", r, err)
+				}
+			})
+		}
+	}
+}
+
+func TestSharedMaintenanceClientRefusesCrossOperationFieldsBeforeGrant(t *testing.T) {
+	first, _ := maintenanceClientHistoryFixture(0)
+	next, _ := maintenanceClientHistoryFixture(1)
+	manual := maintenanceClientTestRequest()
+	page := 0
+	bad := []brokerpipe.MaintenanceRequest{first, first, first, next, next, manual, manual, manual, manual}
+	bad[0].Page = nil
+	bad[1].ExpectedSelectedHeadSHA256 = strings.Repeat("2", 64)
+	bad[2].TargetGeneration = strings.Repeat("3", 32)
+	bad[3].InventorySHA256 = ""
+	bad[4].ExpectedSelectedHeadSHA256 = strings.Repeat("f", 63)
+	bad[5].Page = &page
+	bad[6].InventorySHA256 = strings.Repeat("6", 64)
+	bad[7].Operation = brokerpipe.PrepareDecommission
+	bad[8].Operation = brokerpipe.PrepareUninstall
+	for _, q := range bad {
+		prepare := func(context.Context) (maintenanceClientCustody, error) {
+			t.Fatal("invalid request prepared grant", q)
+			return nil, nil
+		}
+		call := func(context.Context, brokerpipe.MaintenanceRequest) (brokerpipe.MaintenanceResult, error) {
+			t.Fatal("invalid request transmitted", q)
+			return brokerpipe.MaintenanceResult{}, nil
+		}
+		r, err := callMaintenanceWithCustody(context.Background(), q, prepare, prepare, call)
+		if err == nil || r != (brokerpipe.MaintenanceResult{}) {
+			t.Fatal("cross-operation request accepted", q)
+		}
+	}
+	q := maintenanceClientTestRequest()
+	for _, mutate := range []func(*brokerpipe.MaintenanceResult){
+		func(r *brokerpipe.MaintenanceResult) { r.Version = "1.0.0" },
+		func(r *brokerpipe.MaintenanceResult) { r.Page = &page },
+		func(r *brokerpipe.MaintenanceResult) { r.InventorySHA256 = strings.Repeat("6", 64) },
+	} {
+		r := maintenanceClientTestResult(q)
+		mutate(&r)
+		if maintenanceClientResult(r, q) {
+			t.Fatal("manual rollback accepted history response fields", r)
+		}
+	}
+}

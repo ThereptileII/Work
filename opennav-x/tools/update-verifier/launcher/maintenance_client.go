@@ -73,8 +73,8 @@ func maintenanceClientHex(value string, size int) bool {
 	return true
 }
 func maintenanceClientRequest(q brokerpipe.MaintenanceRequest) bool {
-	return q.Schema == 1 && q.Operation == brokerpipe.ManualRollback && maintenanceClientHex(q.RequestID, 32) && maintenanceClientHex(q.ExpectedSelectedHeadSHA256, 64) && maintenanceClientHex(q.TargetGeneration, 32) && maintenanceClientHex(q.TargetCompletionSHA256, 64)
+	return brokerpipe.ValidMaintenanceClientRequest(q)
 }
 func maintenanceClientResult(r brokerpipe.MaintenanceResult, q brokerpipe.MaintenanceRequest) bool {
-	return r.Schema == 1 && r.RequestID == q.RequestID && r.State == "manual-selected" && r.Generation == q.TargetGeneration && r.CompletionSHA256 == q.TargetCompletionSHA256 && maintenanceClientHex(r.SelectedHeadSHA256, 64) && r.SelectedHeadSHA256 != q.ExpectedSelectedHeadSHA256
+	return brokerpipe.ValidMaintenanceClientResult(r, q)
 }
