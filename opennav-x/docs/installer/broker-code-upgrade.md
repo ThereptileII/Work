@@ -36,6 +36,17 @@ Publisher monotonicity and current TUF metadata/root expiry and durable rollback
 floors remain mandatory. The consumer does not infer a broker version from the
 original application's version.
 
+`DiscoverBrokerCodeUpgrade` now provides owned exact verified target bytes and
+the parsed successor tuple without a premanufactured successor pin. It reuses
+the existing signed target, purpose, expiry, floor, origin and schema checks;
+the explicit operator API still requires all independent pins. A future customer
+entry may derive admission from the already authenticated installed helper's
+original protected trust/cache and completion, then retain the exact downloaded
+image and loader through execution. That customer admission/elevation handoff
+is not implemented by target discovery alone. No second per-customer manual
+approval channel is required by this design, and no untrusted local file supplies
+its approval.
+
 The local original-completion pin and genuine protected native completion bind
 this transition to the actual user, original request/baseline/publication and
 full old code identities. The exact original trust bytes must match. An expired
@@ -196,6 +207,20 @@ replaces code or runs verify-store. Clean SCM STOPPED is not process-exit proof.
 After successful start, the first actual RUNNING process is bound once and retained
 through query-only readiness/publication; process loss never rebinds a later instance.
 
+DEMAND_START recovery admits only clean STOPPED plus the already-published exact
+complete-pair closure, genuinely absent ready and normal-start attempts. A
+separate CHANGE_CONFIG/query-only owner exclusively flushes one canonical
+`.code-successor.demand-attempt.json` bound to the original completion, policy,
+successor and pair before its sole AUTO configuration call. It cannot START or
+STOP. It releases configuration authority before the existing AUTO dispatcher
+reopens and revalidates the installation and consumes the normal-start fence.
+An attempt still paired with DEMAND forbids another configuration call. An exact
+attempt paired with freshly observed exact AUTO can reconcile the authorized
+configuration effect without replaying it; no redundant completion receipt is
+needed. Torn, foreign or partial attempts refuse in every reader. Early abort
+and DISABLED recovery reject any demand attempt. SCM STOPPED alone does not
+authorize a missing complete pair or establish verifier process exit.
+
 This implementation supports the early terminal abort boundaries above, the
 four disabled rename boundaries, one fenced
 normal start from an exact automatic clean-stopped successor, and terminal
@@ -207,8 +232,9 @@ marker. It deliberately **does not claim recovery of every phase**:
   authenticated complete boundaries above while original code is still running.
 - A partial immutable successor/marker write whose bytes do not exactly match
   the same transaction refuses adoption; it is not silently repaired.
-- Process loss after DEMAND_START is selected for `verify-store` refuses the
-  DISABLED-only recovery entry.
+- Process loss during DEMAND_START `verify-store` before complete-pair
+  publication still refuses. The bounded DEMAND recovery covers only the
+  already-published complete pair; it never reruns verification.
 - AUTO_START with pending/unclean STOPPED or any previous start-attempt namespace
   refuses another start; a failed or uncertain StartService is never retried.
 

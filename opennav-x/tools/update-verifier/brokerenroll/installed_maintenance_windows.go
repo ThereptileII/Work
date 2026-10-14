@@ -236,7 +236,7 @@ func readInstalledCompletionModeNative(ctx context.Context, fixedHelper bool, re
 			return result, err
 		}
 	} else if len(recoverMode) == 0 || !recoverMode[0] {
-		for _, name := range []string{sid + codeDrainSuffix, sid + codeIntentSuffix, sid + codeReservationSuffix, sid + codeSuccessorSuffix, sid + codeSuccessorPairSuffix, sid + codeSuccessorMarkerSuffix, sid + codeBrokerStageSuffix, sid + codeHelperStageSuffix, sid + codeEarlyAbortSuffix} {
+		for _, name := range []string{sid + codeDrainSuffix, sid + codeIntentSuffix, sid + codeReservationSuffix, sid + codeSuccessorSuffix, sid + codeSuccessorPairSuffix, sid + codeSuccessorMarkerSuffix, sid + codeStartAttemptSuffix, sid + codeDemandAttemptSuffix, sid + codeBrokerStageSuffix, sid + codeHelperStageSuffix, sid + codeEarlyAbortSuffix} {
 			if err := startupRestorationAbsent(parent, name); err != nil {
 				return result, err
 			}

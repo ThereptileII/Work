@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-14
 
+## Authenticated upgrade discovery and bounded recovery integrated; native gate pending
+
+SCRUM-311 now discovers the exact signed successor through the existing TUF
+authority without manufacturing successor pins from local files. Complete,
+already-validated DEMAND successors get one durable configuration attempt before
+the existing independently fenced normal start. Early intent/completed-stage
+interruptions can restore original-reader eligibility only after verifying the
+unchanged running original pair and publishing a distinct terminal abort; partial
+unproven copies still refuse. Configuration, start and query-only rights remain
+separate. The customer Setup/Maintain admission and genuine desktop journey remain
+open; these components do not qualify installed recovery by themselves.
+
+The combined focused Linux check passes **28 top-level / 94 including subcases**,
+with no failures/skips. Broker/provisioner source-closure suites pass **12/14**;
+the integrated Windows x86 test binary compiles. Native execution is still pending.
+Independent review checked shared dispatch, ownership and reader exclusions.
+[Contract](installer/broker-code-upgrade.md).
+
 ## Frozen candidate refused newer Windows host before application compilation
 
 Candidate `9b12442d9de9ad1fd91780f74cdfa43eba261dc6`,
@@ -11,8 +29,10 @@ application crash. Linux continues separately. The original job log is retained
 privately; the missing evidence-directory upload is a secondary failure after
 that early refusal.
 
-An explicit dependency-only refresh will require the newly observed image before
-setup. The new guard passes five focused actual-workflow-program checks. It does
+An explicit dependency-only refresh is running at source `68c83517` in
+[38618335277](https://github.com/ThereptileII/Work/actions/runs/38618335277); its
+early expected-image guard passed for `20261012.333.1`. The new guard passes five
+focused actual-workflow-program checks. It does
 not force GitHub's allocation or bypass the consumer's exact environment checks.
 No duplicate full application build or blind retry is authorized by this result.
 
@@ -28,12 +48,12 @@ configuration downgrade and repeated uncertain starts refuse. The initial empty
 fixture-construction failure and its exact-byte evidence remain recorded.
 [Scope and receipts](evidence/scrum311-stopped-start-20261014/README.md).
 
-One full private Staging candidate at this source is running in
+One full private Staging candidate at this source was dispatched in
 [38615517743](https://github.com/ThereptileII/Work/actions/runs/38615517743), reusing
 the unchanged authenticated SDK subject to same-job environment verification.
-No design/extended run was requested. Full application/installed/boat acceptance
-is pending. Customer Setup activation, early partial staging and DEMAND validation
-recovery remain open; bounded native primitives are not complete customer recovery.
+No design/extended run was requested. Its Windows environment refusal is recorded
+above; full application/installed/boat acceptance remains pending. Later recovery
+increments are described above and cannot qualify that frozen candidate.
 
 ## Earlier running successor finalization gate
 

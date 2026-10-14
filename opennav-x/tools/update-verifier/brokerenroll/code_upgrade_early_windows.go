@@ -49,7 +49,7 @@ func (n *nativeCodeUpgrade) publishStageReceipt(ctx context.Context, name string
 // This reader grants no SCM capability. Every accepted retained staged file has
 // its own durable completion receipt; absence of a receipt never adopts a file.
 func readCodeEarlyStateNative(ctx context.Context, c *nativeInstalledMaintenanceAuthority, original installedCompletionRecord, originalRaw []byte, recordSD, imageSD *windows.SECURITY_DESCRIPTOR) ([]byte, error) {
-	for _, suffix := range []string{codeDrainSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix} {
+	for _, suffix := range []string{codeDrainSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix, codeDemandAttemptSuffix} {
 		if err := startupRestorationAbsent(c.requestParent, c.clientSID+suffix); err != nil {
 			return nil, errors.Join(errors.New("later code transition evidence forbids early abort"), err)
 		}

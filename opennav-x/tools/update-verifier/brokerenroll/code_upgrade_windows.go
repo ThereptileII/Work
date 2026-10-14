@@ -713,7 +713,7 @@ func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceA
 	}
 	intentAbsent := startupRestorationAbsent(parent, sid+codeIntentSuffix) == nil
 	if intentAbsent {
-		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix, codeBrokerStageSuffix, codeHelperStageSuffix} {
+		for _, suffix := range []string{codeDrainSuffix, codeReservationSuffix, codeSuccessorSuffix, codeSuccessorPairSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix, codeDemandAttemptSuffix, codeBrokerStageSuffix, codeHelperStageSuffix} {
 			if startupRestorationAbsent(parent, sid+suffix) != nil {
 				return original, errors.New("partial code successor state")
 			}
@@ -837,6 +837,9 @@ func readCodeSuccessorNative(ctx context.Context, c *nativeInstalledMaintenanceA
 		if startupRestorationAbsent(c.codeParent, name) != nil {
 			return original, errors.New("unknown staged code remains")
 		}
+	}
+	if _, err = readCodeDemandAttemptNative(ctx, c, recordSD, digest(originalRaw), r.PolicySHA256, digest(raw), digest(pairRaw)); err != nil {
+		return original, err
 	}
 	original.Broker, original.MaintenanceHelper = r.Broker, r.Helper
 	return original, nil

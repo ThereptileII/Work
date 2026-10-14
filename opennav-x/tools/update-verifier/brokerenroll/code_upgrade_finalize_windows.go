@@ -100,8 +100,8 @@ func openCodeFinalizeObserverNative(ctx context.Context, c *nativeInstalledMaint
 		return nil, err
 	}
 	n.service.expectedStart = config.StartType
-	if config.StartType != windows.SERVICE_DISABLED && config.StartType != windows.SERVICE_AUTO_START {
-		return nil, errors.New("resume accepts only exact disabled recovery or running automatic finalization")
+	if config.StartType != windows.SERVICE_DISABLED && config.StartType != windows.SERVICE_AUTO_START && config.StartType != windows.SERVICE_DEMAND_START {
+		return nil, errors.New("resume requires an exact supported service phase")
 	}
 	return n, n.check(ctx)
 }
@@ -145,6 +145,20 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 	if err != nil {
 		return nil, err
 	}
+	if observer.service.expectedStart == windows.SERVICE_DEMAND_START {
+		if !serviceCompleted(state) {
+			return nil, errors.New("demand recovery requires an already validated clean-stopped pair")
+		}
+		if err = observer.close(); err != nil {
+			return nil, errors.Join(ErrCleanup, err)
+		}
+		// The separate configuration owner takes c on every outcome. Its complete
+		// pair validation and exclusive attempt precede the sole AUTO effect.
+		transferred = true
+		return openCodeDemandResumeNative(ctx, c, p, raw, broker.String(), func(next context.Context) (codeUpgradeResumeOwner, error) {
+			return openCodeResumeNative(next, p, raw, trust, originalSHA)
+		})
+	}
 	if observer.service.expectedStart == windows.SERVICE_AUTO_START && maintenanceRunning(state, state.processID) &&
 		startupRestorationAbsent(c.requestParent, c.clientSID+codeDrainSuffix) == nil &&
 		startupRestorationAbsent(c.requestParent, c.clientSID+codeSuccessorSuffix) == nil {
@@ -158,8 +172,9 @@ func openCodeResumeNative(ctx context.Context, p releasepolicy.BrokerCodeUpgrade
 		return owner, nil
 	}
 	if observer.service.expectedStart == windows.SERVICE_DISABLED {
-		if startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix) != nil {
-			return nil, errors.New("start attempt forbids disabled recovery")
+		if startupRestorationAbsent(c.requestParent, c.clientSID+codeStartAttemptSuffix) != nil ||
+			startupRestorationAbsent(c.requestParent, c.clientSID+codeDemandAttemptSuffix) != nil {
+			return nil, errors.New("activation attempt forbids disabled recovery")
 		}
 		if !serviceCompleted(state) {
 			return nil, errors.New("disabled recovery still requires original clean stopped state")

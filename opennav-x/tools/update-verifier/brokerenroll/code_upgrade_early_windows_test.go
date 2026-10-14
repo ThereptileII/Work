@@ -99,6 +99,9 @@ func nativeEarlyAbortFixture(t *testing.T, stages int, reservation bool, fault s
 	if fault == "start-present" {
 		write(codeStartAttemptSuffix, []byte("PARTIAL"))
 	}
+	if fault == "demand-present" {
+		write(codeDemandAttemptSuffix, []byte("PARTIAL"))
+	}
 	if fault == "backup-present" {
 		if err := os.WriteFile(filepath.Join(n.parent.dos, previousBrokerName), []byte("FOREIGN"), 0600); err != nil {
 			t.Fatal(err)
@@ -149,7 +152,7 @@ func TestNativeCodeUpgradeEarlyAbortReaderRequiresExactCompleteClosure(t *testin
 				!bytes.Equal(selected.ClientRequest, c.record.ClientRequest) || selected.Baseline != c.record.Baseline {
 				t.Fatal("verified abort lost original installation", err)
 			}
-			for _, suffix := range []string{codeSuccessorSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix} {
+			for _, suffix := range []string{codeSuccessorSuffix, codeSuccessorMarkerSuffix, codeStartAttemptSuffix, codeDemandAttemptSuffix} {
 				if err := startupRestorationAbsent(c.requestParent, c.clientSID+suffix); err != nil {
 					t.Fatal("early abort fabricated successor/start evidence", err)
 				}
@@ -159,7 +162,7 @@ func TestNativeCodeUpgradeEarlyAbortReaderRequiresExactCompleteClosure(t *testin
 }
 
 func TestNativeCodeUpgradeEarlyAbortRefusesUnprovablePartialAndForeignStages(t *testing.T) {
-	for _, fault := range []string{"torn-intent", "missing-receipt", "torn-receipt", "wrong-intent-receipt", "torn-reservation", "replacement-stage", "partial-stage", "drain-present", "start-present", "backup-present"} {
+	for _, fault := range []string{"torn-intent", "missing-receipt", "torn-receipt", "wrong-intent-receipt", "torn-reservation", "replacement-stage", "partial-stage", "drain-present", "start-present", "demand-present", "backup-present"} {
 		t.Run(fault, func(t *testing.T) {
 			c, n := nativeEarlyAbortFixture(t, 2, true, fault)
 			if _, err := readCodeEarlyStateNative(context.Background(), c, c.record, c.originalRaw, n.sd, n.sd); err == nil {

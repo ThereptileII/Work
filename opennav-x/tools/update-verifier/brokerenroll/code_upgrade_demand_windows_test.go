@@ -94,6 +94,11 @@ func TestNativeCodeUpgradeDemandAttemptExclusiveAndExactPairBound(t *testing.T) 
 			if present != (kind != "absent") || (err == nil) != (kind == "absent" || kind == "exact") {
 				t.Fatal("native attempt presence/authority", present, err)
 			}
+			// Exercise the integrated pending-pair reader as well as its leaf reader:
+			// malformed attempts must not reach AUTO start or finalization admission.
+			if _, _, e := openCodeFinalizePairNative(ctx, c, p, raw, sd, sd); (e == nil) != (kind == "absent" || kind == "exact") {
+				t.Fatal("complete-pair reader lost demand-attempt boundary", e)
+			}
 			pin, writeErr := writeCodeUpgradeFileNative(ctx, files, c.requestParent, c.clientSID+codeDemandAttemptSuffix, sd, attempt)
 			if kind == "absent" {
 				if writeErr != nil {
