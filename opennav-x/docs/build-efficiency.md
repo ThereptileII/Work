@@ -92,6 +92,15 @@ triggers a cold fallback or automatic retry. The lock selects producer run
 `38552041879`, attempt `1`, artifact `11890887394`, whose original job and bundle
 both record image `20261004.326.1`; this selection does not qualify a newer image.
 
+For an explicit dependency refresh during a hosted-image rollout, supply the
+dependency workflow's `expected_image` input with the observed exact
+`ImageVersion`. A guard records expected/actual identity and refuses a different
+allocation before MSYS2 setup or compilation. This does not pin GitHub's runner
+allocation, override its identity, weaken SDK verification or authorize automatic
+retry. An empty input retains first-producer behavior with a validated native
+Windows x64 identity. Select a successful refreshed artifact explicitly before
+the next coherent application candidate; preserve the original failed run.
+
 Reject mismatched, missing, expired, tampered or relocated inputs. Select or build
 a valid SDK explicitly rather than silently accepting partial restoration.
 Keep same-job fixture-success receipts separate from cross-run SDK provenance.

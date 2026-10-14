@@ -1,5 +1,21 @@
 # SKAGER status — 2026-10-14
 
+## Frozen candidate refused newer Windows host before application compilation
+
+Candidate `9b12442d9de9ad1fd91780f74cdfa43eba261dc6`,
+[run 38615517743](https://github.com/ThereptileII/Work/actions/runs/38615517743),
+received hosted image `20261012.333.1`. Its early SDK gate correctly refused the
+selected producer's `20261004.326.1`; native application compilation and packaging
+were not reached. This is an environment qualification failure, not an observed
+application crash. Linux continues separately. The original job log is retained
+privately; the missing evidence-directory upload is a secondary failure after
+that early refusal.
+
+An explicit dependency-only refresh will require the newly observed image before
+setup. The new guard passes five focused actual-workflow-program checks. It does
+not force GitHub's allocation or bypass the consumer's exact environment checks.
+No duplicate full application build or blind retry is authorized by this result.
+
 ## Stopped successor recovery: focused native gate passes
 
 Exact `9b12442d9de9ad1fd91780f74cdfa43eba261dc6` passes
