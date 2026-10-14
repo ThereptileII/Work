@@ -1,6 +1,25 @@
-# SKAGER status — 2026-10-13
+# SKAGER status — 2026-10-14
 
-## Private downloads integrated; provider storage limit remains
+## Private R2 storage enabled; download adapter passes source gates
+
+Exact web source `1acc781ed1ba50d565201911c15cdab00c24a364` passes
+[web CI 38512040319](https://github.com/ThereptileII/Work/actions/runs/38512040319):
+**182 tests** (88 Django/PostgreSQL and 94 Edge), no failures or skips, plus
+disposable SQL and migration checks. The original evidence ZIP is authenticated
+against its provider digest/length and all ten CRCs. The runtime now signs
+60-second GET links for the exact private R2 bucket after existing account,
+entitlement and CSRF checks. The pinned signing SDK and MIT notice are included
+only in the server package.
+
+The owner activated R2, and `skager-private-releases` was created with public
+access disabled and no objects. The read-only single-bucket credential handoff
+is pending. Both exact web bundles are packaged, **not deployed**; live Supabase
+remains `251c88be` and Cloudflare `e18a9fb4`. Download access remains OFF and the
+reviewed release catalog empty. Live R2 custody/download/expiry tests and desktop
+package qualification remain pending. No public launch acceptance is claimed.
+[Exact source, package, CI and provider evidence](evidence/scrum42-r2-20261014/README.md).
+
+## Earlier checkpoint: private downloads integrated; provider storage limit remained
 
 Exact web source `76ddba17462fcfe6884be2465e88e0e80b79b265` passes
 [web CI 38464107015](https://github.com/ThereptileII/Work/actions/runs/38464107015):
