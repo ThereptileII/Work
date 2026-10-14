@@ -63,8 +63,12 @@ permissions:
 jobs:
   verify:
     if: ${{ !inputs.retained_enrollment_only && (inputs.verifier_only || (!inputs.owned_files_only && !inputs.image_owner_only && !inputs.startup_only && github.ref != 'refs/heads/skager-updater-lifecycle')) }}
-    timeout-minutes: 20
+    # The native job includes source-closure builds and retained package upload.
+    # Exact run38633971333 passed every step but exceeded the former20-minute cap
+    # during final cleanup. Keep all tests; reserve bounded Windows upload margin.
+    timeout-minutes: ${{ matrix.os == 'windows-2022' && 35 || 20 }}
     strategy:
+      fail-fast: false
       matrix:
         include:
           - os: ubuntu-24.04
