@@ -75,15 +75,36 @@ Required Windows recovery and corresponding-source archives exceed that limit.
 The implementation's bounded metadata size is not a promise that the provider
 plan can store that object. No real catalog entry or bucket has been enabled.
 
-The existing Cloudflare account's R2 page is still at subscription activation.
+At the 2026-10-13 checkpoint the existing Cloudflare account's R2 page was still at subscription activation.
 R2 Standard offers 10 GB-month storage, one million Class A and ten million
 Class B operations free per month; overage is usage-billed under its
 [pricing policy](https://developers.cloudflare.com/r2/pricing/).
 Activation requires owner acceptance of the recurring terms/billing step.
-No R2 subscription, bucket, binding or upload was created by the operator.
+No R2 subscription, bucket, binding or upload had been created by the operator at that checkpoint.
 Provider selection/adaptation remains in SCRUM-42; do not split archives into
 opaque chunks or expose public objects to work around this capacity blocker.
 Supabase identity, database and payment boundaries remain unchanged.
+
+### Owner activation and private bucket — 2026-10-14
+
+The owner activated R2. Dashboard readback confirms the existing account now
+has R2, and the operator created `skager-private-releases` with Standard storage,
+the default Eastern Europe placement and **Public Access: Disabled**. The bucket
+contains no objects. No public development URL, custom domain or public access
+was enabled. This removes the subscription/capacity setup blocker, not the
+separate credential, provider qualification or software release gates.
+
+A Cloudflare account-token form is prepared with **Object Read only**, restricted
+to this bucket. The owner must complete creation and enter its Access Key ID and
+Secret Access Key directly into Supabase Edge Secrets as `R2_ACCESS_KEY_ID` and
+`R2_SECRET_ACCESS_KEY`. The portal runtime must never receive write/delete/admin
+rights. Upload custody needs a separate authorized deployment route. No token
+has been created or read by the operator, and no credentials are in source.
+
+The R2 signing adapter is being implemented under SCRUM-42; the currently deployed
+frontend/backend have not been replaced by that work. Downloads remain disabled
+and the reviewed catalog remains empty. A private empty bucket is not proof of
+authenticated delivery, signed-link expiry or exact artifact integrity.
 
 ## Storage signing and limits
 
