@@ -12,6 +12,7 @@ import (
 	"time"
 
 	"example.com/opennav-update-verifier/brokerregistration"
+	"golang.org/x/sys/windows"
 )
 
 // Uses only disposable inert bytes and the existing elevated native fixture.
@@ -125,5 +126,43 @@ func TestNativeBindingDoesNotAdoptExistingCompletionName(t *testing.T) {
 	}
 	if err := startupHashPin(context.Background(), owner.original, owner.originalSHA); err != nil {
 		t.Fatalf("original backup lost after collision: %v", err)
+	}
+}
+
+func TestNativeStartupBindingRetainsAllThreeOriginalDeleteOwners(t *testing.T) {
+	owner, menu, recovery, request := startupCompletedBindingFixture(t, []byte("ORIGINAL-NORMAL"), []byte("ORIGINAL-LEGACY"), []byte("ORIGINAL-SAFE"))
+	children := append([]*nativeStartupPublication{owner}, owner.additional...)
+	handles, ids := [3]windows.Handle{}, [3]enrollmentFileID{}
+	for i, child := range children {
+		handles[i], ids[i] = child.original.handle, child.original.id
+	}
+	if err := completeStartupPublicationBinding(context.Background(), owner, menu, recovery, request, recovery.descriptor); err != nil {
+		t.Fatal(err)
+	}
+	if err := owner.Check(context.Background()); err != nil {
+		t.Fatal(err)
+	}
+	for i, child := range children {
+		spec, _ := child.mode.spec()
+		if child.original.handle != handles[i] || child.original.id != ids[i] {
+			t.Fatal("completion replaced original DELETE custody")
+		}
+		if err := startupCheckOriginalLocation(child, recovery, spec.name); err != nil {
+			t.Fatal(err)
+		}
+		path, _ := windows.UTF16PtrFromString(child.originalFile.dos)
+		handle, err := windows.CreateFile(path, windows.DELETE, windows.FILE_SHARE_READ|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+		if err == nil {
+			windows.CloseHandle(handle)
+			t.Fatal("completion released original delete exclusion")
+		}
+		if !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+			t.Fatalf("unexpected original exclusion result: %v", err)
+		}
+	}
+	// The separate alias is comparison evidence, never a replacement source.
+	children[2].originalFile.dos = children[1].originalFile.dos
+	if err := owner.Check(context.Background()); err == nil {
+		t.Fatal("substituted original DOS alias accepted")
 	}
 }

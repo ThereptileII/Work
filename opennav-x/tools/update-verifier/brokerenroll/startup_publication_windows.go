@@ -26,6 +26,7 @@ type nativeStartupPublication struct {
 	image                   *enrollmentPin
 	imageSHA                string
 	link, original          *enrollmentPin
+	originalFile            *startupRestorationFile
 	linkSHA, originalSHA    string
 	manifest, binding       *enrollmentPin
 	manifestSHA, bindingSHA string
@@ -44,6 +45,14 @@ func (s *nativeStartupPublication) Check(ctx context.Context) error {
 		return err
 	}
 	for _, publication := range append([]*nativeStartupPublication{s}, s.additional...) {
+		if publication.original != nil {
+			if publication.originalFile == nil || publication.originalFile.pin != publication.original {
+				return errors.New("original startup DELETE custody required")
+			}
+			if err := publication.originalFile.checkAlias(); err != nil {
+				return err
+			}
+		}
 		for _, item := range []struct {
 			pin *enrollmentPin
 			sha string
@@ -426,15 +435,13 @@ func startupPublishRenames(ctx context.Context, owner *nativeStartupPublication,
 	dest, _ := windows.UTF16PtrFromString(enrollmentPhysical(destination))
 	pending, _ := windows.UTF16PtrFromString(enrollmentPhysical(owner.link.physical))
 	if owner.original != nil {
-		backupPhysical := recovery.physical + `\` + spec.name
-		backup, _ := windows.UTF16PtrFromString(enrollmentPhysical(backupPhysical))
-		// Neither rename replaces a destination. If interrupted after the first,
-		// the original native file and a separately synced exact byte copy survive
-		// in recovery; a new/unknown menu entry is never overwritten or adopted.
-		if err := windows.MoveFileEx(dest, backup, windows.MOVEFILE_WRITE_THROUGH); err != nil {
-			return errors.Join(ErrStartupUncertain, err)
+		// DELETE access and exclusion of foreign delete handles date from the
+		// first original open. Move that exact file relative to the retained
+		// recovery directory, with replacement disabled; no path selects a source.
+		if err := startupCheckOriginalLocation(owner, menu, spec.name); err != nil {
+			return err
 		}
-		if err := startupRebindRenamedPin(ctx, owner.original, backupPhysical, filepath.Join(recovery.dos, spec.name), owner.originalSHA); err != nil {
+		if err := startupRenameRestorationFile(ctx, owner.originalFile, recovery, spec.name, owner.originalSHA); err != nil {
 			return errors.Join(ErrStartupUncertain, err)
 		}
 		if err := owner.files.Check(); err != nil {
@@ -468,7 +475,7 @@ func startupPreflightDestination(owner *nativeStartupPublication, menu *enrollme
 		return err
 	}
 	if owner.original != nil {
-		return owner.original.check()
+		return startupCheckOriginalLocation(owner, menu, spec.name)
 	}
 	path, err := windows.UTF16PtrFromString(enrollmentPhysical(menu.physical + `\` + spec.name))
 	if err != nil {
@@ -581,9 +588,11 @@ func startupCaptureOriginals(owner *nativeStartupPublication, menu *enrollmentPi
 		if err != nil {
 			return err
 		}
-		child.original, err = startupOpenFile(owner.files, menu, spec.name, true, maxStartupShortcutBytes)
+		original, err := openStartupRestorationFile(owner.files, menu, spec.name)
 		if errors.Is(err, windows.ERROR_FILE_NOT_FOUND) {
-			child.original, err = nil, nil
+			child.original, child.originalFile, err = nil, nil, nil
+		} else if err == nil {
+			child.original, child.originalFile = original.pin, &original
 		}
 		if err != nil {
 			return err
@@ -593,4 +602,15 @@ func startupCaptureOriginals(owner *nativeStartupPublication, menu *enrollmentPi
 		}
 	}
 	return nil
+}
+
+// DELETE owners use a separate sharing-compatible DOS corroboration because the
+// ordinary enrollment pin's DOS open deliberately excludes DELETE sharing.
+func startupCheckOriginalLocation(owner *nativeStartupPublication, parent *enrollmentPin, name string) error {
+	if owner.original == nil || owner.originalFile == nil || owner.originalFile.pin != owner.original ||
+		owner.original.physical != parent.physical+`\`+name || owner.original.dos != "" ||
+		owner.originalFile.dos != filepath.Join(parent.dos, name) {
+		return errors.New("same original fixed-role startup DELETE owner required")
+	}
+	return owner.originalFile.checkAlias()
 }

@@ -168,6 +168,15 @@ func TestNativeStartupPublicationPreservesOriginalIdentityAndOtherLinks(t *testi
 	if err != nil {
 		t.Fatal(err)
 	}
+	// Release the inert creator before the publisher's first DELETE-owning open.
+	if err := windows.CloseHandle(owner.original.handle); err != nil {
+		t.Fatal(err)
+	}
+	owner.files.pins = owner.files.pins[:len(owner.files.pins)-1]
+	owner.original = nil
+	if err := startupCaptureOriginals(owner, menu); err != nil {
+		t.Fatal(err)
+	}
 	owner.originalSHA = digest(old)
 	originalID := owner.original.id
 	legacy, err := startupWriteFile(context.Background(), owner.files, menu, "OpenCPN Legacy.lnk", []byte("LEGACY-UNCHANGED"), sd, false)
@@ -530,6 +539,108 @@ func TestNativeStartupModePreflightRefusesAmbiguousEntries(t *testing.T) {
 			}
 			if child.original != nil {
 				t.Fatal("ambiguous mode target adopted")
+			}
+		})
+	}
+}
+
+func TestNativeStartupOriginalCustodyExcludesLateSubstitution(t *testing.T) {
+	for mode := startupNormal; mode <= startupSafe; mode++ {
+		spec, _ := mode.spec()
+		t.Run(spec.name, func(t *testing.T) {
+			owner, menu, recovery, sd := startupThreeLinkFixture(t, []byte("ORIGINAL-NORMAL"), []byte("ORIGINAL-LEGACY"), []byte("ORIGINAL-SAFE"))
+			children := append([]*nativeStartupPublication{owner}, owner.additional...)
+			child := children[int(mode)]
+			originalHandle, originalID := child.original.handle, child.original.id
+			foreignRaw := []byte("FOREIGN-MUST-STAY-OUTSIDE-RECOVERY")
+			foreign, err := startupWriteFile(context.Background(), owner.files, menu, "foreign.lnk", foreignRaw, sd, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			source, _ := windows.UTF16PtrFromString(enrollmentPhysical(child.original.physical))
+			away, _ := windows.UTF16PtrFromString(enrollmentPhysical(menu.physical + `\displaced.lnk`))
+			replacement, _ := windows.UTF16PtrFromString(enrollmentPhysical(foreign.physical))
+			attempted := false
+			// Exercise substitution precisely after all role preflights and before
+			// this role's move, the former path-based rename race window.
+			err = startupPublishSequence(context.Background(), func(m startupShortcutMode) error {
+				return startupPreflightDestination(children[int(m)], menu)
+			}, func(m startupShortcutMode) error {
+				if m == mode {
+					attempted = true
+					if err := windows.MoveFileEx(source, away, windows.MOVEFILE_WRITE_THROUGH); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+						return errors.New("original rename exclusion missing")
+					}
+					if err := windows.MoveFileEx(replacement, source, windows.MOVEFILE_REPLACE_EXISTING|windows.MOVEFILE_WRITE_THROUGH); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+						return errors.New("foreign replacement exclusion missing")
+					}
+				}
+				return startupPublishRenames(context.Background(), children[int(m)], menu, recovery)
+			})
+			if err != nil || !attempted {
+				t.Fatalf("publication after excluded substitution: %v", err)
+			}
+			if child.original.handle != originalHandle || child.original.id != originalID {
+				t.Fatal("original owner was reopened or substituted")
+			}
+			if err := startupCheckOriginalLocation(child, recovery, spec.name); err != nil {
+				t.Fatal(err)
+			}
+			if err := startupHashPin(context.Background(), child.original, child.originalSHA); err != nil {
+				t.Fatal("original backup changed", err)
+			}
+			if err := startupHashPin(context.Background(), foreign, digest(foreignRaw)); err != nil || foreign.physical != menu.physical+`\foreign.lnk` {
+				t.Fatal("foreign file moved or changed", err)
+			}
+			if err := owner.Check(context.Background()); err != nil {
+				t.Fatal(err)
+			}
+		})
+	}
+}
+
+func TestNativeStartupOriginalCaptureRefusesExistingDeleteOwner(t *testing.T) {
+	for mode := startupNormal; mode <= startupSafe; mode++ {
+		spec, _ := mode.spec()
+		t.Run(spec.name, func(t *testing.T) {
+			owner, menu, recovery, sd := startupNativeFixture(t)
+			owner.mode = mode
+			raw := []byte("ORIGINAL-WITH-FOREIGN-DELETE-OWNER")
+			created, err := startupWriteFile(context.Background(), owner.files, menu, spec.name, raw, sd, true)
+			if err != nil {
+				t.Fatal(err)
+			}
+			if err := windows.CloseHandle(created.handle); err != nil {
+				t.Fatal(err)
+			}
+			owner.files.pins = owner.files.pins[:len(owner.files.pins)-1]
+			path, _ := windows.UTF16PtrFromString(enrollmentPhysical(created.physical))
+			foreign, err := windows.CreateFile(path, windows.GENERIC_READ|windows.DELETE, windows.FILE_SHARE_READ|windows.FILE_SHARE_DELETE, nil, windows.OPEN_EXISTING, windows.FILE_FLAG_OPEN_REPARSE_POINT, 0)
+			if err != nil {
+				t.Fatal(err)
+			}
+			t.Cleanup(func() {
+				if err := windows.CloseHandle(foreign); err != nil {
+					t.Errorf("foreign fixture DELETE owner close: %v", err)
+				}
+			})
+			if err := startupCaptureOriginals(owner, menu); !errors.Is(err, windows.ERROR_SHARING_VIOLATION) {
+				t.Fatalf("foreign DELETE owner not refused: %v", err)
+			}
+			if owner.original != nil || owner.originalFile != nil {
+				t.Fatal("unexcluded original adopted")
+			}
+			_, id, err := enrollmentInfo(foreign)
+			if err != nil || id != created.id {
+				t.Fatal("original changed during refusal", err)
+			}
+			observed := *created
+			observed.handle, observed.dos = foreign, ""
+			if err := startupHashPin(context.Background(), &observed, digest(raw)); err != nil {
+				t.Fatal("refusal changed original bytes", err)
+			}
+			if _, err := os.Stat(filepath.Join(recovery.dos, spec.name)); !os.IsNotExist(err) {
+				t.Fatal("refusal moved an original", err)
 			}
 		})
 	}
