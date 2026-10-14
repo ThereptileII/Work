@@ -41,11 +41,13 @@ retained completion file must match the independently approved original bytes;
 the pre-move manifest must retain its recorded digest. Missing, foreign, changed,
 partial or colliding fixed objects refuse. Binding itself performs no move.
 
-The baseline-only `uninstall-protected` action instead calls
+The `uninstall-protected` action instead calls
 `MaintenanceOwner.PrepareStartupRestoration` **before** its single broker
 retirement request. Opening the original launcher afterward would fail because
 its generation has moved. Preparation retains the original publication, menu,
-recovery, links and launcher without mutation. A private anchor holds the original
+recovery, links and baseline launcher without mutation. The closed-lineage
+retirement may select a later generation, while this anchor always belongs to
+the original approved baseline. A private anchor holds the original
 generation, `app` directory and launcher with read access and delete sharing.
 Native run [38465784927](https://github.com/ThereptileII/Work/actions/runs/38465784927)
 proved that this is insufficient for directory rename: open descendant handles
@@ -86,8 +88,11 @@ removed or relaxed. The original joined run failed as recorded above. The correc
 including all eight explicitly checked new native controls without skips.
 [Authenticated component evidence](../evidence/scrum27-two-phase-uninstall-20261014/README.md)
 records the original artifacts and limits. Full installed uninstall acceptance
-remains pending; this component result does not supply that proof. Updated/pending lineage
-and authenticated terminal cleanup remain unsupported by this baseline join.
+remains pending; this component result does not supply that proof. That accepted
+baseline join did not yet cover updated lineage or installed cleanup. The later
+[closed-lineage work](../evidence/scrum27-lineage-uninstall-20261014/README.md) and
+[same-owner installed cleanup](installed-terminal-cleanup.md) retain separate
+qualification gates; pending lineage still refuses.
 
 For a bound service-only publication, `Decommission` retires the three fixed published links
 to `retired-Skager.lnk`, `retired-Skager Legacy.lnk` and

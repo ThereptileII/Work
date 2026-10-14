@@ -215,19 +215,20 @@ func TestOperatorDecommissionRealPublicationParserRefusesBeforeSCM(t *testing.T)
 }
 
 type startupDecommissionFixture struct {
-	t                        *testing.T
-	events                   []string
-	fault                    string
-	approved                 *brokerenroll.ApprovedStartupPublication
-	witness                  *brokerpipe.DecommissionWitness
-	requested, fenced, bound bool
-	uninstall                bool
-	prepared                 bool
-	drained                  bool
-	interim                  *brokerpipe.UninstallFenceWitness
-	operationCtx             context.Context
-	closed, witnessClosed    bool
-	cancel                   context.CancelFunc
+	t                            *testing.T
+	events                       []string
+	fault                        string
+	approved                     *brokerenroll.ApprovedStartupPublication
+	witness                      *brokerpipe.DecommissionWitness
+	requested, fenced, bound     bool
+	uninstall                    bool
+	installed, installedPrepared bool
+	prepared                     bool
+	drained                      bool
+	interim                      *brokerpipe.UninstallFenceWitness
+	operationCtx                 context.Context
+	closed, witnessClosed        bool
+	cancel                       context.CancelFunc
 }
 
 func (f *startupDecommissionFixture) event(name string) error {
@@ -320,6 +321,9 @@ func (f *startupDecommissionFixture) Decommission(ctx context.Context) (brokeren
 func (f *startupDecommissionFixture) Close() error {
 	if !f.closed {
 		f.closed = true
+		if f.fault == "cancel-close" {
+			f.cancel()
+		}
 		return f.event("close-owner")
 	}
 	if f.fault == "close-owner" {
@@ -328,16 +332,49 @@ func (f *startupDecommissionFixture) Close() error {
 	return nil
 }
 
+func (f *startupDecommissionFixture) PrepareInstalledUninstall(ctx context.Context, artifact string) error {
+	if !f.installed || !f.prepared || f.fenced || artifact != "original-baseline-artifact" || ctx != f.operationCtx {
+		f.t.Fatal("installed preparation bypassed original startup/operation custody")
+	}
+	if err := f.event("prepare-installed"); err != nil {
+		return err
+	}
+	f.installedPrepared = true
+	return nil
+}
+
+func (f *startupDecommissionFixture) DecommissionInstalled(ctx context.Context) (brokerenroll.InstalledUninstallResult, error) {
+	if !f.installed || !f.installedPrepared || !f.fenced || !f.bound || !f.drained || ctx != f.operationCtx || ctx.Err() != nil {
+		f.t.Fatal("installed cleanup bypassed retained preparation/final witness")
+	}
+	if err := f.event("decommission-installed"); err != nil {
+		return brokerenroll.InstalledUninstallResult{}, err
+	}
+	result := brokerenroll.InstalledUninstallResult{Service: brokerenroll.ServiceMarkedForRemoval,
+		Integration: "verified-owned-members-removed", Registration: "unregistered", Recovery: "preserved"}
+	if f.fault == "partial-installed-result" {
+		result.Registration = ""
+	}
+	return result, nil
+}
+
 // Zero publication/witness objects are used ONLY behind private parser/owner/
 // close seams. The public production entrypoint retains the actual parser,
 // sealed native witness and native Close; these fakes grant no native authority.
 func (f *startupDecommissionFixture) run(request, publication []byte, output *bytes.Buffer) error {
+	if f.installed {
+		f.uninstall, f.requested = true, true
+	}
 	args := decommissionArguments(request)
 	if f.requested {
 		args = decommissionPublicationArguments(request, publication)
 	}
 	if f.uninstall {
 		args[0] = "--maintenance=" + uninstallProtected
+	}
+	if f.installed {
+		args[0] = "--maintenance=" + uninstallInstalled
+		args = append(args, "--installed-baseline-artifact=original-baseline-artifact")
 	}
 	ctx, cancel := context.WithCancel(context.Background())
 	f.cancel = cancel

@@ -20,6 +20,7 @@ import (
 
 const decommissionService = "decommission-service"
 const uninstallProtected = "uninstall-protected"
+const uninstallInstalled = "uninstall-installed"
 
 // Matches the existing purpose-bound publication parser. The shared input
 // reader remains bounded by MaxRequestBytes; this narrower record is checked
@@ -34,6 +35,11 @@ type decommissionOwner interface {
 	RestoreStartupAndDrain(context.Context, *brokerpipe.UninstallFenceWitness) error
 	Decommission(context.Context) (brokerenroll.DecommissionResult, error)
 	Close() error
+}
+
+type installedDecommissionOwner interface {
+	PrepareInstalledUninstall(context.Context, string) error
+	DecommissionInstalled(context.Context) (brokerenroll.InstalledUninstallResult, error)
 }
 
 type decommissionOpener func(context.Context, brokerenroll.MaintenanceRequest) (decommissionOwner, error)
@@ -58,19 +64,25 @@ func openDecommissionNative(ctx context.Context, request brokerenroll.Maintenanc
 func decommissionRequested(args []string) bool {
 	for i, arg := range args {
 		name, value, inline := strings.Cut(arg, "=")
-		if name == "--maintenance" && ((inline && (value == decommissionService || value == uninstallProtected)) || (!inline && i+1 < len(args) && (args[i+1] == decommissionService || args[i+1] == uninstallProtected))) {
+		if name == "--maintenance" && ((inline && decommissionAction(value)) || (!inline && i+1 < len(args) && decommissionAction(args[i+1]))) {
 			return true
 		}
 	}
 	return false
 }
 
+func decommissionAction(value string) bool {
+	return value == decommissionService || value == uninstallProtected || value == uninstallInstalled
+}
+
 // This explicit elevated operator invocation owns the original service BEFORE
 // asking that same broker to publish its terminal fence. Explicitly requested
 // original shortcut restoration binds to that SAME fenced owner before its
 // Decommission operation. Protected uninstall first completes native retirement
-// through the same live broker; no file/profile effect follows service shutdown.
-// The native witness is never reconstructed from JSON.
+// through the same live broker. Installed uninstall additionally prepares its
+// original artifact/member owners before fencing and completes their bounded
+// cleanup inside that owner after shutdown; profiles remain untouched. The
+// native witness is never reconstructed from JSON.
 func runDecommission(ctx context.Context, args []string, read func(string) ([]byte, error), open decommissionOpener, call decommissionCaller, output io.Writer) (resultErr error) {
 	return runDecommissionWith(ctx, args, read, open, call, output, decommissionOperations{
 		parse:     brokerenroll.ParseApprovedStartupPublication,
@@ -95,7 +107,7 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	}
 	flags := flag.NewFlagSet("skager-update-provisioner service decommission", flag.ContinueOnError)
 	flags.SetOutput(io.Discard)
-	action := flags.String("maintenance", "", "explicit decommission-service or uninstall-protected; optional original startup restoration requires paired approval")
+	action := flags.String("maintenance", "", "explicit decommission-service, uninstall-protected or uninstall-installed")
 	broker := flags.String("broker-sha256", "", "independently approved installed broker hash")
 	clientPath := flags.String("client-registration-request", "", "original independently approved request file")
 	clientSHA := flags.String("client-registration-request-sha256", "", "independently approved original request hash")
@@ -103,6 +115,7 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	head := flags.String("expected-selected-head-sha256", "", "observed original selected head")
 	publicationPath := flags.String("original-startup-publication", "", "optional independently approved ORIGINAL completed startup publication file")
 	publicationSHA := flags.String("original-startup-publication-sha256", "", "separately approved original completed publication SHA-256")
+	artifactDirectory := flags.String("installed-baseline-artifact", "", "original baseline artifact input for explicit installed uninstall; never a cleanup destination")
 	seen := map[string]bool{}
 	for i := 0; i < len(args); i++ {
 		if !strings.HasPrefix(args[i], "--") {
@@ -125,16 +138,24 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if hasPublication {
 		expected += 2
 	}
-	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != expected || (*action != decommissionService && *action != uninstallProtected) || !pin(*broker) || !pin(*clientSHA) || !pin(*head) || !manualRollbackID(*requestID) || *clientPath == "" {
+	if seen["installed-baseline-artifact"] {
+		expected++
+	}
+	if flags.Parse(args) != nil || flags.NArg() != 0 || len(seen) != expected || !decommissionAction(*action) || !pin(*broker) || !pin(*clientSHA) || !pin(*head) || !manualRollbackID(*requestID) || *clientPath == "" {
 		return refused
 	}
-	if *action == uninstallProtected && !hasPublication {
+	installed := *action == uninstallInstalled
+	protected := *action == uninstallProtected || installed
+	if installed != seen["installed-baseline-artifact"] || installed && *artifactDirectory == "" {
 		return refused
 	}
-	if *action == uninstallProtected && op.uninstall == nil {
+	if protected && !hasPublication {
 		return refused
 	}
-	if *action == uninstallProtected {
+	if protected && op.uninstall == nil {
+		return refused
+	}
+	if protected {
 		// Keep one bounded context alive through preparation, the callback,
 		// final witness binding and the last SCM effect. The final native
 		// witness must not inherit an already-cancelled nested call context.
@@ -178,21 +199,32 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 	if err = owner.Check(ctx); err != nil {
 		return refused
 	}
-	if *action == uninstallProtected {
+	var installedOwner installedDecommissionOwner
+	if installed {
+		var ok bool
+		installedOwner, ok = owner.(installedDecommissionOwner)
+		if !ok {
+			return refused
+		}
+	}
+	if protected {
 		// Retain the original launcher and all publication objects before the one
 		// broker call can move its generation. Binding the authenticated retirement
 		// witness below finalizes those SAME move-aware handles; no path reopening.
 		if err = owner.PrepareStartupRestoration(ctx, approved); err != nil || ctx.Err() != nil {
 			return refused
 		}
+		if installed && (installedOwner.PrepareInstalledUninstall(ctx, *artifactDirectory) != nil || ctx.Err() != nil) {
+			return refused
+		}
 	}
 	operation := brokerpipe.PrepareDecommission
-	if *action == uninstallProtected {
+	if protected {
 		operation = brokerpipe.PrepareUninstall
 	}
 	request := brokerpipe.MaintenanceRequest{Schema: 1, Operation: operation, RequestID: *requestID, ExpectedSelectedHeadSHA256: *head}
 	var witness *brokerpipe.DecommissionWitness
-	if *action == uninstallProtected {
+	if protected {
 		// One original conversation publishes the terminal fence, synchronously
 		// restores/drains original startup owners, then returns completed native
 		// retirement. No service-only fallback or second broker call is allowed.
@@ -214,13 +246,23 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 			return refused
 		}
 	}
-	result, err := owner.Decommission(ctx)
+	var result brokerenroll.DecommissionResult
+	var installedResult brokerenroll.InstalledUninstallResult
+	if installed {
+		installedResult, err = installedOwner.DecommissionInstalled(ctx)
+		result.Service = installedResult.Service
+		if installedResult.Integration != "verified-owned-members-removed" || installedResult.Registration != "unregistered" || installedResult.Recovery != "preserved" {
+			return refused
+		}
+	} else {
+		result, err = owner.Decommission(ctx)
+	}
 	if err != nil || result.Service != brokerenroll.ServiceMarkedForRemoval {
 		return refused
 	}
 	// Close all original native owners before reporting either bounded action.
 	// Neither this result nor SCM deletion grants later cleanup authority.
-	if err = errors.Join(owner.Close(), op.closeWitness(witness)); err != nil {
+	if err = errors.Join(owner.Close(), op.closeWitness(witness), ctx.Err()); err != nil {
 		return refused
 	}
 	startup := ""
@@ -228,14 +270,20 @@ func runDecommissionWith(ctx context.Context, args []string, read func(string) (
 		startup = "original-shortcuts-restored"
 	}
 	state := "service-decommissioned"
-	if *action == uninstallProtected {
+	if protected {
 		state = "protected-retired-service-decommissioned"
 	}
+	if installed {
+		state, startup = "verified-installed-integration-uninstalled", "verified-integration-shortcuts-retired"
+	}
 	return json.NewEncoder(output).Encode(struct {
-		Schema    int    `json:"schema"`
-		RequestID string `json:"requestId"`
-		State     string `json:"state"`
-		Service   string `json:"service"`
-		Startup   string `json:"startup,omitempty"`
-	}{1, *requestID, state, result.Service, startup})
+		Schema       int    `json:"schema"`
+		RequestID    string `json:"requestId"`
+		State        string `json:"state"`
+		Service      string `json:"service"`
+		Startup      string `json:"startup,omitempty"`
+		Integration  string `json:"integration,omitempty"`
+		Registration string `json:"registration,omitempty"`
+		Recovery     string `json:"recovery,omitempty"`
+	}{1, *requestID, state, result.Service, startup, installedResult.Integration, installedResult.Registration, installedResult.Recovery})
 }
