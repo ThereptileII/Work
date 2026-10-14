@@ -1,5 +1,33 @@
 # SKAGER status — 2026-10-14
 
+## Customer rollback native helper gate passes; Repair still under review
+
+Exact `4fe70d8ae80c5f71c0d127bd1ab6c6eb0d0d54b2` passes the existing short
+[Linux/Windows gate 38580830570](https://github.com/ThereptileII/Work/actions/runs/38580830570).
+Authenticated downloaded receipts contain **188 Linux** and **283 Windows x86**
+top-level test passes, zero failures. Windows records five explicit skips: four
+non-Windows boundary cases and the disposable-host-opt-in SUBST remap case.
+All 15 Linux / 30 Windows newly mandatory maintenance cases actually ran and
+passed; skipped cases are not claimed as covered. The Windows job took under
+two minutes. [Exact artifact evidence](evidence/scrum27-maintenance-native-20261014/README.md).
+
+The integrated changes join the customer Maintain Rollback action to protected
+selected history and add an actual pinned stock OpenCPN reopen observer after
+Maintain uninstall. These helper tests do not establish genuine interactive
+customer UAC, the complete installed journey, historical-version compatibility
+or boat acceptance. Protected Repair implementation remains on its isolated
+branch under review: interrupted-copy recovery and repair after broker/OS restart
+must be resolved before treating that customer path as usable. No full build,
+boat change or public release was performed for this gate.
+
+The preceding full candidate `bd47aa729aa728c6834072047eec7e00a65c6f13`,
+[run 38563357629](https://github.com/ThereptileII/Work/actions/runs/38563357629),
+remains **failed and unqualified**. Its same-job SDK check passed, but Chocolatey
+returned HTTP 503 acquiring a Poedit dependency before application compilation.
+Both original Linux executions passed the same 154 cases with no failures or
+skips. [Authenticated original Linux evidence](evidence/scrum209-27-linux-bd47-20261014/README.md).
+No newer helper result qualifies that application candidate or its security gates.
+
 ## Windows SDK authenticated; same-job early environment gate selected
 
 Exact `1107c04f55a5a51660e424493bf083fc83106443` passes
