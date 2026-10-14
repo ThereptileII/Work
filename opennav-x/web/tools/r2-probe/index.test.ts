@@ -13,6 +13,10 @@ function jwt(patch: Record<string, unknown> = {}, header = { alg: 'HS256', typ: 
     iat: 1, exp: 4102444800, ...patch }), 'a'.repeat(43)].join('.');
 }
 const service = jwt();
+const validBindingChecks = { project: true, bearerFormat: true, jwtEncoding: true, headerJSON: true,
+  payloadJSON: true, headerAlgorithm: true, headerType: true, issuer: true, projectClaim: true,
+  serviceRole: true, issuedInteger: true, issuedPositive: true, issuedNotFuture: true,
+  expiresInteger: true, expiresFuture: true };
 const env = { SUPABASE_URL: origin, SUPABASE_SERVICE_ROLE_KEY: service, SUPABASE_ANON_KEY: jwt({ role: 'anon' }),
   SKAGER_DOWNLOAD_BACKEND: 'r2', R2_ACCOUNT_ID: '7869adcf376c630b175c94729321e016',
   R2_DOWNLOAD_BUCKET: 'skager-private-releases', R2_ACCESS_KEY_ID: 'f'.repeat(32), R2_SECRET_ACCESS_KEY: 'e'.repeat(64) };
@@ -128,7 +132,8 @@ test('missing or changed R2 bindings cannot trigger provider I/O', async () => {
 
 test('only exact administrators see finite binding/config checks and never their values', async () => {
   const binding = await result(request(), { ...env, SUPABASE_URL: 'https://private-value.example.test' });
-  assert.deepEqual(binding.body, { error: 'Administrative R2 probe unavailable.', phase: 'trusted-binding', checks: { project: false } });
+  assert.deepEqual(binding.body, { error: 'Administrative R2 probe unavailable.', phase: 'trusted-binding',
+    checks: { ...validBindingChecks, project: false } });
   for (const [patch, failed] of [
     [{ SKAGER_DOWNLOAD_BACKEND: undefined }, 'backend'], [{ R2_ACCOUNT_ID: 'private-account' }, 'account'],
     [{ R2_DOWNLOAD_BUCKET: 'private-bucket' }, 'bucket'], [{ R2_ACCESS_KEY_ID: undefined }, 'accessKeyFormat'],
@@ -147,8 +152,60 @@ test('only exact administrators see finite binding/config checks and never their
   }
   for (const key of [undefined, env.SUPABASE_ANON_KEY, jwt({ ref: 'other-project' })]) {
     const refused = await result(request(), { ...env, SUPABASE_SERVICE_ROLE_KEY: key });
-    assert.deepEqual(refused.body, { error: 'Administrative R2 probe unavailable.' });
+    assert.deepEqual(refused.body, { error: key === undefined || key === env.SUPABASE_ANON_KEY
+      ? 'Administrative R2 probe unavailable.' : 'Administrative credential required.' });
   }
+});
+
+test('exact possession exposes every retained binding predicate but none can be bypassed before signing', async () => {
+  const encode = (value: string) => Buffer.from(value).toString('base64url');
+  const [header, payload, signature] = service.split('.');
+  const cases: [string, string[]][] = [
+    ['fixture-malformed-binding', ['jwtEncoding', 'headerJSON', 'payloadJSON']],
+    [service.slice(0, -1), ['jwtEncoding']],
+    [service + '=', ['bearerFormat', 'jwtEncoding']],
+    [[encode('not JSON'), payload, signature].join('.'), ['headerJSON', 'headerAlgorithm', 'headerType']],
+    [[header, encode('not JSON'), signature].join('.'), ['payloadJSON', 'issuer', 'projectClaim', 'serviceRole']],
+    [jwt({}, { alg: 'HS512', typ: 'JWT' }), ['headerAlgorithm']],
+    [jwt({}, { alg: 'HS256', typ: 'other' }), ['headerType']],
+    [jwt({ iss: 'other' }), ['issuer']], [jwt({ ref: 'other' }), ['projectClaim']],
+    [jwt({ role: 'authenticated' }), ['serviceRole']],
+    [jwt({ iat: 1.5 }), ['issuedInteger']], [jwt({ iat: 0 }), ['issuedPositive']],
+    [jwt({ iat: 4102444800 }), ['issuedNotFuture']],
+    [jwt({ exp: '4102444800' }), ['expiresInteger']], [jwt({ exp: 1 }), ['expiresFuture']],
+  ];
+  mock.method(AwsClient.prototype, 'sign', async () => { assert.fail('Invalid binding reached signing'); });
+  try {
+    for (const [configuredKey, failed] of cases) {
+      const configured = { ...env, SUPABASE_SERVICE_ROLE_KEY: configuredKey };
+      const observed = await result(request(configuredKey), configured);
+      assert.equal(observed.response.status, 503);
+      assert.equal(observed.body.phase, 'trusted-binding');
+      assert.deepEqual(Object.keys(observed.body.checks).sort(), Object.keys(validBindingChecks).sort());
+      assert.equal(Object.values(observed.body.checks).every(value => typeof value === 'boolean'), true);
+      for (const name of failed) assert.equal(observed.body.checks[name], false, name);
+      assert.equal(Object.hasOwn(observed.body, 'providerStatus'), false);
+      assert.equal(JSON.stringify(observed.body).includes(configuredKey), false);
+      const otherHolder = await result(request(), configured);
+      assert.equal(otherHolder.response.status, 401);
+      assert.deepEqual(otherHolder.body, { error: 'Administrative credential required.' });
+    }
+  } finally { mock.restoreAll(); }
+});
+
+test('missing empty oversized equal bindings and comparison errors disclose no diagnostics', async () => {
+  for (const patch of [
+    { SUPABASE_SERVICE_ROLE_KEY: undefined }, { SUPABASE_SERVICE_ROLE_KEY: '' }, { SUPABASE_SERVICE_ROLE_KEY: 'a'.repeat(8193) },
+    { SUPABASE_ANON_KEY: undefined }, { SUPABASE_ANON_KEY: '' }, { SUPABASE_ANON_KEY: 'a'.repeat(8193) },
+    { SUPABASE_ANON_KEY: service },
+  ]) {
+    const observed = await result(request(), { ...env, ...patch });
+    assert.equal(observed.response.status, 503);
+    assert.deepEqual(observed.body, { error: 'Administrative R2 probe unavailable.' });
+  }
+  mock.method(crypto.subtle, 'digest', async () => { throw Error(`private ${service}`); });
+  try { assert.deepEqual((await result()).body, { error: 'Administrative R2 probe unavailable.' }); }
+  finally { mock.restoreAll(); }
 });
 
 test('SDK failure and missing Request cache support expose only finite sign diagnostics to admin', async () => {

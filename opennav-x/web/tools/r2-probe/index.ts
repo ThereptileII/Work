@@ -17,25 +17,39 @@ function reply(status: number, body: Record<string, unknown>) {
 
 function serviceBinding(env: Env): string {
   const key = env.SUPABASE_SERVICE_ROLE_KEY;
-  requireValue(typeof key === 'string' && key.length <= 8192
-    && key !== env.SUPABASE_ANON_KEY && /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(key));
-  const decode = (part: string) => JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')));
-  const [header, payload] = key.split('.').slice(0, 2).map(decode);
-  const now = Math.floor(Date.now() / 1000);
-  // This checks the TRUSTED platform-injected binding's shape. It is NOT a JWT
-  // verifier and never authorizes a caller by decoding caller-supplied claims.
-  requireValue(header.alg === 'HS256' && header.typ === 'JWT' && payload.iss === 'supabase'
-    && payload.ref === PROJECT && payload.role === 'service_role'
-    && Number.isSafeInteger(payload.iat) && payload.iat > 0 && payload.iat <= now
-    && Number.isSafeInteger(payload.exp) && payload.exp > now);
+  const anon = env.SUPABASE_ANON_KEY;
+  requireValue(typeof key === 'string' && key.length > 0 && key.length <= 8192
+    && typeof anon === 'string' && anon.length > 0 && anon.length <= 8192 && key !== anon);
   return key;
+}
+
+function bindingChecks(request: Request, env: Env, key: string): Record<string, boolean> {
+  const parts = key.split('.');
+  const decode = (part: string) => JSON.parse(atob(part.replace(/-/g, '+').replace(/_/g, '/')));
+  let header: any, payload: any, headerJSON = false, payloadJSON = false;
+  try { header = decode(parts[0]); headerJSON = true; } catch { /* Boolean only. */ }
+  try { payload = decode(parts[1]); payloadJSON = true; } catch { /* Boolean only. */ }
+  const now = Math.floor(Date.now() / 1000);
+  const issuedInteger = Number.isSafeInteger(payload?.iat), expiresInteger = Number.isSafeInteger(payload?.exp);
+  // Exact possession authorizes ONLY these fixed boolean diagnostics. Every
+  // previous JWT/header/project/clock predicate remains mandatory before R2 I/O.
+  // Never decode caller claims or serialize the trusted binding's values.
+  return {
+    project: env.SUPABASE_URL === ORIGIN,
+    bearerFormat: /^Bearer [A-Za-z0-9_.-]+$/.test(request.headers.get('authorization') || ''),
+    jwtEncoding: /^[A-Za-z0-9_-]+\.[A-Za-z0-9_-]+\.[A-Za-z0-9_-]{43}$/.test(key),
+    headerJSON, payloadJSON, headerAlgorithm: header?.alg === 'HS256', headerType: header?.typ === 'JWT',
+    issuer: payload?.iss === 'supabase', projectClaim: payload?.ref === PROJECT, serviceRole: payload?.role === 'service_role',
+    issuedInteger, issuedPositive: issuedInteger && payload.iat > 0, issuedNotFuture: issuedInteger && payload.iat <= now,
+    expiresInteger, expiresFuture: expiresInteger && payload.exp > now,
+  };
 }
 
 async function authorized(request: Request, expected: string): Promise<boolean> {
   const header = request.headers.get('authorization');
-  if (typeof header !== 'string' || header.length > 8199 || !/^Bearer [A-Za-z0-9_.-]+$/.test(header)) return false;
-  // Exact possession of the genuine injected service key is required. A user
-  // JWT, anon/publishable key or another project's service key cannot qualify.
+  if (typeof header !== 'string' || header.length > 8199 || !header.startsWith('Bearer ')) return false;
+  // Exact possession of the trusted injected binding grants fixed diagnostics
+  // only. All legacy service-key checks still precede any signing or R2 I/O.
   const encode = new TextEncoder();
   const [a, b] = await Promise.all([expected, header.slice(7)].map(value =>
     crypto.subtle.digest('SHA-256', encode.encode(value)).then(bytes => new Uint8Array(bytes))));
@@ -45,7 +59,7 @@ async function authorized(request: Request, expected: string): Promise<boolean> 
 }
 
 export async function handleProbe(request: Request, env: Env, transport: typeof fetch = fetch): Promise<Response> {
-  let administrator = false;
+  let diagnosticsAuthorized = false;
   let phase: 'trusted-binding' | 'config' | 'sign' | 'fetch' | 'provider' | 'timeout' = 'trusted-binding';
   let checks: Record<string, boolean> | undefined;
   let providerStatus: number | undefined;
@@ -62,10 +76,11 @@ export async function handleProbe(request: Request, env: Env, transport: typeof 
       void request.body.cancel().catch(() => {});
       return reply(400, { error: 'Request body not supported.' });
     }
-    if (!await authorized(request, serviceBinding(env))) return reply(401, { error: 'Administrative credential required.' });
-    administrator = true;
-    checks = { project: env.SUPABASE_URL === ORIGIN };
-    requireValue(checks.project);
+    const key = serviceBinding(env);
+    if (!await authorized(request, key)) return reply(401, { error: 'Administrative credential required.' });
+    diagnosticsAuthorized = true;
+    checks = bindingChecks(request, env, key);
+    requireValue(Object.values(checks).every(Boolean));
     phase = 'config';
     checks = { backend: env.SKAGER_DOWNLOAD_BACKEND === 'r2', account: env.R2_ACCOUNT_ID === R2_ACCOUNT_ID,
       bucket: env.R2_DOWNLOAD_BUCKET === DOWNLOAD_BUCKET,
@@ -104,7 +119,7 @@ export async function handleProbe(request: Request, env: Env, transport: typeof 
       return reply(200, { probe: 'r2-head-bucket', authenticated: true });
     } finally { clearTimeout(timer!); controller.abort(); }
   } catch { return reply(503, { error: 'Administrative R2 probe unavailable.',
-    ...(administrator ? { phase, ...(checks ? { checks } : {}), ...(providerStatus === undefined ? {} : { providerStatus }) } : {}) }); }
+    ...(diagnosticsAuthorized ? { phase, ...(checks ? { checks } : {}), ...(providerStatus === undefined ? {} : { providerStatus }) } : {}) }); }
 }
 
 declare const Deno: { env: { get(name: string): string | undefined }; serve(handler: (request: Request) => Promise<Response>): void };

@@ -9,10 +9,13 @@ A GET to the exact project function path, with no query/body, must carry
 `Authorization: Bearer <existing platform service-role key>`. Keep Supabase's
 platform JWT verification **ON**. This function additionally requires exact
 possession of the platform-injected `SUPABASE_SERVICE_ROLE_KEY`, with digest
-comparison. The injected binding must be a valid-time legacy HS256 service-role
-key for the selected project and differ from its anon key. Caller JWT claims,
-user sessions, anon/publishable keys and an `apikey` header alone never authorize
-it. New opaque secret-key formats are deliberately unsupported. No new key,
+comparison. Both service and anon bindings must be nonempty, bounded and
+distinct before comparison. Exact possession grants only the fixed diagnostic
+booleans below. Before signing or R2 I/O, the injected binding must still pass
+every prior legacy HS256 header, encoding, issuer, project, service-role and
+clock predicate. Caller JWT claims never authorize access, and an `apikey`
+header alone cannot match the service binding. New opaque secret-key formats
+remain unsupported for R2 operations. No new key,
 permission or disabling of verification follows from this tool. Never place an
 admin credential in browser JavaScript, chat, logs, screenshots or saved files.
 
@@ -35,15 +38,18 @@ returned or logged. A 200 result means only that this exact authenticated
 HeadBucket operation succeeded. It proves no download, object custody, release
 qualification, entitlement, readiness or public-access acceptance.
 
-After exact administrator authentication, a failure may add only a finite
+After exact binding possession is established, a failure may add only a finite
 `phase` (`trusted-binding`, `config`, `sign`, `fetch`, `provider`, `timeout`),
 fixed boolean `checks` for binding/configuration or signed-request validation,
 and numeric `providerStatus` when an HTTP response was actually observed.
 No check contains a binding, key, endpoint, object name, request or error value.
 This allows a runtime boundary such as unsupported `Request.cache` to be
 identified without changing its validation. Before exact authorization all
-failures remain generic. Missing/malformed service-role bindings therefore
-cannot expose diagnostics: the handler cannot establish an administrator.
+failures remain generic. Missing, empty, oversized or equal bindings, credential
+mismatch and comparison errors expose no diagnostics. An exact holder of a
+malformed trusted service binding can see only fixed validation booleans; any
+failed predicate prevents signing or network access. This orders diagnosis
+after possession proof without relaxing the existing R2 admission boundary.
 
 Official references checked 2026-10-14:
 
