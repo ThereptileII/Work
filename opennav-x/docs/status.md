@@ -28,6 +28,14 @@ Both original Linux executions passed the same 154 cases with no failures or
 skips. [Authenticated original Linux evidence](evidence/scrum209-27-linux-bd47-20261014/README.md).
 No newer helper result qualifies that application candidate or its security gates.
 
+A single bounded [native prerequisite run 38581902769](https://github.com/ThereptileII/Work/actions/runs/38581902769)
+now passes at `edd04b37b4a257f0f4307f5e240342fe3529a0f7`: 25 contract tests,
+Poedit 3.9.1 acquired on the first attempt, both real gettext 0.26 operations
+and UTF-8 catalog verification pass. Original artifact hashes/CRCs and exact
+input hashes verify. [Prerequisite receipt](evidence/scrum209-gettext-20261014/README.md).
+The 76-second job establishes current acquisition availability only; the full
+candidate and genuine customer/boat acceptance remain open.
+
 ## Windows SDK authenticated; same-job early environment gate selected
 
 Exact `1107c04f55a5a51660e424493bf083fc83106443` passes
