@@ -247,7 +247,10 @@ class Receipt(unittest.TestCase):
         self.write_package()
         self.setup = self.installer / 'SKAGER-Beta2-Setup.exe'
         self.setup.write_bytes(b'inert Setup fixture; never executed')
-        self.setup.with_suffix('.exe.sha256').write_text(sha(self.setup.read_bytes()) + '  ' + self.setup.name + '\r\n')
+        # Preserve exact CRLF bytes; write_text would translate LF again on
+        # Windows and manufacture a CRCRLF/extra-line negative fixture.
+        self.setup.with_suffix('.exe.sha256').write_bytes(
+            (sha(self.setup.read_bytes()) + '  ' + self.setup.name + '\r\n').encode('ascii'))
         self.original_recovery()
 
     def tearDown(self):
@@ -290,6 +293,19 @@ class Receipt(unittest.TestCase):
             (finish or self.finish)()
         self.assertEqual(self.snapshot(), before)
         self.assertFalse((self.recovery / receipt.SIDECAR).exists())
+
+    def rename_case(self, path, name):
+        # A distinct intermediate name makes the actual on-disk spelling change
+        # on NTFS too; writing through another case spelling just overwrites.
+        intermediate = path.with_name('fixture-case-transition')
+        self.assertFalse(intermediate.exists())
+        path.rename(intermediate)
+        renamed = path.with_name(name)
+        intermediate.rename(renamed)
+        names = {child.name for child in path.parent.iterdir()}
+        self.assertIn(name, names)
+        self.assertNotIn(path.name, names)
+        return renamed
 
     def test_exact_sidecar_and_payload_unchanged_with_complete_archive_inventory(self):
         before = {name: (self.recovery / name).read_bytes() for name in self.files}
@@ -488,9 +504,10 @@ class Receipt(unittest.TestCase):
         self.refuses_unchanged()
 
     def test_case_aliased_tree_and_preexisting_empty_installer_refuse(self):
-        (self.recovery / 'APP').mkdir()
+        app = self.recovery / 'app'
+        alias = self.rename_case(app, 'APP')
         self.refuses_unchanged()
-        (self.recovery / 'APP').rmdir()
+        self.rename_case(alias, 'app')
         (self.recovery / 'Installer').mkdir()
         self.refuses_unchanged()
         (self.recovery / 'Installer').rmdir()
@@ -509,15 +526,25 @@ class Receipt(unittest.TestCase):
         self.setup.unlink()
         self.refuses_unchanged()
 
+    def test_setup_checksum_preserves_exact_crlf_and_refuses_translated_extra_line(self):
+        checksum = self.setup.with_suffix('.exe.sha256')
+        line = (sha(self.setup.read_bytes()) + '  ' + self.setup.name).encode('ascii')
+        self.assertEqual(checksum.read_bytes(), line + b'\r\n')
+        checksum.write_bytes(line + b'\r\r\n')
+        self.refuses_unchanged()
+
     def test_helper_snapshot_missing_empty_changed_alias_extra_and_links_refuse(self):
         engine = self.installer / 'engine'
         path = engine / 'Lifecycle.ps1'
         for kind in ['missing', 'empty', 'changed', 'alias', 'extra', 'symlink', 'hardlink']:
             with self.subTest(kind=kind):
                 path.unlink()
-                if kind in {'alias', 'extra'}:
+                if kind == 'alias':
+                    (engine / 'LIFECYCLE.ps1').write_bytes(self.helpers[path.name])
+                    self.assertIn('LIFECYCLE.ps1', {child.name for child in engine.iterdir()})
+                elif kind == 'extra':
                     path.write_bytes(self.helpers[path.name])
-                    (engine / ('LIFECYCLE.ps1' if kind == 'alias' else 'unexpected.ps1')).write_bytes(b'extra')
+                    (engine / 'unexpected.ps1').write_bytes(b'extra')
                 elif kind == 'symlink':
                     path.symlink_to(self.helper_source / path.name)
                 elif kind == 'hardlink':
@@ -550,11 +577,10 @@ class Receipt(unittest.TestCase):
             receipt.snapshot_installer_helpers(source, output)
         self.assertFalse((output / 'engine').exists())
         lifecycle.write_bytes(self.helpers[lifecycle.name])
-        alias = source / 'LIFECYCLE.ps1'
-        alias.write_bytes(b'alias')
-        with self.assertRaises(ValueError):
+        alias = self.rename_case(lifecycle, 'LIFECYCLE.ps1')
+        with self.assertRaisesRegex(ValueError, 'Case-aliased source helper'):
             receipt.snapshot_installer_helpers(source, output)
-        alias.unlink()
+        self.rename_case(alias, 'Lifecycle.ps1')
         (output / 'Engine').mkdir()
         with self.assertRaises(ValueError):
             receipt.snapshot_installer_helpers(source, output)
@@ -636,9 +662,12 @@ class Receipt(unittest.TestCase):
         for kind in ('alias', 'extra', 'empty', 'symlink', 'hardlink', 'directory'):
             with self.subTest(kind=kind):
                 path.unlink()
-                if kind in {'alias', 'extra'}:
+                if kind == 'alias':
+                    (subtree / 'COMMON.ps1').write_bytes(self.commissioning[path.name])
+                    self.assertIn('COMMON.ps1', {child.name for child in subtree.iterdir()})
+                elif kind == 'extra':
                     path.write_bytes(self.commissioning[path.name])
-                    (subtree / ('COMMON.ps1' if kind == 'alias' else 'unexpected.ps1')).write_bytes(b'extra')
+                    (subtree / 'unexpected.ps1').write_bytes(b'extra')
                 elif kind == 'symlink': path.symlink_to(self.commissioning_source / path.name)
                 elif kind == 'hardlink': os.link(self.commissioning_source / path.name, path)
                 elif kind == 'directory': path.mkdir()
@@ -647,15 +676,13 @@ class Receipt(unittest.TestCase):
                 for child in subtree.iterdir():
                     child.rmdir() if child.is_dir() else child.unlink()
                 for name, raw in self.commissioning.items(): (subtree / name).write_bytes(raw)
-        for name in ('Commissioning-v1', 'commissioning-v2'):
-            with self.subTest(namespace=name):
-                extra = self.installer / name; extra.mkdir()
-                self.refuses_unchanged(self.finish_commissioning)
-                extra.rmdir()
-        alias = self.installer / 'Commissioning-v1'
-        subtree.rename(alias)
+        extra = self.installer / 'commissioning-v2'
+        extra.mkdir()
         self.refuses_unchanged(self.finish_commissioning)
-        alias.rename(subtree)
+        extra.rmdir()
+        alias = self.rename_case(subtree, 'Commissioning-v1')
+        self.refuses_unchanged(self.finish_commissioning)
+        self.rename_case(alias, 'commissioning-v1')
         retained = self.root / 'held-commissioning'
         subtree.rename(retained)
         subtree.symlink_to(retained, target_is_directory=True)
@@ -669,7 +696,9 @@ class Receipt(unittest.TestCase):
         for kind in ('missing', 'alias', 'symlink', 'hardlink'):
             with self.subTest(kind=kind):
                 path.unlink()
-                if kind == 'alias': (self.commissioning_source / 'COMMON.ps1').write_bytes(b'alias')
+                if kind == 'alias':
+                    (self.commissioning_source / 'COMMON.ps1').write_bytes(self.commissioning[path.name])
+                    self.assertIn('COMMON.ps1', {child.name for child in self.commissioning_source.iterdir()})
                 elif kind == 'symlink': path.symlink_to(self.helper_source / 'Lifecycle.ps1')
                 elif kind == 'hardlink': os.link(self.helper_source / 'Lifecycle.ps1', path)
                 with self.assertRaises((ValueError, OSError)):
@@ -734,7 +763,10 @@ class Receipt(unittest.TestCase):
             defines = dict(arg[2:].split('=', 1) for arg in arguments if arg.startswith('/D'))
             for define, name in [('ENGINE', 'Lifecycle.ps1'), ('UPDATE_TRANSACTION', 'UpdateTransaction.ps1'),
                                  ('UPDATE_SUPERVISOR', 'UpdateSupervisor.ps1')]:
-                self.assertEqual(Path(defines[define]), output / 'engine' / name)
+                selected = Path(defines[define])
+                expected = output / 'engine' / name
+                self.assertEqual(selected.resolve(strict=True), expected.resolve(strict=True))
+                self.assertTrue(selected.samefile(expected))
                 self.assertEqual(Path(defines[define]).read_bytes(), self.helpers[name])
             self.assertEqual({child.name for child in (output / 'commissioning-v1').iterdir()}, set(COMMISSIONING_NAMES))
             for name, raw in self.commissioning.items():
