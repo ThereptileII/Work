@@ -3,6 +3,7 @@
 import ctypes
 import importlib.util
 import json
+import struct
 from pathlib import Path
 from types import SimpleNamespace
 import unittest
@@ -870,7 +871,7 @@ class ChildStartupQueries(unittest.TestCase):
                 args[2].value = self.names[args[1] - 1]
                 return len(args[2].value)
             if name == 'WaitForSingleObject':
-                self.assertIs(args[0], self.owner.thread)
+                self.assertTrue(args[0] is self.owner.thread or args[0] is self.owner.process)
                 self.assertEqual(args[1], 0)
                 return 258 if self.thread_live else 0
             if name == 'EnumThreadWindows':
@@ -896,7 +897,7 @@ class ChildStartupQueries(unittest.TestCase):
     def test_queries_original_handles_and_reports_only_fixed_classifications(self):
         result = self.observer.collect(self.verify)
         self.assertTrue(result['originalIdentityVerified'])
-        self.assertEqual(self.verify.call_count, 2)
+        self.assertEqual(self.verify.call_count, 4)
         self.assertEqual(result['threadTimes'], dict(state='observed', kernel100ns=(1 << 32) + 17,
                                                      user100ns=(2 << 32) + 19))
         self.assertEqual(result['pendingIO'], dict(state='observed', pending=True))
@@ -955,6 +956,152 @@ class ChildStartupQueries(unittest.TestCase):
             result = self.observer.collect(self.verify)
             self.assertEqual(result, dict(state='unavailable', originalIdentityVerified=False, nativeError=None))
             self.assertNotIn('private-secret', json.dumps(result))
+
+
+class SystemThreadSnapshot(unittest.TestCase):
+    # Encode independent SDK offsets, rather than using the parser's structures.
+    POINTER = ctypes.sizeof(ctypes.c_void_p)
+    HEADER, THREAD, PID, CLIENT, STATE = (256, 80, 80, 40, 68) if POINTER == 8 else (184, 64, 68, 32, 52)
+    PTR = '<Q' if POINTER == 8 else '<I'
+
+    @classmethod
+    def record(cls, pid=301, threads=((302, 5, 5),), *, linked=False):
+        raw = bytearray(cls.HEADER + len(threads) * cls.THREAD)
+        struct.pack_into('<II', raw, 0, len(raw) if linked else 0, len(threads))
+        struct.pack_into(cls.PTR, raw, cls.PID, pid)
+        # Invalid foreign pointer and private bytes must never be dereferenced/output.
+        secret = b'private-process-snapshot!'
+        raw[8:8 + len(secret)] = secret
+        struct.pack_into(cls.PTR, raw, 64 if cls.POINTER == 8 else 60, (1 << (8 * cls.POINTER)) - 1)
+        for index, (tid, state, reason) in enumerate(threads):
+            offset = cls.HEADER + index * cls.THREAD
+            struct.pack_into(cls.PTR, raw, offset + cls.CLIENT, pid)
+            struct.pack_into(cls.PTR, raw, offset + cls.CLIENT + cls.POINTER, tid)
+            struct.pack_into('<II', raw, offset + cls.STATE, state, reason)
+        return bytes(raw)
+
+    def setUp(self):
+        self.events, self.responses = [], [(0, self.record(), None)]
+        self.live, self.after_query_live = True, True
+        self.owner = SimpleNamespace(process=probe.W.HANDLE(0x101), thread=probe.W.HANDLE(0x202),
+            native=SimpleNamespace(kernel='kernel'))
+        self.verify, self.nt = mock.Mock(), object()
+        self.dll = mock.patch.object(probe.C, 'WinDLL', create=True, return_value=self.nt)
+        self.load = self.dll.start()
+        self.addCleanup(self.dll.stop)
+        self.owner.fn = self.fn
+        self.observer = probe._ChildStartupObservation(self.owner, 301, 302)
+
+    def fn(self, dll, name, result, *types):
+        if name == 'WaitForSingleObject':
+            self.assertEqual(dll, 'kernel')
+            def wait(handle, timeout):
+                self.assertTrue(handle is self.owner.process or handle is self.owner.thread)
+                self.assertEqual(timeout, 0)
+                self.events.append(('live', 'process' if handle is self.owner.process else 'thread'))
+                return 258 if self.live else 0
+            return wait
+        self.assertIs(dll, self.nt)
+        self.assertEqual(name, 'NtQuerySystemInformation')
+        self.assertEqual(result, ctypes.c_int32)
+        self.assertEqual(types, (ctypes.c_int32, ctypes.c_void_p, ctypes.c_uint32,
+                                 ctypes.POINTER(ctypes.c_uint32)))
+        def query(kind, buffer, capacity, returned):
+            self.assertEqual(kind, 5)
+            self.assertEqual(ctypes.sizeof(buffer), capacity)
+            self.events.append(('query', capacity))
+            status, raw, needed = self.responses.pop(0)
+            if raw:
+                ctypes.memmove(buffer, raw, min(len(raw), capacity))
+            returned._obj.value = len(raw) if needed is None else needed
+            self.live = self.after_query_live
+            return ctypes.c_int32(status).value
+        return query
+
+    def test_documented_layout_uses_fixed_widths_and_current_pointer_alignment(self):
+        self.assertEqual(ctypes.sizeof(probe._SystemProcessInformation), self.HEADER)
+        self.assertEqual(ctypes.sizeof(probe._SystemThreadInformation), self.THREAD)
+        self.assertEqual(probe._SystemProcessInformation.pid.offset, self.PID)
+        self.assertEqual(probe._SystemThreadInformation.client.offset, self.CLIENT)
+        self.assertEqual(probe._SystemThreadInformation.state.offset, self.STATE)
+        self.assertEqual(probe._SystemThreadInformation.wait.offset, self.STATE + 4)
+
+    def test_selects_only_original_thread_and_exposes_wait_reason_only_when_waiting(self):
+        for state in (0, 1, 2, 3, 4, 5, 6, 7):
+            raw = self.record(0, ((0, 0, 0), (0, 0, 0)), linked=True) + self.record(
+                threads=((303, 5, 99), (302, state, 12)), linked=True) + self.record(999, ((998, 5, 20),))
+            result = probe._parse_system_thread(raw, 301, 302)
+            expected = dict(originalProcessThreadCount=2, originalPrimaryThreadState=state)
+            if state == 5:
+                expected['originalPrimaryWaitReason'] = 12
+            self.assertEqual(result, expected)
+            self.assertNotIn('private', json.dumps(result))
+
+    def test_refuses_offsets_counts_truncation_duplicates_and_missing_original(self):
+        original = self.record()
+        bad = [b'', original[:self.HEADER - 1], original[:-1],
+               self.record(999), self.record(threads=((303, 5, 5),)),
+               self.record(threads=((302, 5, 5), (302, 5, 6))),
+               self.record(linked=True) + original]
+        for offset, value in ((0, 4), (0, self.HEADER + 1), (0, len(original) + 8),
+                              (0, len(original)), (4, 4097), (4, 2)):
+            value_raw = bytearray(original)
+            struct.pack_into('<I', value_raw, offset, value)
+            bad.append(bytes(value_raw))
+        foreign = bytearray(original)
+        struct.pack_into(self.PTR, foreign, self.HEADER + self.CLIENT, 999)
+        bad.append(bytes(foreign))
+        for raw in bad:
+            with self.subTest(length=len(raw)), self.assertRaises(probe.Refused):
+                probe._parse_system_thread(raw, 301, 302)
+
+    def test_byte_and_process_entry_limits_never_accept_partial_matches(self):
+        with self.assertRaises(probe.Refused):
+            probe._parse_system_thread(b'\0' * (4 * 1024 * 1024 + 1), 301, 302)
+        raw = self.record(linked=True) + b''.join(self.record(pid, (), linked=True)
+            for pid in range(1000, 5095)) + self.record(9999, ())
+        with self.assertRaises(probe.Refused):
+            probe._parse_system_thread(raw, 301, 302)
+
+    def test_native_query_is_bound_to_original_live_handles_before_and_after(self):
+        result = self.observer.system_thread(self.verify)
+        self.assertEqual(result, dict(state='observed', queryStatus=0,
+            originalProcessThreadCount=1, originalPrimaryThreadState=5, originalPrimaryWaitReason=5))
+        self.assertEqual(self.events, [('live', 'process'), ('live', 'thread'), ('query', 65536),
+                                      ('live', 'process'), ('live', 'thread')])
+        self.assertEqual(self.verify.call_count, 2)
+        self.load.assert_called_once_with('ntdll.dll', use_last_error=True, winmode=0x800)
+
+    def test_only_length_mismatch_resizes_once_with_a_fixed_byte_ceiling(self):
+        self.responses = [(0xc0000004, b'', 65537), (0, self.record(), None)]
+        self.assertEqual(self.observer.system_thread(self.verify)['state'], 'observed')
+        self.assertEqual([value for kind, value in self.events if kind == 'query'], [65536, 4 * 1024 * 1024])
+        self.events.clear()
+        self.responses = [(0xc0000004, b'', 65537), (0xc0000004, b'', 4 * 1024 * 1024 + 1)]
+        self.assertEqual(self.observer.system_thread(self.verify), dict(state='unavailable', queryStatus=0xc0000004))
+        self.assertEqual(len([event for event in self.events if event[0] == 'query']), 2)
+
+    def test_query_failure_or_malformed_success_never_returns_process_inventory(self):
+        for response in ((0xc0000002, b'', 0), (0xc0000022, b'', 0),
+                         (0xc0000004, b'', 4 * 1024 * 1024 + 1),
+                         (0, b'', 0), (0, b'', 65537), (0, b'private', None)):
+            self.responses = [response]
+            self.events.clear()
+            result = self.observer.system_thread(self.verify)
+            self.assertEqual(result, dict(state='unavailable', queryStatus=response[0]))
+            self.assertEqual(len([event for event in self.events if event[0] == 'query']), 1)
+            self.assertNotIn('private', json.dumps(result))
+
+    def test_exited_or_changed_original_discards_even_a_well_formed_snapshot(self):
+        self.live = False
+        self.assertEqual(self.observer.system_thread(self.verify), dict(state='unavailable', queryStatus=None))
+        self.assertNotIn('query', [event[0] for event in self.events])
+        self.live, self.after_query_live = True, False
+        self.assertEqual(self.observer.system_thread(self.verify), dict(state='unavailable', queryStatus=0))
+        self.live = self.after_query_live = True
+        self.responses = [(0, self.record(), None)]
+        self.verify.side_effect = [None, RuntimeError('private changed identity')]
+        self.assertEqual(self.observer.system_thread(self.verify), dict(state='unavailable', queryStatus=0))
 
 
 class HostGate(unittest.TestCase):

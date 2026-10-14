@@ -46,11 +46,85 @@ STARTUP_MODULES = ('ntdll.dll', 'kernel32.dll', 'kernelbase.dll', 'python312.dll
                    'ucrtbase.dll', 'user32.dll', '_ctypes.pyd')
 STARTUP_MODULE_BOUND = 128
 STARTUP_WINDOW_BOUND = 16
+SYSTEM_SNAPSHOT_BOUND = 4 * 1024 * 1024
+SYSTEM_PROCESS_BOUND = 4096
+SYSTEM_THREAD_BOUND = 4096
 _WindowCallback = getattr(C, 'WINFUNCTYPE', C.CFUNCTYPE)(C.c_int32, W.HWND, C.c_ssize_t)
 
 
 class _Filetime(C.Structure):
     _fields_ = [('low', C.c_uint32), ('high', C.c_uint32)]
+
+
+class _SystemUnicode(C.Structure):
+    _fields_ = [('length', C.c_uint16), ('maximum', C.c_uint16), ('buffer', C.c_void_p)]
+
+
+class _SystemProcessInformation(C.Structure):
+    # Public winternl.h layout. Pointer/name/reserved fields remain opaque.
+    _fields_ = [('next', C.c_uint32), ('threads', C.c_uint32), ('reserved1', C.c_ubyte * 48),
+        ('image', _SystemUnicode), ('priority', C.c_int32), ('pid', C.c_void_p),
+        ('parent', C.c_void_p), ('handles', C.c_uint32), ('session', C.c_uint32),
+        ('reserved3', C.c_void_p), ('peakVirtual', C.c_size_t), ('virtual', C.c_size_t),
+        ('reserved4', C.c_uint32), ('peakWorking', C.c_size_t), ('working', C.c_size_t),
+        ('reserved5', C.c_void_p), ('paged', C.c_size_t), ('reserved6', C.c_void_p),
+        ('nonpaged', C.c_size_t), ('pagefile', C.c_size_t), ('peakPagefile', C.c_size_t),
+        ('privatePages', C.c_size_t), ('reserved7', C.c_int64 * 6)]
+
+
+class _SystemClientId(C.Structure):
+    _fields_ = [('pid', C.c_void_p), ('tid', C.c_void_p)]
+
+
+class _SystemThreadInformation(C.Structure):
+    _fields_ = [('reserved1', C.c_int64 * 3), ('reserved2', C.c_uint32),
+        ('start', C.c_void_p), ('client', _SystemClientId), ('priority', C.c_int32),
+        ('basePriority', C.c_int32), ('reserved3', C.c_uint32),
+        ('state', C.c_uint32), ('wait', C.c_uint32)]
+
+
+def _parse_system_thread(raw, pid, tid):
+    """Validate the bounded linked records; expose only the original child.
+
+    No pointer in this buffer is dereferenced. Unrelated thread IDs, names,
+    addresses, timing and reserved fields are neither inspected nor returned.
+    """
+    pointer = C.sizeof(C.c_void_p)
+    header, thread = C.sizeof(_SystemProcessInformation), C.sizeof(_SystemThreadInformation)
+    require((pointer, header, thread) in ((8, 256, 80), (4, 184, 64)),
+            'system-snapshot-layout-unavailable')
+    require(type(raw) is bytes and header <= len(raw) <= SYSTEM_SNAPSHOT_BOUND and
+            type(pid) is int and 0 < pid <= 0xffffffff and type(tid) is int and 0 < tid <= 0xffffffff,
+            'system-snapshot-bound-refused')
+    offset, seen, result = 0, set(), None
+    for _ in range(SYSTEM_PROCESS_BOUND):
+        require(offset % pointer == 0 and offset + header <= len(raw), 'system-process-offset-refused')
+        entry = _SystemProcessInformation.from_buffer_copy(raw, offset)
+        span = entry.next or len(raw) - offset
+        require(header <= span <= len(raw) - offset and (not entry.next or span % pointer == 0) and
+                entry.threads <= SYSTEM_THREAD_BOUND and header + entry.threads * thread <= span,
+                'system-thread-range-refused')
+        process_id = entry.pid or 0
+        require(process_id not in seen, 'system-process-duplicate-refused')
+        seen.add(process_id)
+        if process_id == pid:
+            require(entry.threads > 0, 'system-original-thread-missing')
+            thread_ids = set()
+            for index in range(entry.threads):
+                value = _SystemThreadInformation.from_buffer_copy(raw, offset + header + index * thread)
+                require(value.client.pid == pid and value.client.tid and value.client.tid not in thread_ids,
+                        'system-original-thread-identity-refused')
+                thread_ids.add(value.client.tid)
+                if value.client.tid == tid:
+                    result = dict(originalProcessThreadCount=entry.threads, originalPrimaryThreadState=value.state)
+                    if value.state == 5:  # Waiting; the reason is undefined in other states.
+                        result['originalPrimaryWaitReason'] = value.wait
+            require(result is not None, 'system-original-thread-missing')
+        if not entry.next:
+            require(result is not None, 'system-original-process-missing')
+            return result
+        offset += entry.next
+    raise Refused('system-process-entry-bound-refused')
 
 
 class _ChildStartupObservation:
@@ -82,6 +156,39 @@ class _ChildStartupObservation:
         self.call(self.owner.native.kernel, 'GetThreadIOPendingFlag', W.BOOL,
             (W.HANDLE, C.POINTER(W.BOOL)), self.owner.thread, C.byref(pending))
         return dict(pending=bool(pending.value))
+
+    def system_thread(self, verify):
+        result = dict(state='unavailable', queryStatus=None)
+        def live():
+            wait = self.owner.fn(self.owner.native.kernel, 'WaitForSingleObject', W.DWORD, W.HANDLE, W.DWORD)
+            require(all(wait(handle, 0) == 258 for handle in (self.owner.process, self.owner.thread)),
+                    'system-original-process-or-thread-not-live')
+        try:
+            verify()
+            live()
+            try:
+                nt = C.WinDLL('ntdll.dll', use_last_error=True, winmode=0x800)
+                query = self.owner.fn(nt, 'NtQuerySystemInformation', C.c_int32,
+                    C.c_int32, C.c_void_p, C.c_uint32, C.POINTER(C.c_uint32))
+                # At most two calls and one bounded resize, only for length mismatch.
+                for capacity in (65536, SYSTEM_SNAPSHOT_BOUND):
+                    buffer, returned = C.create_string_buffer(capacity), C.c_uint32()
+                    status = query(5, buffer, capacity, C.byref(returned)) & 0xffffffff
+                    result['queryStatus'] = status
+                    if status == 0:
+                        require(0 < returned.value <= capacity, 'system-snapshot-return-bound-refused')
+                        result.update(_parse_system_thread(buffer.raw[:returned.value], self.pid, self.tid),
+                                      state='observed')
+                        break
+                    if status != 0xc0000004 or not capacity < returned.value <= SYSTEM_SNAPSHOT_BOUND:
+                        break
+            finally:
+                live()
+                verify()
+        except BaseException:
+            # Even a malformed/unsupported snapshot cannot mask the launch result.
+            result = dict(state='unavailable', queryStatus=result['queryStatus'])
+        return result
 
     def modules(self):
         modules, needed = (W.HANDLE * STARTUP_MODULE_BOUND)(), W.DWORD()
@@ -147,6 +254,7 @@ class _ChildStartupObservation:
         try:
             verify()
             for name, method in (('threadTimes', self.thread_times), ('pendingIO', self.pending_io),
+                                 ('systemThread', lambda: self.system_thread(verify)),
                                  ('modules', self.modules), ('windows', self.windows)):
                 try:
                     result[name] = {'state': 'observed', **method()}

@@ -40,3 +40,14 @@ rule out loader failure or another process's dialog. No target text/paths, wait
 chains, privilege changes, process reopening, suspension, console attachment,
 window messages, kill, retry or timeout increase are added. Native observation
 remains pending.
+
+The next prepared discriminator adds
+[SystemProcessInformation](https://learn.microsoft.com/en-us/windows/win32/api/winternl/nf-winternl-ntquerysysteminformation)
+at those same two observation points. It bounds snapshot bytes, linked entries,
+thread ranges and query attempts, then emits only the original process's thread
+count, original primary thread's numeric state and its wait reason when waiting.
+Original handle liveness and identity surround the query; malformed, unsupported
+or failed snapshots remain unavailable and cannot change the launch result.
+Names, addresses, reserved fields and unrelated thread data are not dereferenced
+or emitted. This version-sensitive query supplies a momentary diagnostic fact,
+not an exact stall cause or native acceptance. Native observation remains pending.
