@@ -157,9 +157,15 @@ func installedElevationDispatchWith(ctx context.Context, args []string, run func
 		}
 	}()
 	err = run(joined)
-	parentFailure := context.Cause(joined)
 	// Join the watcher before closing either original native process/token owner.
-	stop(context.Canceled)
+	// A distinct normal-stop cause preserves a watcher failure racing callback
+	// return, even if a later native observation would happen to succeed.
+	normalStop := errors.New("installed elevation watcher completed")
+	stop(normalStop)
 	<-done
+	parentFailure := context.Cause(joined)
+	if parentFailure == normalStop {
+		parentFailure = nil
+	}
 	return true, errors.Join(err, parentFailure, ctx.Err(), parent.check(ctx), self.owner.check(ctx))
 }

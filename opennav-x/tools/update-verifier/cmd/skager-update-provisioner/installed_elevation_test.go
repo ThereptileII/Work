@@ -163,7 +163,12 @@ func TestInstalledElevationBindingParentExitCancelsMaintenance(t *testing.T) {
 		parent.mu.Unlock()
 		select {
 		case <-ctx.Done():
-			return nil // Even a swallowed cancellation must refuse success.
+			// Even a swallowed cancellation and a later successful observation
+			// cannot erase the original watcher refusal.
+			parent.mu.Lock()
+			parent.fail = false
+			parent.mu.Unlock()
+			return nil
 		case <-time.After(time.Second):
 			t.Fatal("parent exit did not cancel maintenance")
 			return nil
