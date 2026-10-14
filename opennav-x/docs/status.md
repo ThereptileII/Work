@@ -1,6 +1,24 @@
 # SKAGER status — 2026-10-14
 
-## Private login email preparation; provider activation pending
+## Private email activated; first invitation exposed a provider-header defect
+
+Resend's separate `auth.skager.app` sender is verified with enforced TLS.
+The owner completed the credential handoff; custom SMTP is persisted enabled.
+Both code-only email templates were saved and fully read back. Exact frontend
+`a6a1768d01963388416d48ab1d51dd191d9288db` is active as Cloudflare `f5508044`;
+live `auth.js` matches the retained candidate. Its [CI 38531861920](https://github.com/ThereptileII/Work/actions/runs/38531861920)
+passes **191 tests** (88 Django and 103 Edge), plus disposable SQL checks.
+The server bundle remains byte-identical to deployed `1acc781e`.
+
+Only the owner's explicitly authorized address is allowlisted for private
+auth testing. Checkout, portal and downloads remain off. First signup reached
+successful throttle RPCs but `/auth/v1/invite` returned 403; Auth reports a
+malformed token and Resend lists no sent email. The SDK-aligned correction uses
+the server identity in both admin-invitation headers, with **23 focused checks**
+passing. Deployment/live retry and end-to-end authentication remain pending.
+No public-access or paid-entitlement acceptance is claimed.
+
+## Earlier checkpoint: private login email preparation
 
 Source `a6a1768d01963388416d48ab1d51dd191d9288db` adds code-only Supabase
 Invitation/Magic Link templates and fixes optional trailing-slash auth routing.
