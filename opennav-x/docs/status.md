@@ -2,6 +2,16 @@
 
 ## Original shortcut custody passes; genuine customer host remains unqualified
 
+One combined full Staging candidate, exact
+`faa211b568f0e79e1d1065ba3fb76c3b1e801fd6`, is running in
+[CI 38529654044](https://github.com/ThereptileII/Work/actions/runs/38529654044).
+Design and endurance sweeps remain off. Later approval/host helper corrections
+do not replace that packaged source revision or request another application build.
+Setup approval now binds original policy, installer hash/size and local file
+metadata (25 focused checks). A short fresh-account probe produced real split
+tokens but refused their primary/impersonation type mismatch; its own cleanup
+passed. Failed evidence is retained below and the ordinary-customer gate stays open.
+
 Exact `404cc83bd0873a6aa4231c1ba2ae2e4a1f8a3499` passes
 [focused run 38528886583](https://github.com/ThereptileII/Work/actions/runs/38528886583):
 Linux **143 top-level / 422 nested**, native Win32 Windows **216 top-level /
