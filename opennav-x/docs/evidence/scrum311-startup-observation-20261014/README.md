@@ -66,3 +66,22 @@ execution as never resumed or never scheduled. They do not identify the blocking
 server, exact function, missing permission, console cause or a SKAGER defect.
 No extra resume, privileged debugger, policy change or application rebuild is
 authorized by this diagnostic. Cleanup remains deferred to disposable retirement.
+
+## Explicit detached-console request refused
+
+Helper `e97356e164e8ea2497dd9bc7d24fc29d10e02e77`,
+[run 38645846804 attempt 1](https://github.com/ThereptileII/Work/actions/runs/38645846804),
+job `116132371417`, changes only this file-only child's requested creation flags
+to `CREATE_SUSPENDED | DETACHED_PROCESS` (12). The existing 68 focused cases pass.
+The [Microsoft flag contract](https://learn.microsoft.com/en-us/windows/win32/procthread/process-creation-flags)
+lists the flag, but this actual `CreateProcessWithTokenW` invocation refuses with
+Windows error 87 (`ERROR_INVALID_PARAMETER`) before creating a child. There is
+no resume, worker marker, exit report or startup snapshot in this run. No fallback
+was attempted; only the original owned disposable account/profile was removed.
+Caller desktop and UAC checks remain unchanged. The separate profile adapter passes.
+
+[Original authenticated receipt](detached-receipt.json). Root independently
+rechecked both archives' provider hashes, lengths, CRCs and sole members.
+The result does not prove the original timeout's console cause, a usable
+non-console setup or any installed/customer acceptance. The application candidate
+remains unchanged. Do not repeat this rejected flag combination.

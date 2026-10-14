@@ -64,6 +64,13 @@ wait reason 5 before resume and 17 at timeout, with 15.625 ms accounted user CPU
 This rules out calling it never resumed/scheduled; the blocking cause remains
 unidentified. No launch policy, privileges or application inputs changed.
 
+The subsequent host-only console discriminator `e97356e1` /
+[38645846804](https://github.com/ThereptileII/Work/actions/runs/38645846804)
+requests `CREATE_SUSPENDED | DETACHED_PROCESS` for the file-only worker. Windows
+refuses error 87 before creating a child. No fallback occurs; owned disposable
+cleanup passes, caller desktop/UAC stays unchanged and profile preparation passes.
+This rejected flag combination will not be retried; it grants no acceptance.
+
 The separate callable installed-journey CLI is integrated as `b5c5da7f`:
 **13 CLI / 23 coordinator groups pass**. It preserves independent input and
 operator approval and performs no signing, publication or connectivity changes.

@@ -1,0 +1,97 @@
+{
+  "artifacts": [
+    {
+      "artifactBytes": 594,
+      "artifactId": 11931808738,
+      "artifactSha256": "b57c97bb7d65cce3c739daf3f636caadb8a4e247b8764bfe075b20ced9ec40d3",
+      "attempt": 1,
+      "jobId": 116132371417,
+      "kind": "profile",
+      "resultBytes": 780,
+      "resultCrc32": "65eaf723",
+      "runId": 38645846804,
+      "sourceCommit": "e97356e164e8ea2497dd9bc7d24fc29d10e02e77",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    },
+    {
+      "artifactBytes": 1041,
+      "artifactId": 11931604227,
+      "artifactSha256": "7830c5d95920c28c1cb4424332a100c9cf6a09fec228d4db3624dba29f5cc62b",
+      "attempt": 1,
+      "helperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7",
+      "jobId": 116132371417,
+      "kind": "account",
+      "resultBytes": 3444,
+      "resultCrc32": "72b5a5f1",
+      "runId": 38645846804,
+      "sourceCommit": "e97356e164e8ea2497dd9bc7d24fc29d10e02e77",
+      "uploadLogArtifactAndDigestVerified": true,
+      "zipCRCVerified": true
+    }
+  ],
+  "observations": {
+    "attempt": 1,
+    "callerChecksPassed": {
+      "afterObservation": true,
+      "beforeAccount": true,
+      "beforeLaunch": true
+    },
+    "callerDesktop": {
+      "input": "Default",
+      "nativeError": null,
+      "station": "WinSta0",
+      "thread": "Default",
+      "visible": true
+    },
+    "callerPolicy": {
+      "consentPromptBehaviorAdmin": 0,
+      "enableLUA": 1,
+      "promptOnSecureDesktop": 1
+    },
+    "capabilityLaunch": {
+      "creationFlags": 12,
+      "scope": "non-console-file-only-capability"
+    },
+    "cleanup": {
+      "state": "own-account-and-profile-removed"
+    },
+    "consentPromptAcceptance": false,
+    "jobId": 116132371417,
+    "nativeCustomerAcceptance": false,
+    "nativeError": 87,
+    "observation": null,
+    "originalChild": {},
+    "originalFullStatistics": {
+      "impersonationLevel": 1,
+      "tokenType": 2
+    },
+    "originalLimitedStatistics": {
+      "impersonationLevel": 2,
+      "tokenType": 1
+    },
+    "originalLinkedToken": {
+      "elevated": true,
+      "elevationType": 2,
+      "integrityLevel": "high",
+      "session": 2,
+      "tokenType": 2
+    },
+    "originalLogonToken": {
+      "elevated": false,
+      "elevationType": 3,
+      "integrityLevel": "medium",
+      "session": 2,
+      "tokenType": 1
+    },
+    "producerCommit": "e97356e164e8ea2497dd9bc7d24fc29d10e02e77",
+    "productInstallAttempted": false,
+    "profileState": "disposable-profile-created",
+    "progress": null,
+    "reason": "original-limited-token-fixed-probe-launch-refused",
+    "runId": 38645846804,
+    "state": "blocked",
+    "unchangedChildHelperWindowsCheckoutSha256": "60f2dca0e7515dd8df88697dfeb0bba949ee90798de8378e1bdbfe49f4c1beb7"
+  },
+  "rootReverifiedArchiveSizeDigestCrcMember": true
+}
