@@ -5,7 +5,12 @@
 One combined full Staging candidate, exact
 `faa211b568f0e79e1d1065ba3fb76c3b1e801fd6`, is running in
 [CI 38529654044](https://github.com/ThereptileII/Work/actions/runs/38529654044).
-Design and endurance sweeps remain off. Later approval/host helper corrections
+The authenticated Linux integration job passes: both application suites have
+**154 cases, zero failures and zero skips**; applicable integration steps pass.
+[Partial Linux receipt](evidence/scrum209-27-candidate-linux-38529654044/README.md).
+Windows remains pending; the full candidate is not accepted. Extended preview
+scenarios and endurance were deliberately skipped; design remains off. Later
+approval/host helper corrections
 do not replace that packaged source revision or request another application build.
 Setup approval now binds original policy, installer hash/size and local file
 metadata (25 focused checks). A short fresh-account probe produced real split

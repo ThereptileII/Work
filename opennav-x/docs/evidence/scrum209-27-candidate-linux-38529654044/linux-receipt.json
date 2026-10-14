@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "scope": "partial-full-candidate-linux-evidence",
+  "productCommit": "faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+  "run": {
+    "repository": "ThereptileII/Work",
+    "id": "38529654044",
+    "attempt": "1",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38529654044"
+  },
+  "linuxJob": {
+    "id": "115738330035",
+    "name": "Linux integrated regression gate",
+    "conclusion": "success",
+    "completedAt": "2026-10-14T08:17:42Z",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38529654044/job/115738330035"
+  },
+  "artifact": {
+    "name": "linux-integration-faa211b568f0e79e1d1065ba3fb76c3b1e801fd6",
+    "bytes": 14626865,
+    "sha256": "5889628b3819a4f13a422bc95497dcc33c076ab2610272e98effbc9ae0be5d9b",
+    "members": 3984,
+    "allMemberCRCsVerified": true,
+    "providerMetadataAuthenticatedByCoordinator": true
+  },
+  "suites": [
+    {
+      "path": "xnav-linux-tests.xml",
+      "bytes": 134124,
+      "sha256": "a8bec49583efb4191296e2d1d2a30caa371958a820ff5ba99b46991344d395ee",
+      "cases": 154,
+      "failures": 0,
+      "skipped": 0
+    },
+    {
+      "path": "production-linux-tests.xml",
+      "bytes": 135014,
+      "sha256": "995427566dcd135cd16a33dc20df9426ce98799b430653fa794b33dc062bd365",
+      "cases": 154,
+      "failures": 0,
+      "skipped": 0
+    }
+  ],
+  "scenarios": {
+    "applicableIntegrationSteps": "passed",
+    "extendedPreviewPages": "skipped-not-requested",
+    "designValidation": "not-requested",
+    "endurance": "skipped-user-policy",
+    "endurancePolicyStep": "passed"
+  },
+  "qualificationSnapshot": {
+    "linux": "passed",
+    "windows": "pending",
+    "candidateAccepted": false,
+    "installedJourneyAccepted": false,
+    "boatAccepted": false,
+    "publicAccessAuthorized": false
+  }
+}
