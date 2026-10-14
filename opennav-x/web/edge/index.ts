@@ -1,5 +1,5 @@
 import { getAccount, handleAuth } from './auth.ts';
-import { handleCommerce } from './commerce.ts';
+import { handleCommerce, reportCommerceConfiguration } from './commerce.ts';
 import { handlePortal } from './portal.ts';
 import { handleDownloads } from './downloads.ts';
 import { bootstrapCsrf, boundedBytes, csrfValid, json, MAX_BODY, PUBLIC_ORIGIN, rpcClient } from './platform.ts';
@@ -39,4 +39,9 @@ export async function handleRequest(request: Request, env: RuntimeEnv, transport
 }
 
 declare const Deno: { env: { toObject(): RuntimeEnv }; serve: (handler: (r: Request) => Promise<Response>) => void };
-if (typeof Deno !== 'undefined') Deno.serve(request => handleRequest(request, Deno.env.toObject()));
+if (typeof Deno !== 'undefined') {
+  // One static startup observation per isolate; never log on a public request.
+  try { reportCommerceConfiguration(Deno.env.toObject()); }
+  catch { /* A diagnostic cannot prevent the existing server from starting. */ }
+  Deno.serve(request => handleRequest(request, Deno.env.toObject()));
+}

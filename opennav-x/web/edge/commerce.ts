@@ -35,21 +35,45 @@ const reply = (status: number, value: Json) => new Response(JSON.stringify(value
   headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff' } });
 
-function configuration(ctx: CommerceContext): Configuration {
-  const env = ctx.env;
-  requireValue(env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
-  requireValue(/^(?:sk|rk)_test_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_SECRET_KEY ?? ''));
-  requireValue(/^whsec_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_WEBHOOK_SECRET ?? ''));
-  requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(env.STRIPE_TEST_PRICE_ID ?? ''));
+type ConfigurationBinding = 'STRIPE_TEST_CHECKOUT_ENABLED' | 'STRIPE_TEST_SECRET_KEY'
+  | 'STRIPE_TEST_WEBHOOK_SECRET' | 'STRIPE_TEST_PRICE_ID' | 'STRIPE_TEST_RETURN_ORIGIN'
+  | 'STRIPE_TEST_ALLOWED_COUPON_IDS' | 'STRIPE_TEST_ALLOWED_PROMOTION_IDS';
+class ConfigurationError extends BoundaryError {
+  readonly binding: ConfigurationBinding;
+  constructor(binding: ConfigurationBinding) { super(); this.binding = binding; }
+}
+function requireConfiguration(binding: ConfigurationBinding, condition: unknown): void {
+  if (!condition) throw new ConfigurationError(binding);
+}
+
+function configuration(env: CommerceContext['env']): Configuration {
+  requireConfiguration('STRIPE_TEST_CHECKOUT_ENABLED', env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
+  requireConfiguration('STRIPE_TEST_SECRET_KEY', /^(?:sk|rk)_test_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_SECRET_KEY ?? ''));
+  requireConfiguration('STRIPE_TEST_WEBHOOK_SECRET', /^whsec_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_WEBHOOK_SECRET ?? ''));
+  requireConfiguration('STRIPE_TEST_PRICE_ID', /^price_[A-Za-z0-9]{8,128}$/.test(env.STRIPE_TEST_PRICE_ID ?? ''));
   const origin = env.STRIPE_TEST_RETURN_ORIGIN ?? '';
-  requireValue(/^https:\/\/(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(origin));
+  requireConfiguration('STRIPE_TEST_RETURN_ORIGIN', /^https:\/\/(?=.{1,253}$)(?:[a-z0-9](?:[a-z0-9-]{0,61}[a-z0-9])?\.)+[a-z](?:[a-z0-9-]{0,61}[a-z0-9])?$/.test(origin));
   const coupons = (env.STRIPE_TEST_ALLOWED_COUPON_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
-  requireValue(coupons.length <= 100 && coupons.every(value => /^[A-Za-z0-9_-]{1,128}$/.test(value)));
+  requireConfiguration('STRIPE_TEST_ALLOWED_COUPON_IDS', coupons.length <= 100 && coupons.every(value => /^[A-Za-z0-9_-]{1,128}$/.test(value)));
   const promotions = (env.STRIPE_TEST_ALLOWED_PROMOTION_IDS ?? '').split(',').map(value => value.trim()).filter(Boolean);
-  requireValue(promotions.length <= 100 && promotions.every(value => PROMOTION.test(value)));
+  requireConfiguration('STRIPE_TEST_ALLOWED_PROMOTION_IDS', promotions.length <= 100 && promotions.every(value => PROMOTION.test(value)));
   return { key: env.STRIPE_TEST_SECRET_KEY!, secret: env.STRIPE_TEST_WEBHOOK_SECRET!,
     price: env.STRIPE_TEST_PRICE_ID!, origin, coupons: [...new Set(coupons)],
     promotions: [...new Set(promotions)] };
+}
+
+/** Called only at server startup. Operator logs receive a finite static marker;
+ * neither public callers nor logs receive environment values or error details. */
+export function reportCommerceConfiguration(env: CommerceContext['env']): void {
+  // Disabled checkout is an intentional closed state, not an operational fault.
+  if (env.STRIPE_TEST_CHECKOUT_ENABLED !== 'true') return;
+  let marker = 'skager-commerce:configuration-v1:valid';
+  try { configuration(env); }
+  catch (error) {
+    marker = 'skager-commerce:configuration-v1:'
+      + (error instanceof ConfigurationError ? error.binding : 'unknown');
+  }
+  try { console.warn(marker); } catch { /* Logging cannot prevent server startup. */ }
 }
 
 async function discountCode(req: Request): Promise<string | null> {
@@ -459,7 +483,7 @@ export async function handleCommerce(req: Request, ctx: CommerceContext): Promis
   if (!['/api/checkout/start', '/api/stripe/webhook'].includes(path)) return null;
   if (req.method !== 'POST') return reply(405, { error: 'POST required' });
   let config: Configuration;
-  try { config = configuration(ctx); } catch { return reply(404, { error: 'Unavailable' }); }
+  try { config = configuration(ctx.env); } catch { return reply(404, { error: 'Unavailable' }); }
   if (path === '/api/stripe/webhook') return webhook(req, ctx, config);
   // Root router also verifies CSRF. A fixed exact Origin is mandatory here so
   // direct invocation cannot bypass browser request origin checks.
