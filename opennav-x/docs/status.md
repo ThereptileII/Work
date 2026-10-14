@@ -1,5 +1,21 @@
 # SKAGER status — 2026-10-14
 
+## Replacement candidate after native updater job timeout
+
+Candidate `e538bbc8` / [38633971333](https://github.com/ThereptileII/Work/actions/runs/38633971333)
+exceeded the Windows updater job's former 20-minute limit after all executed
+steps succeeded. Windows application integration never started. Correction
+`38fca523` preserves tests and allows 35 minutes on Windows, retaining independent
+matrix results. Its already uploaded operator kit passes original artifact,
+inventory and payload verification; it is not a qualified application package.
+
+The single replacement is `89854110b41286cab0c6bf9748f37882a595a366` /
+[38638855800](https://github.com/ThereptileII/Work/actions/runs/38638855800), with
+private Staging trust and without extended/design suites. The verified SDK is
+unchanged. The superseded run's remaining Linux compilation was cancelled;
+no separate verifier-only build or dependency rebuild was selected.
+[Failure, bounded component evidence and correction](evidence/scrum311-updater-budget-20261014/README.md).
+
 ## Installed journey coordinator passes focused native streaming gate
 
 `e0f20d1e` / `fc76ee9e` / `03e5bcc1` join the existing approval transport and
