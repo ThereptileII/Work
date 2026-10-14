@@ -13,8 +13,10 @@ focused check and corrected Windows path/newline fixtures remain recorded in
 That exact full [Staging candidate, run38549237034](https://github.com/ThereptileII/Work/actions/runs/38549237034)
 passes the early receipt contracts, but Windows refuses the authenticated SDK:
 hosted image `20261012.333.1` differs from producer `20261004.326.1`. Windows
-application compilation and packaging were not reached. Linux continues its
-existing job; the overall candidate cannot qualify from this attempt.
+application compilation and packaging were not reached. Linux completed successfully:
+154 tests pass in each of the fixture-enabled and fixture-free runs, with no
+failures or skips. [Authenticated original Linux evidence](evidence/scrum209-27-linux-1107-20261014/README.md).
+The overall candidate cannot qualify from this attempt.
 
 Root selected one dependency-only refresh at `e80f0b92`,
 [run38552041879](https://github.com/ThereptileII/Work/actions/runs/38552041879).

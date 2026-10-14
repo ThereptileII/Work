@@ -1,0 +1,87 @@
+{
+  "schema": 1,
+  "repository": "ThereptileII/Work",
+  "commit": "1107c04f55a5a51660e424493bf083fc83106443",
+  "run": {
+    "id": 38549237034,
+    "run_attempt": 1,
+    "head_sha": "1107c04f55a5a51660e424493bf083fc83106443",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "status": "completed",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "head_branch": "codex/software-qualification-20261013b"
+  },
+  "job": {
+    "id": 115803006381,
+    "run_id": 38549237034,
+    "run_attempt": 1,
+    "name": "Linux integrated regression gate",
+    "head_sha": "1107c04f55a5a51660e424493bf083fc83106443",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-14T10:23:59Z",
+    "completed_at": "2026-10-14T11:03:19Z"
+  },
+  "artifact": {
+    "id": 11888380195,
+    "name": "linux-integration-1107c04f55a5a51660e424493bf083fc83106443",
+    "size_in_bytes": 14628412,
+    "digest": "sha256:fa15e7452037417f3e445a89550a3e8e138a3bd78c902d51e80dd13d7adf193a",
+    "expired": false,
+    "created_at": "2026-10-14T11:03:17Z",
+    "workflow_run": {
+      "id": 38549237034,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "codex/software-qualification-20261013b",
+      "head_sha": "1107c04f55a5a51660e424493bf083fc83106443"
+    }
+  },
+  "downloadedBytes": 14628412,
+  "downloadedSha256": "fa15e7452037417f3e445a89550a3e8e138a3bd78c902d51e80dd13d7adf193a",
+  "zipCrcVerifiedMembers": 3984,
+  "ctest": [
+    {
+      "member": "production-linux-tests.xml",
+      "sha256": "31383f5d1c5455fd533a9e16b4b234a04d14677b2c9567622deb7ae0ecff1d07",
+      "rootAttributes": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "13",
+        "timestamp": "2026-10-14T11:02:38"
+      },
+      "caseCount": 154,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 154,
+      "failedOrSkippedCases": []
+    },
+    {
+      "member": "xnav-linux-tests.xml",
+      "sha256": "c12a848f556256ae172b21d9e2617a3c28fdd2f107e8789c524a9713ef835c0d",
+      "rootAttributes": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "13",
+        "timestamp": "2026-10-14T10:40:08"
+      },
+      "caseCount": 154,
+      "failures": 0,
+      "errors": 0,
+      "skipped": 0,
+      "passed": 154,
+      "failedOrSkippedCases": []
+    }
+  ],
+  "scope": "Linux job evidence only; overall candidate failed before Windows application compilation"
+}
