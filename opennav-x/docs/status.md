@@ -1,6 +1,23 @@
 # SKAGER status — 2026-10-14
 
-## Customer rollback native helper gate passes; Repair still under review
+## Customer Repair integrated; focused native verification pending
+
+The reviewed Repair batch is integrated through `8e0331b9`: exact retained-source
+restoration, cold restart profile custody, and explicit continuation of one
+authenticated interrupted copy. The new journal binds its prior original reader
+before its first fact, so an interruption at that complete durable boundary can
+be continued without reopening an old journal for append. Independent review
+found no blocker in that scope. Malformed/torn writes, lost private authority,
+damaged bootstrap and old fixed broker/helper compatibility remain explicit
+limitations. [Contract and remaining gates](installer/customer-protected-repair.md).
+
+All 12 new production Go modules are mandatory in the corresponding-source
+closure; customer rollback sources are also explicitly required. Both package
+verification suites pass locally (12 broker + 14 provisioner cases). The exact
+combined Windows Repair tests have not yet run; no installed/customer/boat
+acceptance or new full application build is claimed.
+
+## Earlier customer rollback native helper gate passes
 
 Exact `4fe70d8ae80c5f71c0d127bd1ab6c6eb0d0d54b2` passes the existing short
 [Linux/Windows gate 38580830570](https://github.com/ThereptileII/Work/actions/runs/38580830570).
@@ -15,9 +32,8 @@ The integrated changes join the customer Maintain Rollback action to protected
 selected history and add an actual pinned stock OpenCPN reopen observer after
 Maintain uninstall. These helper tests do not establish genuine interactive
 customer UAC, the complete installed journey, historical-version compatibility
-or boat acceptance. Protected Repair implementation remains on its isolated
-branch under review: interrupted-copy recovery and repair after broker/OS restart
-must be resolved before treating that customer path as usable. No full build,
+or boat acceptance. This earlier gate predates the Repair implementation described
+above and cannot qualify it. No full build,
 boat change or public release was performed for this gate.
 
 The preceding full candidate `bd47aa729aa728c6834072047eec7e00a65c6f13`,

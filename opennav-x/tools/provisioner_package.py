@@ -19,6 +19,12 @@ REQUIRED_SOURCES = frozenset(broker.REGISTRATION_SOURCES | {broker.PREFIX + name
     'cmd/skager-update-provisioner/installed_elevation_other.go',
     'cmd/skager-update-provisioner/installed_elevation_windows.go',
     'cmd/skager-update-provisioner/operator_selected_diagnostics.go',
+    'cmd/skager-update-provisioner/customer_rollback.go',
+    'cmd/skager-update-provisioner/customer_rollback_other.go',
+    'cmd/skager-update-provisioner/customer_rollback_windows.go',
+    'cmd/skager-update-provisioner/customer_repair.go',
+    'cmd/skager-update-provisioner/customer_repair_other.go',
+    'cmd/skager-update-provisioner/customer_repair_windows.go',
     'cmd/skager-update-provisioner/operator_manual_rollback.go', 'go.mod', 'go.sum')} | {
         'project/LICENSE', 'project/tools/package-update-launcher.py',
         'project/tools/package-update-broker.py', 'project/tools/package-update-provisioner.py',
