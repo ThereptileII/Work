@@ -71,6 +71,7 @@ type acquiredBroker interface {
 
 type operations struct {
 	holdDirectories         func(string, string) (io.Closer, error)
+	bindOriginalInputs      func(enrollmentFiles, io.Closer) error
 	verify                  func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
 	acquire                 func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
 	create                  func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
@@ -97,8 +98,9 @@ func Run(ctx context.Context, req Request) error {
 
 func nativeOperations() operations {
 	return operations{
-		holdDirectories: holdOperatorDirectories,
-		verify:          verifier.VerifyBrokerBootstrap,
+		holdDirectories:    holdOperatorDirectories,
+		bindOriginalInputs: bindOriginalBootstrapCacheNative,
+		verify:             verifier.VerifyBrokerBootstrap,
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, origin, directory string) (acquiredBroker, error) {
 			return verifier.DownloadArtifact(ctx, a, origin, directory)
 		},
@@ -265,6 +267,11 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			resultErr = errors.Join(resultErr, ErrCleanup)
 		}
 	}()
+	if op.bindOriginalInputs != nil {
+		if err := op.bindOriginalInputs(files, inputs); err != nil {
+			return err
+		}
+	}
 	if ctx.Err() != nil {
 		return errors.New("retained fresh machine files changed or interrupted")
 	}

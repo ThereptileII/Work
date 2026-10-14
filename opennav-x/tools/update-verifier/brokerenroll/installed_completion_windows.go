@@ -117,7 +117,11 @@ func (s *nativeStartupPublication) prepareInstalledCompletion(ctx context.Contex
 	}
 	n := &nativeInstalledCompletion{files: f, publication: s, baseline: source}
 	n.self = n
-	r := installedCompletionRecord{Schema: 1, Purpose: installedCompletionPurpose, ClientSID: client.ClientSID, ClientRequest: rawRequest, ClientRequestSHA256: client.RequestSHA256, StartupPublication: rawPublication, StartupPublicationSHA256: s.bindingSHA}
+	cache, err := originalBootstrapCacheBindingNative(f)
+	if err != nil {
+		return nil, err
+	}
+	r := installedCompletionRecord{Schema: 2, BootstrapCache: cache, Purpose: installedCompletionPurpose, ClientSID: client.ClientSID, ClientRequest: rawRequest, ClientRequestSHA256: client.RequestSHA256, StartupPublication: rawPublication, StartupPublicationSHA256: s.bindingSHA}
 	if r.Parent, err = startupDirectoryIdentity(f.clientParent); err != nil {
 		return nil, err
 	}

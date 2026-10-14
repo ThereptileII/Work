@@ -158,6 +158,8 @@ type nativeEnrollmentFiles struct {
 	maintenanceHelperSHA  string
 	maintenanceSource     maintenanceImageSource
 	maintenanceAttempted  bool
+	bootstrapCache        *enrollmentPin
+	bootstrapCacheOwner   *nativeEnrollmentFiles
 }
 
 // createFreshFiles requires an independently authenticated provisioner before
@@ -315,6 +317,14 @@ func (f *nativeEnrollmentFiles) check() error {
 	}
 	for _, pin := range f.pins {
 		if err := pin.check(); err != nil {
+			return err
+		}
+	}
+	if f.bootstrapCacheOwner != nil {
+		if f.bootstrapCacheOwner == f {
+			return errors.New("separate original bootstrap cache owner required")
+		}
+		if err := f.bootstrapCacheOwner.Check(); err != nil {
 			return err
 		}
 	}
@@ -746,10 +756,13 @@ func holdOperatorDirectories(cacheDir, artifactDir string) (io.Closer, error) {
 		return nil, err
 	}
 	f := &nativeEnrollmentFiles{}
-	for _, directory := range []string{cacheDir, artifactDir} {
+	for index, directory := range []string{cacheDir, artifactDir} {
 		pin, err := f.holdAncestry(directory, true)
 		if err != nil {
 			return nil, errors.Join(err, f.Close())
+		}
+		if index == 0 {
+			f.bootstrapCache = pin
 		}
 		pin.allowAdds = false
 		if err := pin.check(); err != nil {

@@ -78,6 +78,8 @@ func installedCompletionNativeFixture(t *testing.T) (*nativeStartupPublication, 
 	if err != nil {
 		t.Fatal(err)
 	}
+	input.bootstrapCache = inputParent
+	f.bootstrapCache, f.bootstrapCacheOwner = inputParent, input
 	inputPin, err := startupWriteFile(ctx, input, inputParent, clientBaselineInputName, body, fileSD, false)
 	if err != nil {
 		t.Fatal(err)
@@ -130,7 +132,7 @@ func TestNativeInstalledCompletionStartupCommitPreservesOriginalCustody(t *testi
 		t.Fatal(err)
 	}
 	r, err := parseInstalledCompletion(recordRaw)
-	if err != nil || !bytes.Equal(r.ClientRequest, request.OriginalBytes()) || r.MaintenanceHelper.SHA256 != f.maintenanceHelperSHA || r.Request.FileID == r.Baseline.FileID {
+	if err != nil || r.Schema != 2 || r.BootstrapCache == nil || r.BootstrapCache.Path != f.bootstrapCache.dos || !bytes.Equal(r.ClientRequest, request.OriginalBytes()) || r.MaintenanceHelper.SHA256 != f.maintenanceHelperSHA || r.Request.FileID == r.Baseline.FileID {
 		t.Fatalf("original completion lost identity: %v", err)
 	}
 	if err = n.Complete(context.Background(), installedCompletionFixtureGuard); err == nil {

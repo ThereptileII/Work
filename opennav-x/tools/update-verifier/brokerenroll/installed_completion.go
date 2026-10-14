@@ -17,19 +17,20 @@ const maxInstalledCompletionMarkerBytes = 128
 // approved install. Parsing a record establishes no native custody or authority.
 // Admin/SYSTEM remain trusted machine principals, as in createFreshFiles.
 type installedCompletionRecord struct {
-	Schema                   int                     `json:"schema"`
-	Purpose                  string                  `json:"purpose"`
-	ClientSID                string                  `json:"clientSid"`
-	ClientRequest            []byte                  `json:"clientRequest"`
-	ClientRequestSHA256      string                  `json:"clientRequestSha256"`
-	StartupPublication       []byte                  `json:"startupPublication"`
-	StartupPublicationSHA256 string                  `json:"startupPublicationSha256"`
-	Parent                   startupDirectoryBinding `json:"parent"`
-	Request                  startupFileBinding      `json:"request"`
-	Publication              startupFileBinding      `json:"publication"`
-	Baseline                 startupFileBinding      `json:"baseline"`
-	Broker                   startupFileBinding      `json:"broker"`
-	MaintenanceHelper        startupFileBinding      `json:"maintenanceHelper"`
+	Schema                   int                             `json:"schema"`
+	Purpose                  string                          `json:"purpose"`
+	ClientSID                string                          `json:"clientSid"`
+	ClientRequest            []byte                          `json:"clientRequest"`
+	ClientRequestSHA256      string                          `json:"clientRequestSha256"`
+	StartupPublication       []byte                          `json:"startupPublication"`
+	StartupPublicationSHA256 string                          `json:"startupPublicationSha256"`
+	Parent                   startupDirectoryBinding         `json:"parent"`
+	Request                  startupFileBinding              `json:"request"`
+	Publication              startupFileBinding              `json:"publication"`
+	Baseline                 startupFileBinding              `json:"baseline"`
+	Broker                   startupFileBinding              `json:"broker"`
+	MaintenanceHelper        startupFileBinding              `json:"maintenanceHelper"`
+	BootstrapCache           *installedBootstrapCacheBinding `json:"bootstrapCache,omitempty"`
 }
 
 type installedCompletion interface {
@@ -67,7 +68,10 @@ func parseInstalledCompletion(raw []byte) (r installedCompletionRecord, err erro
 		return refuse()
 	}
 	canonical, e := json.Marshal(r)
-	if e != nil || !bytes.Equal(canonical, raw) || r.Schema != 1 || r.Purpose != installedCompletionPurpose || !validStartupDirectory(r.Parent) {
+	if e != nil || !bytes.Equal(canonical, raw) || (r.Schema != 1 && r.Schema != 2) || r.Purpose != installedCompletionPurpose || !validStartupDirectory(r.Parent) {
+		return refuse()
+	}
+	if (r.Schema == 1 && r.BootstrapCache != nil) || (r.Schema == 2 && !validInstalledBootstrapCache(r.BootstrapCache)) {
 		return refuse()
 	}
 	request, e := brokerregistration.ParseRetainedApprovedRequest(r.ClientRequest, r.ClientRequestSHA256)
