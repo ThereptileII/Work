@@ -188,6 +188,15 @@ The CLI requires all six explicit, nonduplicated inputs: `--trust-config`,
 `--bootstrap-cache`, `--artifact-directory`, `--policy-sha256`,
 `--provisioner-sha256` and `--trust-config-sha256`. No environment-derived pins,
 adjacent self-described manifest or checkbox authenticates first execution.
+The protected cache must already contain its original `metadata/root.json`.
+At independently approved first cache creation, seed that file exclusively from
+the pinned public trust input, flush it and retain the protected directory. This
+is an operator preparation step, not a fallback performed by verification. A
+missing or corrupt root in an existing cache is lost trust state and must refuse;
+never replace it with the original anchor to make enrollment or an upgrade pass.
+Previously accepted rotated roots remain authoritative even if their old remote
+rotation files are no longer available. Existing customer/code-upgrade operations
+have no cache initializer or reset switch.
 This is an operator-only component, **not** a currently qualified execution guide
 or an automatic installer/application-startup action. Do not run it on the boat
 until independent final executable/publisher/loader authentication and native
