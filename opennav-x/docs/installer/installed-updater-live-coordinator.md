@@ -200,6 +200,13 @@ bundled stock plugins and online AIS/weather, and observes navigation/settings
 through the existing installed driver. Its JSON reports scoped observations and
 the `preserveSettings` declaration entries; it supplies no approval or product
 acceptance. No app is launched, ACL changed or existing profile read/copied.
+Failure exits nonzero and emits one bounded stdout JSON receipt with a fixed
+stage enum, nullable unsigned `win32Error`/`ntstatus` numbers and all acceptance
+flags false. Stages distinguish host/input guards, known-folder/client/canonical
+directory observations, absence checks, native creation, handle conversion,
+writes, fixture observation/verification and cleanup; no exception text or paths
+are emitted. Successful creation likewise emits one JSON object, so the calling
+workflow can retain stdout in its existing evidence directory on either outcome.
 Portable `test-prepare-installed-updater-profile.py` checks do not qualify the
 native known-folder/handle-relative creation calls: those, Windows profile
 loading/migration and the actual installed journey still need disposable Windows

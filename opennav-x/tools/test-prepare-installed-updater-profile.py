@@ -4,6 +4,7 @@ from contextlib import redirect_stderr, redirect_stdout
 import configparser
 import importlib.util
 import io
+import json
 import os
 from pathlib import Path
 import tempfile
@@ -157,6 +158,31 @@ class Tests(unittest.TestCase):
             self.prepare()
         self.assertFalse(self.native.profile_root.exists())
 
+    def test_native_check_uses_stable_identity_not_directory_size(self):
+        native = object.__new__(helper.Native)  # No Windows API is loaded/called.
+        native.root = self.root
+        identity = (123, b'original-file-id')
+        native.directories = [(self.root, 42, identity)]
+        with patch.object(helper.phase.Native, 'folder', return_value=self.root), \
+             patch.object(native, 'no_existing_clients'), \
+             patch.object(native, '_check_file', side_effect=[(identity, 4096), (identity, 8192)]), \
+             patch.object(native, '_open', return_value=43), \
+             patch.object(native, 'close_handle', return_value=True, create=True) as close:
+            native.check()
+            close.assert_called_once_with(43)
+        with patch.object(helper.phase.Native, 'folder', return_value=self.root), \
+             patch.object(native, 'no_existing_clients'), \
+             patch.object(native, '_check_file', return_value=((123, b'replaced-file-id'), 4096)), \
+             patch.object(native, '_open') as reopen, self.assertRaises(ValueError):
+            native.check()
+        reopen.assert_not_called()
+
+    def test_native_directory_reader_refusal_is_not_projected_away(self):
+        native = object.__new__(helper.Native)
+        with patch.object(native, '_check_file', side_effect=ValueError('reparse/type/path refusal')), \
+             self.assertRaises(ValueError):
+            native._directory_identity(42, self.root)
+
     def test_partial_failure_preserves_created_state_and_never_retries(self):
         original = self.native.write
         def fail(name, raw):
@@ -211,8 +237,64 @@ class Tests(unittest.TestCase):
             with redirect_stdout(stdout), redirect_stderr(stderr), patch.object(helper, 'Native') as native:
                 self.assertEqual(helper.main(args), 1)
             native.assert_not_called()
-            self.assertEqual(stdout.getvalue(), '')
+            receipt = json.loads(stdout.getvalue())
+            self.assertEqual(receipt['state'], 'refused')
+            self.assertIn(receipt['stage'], helper.STAGES)
+            self.assertIsNone(receipt['win32Error'])
+            self.assertIsNone(receipt['ntstatus'])
+            self.assertLessEqual(len(stdout.getvalue()), 1025)
             self.assertEqual(stderr.getvalue(), helper.FAILURE + '\n')
+
+    def test_failure_receipt_contains_only_stage_unsigned_codes_and_false_flags(self):
+        error = OSError('PRIVATE PATH AND CREDENTIAL')
+        error.winerror = 5
+        for stage in helper.STAGES:
+            refusal = helper.Refused(stage, error, ntstatus=0xc0000022)
+            stdout, stderr = io.StringIO(), io.StringIO()
+            with patch.object(helper, 'prepare', side_effect=refusal), redirect_stdout(stdout), redirect_stderr(stderr):
+                self.assertEqual(helper.main(['--disposable-opt-in', helper.OPT_IN]), 1)
+            self.assertEqual(json.loads(stdout.getvalue()), dict(schema=1, state='refused', stage=stage,
+                win32Error=5, ntstatus=0xc0000022, nativeInstalledAcceptance=False,
+                customerUacAcceptance=False, nativeProductAcceptance=False))
+            self.assertNotIn('PRIVATE', stdout.getvalue() + stderr.getvalue())
+            self.assertEqual(len(stdout.getvalue().splitlines()), 1)
+        for value in (-1, 1 << 32, True, 'PRIVATE'):
+            error.winerror = value
+            record = helper.failure_receipt(helper.Refused('PRIVATE', error, ntstatus=value))
+            self.assertEqual(record['stage'], 'arguments')
+            self.assertIsNone(record['win32Error'])
+            self.assertIsNone(record['ntstatus'])
+
+    def test_native_create_refusal_retains_only_unsigned_ntstatus(self):
+        native = object.__new__(helper.Native)
+        native.nt, native.handles = object(), []
+        with patch.object(native, '_fn', return_value=lambda *args: -1073741790), \
+             self.assertRaises(helper.Refused) as refused:
+            native._create(42, 'opencpn', True)
+        self.assertEqual(helper.failure_receipt(refused.exception)['ntstatus'], 0xc0000022)
+        self.assertEqual(refused.exception.stage, 'native-create')
+
+    def test_cleanup_cannot_replace_original_failure_stage_or_emit_success(self):
+        error = OSError('PRIVATE OBSERVER FAILURE')
+        error.winerror = 5
+        def observe(native, files):
+            native.stage = 'fixture-observation'
+            raise error
+        def close():
+            self.native.stage = 'cleanup'
+        with patch.object(helper, 'host'), patch.object(helper, 'contents', return_value=self.files), \
+             patch.object(helper, 'Native', return_value=self.native), patch.object(helper, '_prepare', observe), \
+             patch.object(self.native, 'close', side_effect=close, create=True), \
+             self.assertRaises(helper.Refused) as refused:
+            helper.prepare(helper.OPT_IN)
+        self.assertEqual(refused.exception.stage, 'fixture-observation')
+        self.assertEqual(refused.exception.winerror, 5)
+        with patch.object(helper, 'host'), patch.object(helper, 'contents', return_value=self.files), \
+             patch.object(helper, 'Native', return_value=self.native), patch.object(helper, '_prepare', return_value={}), \
+             patch.object(self.native, 'close', side_effect=error, create=True), \
+             self.assertRaises(helper.Refused) as refused:
+            helper.prepare(helper.OPT_IN)
+        self.assertEqual(refused.exception.stage, 'cleanup')
 
 
 if __name__ == '__main__':

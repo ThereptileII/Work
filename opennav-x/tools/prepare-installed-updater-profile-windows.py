@@ -30,6 +30,28 @@ FAILURE = 'Disposable installed profile refused; preserve existing or partial st
 SETTINGS = [{'section': 'Settings', 'key': 'ShowStatusBar'},
             {'section': 'Settings/NMEADataSource', 'key': 'DataConnections'}]
 PLUGINS = ('chartdldr_pi.dll', 'dashboard_pi.dll', 'grib_pi.dll', 'wmm_pi.dll')
+STAGES = frozenset(('arguments', 'host-guard', 'fixture-input', 'known-folder',
+    'client-observation', 'canonical-directory', 'profile-absence', 'native-create',
+    'file-handle-conversion', 'fixture-write', 'fixture-observation',
+    'fixture-verification', 'cleanup'))
+
+
+class Refused(ValueError):
+    def __init__(self, stage, error=None, *, ntstatus=None):
+        super().__init__(FAILURE)
+        self.stage = stage if type(stage) is str and stage in STAGES else 'arguments'
+        value = getattr(error, 'winerror', None)
+        self.winerror = value if type(value) is int and 0 <= value <= 0xffffffff else None
+        value = ntstatus if ntstatus is not None else getattr(error, 'ntstatus', None)
+        self.ntstatus = value if type(value) is int and 0 <= value <= 0xffffffff else None
+
+
+def failure_receipt(error):
+    refused = error if isinstance(error, Refused) else Refused('arguments')
+    return dict(schema=1, state='refused', stage=refused.stage,
+                win32Error=refused.winerror, ntstatus=refused.ntstatus,
+                nativeInstalledAcceptance=False, customerUacAcceptance=False,
+                nativeProductAcceptance=False)
 
 
 def require(value):
@@ -79,6 +101,7 @@ class Native:
     profile = phase.Native.profile
 
     def __init__(self):
+        self.stage = 'known-folder'
         self.handles, self.streams, self.directories = [], [], []
         self.kernel = C.WinDLL('kernel32.dll', use_last_error=True, winmode=0x800)
         self.nt = C.WinDLL('ntdll.dll', use_last_error=True, winmode=0x800)
@@ -94,25 +117,38 @@ class Native:
                 self._pin(path)
             self.profile_root = self.root / 'opencpn'
             self.check()
-        except BaseException:
-            self.close()
-            raise
+        except BaseException as error:
+            failure = Refused(self.stage, error)
+            try:
+                self.close()
+            except BaseException as cleanup:
+                raise Refused('cleanup', cleanup) from None
+            raise failure from None
 
     def _pin(self, path, handle=None):
+        self.stage = 'canonical-directory'
         if handle is None:
             handle = self._open(str(path), 0x80, 3, 3, 0x02200000)
         self.handles.append(handle)
-        identity = self._check_file(handle, str(path), directory=True)
+        identity = self._directory_identity(handle, path)
         self.directories.append((path, handle, identity))
 
+    def _directory_identity(self, handle, path):
+        # The maintained reader still verifies type, reparse/delete state and
+        # canonical path. Its second return value is content size, not identity.
+        return self._check_file(handle, str(path), directory=True)[0]
+
     def check(self):
+        self.stage = 'known-folder'
         require(phase.Native.folder(self, phase.PROGRAM_DATA) == self.root)
+        self.stage = 'client-observation'
         self.no_existing_clients()
+        self.stage = 'canonical-directory'
         for path, handle, identity in self.directories:
-            require(self._check_file(handle, str(path), directory=True) == identity)
+            require(self._directory_identity(handle, path) == identity)
             current = self._open(str(path), 0x80, 3, 3, 0x02200000)
             try:
-                require(self._check_file(current, str(path), directory=True) == identity)
+                require(self._directory_identity(current, path) == identity)
             finally:
                 require(self.close_handle(current))
 
@@ -138,21 +174,25 @@ class Native:
         # FILE_CREATE refuses every existing leaf, including a reparse point;
         # the relative name has no intermediate components to redirect.
         options = 0x20 | (1 if directory else 0x40)
+        self.stage = 'native-create'
         result = call(C.byref(handle), access, C.byref(attributes), C.byref(status), None,
                       0x10 if directory else 0x80, 3 if directory else 1, 2, options, None, 0)
         if handle.value:
             self.handles.append(handle.value)
-        require(result == 0 and handle.value and status.information == 2)
+        if result != 0 or not handle.value or status.information != 2:
+            raise Refused(self.stage, ntstatus=result & 0xffffffff if result != 0 else None)
         return handle.value
 
     def create_profile(self):
         self.check()
+        self.stage = 'profile-absence'
         phase.updater._plain(self.profile_root, allow_missing=True)
         require(not os.path.lexists(self.profile_root))
         handle = self._create(self.directories[-1][1], 'opencpn', True)
         # _create already owns this original handle, including on later refusal.
+        self.stage = 'canonical-directory'
         self.directories.append((self.profile_root, handle,
-                                 self._check_file(handle, str(self.profile_root), directory=True)))
+                                 self._directory_identity(handle, self.profile_root)))
         self.check()
         require(not any(self.profile_root.iterdir()))
 
@@ -160,6 +200,7 @@ class Native:
         import msvcrt
         self.check()
         handle = self._create(self.directories[-1][1], name, False)
+        self.stage = 'file-handle-conversion'
         descriptor = msvcrt.open_osfhandle(handle, os.O_RDWR | os.O_BINARY)
         self.handles.remove(handle)  # descriptor owns it from this point.
         try:
@@ -168,12 +209,14 @@ class Native:
             os.close(descriptor)
             raise
         self.streams.append(stream)
+        self.stage = 'fixture-write'
         stream.write(raw)
         stream.flush()
         os.fsync(stream.fileno())
         self.check()
 
     def close(self):
+        self.stage = 'cleanup'
         failed = False
         for stream in reversed(self.streams):
             try:
@@ -190,6 +233,7 @@ class Native:
 def _prepare(native, files):
     """Private seam for inert filesystem tests; production takes no path override."""
     root = native.profile_root
+    native.stage = 'profile-absence'
     phase.updater._plain(root.parent)
     phase.updater._plain(root, allow_missing=True)
     require(not os.path.lexists(root))  # Even an existing empty profile refuses.
@@ -198,11 +242,14 @@ def _prepare(native, files):
         native.check()
         native.write(name, raw)
     native.check()
+    native.stage = 'fixture-verification'
     require({p.name for p in root.iterdir()} == set(files))
     for name, raw in files.items():
         path = phase.updater._plain(root / name)
         require(path.is_file() and path.stat().st_nlink == 1 and path.read_bytes() == raw)
+    native.stage = 'fixture-observation'
     observed = native.profile()  # Existing read-only navigation and .ini observer.
+    native.stage = 'fixture-verification'
     require(observed['navigationMigrationFixtureSha256'] == phase.CONTROLLED_XML_SHA256)
     config = configparser.RawConfigParser(strict=True, interpolation=None)
     config.read_string((root / 'opencpn.ini').read_text(encoding='ascii'))
@@ -218,13 +265,24 @@ def _prepare(native, files):
 
 
 def prepare(opt_in):
-    host(os.environ, sys.platform, opt_in)  # Before any reads or native effects.
-    files = contents()
-    native = Native()
+    native, stage = None, 'host-guard'
     try:
+        host(os.environ, sys.platform, opt_in)  # Before any reads or native effects.
+        stage = 'fixture-input'
+        files = contents()
+        stage = 'known-folder'
+        native = Native()
         return _prepare(native, files)
+    except BaseException as error:
+        if isinstance(error, Refused):
+            raise
+        raise Refused(native.stage if native is not None else stage, error) from None
     finally:
-        native.close()
+        if native is not None:
+            try:
+                native.close()
+            except BaseException as error:
+                raise Refused('cleanup', error) from None
 
 
 def main(arguments=None):
@@ -237,7 +295,12 @@ def main(arguments=None):
         args = parser.parse_args(arguments)
         print(json.dumps(prepare(args.disposable_opt_in), sort_keys=True))
         return 0
-    except (Exception, KeyboardInterrupt, SystemExit):
+    except (Exception, KeyboardInterrupt, SystemExit) as error:
+        # Fixed enum and bounded unsigned numbers only; never exception text,
+        # account/profile paths, environment, native buffers or submitted inputs.
+        receipt = json.dumps(failure_receipt(error), sort_keys=True)
+        require(len(receipt) <= 1024)
+        print(receipt)
         print(FAILURE, file=sys.stderr)
         return 1
 
