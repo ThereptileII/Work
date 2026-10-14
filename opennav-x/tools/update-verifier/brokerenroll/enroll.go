@@ -70,15 +70,17 @@ type acquiredBroker interface {
 }
 
 type operations struct {
-	holdDirectories   func(string, string) (io.Closer, error)
-	verify            func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
-	acquire           func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
-	create            func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
-	initialize        func(context.Context, enrollmentFiles) error
-	initializeStartup func(context.Context, enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline) error
-	validateClient    func(string) error
-	openBaseline      func(context.Context, string) (ApprovedClientBaseline, error)
-	validateBaseline  func(context.Context, []byte, string, ApprovedClientBaseline) error
+	holdDirectories         func(string, string) (io.Closer, error)
+	verify                  func(verifier.BrokerBootstrapRequest) (releasepolicy.BrokerBootstrapPolicy, []byte, error)
+	acquire                 func(context.Context, releasepolicy.Artifact, string, string) (acquiredBroker, error)
+	create                  func(context.Context, io.Reader, releasepolicy.Artifact) (enrollmentFiles, error)
+	initialize              func(context.Context, enrollmentFiles) error
+	initializeStartup       func(context.Context, enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline) error
+	validateClient          func(string) error
+	openBaseline            func(context.Context, string) (ApprovedClientBaseline, error)
+	validateBaseline        func(context.Context, []byte, string, ApprovedClientBaseline) error
+	openMaintenanceImage    func(context.Context, releasepolicy.Artifact) (maintenanceImageSource, error)
+	publishMaintenanceImage func(context.Context, enrollmentFiles, maintenanceImageSource, releasepolicy.Artifact) error
 }
 
 // Run verifies the distinct signed bootstrap and exact broker artifact, creates
@@ -100,11 +102,13 @@ func nativeOperations() operations {
 		acquire: func(ctx context.Context, a releasepolicy.Artifact, origin, directory string) (acquiredBroker, error) {
 			return verifier.DownloadArtifact(ctx, a, origin, directory)
 		},
-		create:           createFreshFiles,
-		initialize:       initializeService,
-		validateClient:   validateClientSIDNative,
-		openBaseline:     openClientBaselineInputNative,
-		validateBaseline: validateApprovedClientBaseline,
+		create:                  createFreshFiles,
+		initialize:              initializeService,
+		validateClient:          validateClientSIDNative,
+		openBaseline:            openClientBaselineInputNative,
+		validateBaseline:        validateApprovedClientBaseline,
+		openMaintenanceImage:    openMaintenanceImageNative,
+		publishMaintenanceImage: publishMaintenanceImageNative,
 	}
 }
 
@@ -205,6 +209,29 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 		policy.Broker.Bytes < 1 || policy.Broker.Bytes > maxBrokerBytes {
 		return errors.New("approved broker bootstrap identity or size refused")
 	}
+	// Only explicit startup enrollment installs customer maintenance code. Its
+	// source is the actual authenticated running provisioner, not a downloaded
+	// parallel executable or a pathname/self-hash offered by a client.
+	var maintenanceImage maintenanceImageSource
+	if op.initializeStartup != nil {
+		if client == nil || op.openMaintenanceImage == nil || op.publishMaintenanceImage == nil {
+			return errors.New("original startup maintenance image operations required")
+		}
+		maintenanceImage, err = op.openMaintenanceImage(ctx, policy.Provisioner)
+		if maintenanceImage != nil {
+			defer func() {
+				if maintenanceImage.Close() != nil {
+					resultErr = errors.Join(resultErr, ErrCleanup)
+				}
+			}()
+		}
+		if err != nil || maintenanceImage == nil {
+			return errors.Join(errors.New("authenticated original maintenance image custody required"), enrollmentCleanupResult(err))
+		}
+		if err := maintenanceImage.Check(ctx); err != nil {
+			return errors.Join(errors.New("authenticated original maintenance image custody required"), enrollmentCleanupResult(err))
+		}
+	}
 	broker, err := op.acquire(ctx, policy.Broker, trust.ArtifactOrigin, req.ArtifactDirectory)
 	if err != nil || broker == nil {
 		if broker != nil && broker.Close() != nil {
@@ -246,6 +273,17 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 			resultErr = ErrCleanup
 		}
 		return errors.Join(errors.New("retained fresh machine files changed or interrupted"), resultErr)
+	}
+	if maintenanceImage != nil {
+		if err := maintenanceImage.Check(ctx); err != nil {
+			return errors.New("original maintenance source changed")
+		}
+		if err := op.publishMaintenanceImage(ctx, files, maintenanceImage, policy.Provisioner); err != nil {
+			return errors.Join(errors.New("fresh protected maintenance image publication refused"), enrollmentCleanupResult(err))
+		}
+		if err := errors.Join(maintenanceImage.Check(ctx), files.Check(), ctx.Err()); err != nil {
+			return errors.Join(errors.New("retained maintenance image publication uncertain"), enrollmentCleanupResult(err))
+		}
 	}
 	if client != nil {
 		publisher, ok := files.(clientRequestFiles)
@@ -305,6 +343,11 @@ func run(ctx context.Context, req Request, op operations) (resultErr error) {
 	if baseline != nil {
 		if err := baseline.Validate(); err != nil {
 			return errors.Join(errors.New("approved baseline completion custody uncertain"), enrollmentCleanupResult(err))
+		}
+	}
+	if maintenanceImage != nil {
+		if err := maintenanceImage.Check(ctx); err != nil {
+			return errors.Join(errors.New("original maintenance source completion custody uncertain"), enrollmentCleanupResult(err))
 		}
 	}
 	return nil

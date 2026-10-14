@@ -139,20 +139,25 @@ type enrollmentAncestorLocation struct {
 }
 
 type nativeEnrollmentFiles struct {
-	mu                   sync.Mutex
-	pins                 []*enrollmentPin
-	programDataGuards    []*enrollmentProgramDataGuard
-	imagePath            string
-	fence                *os.File
-	fencePin             *enrollmentPin
-	closed               bool
-	closeErr             error
-	data                 *enrollmentPin
-	clientAttempted      bool
-	clientSID, clientSHA string
-	clientParent         *enrollmentPin
-	baselineAttempted    bool
-	clientBaselineReady  bool
+	mu                    sync.Mutex
+	pins                  []*enrollmentPin
+	programDataGuards     []*enrollmentProgramDataGuard
+	imagePath             string
+	fence                 *os.File
+	fencePin              *enrollmentPin
+	closed                bool
+	closeErr              error
+	data                  *enrollmentPin
+	clientAttempted       bool
+	clientSID, clientSHA  string
+	clientParent          *enrollmentPin
+	baselineAttempted     bool
+	clientBaselineReady   bool
+	maintenanceCodeParent *enrollmentPin
+	maintenanceHelper     *enrollmentPin
+	maintenanceHelperSHA  string
+	maintenanceSource     maintenanceImageSource
+	maintenanceAttempted  bool
 }
 
 // createFreshFiles requires an independently authenticated provisioner before
@@ -258,6 +263,7 @@ func createFreshFiles(ctx context.Context, source io.Reader, artifact releasepol
 	if err != nil {
 		return nil, err
 	}
+	files.maintenanceCodeParent = code
 	if err := files.createImage(ctx, code, fileSD, source, artifact); err != nil {
 		return nil, err
 	}
@@ -309,6 +315,11 @@ func (f *nativeEnrollmentFiles) check() error {
 	}
 	for _, pin := range f.pins {
 		if err := pin.check(); err != nil {
+			return err
+		}
+	}
+	if f.maintenanceSource != nil {
+		if err := f.maintenanceSource.Check(context.Background()); err != nil {
 			return err
 		}
 	}
