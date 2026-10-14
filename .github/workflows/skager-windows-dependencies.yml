@@ -7,6 +7,10 @@ on:
         description: Build and test a new immutable dependency SDK, or verify the selected SDK
         options: [produce, verify]
         default: produce
+      expected_image:
+        type: string
+        description: Optional exact Windows ImageVersion selected for this dependency-only run
+        default: ''
   push:
     branches: [skager-dependency-bundles, skager-dependency-reuse]
 permissions:
@@ -24,6 +28,28 @@ jobs:
     timeout-minutes: 180
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Check the explicitly selected Windows image before setup
+        shell: python
+        env:
+          SKAGER_EXPECTED_WINDOWS_IMAGE: ${{ inputs.expected_image }}
+        run: |
+          import json, os, re
+          from pathlib import Path
+          expected = os.environ.get('SKAGER_EXPECTED_WINDOWS_IMAGE', '')
+          actual = os.environ.get('ImageVersion', '')
+          native = (os.environ.get('ImageOS') == 'win22' and
+                    os.environ.get('RUNNER_OS') == 'Windows' and
+                    os.environ.get('RUNNER_ARCH') == 'X64')
+          version = r'[0-9]+(?:\.[0-9]+)+'
+          matched = bool(native and re.fullmatch(version, actual) and
+                         (not expected or (re.fullmatch(version, expected) and expected == actual)))
+          report = Path('opennav-x/evidence/local/dependency-image-selection.json')
+          report.parent.mkdir(parents=True, exist_ok=True)
+          report.write_text(json.dumps({'schema': 1, 'expectedImage': expected,
+                            'actualImage': actual, 'nativeWindowsX64': native,
+                            'accepted': matched}, sort_keys=True) + '\n', encoding='utf-8')
+          if not matched:
+              raise SystemExit('Selected Windows dependency image unavailable; no dependency build started')
       - name: Preserve native Perl for OpenSSL and install curl's POSIX test host
         shell: pwsh
         run: |
