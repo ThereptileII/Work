@@ -30,6 +30,7 @@ PREFIX = 'project/tools/update-verifier/'
 # them too; hashing only the members that remain cannot establish completeness.
 REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'approved_baseline.go', 'artifact.go', 'broker_bootstrap.go', 'broker_download.go',
+    'broker_code_upgrade.go',
     'download.go', 'download_portable.go', 'download_windows.go', 'identity.go',
     'prepare.go', 'recovery.go', 'release.go', 'stage_recovery.go', 'state.go',
     'state_unix.go', 'state_windows.go', 'verifier.go', 'baselineevidence/evidence.go',
@@ -111,6 +112,8 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'brokerstore/execution_profile_backup.go', 'brokerstore/execution_profile_backup_windows.go',
     'brokerstore/generation_stage_seal.go', 'brokerstore/generation_stage_seal_windows.go',
     'brokerenroll/enroll.go', 'brokerenroll/files.go', 'brokerenroll/files_other.go',
+    'brokerenroll/code_upgrade.go', 'brokerenroll/code_upgrade_record.go',
+    'brokerenroll/code_upgrade_other.go', 'brokerenroll/code_upgrade_windows.go',
     'brokerenroll/files_windows.go', 'brokerenroll/applications_windows.go',
     'brokerenroll/programdata_guard_windows.go',
     'brokerenroll/service.go', 'brokerenroll/service_other.go',
@@ -147,9 +150,10 @@ REGISTRATION_SOURCES = frozenset(PREFIX + name for name in (
     'launcher/decommission_client.go', 'launcher/decommission_client_windows.go',
     'launcher/decommission_client_other.go',
     'launcher/broker_query_access.go', 'launcher/broker_query_access_windows.go',
-    'releasepolicy/broker_bootstrap.go', 'releasepolicy/evaluate.go',
+    'releasepolicy/broker_bootstrap.go', 'releasepolicy/broker_code_upgrade.go',
+    'releasepolicy/evaluate.go',
     'releasepolicy/policy.go', 'releasepolicy/semver.go',
-    'repository/broker_bootstrap.go', 'repository/inputs.go',
+    'repository/broker_bootstrap.go', 'repository/broker_code_upgrade.go', 'repository/inputs.go',
     'repository/lock_linux.go', 'repository/lock_other.go', 'repository/repository.go'))
 REQUIRED_SOURCES = REGISTRATION_SOURCES | {
     PREFIX + 'cmd/skager-update-broker/main.go', PREFIX + 'go.mod', PREFIX + 'go.sum',

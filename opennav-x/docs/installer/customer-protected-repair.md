@@ -10,8 +10,10 @@ legacy Lifecycle.
 This increment requires fresh matching broker/helper enrollment. Older brokers
 reject the additive `repair-inspect` / `repair-current` operations before mutation;
 older helpers reject the action. Application B1 does **not** replace the fixed B0
-broker/helper. No broker replacement, migration or re-enrollment is implemented.
-The existing-installation upgrade remains a separate design/native blocker.
+broker/helper. A separate [explicit code-upgrade operator foundation](broker-code-upgrade.md)
+now exists, but is not wired into ordinary Setup/Maintain and does not qualify
+the installed customer journey. No re-enrollment or trust reset is permitted.
+The existing-installation upgrade remains a separate native/customer blocker.
 
 The customer closes SKAGER, chooses Repair, accepts actual same-account UAC and
 confirms the displayed selected version/build. Warm Repair retains the exact

@@ -1,5 +1,24 @@
 # SKAGER status — 2026-10-14
 
+## Existing broker code upgrade: bounded operator increment, not customer acceptance
+
+SCRUM-311 now separates existing-code replacement from initial enrollment with
+a distinct signed TUF target, exact predecessor broker/helper hashes and an
+independently approved successor tuple. The publisher retains those exact
+approved bytes across ordinary application releases; conflicting or corrupted
+authority refuses before publication reservation. Original enrollment, user
+profile, trust/floors and installed startup publication cannot be reset to make
+an upgrade succeed.
+
+The native operator increment supports one immutable successor and authenticated
+resume through the four file-rename boundaries while the original service is
+disabled and stopped. It remains **unqualified and disconnected from normal
+Setup/Maintain**. Early partial staging and interruptions during store validation
+or after service activation still refuse; complete customer recovery is not
+claimed. Focused native kernel/reader tests are required separately from the
+actual SCM, same-account UAC, installed upgrade and boat journeys.
+[Contract and explicit limits](installer/broker-code-upgrade.md).
+
 ## Customer Repair integrated; focused native gate passes
 
 The reviewed Repair batch is integrated through `8e0331b9`: exact retained-source
