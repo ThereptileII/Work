@@ -95,24 +95,38 @@ export function renderDashboard(data, page = "dashboard", downloads = null) {
 
 if (typeof document !== "undefined") {
   let csrfToken;
+  let sessionEnded = false;
   const content = document.getElementById("portal-content");
   const message = document.getElementById("portal-message");
   const tell = text => { message.textContent = text; };
+  const sessionError = () => Object.assign(new Error("Your session has ended. Please sign in."), { status: 401 });
+  function endSession() {
+    if (sessionEnded) return;
+    sessionEnded = true;
+    csrfToken = undefined;
+    content.innerHTML = "";
+    content.setAttribute("aria-busy", "false");
+    document.getElementById("logout").hidden = true;
+    tell("Your session has ended. Please sign in.");
+    location.assign("/auth/login/");
+  }
   const page = location.pathname.split("/").filter(Boolean)[1] || "dashboard";
   const titles = { dashboard: "Welcome aboard.", account: "Your account.", boats: "My boats.", orders: "Orders & billing.", downloads: "Your next passage." };
   document.querySelector("h1").textContent = titles[page] || titles.dashboard;
   document.querySelector(`[data-page="${Object.hasOwn(titles, page) ? page : "dashboard"}"]`)?.setAttribute("aria-current", "page");
   async function api(path, body) {
+    if (sessionEnded) throw sessionError();
     const response = await fetch(path, { credentials: "same-origin", cache: "no-store", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify(body) }) });
-    if (response.status === 401) { location.assign("/auth/login/"); throw new Error("Your session has ended. Please sign in."); }
+    if (response.status === 401) { endSession(); throw sessionError(); }
     const data = await response.json().catch(() => ({}));
+    if (sessionEnded) throw sessionError();
     if (!response.ok) throw Object.assign(new Error(data.error || "This service is temporarily unavailable. Please try again."), { status: response.status });
     return data;
   }
   async function load() {
     try {
       const session = await api("/api/auth/session");
-      if (!session.account) { location.assign("/auth/login/"); return; }
+      if (!session.account) { endSession(); return false; }
       if (typeof session.csrfToken !== "string" || !session.csrfToken) throw new Error("A secure session could not be started. Please reload this page.");
       csrfToken = session.csrfToken;
       const data = await api("/api/portal/dashboard");
@@ -155,7 +169,7 @@ if (typeof document !== "undefined") {
         event.preventDefault();
         const button = event.currentTarget.querySelector("button");
         button.disabled = true;
-        try { await api("/api/portal/boats", { name: document.getElementById("boat-name").value }); await load(); tell("Your boat has been added."); }
+        try { await api("/api/portal/boats", { name: document.getElementById("boat-name").value }); if (await load()) tell("Your boat has been added."); }
         catch (error) { tell(error.message); button.disabled = false; }
       });
       document.getElementById("checkout")?.addEventListener("click", async event => {
@@ -167,11 +181,12 @@ if (typeof document !== "undefined") {
           location.assign(target.href);
         } catch (error) { tell(error.message); event.target.disabled = false; }
       });
-    } catch (error) { content.setAttribute("aria-busy", "false"); tell(error.message); }
+      return true;
+    } catch (error) { content.setAttribute("aria-busy", "false"); tell(error.message); return false; }
   }
   document.getElementById("logout").addEventListener("click", async event => {
     event.target.disabled = true;
-    try { await api("/api/auth/logout", {}); location.assign("/auth/login/"); }
+    try { await api("/api/auth/logout", {}); endSession(); }
     catch (error) { tell(error.message); event.target.disabled = false; }
   });
   load();

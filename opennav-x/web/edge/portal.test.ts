@@ -202,3 +202,184 @@ test("auth shell preserves the intended form and CSRF submission with or without
     }
   }
 });
+
+// Execute the shipped browser module and its registered handlers, with explicit
+// HTTP responses and navigation observations. Provider authorization stays in
+// the separately tested server handlers; these checks exercise browser control.
+async function portalBrowser(path: string, respond: (path: string, init: RequestInit) => Promise<Response>) {
+  const source = (await readFile(new URL('./static/portal.js', import.meta.url), 'utf8')).replace(/^export /gm, '');
+  function element() {
+    const handlers = new Map<string, (event: any) => Promise<void>>();
+    return {
+      hidden: false, disabled: false, innerHTML: '', textContent: '', value: '', dataset: {} as Record<string, string>,
+      attributes: {} as Record<string, string>,
+      setAttribute(name: string, value: string) { this.attributes[name] = value; },
+      addEventListener(name: string, handler: (event: any) => Promise<void>) { handlers.set(name, handler); },
+      async dispatch(name: string) {
+        const handler = handlers.get(name); assert.ok(handler, `Missing ${name} handler`);
+        await handler({ target: this, currentTarget: this, preventDefault() {} });
+      },
+    };
+  }
+  const content = element(), message = element(), logout = element(), heading = element();
+  logout.hidden = true;
+  const boatForm = { ...element(), querySelector: () => boatButton };
+  const boatButton = element(), boatName = { ...element(), value: 'S/Y Aurora' };
+  const checkout = element(), discount = { ...element(), value: ' FREE100 ' };
+  const download = { ...element(), dataset: { releaseId: 'staging-test', artifactId: 'installer' } };
+  Object.assign(content, { querySelectorAll: () => content.innerHTML.includes('portal-download') ? [download] : [] });
+  const calls: { path: string; init: RequestInit }[] = [];
+  const navigations: string[] = [], anchors: any[] = [];
+  const document = {
+    getElementById: (id: string) => {
+      if (id === 'portal-content') return content;
+      if (id === 'portal-message') return message;
+      if (id === 'logout') return logout;
+      const controls: Record<string, any> = { 'boat-form': boatForm, 'boat-name': boatName, checkout, 'discount-code': discount };
+      return content.innerHTML.includes(`id="${id}"`) ? controls[id] : null;
+    },
+    querySelector: (selector: string) => selector === 'h1' ? heading : element(),
+    body: { appendChild: () => {} },
+    createElement: () => {
+      const anchor = { clicked: false, removed: false, click() { this.clicked = true; }, remove() { this.removed = true; } };
+      anchors.push(anchor); return anchor;
+    },
+  };
+  const url = new URL(path, 'https://beta.skager.app');
+  await new Script(source).runInNewContext({ document, URL,
+    location: { pathname: url.pathname, search: url.search, assign: (value: string) => navigations.push(value) },
+    fetch: async (path: string, init: RequestInit) => { calls.push({ path, init }); return respond(path, init); },
+  });
+  return { content, message, logout, boatForm, checkout, download, calls, navigations, anchors };
+}
+const browserAccount = { betaAccess: 'active', account: { email: 'friend@example.test' }, boats: [], orders: [], checkoutAvailable: false };
+const browserSession = { account: { id: MINE }, csrfToken: 'c'.repeat(64) };
+const browserJSON = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
+function browserDownload() {
+  const artifact = { id: 'installer', name: 'SKAGER-Setup.exe', bytes: 1200, sha256: 'b'.repeat(64) };
+  const release = { id: 'staging-test', version: '0.4.0-beta2.5', sourceCommit: 'a'.repeat(40), channel: 'staging', artifacts: [artifact] };
+  const issued = Math.floor(Date.now() / 1000) * 1000;
+  const date = new Date(issued).toISOString().replace(/[-:]/g, '').replace(/\.\d+Z$/, 'Z');
+  const url = new URL(`https://7869adcf376c630b175c94729321e016.r2.cloudflarestorage.com/skager-private-releases/staging/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`);
+  for (const [key, value] of Object.entries({ 'response-content-disposition': `attachment; filename="${artifact.name}"`,
+    'X-Amz-Expires': '60', 'X-Amz-Date': date, 'X-Amz-Algorithm': 'AWS4-HMAC-SHA256',
+    'X-Amz-Credential': 'f'.repeat(32) + `/${date.slice(0, 8)}/auto/s3/aws4_request`,
+    'X-Amz-SignedHeaders': 'host', 'X-Amz-Signature': 'e'.repeat(64) })) url.searchParams.set(key, value);
+  return { artifact, release, signed: { releaseId: release.id, artifactId: artifact.id, name: artifact.name,
+    bytes: artifact.bytes, sha256: artifact.sha256, expiresAt: new Date(issued + 60000).toISOString(), url: url.href } };
+}
+
+test('expiry during downloads load leaves no authenticated controls and retains sign-in guidance', async () => {
+  const browser = await portalBrowser('/portal/downloads/', async path => browserJSON(
+    path === '/api/auth/session' ? browserSession : path === '/api/portal/dashboard' ? browserAccount : { error: 'Sign in required' },
+    path === '/api/portal/downloads' ? 401 : 200));
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.equal(browser.content.innerHTML, '');
+  assert.equal(browser.logout.hidden, true);
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+  assert.equal(browser.content.attributes['aria-busy'], 'false');
+});
+
+test('logout clears loaded private data only after successful server revocation', async () => {
+  for (const status of [200, 503]) {
+    const browser = await portalBrowser('/portal/account/', async path => browserJSON(
+      path === '/api/auth/session' ? browserSession : path === '/api/portal/dashboard' ? browserAccount
+        : status === 200 ? { ok: true } : { error: 'Please try again.' }, path === '/api/auth/logout' ? status : 200));
+    assert.match(browser.content.innerHTML, /friend@example.test/);
+    await browser.logout.dispatch('click');
+    const call = browser.calls.at(-1)!;
+    assert.equal(call.path, '/api/auth/logout');
+    assert.equal(call.init.method, 'POST');
+    assert.equal(call.init.credentials, 'same-origin');
+    assert.equal((call.init.headers as Record<string, string>)['X-CSRF-Token'], 'c'.repeat(64));
+    if (status === 200) {
+      assert.equal(browser.content.innerHTML, '');
+      assert.equal(browser.logout.hidden, true);
+      assert.deepEqual(browser.navigations, ['/auth/login/']);
+    } else {
+      assert.match(browser.content.innerHTML, /friend@example.test/);
+      assert.equal(browser.logout.disabled, false);
+      assert.deepEqual(browser.navigations, []);
+    }
+  }
+});
+
+test('expired session during boat refresh cannot be reported as successful account refresh', async () => {
+  let sessions = 0;
+  const browser = await portalBrowser('/portal/boats/', async path => {
+    if (path === '/api/auth/session') return browserJSON(++sessions === 1 ? browserSession : { account: null, csrfToken: 'd'.repeat(64) });
+    return browserJSON(path === '/api/portal/dashboard' ? browserAccount : { boat: { name: 'S/Y Aurora' } }, path === '/api/portal/boats' ? 201 : 200);
+  });
+  await browser.boatForm.dispatch('submit');
+  assert.equal(browser.content.innerHTML, '');
+  assert.match(browser.message.textContent, /session has ended.*sign in/i);
+  assert.doesNotMatch(browser.message.textContent, /has been added/);
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+});
+
+test('checkout return reads actual server order state and never trusts success query parameters', async () => {
+  const account = { ...browserAccount, betaAccess: 'inactive', orders: [{ id: ORDER, status: 'pending', createdAt: created, amountMinor: 2000, currency: 'USD', fullyDiscounted: false }] };
+  const browser = await portalBrowser('/portal/orders/?success=true&betaAccess=active&paid=true', async path => browserJSON(
+    path === '/api/auth/session' ? browserSession : account));
+  assert.deepEqual(browser.calls.map(call => call.path), ['/api/auth/session', '/api/portal/dashboard']);
+  assert.match(browser.content.innerHTML, /Pending/);
+  assert.doesNotMatch(browser.content.innerHTML, /Active in staging|portal-download/);
+  assert.deepEqual(browser.navigations, []);
+});
+
+test('anonymous checkout return goes to fixed login without querying private orders', async () => {
+  const browser = await portalBrowser('/portal/orders/?next=https://untrusted.example.test', async path => {
+    assert.equal(path, '/api/auth/session'); return browserJSON({ account: null, csrfToken: 'c'.repeat(64) });
+  });
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.equal(browser.content.innerHTML, '');
+  assert.equal(browser.calls.length, 1);
+});
+
+test('download selection rechecks server authorization and cannot navigate after logout', async () => {
+  const { artifact, release, signed } = browserDownload();
+  let finishDownload!: (value: Response) => void;
+  const pending = new Promise<Response>(resolve => { finishDownload = resolve; });
+  const browser = await portalBrowser('/portal/downloads/', async (path, init) => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return browserJSON(browserAccount);
+    if (path === '/api/auth/logout') return browserJSON({ ok: true });
+    assert.equal(path, '/api/portal/downloads');
+    return init.method === 'POST' ? pending : browserJSON({ available: true, releases: [release] });
+  });
+  assert.equal(browser.anchors.length, 0, 'catalog must not pre-mint or navigate to bearer links');
+  const downloading = browser.download.dispatch('click');
+  const call = browser.calls.at(-1)!;
+  assert.equal(call.init.method, 'POST');
+  assert.deepEqual(JSON.parse(call.init.body as string), { releaseId: release.id, artifactId: artifact.id });
+  assert.equal((call.init.headers as Record<string, string>)['X-CSRF-Token'], 'c'.repeat(64));
+  await browser.logout.dispatch('click');
+  finishDownload(browserJSON(signed));
+  await downloading;
+  assert.equal(browser.anchors.length, 0);
+  assert.equal(browser.content.innerHTML, '');
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  assert.match(browser.message.textContent, /session has ended/i);
+});
+
+test('authorized download obtains a fresh selection-bound link only on click and suppresses referrers', async () => {
+  const { release, artifact, signed } = browserDownload();
+  const browser = await portalBrowser('/portal/downloads/', async (path, init) => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/portal/dashboard') return browserJSON(browserAccount);
+    assert.equal(path, '/api/portal/downloads');
+    return browserJSON(init.method === 'POST' ? signed : { available: true, releases: [release] });
+  });
+  assert.equal(browser.anchors.length, 0);
+  assert.doesNotMatch(browser.content.innerHTML, /X-Amz-Signature/);
+  await browser.download.dispatch('click');
+  assert.equal(browser.anchors.length, 1);
+  assert.equal(browser.anchors[0].href, signed.url);
+  assert.equal(browser.anchors[0].rel, 'noreferrer');
+  assert.equal(browser.anchors[0].referrerPolicy, 'no-referrer');
+  assert.equal(browser.anchors[0].download, artifact.name);
+  assert.equal(browser.anchors[0].clicked, true);
+  assert.equal(browser.anchors[0].removed, true);
+  assert.equal(browser.download.disabled, false);
+  assert.deepEqual(browser.navigations, []);
+});
