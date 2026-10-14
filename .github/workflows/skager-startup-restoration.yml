@@ -133,7 +133,8 @@ jobs:
                   'TestNativeRepairColdCustodyRefusesPreexistingWriteOrDeleteHandle',
                   'TestNativeRepairColdCustodyDetectsNamespaceChangeAndNeverErasesIt',
                   'TestNativeRepairColdCustodyRefusesReleasedUnwatchedOrProcessUncheckedSource']
-          maintenance['.'] = ['TestBrokerCodeUpgradeSignedTargetIsolation']
+          maintenance['.'] = ['TestBrokerCodeUpgradeSignedTargetIsolation',
+                              'TestBrokerCodeUpgradeDiscoveryAuthenticatedSuccessor']
           maintenance['releasepolicy'] = ['TestBrokerCodeUpgradeDistinctPurposeAndExactPair']
           # Repository publication is a Linux operator tool; its native lock
           # deliberately refuses unsupported platforms. Windows exercises consumers.
@@ -162,7 +163,19 @@ jobs:
               'TestCodeUpgradeFinalizeRevocationWithholdsReadyPublication',
               'TestCodeUpgradeFinalizeRejectsPendingStoppedOrExistingReadyBeforeQuery',
               'TestCodeUpgradeFinalizeCleanupFailureRetainsUncertainty',
-              'TestCodeUpgradeResumeSelectsNativePhaseWithoutReplacementAcquisition']
+              'TestCodeUpgradeResumeSelectsNativePhaseWithoutReplacementAcquisition',
+              'TestCodeUpgradeDemandReleasesConfigBeforeExistingFencedStartHandoff',
+              'TestCodeUpgradeDemandUncertainEffectNeverRetriesOrHandsOffInSameInvocation',
+              'TestCodeUpgradeDemandExistingAttemptAndPhaseChangesForbidConfigMutation',
+              'TestCodeUpgradeDemandCancellationAndReacquisitionFailureCannotReachStart',
+              'TestCodeUpgradeDemandAttemptRejectsForeignTransactionTornAndNoncanonicalBytes',
+              'TestCodeUpgradeEarlyIntentNeverInventsSuccessorIdentity',
+              'TestCodeUpgradeCompleteStageReceiptRequiresExactIntentArtifactAndNativeIdentity',
+              'TestCodeUpgradeEarlyAbortClosureCannotSkipOrderedStaging',
+              'TestCodeUpgradeEarlyAbortIsDistinctTerminalNonSuccessWithNoServiceMutation',
+              'TestCodeUpgradeEarlyAbortReachesCallerWithoutSuccessOrAutomaticContinuation',
+              'TestCodeUpgradeEarlyAbortPostEffectCustodyLossRemainsUncertain',
+              'TestCodeUpgradeEarlyAbortDeferredCleanupFailureRevokesTerminalClassification']
           maintenance['cmd/skager-update-provisioner'] += [
               'TestCodeUpgradeOperatorExplicitUpgradeAndResume',
               'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs']
@@ -177,7 +190,12 @@ jobs:
                   'TestNativeCodeUpgradeFinalizeReadyPublicationRetainsProcessAndOriginals',
                   'TestNativeCodeUpgradeFinalizeRefusesEveryExistingReadyNamespace',
                   'TestNativeCodeUpgradeFinalizeRechecksProcessBeforeAndAfterCreate',
-                  'TestNativeCodeUpgradeFinalizeRequiresExactPendingPairClosure']
+                  'TestNativeCodeUpgradeFinalizeRequiresExactPendingPairClosure',
+                  'TestNativeCodeUpgradeDemandAttemptExclusiveAndExactPairBound',
+                  'TestNativeCodeUpgradeDemandAttemptCannotAdoptAliasNamespace',
+                  'TestNativeCodeUpgradeEarlyAbortReaderRequiresExactCompleteClosure',
+                  'TestNativeCodeUpgradeEarlyAbortRefusesUnprovablePartialAndForeignStages',
+                  'TestNativeCodeUpgradeEarlyAbortRejectsPartialOrForeignTerminalRecord']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
