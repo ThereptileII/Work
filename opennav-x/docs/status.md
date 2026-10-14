@@ -1,6 +1,30 @@
 # SKAGER status — 2026-10-14
 
-## Private provider credential check; no live-flow acceptance
+## Frontend published; invited sign-in reached email-code verification
+
+The owner completed the whole-file upload of frontend source
+`8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`. Cloudflare deployment
+**`ac34d9d4` is Active / Latest**. The retained 504,268-byte upload has SHA-256
+`a42d54ba857209cc76cee87a66905ad34502e5d80fc79d1091e3c27931427f0e`.
+This used supported whole-file drag/drop, not a partial editor paste. Independent
+provider-source byte equality was not obtained and is not claimed.
+
+The real beta homepage renders; its Login entry opens the new sign-in page.
+An authorized owner sign-in request completed with the neutral eligible-request
+message, and the email-code verification form is ready. Code entry and the
+authenticated session remain pending the owner; no OTP was read. Direct browser
+navigation to the JSON provenance and health URLs was client-blocked, so no new
+health/provenance response is inferred from those attempts.
+
+The existing server remains `af986f7416bebb638c0e59dfbf98e58732a21157`;
+the new candidate's server bytes are identical and were not redeployed. The owner
+has now saved distinct Stripe TEST key/webhook bindings, and Resend previously
+confirmed successful invitation delivery. The administrative R2 probe still
+refuses authentication before R2 I/O. Checkout, portal/download qualification,
+refund/entitlement checks and actual signed-in use remain open. Public access
+remains closed. [Deployment evidence](evidence/scrum43-frontend-20261014/README.md).
+
+## Earlier checkpoint: private provider credential check
 
 The current frontend candidate `8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`
 passes [web CI 38553897564](https://github.com/ThereptileII/Work/actions/runs/38553897564)
