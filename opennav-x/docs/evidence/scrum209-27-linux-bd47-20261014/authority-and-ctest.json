@@ -1,0 +1,97 @@
+{
+  "schema": 1,
+  "repository": "ThereptileII/Work",
+  "commit": "bd47aa729aa728c6834072047eec7e00a65c6f13",
+  "run": {
+    "id": 38563357629,
+    "run_attempt": 1,
+    "head_sha": "bd47aa729aa728c6834072047eec7e00a65c6f13",
+    "path": ".github/workflows/opennav-baseline.yml",
+    "status": "completed",
+    "conclusion": "failure",
+    "event": "workflow_dispatch",
+    "head_branch": "codex/software-qualification-20261013b"
+  },
+  "job": {
+    "id": 115849938492,
+    "run_id": 38563357629,
+    "run_attempt": 1,
+    "name": "Linux integrated regression gate",
+    "head_sha": "bd47aa729aa728c6834072047eec7e00a65c6f13",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-14T12:23:22Z",
+    "completed_at": "2026-10-14T12:54:40Z"
+  },
+  "artifact": {
+    "id": 11895553164,
+    "name": "linux-integration-bd47aa729aa728c6834072047eec7e00a65c6f13",
+    "size_in_bytes": 14621662,
+    "digest": "sha256:60582bf60db74054506bf2408640c356c8cd938fc4d8b8fc349bebf0ec53728a",
+    "expired": false,
+    "created_at": "2026-10-14T12:54:38Z",
+    "workflow_run": {
+      "id": 38563357629,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "codex/software-qualification-20261013b",
+      "head_sha": "bd47aa729aa728c6834072047eec7e00a65c6f13"
+    }
+  },
+  "downloadedBytes": 14621662,
+  "downloadedSha256": "60582bf60db74054506bf2408640c356c8cd938fc4d8b8fc349bebf0ec53728a",
+  "zipCrcVerifiedMembers": 3984,
+  "ctest": [
+    {
+      "member": "production-linux-tests.xml",
+      "sha256": "83d5d579cab5496b78195380a7266d573ec7288f8bb3db6210017c924f68b83b",
+      "rootAttributes": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "11",
+        "timestamp": "2026-10-14T12:54:02"
+      },
+      "caseCount": 154,
+      "failureCount": 0,
+      "errorCount": 0,
+      "skippedCount": 0,
+      "failedOrSkippedCases": []
+    },
+    {
+      "member": "xnav-linux-tests.xml",
+      "sha256": "ba48b6b5f1b33fa417206ba5e45a9a938ed89f49eb244ac158ad16ffb4215bc5",
+      "rootAttributes": {
+        "name": "(empty)",
+        "tests": "154",
+        "failures": "0",
+        "disabled": "0",
+        "skipped": "0",
+        "hostname": "",
+        "time": "12",
+        "timestamp": "2026-10-14T12:35:14"
+      },
+      "caseCount": 154,
+      "failureCount": 0,
+      "errorCount": 0,
+      "skippedCount": 0,
+      "failedOrSkippedCases": []
+    }
+  ],
+  "scope": "Original Linux component/integration evidence only; overall run failed; Windows application/installer acceptance absent.",
+  "sameSuiteInBothExecutions": true,
+  "uniqueCTestNames": 154,
+  "loaderIdentity": {
+    "member": "installer-loader-selftest.json",
+    "sha256": "40c1139bde38bc59c060926668155ba0d4a7309bfc66341357bf2dc134790c13",
+    "reportedExecutableSha256": "2dbd9abbdc2a68269e1513d5ad000b1d6aa00899e0b8e02aafe2c44607afae5c",
+    "commit": "bd47aa729aa728c6834072047eec7e00a65c6f13",
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "testFixtures": false,
+    "profileInitialized": false,
+    "status": "passed"
+  }
+}

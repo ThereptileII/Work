@@ -1,0 +1,13 @@
+{
+  "originalJobLogSha256": "4735e0158a0bf224e65470199e5dd89ad641c9dcef789c86a4f312b1220ef03f",
+  "sanitizedOriginalLines": [
+    "2026-10-14T12:35:27.0889826Z 100% tests passed, 0 tests failed out of 154",
+    "2026-10-14T12:44:50.1749940Z Endurance SKIPPED by user direction; no endurance pass or release qualification.",
+    "2026-10-14T12:54:14.2923633Z 100% tests passed, 0 tests failed out of 154",
+    "2026-10-14T12:54:38.3542970Z SHA256 digest of uploaded artifact zip is 60582bf60db74054506bf2408640c356c8cd938fc4d8b8fc349bebf0ec53728a",
+    "2026-10-14T12:54:38.6307919Z Artifact linux-integration-bd47aa729aa728c6834072047eec7e00a65c6f13.zip successfully finalized. Artifact ID 11895553164",
+    "2026-10-14T12:54:38.6308824Z Artifact linux-integration-bd47aa729aa728c6834072047eec7e00a65c6f13 has been successfully uploaded! Final size is 14621662 bytes. Artifact ID is 11895553164"
+  ],
+  "endurance": "skipped by explicit user direction",
+  "designReview": "not requested"
+}
