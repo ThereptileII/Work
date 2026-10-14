@@ -17,6 +17,18 @@ type startupServiceFixture struct {
 	activations  int
 	activateErr  error
 	activateHook func()
+	runningPID   uint32
+}
+
+func (b *startupServiceFixture) status() (serviceState, error) {
+	if len(b.states) == 0 && b.activations == 1 && b.runningPID != 0 {
+		return serviceState{state: 4, processID: b.runningPID}, nil
+	}
+	s, err := b.serviceFixture.status()
+	if err == nil && s.state == 4 {
+		b.runningPID = s.processID
+	}
+	return s, err
 }
 
 func (b *startupServiceFixture) activateNormal() error {
@@ -34,6 +46,39 @@ func (b *startupServiceFixture) activateNormal() error {
 type startupPublicationFixture struct {
 	checks, closes     int
 	checkErr, closeErr error
+	completion         *installedCompletionFixture
+	prepareErr         error
+	prepareHook        func(enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline)
+}
+
+type installedCompletionFixture struct {
+	completes, closes     int
+	completeErr, closeErr error
+	completeHook          func()
+}
+
+func (c *installedCompletionFixture) Complete(ctx context.Context, guard func(context.Context) error) error {
+	c.completes++
+	if err := guard(ctx); err != nil {
+		return err
+	}
+	if c.completeHook != nil {
+		c.completeHook()
+	}
+	if err := guard(ctx); err != nil {
+		return err
+	}
+	return errors.Join(ctx.Err(), c.completeErr)
+}
+func (c *installedCompletionFixture) Close() error { c.closes++; return c.closeErr }
+func (p *startupPublicationFixture) prepareInstalledCompletion(ctx context.Context, f enrollmentFiles, r *brokerregistration.Request, b ApprovedClientBaseline) (installedCompletion, error) {
+	if p.prepareHook != nil {
+		p.prepareHook(f, r, b)
+	}
+	if p.completion == nil {
+		p.completion = &installedCompletionFixture{}
+	}
+	return p.completion, errors.Join(ctx.Err(), p.prepareErr)
 }
 
 func (p *startupPublicationFixture) Check(ctx context.Context) error {
@@ -165,6 +210,7 @@ func TestStartupPublicationAndActivationFaultsRemainUncertain(t *testing.T) {
 
 func TestStartupRunRetainsOriginalApprovalAndBaseline(t *testing.T) {
 	f, files, baseline := approvedBaselineEnrollment(t)
+	maintenanceImageOperations(t, f)
 	called := 0
 	original := bytes.Clone(f.req.ClientRegistrationRequest)
 	f.op.initialize = func(context.Context, enrollmentFiles) error {
@@ -192,5 +238,64 @@ func TestStartupExplicitAPIRefusesNonWindows(t *testing.T) {
 	}
 	if err := RunAndActivateStartup(context.Background(), Request{}); err == nil {
 		t.Fatal("native startup accepted off Windows")
+	}
+}
+
+func TestStartupInstalledCompletionRetainsOriginalOwnersAndOrdersCommit(t *testing.T) {
+	f, b, request, baseline := startupFlowFixture(t)
+	p := &startupPublicationFixture{}
+	p.prepareHook = func(got enrollmentFiles, r *brokerregistration.Request, source ApprovedClientBaseline) {
+		if got != f || r != request || source != baseline || b.activations != 0 || p.closes != 0 {
+			t.Fatal("reservation lost original pre-activation owners")
+		}
+		b.events = append(b.events, "reserve-maintenance")
+	}
+	p.completion = &installedCompletionFixture{completeHook: func() {
+		if b.activations != 1 || p.checks < 2 || p.closes != 0 || baseline.closed {
+			t.Fatal("completion escaped final live startup checks")
+		}
+		b.events = append(b.events, "complete-maintenance")
+	}}
+	if err := completeStartup(context.Background(), f, b, request, baseline, func(context.Context, enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline) (startupPublication, error) {
+		return p, nil
+	}, inertServicePoll); err != nil {
+		t.Fatal(err)
+	}
+	if !reflect.DeepEqual(b.events, []string{"reserve-maintenance", "activate-normal", "complete-maintenance"}) || p.completion.completes != 1 || p.completion.closes != 1 || p.closes != 1 {
+		t.Fatalf("invalid completion lifecycle %v %+v", b.events, p.completion)
+	}
+}
+
+func TestStartupInstalledCompletionFailureRetainsUncertainty(t *testing.T) {
+	for _, failure := range []string{"reservation", "activation", "final-publication", "cancel-after-activation", "service-exit-during-completion", "completion", "completion-close"} {
+		t.Run(failure, func(t *testing.T) {
+			f, b, request, baseline := startupFlowFixture(t)
+			ctx, cancel := context.WithCancel(context.Background())
+			defer cancel()
+			p := &startupPublicationFixture{completion: &installedCompletionFixture{}}
+			switch failure {
+			case "reservation":
+				p.prepareErr = errServiceFixture
+			case "activation":
+				b.activateErr = errServiceFixture
+			case "final-publication":
+				b.activateHook = func() { p.checkErr = errServiceFixture }
+			case "cancel-after-activation":
+				b.activateHook = cancel
+			case "completion":
+				p.completion.completeErr = errServiceFixture
+			case "service-exit-during-completion":
+				p.completion.completeHook = func() { b.runningPID = 0; b.states = []serviceState{{state: serviceStopped}} }
+			case "completion-close":
+				p.completion.closeErr = ErrCleanup
+			}
+			err := completeStartup(ctx, f, b, request, baseline, func(context.Context, enrollmentFiles, *brokerregistration.Request, ApprovedClientBaseline) (startupPublication, error) {
+				return p, nil
+			}, inertServicePoll)
+			wantComplete := failure == "completion" || failure == "completion-close" || failure == "service-exit-during-completion"
+			if err == nil || !errors.Is(err, ErrStartupUncertain) || (p.completion.completes == 1) != wantComplete || p.completion.closes != 1 || p.closes != 1 || (failure == "reservation" && b.activations != 0) {
+				t.Fatalf("failure leaked completion/effects err=%v completion=%+v events=%v", err, p.completion, b.events)
+			}
+		})
 	}
 }

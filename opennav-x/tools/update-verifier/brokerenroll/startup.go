@@ -110,6 +110,22 @@ func completeStartup(ctx context.Context, files enrollmentFiles, b serviceBacken
 	if err := publication.Check(ctx); err != nil {
 		return errors.Join(ErrStartupUncertain, err)
 	}
+	producer, ok := publication.(installedCompletionPublisher)
+	if !ok {
+		return errors.Join(ErrStartupUncertain, errors.New("original installed maintenance completion publisher required"))
+	}
+	completion, err := producer.prepareInstalledCompletion(ctx, files, client, baseline)
+	if completion != nil {
+		defer func() {
+			result = errors.Join(result, completion.Close())
+			if result != nil {
+				result = errors.Join(ErrStartupUncertain, result)
+			}
+		}()
+	}
+	if err != nil || completion == nil {
+		return errors.Join(ErrStartupUncertain, errors.New("original installed maintenance reservation refused"), err)
+	}
 	state, err = b.status()
 	if err != nil || !serviceCompleted(state) {
 		return errors.Join(ErrStartupUncertain, errors.New("original service changed before explicit activation"), err)
@@ -138,7 +154,23 @@ func completeStartup(ctx context.Context, files enrollmentFiles, b serviceBacken
 			if err := publication.Check(waitCtx); err != nil {
 				return err
 			}
-			return check()
+			if err := check(); err != nil {
+				return err
+			}
+			pid := state.processID
+			return completion.Complete(waitCtx, func(ctx context.Context) error {
+				if err := ctx.Err(); err != nil {
+					return err
+				}
+				if err := check(); err != nil {
+					return err
+				}
+				current, err := b.status()
+				if err != nil || current.state != 4 || current.processID != pid || current.win32Exit != 0 || current.serviceExit != 0 {
+					return errors.Join(errors.New("original running service changed before maintenance completion"), err)
+				}
+				return nil
+			})
 		}
 		if state.state != serviceStartPending || state.controls != 0 || state.win32Exit != 0 || state.serviceExit != 0 {
 			return errors.New("explicitly activated broker did not enter Running")
