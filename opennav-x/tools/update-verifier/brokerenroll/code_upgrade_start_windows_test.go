@@ -4,6 +4,8 @@ package brokerenroll
 
 import (
 	"context"
+	"os"
+	"path/filepath"
 	"testing"
 )
 
@@ -31,7 +33,28 @@ func TestNativeCodeUpgradeStartFenceExclusiveDurableAndPairBound(t *testing.T) {
 					}
 					body = codeStartAttemptBytes(digest(c.originalRaw), digest(raw), digest(receipt), digest(codeSuccessorMarker(digest(receipt))))
 				}
-				if _, e := startupWriteFile(ctx, c.files, c.requestParent, c.clientSID+codeStartAttemptSuffix, body, sd, false); e != nil {
+				if kind == "empty" {
+					// Simulate interruption before any bytes were written. The normal
+					// publication helper deliberately rejects empty input.
+					path := filepath.Join(c.requestParent.dos, c.clientSID+codeStartAttemptSuffix)
+					file, e := os.OpenFile(path, os.O_WRONLY|os.O_CREATE|os.O_EXCL, 0600)
+					if e != nil {
+						t.Fatal(e)
+					}
+					if e = file.Close(); e != nil {
+						t.Fatal(e)
+					}
+					before, e := os.Lstat(path)
+					if e != nil || !before.Mode().IsRegular() || before.Size() != 0 {
+						t.Fatal("empty attempt fixture not created", e)
+					}
+					defer func() {
+						after, e := os.Lstat(path)
+						if e != nil || !os.SameFile(before, after) || after.Size() != 0 {
+							t.Fatal("refusal changed the empty attempt", e)
+						}
+					}()
+				} else if _, e := startupWriteFile(ctx, c.files, c.requestParent, c.clientSID+codeStartAttemptSuffix, body, sd, false); e != nil {
 					t.Fatal(e)
 				}
 			}
