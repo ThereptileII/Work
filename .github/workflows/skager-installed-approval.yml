@@ -1,0 +1,40 @@
+name: SKAGER installed B0 operator approval
+on:
+  workflow_dispatch:
+    inputs:
+      request_b64:
+        description: Base64 of the reviewed original pending-job request.json
+        type: string
+        required: true
+      approval_b64:
+        description: Base64 of the independently authored approval.json
+        type: string
+        required: true
+      pins_b64:
+        description: Base64 of the separately reviewed approval-pins.json
+        type: string
+        required: true
+permissions:
+  contents: read
+jobs:
+  approval:
+    name: Approve installed B0 originals
+    runs-on: ubuntu-24.04
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Validate and retain operator-authored original records
+        id: originals
+        env:
+          SKAGER_REQUEST_B64: ${{ inputs.request_b64 }}
+          SKAGER_APPROVAL_B64: ${{ inputs.approval_b64 }}
+          SKAGER_PINS_B64: ${{ inputs.pins_b64 }}
+        run: python3 opennav-x/tools/produce-installed-updater-approval.py
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: ${{ steps.originals.outputs.artifact_name }}
+          path: ${{ steps.originals.outputs.directory }}/*.json
+          if-no-files-found: error
+          retention-days: 7
