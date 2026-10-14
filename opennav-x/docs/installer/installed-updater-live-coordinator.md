@@ -108,3 +108,79 @@ The operator independently computes `status_context(original_request)` and
 functions format observations/data, never approve or post them. No producer or
 artifact-name discovery, approval authoring, publication, connectivity mutation,
 profile preparation or automatic execution retry is introduced.
+
+## Callable hosted Windows entrypoint
+
+`tools/run-installed-updater-journey-windows.py` invokes the existing live
+coordinator once. It accepts only three explicit options:
+
+```powershell
+$env:SKAGER_APPROVAL_READ_TOKEN = '<separately supplied read-only token>'
+python opennav-x/tools/run-installed-updater-journey-windows.py `
+  --config=C:\Qualification\journey.json `
+  --config-sha256=<independently approved original configuration SHA-256> `
+  --disposable-opt-in=SCRUM-311-disposable-initial-protected-b0
+```
+
+The token never enters command-line options or diagnostic output. The CLI refuses
+non-Windows, non-GitHub-hosted, wrong-repository, non-manual-dispatch or missing
+explicit disposable opt-in before reading files or invoking native effects. This
+is an operational guard against accidental boat/non-disposable execution, not
+cryptographic host attestation. Actual same-account/token/desktop capability and
+an independently prepared disconnected stock/profile fixture remain required.
+
+The independently hash-pinned configuration is bounded to 64 KiB, strict JSON,
+with exactly these fields; none supplies authorization merely by existing:
+
+| Field | Required original input |
+| --- | --- |
+| `schema`, `purpose` | `1`, `installed-updater-journey-cli` |
+| `request` | `{path, sha256}` of the original pending approval request envelope |
+| `runner` | Exact existing request runner tuple: repository/headSha/runId/runAttempt/jobId/jobName, independently supplied and compared with actual environment and GitHub run/job |
+| `challenge` | Independently retained original pending challenge |
+| `pendingWorkflow` | Exact reviewed pending workflow path |
+| `admission`, `phases` | Original independently approved `{path, sha256}` records for the existing two declaration parsers |
+| `artifacts` | Exactly `candidate`, `operatorKit`, `successor`; each contains `{artifact, workflow, jobName}`. `artifact` is the existing exact producer artifact tuple including original ID/digest/size/head/run/attempt/job. Candidate and kit must equal the pending request; successor commit must equal prepared B1 |
+| `source` | All four explicit `TrustedStatusLocator` fields: status_creator_id/producer_commit/producer_actor_id/producer_triggering_actor_id |
+| `consumer` | `{path, sha256}` of the independently authenticated native qualification executable |
+| `qualificationParent` | Existing independently prepared protected parent; no creation/ACL repair |
+| `consumptionReceipt` | Separate absent receipt file outside protected parent and joined evidence tree |
+| `output` | Fresh joined evidence `result.json` path |
+| `phasePlan` | Independently approved `{path, sha256}` for the exact phase timestamp plan |
+
+`producer()` corroborates GitHub metadata/provenance using the existing exact
+run/job/artifact validators and bounded read-only API. It does not download or
+authenticate archive payload bytes. Independently verified original candidate,
+operator-kit and successor archive digests, inventories, manifest/qualification
+records and linkage to the exact extracted local bytes are required preparation
+prerequisites **before authorizing the CLI configuration/request**. Workflow
+success alone does not establish application qualification. Qualified B0/B1,
+original local bytes and independent producer provenance must already be approved;
+existing declaration hashes and the external postproduction approval bind those
+exact prepared inputs. The CLI constructs no package,
+request, approval or profile, and builds no helper. Existing declaration parsers
+and coordinator checks retain their original authority and refusal boundaries.
+A generic failure preserves existing state/evidence; no retry or cleanup occurs.
+
+The strict phase-plan JSON has exactly `no-update`, `later`, `now`, `offline` and
+`manual-rollback`. The first three contain independently approved lowercase
+64-hex timestamp hashes, with `no-update` equal to the original request pin;
+`offline` and `manual-rollback` are JSON null. The plan does not publish anything.
+
+At each phase, the CLI prints one bounded JSON readiness request containing the
+phase, actual expected selected head, fixed status context and exact target URL.
+The same independently authorized status creator must post exactly one success
+status on the original pending commit **after that phase wait begins**, using the
+printed context and target URL. These bind the original runner/challenge, phase,
+actual head and approved phase-plan digest. The signal releases waiting only; it
+cannot change the approved timestamp, authorize publication or claim an offline
+condition. Root/operator performs the separately authorized origin/publication
+or connectivity action externally, then signals readiness. The existing journey
+independently observes the actual signed endpoint/offline condition afterward.
+
+Each phase wait is at most fifteen minutes, with bounded status-only reads and
+complete pagination; foreign creators, stale/edited/malformed/conflicting
+signals, incomplete pagination, API failures and timeouts refuse. A signal URL is
+never followed. There are no publication retries, status writes, signing keys,
+network changes or automatic later-phase continuation. Actual interactive UAC,
+customer Repair/automatic fallback and boat acceptance remain outside this CLI.
