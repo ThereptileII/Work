@@ -32,7 +32,7 @@ jobs:
         run: |
           set -o pipefail
           mkdir -p ../../build/startup-restoration
-          go test -count=1 -json ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|Repair)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
+          go test -count=1 -json . ./releasepolicy ./repository ./cmd/skager-repository ./brokerhost ./brokerenroll ./brokerpipe ./brokerstore ./cmd/skager-update-provisioner ./launcher -run 'Test.*(Startup|Binding|Decommission|Restoration|Retirement|ProtectedUninstall|Maintenance|SelectedHistory|PreviousQualified|CustomerRollback|ManualRollback|InstalledElevation|Repair|CodeUpgrade)|TestClientRegistrationWritesLegacyProtectedRecordBytes' | tee ../../build/startup-restoration/tests.json
       - name: Require actual execution of the selected binding controls
         shell: python
         run: |
@@ -133,6 +133,35 @@ jobs:
                   'TestNativeRepairColdCustodyRefusesPreexistingWriteOrDeleteHandle',
                   'TestNativeRepairColdCustodyDetectsNamespaceChangeAndNeverErasesIt',
                   'TestNativeRepairColdCustodyRefusesReleasedUnwatchedOrProcessUncheckedSource']
+          maintenance['.'] = ['TestBrokerCodeUpgradeSignedTargetIsolation']
+          maintenance['releasepolicy'] = ['TestBrokerCodeUpgradeDistinctPurposeAndExactPair']
+          maintenance['repository'] = [
+              'TestBrokerCodeUpgradePublicationAndRetention',
+              'TestBrokerCodeUpgradeCombinedEnrollmentAndArtifactReuse',
+              'TestBrokerCodeUpgradeRefusalDoesNotReserve',
+              'TestBrokerCodeUpgradeOldPairUsesPrepublicationHistory',
+              'TestBrokerCodeUpgradeVersionChainAndConflict',
+              'TestBrokerCodeUpgradeRetainedCorruptionRefusesBeforeReservation',
+              'TestBrokerCodeUpgradeInterruptedPublicationRetainsAuthority']
+          maintenance['cmd/skager-repository'] = [
+              'TestCodeUpgradeCLIFlagsRefuseBeforePrivateKeyRead',
+              'TestCodeUpgradeCLIActualSignedPublicationAndOrdinaryRetention']
+          maintenance['brokerenroll'] = [
+              'TestCodeUpgradeCustodyPurposeSequenceAndSingleEffects',
+              'TestCodeUpgradeFailureNeverContinuesOrRetries',
+              'TestCodeUpgradeExactVerifiedBytesBeforeMachineOpen',
+              'TestCodeUpgradeRecordPreservesExactPairAndRefusesSubstitution',
+              'TestCodeUpgradeDrainProofRequiresExactCleanOriginalProcess']
+          maintenance['cmd/skager-update-provisioner'] += [
+              'TestCodeUpgradeOperatorExplicitUpgradeAndResume',
+              'TestCodeUpgradeOperatorAmbiguityRefusesBeforeInputs']
+          if os.environ['RUNNER_OS'] == 'Windows':
+              maintenance['brokerenroll'] += [
+                  'TestNativeCodeUpgradeResumeEveryRenameBoundary',
+                  'TestNativeCodeUpgradeRestoresSameOwnedOriginalPair',
+                  'TestNativeCodeUpgradeRefusesForeignRecoveryDestination',
+                  'TestNativeCodeUpgradeStageUsesExactProtectedCopy',
+                  'TestNativeCodeUpgradeSuccessorReaderRequiresCompleteTransaction']
           required |= {name for names in maintenance.values() for name in names}
           if os.environ['RUNNER_OS'] == 'Windows':
               required |= {'TestNativeCompletedBindingAfterThreeMoves',
@@ -160,7 +189,8 @@ jobs:
           # Match exact package/test identities, and refuse skipped native
           # positive cases even when the surrounding package reports PASS.
           for package, names in maintenance.items():
-              rows = [event for event in events if event.get('Package') == module+package]
+              qualified_package = module.rstrip('/') if package == '.' else module+package
+              rows = [event for event in events if event.get('Package') == qualified_package]
               if not any(row.get('Action') == 'pass' and 'Test' not in row for row in rows):
                   raise SystemExit('Required maintenance package did not pass: '+package)
               for name in names:
