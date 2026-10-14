@@ -57,14 +57,26 @@
     }
   },
   "deployment": {
-    "serverCandidateDeployed": false,
-    "serverEditorReadbackPerformed": false,
-    "browserReconnectPending": true,
+    "serverCandidateDeployed": true,
+    "serverEditorReadbackPerformed": true,
+    "browserReconnectPending": false,
     "earlierOwnerLoginConfirmed": true,
     "ownerSessionExpired": true,
     "actualStripeKeyValidityProven": false,
     "actualTestCheckoutProven": false,
-    "publicAccessOpened": false
+    "publicAccessOpened": false,
+    "providerProject": "kelwgubkuvditalsbqpr",
+    "functionName": "skager-web",
+    "verifiedAtUtc": "2026-10-14T19:28:35Z",
+    "preDeployEditorBytes": 79004,
+    "postReloadEditorBytes": 79004,
+    "preDeployEditorSha256": "d2bcfbc710c9488d62c51ed62188f4af1d07934fcfc1a9b95c809ee913cbd358",
+    "postReloadEditorSha256": "d2bcfbc710c9488d62c51ed62188f4af1d07934fcfc1a9b95c809ee913cbd358",
+    "exactEditorEqualityBeforeAndAfter": true,
+    "providerRecencyObserved": "a minute ago",
+    "legacyJwtGatewayEnabled": false,
+    "sourceDeploymentIdentifierExposed": false,
+    "newOwnerCodeStepPending": true
   },
-  "scope": "Existing original evidence verification only; no new tests, CI dispatch, deployment, provider changes or live acceptance."
+  "scope": "Exact retained server bundle deployed through authorized provider UI with whole-editor byte equality before deploy and after reload. Frontend and secrets unchanged. No completed live checkout or payment acceptance yet."
 }

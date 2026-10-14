@@ -1,7 +1,7 @@
 # Stripe TEST key framing: source and package evidence
 
 Jira SCRUM-43. Exact source `2c1511c4e8dc269fce0846e616af9b99675faca7`.
-This candidate is **not deployed**.
+The exact retained server candidate was **deployed and read back on 2026-10-14**.
 
 The server now accepts opaque TEST secret/restricted keys using bounded ASCII
 Bearer framing instead of an invented provider suffix length/alphabet. It
@@ -28,9 +28,17 @@ The retained build manifest and actual server bytes agree. Frontend upload stays
 `a42d54ba857209cc76cee87a66905ad34502e5d80fc79d1091e3c27931427f0e`,
 unchanged from active Cloudflare `ac34d9d4`; no Cloudflare redeploy is needed.
 
-Chrome disconnected before this server candidate could be uploaded; reconnect
-remains pending. Earlier owner sign-in was confirmed, but that session expired.
-No new server editor readback, deployment identity or live key authentication is
+Chrome reconnected. The existing provider editor matched the prior 78,865-byte
+server exactly before replacement. Whole-document readback before deployment and
+after reloading the provider page matches all 79,004 candidate bytes and the
+server SHA-256 above. Supabase shows a fresh deployment; no distinct deployment
+revision identifier was exposed by the observed UI. The existing legacy-JWT
+gateway flag remains OFF; application sessions, CSRF and webhook signatures
+remain enforced. No secrets or frontend bytes changed.
+
+The owner previously confirmed sign-in. The new portal visit redirected to
+login because that session expired; a new authorized sign-in code was requested
+and the same browser is waiting for owner entry. No live key authentication is
 claimed. Actual TEST checkout, the approved 100% coupon, verified webhook/active
 entitlement/refund, cross-account checks and customer download remain unproven.
 Public signup, public payments and downloads remain closed. No credential, OTP,
