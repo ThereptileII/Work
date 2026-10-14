@@ -44,3 +44,35 @@ The five Windows skips remain explicit: the opt-in disposable-host SUBST remap
 case plus four non-Windows public boundary cases. They are not coverage.
 No Repair, installed lifecycle, earlier-version compatibility or boat acceptance
 is granted by this failed attempt or by the Linux result.
+
+## Corrected native confirmation
+
+Exact `de87b132f6f8dbbb7711b586854e412a8e23ea9d` passes
+[run 38587874517](https://github.com/ThereptileII/Work/actions/runs/38587874517),
+attempt 1. The same existing workflow ran once after the reviewed fixture fix.
+The original failed attempt above remains unchanged.
+
+| Platform | Original job | Artifact | ZIP bytes | SHA-256 | Pass / fail / skip |
+| --- | --- | --- | ---: | --- | --- |
+| Windows 2022 / Go 386 | 115934612130 | 11906461084 | 61896 | `77f49b1d81f04c48f1ebced2f20e97e5b5a3809852d3675c8183c3cdc485cc9a` | 317 / 0 / 5 |
+| Linux Ubuntu 24.04 / amd64 | 115934612792 | 11905238873 | 58595 | `35a2a3b695a56fd6978b90202adc18a6dc623ed6ef0c118b870016a9d13a4129` | 214 / 0 / 0 |
+
+Original API artifact source/run identity, byte sizes, hashes and every ZIP CRC
+verify. Downloaded receipts bind this exact source/run/attempt to the original
+test streams: Windows `e4e99c2d45de1abe4b9275174661e8c03470c80f728244486aef04ec0caa35be`,
+Linux `4da8e96ab0501a49fc93dbd9be11df80f8c5153ab9ba21d70d09ec16b6493f3d`.
+All 64 Windows / 41 Linux mandatory maintenance tests ran and passed exactly
+once, with no skipped or failed subcases. Original receipts are retained as
+`windows-contracts.json` and `linux-contracts.json`. The broader existing binding
+gate and exact broker source-closure step also pass in both jobs.
+
+Windows: 15:16:30–15:18:35 UTC; Linux: 15:16:31–15:17:15 UTC.
+Both previously failing NTFS test functions, including signed-candidate copying
+and same-bytes replacement rejection, now pass. The five Windows skips remain
+the same explicit cases, not coverage.
+
+This confirms the bounded native Repair source/copy/identity, recovery-journal
+and profile-custody contracts. It is not an application build or actual customer
+UAC/installed historical-version journey. Older fixed broker/helper replacement
+needs its own authenticated upgrade route and qualification (SCRUM-311).
+Boat acceptance and public release remain ungranted.

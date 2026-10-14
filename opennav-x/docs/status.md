@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-14
 
-## Customer Repair integrated; native fixture correction awaiting confirmation
+## Customer Repair integrated; focused native gate passes
 
 The reviewed Repair batch is integrated through `8e0331b9`: exact retained-source
 restoration, cold restart profile custody, and explicit continuation of one
@@ -14,13 +14,18 @@ limitations. [Contract and remaining gates](installer/customer-protected-repair.
 All 12 new production Go modules are mandatory in the corresponding-source
 closure; customer rollback sources are also explicitly required. Both package
 verification suites pass locally (12 broker + 14 provisioner cases). Exact
-`db71720599cae54b34a9a7c805ac971502900385` then ran the short native gate:
-**214 Linux passes; Windows 315 passes, two failed top-level NTFS tests and five
-explicit skips**. [Preserved original failure](evidence/scrum27-repair-native-20261014/README.md).
-The reviewed test-only correction `1036a938` releases the previous baseline
-before independent stage sealing and reproduces the original source ACL when
-replacing an identical file. Native confirmation remains pending. No
-installed/customer/boat acceptance or new full application build is claimed.
+`de87b132f6f8dbbb7711b586854e412a8e23ea9d` passes short native
+[run 38587874517](https://github.com/ThereptileII/Work/actions/runs/38587874517):
+**317 Windows x86 and 214 Linux top-level passes, zero failures**. Windows has
+five explicit skips; all required 64 Windows / 41 Linux maintenance cases ran
+and passed without skipped/failed subcases. Original artifacts, hashes and CRCs
+verify. [Evidence and preserved first failure](evidence/scrum27-repair-native-20261014/README.md).
+The test-only fix released the previous baseline before independent sealing and
+used the original source ACL for an identical replacement file; both original
+NTFS failures are resolved. No installed/customer/boat acceptance or new full
+application build is claimed. Existing older fixed broker/helper replacement
+remains a separate authenticated-upgrade gap tracked in SCRUM-311; ordinary
+application updates cannot replace that pair or reset its original trust state.
 
 ## Earlier customer rollback native helper gate passes
 

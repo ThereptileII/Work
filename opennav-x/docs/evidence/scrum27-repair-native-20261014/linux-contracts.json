@@ -1,0 +1,67 @@
+{
+  "schema": 1,
+  "sourceCommit": "de87b132f6f8dbbb7711b586854e412a8e23ea9d",
+  "run": "38587874517",
+  "attempt": "1",
+  "requiredMaintenanceTests": {
+    "launcher": [
+      "TestMaintenanceClientCustodyOrderingAndFailures",
+      "TestMaintenanceClientJoinsIndependentCleanupErrors",
+      "TestMaintenanceClientPreflightHasNoGrantOrTransport",
+      "TestSelectedHistoryUsesOriginalNativeCustodyAndNeverRetries",
+      "TestSharedMaintenanceClientRefusesCrossOperationFieldsBeforeGrant"
+    ],
+    "brokerpipe": [
+      "TestMaintenanceProtocolStrictBindings",
+      "TestSelectedHistoryStrictPagesAndNoManualWireChange",
+      "TestPreviousQualifiedStrictOptionalProtocolAndOldWireIsolation",
+      "TestRepairWireRejectsCallerAuthorityAndFalseHealth",
+      "TestRepairedHistorySeparatesOriginalQualificationAndClosesSchema"
+    ],
+    "brokerhost": [
+      "TestSelectedHistoryPagesOriginalQualificationWithoutMutation",
+      "TestPreviousQualifiedWalksOriginalLineageNotLexicalGeneration",
+      "TestPreviousQualifiedAfterManualSelectionUsesPreviousActualRelease",
+      "TestPreviousQualifiedRefusesMissingAmbiguousOrUnqualifiedHistory",
+      "TestRepairSelectionStartupHistoryAndUninstallRemainDistinctFromHealth",
+      "TestRepairIncompleteOrMismatchedAuthorityCannotSelect",
+      "TestPreviousQualifiedRefusesHistoricalRepairWithoutInventingQualification",
+      "TestRepairColdCustodyRequiresFrozenProfileWithoutInventingProcessExit",
+      "TestRepairCustodyEveryPresentUncertainKeeperRefusesColdFallback",
+      "TestRepairWarmCustodyKeepsExactOriginalUntilFinishAndNeverOwnsProfile",
+      "TestRepairCustodyLateAppearanceReplacementProfileOrContextFailurePoisonsOwner",
+      "TestRepairCustodyCaptureAndPostProfileObservationRefusalsDoNotConsumeOwners",
+      "TestRepairCustodyWarmDrainFailureRetainsTombstoneAndCannotRetry",
+      "TestInterruptedRepairContinuesOnlyWithFreshExactLinkedJournal",
+      "TestRepairRecoveryRejectsForkMismatchAndOrdinaryPendingTransactions",
+      "TestRepairEmptyOriginIsPendingProvenanceAndNeverHealth",
+      "TestRepairContinuationEmptyBornJournalSupersedesOnlyItsExactPrior"
+    ],
+    "cmd/skager-update-provisioner": [
+      "TestCustomerRollbackConfirmsOneOriginalTargetThenReadsBack",
+      "TestCustomerRollbackElevationFixedActionsAndOriginalOwners",
+      "TestCustomerRollbackNSISRoutesProtectedActionWithoutLegacyFallback",
+      "TestCustomerRepairOneMutationAndStrictFreshReadback",
+      "TestCustomerRepairFixedSameAccountElevationAndNSISJoin"
+    ],
+    "brokerstore": [
+      "TestRepairRestoresExactSelectedBytesAfterDamageWithoutAdoptingOrOverwriting",
+      "TestRepairRejectsSourceTamperingBeforeReservationAndPreservesFailedAttempt",
+      "TestRepairProvenanceCannotChangeCodeOrNestHistoricalRepair",
+      "TestRepairBootstrapRequiresOriginalBaselineLauncherAndRetainedSourceCustody",
+      "TestCompletedRepairWithoutCommittedJournalBlocksFreshAttempt",
+      "TestInterruptedRepairDiscoveryOnlyAcceptsOneExactOwnedCopy",
+      "TestInterruptedRepairStillRequiresStrictPublicPayloadReopen",
+      "TestRepairRecoveryJournalBornLinkSurvivesZeroFactsAndFurtherContinuation",
+      "TestRepairRecoveryJournalRejectsUnownedClosedOrChangedPriorBeforeReservation"
+    ]
+  },
+  "requiredMaintenanceTopLevelCount": 41,
+  "goTestStreamSha256": "4da8e96ab0501a49fc93dbd9be11df80f8c5153ab9ba21d70d09ec16b6493f3d",
+  "passed": true,
+  "nativeWindows": false,
+  "applicationBuild": false,
+  "productAcceptance": false,
+  "boatAcceptance": false,
+  "scope": "Maintenance contracts and native ownership primitives; actual customer UAC/dialog, broker conversation and historical app journey remain separate."
+}
