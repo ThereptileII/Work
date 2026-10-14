@@ -103,6 +103,7 @@ class NativeCustomerProcess:
         self.native, self.child, self.command, self.capability = native, child, command, capability
         self.pid, self.created = child['pid'], child['created']
         self.sid, self.session, self.elevated = child['token']['sid'], child['token']['session'], child['token']['elevated']
+        self.launch_evidence = dict(child.get('launchEvidence', {}))
         self.closed, self.close_error = False, None
 
     def check(self):
@@ -330,19 +331,56 @@ class _Native:
         # privilege adjustment, policy write or elevation verb is used here.
         call = self._fn(self.adv, 'CreateProcessWithTokenW', W.BOOL, W.HANDLE, W.DWORD, W.LPCWSTR, W.LPWSTR,
                         W.DWORD, C.c_void_p, W.LPCWSTR, C.POINTER(Startup), C.POINTER(Process))
-        ok = call(self.linked, 0, command[0], line, 0, None, ntpath.dirname(command[0]), C.byref(startup), C.byref(process))
-        for handle in (process.process, process.thread):
-            if handle:
-                self.owned.append((handle, self.close_handle))
-        self._ok(ok)
-        _require(process.process and process.thread and process.pid > 0, 'Original returned customer process handles required')
-        thread_pid = self._fn(self.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(process.thread)
-        _require(thread_pid == process.pid, 'Original returned primary thread differs')
-        token = self._process_token(process.process)
-        result = dict(handle=process.process, pid=process.pid, created=self._created(process.process),
-                      token=self._token(token), tokenHandle=token, image=command[0])
-        self.check(result)
-        return result
+        # A real NSIS uninstaller wrapper can relocate and exit immediately.
+        # Keep its original primary thread suspended until its process/token
+        # identity is captured; no later reopen-by-PID can recover that token.
+        resume = self._fn(self.kernel, 'ResumeThread', W.DWORD, W.HANDLE)
+        evidence = dict(pid=0, threadId=0, created=None, resumeAttempted=False,
+                        resumeResult=None, state='not-created')
+        try:
+            try:
+                ok = call(self.linked, 0, command[0], line, 0x4, None, ntpath.dirname(command[0]), C.byref(startup), C.byref(process))
+            finally:
+                for handle in (process.process, process.thread):
+                    if handle:
+                        self.owned.append((handle, self.close_handle))
+                evidence.update(pid=process.pid, threadId=process.tid)
+                if process.process or process.thread:
+                    evidence['state'] = 'creation-effect-uncertain'
+            self._ok(ok)
+            _require(process.process and process.thread and process.pid > 0 and process.tid > 0,
+                     'Original returned customer process/thread handles required')
+            evidence['state'] = 'original-child-suspended'
+            created = self._created(process.process)
+            evidence['created'] = created
+            thread_pid = self._fn(self.kernel, 'GetProcessIdOfThread', W.DWORD, W.HANDLE)(process.thread)
+            thread_id = self._fn(self.kernel, 'GetThreadId', W.DWORD, W.HANDLE)(process.thread)
+            _require(thread_pid == process.pid and thread_id == process.tid, 'Original returned primary thread differs')
+            token = self._process_token(process.process)
+            result = dict(handle=process.process, pid=process.pid, created=created,
+                          token=self._token(token), tokenHandle=token, image=command[0])
+            self.check(result)
+            evidence['resumeAttempted'] = True
+            evidence['state'] = 'resume-effect-uncertain'
+            previous = resume(process.thread)
+            evidence['resumeResult'] = previous
+            self._ok(previous != 0xFFFFFFFF)
+            _require(previous == 1, 'Original primary thread suspend count changed; never resume twice')
+            evidence['state'] = 'original-child-resumed'
+            result['launchEvidence'] = dict(evidence)
+            self.check(result)
+            return result
+        except BaseException as error:
+            # Closing native owners does not terminate a suspended child or an
+            # uncertain/running child. Preserve exact original creation/resume
+            # facts for explicit operator review; never resume/retry as cleanup.
+            if process.process or process.thread:
+                failure = CustomerLaunchRefused('Original customer launch refused; preserve process evidence: ' +
+                                               json.dumps(evidence, sort_keys=True))
+                failure.launchEvidence = dict(evidence)
+                failure.winerror = getattr(error, 'winerror', None)
+                raise failure from error
+            raise
 
     def check(self, child):
         _require(not self.closed, 'Original native launch owners closed')

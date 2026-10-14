@@ -1,6 +1,7 @@
 #!/usr/bin/env python3
 """Portable contracts for actual-token fixture launch; no Windows/API execution."""
 import copy
+import ctypes
 import subprocess
 import unittest
 from unittest import mock
@@ -49,6 +50,136 @@ class FakeNative:
         self.closed = True
         if self.close_error:
             raise self.close_error
+
+
+class SequenceNative(customer._Native):
+    """Exercise the real create/check/close sequence with inert native calls."""
+    def __init__(self, fault=None, resume_result=1):
+        self.observed, self.local = observations(), LOCAL
+        self.current, self.linked = ctypes.c_void_p(16), ctypes.c_void_p(32)
+        self.adv, self.kernel = object(), object()
+        self.closed, self.close_error, self.resumes = False, None, 0
+        self.events, self.closed_handles = [], []
+        self.fault, self.resume_result = fault, resume_result
+        self.close_handle = lambda handle: self.closed_handles.append(self.value(handle)) or True
+        self.owned = [(self.current, self.close_handle), (self.linked, self.close_handle)]
+
+    @staticmethod
+    def value(handle):
+        return handle.value if hasattr(handle, 'value') else handle
+
+    @staticmethod
+    def _ok(value):
+        if not value:
+            error = OSError('inert native refusal')
+            error.winerror = 5
+            raise error
+        return value
+
+    def _fn(self, dll, name, result, *types):
+        def call(*args):
+            self.events.append(name)
+            if name == 'CreateProcessWithTokenW':
+                assert args[0] is self.linked, 'Original linked token was substituted'
+                assert args[4] == 0x4, 'NSIS wrapper must start suspended'
+                process = args[-1]._obj
+                process.process, process.thread = 0x111, 0x112
+                process.pid, process.tid = 42, 43
+                if self.fault == 'interrupt-after-create':
+                    raise KeyboardInterrupt('inert interruption after original returned handles')
+                return self.fault != 'create'
+            if name == 'GetProcessIdOfThread':
+                assert self.value(args[0]) == 0x112
+                return 999 if self.fault == 'thread' else 42
+            if name == 'GetThreadId':
+                assert self.value(args[0]) == 0x112
+                return 999 if self.fault == 'thread-id' else 43
+            if name == 'GetProcessId':
+                assert self.value(args[0]) == 0x111
+                return 42
+            if name == 'ResumeThread':
+                assert self.value(args[0]) == 0x112
+                assert 'capture-token' in self.events and 'verify-image' in self.events
+                self.resumes += 1
+                assert self.resumes == 1, 'Never resume twice'
+                return self.resume_result
+            if name == 'GetExitCodeProcess':
+                args[1]._obj.value = 0
+                return True
+            raise AssertionError('Forbidden or unexpected native API: ' + name)
+        return call
+
+    def _created(self, handle):
+        self.events.append('capture-creation')
+        assert self.value(handle) == 0x111
+        return 123450
+
+    def _process_token(self, handle):
+        self.events.append('capture-token')
+        assert self.value(handle) == 0x111 and self.resumes == 0
+        if self.fault == 'token':
+            self._ok(False)
+        token = ctypes.c_void_p(48)
+        self.owned.append((token, self.close_handle))
+        return token
+
+    def _token(self, token):
+        which = 'current' if self.value(token) == 16 else 'linked'
+        return copy.deepcopy(self.observed[which])
+
+    def _state(self, child):
+        # Simulate the real NSIS bootstrap exiting immediately on its first
+        # resume. Subsequent checks must use its already retained token handle.
+        return 0 if self.resumes else 258
+
+    def _image(self, handle):
+        self.events.append('verify-image')
+        return COMMAND[0] + ('.foreign' if self.fault == 'image' else '')
+
+
+class SuspendedCustomerLaunchTests(unittest.TestCase):
+    def test_capture_precedes_exact_single_resume_even_when_nsis_exits_immediately(self):
+        native = SequenceNative()
+        owner = customer.open_same_account_launch(COMMAND, SID, _native_factory=lambda: native)
+        self.assertEqual(native.resumes, 1)
+        self.assertLess(native.events.index('capture-creation'), native.events.index('ResumeThread'))
+        self.assertLess(native.events.index('capture-token'), native.events.index('ResumeThread'))
+        self.assertLess(native.events.index('verify-image'), native.events.index('ResumeThread'))
+        self.assertEqual(native.events.count('capture-token'), 1)
+        self.assertEqual(owner.wait(0), 0)
+        self.assertEqual(owner.launch_evidence, dict(pid=42, threadId=43, created=123450,
+            resumeAttempted=True, resumeResult=1, state='original-child-resumed'))
+        owner.close()
+        self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
+
+    def test_capture_refusal_never_resumes_or_loses_returned_handles(self):
+        for fault in ('create', 'interrupt-after-create', 'thread', 'thread-id', 'token', 'image'):
+            with self.subTest(fault=fault):
+                native = SequenceNative(fault=fault)
+                with self.assertRaises(customer.CustomerLaunchRefused) as caught:
+                    customer.open_same_account_launch(COMMAND, SID, _native_factory=lambda: native)
+                evidence = caught.exception.launchEvidence
+                self.assertEqual((evidence['pid'], evidence['threadId']), (42, 43))
+                self.assertFalse(evidence['resumeAttempted'])
+                self.assertIsNone(evidence['resumeResult'])
+                self.assertEqual(native.resumes, 0)
+                self.assertTrue(native.closed)
+                self.assertEqual(native.closed_handles.count(0x111), 1)
+                self.assertEqual(native.closed_handles.count(0x112), 1)
+
+    def test_resume_failure_or_changed_count_preserves_uncertainty_without_retry_or_termination(self):
+        for previous in (0xFFFFFFFF, 0, 2):
+            with self.subTest(previous=previous):
+                native = SequenceNative(resume_result=previous)
+                with self.assertRaises(customer.CustomerLaunchRefused) as caught:
+                    customer.open_same_account_launch(COMMAND, SID, _native_factory=lambda: native)
+                self.assertEqual(caught.exception.launchEvidence, dict(pid=42, threadId=43, created=123450,
+                    resumeAttempted=True, resumeResult=previous, state='resume-effect-uncertain'))
+                self.assertEqual(native.resumes, 1)
+                self.assertTrue(native.closed)
+                self.assertEqual(native.closed_handles, [48, 0x112, 0x111, 32, 16])
+                if previous == 0xFFFFFFFF:
+                    self.assertEqual(caught.exception.winerror, 5)
 
 
 class CustomerLaunchTests(unittest.TestCase):
