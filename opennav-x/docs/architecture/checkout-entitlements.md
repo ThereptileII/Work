@@ -22,6 +22,21 @@ client. The browser receives `{ "url": "https://checkout.stripe.com/..." }`
 and follows the hosted checkout URL. Return pages do not grant access or
 infer completion from query parameters.
 
+`STRIPE_TEST_SECRET_KEY` accepts the exact `sk_test_` or `rk_test_` prefix
+with a nonempty suffix using the [RFC 6750 section 2.1 bearer-token grammar](https://www.rfc-editor.org/rfc/rfc6750#section-2.1):
+ASCII letters, digits, `.`, `_`, `~`, `+`, `/`, and `-`, followed by optional
+`=` padding only at the end. The 4096-byte total limit is an application
+transport bound, not a Stripe format claim. Whitespace, controls, non-ASCII,
+quotes and commas are refused; the value is never trimmed or transformed.
+[Stripe documents the TEST key prefixes](https://docs.stripe.com/keys), without
+specifying the previous local alphanumeric suffix or 16–256-character bound;
+[Stripe's SDK](https://github.com/stripe/stripe-node/blob/master/src/utils.ts)
+forwards the opaque key in `Authorization: Bearer`. Local framing only admits
+a safely transportable TEST credential: Stripe still authenticates it and
+checks permissions. This correction does not prove that an operator's actual
+credential works; provider validation remains required. TEST-resource, price,
+coupon, settlement, authentication and CSRF checks remain in force.
+
 Configuration keys are `STRIPE_TEST_CHECKOUT_ENABLED=true`,
 `STRIPE_TEST_SECRET_KEY`, `STRIPE_TEST_WEBHOOK_SECRET`, `STRIPE_TEST_PRICE_ID`,
 `STRIPE_TEST_RETURN_ORIGIN`, comma-separated

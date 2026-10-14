@@ -1,6 +1,10 @@
 /** Closed Stripe TEST commerce. Secrets exist only in the server environment. */
 export const STRIPE_API_VERSION = '2026-09-30.endive';
 const STRIPE_API = 'https://api.stripe.com/v1/';
+// Application transport bound, not a Stripe key-format limit. ASCII grammar below
+// makes string length equal byte length; the final assertion forbids trailing LF.
+const MAX_STRIPE_KEY_BYTES = 4096;
+const TEST_BEARER_KEY = /^(?:sk|rk)_test_[A-Za-z0-9._~+/-]+=*(?![\s\S])/;
 const MAX_PROVIDER_BYTES = 64 * 1024;
 const MAX_WEBHOOK_BYTES = 256 * 1024;
 const encoder = new TextEncoder();
@@ -48,7 +52,8 @@ function requireConfiguration(binding: ConfigurationBinding, condition: unknown)
 
 function configuration(env: CommerceContext['env']): Configuration {
   requireConfiguration('STRIPE_TEST_CHECKOUT_ENABLED', env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
-  requireConfiguration('STRIPE_TEST_SECRET_KEY', /^(?:sk|rk)_test_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_SECRET_KEY ?? ''));
+  const key = env.STRIPE_TEST_SECRET_KEY ?? '';
+  requireConfiguration('STRIPE_TEST_SECRET_KEY', key.length <= MAX_STRIPE_KEY_BYTES && TEST_BEARER_KEY.test(key));
   requireConfiguration('STRIPE_TEST_WEBHOOK_SECRET', /^whsec_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_WEBHOOK_SECRET ?? ''));
   requireConfiguration('STRIPE_TEST_PRICE_ID', /^price_[A-Za-z0-9]{8,128}$/.test(env.STRIPE_TEST_PRICE_ID ?? ''));
   const origin = env.STRIPE_TEST_RETURN_ORIGIN ?? '';

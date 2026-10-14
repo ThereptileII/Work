@@ -304,9 +304,17 @@ test('malformed or unauthenticated shared-sandbox events still refuse before pro
   assert.deepEqual(unsigned.urls, []);
 });
 
-test('restricted TEST keys work while live, publishable, missing and malformed keys refuse before effects', async () => {
-  for (const key of ['rk_test_1234567890abcdef', config.key, 'rk_live_1234567890abcdef',
-    'sk_live_1234567890abcdef', 'pk_test_1234567890abcdef', '', 'rk_test_short', 'rk_test_1234567890abcdef\n']) {
+test('TEST bearer key framing preserves exact authorization and rejects injection before effects', async () => {
+  const accepted = new Set([config.key, 'rk_test_a', 'sk_test_a', 'rk_test_short',
+    'rk_test_Az09._~+/-', 'sk_test_Az09._~+/-===', 'rk_test_' + 'a'.repeat(4096 - 8)]);
+  const rejected = ['rk_live_1234567890abcdef', 'sk_live_1234567890abcdef',
+    'pk_test_1234567890abcdef', '', 'rk_test_', 'sk_test_', 'rk_test_=',
+    'rk_test_' + 'a'.repeat(4097 - 8), 'rk_test_a=b', 'rk_test_a==b',
+    ' rk_test_a', 'rk_test_a ', 'rk_test_a\t', 'rk_test_a\n', 'rk_test_a\r',
+    'rk_test_a\r\nAuthorization: Bearer injected', 'rk_test_a\0', 'rk_test_a\x7f',
+    'rk_test_é', 'rk_test_☃', 'rk_test_a"', "rk_test_a'", 'rk_test_a,b',
+    'RK_test_a', 'rk_TEST_a', 'rk_test_a\\b', 'rk_test_a:b'];
+  for (const key of [...accepted, ...rejected]) {
     let effects = 0;
     const ctx = {
       env: { ...runtimeEnv, STRIPE_TEST_SECRET_KEY: key },
@@ -322,7 +330,7 @@ test('restricted TEST keys work while live, publishable, missing and malformed k
     const response = await handleCommerce(new Request(config.origin + '/api/checkout/start', {
       method: 'POST', headers: { Origin: config.origin },
     }), ctx);
-    const valid = key === config.key || key === 'rk_test_1234567890abcdef';
+    const valid = accepted.has(key);
     assert.equal(response?.status, valid ? 200 : 404);
     assert.equal(effects, valid ? 4 : 0);
   }
