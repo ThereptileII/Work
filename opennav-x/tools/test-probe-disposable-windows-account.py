@@ -465,7 +465,7 @@ class FixedNativeCommand(unittest.TestCase):
         owner.ok = lambda value: probe.require(value, 'native-failure')
         owner.verify_profile = mock.Mock(return_value=Path('original-profile'))
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
-            self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
+            self.assertEqual((token, flags, creation, environment), (987, 1, 0xC, None))
             self.assertEqual(executable, probe.sys.executable)
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
                 [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
@@ -516,6 +516,8 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertTrue(all(s['checksPassed'] for s in provisioning['observations'].values()))
         self.assertFalse(result['consentPromptAcceptance'])
         self.assertFalse(result['nativeCustomerAcceptance'])
+        self.assertEqual(owner.facts['capabilityLaunch'], dict(creationFlags=0xC,
+            scope='non-console-file-only-capability'))
 
     def test_unsuitable_caller_refuses_before_launch_or_fresh_account_creation(self):
         for change in ({'station': 'service-station'}, {'visible': False}, {'input': 'Winlogon'},
@@ -662,6 +664,8 @@ class FixedNativeCommand(unittest.TestCase):
                 self.assertNotIn('capability', result)
                 self.assertFalse(owner.exit_observed)
                 progress = result['originalFacts']['capabilityProgress']
+                self.assertEqual(result['originalFacts']['capabilityLaunch'], dict(creationFlags=0xC,
+                    scope='non-console-file-only-capability'))
                 self.assertEqual(progress['lastMarker'], last)
                 self.assertEqual(progress['finalDocumentPresent'], document)
                 self.assertNotIn('secret', json.dumps(result))
@@ -764,7 +768,7 @@ class FixedNativeCommand(unittest.TestCase):
         calls = []
         def create(token, flags, executable, command, creation, environment, cwd, startup, process):
             calls.append('create')
-            self.assertEqual((token, flags, creation, environment), (987, 1, 4, None))
+            self.assertEqual((token, flags, creation, environment), (987, 1, 0xC, None))
             self.assertEqual(command.value, probe.subprocess.list2cmdline(
                 [probe.sys.executable, '-I', '-B', str(owner.helper), customer.PROFILE_CAPABILITY_MODE]))
             self.assertEqual(executable, probe.sys.executable)
@@ -782,6 +786,8 @@ class FixedNativeCommand(unittest.TestCase):
         self.assertEqual(caught.exception.reason, 'original-limited-token-fixed-probe-launch-refused')
         self.assertEqual(caught.exception.winerror, 1314)
         self.assertEqual(owner.launch_effect, 'refused-no-child')
+        self.assertEqual(owner.facts['capabilityLaunch'], dict(creationFlags=0xC,
+            scope='non-console-file-only-capability'))
         self.assertEqual([handle.value if hasattr(handle, 'value') else handle for handle in owner.owned],
                          [])
         self.assertEqual(calls.count('create'), 1)

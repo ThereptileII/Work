@@ -10,6 +10,8 @@ desktop observations do not enable the elevated-parent customer launch API.
 Bounded flushed progress and the final report use one child-created fixed file
 in the actual-token profile. No stdout/stderr handles, environment paths or
 handle inheritance are assumed. Original verified exit remains necessary.
+Only this file-only capability child is console-detached; GUI/customer/UAC
+acceptance is not inferred from its progress or desktop observations.
 This fresh-account-only probe requests documented Windows-managed per-user
 access to the caller's inherited desktop with lpDesktop=NULL. Actual caller
 WinSta0/Default and unchanged UAC policy are checked before/after. This is host
@@ -706,11 +708,15 @@ class AccountProbe:
         self.check_limited()
         self.check_disposable_host('beforeLaunch')
         self.facts['hostDesktopProvisioning']['permissionAdditionsRequested'] = True
+        creation_flags = 0x00000004 | 0x00000008  # CREATE_SUSPENDED | DETACHED_PROCESS
+        self.facts['capabilityLaunch'] = dict(creationFlags=creation_flags,
+                                            scope='non-console-file-only-capability')
         self.profile_attempted, self.launch_effect = True, 'uncertain'
         try:
             result = self.fn(self.native.adv, 'CreateProcessWithTokenW', W.BOOL, W.HANDLE, W.DWORD, W.LPCWSTR,
                 W.LPWSTR, W.DWORD, C.c_void_p, W.LPCWSTR, C.POINTER(Startup), C.POINTER(Process))(
-                self.limited, 1, sys.executable, line, 4, None, str(self.helper.parent), C.byref(startup), C.byref(process))
+                self.limited, 1, sys.executable, line, creation_flags, None,
+                str(self.helper.parent), C.byref(startup), C.byref(process))
             error = C.get_last_error()
             self.launch_effect = 'created' if result else 'refused-no-child'
         finally:
