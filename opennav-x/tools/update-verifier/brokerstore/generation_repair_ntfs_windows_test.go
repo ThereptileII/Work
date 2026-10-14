@@ -88,6 +88,11 @@ func repairNTFSFixture(t *testing.T, purpose GenerationPurpose) nativeRepairNTFS
 		if err = owner.Close(); err != nil {
 			t.Fatal(err)
 		}
+		// Stage sealing independently reopens the materialized generation. Drain
+		// the retained baseline source first, as in nativeStageSealFixture.
+		if err = p.Close(); err != nil {
+			t.Fatal(err)
+		}
 		if err = c.Seal(context.Background(), []byte("original inert stage receipt")); err != nil {
 			t.Fatal(err)
 		}
@@ -252,10 +257,7 @@ func TestNativeRepairNTFSRefusesTamperedOriginalPrivateSource(t *testing.T) {
 					if err := os.Remove(f.private); err != nil {
 						t.Fatal(err)
 					}
-					var client *windows.SID
-					if purpose == GenerationPurposeSignedCandidate {
-						client = f.backend.sid
-					}
+					client := f.backend.sid
 					dirSD, err := descriptor(f.backend.broker, client, true)
 					if err != nil {
 						t.Fatal(err)
