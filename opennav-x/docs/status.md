@@ -1,5 +1,23 @@
 # SKAGER status — 2026-10-14
 
+## Stripe TEST key framing passes CI; server deployment pending
+
+SCRUM-43 source `2c1511c4e8dc269fce0846e616af9b99675faca7` accepts bounded,
+opaque TEST secret/restricted Bearer keys while preserving their exact bytes and
+refusing LIVE/publishable keys, empty suffixes, whitespace and header injection.
+[CI 38613459842](https://github.com/ThereptileII/Work/actions/runs/38613459842)
+passes **208 tests** (88 Django / 120 Edge), plus migrations and disposable SQL.
+Original artifact hashes and ZIP CRCs verify. The retained 79,004-byte server
+bundle matches its build manifest. Frontend bytes remain identical to active
+Cloudflare `ac34d9d4`; no Cloudflare redeploy is needed.
+
+This server candidate is **not deployed**: Chrome disconnected and reconnect
+remains pending. Earlier owner login was confirmed, but the session expired.
+The earlier static binding rejection proves no Stripe authentication result;
+actual key validity, TEST checkout, webhook/entitlement and customer download
+remain unproven. Public signup, public payments and downloads remain closed.
+[Exact package and sanitized evidence](evidence/scrum43-key-framing-20261014/README.md).
+
 ## Invited sign-in and customer portal verified; TEST checkout configuration blocked
 
 The owner entered a fresh website invitation code and confirmed successful
