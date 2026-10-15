@@ -13,7 +13,8 @@ if($Action -ceq 'Inspect') {$proof=Read-ReconciliationParent $context.workspace 
 elseif($Action -ceq 'Plan') {
   $inspectionPath=Assert-LocalPath $Inspection
   if($ExpectedInspectionSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $inspectionPath) -cne $ExpectedInspectionSha256){throw 'Exact inspection required.'}
-  $observed=Read-Record $inspectionPath;$proof=Read-ReconciliationParent $context.workspace $observed.parentPrepared $observed.parentPreparedSha256
+  $observed=Read-ReconciliationInspection $context $inspectionPath $ExpectedInspectionSha256
+  $proof=Read-ReconciliationParent $context.workspace $observed.parentPrepared $observed.parentPreparedSha256
 } else {$selected=Read-ReconciliationPlan $context.workspace $Plan $ExpectedPlanSha256;$proof=$selected.proof}
 $profileLock=Open-CommissioningProfileLock $context.profile;$transactionLock=$null
 try {
@@ -40,11 +41,11 @@ try {
     Assert-ReconciliationMoves $proof $directory;foreach($tree in $currentTrees){Assert-PreparationTree $tree}
     Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
     $output=Join-Path $directory 'inspection.json'
-    Write-Record $output @{schema=1;owner=$script:ReconciliationOwner;status='inspected';parentPrepared=$proof.record;parentPreparedSha256=$proof.sha256;
+    $inspectionHash=Write-ReconciliationInspection $context $output @{schema=1;owner=$script:ReconciliationOwner;status='inspected';parentPrepared=$proof.record;parentPreparedSha256=$proof.sha256;
       currentContext=$context;activeMarkerSha256=(Get-Digest (Join-Path $context.workspace 'commissioning-active.json'));
       profileTree=$snapshot;currentPluginTrees=$currentTrees;acls=$acls;currentIniSha256=(Get-Digest $ini);
       connectionDisposition=$bytes.disposition;diff=@(Get-CommissioningIniDiff (Join-Path $proof.directory 'input-only.ini') $ini);applicationLaunched=$false}
-    [pscustomobject]@{status='review-required';inspection=$output;inspectionSha256=(Get-Digest $output);profileChanged=$false;applicationLaunched=$false}|ConvertTo-Json
+    [pscustomobject]@{status='review-required';inspection=$output;inspectionSha256=$inspectionHash;profileChanged=$false;applicationLaunched=$false}|ConvertTo-Json
     return
   }
   if($Action -ceq 'Plan') {

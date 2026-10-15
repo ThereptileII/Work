@@ -115,7 +115,7 @@ $invoke=[scriptblock]::Create($body)
 function InspectPlan([switch]$Retention,[scriptblock]$ChangeReview=$null) {
   $f=$script:fixture
   $inspection=(& $invoke -Action Inspect -Workspace $f.workspace -Record $f.record -ExpectedRecordSha256 $f.recordHash)|ConvertFrom-Json
-  $observed=Read-Record $inspection.inspection
+  $observed=Read-ReconciliationInspection $f.current $inspection.inspection $inspection.inspectionSha256
   $review=Join-Path ([IO.Path]::GetDirectoryName($inspection.inspection)) 'independent-review.json'
   Write-Record $review @{schema=1;owner='OpenNavX.SessionPreservationReview.1';parentPreparedSha256=$f.recordHash;inspectionSha256=$inspection.inspectionSha256;
     beforeSha256=(Get-Digest (Join-Path $f.parent 'input-only.ini'));afterSha256=$observed.currentIniSha256;reviewedUtc=[datetime]::UtcNow.ToString('o');connectionDisposition=$observed.connectionDisposition;
@@ -258,6 +258,90 @@ try {
   }
   Pass 'Entrypoint and helper parse before any mutation' {
     foreach($file in @($entry,(Join-Path $PSScriptRoot 'CommissioningReconciliation.ps1'))) {$errors=$null;$tokens=$null;$null=[Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}
+  }
+  Pass 'Full owned inspection above 4 MiB roundtrips every tree and ACL record without changing the generic limit' {
+    $f=NewFixture
+    $inspection=(& $invoke -Action Inspect -Workspace $f.workspace -Record $f.record -ExpectedRecordSha256 $f.recordHash)|ConvertFrom-Json
+    $observed=Read-ReconciliationInspection $f.current $inspection.inspection $inspection.inspectionSha256
+    $large=Clone $observed
+    # Invented inventory data only, comparable in shape/count to the real large
+    # record. No actual boat paths, profile values or ACLs enter this fixture.
+    $entries=New-Object 'Collections.Generic.List[object]';$acls=New-Object 'Collections.Generic.List[object]'
+    for($index=0;$index -lt 5000;$index++) {
+      $name='inventory/'+$index.ToString('D5')+'-'+('x'*96)
+      $entries.Add([pscustomobject]@{path=$name;directory=$false;bytes=3;sha256=$index.ToString('x64')})
+      $acls.Add([pscustomobject]@{path=(Join-Path $f.current.profile $name);sddl=('O:SYG:SYD:P'+('(A;;FR;;;SY)'*40))})
+    }
+    $large.profileTree.entries=@($observed.profileTree.entries)+@($entries.ToArray())
+    $large.acls=@($observed.acls)+@($acls.ToArray())
+    $directory=New-PreparationDirectory $f.current 'cold-reconciliation';$path=Join-Path $directory 'inspection.json'
+    $hash=Write-ReconciliationInspection $f.current $path $large
+    if((Get-Item -LiteralPath $path).Length -le 4194304 -or
+       (Get-Item -LiteralPath $path).Length -gt $script:ReconciliationInspectionMaxBytes){throw 'Large inventory did not exercise the separate bounded reader.'}
+    $loaded=Read-ReconciliationInspection $f.current $path $hash
+    if(($loaded|ConvertTo-Json -Depth 16) -cne ($large|ConvertTo-Json -Depth 16) -or
+       $loaded.profileTree.entries.Count -ne $large.profileTree.entries.Count -or $loaded.acls.Count -ne $large.acls.Count) {
+      throw 'Full inspection roundtrip lost or changed inventory/ACL data.'
+    }
+    Refuse 'Generic Read-Record still refuses the same inspection above 4 MiB' {Read-Record $path}
+    Refuse 'Large inspection requires its exact expected digest' {Read-ReconciliationInspection $f.current $path ('0'*64)}
+    # Valid JSON whitespace reaches the exact byte ceiling without changing or
+    # inventing any fields. One additional byte must fail before JSON parsing.
+    [IO.File]::AppendAllText($path,(' '*($script:ReconciliationInspectionMaxBytes-(Get-Item -LiteralPath $path).Length)),$encoding)
+    $ceiling=Read-ReconciliationInspection $f.current $path (Get-Digest $path)
+    if((Get-Item -LiteralPath $path).Length -ne $script:ReconciliationInspectionMaxBytes -or
+       $ceiling.profileTree.entries.Count -ne $large.profileTree.entries.Count -or $ceiling.acls.Count -ne $large.acls.Count){throw 'Exact inspection byte ceiling changed data.'}
+    $checks.Add('Inspection reader accepts a complete hash-bound record at the exact 16 MiB ceiling')
+    [IO.File]::AppendAllText($path,' ',$encoding)
+    Refuse 'Inspection reader refuses valid JSON one byte above the shared 16 MiB bound' {Read-ReconciliationInspection $f.current $path (Get-Digest $path)}
+    $wrong=Join-Path $directory 'plan.json';Write-Record $wrong $observed
+    Refuse 'Larger reader cannot consume a differently named record' {Read-ReconciliationInspection $f.current $wrong (Get-Digest $wrong)}
+    $outside=Join-Path $f.parent 'inspection.json';Write-Record $outside $observed
+    Refuse 'Larger reader cannot consume an inspection outside an owned cold run' {Read-ReconciliationInspection $f.current $outside (Get-Digest $outside)}
+    Refuse 'Inspection producer cannot write outside its owned cold run' {Write-ReconciliationInspection $f.current (Join-Path $f.workspace 'inspection.json') $observed}
+    foreach($kind in @('owner','schema','schema-string','status','launch','extra-authority','missing-tree','context-account')) {
+      $changed=Clone $observed
+      switch($kind) {
+        'owner'{$changed.owner='OpenNavX.OtherRecord.1'};'schema'{$changed.schema=2};'schema-string'{$changed.schema='1'}
+        'status'{$changed.status='planned'};'launch'{$changed.applicationLaunched=$true}
+        'extra-authority'{$changed|Add-Member -NotePropertyName commandsAuthorized -NotePropertyValue $true}
+        'missing-tree'{$changed.PSObject.Properties.Remove('profileTree')};'context-account'{$changed.currentContext.sid='S-1-0-0'}
+      }
+      [IO.File]::WriteAllText($inspection.inspection,($changed|ConvertTo-Json -Depth 16),$encoding)
+      Refuse ('Inspection-specific reader refuses wrong kind/context: '+$kind) {Read-ReconciliationInspection $f.current $inspection.inspection (Get-Digest $inspection.inspection)}
+      $fresh=Join-Path (New-PreparationDirectory $f.current 'cold-reconciliation') 'inspection.json'
+      Refuse ('Inspection producer refuses wrong kind/context: '+$kind) {Write-ReconciliationInspection $f.current $fresh $changed}
+      if(Test-Path -LiteralPath $fresh){throw 'Invalid inspection was published.'}
+    }
+    foreach($content in @('', '{not-json', '[]')) {
+      [IO.File]::WriteAllText($inspection.inspection,$content,$encoding)
+      Refuse 'Inspection reader refuses empty, malformed or non-record JSON' {Read-ReconciliationInspection $f.current $inspection.inspection (Get-Digest $inspection.inspection)}
+    }
+    [IO.File]::WriteAllBytes($inspection.inspection,[byte[]]@(0xc3,0x28))
+    Refuse 'Inspection reader refuses malformed UTF-8' {Read-ReconciliationInspection $f.current $inspection.inspection (Get-Digest $inspection.inspection)}
+    $oversized=Clone $observed;$oversized.diff[0].after='x'*$script:ReconciliationInspectionMaxBytes
+    $fresh=Join-Path (New-PreparationDirectory $f.current 'cold-reconciliation') 'inspection.json'
+    Refuse 'Inspection producer refuses oversize before publishing a record' {Write-ReconciliationInspection $f.current $fresh $oversized}
+    if(Test-Path -LiteralPath $fresh){throw 'Oversized inspection was published.'}
+    if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or -not(Test-Path (Join-Path $f.workspace 'commissioning-active.json')) -or
+       @($f.moves|Where-Object {[IO.File]::Exists($_.path)}).Count){throw 'Inspection I/O changed profile, marker or quarantined paths.'}
+  }
+  Pass 'Inspection reader does not relax full backup-tree or ACL validation even with fresh exact hashes' {
+    foreach($kind in @('tree','acl')) {
+      $f=NewFixture;$plan=InspectPlan;$directory=[IO.Path]::GetDirectoryName($plan.plan)
+      $record=Read-Record $plan.plan;$path=Join-Path $directory 'inspection.json'
+      $observed=Read-ReconciliationInspection $f.current $path $record.inspectionSha256
+      if($kind -ceq 'tree'){$observed.profileTree.entries[0].sha256='0'*64}else{$observed.acls[0].sddl='changed exact ACL'}
+      [IO.File]::WriteAllText($path,($observed|ConvertTo-Json -Depth 16),$encoding)
+      $record.inspectionSha256=Get-Digest $path
+      $reviewPath=Join-Path $directory 'preservation-review.json';$review=Read-Record $reviewPath
+      $review.inspectionSha256=$record.inspectionSha256
+      [IO.File]::WriteAllText($reviewPath,($review|ConvertTo-Json -Depth 16),$encoding);$record.reviewSha256=Get-Digest $reviewPath
+      [IO.File]::WriteAllText($plan.plan,($record|ConvertTo-Json -Depth 16),$encoding);$plan.planSha256=Get-Digest $plan.plan
+      Refuse ('Changed complete inspection '+$kind+' remains refused before any commit effect') {Commit $plan}
+      if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or -not(Test-Path (Join-Path $f.workspace 'commissioning-active.json')) -or
+         @($f.moves|Where-Object {[IO.File]::Exists($_.path)}).Count){throw 'Refused inspection changed profile, marker or quarantine.'}
+    }
   }
   Pass 'Journal JSON retains every native creation-time tick across the supported PowerShell engines' {
     $date=[datetime]::SpecifyKind([datetime]'2020-02-03T04:05:06',[DateTimeKind]::Utc).AddTicks(1234567)

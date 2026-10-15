@@ -1,5 +1,68 @@
 # Explicit cold reconciliation only. Never select, launch or relabel a generation.
 $script:ReconciliationOwner='OpenNavX.ColdCommissioningReconciliation.1'
+# A complete observed profile/plugin/ACL inventory is already 4.53 MB. Keep
+# bounded headroom for that owned record only; all generic records stay 4 MiB.
+$script:ReconciliationInspectionMaxBytes=16777216
+function Assert-ReconciliationInspectionPath($Context,[string]$Path) {
+  $path=Assert-LocalPath $Path;$directory=[IO.Path]::GetDirectoryName($path)
+  if([IO.Path]::GetFileName($path) -cne 'inspection.json' -or
+     [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Context.workspace 'runs') -or
+     [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-cold-reconciliation-[a-f0-9]{8}$') {
+    throw 'Owned cold reconciliation inspection path required.'
+  }
+  Assert-ColdPrivateEvidence $directory $Context.sid
+  return $path
+}
+function Assert-ReconciliationInspectionRecord($Record,$Context) {
+  $fields=@('schema','owner','status','parentPrepared','parentPreparedSha256','currentContext','activeMarkerSha256',
+    'profileTree','currentPluginTrees','acls','currentIniSha256','connectionDisposition','diff','applicationLaunched')
+  if((@($Record.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne
+     (@($fields|Sort-Object)|ConvertTo-Json -Compress) -or
+     ($Record.schema -isnot [int] -and $Record.schema -isnot [long]) -or $Record.schema -ne 1 -or
+     $Record.owner -cne $script:ReconciliationOwner -or $Record.status -cne 'inspected' -or
+     $Record.applicationLaunched -isnot [bool] -or $Record.applicationLaunched -or
+     $Record.currentContext.workspace -cne $Context.workspace -or $Record.currentContext.sid -cne $Context.sid -or
+     $Record.currentContext.profile -cne $Context.profile -or $Record.profileTree.root -cne $Context.profile -or
+     $Record.profileTree.exists -isnot [bool] -or -not $Record.profileTree.exists -or
+     $Record.connectionDisposition -cnotin @('preserve-current-original-direction','restore-original-temporary-direction')) {
+    throw 'Exact inspected reconciliation inventory kind and context required.'
+  }
+  foreach($hash in @($Record.parentPreparedSha256,$Record.activeMarkerSha256,$Record.currentIniSha256)) {
+    if($hash -isnot [string] -or $hash -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact inspection identity hashes required.'}
+  }
+}
+function Read-ReconciliationInspection($Context,[string]$Path,[string]$Hash) {
+  $path=Assert-ReconciliationInspectionPath $Context $Path
+  if($Hash -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact reconciliation inspection hash required.'}
+  # Bind the hash and parsed document to the same bounded bytes. Deny concurrent
+  # writers while reading, rather than hashing one open and parsing another.
+  $stream=New-Object IO.FileStream($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  try {
+    if($stream.Length -le 0 -or $stream.Length -gt $script:ReconciliationInspectionMaxBytes){throw 'Reconciliation inspection size outside 16 MiB bound.'}
+    $bytes=New-Object byte[] ([int]$stream.Length);$offset=0
+    while($offset -lt $bytes.Length) {
+      $read=$stream.Read($bytes,$offset,$bytes.Length-$offset)
+      if($read -eq 0){throw 'Reconciliation inspection ended before its bounded length.'}
+      $offset+=$read
+    }
+  } finally {$stream.Dispose()}
+  if((Get-CommissioningHash $bytes) -cne $Hash){throw 'Reconciliation inspection bytes changed.'}
+  $record=(New-Object Text.UTF8Encoding($false,$true)).GetString($bytes)|ConvertFrom-Json
+  Assert-ReconciliationInspectionRecord $record $Context
+  return $record
+}
+function Write-ReconciliationInspection($Context,[string]$Path,$Record) {
+  $path=Assert-ReconciliationInspectionPath $Context $Path
+  $text=$Record|ConvertTo-Json -Depth 16
+  $bytes=(New-Object Text.UTF8Encoding($false,$true)).GetBytes($text)
+  if($bytes.Length -le 0 -or $bytes.Length -gt $script:ReconciliationInspectionMaxBytes){throw 'Reconciliation inspection size outside 16 MiB bound.'}
+  Assert-ReconciliationInspectionRecord ($text|ConvertFrom-Json) $Context
+  Write-Record $path $Record
+  $hash=Get-Digest $path
+  # Inspect must not announce review-required for a document Plan cannot read.
+  $null=Read-ReconciliationInspection $Context $path $hash
+  return $hash
+}
 function Assert-ReconciliationContexts($Old,$Current) {
   foreach($key in @('sid','localAppData','profile','application','managed','workspace','executable')) {
     if($Old.$key -cne $Current.$key){throw 'Reconciliation requires the same actual account, profile and original roots.'}
@@ -301,8 +364,7 @@ function Read-ReconciliationPlan([string]$Workspace,[string]$Plan,[string]$Hash,
      $value.launchPermission -isnot [bool] -or $value.launchPermission){throw 'Plan cannot claim launch permission or another provenance.'}
   $proof=Read-ReconciliationParent $Workspace $value.parentPrepared $value.parentPreparedSha256 ($Depth+1)
   $inspection=Join-Path $directory 'inspection.json'
-  if((Get-Digest $inspection) -cne $value.inspectionSha256){throw 'Reconciliation inspection changed.'}
-  $observed=Read-Record $inspection
+  $observed=Read-ReconciliationInspection $proof.parent.context $inspection $value.inspectionSha256
   if($observed.schema -ne 1 -or $observed.owner -cne $script:ReconciliationOwner -or $observed.status -cne 'inspected' -or
      $observed.parentPrepared -ine $proof.record -or $observed.parentPreparedSha256 -cne $proof.sha256 -or
      $observed.activeMarkerSha256 -cnotmatch '^[a-f0-9]{64}$' -or $observed.profileTree.root -ine $observed.currentContext.profile -or
