@@ -54,13 +54,47 @@ plugins directly imports it; their own export directories are only 7,080 or
 7,564 bytes. This establishes the same-package common dependency rather than
 inferring it solely from the captured SDK.
 
-The current reader rejects this backed directory solely because its extent
+The original reader rejects this backed directory solely because its extent
 exceeds 1 MiB. That extent is not the amount of data the parser scans: work is
 already bounded by the file/raw/RVA checks, 65,536 EAT entries, 4,096 forwarders,
 per-string limits and the shared 1 MiB declaration-name budget. Independent
 source review supports removing only the redundant extent ceiling and retaining
 all those bounds. Malformed/unbacked large-directory fixtures must still refuse;
 valid large directories and late legacy-TLS forwarders need positive/negative
-coverage. The corrected native/product gates remain pending. No bundled-plugin,
-installed lifecycle or boat acceptance follows
+coverage. No bundled-plugin, installed lifecycle or boat acceptance follows
 from the byte-reader diagnosis.
+
+## Bounded correction and focused validation
+
+Fix `5ed9edf96b03bde5630c92ac57e1227ad74074a0` is integrated as
+`630d04d84db4cac949360e60063b5f32b5dca074`. Only the redundant export-extent
+ceiling is removed. Complete backing and every work/string/count budget remain.
+The positive fixture uses the actual wx directory size and EAT count. Negative
+cases retain unbacked extents, overflow, bad EAT, count limits, late legacy
+forwarders and terminators outside the declared extent.
+
+The [portable receipt](parser-receipt.json) records 9,920 import and 17,625
+forwarder assertions, with ASan/UBSan runs. All 164 retained DLL/EXE paths
+(91 distinct hashes) parse successfully and remain unchanged. The existing
+policy's eight plugin/application-directory dependency walks pass. This
+read-only corpus check executes no target file and does not cover system/PATH,
+SxS, already-loaded modules or native handle lifetimes.
+
+The separate [native run 38685332524](https://github.com/ThereptileII/Work/actions/runs/38685332524),
+attempt 1, job `116258766184`, passes at exact integrated commit `630d04d8`.
+Its artifact `11949339377` has 33,897 bytes and SHA-256
+`ee53937d4a8853ba4f59ecc88473e6ded4a6c05aa011d46adfdd211d2504aaa0`.
+All 54 member CRCs and 28 source/workflow hashes match the original Windows
+checkout (including its Git line-ending conversion). Native logs record
+17,625 forwarder assertions, 282 TLS byte-policy assertions, and all 58 mandatory
+loader groups. Two focused 17-test Python suites and build-wiring refusal
+checks pass. [Native authority receipt](native-guard-receipt.json).
+
+This guard executes harmless fixture DLLs, not vendor or OpenCPN plugin
+factories. It does not establish actual application startup, chart rendering,
+installed lifecycle or boat acceptance. Helper `f16a2e29` additionally requires
+exactly one loaded record for each bundled DLL in normal application smokes,
+before interaction; its six focused tests pass and Safe Mode is exempt.
+The existing enabled/initialized Dashboard, GRIB and WMM assertions remain.
+The integrated application must still prove those conditions on new bytes;
+the failed original candidate and retest remain failed.

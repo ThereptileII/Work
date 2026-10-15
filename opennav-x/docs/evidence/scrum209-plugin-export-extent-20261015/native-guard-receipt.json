@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "status": "authenticated-native-guard-passed-not-product-qualified",
+  "repository": "ThereptileII/Work",
+  "runId": "38685332524",
+  "runAttempt": "1",
+  "commit": "630d04d84db4cac949360e60063b5f32b5dca074",
+  "workflow": ".github/workflows/skager-ocharts-loader.yml",
+  "jobId": "116258766184",
+  "jobConclusion": "success",
+  "artifactId": "11949339377",
+  "artifactName": "native-ocharts-loader-guards-630d04d84db4cac949360e60063b5f32b5dca074",
+  "artifactDigest": "sha256:ee53937d4a8853ba4f59ecc88473e6ded4a6c05aa011d46adfdd211d2504aaa0",
+  "artifactBytes": 33897,
+  "zipCrcVerified": true,
+  "inventoryMembers": 54,
+  "sourcesVerified": 28,
+  "sourceHashes": {
+    "src/integration/OChartsModuleLoader.cpp": {
+      "bytes": 7868,
+      "sha256": "3d0afe5241f42b7acb0e6f702c1258b9afaa02bb81be0102d2584d3cca24ed47"
+    },
+    "src/integration/OChartsModuleLoader.h": {
+      "bytes": 1296,
+      "sha256": "38cdda23e1a8c9c516b5b53b9a5ee8d76285adf520395418332bf51327690896"
+    },
+    "src/integration/PluginPresentationLoader.cpp": {
+      "bytes": 427,
+      "sha256": "a06d7e0d430172ab4e829416bcb882a27300a6d857dd2858c859280832cd1df4"
+    },
+    "src/integration/PluginPresentationLoader.h": {
+      "bytes": 1047,
+      "sha256": "1af8e8e798ea9e56d623c76cf78f2891f3fdea93e9bf034e78acf78c0bbc45d5"
+    },
+    "src/integration/PluginPresentationFallback.h": {
+      "bytes": 3266,
+      "sha256": "c2a327555cc05e49c74ac4efdfc7c77dd23596da6aa15c7b9a3efa5731afce3a"
+    },
+    "patches/opencpn-5.12.4-chart-presentation.patch": {
+      "bytes": 195618,
+      "sha256": "0cbf8a593cff312acfb37a2d85bcea85003473425065b4322952f2909828f837"
+    },
+    "src/integration/OriginalPluginTlsGuard.h": {
+      "bytes": 7758,
+      "sha256": "768c7a6b7f5eec129c3d271fb252291f22cd6f0a33652ae041b9f4f06437a753"
+    },
+    "src/integration/Win32PluginTlsImports.h": {
+      "bytes": 10052,
+      "sha256": "e8414b27dc778b5deb34a683b133b12c518c71d3412f1ace0f77ee1f81669797"
+    },
+    "src/integration/PluginTlsBytePolicy.h": {
+      "bytes": 701,
+      "sha256": "d77ab196b9f46fe948d41c211b2c3a54a95fcd4cc4f0af01d5741da15df3cfec"
+    },
+    "src/integration/Win32PeImports.h": {
+      "bytes": 9452,
+      "sha256": "cb8dfcb458d79d49b951f5e141567acfbd1260bfa8d92fd3b7beedb212db0f7e"
+    },
+    "src/plugin-adapters/ChartPresentationBindingV1.h": {
+      "bytes": 3172,
+      "sha256": "b19186376a4aa357ba7625d2e7c26d3ad4a526d120ea61d36a857f52f3266dde"
+    },
+    "src/plugin-adapters/ocharts/BindingState.h": {
+      "bytes": 4088,
+      "sha256": "c10e46310dc72621d3fac2ac272ed282aab1feb5c565db412ebb2c23062fc870"
+    },
+    "tests/windows_ocharts_loader/CMakeLists.txt": {
+      "bytes": 9210,
+      "sha256": "eeb91e4dd871afb5ae3c3bb2c63446c436151b9c862e420b3c3458f21a368e6b"
+    },
+    "tests/windows_ocharts_loader/fixture.cpp": {
+      "bytes": 4267,
+      "sha256": "6c139e401473d04397bcf27de25d7b42be615a83607ab2a451e5203ba9bde06e"
+    },
+    "tests/windows_ocharts_loader/indirect_dependency.cpp": {
+      "bytes": 329,
+      "sha256": "877f5dabb1004a589fa921d99e4f99e7fa1862d5d997f664f7a710f3d353958c"
+    },
+    "tests/windows_ocharts_loader/crossroot_dependency.cpp": {
+      "bytes": 259,
+      "sha256": "55edd03e47d1563db5c3120196bb6962b2133ea703cb39ad3a56a360c6b188ef"
+    },
+    "tests/windows_ocharts_loader/unmapped_dependency.cpp": {
+      "bytes": 159,
+      "sha256": "b8182f35447feb347fa17661e2b461e789f5e39474871e095d00a13b20f44ad9"
+    },
+    "tests/windows_ocharts_loader/legacy_dependency.cpp": {
+      "bytes": 161,
+      "sha256": "224533908d09c37fd8bed85ac3b1a55fed0b1f0c32211e055370a34bf99a238d"
+    },
+    "tests/windows_ocharts_loader/forward_dependency.cpp": {
+      "bytes": 1080,
+      "sha256": "3c57112af69cc5e98d259344af189b212e1133586144aaa7bb67baa79b2f93a3"
+    },
+    "tests/windows_ocharts_loader/forwarder_fixtures.py": {
+      "bytes": 13311,
+      "sha256": "cb144c4bfd4e32f6b355fc3175845743c0c28ff8960769c6918dc368c816e431"
+    },
+    "tests/win32_pe_forwarders_test.cpp": {
+      "bytes": 13854,
+      "sha256": "ee8f542c212932f3202abce87b68f8f67d5ca202b99576f4faceb86722548ec6"
+    },
+    "tests/plugin_tls_byte_policy_test.cpp": {
+      "bytes": 8767,
+      "sha256": "19dec04e4ffb2eb3f9098b61795e067c970109215239a27f4c86eda96c7d6186"
+    },
+    "tests/windows_ocharts_loader/loader_test.cpp": {
+      "bytes": 58543,
+      "sha256": "cf50f69eb8d08c3a02fdfc77af0e1bd220035205e793698c8ffc11aea43e5d02"
+    },
+    "tests/windows_ocharts_loader/inputs.lock.json": {
+      "bytes": 1183,
+      "sha256": "7520333aba2a38f2bca5f4316a5faa8b229dbbb057e84dc1a57e8882bc53feae"
+    },
+    "tools/test-ocharts-loader-windows.py": {
+      "bytes": 14609,
+      "sha256": "3a8ae9a70fc173d41becb0f49da2b7c622f6363ee50495c1bf73c48db3d3e848"
+    },
+    "tools/test-windows-changed-units.py": {
+      "bytes": 37232,
+      "sha256": "f7a3084410a11700bb06670222b71d78c9bcc1f417599dcb030c71a56714b180"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "../.github/workflows/skager-ocharts-loader.yml": {
+      "bytes": 3490,
+      "sha256": "3dbb11ef46d3dfb87499f2bc58f31e54b038d59458e2a3917b9678723f4e8032"
+    }
+  },
+  "nativeLoaderGroups": 58,
+  "nativePeForwarderChecks": 17625,
+  "nativeTlsBytePolicyChecks": 282,
+  "nativeMandatoryReceipt": {
+    "status": "passed",
+    "checks": 58,
+    "vendorExecuted": false,
+    "pluginFactoryExecuted": false,
+    "invalidHandleFaultInjected": true,
+    "unmappedSiblingGuardControl": true,
+    "exportForwarderControls": true,
+    "forwarderGrammarProbes": true,
+    "applicationDirectoryClosure": {
+      "legacyRefusedBeforeInitialization": true,
+      "cleanSiblingCannotMaskHost": true,
+      "crossRootChainRefused": true,
+      "benignFirstMappingIdentity": true,
+      "custodyThroughUnload": true
+    },
+    "declaredPluginRoots": {
+      "unsafeRefusedBeforeInitialization": true,
+      "cleanSiblingCannotMaskRoot": true,
+      "benignFirstMappingIdentity": true,
+      "custodyThroughUnload": true,
+      "absentRootPreserved": true
+    },
+    "productAcceptance": false
+  },
+  "nativeProductAcceptance": false,
+  "vendorExecuted": false,
+  "pluginFactoryExecuted": false,
+  "gaps": [
+    "real adapter OpenCPN import ABI and renderer integration",
+    "full app Standard/Safe selection and plugin lifecycle",
+    "genuine loaded-module unload refusal; fault test uses a reserved non-module address",
+    "forwarder grammar beyond the supported single-separator subset; native probes do not relax policy",
+    "declared plugin/application/upstream-Libdirs graph only; system/other-PATH/redirected or preloaded modules, arbitrary dynamic/helper loads and general module identity",
+    "encrypted-chart rendering, licensing and physical hardware"
+  ],
+  "originalJobLogSha256": "e1cd0457b4f19c941be08b3ec9868cdf56ccd02f749c0c9404d95f265ba285b3"
+}

@@ -1,0 +1,108 @@
+{
+  "issue": "SCRUM-209",
+  "baseCommit": "c1dd0268",
+  "candidateCommit": "89854110b41286cab0c6bf9748f37882a595a366",
+  "scope": "Pure bounded PE metadata parser and declared artifact-directory dependency policy; no target image execution",
+  "offendingModule": {
+    "name": "wxmsw32u_core_vc14x.dll",
+    "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+    "bytes": 7467008,
+    "exportRva": "0x55d9b0",
+    "exportBytes": 1158912,
+    "exportRawOffset": 5619632,
+    "completeRawBacking": true,
+    "exportFunctions": 19522,
+    "forwarders": 0
+  },
+  "baseline": {
+    "importFixtureChecks": 9920,
+    "actualWxControl": "Invalid export directory extent",
+    "exitCode": 1
+  },
+  "fixed": {
+    "importFixtureChecks": 9920,
+    "forwarderFixtureChecks": 17625,
+    "asanUbsanImportsAndActualFiveControls": true,
+    "asanUbsanForwarders": true,
+    "corpusFiles": 164,
+    "corpusUniqueHashes": 91,
+    "corpusUniqueBytes": 88507408,
+    "corpusAllPositiveControlsRecorded": true,
+    "corpusAllInputHashesUnchanged": true,
+    "closureTrees": [
+      "xnav-install",
+      "production-install"
+    ],
+    "closures": 8,
+    "eachClosureInspected": 61,
+    "eachClosureCandidateReads": 180,
+    "closureExitCodes": [
+      0,
+      0
+    ]
+  },
+  "sourceHashes": {
+    "opennav-x/src/integration/Win32PeImports.h": "5917fef0eb40dc209c4389fe3fa0f8d23247d292ad85629a61c3379200f94b8a",
+    "opennav-x/tests/win32_pe_forwarders_test.cpp": "195c525233f34a8261a6b31969f8193c23df65d54660d499e71eca921ed02a44"
+  },
+  "evidence": {
+    "baseline-imports.log": {
+      "bytes": 1158,
+      "sha256": "23c567cb1e6f3a0d34b54cce9a761dac94b96354f8a142ebfb8c9157f1d2568c"
+    },
+    "fixed-imports.log": {
+      "bytes": 991,
+      "sha256": "0fb21f3d4cfb7e74a6b6b152cdf01543111dfba0ed91bcaab68635446654eead"
+    },
+    "forwarders.log": {
+      "bytes": 56,
+      "sha256": "926226792a7dc2a45f7301f5d458edfe999c31a19710fdeb37f323248c492f5b"
+    },
+    "forwarders-sanitized.log": {
+      "bytes": 56,
+      "sha256": "926226792a7dc2a45f7301f5d458edfe999c31a19710fdeb37f323248c492f5b"
+    },
+    "imports-sanitized.log": {
+      "bytes": 3703,
+      "sha256": "1a01fc6809a9d0b7e6e4e81a6e7b196673a2396e2d735a2eabac4fecfdcf69f6"
+    },
+    "corpus.json": {
+      "bytes": 32446,
+      "sha256": "52a2035e3a7837a810a44dd77e5fc7ff7b619f063625ba4e14bcca3caa59fab6"
+    },
+    "corpus-command.json": {
+      "bytes": 13836,
+      "sha256": "857da2ec709ec0c5af0add5ef9494175ebaf6df7cbc49a84e136d7c378e59132"
+    },
+    "corpus.log": {
+      "bytes": 39848,
+      "sha256": "b476e7b6167888091dc83190ce3fa439d6ebf444a0365aab46ba486691c01791"
+    },
+    "closure-xnav-install.log": {
+      "bytes": 221,
+      "sha256": "16ac4f3b1311bedbb7c94035fb125a84627d6d8adbd35f42fd426f5db0e0e537"
+    },
+    "closure-production-install.log": {
+      "bytes": 221,
+      "sha256": "16ac4f3b1311bedbb7c94035fb125a84627d6d8adbd35f42fd426f5db0e0e537"
+    },
+    "replay-artifact-closure.cpp": {
+      "bytes": 2637,
+      "sha256": "2b2cdd5062ca1314f9335f636c6a4f3f191eda0f93b0a259bbec507c30c8e48a"
+    },
+    "replay-artifact-closure": {
+      "bytes": 89544,
+      "sha256": "f05f08df541bfd3c5cda5e559ad1aef2256da86bdab1f192a4946b046905dd01"
+    }
+  },
+  "compiler": "c++ (GCC) 16.2.1 20260810",
+  "sanitizerCompiler": "clang version 22.1.8",
+  "limitations": [
+    "No DLL or EXE corpus member executed or loaded",
+    "Closure candidates restricted to each extracted plugin directory and application directory, not system binaries, PATH, SxS or preloaded modules",
+    "One-off closure callback uses static extracted files, not native handle lifetime or Windows loader behavior",
+    "Native guard workflow and a new exact application candidate remain required; frozen candidate is unchanged and unqualified"
+  ],
+  "fixCommit": "5ed9edf96b03bde5630c92ac57e1227ad74074a0",
+  "integratedCommit": "630d04d84db4cac949360e60063b5f32b5dca074"
+}

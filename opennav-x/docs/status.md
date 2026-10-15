@@ -46,10 +46,20 @@ import parser applies that check to dependencies as well as each named plugin.
 This is not evidence that obsolete TLS was detected or that plugin compatibility
 passes. The authenticated captured `wxmsw32u_core_vc14x.dll` has a fully backed
 1,158,912-byte export directory, exceeding the parser's arbitrary 1 MiB extent
-ceiling. A bounded parser correction with positive large-directory and malformed
-metadata regressions is in progress; file/RVA, entry, forwarder and name budgets
-remain required. No unchanged native rerun, full rebuild or design suite is
-selected before the correction. Package and boat acceptance remain open.
+ceiling. Product correction `630d04d8` removes only that ceiling; file/RVA,
+entry, forwarder and name budgets remain unchanged. Focused Linux checks pass
+9,920 import and 17,625 forwarder assertions, including ASan/UBSan. All 91
+distinct retained DLL/EXE byte sequences and eight declared plugin dependency
+walks pass the corrected reader without executing the files.
+
+Native guard [38685332524](https://github.com/ThereptileII/Work/actions/runs/38685332524)
+passes on exact `630d04d8`: 17,625 forwarder assertions, 282 TLS byte-policy
+assertions and all 58 required loader groups. Original artifact identity,
+CRC and all 28 source/workflow hashes verify. The normal-startup smoke now also
+requires all four bundled plugin filenames; Safe Mode is exempt. These focused
+results do not qualify the old `89854110` bytes. A new integrated application
+candidate is required; package, installed lifecycle and boat acceptance remain
+open. No design or endurance suite is selected.
 [Authenticated failure and correction boundary](evidence/scrum209-plugin-export-extent-20261015/README.md).
 
 ## Disposable desktop provisioning remains insufficient
