@@ -90,10 +90,16 @@ window/control checks and fresh post-click observations. Independent review and
 fails before the first new click because its inert heading panel lacks the
 accessible name already supplied by the existing AIS-list fixture. The original
 artifact's SHA-256/size/CRC verify; no application was launched and cleanup reports
-no errors. A fixture-only correction supplies the same heading name and checks
-the direct-child accessibility shape. Runtime guards remain unchanged. Native
-actions, actual product accessibility and boat AIS responsiveness remain pending;
-neither enabling a preference nor disabling it proves a network-outage test.
+no errors. Fixture-only correction `5f1d0cc1` supplies the same heading name and
+checks the direct-child accessibility shape. Runtime guards remain unchanged.
+Native rerun [38688203646](https://github.com/ThereptileII/Work/actions/runs/38688203646)
+on helper revision `0dbc87b3` passes all **78 inert-window cases**, including the
+**14 new Online AIS cases**, plus 364 policy and 192 restart-policy checks. The
+original artifact authenticates and both reported native source hashes match the
+exact Git revision with Windows checkout line endings. Actual product accessibility
+and boat AIS responsiveness remain pending; neither enabling a preference nor
+disabling it proves a network-outage test.
+[Bounded native receipt](evidence/scrum301-online-ais-actions-20261015/native-helper-receipt.json).
 
 Read-only boat observations on 2026-10-15 confirm the selected application is
 `f1a1e68c`, while the still-active commissioning record identifies older

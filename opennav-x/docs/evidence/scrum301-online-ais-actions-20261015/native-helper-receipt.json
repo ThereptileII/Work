@@ -1,0 +1,31 @@
+{
+  "schema": 1,
+  "scope": "native inert-window helper only",
+  "sourceCommit": "0dbc87b3af77477ec7590ec0c22e67e80a74a931",
+  "runId": 38688203646,
+  "attempt": 1,
+  "jobId": 116267835323,
+  "artifactId": 11950814755,
+  "artifactSha256": "9c8f75851eb214b73264b675b882718468a0654c7b1e873930ede3e55675de87",
+  "artifactBytes": 15656,
+  "status": "passed",
+  "totalNativeCases": 78,
+  "newOnlineAisCases": 14,
+  "productLaunched": false,
+  "physicalOutput": false,
+  "cleanupErrors": [],
+  "sourceChecks": {
+    "opennav-x/tools/boat/ReviewWindowNative.cs": {
+      "gitSha256": "fc485eda5c1c62fe316660d123128b8704475df51cf7605afb8a94e86a88919e",
+      "nativeCheckoutSha256": "2b19ca89cb681761d505e6336756acabb37fb129668b7da3d5907c856ca90b38",
+      "lineEndings": "CRLF"
+    },
+    "opennav-x/tests/display-review/window-fixture.ps1": {
+      "gitSha256": "1785e2498cd9e66f30705a08e168a8bb4d45548c62bb7b545fc786b8cc8017d9",
+      "nativeCheckoutSha256": "604a25ca7c6c4122603c83a60341b97d638a90d25785126985fa09ebfff9209b",
+      "lineEndings": "CRLF"
+    }
+  },
+  "policyChecks": 364,
+  "restartPolicyChecks": 192
+}
