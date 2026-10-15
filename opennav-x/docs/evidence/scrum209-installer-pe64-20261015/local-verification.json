@@ -1,0 +1,62 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "implementationCommit": "11a72f5a739170555fbbf14dc1b6f70d62604451",
+  "integratedCommit": "6786a1e5b17906f87957c32ffa63704cd6147a55",
+  "sourceFiles": {
+    "opennav-x/installer/windows/Lifecycle.ps1": "0530e1570e4357d9706b4f846509ee6ae99fd66053d1aa2f46f0c577517feb68",
+    "opennav-x/tools/test-installer-pe.ps1": "cf11d5660c255fe5edb77cb6dbe8914146117039906b7e543f28eac1ad41360c",
+    "opennav-x/tools/test-installer-filesystem.ps1": "07ad7e03b75e829e5e1ac9ac463e6a8589a788cc346a37d329f766204a5604be",
+    "opennav-x/docs/architecture/windows-native-dependency-integration.md": "6d138f10b2ac0046a424d69bfbe6ed0c96b858a6446a7d84862daf32f48faeba"
+  },
+  "sourceBinding": "The four changed files are byte-identical in the implementation and integrated commits.",
+  "host": "Linux PowerShell 7.6.7",
+  "checks": [
+    {
+      "name": "Maintained installer PE suite",
+      "result": "passed",
+      "command": "pwsh -NoLogo -NoProfile -File opennav-x/tools/test-installer-pe.ps1",
+      "stdoutSha256": "c6fb2c8eea3bfd06c67d15fef51ac4320873ce41c9a2028632ba8b85aefd1ced",
+      "stdoutBytes": 273,
+      "stderrBytes": 0,
+      "stdout": [
+        "Installer large raw-backed export extent and boundary fixtures passed.",
+        "Installer extensionless and export forwarder policy fixtures passed.",
+        "AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+        "Installer staged PE import closure fixtures passed."
+      ]
+    },
+    {
+      "name": "Inert authenticated AMD64 helper metadata",
+      "result": "passed",
+      "files": 14,
+      "hashesUnchanged": true,
+      "parserOutputSha256": "e8b50a3c65a54d0c60d81d612ef612263ecdae2f6c2b6e329d7fa94c7dee17bc"
+    },
+    {
+      "name": "Inert authenticated native VC14 metadata",
+      "result": "passed",
+      "files": 3,
+      "hashesUnchanged": true,
+      "parserOutputSha256": "11312ada193645188ec5dce309a0ab63f432caf8c858716d6f808307864af7be"
+    },
+    {
+      "name": "Retained input graph",
+      "result": "passed at local metadata boundary",
+      "reachableFiles": 17,
+      "importEdges": 169,
+      "externalWindowsNames": 20,
+      "graphSha256": "bcefcfecc542dd6ce8916b0a2aad32371b2fedcc87310362b7d10925d03fb8cc"
+    }
+  ],
+  "privateReceiptSha256": "c4e61203d1d485c1d6992adff2330e66b22d8566b5486efabaf99bfcb983122c",
+  "independentReview": "Codex read-only source review found no concrete blocker; subsequent source edit corrected only an obsolete comment.",
+  "limits": [
+    "Linux fixtures replace platform path, system-directory and signature observations; native verification is separate.",
+    "The actual-byte graph enumerates Windows/API-set dependencies but does not resolve or load them on Linux.",
+    "Private binaries, machine paths, runtime observations and original parser records remain outside the repository.",
+    "Passing these checks does not qualify arbitrary third-party TLS versions or their source/provenance.",
+    "No application build, install, update, helper execution or installed-product acceptance occurred."
+  ],
+  "originalDevelopmentFailures": "Retained privately; a fixture function-name typo and wrong fixture descriptor offset were corrected before the maintained suite passed."
+}

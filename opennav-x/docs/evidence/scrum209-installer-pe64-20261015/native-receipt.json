@@ -1,0 +1,195 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "repository": "ThereptileII/Work",
+  "runId": 38740580580,
+  "attempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38740580580",
+  "event": "workflow_dispatch",
+  "conclusion": "success",
+  "harnessCommit": "6786a1e5b17906f87957c32ffa63704cd6147a55",
+  "implementationCommit": "11a72f5a739170555fbbf14dc1b6f70d62604451",
+  "workflowSha256": "60a02404143a02829c49193fcd023a4a8add9bfc8a18b5bdf0504c2189ead055",
+  "jobs": [
+    {
+      "architecture": "x86",
+      "jobId": 116440929670,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38740580580/job/116440929670",
+      "conclusion": "success",
+      "powershell": "5.1.20348.5622",
+      "hostBits": 32,
+      "hostExecutable": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "amd64SystemDirectoryBranch": "Sysnative",
+      "directoryEvidence": "Actual kernel32 machine assertions passed through the source-bound GetCandidateSystemDirectory function.",
+      "signatureEvidence": "Actual Authenticode Valid/Microsoft and AMD64 assertions passed for msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll; no platform mocks on Windows.",
+      "passLines": [
+        "Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.",
+        "Installer large raw-backed export extent and boundary fixtures passed.",
+        "Installer extensionless and export forwarder policy fixtures passed.",
+        "AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+        "Installer staged PE import closure fixtures passed."
+      ],
+      "retainedModule": {
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+        "bytes": 7467008,
+        "imports": [
+          "kernel32.dll",
+          "user32.dll",
+          "gdi32.dll",
+          "comdlg32.dll",
+          "winspool.drv",
+          "winmm.dll",
+          "shell32.dll",
+          "shlwapi.dll",
+          "comctl32.dll",
+          "ole32.dll",
+          "oleaut32.dll",
+          "rpcrt4.dll",
+          "wxbase32u_vc14x.dll",
+          "oleacc.dll",
+          "uxtheme.dll",
+          "msvcp140.dll",
+          "msimg32.dll",
+          "vcruntime140.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-math-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-convert-l1-1-0.dll",
+          "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "api-ms-win-crt-time-l1-1-0.dll",
+          "api-ms-win-crt-environment-l1-1-0.dll",
+          "api-ms-win-crt-utility-l1-1-0.dll"
+        ]
+      },
+      "artifact": {
+        "id": 11975717217,
+        "name": "installer-pe-x86-6786a1e5b17906f87957c32ffa63704cd6147a55-run38740580580-attempt1",
+        "size_in_bytes": 1549,
+        "digest": "sha256:b3d9b615d7a115e6523cffb15f1d96e9f1a6607371c80b90a573b30da101f08a"
+      },
+      "zipDigestVerified": true,
+      "zipCrcVerified": true,
+      "memberInventory": {
+        "input-receipt.json": {
+          "bytes": 560,
+          "sha256": "742abc21b6db6f9355e169bb3541150f04acfdd9f0efe05cee08fbca6b2e9792"
+        },
+        "result.json": {
+          "bytes": 323,
+          "sha256": "37ee3973ee0891758a5ba307335686729f180fc009fd1de302027e195345e35a"
+        },
+        "test-installer-pe.log": {
+          "bytes": 1274,
+          "sha256": "22e0f7e49d158fd8b831fd78583a338f7d76986cd8f2c8fee286966231004585"
+        }
+      },
+      "originalJobLogSha256": "504918d0c5e40ed1942cc8c2704a6e5e5aaf0843b3dedfb598b8b75c57df27cf"
+    },
+    {
+      "architecture": "x64",
+      "jobId": 116440928900,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38740580580/job/116440928900",
+      "conclusion": "success",
+      "powershell": "5.1.20348.5622",
+      "hostBits": 64,
+      "hostExecutable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "amd64SystemDirectoryBranch": "System32",
+      "directoryEvidence": "Actual kernel32 machine assertions passed through the source-bound GetCandidateSystemDirectory function.",
+      "signatureEvidence": "Actual Authenticode Valid/Microsoft and AMD64 assertions passed for msvcp140.dll, vcruntime140.dll and vcruntime140_1.dll; no platform mocks on Windows.",
+      "passLines": [
+        "Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.",
+        "Installer large raw-backed export extent and boundary fixtures passed.",
+        "Installer extensionless and export forwarder policy fixtures passed.",
+        "AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+        "Installer staged PE import closure fixtures passed."
+      ],
+      "retainedModule": {
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+        "bytes": 7467008,
+        "imports": [
+          "kernel32.dll",
+          "user32.dll",
+          "gdi32.dll",
+          "comdlg32.dll",
+          "winspool.drv",
+          "winmm.dll",
+          "shell32.dll",
+          "shlwapi.dll",
+          "comctl32.dll",
+          "ole32.dll",
+          "oleaut32.dll",
+          "rpcrt4.dll",
+          "wxbase32u_vc14x.dll",
+          "oleacc.dll",
+          "uxtheme.dll",
+          "msvcp140.dll",
+          "msimg32.dll",
+          "vcruntime140.dll",
+          "api-ms-win-crt-heap-l1-1-0.dll",
+          "api-ms-win-crt-math-l1-1-0.dll",
+          "api-ms-win-crt-string-l1-1-0.dll",
+          "api-ms-win-crt-runtime-l1-1-0.dll",
+          "api-ms-win-crt-stdio-l1-1-0.dll",
+          "api-ms-win-crt-convert-l1-1-0.dll",
+          "api-ms-win-crt-filesystem-l1-1-0.dll",
+          "api-ms-win-crt-time-l1-1-0.dll",
+          "api-ms-win-crt-environment-l1-1-0.dll",
+          "api-ms-win-crt-utility-l1-1-0.dll"
+        ]
+      },
+      "artifact": {
+        "id": 11974967533,
+        "name": "installer-pe-x64-6786a1e5b17906f87957c32ffa63704cd6147a55-run38740580580-attempt1",
+        "size_in_bytes": 1548,
+        "digest": "sha256:1a30a935112205b5d88aa961d60a147d6b9920e0350503c70b048393b4c57a73"
+      },
+      "zipDigestVerified": true,
+      "zipCrcVerified": true,
+      "memberInventory": {
+        "input-receipt.json": {
+          "bytes": 560,
+          "sha256": "742abc21b6db6f9355e169bb3541150f04acfdd9f0efe05cee08fbca6b2e9792"
+        },
+        "result.json": {
+          "bytes": 323,
+          "sha256": "c39fe0333e306d8318bf84295d9ddab703484f5ebc78a5ba068586e4f741bbd9"
+        },
+        "test-installer-pe.log": {
+          "bytes": 1274,
+          "sha256": "aed4c6411f844fe6febdd71927d3489bafa679484cae2a77f4e2d08fd234782b"
+        }
+      },
+      "originalJobLogSha256": "ebdfce1b7b13b71d393162e7a2581715944932cb67481ba29edb32127a79d97f"
+    }
+  ],
+  "retainedModuleProvenance": {
+    "schema": 1,
+    "productCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+    "harnessCommit": "6786a1e5b17906f87957c32ffa63704cd6147a55",
+    "producerRun": 38722465573,
+    "producerAttempt": 1,
+    "producerJob": 116388013514,
+    "artifact": 11969697633,
+    "artifactSha256": "dabcc028d945a8a0005084593f5c675e3b5a556023c583ab68d9b88582640748",
+    "moduleSha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+    "moduleBytes": 7467008,
+    "crcPassed": true,
+    "applicationBuilt": false,
+    "installedProductAcceptance": false
+  },
+  "otherJobs": "Five unrelated jobs were skipped by the explicitly selected installer_pe_only dispatch.",
+  "apiMetadataSha256": {
+    "run.json": "e27705120512ec136e78a314e44f59e53f7d4c3358a009603720b6ef646f5d6d",
+    "jobs.json": "440bc14abc7c04d3b0be46a1a27eee20ae89affaf60632abea49e593754ffd7c",
+    "artifacts.json": "4b72c42804dea64cd24a63fa83bb272f6581d5d45f0774ef2904bd43bb4f8a2d"
+  },
+  "limits": [
+    "This first-attempt success qualifies the focused native parser/closure fixtures, not the full application or installation.",
+    "The native VC14 checks use each CI runner own installed Microsoft runtime; exact retained third-party helper files were parsed locally, not transferred to this run.",
+    "Sysnative/System32 branch claims combine verified host bitness, exact source and actual kernel32-machine assertions; individual CRT hash/version log entries are captured internally by the fixture and are not emitted in its retained stdout.",
+    "No module was loaded or executed; known legacy-name, known-byte, architecture, bounds and malformed-input refusal assertions remained active.",
+    "External-helper TLS version/source/security acceptance and actual installed retained-plugin lifecycle acceptance remain separate."
+  ]
+}
