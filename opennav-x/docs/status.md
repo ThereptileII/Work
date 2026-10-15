@@ -9,7 +9,14 @@ is the single current candidate. It includes the native-tested installer observe
 correction and the authenticated retained-plugin results below. Private Staging
 trust is selected; extended and design suites are off. The unchanged verified
 SDK is reused subject to the existing fresh native source/environment checks.
-The run is pending; no installed-product or boat acceptance follows yet.
+Attempt 1 Windows integration refuses before compilation: hosted image
+`20261004.326.1` differs from the SDK's required `20261012.333.1`. Windows
+updater verification and native contract jobs pass; original Linux integration
+is still running. GitHub declines the coordinator's one failed-job-only rerun
+request while the overall run remains active; no new attempt or cancellation
+occurred. Preserve the original jobs and select only the failed Windows job
+and its dependents after terminal state. [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
+No installed-product or boat acceptance follows yet.
 The earlier `977d37c7` package remains failed rather than being relabelled.
 
 ## Replacement candidate after native updater job timeout
@@ -198,9 +205,16 @@ restart acceptance remains separate. The exact 161-file helper copy is staged
 on the boat, and fresh Inspect completes with a full private backup: 4,229
 profile entries, 4,483 ACL observations and the same 18 differences/hash. Its
 4,525,948-byte report exceeds the generic reader's 4,194,304-byte limit, so the
-subsequent read-only review-input read refuses before Plan/Commit. A dedicated
-bounded owned-inspection reader/producer correction is selected; the generic
-limit and complete tree/ACL evidence remain unchanged. [Actual size refusal](evidence/scrum17-cold-reconciliation-20261015/v2-actual-size-refusal.json).
+subsequent read-only review-input read refuses before Plan/Commit. Integrated
+helper `f26e1123` adds a dedicated 16 MiB owned-inspection reader/producer,
+hashing and parsing the same bounded bytes. The producer verifies readability
+before reporting success. The generic 4 MiB limit and full tree/ACL checks
+remain unchanged. Independent source review finds no confirmed defects;
+165 focused portable checks pass, including complete large inventories, the
+exact size ceiling, invalid UTF-8, wrong record/context/hash and retained
+tree/ACL refusals. Native Windows validation remains pending; this helper-only
+change does not rebuild or relabel application candidate `b4c40e6e`.
+[Actual size refusal](evidence/scrum17-cold-reconciliation-20261015/v2-actual-size-refusal.json).
 Boat checks confirm the same profile/active-marker hashes, no running OpenCPN
 and all three remote-access services running. The current profile and active
 transaction are unchanged, no application was launched, and no physical command
