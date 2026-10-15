@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.InstallerOperationReportNativeReceipt.1",
+  "issues": [
+    "SCRUM-22",
+    "SCRUM-209"
+  ],
+  "status": "passed-scoped-native-report-correction",
+  "sourceCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "implementationCommit": "e3862fceced7c275de93e41c435a6558e539b479",
+  "integratedImplementationCommit": "df02dec24ecff8b865793a81bdf97a8ef8bb278f",
+  "workflowCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "workflow": ".github/workflows/skager-native-python-contracts.yml",
+  "runId": 38722080504,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38722080504",
+  "runConclusion": "success",
+  "selection": {
+    "installerFilesystemOnly": true,
+    "otherJobsSkipped": true
+  },
+  "sourceBinding": {
+    "implementationAndNativeCheckoutGitObjectsEqual": true,
+    "files": [
+      {
+        "path": "opennav-x/installer/windows/Lifecycle.ps1",
+        "gitBlob": "45937e5fd8dfabf68bd213085423612ca84f9b96",
+        "gitSourceBytesSha256": "1550b940c9d395582abdcc59fddd973d4f9b7f988827797d312c7b4c30293b96"
+      },
+      {
+        "path": "opennav-x/tools/test-installer-operation-report.ps1",
+        "gitBlob": "6b494c7eefb365c90558c076459ac3dda11ac4c8",
+        "gitSourceBytesSha256": "743e3f2b67cb9a9b2682be4e37a004f5b59be5ebb7fe156452930eec788daf07"
+      }
+    ],
+    "nativeFixtureUsesCheckoutEngineFunctionsAndActualCatchAst": true
+  },
+  "originalArtifacts": [
+    {
+      "id": 11965892601,
+      "name": "installer-filesystem-x86-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-run38722080504-attempt1",
+      "bytes": 4968,
+      "sha256": "b90b3cc3deb61f01c5b619a503da5bed957c2e858bd67b223a22c95fe71c8100",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "test-installer-operation-report.ps1.log",
+          "bytes": 2889,
+          "crc32": "7c61d64b",
+          "sha256": "775a63f1d800d1ed28b5b9f107c1bc447fca63f779a47a91b4e898d46e8329b1"
+        },
+        {
+          "name": "result.json",
+          "bytes": 870,
+          "crc32": "bf19b86e",
+          "sha256": "d5dec62def61a3d19b644c1e1b399045426d845f489e93aae5693ffe0ee8e17f"
+        },
+        {
+          "name": "test-installer-filesystem.ps1.log",
+          "bytes": 22016,
+          "crc32": "b4268439",
+          "sha256": "3fd92705917556fa6c3543c3e6eaabbf1cf5bc21142dc79739f0fc87c99e701e"
+        },
+        {
+          "name": "test-lifecycle-protected-broker-guard.ps1.log",
+          "bytes": 70,
+          "crc32": "0c9a468f",
+          "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9"
+        }
+      ]
+    },
+    {
+      "id": 11967200972,
+      "name": "installer-filesystem-x64-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-run38722080504-attempt1",
+      "bytes": 4958,
+      "sha256": "5ed22489d726298b368eff396d5d6f0963dbc02fa1300149ff65b855395bf68b",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "result.json",
+          "bytes": 870,
+          "crc32": "de01c224",
+          "sha256": "2278426d1371410ff699e5c7959f20bab46f1bb3715d4ea66d35d7c6ccadc88e"
+        },
+        {
+          "name": "test-installer-filesystem.ps1.log",
+          "bytes": 22016,
+          "crc32": "156ef5bc",
+          "sha256": "76c411ff2af071ee175783f2709e4da9457eae6e28de957f2711a6d9c38953d5"
+        },
+        {
+          "name": "test-installer-operation-report.ps1.log",
+          "bytes": 2889,
+          "crc32": "1cac8cfd",
+          "sha256": "3ee522ed81a5b07ebc108e8ff95d0642eba38bc05e81de99224c861a126eaa90"
+        },
+        {
+          "name": "test-lifecycle-protected-broker-guard.ps1.log",
+          "bytes": 70,
+          "crc32": "0c9a468f",
+          "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9"
+        }
+      ]
+    }
+  ],
+  "authentication": {
+    "apiPayloadSha256": {
+      "run": "a3604a60f01f6bfd5bc2f84237f813a6fa27091005833d4195b6271c218297ed",
+      "jobs": "2b1454b61089713afa367c1f7a4c16aff8acb2136cbdb3622e5475f2c9a15d85",
+      "artifacts": "dcf81f63b4df783e80fb9068658bcc1d1aa42d95ac307c0a2d15c442dda2cd1d"
+    },
+    "originalJobLogs": [
+      {
+        "jobId": 116378840536,
+        "bytes": 55868,
+        "sha256": "b3bf6e2952f3bb6e296a2ab642b348c928dd4cc18038e2cbc7dcf4b021486d94"
+      },
+      {
+        "jobId": 116378841092,
+        "bytes": 57373,
+        "sha256": "361fc0a3ccd0d7588455259ebacec28cf83e947dc1f2a01afd847448f2abe7b7"
+      }
+    ]
+  },
+  "reports": {
+    "x86": {
+      "jobId": 116378840536,
+      "jobConclusion": "success",
+      "hostExecutable": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "powerShellVersion": "5.1.20348.5622",
+      "operationReport": {
+        "status": "passed",
+        "checks": 39,
+        "nativeSignedBarrier": true,
+        "foreignShellCom": true,
+        "protectedObservation": "inert refusal adapters"
+      },
+      "filesystemChecks": 44,
+      "shortcutMigrationChecks": 305,
+      "coldObserverCompilerTempCases": [
+        "available",
+        "unavailable"
+      ],
+      "nativeSystemDllShadowAndExactCallerDirectoryRestoration": "passed",
+      "protectedBrokerRefusalAndReadOnlyDiagnostics": "passed",
+      "threeOriginalSuiteExitCodes": [
+        0,
+        0,
+        0
+      ],
+      "applicationBuilt": false,
+      "installedProductAcceptance": false
+    },
+    "x64": {
+      "jobId": 116378841092,
+      "jobConclusion": "success",
+      "hostExecutable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "powerShellVersion": "5.1.20348.5622",
+      "operationReport": {
+        "status": "passed",
+        "checks": 39,
+        "nativeSignedBarrier": true,
+        "foreignShellCom": true,
+        "protectedObservation": "inert refusal adapters"
+      },
+      "filesystemChecks": 44,
+      "shortcutMigrationChecks": 305,
+      "coldObserverCompilerTempCases": [
+        "available",
+        "unavailable"
+      ],
+      "nativeSystemDllShadowAndExactCallerDirectoryRestoration": "passed",
+      "protectedBrokerRefusalAndReadOnlyDiagnostics": "passed",
+      "threeOriginalSuiteExitCodes": [
+        0,
+        0,
+        0
+      ],
+      "applicationBuilt": false,
+      "installedProductAcceptance": false
+    }
+  },
+  "originalFailure": {
+    "candidateCommit": "b4c40e6e9166d7e8340dec2879d2a8ad510b7458",
+    "runId": 38705678784,
+    "runAttempt": 3,
+    "jobId": 116364569049,
+    "overallAndQualificationConclusion": "failure",
+    "artifactId": 11963963356,
+    "artifactBytes": 25002200,
+    "artifactSha256": "837d8806b932836d84afc76c9b789f8349ed28d5876e5855d4336b40d02e8e1e",
+    "apiDigestAndSizeAndAllMemberCrcVerified": true,
+    "originalJobLogBytes": 136795,
+    "originalJobLogSha256": "f275afc829dcfe99e0c720bc5dba00aeeae160c930da5757672425add7ca0823",
+    "actualSetupPreflightPassed": true,
+    "observedFailure": "Foreign-shell Install refusal returned expected exit 1, but requested installer-01-Install.json was absent. smoke-installer-windows.py:599/242.",
+    "underlyingNativeExceptionCaptured": false,
+    "sourcePathDiagnosis": "The foreign-shell owner check refuses before Root creation. The catch report writer reused the strict existing-root signed-session guard, then swallowed its report-publication error. This mechanism was source inference until separately exercising the original catch AST with the focused fixture.",
+    "preservedOriginalCatchRegression": {
+      "missingReportAssertionReproduced": true,
+      "portableAdaptersOnly": true,
+      "stdoutSha256": "5eabc4103f4c01c35e4b8861a77120eb7822976027ea9879da26d7d006151221",
+      "stderrSha256": "235a4b9a7e0645ee056a767fba610ef3bce15ff40cbe1af4f88f6cd26716c092"
+    },
+    "downstreamPeerRestoreReceiptMismatch": "OPEN: peer-two-instances-results.json pins a different restore receipt hash from the final retained staging-inputs.json; no acceptance or reason for that difference is inferred here."
+  },
+  "correctedBoundary": [
+    "Only the exact caller-selected external failed Install/Update report can prove an absent installation root; no Root is created to publish a refusal.",
+    "Default installation-record mutation guards remain strict. Failure publication repeats protected-broker and signed-session checks before temporary writing and final publication.",
+    "Native fixtures cover actual foreign-shell owner refusal and report reason, unchanged foreign shortcut/stock/profile bytes, present/unknown/late protected state, unknown/armed/late armed state, external path/status/action scope, redirected root/report and temporary cleanup."
+  ],
+  "localPortableProof": {
+    "checks": 39,
+    "status": "passed",
+    "nativeAcceptance": false,
+    "stdoutSha256": "31347ba2fa499a001603c65fb58b1e52dbbaffd157525eebc981e57dd80715c2",
+    "stderrBytes": 0
+  },
+  "limits": [
+    "Each architecture reruns the same 39 report, 44 filesystem and 305 shortcut contracts; counts are scoped per host and not summed into an invented unique-test total.",
+    "Protected-broker presence/uncertainty cases use inert observation adapters; native signed-session barrier, COM foreign-shell refusal and filesystem operations execute on Windows PS5.1.",
+    "This is proposed-engine/helper qualification. Frozen b4 Setup and overall candidate remain failed; replacing its engine cannot relabel its acceptance.",
+    "No application or dependency compilation occurred in this helper workflow. New packaged Lifecycle bytes still require a coherent installer/package candidate and its original installed acceptance gates.",
+    "No CI rerun/dispatch, boat, actuator, release, website or private external transfer was performed by this evidence task."
+  ],
+  "applicationBuilt": false,
+  "installedProductAccepted": false,
+  "wholeCandidateAccepted": false,
+  "boatAccepted": false,
+  "releaseAccepted": false
+}
