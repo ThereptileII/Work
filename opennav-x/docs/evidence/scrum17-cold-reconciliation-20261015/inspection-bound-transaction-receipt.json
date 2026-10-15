@@ -1,0 +1,156 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.ColdReconciliation.NativeReceipt.1",
+  "issue": "SCRUM-17",
+  "status": "passed-source-bound-composed-helper-evidence",
+  "helperSourceCommit": "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+  "harnessCommit": "177f2203ff1afedcd867dd9de7ee54f0d97b8f80",
+  "workflow": ".github/workflows/skager-profile-preservation.yml",
+  "workflowSha256": "a6d6c528cb568fadab3d7bebdda20e6ebc3e374942504549cd8380453fe66b63",
+  "runId": 38711468946,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38711468946",
+  "runConclusion": "success",
+  "selection": {
+    "transactionOnly": true,
+    "evidence": "Exact successful transaction job and skipped preservation job match the reviewed workflow branch; this receipt does not claim the prerequisites reran."
+  },
+  "jobs": [
+    {
+      "id": 116343618013,
+      "name": "transaction",
+      "conclusion": "success",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38711468946/job/116343618013",
+      "startedAt": "2026-10-15T09:14:25Z",
+      "completedAt": "2026-10-15T09:16:24Z",
+      "steps": [
+        {
+          "number": 3,
+          "name": "Only the actual disposable closed-session transaction and interruptions",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T09:14:37Z",
+          "completedAt": "2026-10-15T09:16:20Z"
+        },
+        {
+          "number": 4,
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T09:16:20Z",
+          "completedAt": "2026-10-15T09:16:21Z"
+        }
+      ]
+    },
+    {
+      "id": 116343620241,
+      "name": "preservation",
+      "conclusion": "skipped",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38711468946/job/116343620241",
+      "startedAt": "2026-10-15T09:14:23Z",
+      "completedAt": "2026-10-15T09:14:23Z",
+      "steps": []
+    }
+  ],
+  "originalArtifact": {
+    "id": 11960837322,
+    "name": "session-preservation-transaction-only-177f2203ff1afedcd867dd9de7ee54f0d97b8f80",
+    "bytes": 1930,
+    "sha256": "42fde61cf8d32826ba0c1f4e50285904ab8ee405cbb93a440bdc819c4eb118cc",
+    "apiDigestMatched": true,
+    "apiSizeMatched": true,
+    "crcPassed": true,
+    "members": [
+      {
+        "name": "transaction.log",
+        "bytes": 5692,
+        "crc32": "e24255df",
+        "sha256": "2535a0c066c793ce3796203e9a5e71a5be46b57c2782366e1ca1516334469a79"
+      }
+    ]
+  },
+  "authentication": {
+    "originalRunJobsAnnotationsAndArtifactApiMetadataPreserved": true,
+    "apiPayloadSha256": {
+      "run": "9a7c9c2ea26f5bea8256ff29099913de5be25aca3fb11f4c1c11c2a878ca587e",
+      "jobs": "eda252d711824029639e4af16e361599e61dc4c952656beaf37036132ebaad75",
+      "artifacts": "828ed8fa7541ddaa07729dbe64200c0f739ffe6b082a5a16625a8a3a18def299",
+      "annotations": "7aacc00443564c748d461021cbc55c0c62f1aff82deb07c25e3b1b85993aa36f"
+    },
+    "originalJobLog": {
+      "jobId": 116343618013,
+      "bytes": 25434,
+      "sha256": "00e8e9107f68cfc03e91288442b8c8c09ee69db79ec016a0f54575e92ccd08df"
+    }
+  },
+  "reports": {
+    "nativeProfileLockFixture": {
+      "status": "passed",
+      "native": true,
+      "architecture": "AMD64",
+      "checkLabels": 23
+    },
+    "closedSessionTransaction": {
+      "status": "passed",
+      "environment": "native-windows-disposable-filesystem",
+      "count": 27,
+      "checkLabels": 27,
+      "applicationLaunched": false,
+      "boatAccess": false,
+      "productOrBoatAcceptance": false
+    }
+  },
+  "nativeEngineEvidence": "Exact successful transaction step explicitly invokes WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile -File opennav-x/tools/boat/test-commissioning.ps1 -PreservationFixture; reports do not separately emit PSVersion.",
+  "sourceBinding": {
+    "helperDirectory": "opennav-x/tools/boat",
+    "trackedFiles": 161,
+    "helperTreeGitObject": "943a4728894e7b4ccd509be5bd91f46051691144",
+    "pathsModesAndBlobIdentitiesEqual": true,
+    "comparisonCommits": [
+      "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+      "177f2203ff1afedcd867dd9de7ee54f0d97b8f80"
+    ],
+    "treeListingSha256": "0f0c1a311aefd456f73b609ee3ac47de34b439eb18713e4aec983495370a6454",
+    "intendedSourceBundleCommit": "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+    "newSourceBundleGeneratedOrTransferred": false
+  },
+  "prerequisiteEvidence": {
+    "receipt": "inspection-bound-native-receipt.json",
+    "receiptSha256": "e356b8f0817f7f75f5a37132a3f17aef4815ca878c09493c2ac783899067f7a5",
+    "runId": 38709570067,
+    "runAttempt": 1,
+    "sourceCommit": "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+    "originalRunConclusion": "cancelled",
+    "completedWindowsStep3": {
+      "sessionPreservation": 86,
+      "reconciliation": 168,
+      "nativeProfileLockAndAcl": true,
+      "baselineAdoptionOwnLabels": 127,
+      "baselineAdoptionNativeResultObjects": 4
+    },
+    "completedLinuxStep3": {
+      "sessionPreservation": 86,
+      "reconciliation": 165,
+      "baselineAdoption": 127
+    },
+    "largeInspectionNativeCasesPassed": true,
+    "genericReadRecordLimitBytes": 4194304,
+    "ownedInspectionLimitBytes": 16777216,
+    "originalTimeoutAndMissingTransactionResultPreserved": true
+  },
+  "coveredBoundary": [
+    "Exact unchanged helper bytes have completed native preservation, existing adoption/resource contracts and large inspection roundtrip/scope/hash/bound refusal evidence from original run 38709570067 step 3.",
+    "Distinct transaction-only run 38711468946 completes the previously unfinished disposable closed-session transaction/interruption fixture: 27 check labels and 23 native profile-lock labels."
+  ],
+  "limitations": [
+    "This is composed helper evidence across two authenticated original runs; original run 38709570067 remains cancelled and is not relabeled as passed.",
+    "All 161 helper files are byte-bound between sources; these selected suites do not accept every tool or operation in that directory.",
+    "Identity/process discovery uses inert fixture adapters; no actual installed application or vessel profile is qualified.",
+    "No application build, package, installation, navigation behavior, boat reconciliation or physical pilot qualification follows from these fixtures.",
+    "No local tests, CI reruns/dispatch, boat calls, source staging, private configuration transfer or physical commands were performed by this evidence task."
+  ],
+  "applicationLaunched": false,
+  "boatAccess": false,
+  "physicalOutput": false,
+  "wholeToolSuiteAccepted": false,
+  "wholeProductAccepted": false,
+  "actualBoatReconciled": false
+}
