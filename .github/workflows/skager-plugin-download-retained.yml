@@ -89,6 +89,15 @@ jobs:
           CAPTURE = 'Retain exact plugin-download SDK inputs for no-rebuild qualification'
           MUTABLE_PROBES = {'opennav-x/tools/plugin-download-guard-probe.cpp',
                             'opennav-x/tools/TrustProbeConsole.h'}
+          # SCRUM-211: exact reviewed e80 orchestration repair, not a general
+          # permission to change producer assertions. The dispatch recipe is
+          # authenticated before either changed/new module is imported.
+          REVIEWED_CANDIDATE = 'e80cb962e1a32d98bb75b964dca6eb516f7a5e23'
+          REVIEWED_CONSUMERS = {
+              'opennav-x/tools/test-plugin-download-guard-windows.py':
+                  {'producer': 'f46944ddb1b1025fb299d02027ae90afc46400ba', 'helper': '73c19fe76f46bcec6d133128b5806a28353b4cef'},
+          }
+          HELPER_ONLY = {'opennav-x/tools/plugin_subject_sdk.py': '1316d7de6922ffd42924bfdc54bc2f4184f57103'}
           DECLARATIONS = ('opennav-x/tools/test-ocharts-loader-windows.py',
                           'opennav-x/tools/windows_dependency_bundle.py')
           DIRECT_INPUTS = {
@@ -154,7 +163,21 @@ jobs:
               require(set(old) == set(current), 'Consumed input inventory differs from producer')
               require(all(old[name]['mode'] == current[name]['mode'] for name in old), 'Consumed input file mode changed')
               changed = {name for name in old if old[name] != current[name]}
-              require(changed <= MUTABLE_PROBES, 'Immutable consumed input drift: ' + ', '.join(sorted(changed - MUTABLE_PROBES)))
+              reviewed = {name for name, pair in REVIEWED_CONSUMERS.items()
+                          if candidate == REVIEWED_CANDIDATE and name in old and
+                          old[name]['gitBlob'] == pair['producer'] and current[name]['gitBlob'] == pair['helper']}
+              require(changed <= MUTABLE_PROBES | reviewed, 'Immutable consumed input drift: ' +
+                      ', '.join(sorted(changed - MUTABLE_PROBES - reviewed)))
+              helper_only = git_inputs(helper, HELPER_ONLY)
+              require(set(helper_only) == set(HELPER_ONLY) and all(
+                      helper_only[name] == {'mode': '100644', 'gitBlob': blob}
+                      for name, blob in HELPER_ONLY.items()), 'Reviewed helper-only source differs')
+              for name in helper_only:
+                  path = Path(name)
+                  require(path.is_file() and not path.is_symlink() and
+                          subprocess.check_output(['git', 'hash-object', '--path=' + name, name], text=True).strip() ==
+                          helper_only[name]['gitBlob'], 'Helper-only checkout differs: ' + name)
+                  helper_only[name] = dict(helper_only[name], checkoutSha256=file_hash(path))
               records = {}
               for name in sorted(old):
                   path = Path(name)
@@ -167,7 +190,9 @@ jobs:
                           raw = subprocess.check_output(['git', 'show', revision + ':' + name])
                           records[name][label] = dict(records[name][label], sha256=hashlib.sha256(raw).hexdigest())
               return {'producerCommit': candidate, 'helperCommit': helper,
-                      'allowedProbeChanges': sorted(changed), 'consumedInputs': records}
+                      'allowedProbeChanges': sorted(changed & MUTABLE_PROBES),
+                      'allowedConsumerChanges': sorted(changed & reviewed),
+                      'helperOnlyInputs': helper_only, 'consumedInputs': records}
 
           def authenticate_workflow(gh, workflow_sha, path):
               # Authenticate the dispatched helper recipe independently of the
@@ -322,6 +347,13 @@ jobs:
                   runner = importlib.util.module_from_spec(spec); spec.loader.exec_module(runner)
                   root = destination / 'plugin-guard-inputs'
                   data = runner.retained_inputs(root / 'data', root / 'inventory.json', pin, commit)
+                  authority['phase'] = 'subject-sdk-original-artifact-authentication'
+                  import plugin_subject_sdk as subject_api
+                  capture = receipt._read_json(root / 'capture.json')
+                  selection = subject_api.select_subject(receipt._read_json(
+                      Path('opennav-x/tools/windows-dependency-bundle.lock.json')), capture['dependencyAuthority'])
+                  authority['subjectSdkArtifact'] = subject_api.fetch.fetch(gh, selection['selection'],
+                      Path('subject-dependency-bundle'), Path('subject-dependency-provenance.json'), kind='dependencies')
                   authority.update(status='source-and-artifact-authenticated-not-qualified',
                                    phase='source-artifact-authentication-complete')
               finally:
@@ -396,8 +428,13 @@ jobs:
               root = Path('retained-plugin-inputs/plugin-guard-inputs')
               pin = os.environ['INVENTORY_SHA256']
               data = runner.retained_inputs(root / 'data', root / 'inventory.json', pin, authority['producerCommit'])
-              expected, dependency_authority = runner.module('native_ais', 'test-ais-runtime-windows.py').dependency_inputs(
-                  Path('opennav-x').resolve(), Path('dependency-bundle').resolve(), Path('dependency-provenance.json').resolve())
+              subject_api = runner.module('plugin_subject_sdk', 'plugin_subject_sdk.py')
+              subject = subject_api.verify_subject(Path('opennav-x').resolve(),
+                  Path('subject-dependency-bundle').resolve(), Path('subject-dependency-provenance.json').resolve(),
+                  Path('dependency-bundle').resolve(), Path('dependency-provenance.json').resolve(),
+                  receipt._read_json(root / 'capture.json')['dependencyAuthority'])
+              expected, dependency_authority = subject['files'], subject_api.dependency_authority(subject)
+              authority['subjectDependencyAuthority'] = dependency_authority
               runner.bind_tls(data, expected)
               auth.verify_capture(receipt._read_json(root / 'capture.json'), authority, pin,
                   auth.file_hash(Path('opennav-x/tools/retain-plugin-guard-inputs.py')), dependency_authority)
@@ -414,7 +451,7 @@ jobs:
           if ($env:GH_TOKEN -or $env:GITHUB_TOKEN) { throw 'Native probes must not inherit transport credentials' }
           python opennav-x/tools/test-ocharts-loader-windows.py --evidence opennav-x/evidence/local/retained-ocharts-loader
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-          python opennav-x/tools/test-plugin-download-guard-windows.py --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json" --retained-root "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/data" --retained-inputs "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/inventory.json" --retained-inputs-sha256 "$env:INVENTORY_SHA256" --candidate-commit "$env:PRODUCER_COMMIT" --upstream opennav-x/upstream/OpenCPN --patch-program "$env:SKAGER_PLUGIN_PATCH" --output opennav-x/evidence/local/retained-plugin-download
+          python opennav-x/tools/test-plugin-download-guard-windows.py --dependency-bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --dependency-bundle-provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json" --subject-dependency-bundle "$env:GITHUB_WORKSPACE/subject-dependency-bundle" --subject-dependency-bundle-provenance "$env:GITHUB_WORKSPACE/subject-dependency-provenance.json" --retained-capture "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/capture.json" --retained-root "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/data" --retained-inputs "$env:GITHUB_WORKSPACE/retained-plugin-inputs/plugin-guard-inputs/inventory.json" --retained-inputs-sha256 "$env:INVENTORY_SHA256" --candidate-commit "$env:PRODUCER_COMMIT" --upstream opennav-x/upstream/OpenCPN --patch-program "$env:SKAGER_PLUGIN_PATCH" --output opennav-x/evidence/local/retained-plugin-download
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
@@ -426,5 +463,7 @@ jobs:
             retained-plugin-inputs/plugin-guard-inputs/capture.json
             retained-plugin-inputs/opennav-x/evidence/local/plugin-guard-capture.log
             dependency-provenance.json
+            subject-dependency-provenance.json
+            subject-dependency-bundle/bundle.json
           if-no-files-found: error
           retention-days: 90

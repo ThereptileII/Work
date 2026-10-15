@@ -370,7 +370,11 @@ def retained_inputs(root, manifest, pin, candidate):
     assert pin == 'd' * 64 and candidate == 'a' * 40
     return {'retained': True}
 def module(name, filename):
-    return SimpleNamespace(dependency_inputs=lambda *args: ({'authenticated': True}, {'mode': 'cross-run-bundle'}))
+    assert filename == 'plugin_subject_sdk.py'
+    def verify_subject(*args):
+        if args[-1] != {'mode': 'cross-run-bundle'}: raise ValueError('Subject capture differs')
+        return {'files': {'authenticated': True}}
+    return SimpleNamespace(verify_subject=verify_subject, dependency_authority=lambda doc: {'mode': 'cross-run-bundle'})
 def bind_tls(data, expected):
     assert data == {'retained': True} and expected == {'authenticated': True}
 '''
@@ -475,7 +479,7 @@ class SourceBindings(unittest.TestCase):
         self.temp = tempfile.TemporaryDirectory()
         self.addCleanup(self.temp.cleanup)
         self.root = Path(self.temp.name)
-        roots = set(self.namespace['DECLARATIONS']) | self.namespace['DIRECT_INPUTS'] | self.namespace['MUTABLE_PROBES']
+        roots = set(self.namespace['DECLARATIONS']) | self.namespace['DIRECT_INPUTS'] | self.namespace['MUTABLE_PROBES'] | set(self.namespace['HELPER_ONLY'])
         for path in self.namespace['DECLARATIONS']:
             roots.update(self.namespace['input_declaration'](str(self.repository / path)))
         for name in sorted(roots):
@@ -507,6 +511,32 @@ class SourceBindings(unittest.TestCase):
             return self.namespace['authenticate_sources'](self.producer, helper)
         finally:
             os.chdir(previous)
+
+    def test_reviewed_consumer_requires_exact_candidate_and_both_blobs(self):
+        name = 'opennav-x/tools/test-plugin-download-guard-windows.py'
+        old = self.git('rev-parse', self.producer + ':' + name)
+        with (self.root / name).open('ab') as stream: stream.write(b'\n# reviewed inert consumer change\n')
+        helper = self.commit()
+        pair = {'producer': old, 'helper': self.git('rev-parse', helper + ':' + name)}
+        with patch.dict(self.namespace, {'REVIEWED_CANDIDATE': self.producer,
+                                         'REVIEWED_CONSUMERS': {name: pair}}):
+            result = self.bind(helper)
+            self.assertEqual(result['allowedConsumerChanges'], [name])
+            self.assertEqual(result['allowedProbeChanges'], [])
+            for key in ('producer', 'helper'):
+                with patch.dict(pair, {key: 'f' * 40}):
+                    with self.assertRaisesRegex(ValueError, 'Immutable consumed input drift'): self.bind(helper)
+            with patch.dict(self.namespace, {'REVIEWED_CANDIDATE': 'f' * 40}):
+                with self.assertRaisesRegex(ValueError, 'Immutable consumed input drift'): self.bind(helper)
+
+    def test_new_helper_exact_git_and_checkout_bytes_before_import(self):
+        name = next(iter(self.namespace['HELPER_ONLY']))
+        path = self.root / name
+        original = path.read_bytes()
+        path.write_bytes(original + b'\n# unreviewed helper change\n')
+        with self.assertRaisesRegex(ValueError, 'Helper-only checkout differs'): self.bind(self.producer)
+        helper = self.commit()
+        with self.assertRaisesRegex(ValueError, 'Reviewed helper-only source differs'): self.bind(helper)
 
     def test_only_console_probe_changes_are_recorded_with_both_hashes(self):
         for name in self.namespace['MUTABLE_PROBES']:

@@ -147,6 +147,9 @@ def main():
     parser = argparse.ArgumentParser(description=__doc__)
     parser.add_argument('--dependency-bundle', required=True, type=Path)
     parser.add_argument('--dependency-bundle-provenance', required=True, type=Path)
+    parser.add_argument('--subject-dependency-bundle', type=Path)
+    parser.add_argument('--subject-dependency-bundle-provenance', type=Path)
+    parser.add_argument('--retained-capture', type=Path)
     parser.add_argument('--retained-root', required=True, type=Path)
     parser.add_argument('--retained-inputs', required=True, type=Path)
     parser.add_argument('--retained-inputs-sha256', required=True)
@@ -156,6 +159,9 @@ def main():
     parser.add_argument('--output', required=True, type=Path)
     args = parser.parse_args()
     host_guard()
+    subject_args = (args.subject_dependency_bundle, args.subject_dependency_bundle_provenance, args.retained_capture)
+    if any(subject_args) and not all(subject_args):
+        raise ValueError('Subject bundle, external provenance and original capture are required together')
     output = args.output.absolute()
     output.mkdir(parents=True, exist_ok=False)
     report = {'status': 'failed', 'scope': 'Native source-slice PluginHandler/Downloader probe only',
@@ -186,17 +192,35 @@ def main():
             'tools/test-plugin-download-guard.py', 'tools/test-downloader-trust.py',
             'tools/test-ais-runtime-windows.py', 'tools/windows_dependency_receipt.py',
             'tools/windows_dependency_stage.py', 'tools/windows_dependency_bundle.py',
-            'tools/windows_dependency_reuse.py',
+            'tools/windows_dependency_reuse.py', 'tools/plugin_subject_sdk.py',
+            'tools/verify-openssl-runtime.py',
             'tools/plugin-download-guard-server.py', 'tools/plugin-download-guard-probe.cpp',
             'tools/TrustProbeConsole.h', 'patches/opencpn-5.12.4-download-trust.patch',
             'tests/plugin_download_guard/CMakeLists.txt', 'tests/plugin_download_guard/InputPaths.cmake')}
         report['localInputs'] = local
-        expected, authority = native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance)
-        report['dependencyAuthority'] = authority
+        host_expected, host_authority = native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance)
+        report['hostDependencyAuthority'] = host_authority
         native.reprobe_bundle_inputs(args.dependency_bundle, args.dependency_bundle_provenance,
-                                     output / 'dependency-reprobe.log', expected)
-        if native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance) != (expected, authority):
+                                     output / 'dependency-reprobe.log', host_expected)
+        if native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance) != (host_expected, host_authority):
             raise ValueError('Dependency authority changed during reprobe')
+        expected, authority = host_expected, host_authority
+        subject = subject_api = captured = None
+        if all(subject_args):
+            subject_api = module('plugin_subject_sdk', 'plugin_subject_sdk.py')
+            capture_hash = receipt._digest(args.retained_capture)
+            capture = receipt._read_json(args.retained_capture)
+            if (capture.get('candidateCommit') != args.candidate_commit or
+                    capture.get('inventorySha256') != args.retained_inputs_sha256):
+                raise ValueError('Subject capture differs from reviewed candidate/inventory')
+            captured = capture['dependencyAuthority']
+            subject = subject_api.verify_subject(ROOT, args.subject_dependency_bundle,
+                args.subject_dependency_bundle_provenance, args.dependency_bundle,
+                args.dependency_bundle_provenance, captured)
+            expected, authority = subject['files'], subject_api.dependency_authority(subject)
+            report['subjectSdk'] = {'authority': authority, 'captureSha256': capture_hash,
+                'scope': 'Original retained runtime authority only; no cross-image build reuse'}
+        report['dependencyAuthority'] = authority
         data = retained_inputs(args.retained_root, args.retained_inputs,
                                args.retained_inputs_sha256, args.candidate_commit)
         bind_tls(data, expected)
@@ -244,8 +268,10 @@ def main():
             if len(matches) != 1 or not re.search(r'/Host[^/]+/x86/cl\.exe$', matches[0], re.I):
                 raise ValueError('CMake did not select native x86 MSVC')
             compiler = Path(matches[0]); dumpbin = compiler.with_name('dumpbin.exe')
-            report.setdefault('tools', {}).update({str(path): receipt._digest(path) for path in
-                (compiler, dumpbin, Path(shutil.which('cmake')), Path(sys.executable), Path(shutil.which('pwsh')))})
+            selected_tools = (compiler, dumpbin, Path(shutil.which('cmake')), Path(sys.executable), Path(shutil.which('pwsh')))
+            if subject is not None:
+                subject_api.verify_probe_tools(selected_tools, subject, args.subject_dependency_bundle / 'payload')
+            report.setdefault('tools', {}).update({str(path): receipt._digest(path) for path in selected_tools})
             native.run(['cmake', '--build', build, '--config', 'Release', '--target',
                         'plugin-download-guard-probe', '--parallel', '2'], output / (name + '-compile.log'), timeout=300)
             runtime = work / (name + '-runtime')
@@ -277,14 +303,21 @@ def main():
         save()
         # Certificate generation uses the already-verified maintained producer
         # executable. Probe children further reduce PATH to runtime + System32.
-        openssl = receipt._plain_path(ROOT, stage.PREFIX['openssl'] + '/bin/openssl.exe')
+        openssl_root = args.subject_dependency_bundle / 'payload' if subject is not None else ROOT
+        openssl_prefix = receipt._plain_path(openssl_root, stage.PREFIX['openssl'])
+        openssl = receipt._plain_path(openssl_prefix, 'bin/openssl.exe')
         os.environ['PATH'] = str(openssl.parent) + os.pathsep + old_environment.get('PATH', '')
-        os.environ['OPENSSL_CONF'] = str(ROOT / stage.PREFIX['openssl'] / 'ssl/openssl.cnf')
-        os.environ['OPENSSL_MODULES'] = str(ROOT / stage.PREFIX['openssl'] / 'lib/ossl-modules')
+        os.environ['OPENSSL_CONF'] = str(openssl_prefix / 'ssl/openssl.cnf')
+        os.environ['OPENSSL_MODULES'] = str(openssl_prefix / 'lib/ossl-modules')
         for key in ('SSL_CERT_FILE', 'SSL_CERT_DIR', 'CURL_CA_BUNDLE', 'OPENNAV_DOWNLOADER_TEST_CA_FILE'):
             os.environ.pop(key, None)
         if Path(shutil.which('openssl')).resolve() != openssl.resolve():
             raise ValueError('Certificate tool escaped authenticated producer')
+        if subject is not None:
+            runtime_verifier = module('plugin_subject_openssl', 'verify-openssl-runtime.py')
+            report['subjectSdk']['opensslRuntime'] = runtime_verifier.verify(
+                openssl_prefix / 'openssl-build.json', openssl, dict(os.environ))
+            save()
         certs = work / 'certificates'; certs.mkdir()
         key, ca = tls.make_ca(certs, 'plugin-owned-' + work.name)
         other_key, other_ca = tls.make_ca(certs, 'plugin-untrusted-' + work.name)
@@ -317,8 +350,15 @@ def main():
                 dll: receipt._digest(binary.parent / dll) for dll in data['runtime']
             } != report['binaries'][name]['runtimeSha256']:
                 raise ValueError('Executed native runtime changed')
-        if native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance) != (expected, authority):
+        if native.dependency_inputs(ROOT, args.dependency_bundle, args.dependency_bundle_provenance) != (host_expected, host_authority):
             raise ValueError('Dependency inputs changed during qualification')
+        if any(receipt._digest(Path(path)) != digest for path, digest in report['tools'].items()):
+            raise ValueError('Native tools changed during qualification')
+        if subject is not None:
+            if receipt._digest(args.retained_capture) != capture_hash or subject_api.verify_subject(
+                    ROOT, args.subject_dependency_bundle, args.subject_dependency_bundle_provenance,
+                    args.dependency_bundle, args.dependency_bundle_provenance, captured) != subject:
+                raise ValueError('Subject authority changed during qualification')
         report['status'] = 'passed'
     except Exception as error:
         report['failure'] = str(error)

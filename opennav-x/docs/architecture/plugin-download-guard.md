@@ -88,7 +88,8 @@ source compliance and exact release acceptance remain open in Jira.
 ## Reviewed native orchestration entry point
 
 `tools/test-plugin-download-guard-windows.py` now orchestrates the narrow target.
-It is deliberately not wired into CI. It refuses execution except on a disposable
+The manually dispatched `skager-plugin-download-retained.yml` runs it after
+authenticating original capture and helper sources. It refuses execution except on a disposable
 GitHub-hosted Windows runner for `ThereptileII/Work`. This is a source-slice probe,
 not an installed application, plugin loader, release or boat acceptance test.
 
@@ -105,6 +106,58 @@ The caller supplies two independent authorities:
   authenticating that external candidate pin is a prerequisite, not something
   this runner manufactures. It additionally compares curl SDK and maintained
   TLS runtime bytes with the authenticated dependency producer.
+
+For a retained candidate whose original SDK image differs from the newly
+allocated host, the workflow uses two explicit roles. This is a retained-test
+policy only; application/dependency build reuse remains governed by the
+unchanged strict current-image bundle verifier.
+
+* The **host SDK** still passes normal authenticated fetch, restore, complete
+  verification and fresh native toolchain/OpenSSL reprobes on its exact current
+  image. Nothing changes the runner environment to impersonate another image.
+* `--subject-dependency-bundle`, `--subject-dependency-bundle-provenance` and
+  `--retained-capture` must be supplied together. The original capture selects
+  only an already reviewed immutable entry in the existing two-image lock.
+  GitHub independently authenticates that original producer run, successful job,
+  artifact ID/digest and manifest. The subject SDK is never restored or staged
+  into the host SDK workspace.
+* `plugin_subject_sdk.py` requires the original subject runner identity, complete
+  closed payload, source fingerprint/ABI, original toolchain digest, successful
+  upstream logs and original producer/package assertions. Subject and host must
+  have identical Python identity, all 30 source inputs, all five complete native
+  tool-fact documents, and all headers/import libraries. Actual CMake-selected
+  compiler, dumpbin, CMake, Python and PowerShell paths/hashes are checked against
+  those records before native compilation and hashed again afterward.
+* Original curl receipts contain absolute producer paths. The subject helper
+  validates both dependency prefixes and the certificate executable against
+  that original workspace before making a temporary validation view. Exactly
+  those three paths in a copy of `curl-build.json` point to the authenticated
+  subject payload, allowing the unchanged package validators to check the
+  original output hashes, dependency manifest hashes, PE ABI and certificate
+  executable. This derived view is deleted and never becomes artifact authority
+  or probe input. Original manifests, files and runtime bytes remain unchanged.
+* Retained curl headers/imports and TLS DLLs bind to the **subject**, never the
+  host's alternative DLLs. The native probe compiles against retained inputs and
+  executes the exact retained runtime. The subject's own authenticated
+  `openssl.exe` runs the existing `version -a` identity verifier with explicit
+  subject configuration/module paths before generating disposable certificates.
+  Both original authorities and all consumed subject bytes are rechecked after
+  the unchanged 13 cases, guard-bypass mutant and owned-root cleanup.
+
+The workflow authenticates the new helper before import. Its only additional
+existing-source exception pins the exact original e80 runner blob and reviewed
+replacement blob; it does not permit arbitrary assertion edits. Existing probe
+exceptions, external capture inventory pin, source-slice verification, Win32
+`/MD`, import closure and trust cleanup remain mandatory. Results separately
+record host authority, original subject authority and fresh subject OpenSSL
+observation; none qualifies the final installed application or boat.
+
+Run `python3 tools/test-plugin-subject-sdk.py` for focused inert subject-policy
+and path-view negatives, alongside the existing portable orchestration tests.
+These checks do not execute Windows binaries. Failed retained run
+`38756849052` attempts 1 and 2 remain failed: they correctly refused e80's old
+`libcurl.dll` against the newly selected host SDK before reaching native cases.
+A fresh exact-candidate native run remains required after this orchestration fix.
 
 The retained inventory has exactly these top-level fields:
 
