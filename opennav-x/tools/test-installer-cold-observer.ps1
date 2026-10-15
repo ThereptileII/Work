@@ -72,13 +72,25 @@ try {
       throw 'Unavailable compiler temp did not refuse the first real compilation.'
     }
     $compilerIoFailure = $false
+    $compilerFailureEvidence = New-Object 'System.Collections.Generic.List[string]'
     $errorCause = $compileError.Exception
     while ($errorCause) {
+      $nativeCode = 'none'
+      if ($errorCause -is [ComponentModel.Win32Exception]) {
+        $nativeCode = [string]$errorCause.NativeErrorCode
+        # PS5.1 CodeDOM reports the blocked TEMP directory through CreateProcess.
+        # Accept ERROR_PATH_NOT_FOUND only, never an unrelated native failure.
+        if ($errorCause.NativeErrorCode -eq 3) { $compilerIoFailure = $true }
+      }
+      if ($compilerFailureEvidence.Count -lt 8) {
+        $compilerFailureEvidence.Add(('type={0}; nativeCode={1}' -f $errorCause.GetType().FullName, $nativeCode))
+      }
       if ($errorCause -is [IO.IOException] -or $errorCause -is [UnauthorizedAccessException]) {
         $compilerIoFailure = $true
       }
       $errorCause = $errorCause.InnerException
     }
+    Write-Host ('Compiler temp refusal evidence: ' + ($compilerFailureEvidence -join ' | '))
     if (-not $compilerIoFailure) { throw $compileError }
   }
   Write-Host "Cold observer passed: PowerShell 5.1 $([IntPtr]::Size * 8)-bit, compiler temp $CompilerTemp; native System.dll shadow; exact caller directories restored."
