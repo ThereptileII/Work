@@ -18,8 +18,20 @@ without polling pane state until green. Native Windows contracts also pass
 115/115 CTests and all ten additional restart repeats.
 [Exact original Linux/component evidence and limits](evidence/scrum22-linux-e80-20261015/README.md).
 
-Windows application compilation, exact packaged lifecycle, retained
-PluginHandler qualification as needed and fresh boat acceptance remain pending.
+The original Windows producer `116461918332` passes both 146-case CTest
+executions, native AIS/TLS and private chart module binding, recovery packaging
+and installer compilation. [Authenticated original native outcomes and scope](evidence/scrum209-native-e80-20261015/README.md).
+The downstream qualifier `116490177486` stops before installer lifecycle in
+`smoke-navigation.py`'s object workflow: the second waypoint-edit dialog is not
+found after the preceding edit/save and delete/cancel interaction. The first
+edit completed; a static dialog-name mismatch is not established. Original
+failure evidence is preserved while the action/modal sequencing is investigated.
+No application rebuild is requested; exact compiled/package inputs are retained.
+The separate retained PluginHandler run
+[38756849052](https://github.com/ThereptileII/Work/actions/runs/38756849052)
+uses the independently authenticated new inventory pin for this candidate.
+Exact packaged lifecycle, that focused native gate and fresh boat acceptance
+remain pending. The original full run is failed, not relabelled as accepted.
 The boat remains on its previous installed revision; a passive availability
 check confirms SSH, Tailscale and RustDesk running with no OpenCPN/chart-helper
 process. No actuator output, Production promotion or public release is
