@@ -87,8 +87,11 @@ ACLs and original backups. An unstarted plan expires after 24 hours. A durable
 parent intent pins one plan before mutation; individual original-path move
 journals permit recovery after profile publication or partial DLL restoration.
 Before profile publication, a separate journal pins the plan-derived staged path,
-its exact target bytes and native metadata. A retry admits only that validated
-stage into the otherwise unchanged complete profile inventory and publishes it
+its exact target bytes and native metadata. Creation time is stored as a decimal
+tick string so Windows PowerShell 5.1 JSON cannot round it to milliseconds; the
+existing exact metadata/ACL comparison remains unchanged. A retry admits only
+that validated stage into the otherwise unchanged complete profile inventory
+and publishes it
 through the same atomic replacement API. Changed/incomplete staging bytes,
 changed metadata, a substituted stage path and arbitrary extra files refuse;
 keep the evidence for investigation instead of deleting or ignoring them.

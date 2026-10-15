@@ -162,6 +162,20 @@ function Read-ReconciliationPlan([string]$Workspace,[string]$Plan,[string]$Hash,
      @(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime())).Count -ne $value.changedKeys){throw 'Exact review/inspection lineage differs.'}
   return [pscustomobject]@{proof=$proof;value=$value;inspection=$observed;directory=$directory;path=$plan;sha256=$Hash;baseline=$baseline}
 }
+function ConvertTo-ReconciliationMetadata($Metadata) {
+  # Windows PowerShell 5.1 JSON dates retain only milliseconds. Persist exact
+  # DateTime ticks as text; no date parser or JSON numeric rounding is admitted.
+  return [pscustomobject]@{attributes=$Metadata.attributes;
+    creationUtcTicks=$Metadata.creationUtc.Ticks.ToString([Globalization.CultureInfo]::InvariantCulture);
+    acl=$Metadata.acl;auditAcl=$Metadata.auditAcl}
+}
+function ConvertFrom-ReconciliationMetadata($Value) {
+  $ticks=[long]0
+  if($Value.creationUtcTicks -isnot [string] -or $Value.creationUtcTicks -cnotmatch '^(0|[1-9][0-9]{0,18})$' -or
+     -not [long]::TryParse($Value.creationUtcTicks,[Globalization.NumberStyles]::None,[Globalization.CultureInfo]::InvariantCulture,[ref]$ticks) -or
+     $ticks -gt [datetime]::MaxValue.Ticks){throw 'Exact canonical profile creation ticks required.'}
+  return [pscustomobject]@{attributes=$Value.attributes;creationUtc=(New-Object DateTime($ticks,[DateTimeKind]::Utc));acl=$Value.acl;auditAcl=$Value.auditAcl}
+}
 function Read-ReconciliationProfileStage($Plan) {
   $journal=Join-Path $Plan.directory 'profile-stage.json'
   if(-not(Test-Path -LiteralPath $journal)){return $null}
@@ -178,7 +192,7 @@ function Read-ReconciliationProfileStage($Plan) {
      $value.originalSha256 -ceq $value.candidateSha256){throw 'Profile staging journal differs from its exact reconciliation plan.'}
   Assert-PreparationStagePath $original $stage
   if($native){
-    $value.metadata.creationUtc=[datetime]$value.metadata.creationUtc
+    $value.metadata=ConvertFrom-ReconciliationMetadata $value.metadata
     Assert-PreparationNativeMetadata $value.metadata (Get-PreparationNativeMetadata $original) -AllowDaclAutoInherited
   }else{Assert-PreparationAcl $value.acl (Get-PreparationAccessAcl $original)}
   if(Test-Path -LiteralPath $stage){
@@ -198,7 +212,7 @@ function Publish-ReconciliationProfile($Plan,$Current) {
   $original=Join-Path $Current.profile 'opencpn.ini';$journal=Join-Path $Plan.directory 'profile-stage.json'
   if(-not(Test-Path -LiteralPath $journal)){
     $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
-    $metadata=if($native){Get-PreparationNativeMetadata $original}else{$null}
+    $metadata=if($native){ConvertTo-ReconciliationMetadata (Get-PreparationNativeMetadata $original)}else{$null}
     Write-Record $journal @{schema=1;owner=$script:ReconciliationOwner;status='prepared';planSha256=$Plan.sha256;parentPreparedSha256=$Plan.proof.sha256;
       original=$original;stage=($original+'.opennav-recovery-'+$Plan.sha256.Substring(0,32)+'.partial');candidate=$Plan.baseline;
       originalSha256=$Plan.inspection.currentIniSha256;candidateSha256=$Plan.value.baselineSha256;bytes=$Plan.value.baselineBytes;

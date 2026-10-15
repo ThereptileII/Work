@@ -106,6 +106,21 @@ try {
   Pass 'Entrypoint and helper parse before any mutation' {
     foreach($file in @($entry,(Join-Path $PSScriptRoot 'CommissioningReconciliation.ps1'))) {$errors=$null;$tokens=$null;$null=[Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}
   }
+  Pass 'Journal JSON retains every native creation-time tick across the supported PowerShell engines' {
+    $date=[datetime]::SpecifyKind([datetime]'2020-02-03T04:05:06',[DateTimeKind]::Utc).AddTicks(1234567)
+    $acl='O:SYG:SYD:P(A;;FA;;;SY)'
+    $before=[pscustomobject]@{attributes=32;creationUtc=$date;acl=$acl;auditAcl=$acl}
+    $journal=Join-Path $testRoot 'metadata-roundtrip.json';Write-Record $journal (ConvertTo-ReconciliationMetadata $before)
+    $raw=Read-Record $journal;$after=ConvertFrom-ReconciliationMetadata $raw
+    if($raw.creationUtcTicks -isnot [string] -or $raw.PSObject.Properties['creationUtc'] -or
+       $after.creationUtc.Ticks -ne $date.Ticks -or $after.creationUtc.Kind -ne [DateTimeKind]::Utc -or
+       $after.auditAcl -cne $before.auditAcl){throw 'Journal rounded or relabelled exact creation metadata.'}
+    Assert-PreparationNativeMetadata $before $after
+    foreach($invalid in @([long]$date.Ticks,('0'+$raw.creationUtcTicks),'1.5','3155378976000000000')){
+      $changed=Clone $raw;$changed.creationUtcTicks=$invalid
+      Refuse 'Noncanonical, numeric, fractional or out-of-range creation ticks refuse' {ConvertFrom-ReconciliationMetadata $changed}
+    }
+  }
   Pass 'Already original IO1 user choice is preserved byte-for-byte; four DLLs return only to original paths' {
     $f=NewFixture;$plan=InspectPlan
     if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or @($f.moves|Where-Object {[IO.File]::Exists($_.path)}).Count){throw 'Inspect/Plan changed live state.'}
