@@ -1,0 +1,269 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.NativeInstallerPeExtentReceipt.1",
+  "issues": [
+    "SCRUM-22",
+    "SCRUM-209"
+  ],
+  "status": "passed-inert-native-parser-only",
+  "productCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "harnessCommit": "f880ef8f3f20978e251bc9a281c85a194eacdc58",
+  "reviewedCorrectionCommit": "b138b121f513c45c8c538bc293ea079a6052262f",
+  "runId": 38734026147,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38734026147",
+  "nativeResults": [
+    {
+      "architecture": "x86",
+      "jobId": 116418641744,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38734026147/job/116418641744",
+      "jobConclusion": "success",
+      "artifactId": 11971638232,
+      "artifactName": "installer-pe-x86-f880ef8f3f20978e251bc9a281c85a194eacdc58-run38734026147-attempt1",
+      "artifactBytes": 1459,
+      "artifactSha256": "0f36fcf7671cefca0929c5c9b13efac26fe043c4f0f4ef287c0d3c8dcfbbaf7a",
+      "apiDigestSizeIdentityAndAllMemberCrcMatched": true,
+      "hostExecutable": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "actualHostBits": 32,
+      "powershell": "5.1.20348.5622",
+      "retainedDllSha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+      "imports": [
+        "kernel32.dll",
+        "user32.dll",
+        "gdi32.dll",
+        "comdlg32.dll",
+        "winspool.drv",
+        "winmm.dll",
+        "shell32.dll",
+        "shlwapi.dll",
+        "comctl32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "rpcrt4.dll",
+        "wxbase32u_vc14x.dll",
+        "oleacc.dll",
+        "uxtheme.dll",
+        "msvcp140.dll",
+        "msimg32.dll",
+        "vcruntime140.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-filesystem-l1-1-0.dll",
+        "api-ms-win-crt-time-l1-1-0.dll",
+        "api-ms-win-crt-environment-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll"
+      ],
+      "fixtureCompletionMarkers": [
+        "Installer large raw-backed export extent and boundary fixtures passed.",
+        "Installer extensionless and export forwarder policy fixtures passed.",
+        "Installer staged PE import closure fixtures passed."
+      ],
+      "assertionCount": "not emitted; no invented count",
+      "originalMembers": [
+        {
+          "path": "original/corrected-native-pe/x86/input-receipt.json",
+          "bytes": 560,
+          "sha256": "67fc5bfe323ee657ed32aa5c61089783b190dd8d63e707f2565f5a10c4fefcd3",
+          "crc32": "fcaed296"
+        },
+        {
+          "path": "original/corrected-native-pe/x86/result.json",
+          "bytes": 323,
+          "sha256": "bfa10d9ed10f9a86b3e9fdf385f6b9adf53aeea95e892259d46c3594379bd920",
+          "crc32": "b4011276"
+        },
+        {
+          "path": "original/corrected-native-pe/x86/test-installer-pe.log",
+          "bytes": 1109,
+          "sha256": "3e720225492925e20b7722ebef57f6eba49f1245ffd318ba71cd6824b862650b",
+          "crc32": "c3e40f1b"
+        }
+      ],
+      "image": "windows-2022",
+      "imageVersion": "20261004.326.1"
+    },
+    {
+      "architecture": "x64",
+      "jobId": 116418642000,
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38734026147/job/116418642000",
+      "jobConclusion": "success",
+      "artifactId": 11971519494,
+      "artifactName": "installer-pe-x64-f880ef8f3f20978e251bc9a281c85a194eacdc58-run38734026147-attempt1",
+      "artifactBytes": 1459,
+      "artifactSha256": "4db8a00b3fb71b2033200e10ba0bdb03187f7dc24583d4425f6ef51bfd04b2b4",
+      "apiDigestSizeIdentityAndAllMemberCrcMatched": true,
+      "hostExecutable": "C:\\Windows\\System32\\WindowsPowerShell\\v1.0\\powershell.exe",
+      "actualHostBits": 64,
+      "powershell": "5.1.20348.5622",
+      "retainedDllSha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+      "imports": [
+        "kernel32.dll",
+        "user32.dll",
+        "gdi32.dll",
+        "comdlg32.dll",
+        "winspool.drv",
+        "winmm.dll",
+        "shell32.dll",
+        "shlwapi.dll",
+        "comctl32.dll",
+        "ole32.dll",
+        "oleaut32.dll",
+        "rpcrt4.dll",
+        "wxbase32u_vc14x.dll",
+        "oleacc.dll",
+        "uxtheme.dll",
+        "msvcp140.dll",
+        "msimg32.dll",
+        "vcruntime140.dll",
+        "api-ms-win-crt-heap-l1-1-0.dll",
+        "api-ms-win-crt-math-l1-1-0.dll",
+        "api-ms-win-crt-string-l1-1-0.dll",
+        "api-ms-win-crt-runtime-l1-1-0.dll",
+        "api-ms-win-crt-stdio-l1-1-0.dll",
+        "api-ms-win-crt-convert-l1-1-0.dll",
+        "api-ms-win-crt-filesystem-l1-1-0.dll",
+        "api-ms-win-crt-time-l1-1-0.dll",
+        "api-ms-win-crt-environment-l1-1-0.dll",
+        "api-ms-win-crt-utility-l1-1-0.dll"
+      ],
+      "fixtureCompletionMarkers": [
+        "Installer large raw-backed export extent and boundary fixtures passed.",
+        "Installer extensionless and export forwarder policy fixtures passed.",
+        "Installer staged PE import closure fixtures passed."
+      ],
+      "assertionCount": "not emitted; no invented count",
+      "originalMembers": [
+        {
+          "path": "original/corrected-native-pe/x64/result.json",
+          "bytes": 323,
+          "sha256": "5360e56eb172a0de4ecbc4d08dc472d70f0fc44a87da3be3896781ceae2ed809",
+          "crc32": "1e73e8ca"
+        },
+        {
+          "path": "original/corrected-native-pe/x64/input-receipt.json",
+          "bytes": 560,
+          "sha256": "67fc5bfe323ee657ed32aa5c61089783b190dd8d63e707f2565f5a10c4fefcd3",
+          "crc32": "fcaed296"
+        },
+        {
+          "path": "original/corrected-native-pe/x64/test-installer-pe.log",
+          "bytes": 1109,
+          "sha256": "81136e8a7af83e7abedfe2f4dbaf071fd5f925fccd390230b93a9610482c5082",
+          "crc32": "06b3c540"
+        }
+      ],
+      "image": "windows-2022",
+      "imageVersion": "20261004.326.1"
+    }
+  ],
+  "gitSourceHashes": {
+    "opennav-x/installer/windows/Lifecycle.ps1": {
+      "gitBlobBytes": 69181,
+      "gitBlobSha256": "ff78d047d6b0df0ff92543023244b3ccebbe946137af2e725bb0cbdae1a22cbf",
+      "identicalToReviewedCorrection": true
+    },
+    "opennav-x/tools/test-installer-pe.ps1": {
+      "gitBlobBytes": 27658,
+      "gitBlobSha256": "151c0908d8f8081ad346a18bc6bddee92c88f9d72d7f5ba194310b6a3bb584ed",
+      "identicalToReviewedCorrection": true
+    }
+  },
+  "metadataAndLogs": [
+    {
+      "file": "pe-run.json",
+      "bytes": 12230,
+      "sha256": "b9e2c169a9cb20f0cddb410e80781003c7d7fa353f150b5ccd5c61364607fa78"
+    },
+    {
+      "file": "pe-jobs.json",
+      "bytes": 8165,
+      "sha256": "60267c5875dfd52b9696f9626d37303cb417390547a638c114aaa7d22b9364be"
+    },
+    {
+      "file": "pe-artifacts.json",
+      "bytes": 1579,
+      "sha256": "e6b8e742b718a582552945f26a5c3dc967f7034574bbd1adb9b6717bae2e426f"
+    },
+    {
+      "file": "pe-x86-job.log",
+      "bytes": 26442,
+      "sha256": "6b5d6cd03172fcf02ba8dcc081035fc0e87deabcfd97f37e35d347bb96b187f8"
+    },
+    {
+      "file": "pe-x64-job.log",
+      "bytes": 26442,
+      "sha256": "61854715c39e140b28ff7b70030ab1bdfe5b8415a320305c85c886a437673263"
+    }
+  ],
+  "limits": [
+    "Original application/package source remains1ffd09dd; corrected lifecycle/test/workflow source is f880ef8f.",
+    "Native proof executes the actual installer PE parser on inert fixtures and one authenticated retained wx DLL. It does not load DLLs, install, rebuild or qualify the original failed package.",
+    "The original failed installer qualifier and Linux gate remain failed; relevant replacement package and complete lifecycle acceptance are still required.",
+    "No application build, boat/actuator operation, CI dispatch or release action was performed by this evidence collector.",
+    "Git source hashes identify committed blobs; raw native checkout source hashes were not separately emitted by this lane.",
+    "Focused parser jobs used hosted image20261004.326.1. Their success does not authorize verified SDK reuse on that image; the original application producer used20261012.333.1."
+  ],
+  "applicationBuilt": false,
+  "installedProductAcceptance": false,
+  "wholeProductAcceptance": false,
+  "boatAcceptance": false,
+  "localPackageParity": {
+    "packageSha256": "879613bd6b9492d63e82a25e993815942a5bf6c278acc4be6b99e1ab73b4940c",
+    "identicalPrepackageFiles": 78,
+    "changed": [
+      {
+        "packageMember": "SKAGER-Beta2-Portable-Recovery/app/concrt140.dll",
+        "compiledBytes": 248616,
+        "compiledSha256": "2423a2a62fe0369c610837e240d691da727d95a9c1d5add512d0d0c32e328836",
+        "packageBytes": 259688,
+        "packageSha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1"
+      },
+      {
+        "packageMember": "SKAGER-Beta2-Portable-Recovery/app/msvcp140.dll",
+        "compiledBytes": 457000,
+        "compiledSha256": "fa21058e50d0d6860da87d784f573670bf5d3efd65158145954ef96d0cd403cf",
+        "packageBytes": 447616,
+        "packageSha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165"
+      },
+      {
+        "packageMember": "SKAGER-Beta2-Portable-Recovery/app/vccorlib140.dll",
+        "compiledBytes": 273560,
+        "compiledSha256": "ad003c5fccf5655f1c0db97755e6e24cd0b6830c21eda6804171ac504f03fbda",
+        "packageBytes": 287360,
+        "packageSha256": "89ed5a6877a87ec3ec9fe4a0fb14dc950599f0b67318e746084a0c333a6c865f"
+      },
+      {
+        "packageMember": "SKAGER-Beta2-Portable-Recovery/app/vcruntime140.dll",
+        "compiledBytes": 86840,
+        "compiledSha256": "1b372f064eacb455a0351863706e6326ca31b08e779a70de5de986b5be8069a1",
+        "packageBytes": 91216,
+        "packageSha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed"
+      }
+    ],
+    "added": [
+      "SKAGER-Beta2-Portable-Recovery/app/msvcp140_1.dll",
+      "SKAGER-Beta2-Portable-Recovery/app/msvcp140_2.dll",
+      "SKAGER-Beta2-Portable-Recovery/app/msvcp140_atomic_wait.dll",
+      "SKAGER-Beta2-Portable-Recovery/app/msvcp140_codecvt_ids.dll",
+      "SKAGER-Beta2-Portable-Recovery/app/skager-start.exe",
+      "SKAGER-Beta2-Portable-Recovery/app/vcruntime140_threads.dll"
+    ],
+    "missing": [],
+    "deltaParser": {
+      "parserCommit": "b138b121f513c45c8c538bc293ea079a6052262f",
+      "parserSourceSha256": "ff78d047d6b0df0ff92543023244b3ccebbe946137af2e725bb0cbdae1a22cbf",
+      "passed": 10,
+      "powershell": "7.6.7 Linux64",
+      "scope": "Inert corrected installer parser only; no execution, loading, installation or product acceptance",
+      "receiptPath": "/home/standard/Work/installer-pe-extent-20261015/final-package-delta/receipt.json",
+      "receiptSha256": "5c0d301663c23d22dba1ae2d1597b5795f81ec9823a2c2f2a1e04679ac300805",
+      "rawResultsSha256": "945934e6abe3fd216cc820b8092daab57ff914dfcc6f9e104fc4adf5179286a4",
+      "allPackageBytesIndependentlyMatched": true
+    },
+    "unchangedFilesNotRetested": true
+  }
+}

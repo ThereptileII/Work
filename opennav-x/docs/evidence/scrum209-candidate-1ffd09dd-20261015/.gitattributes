@@ -1,0 +1,2 @@
+# Preserve original downloaded Windows JSON/log bytes and their recorded hashes.
+original/** -text whitespace=cr-at-eol

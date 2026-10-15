@@ -1,0 +1,93 @@
+{
+  "status": "failed",
+  "mode": "staging",
+  "design_validation": "not requested",
+  "checks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+    "Unknown installation ownership refused without adding logs or changing files",
+    "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+    "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication"
+  ],
+  "operations": [
+    {
+      "action": "Preflight",
+      "report": "installer-00-Preflight.json"
+    },
+    {
+      "action": "Install",
+      "report": "installer-01-Install.json"
+    },
+    {
+      "action": "Install",
+      "report": "installer-02-Install.json"
+    },
+    {
+      "action": "Install",
+      "report": "installer-03-Install.json"
+    },
+    {
+      "action": "Install",
+      "report": "installer-04-Install.json"
+    },
+    {
+      "action": "Install",
+      "report": "installer-05-Install.json"
+    }
+  ],
+  "screenshots": [
+    "installer-wizard-welcome.png",
+    "installer-wizard-selection.png",
+    "installer-wizard-welcome.png",
+    "installer-wizard-selection.png",
+    "installer-wizard-backup.png",
+    "installer-wizard-options.png",
+    "installer-wizard-ready.png",
+    "installer-failed-1.png",
+    "installer-failed-2.png"
+  ],
+  "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+  "harness_commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "test_source_sha256": "15653bc83b4b50b49ea3cf1ec60693da92499195025072457b0ca25c4c91079c",
+  "product_commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "display": {
+    "before": [
+      1920,
+      1080,
+      32
+    ],
+    "after": [
+      1920,
+      1080,
+      32
+    ]
+  },
+  "unsupported_build_preservation": {
+    "status": "passed",
+    "setup_sha256": "d8ac9f3f72828a6d86865a20da890c7120eb00eac5569ec5365feae399179212",
+    "test_source_sha256": "15653bc83b4b50b49ea3cf1ec60693da92499195025072457b0ca25c4c91079c",
+    "package_manifest_sha256": "9ebac0a0a0f61ce4089daef1da4bc5e0c9f484b7ee49ccb8b861b2e191fead93",
+    "rejected_tree_files": 2,
+    "profile_files": 4,
+    "rejected_tree_before_sha256": "d805d9de304b9244a1c66599b59958f14a1bcceac56594b0b5a4f371651a05a3",
+    "rejected_tree_after_sha256": "d805d9de304b9244a1c66599b59958f14a1bcceac56594b0b5a4f371651a05a3",
+    "profile_before_sha256": "8613b03f19bea226dc3962e0b5130b5881998dad144eb2003dcc67ec2c69e9fe",
+    "profile_after_sha256": "8613b03f19bea226dc3962e0b5130b5881998dad144eb2003dcc67ec2c69e9fe",
+    "install_root_absent": true,
+    "all_shortcut_groups_absent": true
+  },
+  "retained_failed_fixture": "C:\\Users\\RUNNER~1\\AppData\\Local\\Temp\\OpenNav installer 8g_2lmom",
+  "error": "RuntimeError('Beta 2 wizard reported installation failure; retained engine logs contain the cause')",
+  "visible_windows": [
+    {
+      "pid": 4932,
+      "title": "SKAGER Beta 2 Setup"
+    },
+    {
+      "pid": 4932,
+      "title": "SKAGER Beta 2 Setup "
+    }
+  ]
+}

@@ -1,0 +1,15 @@
+{
+  "schema": 1,
+  "productCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "harnessCommit": "f880ef8f3f20978e251bc9a281c85a194eacdc58",
+  "producerRun": 38722465573,
+  "producerAttempt": 1,
+  "producerJob": 116388013514,
+  "artifact": 11969697633,
+  "artifactSha256": "dabcc028d945a8a0005084593f5c675e3b5a556023c583ab68d9b88582640748",
+  "moduleSha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+  "moduleBytes": 7467008,
+  "crcPassed": true,
+  "applicationBuilt": false,
+  "installedProductAcceptance": false
+}

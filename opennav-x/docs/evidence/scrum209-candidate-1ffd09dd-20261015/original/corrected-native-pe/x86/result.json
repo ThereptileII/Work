@@ -1,0 +1,11 @@
+{
+  "attempt": "1",
+  "run": "38734026147",
+  "architecture": "x86",
+  "applicationBuilt": false,
+  "schema": 1,
+  "exitCode": 0,
+  "installedProductAcceptance": false,
+  "commit": "f880ef8f3f20978e251bc9a281c85a194eacdc58",
+  "hostExecutable": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe"
+}

@@ -1,0 +1,1152 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.NativeCandidateEvidenceReceipt.1",
+  "issues": [
+    "SCRUM-209",
+    "SCRUM-22",
+    "SCRUM-212"
+  ],
+  "status": "native-producer-passed-installed-qualification-failed",
+  "candidateCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "evidenceWorktreeBase": "0617e408b2ca404be11c783bbd2bc7f2d14222a0",
+  "runId": 38722465573,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38722465573",
+  "runStatus": "completed",
+  "runConclusion": "failure",
+  "snapshotUtc": "2026-10-15T12:26:28.806387+00:00",
+  "platform": {
+    "image": "windows-2022",
+    "imageVersion": "20261012.333.1",
+    "applicationAbi": "Win32/x86 on Windows x64"
+  },
+  "producerJob": {
+    "id": 116388013514,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38722465573/job/116388013514",
+    "status": "completed",
+    "conclusion": "success",
+    "startedAt": "2026-10-15T11:05:19Z",
+    "completedAt": "2026-10-15T11:48:53Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Authenticate immutable producer dependencies",
+        "conclusion": "success"
+      },
+      {
+        "number": 4,
+        "name": "Verify immutable SDK image, Python and source before native setup",
+        "conclusion": "success"
+      },
+      {
+        "number": 5,
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "conclusion": "success"
+      },
+      {
+        "number": 6,
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "conclusion": "success"
+      },
+      {
+        "number": 7,
+        "name": "Select explicit curl test Perl",
+        "conclusion": "success"
+      },
+      {
+        "number": 8,
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "conclusion": "success"
+      },
+      {
+        "number": 9,
+        "name": "Fetch pinned source",
+        "conclusion": "success"
+      },
+      {
+        "number": 10,
+        "name": "Prepare authenticated AIS inputs before application compilation",
+        "conclusion": "success"
+      },
+      {
+        "number": 11,
+        "name": "Native AIS observation and transport with verified maintained TLS",
+        "conclusion": "success"
+      },
+      {
+        "number": 12,
+        "name": "Prepare stock support after maintained AIS cache staging",
+        "conclusion": "success"
+      },
+      {
+        "number": 13,
+        "name": "Compile fixture application and run compiled security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "number": 14,
+        "name": "Verify packaged source reproduces the curl certificate-tool patch",
+        "conclusion": "success"
+      },
+      {
+        "number": 15,
+        "name": "Installed native peer CLI refuses key changes on the disposable runner",
+        "conclusion": "success"
+      },
+      {
+        "number": 16,
+        "name": "Compile fixture-free product and run installed security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "number": 17,
+        "name": "Check prepackage recovery retention with disposable real Git trees",
+        "conclusion": "success"
+      },
+      {
+        "number": 18,
+        "name": "Retain both native applications and exact tracked source before packaging",
+        "conclusion": "success"
+      },
+      {
+        "number": 19,
+        "name": "Upload unqualified compiled recovery before packaging can fail",
+        "conclusion": "success"
+      },
+      {
+        "number": 20,
+        "name": "Retain exact plugin-download SDK inputs for no-rebuild qualification",
+        "conclusion": "success"
+      },
+      {
+        "number": 21,
+        "name": "Preserve plugin-download SDK inventory and failed capture diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "number": 22,
+        "name": "Resolve private chart imports in the real host without plugin initialization",
+        "conclusion": "success"
+      },
+      {
+        "number": 23,
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "conclusion": "success"
+      },
+      {
+        "number": 24,
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "conclusion": "success"
+      },
+      {
+        "number": 25,
+        "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+        "conclusion": "success"
+      },
+      {
+        "number": 26,
+        "name": "Stage exact qualified startup updater and retained dependency source",
+        "conclusion": "success"
+      },
+      {
+        "number": 27,
+        "name": "Package fixture-free recovery before desktop qualification",
+        "conclusion": "success"
+      },
+      {
+        "number": 28,
+        "name": "Compile exact installer without running its desktop qualification yet",
+        "conclusion": "success"
+      },
+      {
+        "number": 29,
+        "name": "Seal compiled inputs before any desktop test can fail",
+        "conclusion": "success"
+      },
+      {
+        "number": 30,
+        "name": "Preserve actual producing attempt for downstream retries",
+        "conclusion": "success"
+      },
+      {
+        "number": 31,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      },
+      {
+        "number": 32,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      },
+      {
+        "number": 64,
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 65,
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "qualifierJob": {
+    "id": 116405193249,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38722465573/job/116405193249",
+    "conclusion": "failure",
+    "startedAt": "2026-10-15T11:48:56Z",
+    "completedAt": "2026-10-15T12:10:08Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+        "conclusion": "success"
+      },
+      {
+        "number": 4,
+        "name": "Restore exact compiled inputs without compiling",
+        "conclusion": "success"
+      },
+      {
+        "number": 5,
+        "name": "Qualify retained fixture and product behavior",
+        "conclusion": "failure"
+      },
+      {
+        "number": 6,
+        "name": "Require same-run restart qualification before delivering any product artifact",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 7,
+        "name": "Verify exact restart qualification identity",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 8,
+        "name": "Assemble immutable staging payloads and retained qualification inputs",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 9,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 10,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 11,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      },
+      {
+        "number": 22,
+        "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 23,
+        "name": "Complete job",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "artifacts": [
+    {
+      "id": 11968734107,
+      "name": "windows-build-evidence-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-attempt1",
+      "localArchive": "windows-build-evidence.zip",
+      "bytes": 65381712,
+      "sha256": "14a68d636eeec02805e512b8e4f6032c75062dbcba183a4de39aa58b47805a59",
+      "createdAt": "2026-10-15T11:48:50Z",
+      "producerJobId": 116388013514,
+      "sourceRunAttemptIdentityMatched": true,
+      "digestSizeAndAllMemberCrcMatched": true,
+      "zipMembers": 18125,
+      "uncompressedBytes": 213036126
+    },
+    {
+      "id": 11969697633,
+      "name": "plugin-guard-inputs-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-run38722465573-attempt1",
+      "localArchive": "plugin-guard-inputs.zip",
+      "bytes": 131376585,
+      "sha256": "dabcc028d945a8a0005084593f5c675e3b5a556023c583ab68d9b88582640748",
+      "createdAt": "2026-10-15T11:44:55Z",
+      "producerJobId": 116388013514,
+      "sourceRunAttemptIdentityMatched": true,
+      "digestSizeAndAllMemberCrcMatched": true,
+      "zipMembers": 1588,
+      "uncompressedBytes": 131048811
+    },
+    {
+      "id": 11969882642,
+      "name": "compiled-recovery-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-run38722465573-attempt1",
+      "localArchive": "compiled-recovery.zip",
+      "bytes": 427893955,
+      "sha256": "25aa3ba1a4e0f7148768e6c4452a4a87824e620a30789fe0052e4aebe90dc91c",
+      "createdAt": "2026-10-15T11:44:39Z",
+      "producerJobId": 116388013514,
+      "sourceRunAttemptIdentityMatched": true,
+      "digestSizeAndAllMemberCrcMatched": true,
+      "zipMembers": 2,
+      "uncompressedBytes": 427893683
+    },
+    {
+      "id": 11971467118,
+      "name": "windows-qualification-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-attempt1",
+      "localArchive": "windows-qualification.zip",
+      "bytes": 25067911,
+      "sha256": "c69fd1a6dd0db72629cf88d5e8db361f0e4aa8a90ad814fb994e85feaaea5ec6",
+      "createdAt": "2026-10-15T12:10:05Z",
+      "producerJobId": 116405193249,
+      "sourceRunAttemptIdentityMatched": true,
+      "digestSizeAndAllMemberCrcMatched": true,
+      "zipMembers": 5513,
+      "uncompressedBytes": 56148098
+    },
+    {
+      "id": 11968723989,
+      "name": "staging-build-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d-run38722465573-attempt1",
+      "localArchive": "staging-build.zip",
+      "bytes": 1541362116,
+      "sha256": "320201fb8d6872f9efe2ceeaa5635168ba44fe1cf5c45179c2347387d4730444",
+      "createdAt": "2026-10-15T11:48:34Z",
+      "producerJobId": 116388013514,
+      "sourceRunAttemptIdentityMatched": true,
+      "digestSizeAndAllMemberCrcMatched": true,
+      "zipMembers": 2,
+      "uncompressedBytes": 1541361838
+    }
+  ],
+  "authentication": {
+    "apiAndOriginalLogs": [
+      {
+        "file": "run-final.json",
+        "bytes": 12531,
+        "sha256": "5650584dd69747c90d3119c9ed85630d03113d9ef77fdc430b2dd108c7f919ea"
+      },
+      {
+        "file": "producer-job.json",
+        "bytes": 7731,
+        "sha256": "e36b420e2525a4abfcc549f3ce69dd7c3bb35b1249bc048ace432e72370e0b92"
+      },
+      {
+        "file": "qualifier-job.json",
+        "bytes": 3483,
+        "sha256": "492a56544e222037071ef498e941a1905adf965362593ddb98533ce4f15dd84c"
+      },
+      {
+        "file": "artifacts-final.json",
+        "bytes": 16048,
+        "sha256": "66bf6e21cdd660f623268ce5042f6b97658ba830e8ef95dc719c21abb9807430"
+      },
+      {
+        "file": "producer-job.log",
+        "bytes": 2882042,
+        "sha256": "f8e32a150dcbb458284f3eb6354a7ea03bbb6b628a0dcce2ac04df2644018b77"
+      },
+      {
+        "file": "qualifier-job.log",
+        "bytes": 137905,
+        "sha256": "17219a062590beb5f888938a6b86de9df0a05c57c11e1b9de468c76c6ef1dbae"
+      }
+    ],
+    "selectedOriginalMembers": {
+      "producerMembers": [
+        {
+          "member": "ais-native-runtime/report.json",
+          "bytes": 207389,
+          "sha256": "aa39d42d01c91170d9b331dbfce3f3f28acdafac9520cebffc2d8a29965b6313",
+          "crc32": "3c778b0c"
+        },
+        {
+          "member": "ais-native-runtime/session.log",
+          "bytes": 27,
+          "sha256": "76e3795ef79e2823a969b1b46771b58ed70b2b1e1de9d8dd628319421b408041",
+          "crc32": "5dedfc26"
+        },
+        {
+          "member": "ais-native-runtime/transport.log",
+          "bytes": 1412,
+          "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807",
+          "crc32": "5c563283"
+        },
+        {
+          "member": "ais-native-runtime/provider.log",
+          "bytes": 3500,
+          "sha256": "8f2a412704045af7eda54cf3bcb38302436d91757a9138e394b65e8c057c2513",
+          "crc32": "2300dacf"
+        },
+        {
+          "member": "downloader-trust-windows/summary.json",
+          "bytes": 19280,
+          "sha256": "bff84387adf00f0c77fbb286bdfba0938289ce34cbc9ac76dab4d1d54cb01477",
+          "crc32": "5573e73b"
+        },
+        {
+          "member": "ocharts-private-wxcurl-trust-windows/summary.json",
+          "bytes": 19280,
+          "sha256": "2d52f938b987c8dc8bd234c3717360a1e6d12f91f962df4e4c8a7855d4ec63e2",
+          "crc32": "a670fa89"
+        },
+        {
+          "member": "ocharts-real-host-module/summary.json",
+          "bytes": 18382,
+          "sha256": "8afcbeb94c3b452d8f4c96163ade5873aef563e18abaaad96e7c171a6b0a42c5",
+          "crc32": "7061a9d8"
+        },
+        {
+          "member": "windows-changed-units-xnav/summary.json",
+          "bytes": 72046,
+          "sha256": "cd58b70854896f0f4abe5f8fc305b4ecb66b391ad533d56923bb57e7300b5492",
+          "crc32": "a7e1c60b"
+        },
+        {
+          "member": "windows-changed-units-production/summary.json",
+          "bytes": 72046,
+          "sha256": "37757daf2ba21654feef84821c4b392c8cdd165fdc6d09da5548d639b91cac22",
+          "crc32": "7e3a4823"
+        },
+        {
+          "member": "windows-peer-cli-receipt.json",
+          "bytes": 649,
+          "sha256": "1fe6b4dbe1f37a532ec3709fc2114a469953a1b3308440c9a3f8e08db23f741e",
+          "crc32": "d92b94e2"
+        },
+        {
+          "member": "preview-dll-audit.json",
+          "bytes": 69678,
+          "sha256": "54cabdea4e2875809d984499380882f1d2faf2ba177e2086c1593da96bd3753a",
+          "crc32": "728625fe"
+        },
+        {
+          "member": "production-package-selftest.json",
+          "bytes": 933,
+          "sha256": "fd5a91eb6f3886aff5cd3ff09948486ee1907ea1d2c2b12289abb1be36c7acb8",
+          "crc32": "4c723318"
+        },
+        {
+          "member": "windows-curl-certificate-patch.json",
+          "bytes": 399,
+          "sha256": "4b93e4040b89d67b0e1a0742d67e4a297d1e078b8fdfebafe5489dacfc36a3c4",
+          "crc32": "b1343b6f"
+        }
+      ],
+      "qualifierMembers": [
+        {
+          "member": "installer-staging.json",
+          "bytes": 3524,
+          "sha256": "d1d5d1c6572d9a630a21ec8151b26ede19b1a2f8b24b06019c667b917df78332",
+          "crc32": "2725ab29"
+        },
+        {
+          "member": "installer-engine/20261015-120956-441-Install.log",
+          "bytes": 446,
+          "sha256": "dfcd87c69da58366c29aaf2db6a92f5641d7dbbb18812b5ac61c739da1ea648e",
+          "crc32": "732a5936"
+        },
+        {
+          "member": "staging-inputs.json",
+          "bytes": 3870,
+          "sha256": "d459558e200fabd63818746aa22b48911510390acc1f6e82b0243bb4127ba621",
+          "crc32": "98850842"
+        },
+        {
+          "member": "production-recovery-results.json",
+          "bytes": 7004,
+          "sha256": "bbe9f3756f56886e81401ee16e14a4f356a833e5a2dba67030c88d3d51e5445f",
+          "crc32": "488ccaf2"
+        },
+        {
+          "member": "boat-feedback-windows/result.json",
+          "bytes": 3884,
+          "sha256": "e6fd73df0dc5e832a1edf657d992c235beb4ec9ae94adfd595d86ad148a8883b",
+          "crc32": "50855d12"
+        }
+      ],
+      "pluginCapture": {
+        "member": "plugin-guard-inputs/capture.json",
+        "bytes": 195321,
+        "sha256": "937071e3dcdbeb83594e8319787faeafc7793461d55f08ac043331ce4d557bff",
+        "crc32": "61855aa3"
+      }
+    },
+    "privateEvidenceRoot": "/home/standard/Work/candidate-windows-1ffd-evidence-20261015"
+  },
+  "sourceBinding": {
+    "aisLocalInputs": {
+      "candidate": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "total": 413,
+      "exactGitBlob": 24,
+      "windowsCRLFCheckout": 389,
+      "mismatched": [],
+      "missing": []
+    },
+    "retainedProductAndRecipe": [
+      {
+        "prefix": "source/product",
+        "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+        "trackedDirty": false,
+        "entries": 9180,
+        "gitObjectReferenceMatches": 9180,
+        "rawBlobMatches": 2839,
+        "windowsCRLFCheckoutMatches": 6341,
+        "mismatches": []
+      },
+      {
+        "prefix": "source/recipe",
+        "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+        "trackedDirty": false,
+        "entries": 51,
+        "gitObjectReferenceMatches": 51,
+        "rawBlobMatches": 0,
+        "windowsCRLFCheckoutMatches": 51,
+        "mismatches": []
+      }
+    ],
+    "compiledRecovery": {
+      "archiveSha256": "cac49ea463caa641209ec7e711f2b66395e38a8377a487ebc42b19d0089d9f87",
+      "manifestSha256": "f8659f7420979dbf1e8c8c3efbf4aec138c3ae1a49293d66a960d65b252132cb",
+      "allMembersAuthenticated": 17035,
+      "innerMemberCrcPassed": true,
+      "qualification": "not-run",
+      "packaging": "not-run",
+      "sources": [
+        {
+          "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+          "prefix": "source/product",
+          "trackedChanges": "",
+          "trackedDirty": false
+        },
+        {
+          "commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+          "prefix": "source/integrated",
+          "trackedChanges": "M\tCMakeLists.txt\nM\tcli/console.cpp\nM\tgui/include/gui/chcanv.h\nM\tgui/include/gui/glChartCanvas.h\nM\tgui/include/gui/navutil.h\nM\tgui/include/gui/notification_manager_gui.h\nM\tgui/include/gui/ocpn_app.h\nM\tgui/include/gui/ocpndc.h\nM\tgui/include/gui/piano.h\nM\tgui/include/gui/route_gui.h\nM\tgui/include/gui/route_point_gui.h\nM\tgui/include/gui/s57chart.h\nM\tgui/include/gui/waypointman_gui.h\nM\tgui/src/SendToPeerDlg.cpp\nM\tgui/src/ais.cpp\nM\tgui/src/canvasMenu.cpp\nM\tgui/src/chcanv.cpp\nM\tgui/src/cm93.cpp\nM\tgui/src/color_handler.cpp\nM\tgui/src/glChartCanvas.cpp\nM\tgui/src/gshhs.cpp\nM\tgui/src/navutil.cpp\nM\tgui/src/notification_manager_gui.cpp\nM\tgui/src/ocpn_app.cpp\nM\tgui/src/ocpn_frame.cpp\nM\tgui/src/piano.cpp\nM\tgui/src/pluginmanager.cpp\nM\tgui/src/route_gui.cpp\nM\tgui/src/route_point_gui.cpp\nM\tgui/src/routeman_gui.cpp\nM\tgui/src/routemanagerdialog.cpp\nM\tgui/src/s57chart.cpp\nM\tgui/src/toolbar.cpp\nM\tgui/src/waypointman_gui.cpp\nM\tlibs/IXWebSocket/CMakeLists.txt\nM\tlibs/IXWebSocket/ixwebsocket/IXSocket.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXSocket.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocket.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocket.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketHandshake.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketHttpHeaders.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketInitResult.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketOpenInfo.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflate.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketPerMessageDeflateCodec.h\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketTransport.cpp\nM\tlibs/IXWebSocket/ixwebsocket/IXWebSocketTransport.h\nM\tlibs/s52plib/src/DepthFont.cpp\nM\tlibs/s52plib/src/DepthFont.h\nM\tlibs/s52plib/src/chartsymbols.cpp\nM\tlibs/s52plib/src/chartsymbols.h\nM\tlibs/s52plib/src/s52plib.cpp\nM\tlibs/s52plib/src/s52plib.h\nM\tlibs/s52plib/src/s52s57.h\nM\tlibs/wxcurl/include/wx/curl/base.h\nM\tlibs/wxcurl/src/base.cpp\nM\tmodel/cmake/Curl.cmake\nM\tmodel/include/model/MarkIcon.h\nM\tmodel/include/model/comm_drv_n2k_net.h\nM\tmodel/include/model/comm_drv_n2k_serial.h\nM\tmodel/include/model/downloader.h\nM\tmodel/include/model/plugin_loader.h\nM\tmodel/include/model/route_point.h\nM\tmodel/include/model/select.h\nM\tmodel/src/comm_drv_n0183_net.cpp\nM\tmodel/src/comm_drv_n0183_serial.cpp\nM\tmodel/src/comm_drv_n2k_net.cpp\nM\tmodel/src/comm_drv_n2k_serial.cpp\nM\tmodel/src/comm_drv_signalk_net.cpp\nM\tmodel/src/comm_n0183_output.cpp\nM\tmodel/src/downloader.cpp\nM\tmodel/src/garmin_protocol_mgr.cpp\nM\tmodel/src/garmin_wrapper.cpp\nM\tmodel/src/peer_client.cpp\nM\tmodel/src/plugin_handler.cpp\nM\tmodel/src/plugin_loader.cpp\nM\tmodel/src/select.cpp\nM\tmodel/src/ser_ports.cpp\nM\tplugins/dashboard_pi/src/dashboard_pi.cpp\nM\ttest/CMakeLists.txt\nM\ttest/ipc-srv-tests.cpp\nM\ttest/n2k_tests.cpp\n",
+          "trackedDirty": true
+        },
+        {
+          "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+          "prefix": "source/recipe",
+          "trackedChanges": "",
+          "trackedDirty": false
+        }
+      ]
+    }
+  },
+  "producerOutcomes": {
+    "CTest": {
+      "fixture": {
+        "passed": 146,
+        "failed": 0,
+        "log": {
+          "member": "windows-xnav-Win32.log",
+          "bytes": 1238262,
+          "sha256": "b26ba73dbbeb6785982a1c9530952de7844e878ef6692ebd899015d85647e7ed",
+          "crc32": "c89f8596"
+        }
+      },
+      "fixtureFreeProduct": {
+        "passed": 146,
+        "failed": 0,
+        "log": {
+          "member": "windows-production-Win32.log",
+          "bytes": 1180879,
+          "sha256": "ccd43db53e296d509fa168b065a889ac7ac03f75c1723c68f2d5d0a9c41b18ac",
+          "crc32": "29ef2dd4"
+        }
+      },
+      "sameDistinctTestNames": 146,
+      "distinctTestNamesSha256": "99f61a13fb2c77e9198c9f8436a7484ef59eab8ef1e1c4d73bcf46fd1ffdb0d8"
+    },
+    "dependencyAuthority": {
+      "mode": "cross-run-bundle",
+      "producer": {
+        "headSha": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+        "job": "windows-dependencies",
+        "repository": "ThereptileII/Work",
+        "runAttempt": "1",
+        "runId": "38618335277",
+        "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+      },
+      "fingerprint": {
+        "abi": {
+          "abi": "x86",
+          "architecture": "Win32",
+          "curl": "8.22.0",
+          "openssl": "3.5.9",
+          "runtime": "MultiThreadedDLL (/MD)",
+          "zlib": "1.3.2"
+        },
+        "inputs": {
+          "docs/third-party/OpenSSL-3.5.9/LICENSE.txt": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+          "docs/third-party/OpenSSL-3.5.9/provenance.json": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+          "docs/third-party/curl-8.22.0/LICENSE.txt": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+          "docs/third-party/curl-8.22.0/provenance.json": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+          "docs/third-party/zlib-1.3.2/LICENSE.txt": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+          "docs/third-party/zlib-1.3.2/provenance.json": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+          "tools/build-curl-windows.ps1": "9c5a896c5b3ebcf5d04b92f77cdfdfb98b1f381fbac6495c8c4324c76f7ddf23",
+          "tools/build-openssl-windows.ps1": "a57a2a468999daf8ba655c2328fd645d002c184ce370ca916d99cf5cc43dabc7",
+          "tools/build-pristine-windows.ps1": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344",
+          "tools/build-zlib-windows.ps1": "007cb7eac7d5378af095e87218b285920abd4065d4492c1d0e5634deda9c5f22",
+          "tools/curl_package.py": "286ffca81d992270ccd6398829575305d538a889496b96e495e9e3339bb39acb",
+          "tools/openssl_package.py": "fe0c87a9146c03dcbc7a5ba2f4214ac2690d536ebfc8f639681b64da0d41e35d",
+          "tools/patch-curl-test-openssl.py": "499f27be5a3ed25a15d82d1cf9e3338257ae26dc7beb9f674dde6c13cffcc771",
+          "tools/test-curl-source-preflight.ps1": "55cfe2d1d8973489d64cb221b79e16df216a06c51496b18a0a079818fe571379",
+          "tools/test-zlib-source-verification.ps1": "0864a7f6ca6c880988f6decf5dcdca6a26693a07c7b30632d3f1d5fae27b1b16",
+          "tools/windows-curl-environment.ps1": "75779db66dbc232170f830977d5d321236f71867a41a214347283d66d813224e",
+          "tools/windows-curl-import-layout.cmake": "41fb61f6710d45bdcf98289a5d72f011ceaf378555c445dba8f9edc6bdf5c22e",
+          "tools/windows-curl.lock.json": "af38fa0c570b3ed01cda2fd4511e351c8af2bebedb254cfe9ff5fb6c6f13fe18",
+          "tools/windows-native-tool-facts.cmake": "a243fa025043111b73dced4756cfe820f089356c68692e1ff99afc327293e549",
+          "tools/windows-native-tool-facts.ps1": "909d5aca764ae461618d02a58592bf0d6f3d7a6846e4b5483aad818aa04e6cd0",
+          "tools/windows-openssl.lock.json": "dd26041ec5b5f85a76010b4e45716d8dc46c85ccb032815aab8059c49e6bc99d",
+          "tools/windows-parent-environment.ps1": "b84f945ddde6d343529446193360dd228b4c6b6ca8390fd0d35fb12a92e5f6b1",
+          "tools/windows-zlib.lock.json": "3da21aa4827871eac086c48b859fb5a50737bfc15c1e2fbe0ed81ffa15d23995",
+          "tools/windows_dependency_bundle.py": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+          "tools/windows_dependency_evidence.py": "cb073d5f2fc18984074fc171a10a6cdf5dc875ef418fc03c3dbc52f58f0379b5",
+          "tools/windows_dependency_receipt.py": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+          "tools/windows_dependency_reuse.py": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+          "tools/windows_dependency_stage.py": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+          "tools/windows_gettext.py": "1f86e71f42766f3c0b730ec07dd32abdfd8cdee218aa1c1d8f8b2c786754ef36"
+        },
+        "sha256": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+        "workflowSha256": "fae71dff3d7f26b67a01e6f7791e173d79506620695e2e038f0c5c96e0eecd9a"
+      },
+      "toolchainSha256": "978e7a154c8e8d6dc388af73c247ecb6f32636c389f02e80f2d0f29a12018bfb"
+    },
+    "nativeAis": {
+      "status": "passed",
+      "sessionChecks": 251,
+      "transportScenarios": 18,
+      "providerLifecycles": 8,
+      "dependencyBuilds": false,
+      "productAcceptance": false,
+      "boatAcceptance": false
+    },
+    "nativeTrust": {
+      "publicDownloaderCases": 12,
+      "wxCurlCases": 12,
+      "status": "passed",
+      "privateSummaryStatus": "passed",
+      "caseCountsNotAddedAcrossSummaries": true
+    },
+    "privateChartModule": {
+      "status": "passed",
+      "cases": [
+        {
+          "name": "option-without-selftest",
+          "exit": 2,
+          "expected": 2
+        },
+        {
+          "name": "default",
+          "exit": 0,
+          "expected": 0
+        },
+        {
+          "name": "module",
+          "exit": 0,
+          "expected": 0
+        },
+        {
+          "name": "wrong-original",
+          "exit": 1,
+          "expected": 1
+        }
+      ],
+      "profilesUnchanged": true,
+      "nativeProductAcceptance": false
+    },
+    "peerCli": {
+      "schema": 1,
+      "owner": "OpenNavX.CI.PeerCli.1",
+      "status": "success",
+      "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "runId": "38722465573",
+      "runAttempt": "1",
+      "job": "windows-integration",
+      "sourcesSha256": {
+        "tools/test-peer-cli.py": "eb36aa06e5e68f933e1df8d99449c1c35a0dff78200783e137391432c7b32ad5",
+        "tools/peer-cli-receipt.py": "5abb4a6887e2c6aa981aca116974ec98ec388278be5efb61aa2e46586be02c50",
+        "tools/build-pristine-windows.ps1": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+      },
+      "executableSha256": "11ac5555ad93e486ee8cb51bbc841680628e3bebfe0d1947806272694fcab908"
+    },
+    "changedUnits": {
+      "fixture": "passed",
+      "fixtureFreeProduct": "passed"
+    },
+    "dllImportAudit": {
+      "missing": [],
+      "declaredModuleCount": 88,
+      "scope": "packaged static import audit; installed lifecycle failed"
+    },
+    "pluginInputCapture": {
+      "status": "captured-not-qualified",
+      "inventorySha256": "75c6500a4d7f46049abe2d2631c85ba27e61a708e7ed0f777001d5e3967ddeca",
+      "productAcceptance": false
+    },
+    "recoveryPackaging": "passed",
+    "installerCompilation": "passed-compilation-only",
+    "compiledInputSealing": "passed"
+  },
+  "qualifierOutcomes": {
+    "restore": {
+      "schema": 1,
+      "kind": "skager-staging-compiled-inputs",
+      "status": "restored",
+      "qualification": "not-run",
+      "producer": {
+        "repository": "ThereptileII/Work",
+        "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+        "runId": "38722465573",
+        "runAttempt": "1",
+        "job": "windows-integration",
+        "platform": "windows-2022",
+        "architecture": "Win32"
+      },
+      "harnessCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "workspaceRoot": "D:\\a\\Work\\Work\\opennav-x",
+      "archiveSha256": "b9e542e2c9601e29903ffec72b3419ed80891bc504e621be263d4da4a5a391ed",
+      "sourceArchiveSha256": "89a450c1511d7ee25b821887c0717e77657944eaa180b606d9ca3581645936c9",
+      "manifestSha256": "b3921767f62a2910611d51bb2c5751db97ca66a9f8e7a3e7e36b3fd940a8f587",
+      "files": 4578,
+      "boatFeedback": {
+        "manifestSha256": "1456d3a54cf3f513e9017dda0a08078fa2067aeba1fb330fdde44911efd4a332",
+        "binaries": [
+          {
+            "name": "ais_drawer_scroll_test",
+            "path": "build/xnav-windows/Release/ais_drawer_scroll_test.exe",
+            "sha256": "e8e96bf89f930c9559c834fd1c69c9e5e15620eaeecbca48026e65354f079b3a"
+          },
+          {
+            "name": "anchor_route_transition_tests",
+            "path": "build/xnav-windows/Release/anchor_route_transition_tests.exe",
+            "sha256": "019f02d70678d354ee4965c0ca4b99b844fa7509fbc000faec9102748d6ce683"
+          },
+          {
+            "name": "chart_anchor_watch_renderer_test",
+            "path": "build/xnav-windows/Release/chart_anchor_watch_renderer_test.exe",
+            "sha256": "b215df31405cb7e0802a048a5af8fb4752427ad10c30991e6dc7032c045be256"
+          },
+          {
+            "name": "chart_info_drawer_test",
+            "path": "build/xnav-windows/Release/chart_info_drawer_test.exe",
+            "sha256": "45f96876518da91260f1b5da9af7b10a12c30c3467098e2060c05534dc869567"
+          },
+          {
+            "name": "chart_info_tests",
+            "path": "build/xnav-windows/Release/chart_info_tests.exe",
+            "sha256": "647abca9a921b584cc48786475fb12dcfa4b80e2d919607833e8714b70edf0dc"
+          },
+          {
+            "name": "chart_light_hover_tests",
+            "path": "build/xnav-windows/Release/chart_light_hover_tests.exe",
+            "sha256": "05f12ac0d1291fe648009f4c3137f9505b1080db0b11f9ed29032dbd797fa9a2"
+          },
+          {
+            "name": "navigation_name_editor_test",
+            "path": "build/xnav-windows/Release/navigation_name_editor_test.exe",
+            "sha256": "7c79260ea52cf22ee56132e4fd9110bc8d7c29ea04266b975e179a305b5546c7"
+          },
+          {
+            "name": "navigation_naming_tests",
+            "path": "build/xnav-windows/Release/navigation_naming_tests.exe",
+            "sha256": "fa17a2f1169580ab246b8fcda484db64db1ca8f26e7cfd154cdd12cf2745ca43"
+          },
+          {
+            "name": "online_ais_radius_test",
+            "path": "build/xnav-windows/Release/online_ais_radius_test.exe",
+            "sha256": "7d231c14ee3c36b07fc90a7ed70b4a98bf09de23d02a60da4a8e5465fcfe9b0d"
+          },
+          {
+            "name": "pilot_status_tests",
+            "path": "build/xnav-windows/Release/pilot_status_tests.exe",
+            "sha256": "b2c825bb2ac205161e514341ee6c90b260dea69d7c041ea807a6d341ec216359"
+          },
+          {
+            "name": "route_activation_callbacks_test",
+            "path": "build/xnav-windows/Release/route_activation_callbacks_test.exe",
+            "sha256": "d5b087234327836982ffbcac4823124656ab254efbbc5c660ad161842b17a182"
+          },
+          {
+            "name": "route_context_card_test",
+            "path": "build/xnav-windows/Release/route_context_card_test.exe",
+            "sha256": "fd0f460821e1bd1f7dbb93604010c5510c61c6b58edfc459f71bd654de971359"
+          },
+          {
+            "name": "route_context_tests",
+            "path": "build/xnav-windows/Release/route_context_tests.exe",
+            "sha256": "20168e40b9ad8ad9c8e9f3e00ce682d1ce2da5f6c239261b2811f32c536f5cfa"
+          }
+        ]
+      }
+    },
+    "retainedOfflineComponents": {
+      "passed": 13,
+      "failed": 0,
+      "sourceCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "harnessCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "manifestSha256": "1456d3a54cf3f513e9017dda0a08078fa2067aeba1fb330fdde44911efd4a332",
+      "scope": "Offline production component libraries with owned fixtures; no product/profile/chart/network/hardware acceptance"
+    },
+    "fixtureFreeRecovery": {
+      "status": "passed",
+      "packageSha256": "879613bd6b9492d63e82a25e993815942a5bf6c278acc4be6b99e1ab73b4940c",
+      "filesVerified": 1046,
+      "checks": [
+        "Exact extracted package inventory/hash and actual fixture-free executable identity verified",
+        "Extracted app/helper execute matching guarded-restart capability probes without profile initialization",
+        "Out-of-box product shows real unavailable state, no Demo controls and Day/Dusk/Night chart content",
+        "Legacy launcher and Legacy-to-XNav retain real coastline and isolated profile",
+        "Product XNav-to-Legacy-to-XNav controlled restart preserves coastline",
+        "Safe launcher and return to XNav render real chart content with clean process exits",
+        "External-profile override refused; normal installed files and profile canary unchanged"
+      ]
+    },
+    "runtimeReports": [
+      {
+        "member": "boat-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "2253b0c81b8eec2ccada66cb6e8a97f4f1190c2f1e0175a2191effb640d09b23"
+      },
+      {
+        "member": "instruments-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "cdd805c4ebbf61f9304da3826e58decef033260c15fc80cc01b87a069061905e"
+      },
+      {
+        "member": "mode-cycle-results.json",
+        "result": "interaction and fixture persistence passed; visual review required",
+        "sha256": "c1c6b505d41bcdd182ac21ca5196dee46aa0036e06a98edfb9a0251d41c46f87"
+      },
+      {
+        "member": "n2k-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "8fa858c922827c3a6e39b1065bebdd761c93508ec8a5b3e69d39e905875dea03"
+      },
+      {
+        "member": "navigation-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "071cb7de52a10a719173fb352b78885255a713b95a39a4afbd9e52949a59baf8"
+      },
+      {
+        "member": "objects-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "fb48ba363ccaaa2a5f6edf3d189e0858c70536a993204ed41bd5ffb2e810b8d3"
+      },
+      {
+        "member": "peer-two-instances-results.json",
+        "result": "PASS",
+        "sha256": "a5869abf4e84ac4d0a1bcd7c128ca24d3c6576d5affce31d5c513c2927406f6f"
+      },
+      {
+        "member": "pilot-results.json",
+        "result": "passed; screenshot review required",
+        "sha256": "89628a0d4faf631ad7d7fbdb4807a3858961d14f8f1b68e74b1f7bcb66d84dca"
+      },
+      {
+        "member": "production-recovery-results.json",
+        "result": "passed",
+        "sha256": "bbe9f3756f56886e81401ee16e14a4f356a833e5a2dba67030c88d3d51e5445f"
+      },
+      {
+        "member": "recording-results.json",
+        "result": "passed; screenshot review required",
+        "sha256": "bd42ae58076eab03888891a9f57b6623974f796362249375b675658bd5303137"
+      },
+      {
+        "member": "recovery-results.json",
+        "result": "passed; native screenshot review required",
+        "sha256": "05af0aedb4d2086816de08eb2b89ec3b6b24d61ba57e4e18f10fb012674acf00"
+      },
+      {
+        "member": "route-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "ec07b57296db20e7121340e2914e83a17816e3f1eb613ae5f7ac29945b2ff618"
+      },
+      {
+        "member": "route-progress-results.json",
+        "result": "passed",
+        "sha256": "92cdc7246e27ff91616461c6b90f51c01a1ad95a7ae26198b19ce5f6f6241b8c"
+      },
+      {
+        "member": "route-standard-input-results.json",
+        "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+        "sha256": "e83d1d5eb5fa911450be442be0ba2b344d75751925cda59983e2bebb368df65b"
+      },
+      {
+        "member": "route-standard-progress-results.json",
+        "result": "passed",
+        "sha256": "3d52fcae3f43081c3e56f1b1af15b27dc30c445db052a6bc3f68ebcca6cabef1"
+      },
+      {
+        "member": "signalk-results.json",
+        "result": "passed",
+        "sha256": "1e584d23cd00a9eaa94969dbe5410a3d27e83f5f61351aceef2805c042e0e7fa"
+      },
+      {
+        "member": "user-flows-results.json",
+        "result": "passed; native screenshots require review",
+        "sha256": "12a714b06d7150de24188d4af3656b3872818841e095a2f77100335590e0ef5b"
+      }
+    ],
+    "installer": {
+      "status": "failed",
+      "passedPrecedingChecks": [
+        "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+        "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+        "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+        "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+        "Unknown installation ownership refused without adding logs or changing files",
+        "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+        "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication"
+      ],
+      "sourceCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "harnessCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "setupSha256": "d8ac9f3f72828a6d86865a20da890c7120eb00eac5569ec5365feae399179212",
+      "firstCausalFailure": "Invalid PE export directory: .../app/wxmsw32u_core_vc14x.dll",
+      "failureUtc": "2026-10-15T12:09:56.4377050Z",
+      "failureMember": "original/installer-engine/20261015-120956-441-Install.log",
+      "sourceBoundary": "Lifecycle.ps1 rejects exportSize > 1048576 before installed lifecycle can proceed"
+    },
+    "wxDll": {
+      "member": "plugin-guard-inputs/data/runtime/wxmsw32u_core_vc14x.dll",
+      "bytes": 7467008,
+      "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3",
+      "crc32": "4210428a",
+      "exportDirectoryRva": 5626288,
+      "exportDirectoryBytes": 1158912,
+      "installerLimitBytes": 1048576,
+      "sameBytesInBothCompiledInstallTrees": true
+    },
+    "publicEncChartGate": "not-reached-after-installer-failure",
+    "assembly": "skipped",
+    "endurance": "skipped-by-user-direction",
+    "designValidation": "not-requested"
+  },
+  "limits": [
+    "Only original retained evidence was inspected; no build, test suite, CI dispatch, retry or physical action was performed.",
+    "Runtime report wording retaining screenshot-review caveats remains unchanged; no visual/design acceptance is inferred.",
+    "The 146 identical test names ran once per fixture/product build; executions and repeated logs are not summed as unique tests.",
+    "Retained plugin SDK custody is not original plugin acceptance. Static DLL audit does not establish installed loader/import closure or repair the failed lifecycle.",
+    "Product source is 1ffd09ddf2fa6588def2907485f6e14e89bc3a7d; this later evidence commit creates no new executable or product revision.",
+    "Compiled recovery retains modified integrated OpenCPN source separately from clean tracked product/recipe source, and is explicitly unqualified.",
+    "Linux integration in the same run also failed; native component passes cannot grant full Staging, release, installed-product or boat acceptance.",
+    "Source/license review and actual boat acceptance remain separate gates."
+  ],
+  "installedPackageAccepted": false,
+  "wholeProductAccepted": false,
+  "boatAccepted": false,
+  "releaseAccepted": false,
+  "sealedStaging": {
+    "innerArchiveSha256": "b9e542e2c9601e29903ffec72b3419ed80891bc504e621be263d4da4a5a391ed",
+    "manifestSha256": "b3921767f62a2910611d51bb2c5751db97ca66a9f8e7a3e7e36b3fd940a8f587",
+    "allMemberSizeSha256AndCrcMatched": 4578,
+    "producer": {
+      "architecture": "Win32",
+      "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+      "job": "windows-integration",
+      "platform": "windows-2022",
+      "repository": "ThereptileII/Work",
+      "runAttempt": "1",
+      "runId": "38722465573"
+    },
+    "qualification": "not-run",
+    "packages": [
+      {
+        "member": "build/developer-preview/SKAGER-Beta2-source.zip",
+        "bytes": 453282439,
+        "sha256": "89a450c1511d7ee25b821887c0717e77657944eaa180b606d9ca3581645936c9"
+      },
+      {
+        "member": "build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip",
+        "bytes": 193908263,
+        "sha256": "879613bd6b9492d63e82a25e993815942a5bf6c278acc4be6b99e1ab73b4940c"
+      },
+      {
+        "member": "build/beta-installer/SKAGER-Beta2-Setup.exe",
+        "bytes": 187479772,
+        "sha256": "d8ac9f3f72828a6d86865a20da890c7120eb00eac5569ec5365feae399179212"
+      }
+    ],
+    "wxDllCopies": [
+      {
+        "member": "build/developer-preview/SKAGER-Beta2-Portable-Recovery/app/wxmsw32u_core_vc14x.dll",
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      {
+        "member": "build/production-install/wxmsw32u_core_vc14x.dll",
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      {
+        "member": "build/xnav-install/wxmsw32u_core_vc14x.dll",
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      }
+    ],
+    "correspondingSource": {
+      "members": 13584,
+      "allMemberCrcMatched": true,
+      "reference": {
+        "schema": 1,
+        "productCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+        "productSource": "https://github.com/ThereptileII/Work/tree/1ffd09ddf2fa6588def2907485f6e14e89bc3a7d/opennav-x",
+        "openCpnVersion": "5.12.4",
+        "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+        "integratedTree": "OpenCPN-5.12.4-integrated",
+        "integrationPatches": [
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-xnav.patch",
+            "sha256": "fcd48cbe93d1ff34a1c6692cab95798247f60064ce7156a5eace321426f8c92e"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-regression-tests.patch",
+            "sha256": "3ef13652b8f3717d836883d2fbb7a18f35dbd2ca1162ac991fe339e61392dff1"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-ais-transport.patch",
+            "sha256": "ee6689b8943284347fadca9564892b31db4c43db2a007412ac3fdc2072d07fd7"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-chart-presentation.patch",
+            "sha256": "0cbf8a593cff312acfb37a2d85bcea85003473425065b4322952f2909828f837"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-route-focus.patch",
+            "sha256": "b9e7e110c991f804d80c46e40811f8baf73536ca3a8170aaaa9fdd17667fc142"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-route-hit-dpi.patch",
+            "sha256": "4f4ce3695c955f18ae992db60ab3e604c85319f96dfb91fc958d4cbd7cab2cd6"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-maintained-curl.patch",
+            "sha256": "dafa1fec0a69e3a1195db726c2cb26ceeb7535b5e25476ac2e4658d910f44e48"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-download-trust.patch",
+            "sha256": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-wxcurl-trust.patch",
+            "sha256": "72344ee526ade009ec5c5db68a19019efaba8b7579d0ab03e8b784202148825e"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-peer-response-buffer.patch",
+            "sha256": "c335f361766a6982c3d096e93f7c149179deb33134668e110111ac4980064e15"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-peer-unavailable.patch",
+            "sha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+          },
+          {
+            "path": "opennav-x/patches/opencpn-5.12.4-pilot-serial.patch",
+            "sha256": "7db46c9770dc1937e8e659976bdb41be7f8b2e0b7ec55a4997eea83cc74542be"
+          }
+        ],
+        "workflow": ".github/workflows/opennav-baseline.yml",
+        "workflows": [
+          ".github/workflows/opennav-baseline.yml",
+          ".github/workflows/opennav-beta2-handoff.yml",
+          ".github/workflows/opennav-boat-tools.yml",
+          ".github/workflows/opennav-prototype.yml",
+          ".github/workflows/update-verifier-probe.yml"
+        ],
+        "gitlinkReferences": [
+          {
+            "path": "OpenCPN-5.12.4-integrated/flatpak/org.opencpn.OpenCPN",
+            "commit": "5b4e684880340a2e3c83daea6b82fdcd661e15ab",
+            "note": "Gitlink reference; not an application build input"
+          }
+        ],
+        "filesVerified": 13583,
+        "sourceReferenceSha256": "c6657f7f1f21b4421ab261acbefc0327b17024c4b627eaa16378558eb3d6df47",
+        "bundledDependencySources": [
+          {
+            "path": "third-party-sources/openssl-3.5.9.tar.gz",
+            "sha256": "603f5602e2eef00d77fbd429d34dcd5822bb301757a1bc9cdb24c670f1eb859a",
+            "bytes": 53279637
+          },
+          {
+            "path": "third-party-sources/curl-8.22.0.tar.xz",
+            "sha256": "f7ef3ae8a22e521f289803fe93543eb64c329b58aa73a9e224dfd915a2a5f4f7",
+            "bytes": 2953092
+          },
+          {
+            "path": "third-party-sources/zlib-1.3.2.tar.gz",
+            "sha256": "bb329a0a2cd0274d05519d61c667c062e06990d72e125ee2dfa8de64f0119d16",
+            "bytes": 1502830
+          },
+          {
+            "path": "third-party-sources/skager-ocharts-source.zip",
+            "sha256": "a43d50c291dde54835320c47dfe669a13726383d39b0f6b8efa14089a16c8655",
+            "bytes": 5725851
+          },
+          {
+            "path": "third-party-sources/skager-updater-source.zip",
+            "sha256": "2b1ea8049d47cae5845ce56668f7610582e8d522f8d0cd249f05417fde6eb662",
+            "bytes": 139139735
+          }
+        ]
+      }
+    },
+    "recovery": {
+      "members": 1047,
+      "allMemberCrcMatched": true,
+      "product": {
+        "version": "0.4.0-beta2.4",
+        "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+        "test_fixtures": false,
+        "build_purpose": "INSTALLED PRODUCT",
+        "xnav_hardware_output_policy": "manual-commissioning",
+        "xnav_manual_control_contract": 1,
+        "executable_sha256": "2ee5679886e717db7ff7228821ef41d5a224ef863bdd00d43f84579befef3995",
+        "restart_helper_sha256": "f1861c2b14f8091e3f189d6d0a7967ef8777ac19b19c8a3f2b98a2e3bd4a525a",
+        "commissioning_restart_protocol": 1,
+        "update_startup_health": 1,
+        "startup_launcher_sha256": "05f80765c6e39e8a4587e88455c966520e937dcab6c94dcd343ce0d56426d10e",
+        "update_trust": {
+          "schema": 1,
+          "productCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+          "sourcePath": "opennav-x/installer/windows/staging-update-trust.json",
+          "gitPath": "opennav-x/installer/windows/staging-update-trust.json",
+          "gitBlob": "67d6dc32a948a17b4442b5a65043b17bdaed14c4",
+          "gitBlobSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+          "sourceSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+          "configSha256": "4cd61f55731732a06c4e303506f29bc5f46d8bde9c296ae76680d2dee4d27826",
+          "channel": "beta"
+        }
+      },
+      "wxDll": {
+        "member": "SKAGER-Beta2-Portable-Recovery/app/wxmsw32u_core_vc14x.dll",
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      }
+    }
+  }
+}

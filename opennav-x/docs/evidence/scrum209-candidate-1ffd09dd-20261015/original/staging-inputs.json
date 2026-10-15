@@ -1,0 +1,91 @@
+{
+  "schema": 1,
+  "kind": "skager-staging-compiled-inputs",
+  "status": "restored",
+  "qualification": "not-run",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+    "runId": "38722465573",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "harnessCommit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "workspaceRoot": "D:\\a\\Work\\Work\\opennav-x",
+  "archiveSha256": "b9e542e2c9601e29903ffec72b3419ed80891bc504e621be263d4da4a5a391ed",
+  "sourceArchiveSha256": "89a450c1511d7ee25b821887c0717e77657944eaa180b606d9ca3581645936c9",
+  "manifestSha256": "b3921767f62a2910611d51bb2c5751db97ca66a9f8e7a3e7e36b3fd940a8f587",
+  "files": 4578,
+  "boatFeedback": {
+    "manifestSha256": "1456d3a54cf3f513e9017dda0a08078fa2067aeba1fb330fdde44911efd4a332",
+    "binaries": [
+      {
+        "name": "ais_drawer_scroll_test",
+        "path": "build/xnav-windows/Release/ais_drawer_scroll_test.exe",
+        "sha256": "e8e96bf89f930c9559c834fd1c69c9e5e15620eaeecbca48026e65354f079b3a"
+      },
+      {
+        "name": "anchor_route_transition_tests",
+        "path": "build/xnav-windows/Release/anchor_route_transition_tests.exe",
+        "sha256": "019f02d70678d354ee4965c0ca4b99b844fa7509fbc000faec9102748d6ce683"
+      },
+      {
+        "name": "chart_anchor_watch_renderer_test",
+        "path": "build/xnav-windows/Release/chart_anchor_watch_renderer_test.exe",
+        "sha256": "b215df31405cb7e0802a048a5af8fb4752427ad10c30991e6dc7032c045be256"
+      },
+      {
+        "name": "chart_info_drawer_test",
+        "path": "build/xnav-windows/Release/chart_info_drawer_test.exe",
+        "sha256": "45f96876518da91260f1b5da9af7b10a12c30c3467098e2060c05534dc869567"
+      },
+      {
+        "name": "chart_info_tests",
+        "path": "build/xnav-windows/Release/chart_info_tests.exe",
+        "sha256": "647abca9a921b584cc48786475fb12dcfa4b80e2d919607833e8714b70edf0dc"
+      },
+      {
+        "name": "chart_light_hover_tests",
+        "path": "build/xnav-windows/Release/chart_light_hover_tests.exe",
+        "sha256": "05f12ac0d1291fe648009f4c3137f9505b1080db0b11f9ed29032dbd797fa9a2"
+      },
+      {
+        "name": "navigation_name_editor_test",
+        "path": "build/xnav-windows/Release/navigation_name_editor_test.exe",
+        "sha256": "7c79260ea52cf22ee56132e4fd9110bc8d7c29ea04266b975e179a305b5546c7"
+      },
+      {
+        "name": "navigation_naming_tests",
+        "path": "build/xnav-windows/Release/navigation_naming_tests.exe",
+        "sha256": "fa17a2f1169580ab246b8fcda484db64db1ca8f26e7cfd154cdd12cf2745ca43"
+      },
+      {
+        "name": "online_ais_radius_test",
+        "path": "build/xnav-windows/Release/online_ais_radius_test.exe",
+        "sha256": "7d231c14ee3c36b07fc90a7ed70b4a98bf09de23d02a60da4a8e5465fcfe9b0d"
+      },
+      {
+        "name": "pilot_status_tests",
+        "path": "build/xnav-windows/Release/pilot_status_tests.exe",
+        "sha256": "b2c825bb2ac205161e514341ee6c90b260dea69d7c041ea807a6d341ec216359"
+      },
+      {
+        "name": "route_activation_callbacks_test",
+        "path": "build/xnav-windows/Release/route_activation_callbacks_test.exe",
+        "sha256": "d5b087234327836982ffbcac4823124656ab254efbbc5c660ad161842b17a182"
+      },
+      {
+        "name": "route_context_card_test",
+        "path": "build/xnav-windows/Release/route_context_card_test.exe",
+        "sha256": "fd0f460821e1bd1f7dbb93604010c5510c61c6b58edfc459f71bd654de971359"
+      },
+      {
+        "name": "route_context_tests",
+        "path": "build/xnav-windows/Release/route_context_tests.exe",
+        "sha256": "20168e40b9ad8ad9c8e9f3e00ce682d1ce2da5f6c239261b2811f32c536f5cfa"
+      }
+    ]
+  }
+}
