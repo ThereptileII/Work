@@ -51,12 +51,16 @@ retries. Reviewed correction `724adadc` separates current-host tool reprobes fro
 candidate's original authenticated subject SDK. Thirteen subject-policy and
 38 orchestration checks pass; original SDK payload and source bindings verify.
 [Native retained probe 38761760564](https://github.com/ThereptileII/Work/actions/runs/38761760564)
-is pending. Application SDK/image verification remains strict. [Original custody, both refusals and runtime boundaries](evidence/scrum211-retained-e80-20261015/README.md).
+passes all 13 PluginHandler cases, the ignored-download-failure mutant and
+trust cleanup. Its actual host and subject both use the original older-image
+SDK; it does not claim execution of the newer-host/older-subject combination.
+Application SDK/image verification remains strict. [Original custody, both refusals and runtime boundaries](evidence/scrum211-retained-e80-20261015/README.md).
 Exact packaged lifecycle, the focused native gate and fresh boat acceptance remain
-pending. SCRUM-290 composition helper `a57098f0` passes 24 composition,
-17 integration and 20 delivery checks. It correctly refuses the failed full
-retest and cannot turn the defective frozen installer into an accepted package.
-Both original and retained full runs remain failed, not relabelled.
+pending. The full-runtime composition extension was withdrawn in `591fc9ad`: it
+was designed for a modal-helper-only repair and cannot qualify this defective
+frozen installer. Its work and focused results remain in history; the existing
+accepted delivery path is unchanged. Both original and retained full runs remain
+failed, not relabelled. [Retained prefix and installer failure](evidence/scrum22-retained-e80-20261015/README.md).
 The boat remains on its previous installed revision; a passive availability
 check confirms SSH, Tailscale and RustDesk running with no OpenCPN/chart-helper
 process. No actuator output, Production promotion or public release is
