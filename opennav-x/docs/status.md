@@ -62,6 +62,17 @@ candidate is required; package, installed lifecycle and boat acceptance remain
 open. No design or endurance suite is selected.
 [Authenticated failure and correction boundary](evidence/scrum209-plugin-export-extent-20261015/README.md).
 
+The new frozen candidate is `977d37c79f652fd9b9e28e55f26ec259c35eea8e` /
+[38686209123](https://github.com/ThereptileII/Work/actions/runs/38686209123),
+dispatched once with private Staging trust, extended tests off and design
+validation off. Independent review confirms the parser bounds and unchanged SDK
+producer inputs. Final helper correction `977d37c7` waits for one newer native
+diagnostic publication after startup readiness, then checks plugins immediately;
+it never waits for a failing plugin list to turn green. Eleven plugin/freshness
+and five palette helper cases pass. Integrated compilation, runtime, package and
+installed acceptance are pending for this exact candidate; no boat install is
+performed by the dispatch.
+
 ## Disposable desktop provisioning remains insufficient
 
 Helper `81cd0821` uses documented Windows-managed desktop access only for the
