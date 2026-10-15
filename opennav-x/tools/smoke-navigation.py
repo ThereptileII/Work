@@ -858,7 +858,9 @@ try:
             click_object('Save',accessible_name='Save');time.sleep(.6)
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
             capture('waypoint-edit-sheet-result')
-            ui.click_text(app.pid,'Delete waypoint');click_object('Cancel',accessible_name='Cancel')
+            ui.click_text(app.pid,'Delete waypoint')
+            ui.complete_modal_action(app.pid,'Delete waypoint',handle,
+                lambda:click_object('Cancel',accessible_name='Cancel'))
             assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')

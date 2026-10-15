@@ -407,6 +407,35 @@ def set_text_in_dialog(pid, title, previous, value):
     observed=control_text(matches[0])
     assert observed==value,(title,previous,value,observed)
 
+def complete_modal_action(pid, title, owner, action, timeout=5):
+    """Send one action, then observe that exact owned modal release its owner."""
+    dialog, _ = wait_window(title, pid)
+    matches = [h for h, _, caption in windows(pid) if caption == title]
+    assert matches == [dialog], ('Ambiguous modal', title, matches)
+    parent = GetParent(dialog)
+    seen = set()
+    while parent and parent != owner and parent not in seen:
+        seen.add(parent)
+        parent = GetParent(parent)
+    assert parent == owner, ('Modal belongs to another owner', title, dialog, owner)
+    process = W.DWORD()
+    GetWindowThreadProcessId(owner, C.byref(process))
+    assert process.value == pid and IsWindowVisible(owner), 'Modal owner is not the live test frame'
+    assert IsWindowVisible(dialog) and IsWindowEnabled(dialog), 'Modal is not actionable'
+    assert not IsWindowEnabled(owner), 'Expected a modal-disabled owner before the action'
+    action()
+    # Physical mouse-up and the custom button's queued wxEVT_BUTTON are not
+    # completed by mouse_event returning. Never inject the next frame action
+    # until this exact sheet has gone and its existing owner is enabled again.
+    deadline = time.monotonic() + timeout
+    while time.monotonic() < deadline:
+        GetWindowThreadProcessId(owner, C.byref(process))
+        assert process.value == pid and IsWindowVisible(owner), 'Modal owner disappeared or changed process'
+        if not IsWindowVisible(dialog) and IsWindowEnabled(owner):
+            return
+        time.sleep(.05)
+    raise RuntimeError(f'Modal action did not complete: {title}; visible: {windows(pid)}')
+
 def set_dialog_fields(pid, title, values):
     dialog,_=wait_window(title,pid)
     fields=[]
