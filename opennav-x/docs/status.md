@@ -22,11 +22,35 @@ allocated older hosted image `20261004.326.1` and correctly refuses the SDK's
 required `20261012.333.1` before compilation. After the original run ended,
 the coordinator requested only failed Windows job `116117298706` and its
 dependent jobs again. Attempt 2 job `116128956769` passes the exact SDK
-image/Python/source preflight and continues toward native compilation on the
-same frozen candidate. Successful Linux/updater results are retained; Linux
+image/Python/source preflight and completes native compilation and retention on
+the same frozen candidate. Successful Linux/updater results are retained; Linux
 records **154 fixture CTests, 154 fixture-free CTests and 19 Python tests**.
 No dependency rebuild or image-check relaxation is selected.
 [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261014/README.md).
+
+Attempt 2's downstream qualification job `116150037326` fails the mode smoke's
+Day-to-Dusk diagnostic assertion. Its original evidence remains failed; this is
+not a compilation failure. Helper `c1dd0268` uses checked foreground/pointer
+input for Day → Dusk → Night → Day and preserves all destination and chart
+assertions. Five focused portable checks pass. Retained-only
+[38684111006](https://github.com/ThereptileII/Work/actions/runs/38684111006)
+tests the exact `89854110` application/package bytes with this separate harness.
+It fails before sending the Day click: the native window inventory shows a
+startup error dialog listing all four bundled plugins and blocking the main
+frame. The test correctly refuses the covered control; dismissing the dialog
+is not selected as a workaround. The original result archive authenticates.
+
+The original mode log also shows `chartdldr`, `dashboard`, `grib` and `wmm`
+refused before loading with `Invalid export directory extent`. The shared
+import parser applies that check to dependencies as well as each named plugin.
+This is not evidence that obsolete TLS was detected or that plugin compatibility
+passes. The authenticated captured `wxmsw32u_core_vc14x.dll` has a fully backed
+1,158,912-byte export directory, exceeding the parser's arbitrary 1 MiB extent
+ceiling. A bounded parser correction with positive large-directory and malformed
+metadata regressions is in progress; file/RVA, entry, forwarder and name budgets
+remain required. No unchanged native rerun, full rebuild or design suite is
+selected before the correction. Package and boat acceptance remain open.
+[Authenticated failure and correction boundary](evidence/scrum209-plugin-export-extent-20261015/README.md).
 
 ## Disposable desktop provisioning remains insufficient
 

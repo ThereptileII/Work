@@ -1,0 +1,18 @@
+{
+  "run": 38684111006,
+  "attempt": 1,
+  "harnessCommit": "c1dd02682d2037af10961baaf6266f66e922c7d4",
+  "productCommit": "89854110b41286cab0c6bf9748f37882a595a366",
+  "artifact": 11949317833,
+  "bytes": 12011226,
+  "sha256": "3e9fcb83e7bf4564ba96d27d74942720cbc22dda5ab6d521c4c871ef122098bc",
+  "zipCrc": "passed",
+  "members": 1906,
+  "selectedMembers": [
+    "mode-cycle-profile/opencpn.log",
+    "staging-inputs.json",
+    "staging-retest.json"
+  ],
+  "firstFailure": "Mode palette pointer refused: startup library-error modal blocks all four bundled plugins",
+  "acceptance": false
+}
