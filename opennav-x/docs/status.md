@@ -81,10 +81,22 @@ job `116261621665` completes with **154 fixture CTests, 154 fixture-free CTests
 and 19 Python tests** on exact `977d37c7`; its original log and job identity are
 retained in the [candidate receipt](evidence/scrum209-candidate-977d37c7-20261015/linux-receipt.json).
 After attempt 1 ended, only the failed Windows integration/dependent jobs were
-requested again. Attempt 2 job `116274722975` passes SDK preflight and is compiling
-and testing the same frozen candidate. Successful Linux/updater results are
-retained; no dependency rebuild or image-check relaxation is selected. Runtime,
-package, installed lifecycle and boat acceptance remain pending.
+requested again. Attempt 2 job `116274722975` succeeds with 146 fixture CTests,
+146 fixture-free CTests, 12 earlier Python checks and seven retention checks.
+Successful Linux/updater results are retained; no dependency rebuild or
+image-check relaxation is selected. Downstream qualification `116290535162`
+fails installer Preflight: PowerShell reports the native NSIS temporary
+`System.dll` as an invalid assembly. The original log is retained; source
+inspection must establish the resolution boundary before selecting a correction.
+Package assembly/delivery is skipped. [Native and downstream receipt](evidence/scrum209-candidate-977d37c7-20261015/native-receipt.json).
+
+Independent review verifies all 1,585 retained plugin-input file hashes, exact
+source projections, 17 maintained TLS bindings and 11 Win32 runtime closures.
+After the producer becomes terminal, one
+[retained native PluginHandler gate](https://github.com/ThereptileII/Work/actions/runs/38697150458)
+is dispatched with reviewed inventory hash `7666db6cce687cb045c7b58b4145bd1bb312c09daf6cd69bafc76047635fdfd9`.
+It does not rebuild the application or qualify the failed installer.
+[Independent input review](evidence/scrum209-candidate-977d37c7-20261015/plugin-input-review.json).
 
 ## Bounded AIS helper and boat recovery preparation
 
@@ -106,9 +118,25 @@ lineage assertions remain unchanged. The original log lacks expected/actual
 values, so final causal attribution awaits native confirmation. Independent
 review passes and 56 corrected portable reconciliation cases pass.
 The [corrected focused gate](https://github.com/ThereptileII/Work/actions/runs/38693208374)
-on exact `87b55cbb` is pending; neither run rebuilds the application. No actual
-boat reconciliation or launch is accepted from these portable tests.
+on exact `87b55cbb` passes both platforms; neither run rebuilds the application.
+Windows passes 86 session cases with 59 nested reconciliation cases, 131 adoption
+cases (including four native invocations) and 27 separate preservation transaction
+groups. Linux passes 86 session cases with 56 nested reconciliation cases and
+127 adoption cases. Original artifacts authenticate by run/commit, size, SHA-256
+and CRC. These are helper/file-operation results, not whole-product or boat
+acceptance. [Native receipt](evidence/scrum17-cold-reconciliation-20261015/native-receipt.json).
 [Correction and retained failure evidence](evidence/scrum17-cold-reconciliation-20261015/correction-receipt.json).
+
+The qualified helper's actual boat Inspect now completes with a private full
+profile backup and 18 reviewed differences. The entire current connection value
+matches the original direction, so preserving this profile requires no INI write.
+Plan/Commit remain unperformed: current WMM resource location, saved pilot
+configuration, AIS radius, Weather flag and Dashboard accumulated distance need
+bounded reconciliation-specific retention rules. Existing session policy still
+refuses them. The current profile and active transaction are unchanged, no
+application was launched, and no physical command was sent. Retention must not
+qualify the saved pilot binding or grant launch authority.
+[Sanitized actual inspection receipt](evidence/scrum17-cold-reconciliation-20261015/boat-inspection-receipt.json).
 
 
 Separate helper `f1b6fc18` adds three fixed Online AIS settings actions with owned

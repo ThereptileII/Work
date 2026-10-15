@@ -1,0 +1,24 @@
+{
+  "schema": 1,
+  "helperCommit": "87b55cbbfdecd516d79a0ff7fc327bba1a833dcf",
+  "inspectionSha256": "22d52b3303d824f20729aa086fba7f30b28f49be98d306cfb4c33f7ef23a6f9e",
+  "parentPreparedSha256": "5fc304b8dff2062a6e9f5d4fb4b4e238dfc1bb5b6061205f163be727dc0305ee",
+  "currentIniSha256": "7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559",
+  "status": "inspected",
+  "connectionDisposition": "preserve-current-original-direction",
+  "changedKeys": 18,
+  "aclObservations": 4483,
+  "applicationLaunched": false,
+  "physicalOutput": false,
+  "planPerformed": false,
+  "commitPerformed": false,
+  "boatAcceptance": false,
+  "reviewBlockers": [
+    "Directories/WMMDataLocation",
+    "OpenNav/AlphaSettings",
+    "OpenNav/OnlineAIS/v1/RadiusNm",
+    "OpenNav/Weather/v1/Enabled",
+    "PlugIns/Dashboard/SumLogNM"
+  ],
+  "privacy": "Full inspection, profile backup, values and paths remain private; this receipt contains only identities and changed key names."
+}

@@ -1,0 +1,39 @@
+{
+  "schema": 1,
+  "scope": "Independent retained plugin-input review; no native execution or application acceptance",
+  "candidateCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+  "producerRun": "38686209123",
+  "producerAttempt": "2",
+  "artifactId": "11954081545",
+  "zipSha256": "1edc1ee9c26567c9c7f1798c90b672b93083b01bf76df0d2e24dd487c57738f2",
+  "independentlyReviewedInventorySha256": "7666db6cce687cb045c7b58b4145bd1bb312c09daf6cd69bafc76047635fdfd9",
+  "inventoryPinEligible": true,
+  "dataFiles": 1585,
+  "zipMembers": 1588,
+  "uncompressedBytes": 131048811,
+  "checks": {
+    "zipDigestAndSafePaths": "passed",
+    "completeInventorySizesAndSha256": "passed",
+    "exactCandidateCaptureHelperCRLFHash": "passed",
+    "allSourceProjections": "passed",
+    "maintainedTLSBindings17": "passed",
+    "sdkOriginalZipAndBundleMetadataDigests": "passed",
+    "sdkLiveProducerJobAndArtifactIdentity": "passed",
+    "captureDependencyAuthorityMatchesSdkBundle": "passed",
+    "all11RuntimeWin32PeAndNormalDelayImports": "passed",
+    "runtimeClosureSystemLdapUnshadowed": "passed"
+  },
+  "producerRunStatusObserved": "in_progress",
+  "producerRunConclusionObserved": null,
+  "retainedConsumptionCurrentlyEligible": false,
+  "remaining": [
+    "Retained workflow must authenticate terminal exact producer attempt and current dependency bundle restore",
+    "Fresh native tool/environment reprobe and source-slice qualification required; local comparisons do not replace native verification"
+  ],
+  "defects": [],
+  "nativeAcceptance": false,
+  "productAcceptance": false,
+  "boatAcceptance": false,
+  "qualificationRun": 38697150458,
+  "qualificationStatus": "dispatched; result pending"
+}

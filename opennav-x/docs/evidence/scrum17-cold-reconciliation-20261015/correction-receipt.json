@@ -86,10 +86,11 @@
     "attempt": 1,
     "commit": "87b55cbbfdecd516d79a0ff7fc327bba1a833dcf",
     "url": "https://github.com/ThereptileII/Work/actions/runs/38693208374",
-    "status": "pending"
+    "status": "success",
+    "receipt": "native-receipt.json"
   },
   "limitations": [
-    "Corrected native Windows acceptance pending.",
+    "Corrected native Windows helper gate passes; actual boat and application acceptance remain separate.",
     "No boat mutation, navigation application launch or physical output.",
     "Application candidate remains 977d37c79f652fd9b9e28e55f26ec259c35eea8e."
   ]

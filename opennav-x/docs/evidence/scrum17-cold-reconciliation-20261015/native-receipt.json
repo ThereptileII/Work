@@ -1,0 +1,68 @@
+{
+  "schema": 1,
+  "run": 38693208374,
+  "attempt": 1,
+  "commit": "87b55cbbfdecd516d79a0ff7fc327bba1a833dcf",
+  "conclusion": "success",
+  "artifacts": [
+    {
+      "platform": "windows-2022",
+      "id": 11953740102,
+      "bytes": 8552,
+      "sha256": "77acbc321c9564e6a2e2f4dbce5bf93d6c9bde55841f6d42a46c17e47182e996",
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "sha256": "fa9791be15aa4e93b707159394442e2eee063c2a6ab12a9c04d16559fc362083"
+        },
+        {
+          "name": "session-preservation.log",
+          "sha256": "9156cd05b6270ba880f5b1a6b79c89793668e2615b369bb380004ab6e615290b"
+        },
+        {
+          "name": "transaction.log",
+          "sha256": "2535a0c066c793ce3796203e9a5e71a5be46b57c2782366e1ca1516334469a79"
+        }
+      ]
+    },
+    {
+      "platform": "ubuntu-24.04",
+      "id": 11952528846,
+      "bytes": 4546,
+      "sha256": "af10e3d57183c34d2d1da0d0c5a52a9dd2c3761d712b146b4dd705b6462ac6e8",
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "sha256": "ef7e5c110d1572014fe674c777350ab2e57bb9ce07a4859063f88b3f6437712e"
+        },
+        {
+          "name": "session-preservation.log",
+          "sha256": "e16a9ac7e579d147dfe4062d630ae5ce5309bcc13f9a884a49c64a82e5254386"
+        }
+      ]
+    }
+  ],
+  "applicationQualified": false,
+  "boatQualified": false,
+  "results": {
+    "linux": {
+      "session": 86,
+      "nestedReconciliation": 56,
+      "baselineAdoption": 127
+    },
+    "windows": {
+      "session": 86,
+      "nestedReconciliation": 59,
+      "baselineAdoption": 131,
+      "includedNativeAdoptionInvocations": 4,
+      "stockAdoptionTransactionGroups": 25,
+      "installedResourceAdoptionTransactionGroups": 26,
+      "separatePreservationTransactionGroups": 27
+    }
+  },
+  "limitations": [
+    "Counts are distinct and nested suite/group scopes, not a deduplicated application test total.",
+    "Identity/process discovery uses inert fixture adapters; native filesystem locks, ACLs and file publication are real.",
+    "No application, boat or physical-output qualification."
+  ]
+}

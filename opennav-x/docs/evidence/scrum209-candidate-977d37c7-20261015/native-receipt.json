@@ -1,0 +1,87 @@
+{
+  "runId": 38686209123,
+  "attempt": 2,
+  "commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+  "jobId": 116274722975,
+  "conclusion": "success",
+  "files": [
+    {
+      "name": "native-job-116274722975.json",
+      "bytes": 7731,
+      "sha256": "5832e15c3eedbb8834e662d762b2d4a91ff48cd4119eda8a7d5326be8e72f865"
+    },
+    {
+      "name": "native-job-116274722975.log",
+      "bytes": 2881356,
+      "sha256": "898d54e1597409bf4f95e11046ef42662bccf380029a36bde1efc3d401f12083"
+    },
+    {
+      "name": "qualification-job-116290535162.json",
+      "bytes": 3483,
+      "sha256": "d1f75e4460729a258db818e60cff267b1cc77323806bdd403ac23533db628ad2"
+    },
+    {
+      "name": "qualification-job-116290535162.log",
+      "bytes": 137240,
+      "sha256": "ce5eb4f897d387de877bf0628ec6b322516fb432f1429df4be7df9eb6cb57c04"
+    },
+    {
+      "name": "run-terminal.json",
+      "bytes": 12554,
+      "sha256": "648c857ba95b8c0836d9ae9a570d4328f370eb139700c5522efe7dde328fbaf1"
+    }
+  ],
+  "countEvidence": [
+    {
+      "line": 510,
+      "text": "2026-10-15T06:07:01.5963499Z Ran 12 tests in 0.205s"
+    },
+    {
+      "line": 512,
+      "text": "2026-10-15T06:07:01.5963711Z OK"
+    },
+    {
+      "line": 684,
+      "text": "2026-10-15T06:11:44.3515334Z OK"
+    },
+    {
+      "line": 6444,
+      "text": "2026-10-15T06:31:00.4490771Z 100% tests passed, 0 tests failed out of 146"
+    },
+    {
+      "line": 6487,
+      "text": "2026-10-15T06:31:02.7097987Z OK"
+    },
+    {
+      "line": 6660,
+      "text": "2026-10-15T06:31:22.2750978Z OK"
+    },
+    {
+      "line": 10622,
+      "text": "2026-10-15T06:48:35.0442186Z 100% tests passed, 0 tests failed out of 146"
+    },
+    {
+      "line": 10824,
+      "text": "2026-10-15T06:48:59.3586375Z Ran 7 tests in 4.656s"
+    },
+    {
+      "line": 10826,
+      "text": "2026-10-15T06:48:59.3586784Z OK"
+    }
+  ],
+  "runConclusion": "failure",
+  "qualificationJob": {
+    "id": 116290535162,
+    "conclusion": "failure",
+    "completedAt": "2026-10-15T07:10:33Z",
+    "failedStep": "Qualify retained fixture and product behavior",
+    "firstCausalFailure": {
+      "log": "qualification-job-116290535162.log",
+      "line": 1145,
+      "action": "Installer Preflight",
+      "returned": 1,
+      "expected": 0,
+      "error": "Metadata file temporary NSIS System.dll could not be opened: incorrect format; compiler line 1 using System."
+    }
+  }
+}
