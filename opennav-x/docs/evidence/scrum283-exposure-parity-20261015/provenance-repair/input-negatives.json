@@ -1,0 +1,70 @@
+{
+  "helperCommit": "da19af1cb903bec98ed38c870336b365f045a59d",
+  "helperIdentity": {
+    "bytes": 15938,
+    "sha256": "91754c0185de2bd052aa4a14be4e302e943c1e8341b40d2171efbc6bd4597240"
+  },
+  "cases": [
+    {
+      "case": "added quoted-include shadow header",
+      "status": "passed",
+      "rejection": "Patched source inventory/hash differs from production patch composition"
+    },
+    {
+      "case": "same-byte header symlink",
+      "status": "passed",
+      "rejection": "Linked or redirected fixture path: /tmp/skager-hazard-negative-6uroja02/patched/libs/geoprim/src/bbox.h"
+    },
+    {
+      "case": "same-byte ancestor directory symlink",
+      "status": "passed",
+      "rejection": "Linked or redirected fixture path: /tmp/skager-hazard-negative-6uroja02/patched/libs/geoprim"
+    },
+    {
+      "case": "redirected source root",
+      "status": "passed",
+      "rejection": "Linked or redirected fixture path: /tmp/skager-hazard-negative-6uroja02/redirected-root"
+    },
+    {
+      "case": "late added source path",
+      "status": "passed",
+      "rejection": "Fixture input inventory/hash changed: /tmp/skager-hazard-negative-6uroja02/patched"
+    },
+    {
+      "case": "changed src/integration/ChartLightLabel.h",
+      "status": "passed",
+      "rejection": "Fixture input inventory/hash changed: /tmp/skager-hazard-negative-6uroja02/local"
+    },
+    {
+      "case": "changed src/integration/ChartNameText.h",
+      "status": "passed",
+      "rejection": "Fixture input inventory/hash changed: /tmp/skager-hazard-negative-6uroja02/local"
+    },
+    {
+      "case": "changed src/integration/ChartNameSpacing.h",
+      "status": "passed",
+      "rejection": "Fixture input inventory/hash changed: /tmp/skager-hazard-negative-6uroja02/local"
+    },
+    {
+      "case": "core source tamper",
+      "status": "passed",
+      "rejection": "Core fixture source differs from pinned OpenCPN: libs/s52plib/src/s52cnsy.cpp"
+    },
+    {
+      "case": "original source tamper",
+      "status": "passed",
+      "rejection": "Original private source differs from lock: libs/s52plib/src/s52cnsy.cpp"
+    },
+    {
+      "case": "patched source tamper",
+      "status": "passed",
+      "rejection": "Patched source inventory/hash differs from production patch composition"
+    },
+    {
+      "case": "disabled assertions",
+      "status": "passed",
+      "rejection": "Run without -O: fixture parity assertions are required"
+    }
+  ],
+  "scope": "Linux input guards only; Windows reparse execution remains unrun"
+}

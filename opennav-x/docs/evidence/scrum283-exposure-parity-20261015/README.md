@@ -1,5 +1,9 @@
 # SCRUM-283 focused exposure parity, 2026-10-15
 
+The initial input-binding proof below is superseded by the reviewed
+[provenance repair](provenance-repair/README.md). Its historical receipts remain
+unchanged; two fixture-provenance gaps were found and corrected afterwards.
+
 Helper/fixture revision: `43fd4eb219438b1b49ee15fd495a3ef7cf62e730`.
 Runtime/application source base: `1ffd09ddf2fa6588def2907485f6e14e89bc3a7d`.
 This change compiles four isolated fixture executables. It does not build,

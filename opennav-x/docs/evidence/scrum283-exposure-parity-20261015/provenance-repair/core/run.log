@@ -1,0 +1,318 @@
+context layout 104 80
+case 1 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 2 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 3 UWTROC: ;SY(LNDARE01)<US><US> /category=79
+case 4 UWTROC: ;SY(UWTROC03)<US><US> /category=79
+case 5 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 6 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 7 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 8 UWTROC: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79
+case 9 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 10 UWTROC: ;SY(UWTROC04)<US><US> /category=79
+case 11 UWTROC: ;SY(DANGER52);SY(SOUNDG22);SY(SOUNDG11)<US><US><US> /category=79
+case 12 WRECKS: ;SY(WRECKS04)<US><US> /category=79
+case 13 WRECKS: ;SY(WRECKS05)<US><US> /category=79
+case 14 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 15 WRECKS: ;SY(WRECKS01)<US><US> /category=79
+case 16 WRECKS: <US><US> /category=79
+case 17 WRECKS: <US><US> /category=79
+case 18 UWTROC: ;SY(ISODGR51)<US><US> /category=68
+case 19 WRECKS: ;SY(ISODGR51)<US><US> /category=68
+case 20 UWTROC: ;SY(UWTROC03);SY(QUAPOS01)<US><US> /category=79
+case 21 UWTROC: ;SY(UWTROC03);SY(QUAPOS02)<US><US> /category=79
+case 22 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US> /category=79
+case 23 UWTROC: ;SY(UWTROC03);SY(QUAPOS03)<US><US> /category=79
+case 24 UWTROC: ;SY(UWTROC03);SY(LOWACC03)<US><US> /category=79
+case 25 WRECKS: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(WRECKS07);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79
+case 26 OBSTRN: ;SY(OBSTRN01)<US><US> /category=79
+26 actual conditional cases retained this source's missing/depth/quality and isolated-danger behavior
+exposure 1 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=2:  /category=68 /promote=0
+exposure 2 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 3 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 4 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 5 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 6 UDWHAZ03 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 7 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 8 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 9 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 10 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 11 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 12 UDWHAZ03 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 13 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 14 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 15 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 16 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 17 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 18 UDWHAZ03 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 19 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 20 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=10:  /category=79 /promote=0
+exposure 21 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 22 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=10:  /category=79 /promote=0
+exposure 23 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 24 UDWHAZ03 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=10:  /category=79 /promote=0
+exposure 25 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 26 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=10:  /category=79 /promote=0
+exposure 27 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 28 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=10:  /category=79 /promote=0
+exposure 29 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 30 UDWHAZ03 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=10:  /category=79 /promote=0
+exposure 31 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 32 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 33 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 34 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 35 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 36 UDWHAZ03 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 37 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 38 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 39 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 40 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 41 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 42 UDWHAZ03 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 43 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 44 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=10:  /category=79 /promote=0
+exposure 45 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 46 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=10:  /category=79 /promote=0
+exposure 47 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 48 UDWHAZ03 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=10:  /category=79 /promote=0
+exposure 49 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=2:  /category=68 /promote=0
+exposure 50 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 51 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 52 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 53 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 54 UDWHAZ03 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 55 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 56 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 57 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 58 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 59 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 60 UDWHAZ03 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 61 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 62 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 63 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 64 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 65 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 66 UDWHAZ03 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 67 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 68 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=10:  /category=79 /promote=0
+exposure 69 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 70 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=10:  /category=79 /promote=0
+exposure 71 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 72 UDWHAZ03 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=10:  /category=79 /promote=0
+exposure 73 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=2:  /category=68 /promote=0
+exposure 74 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 75 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 76 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 77 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(ISODGR51) /category=68 /promote=0
+exposure 78 UDWHAZ03 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 79 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 80 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 81 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 82 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 83 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 84 UDWHAZ03 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 85 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 86 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=10:  /category=68 /promote=0
+exposure 87 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 88 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 89 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 90 UDWHAZ03 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51) /category=68 /promote=0
+exposure 91 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=2:  /category=79 /promote=0
+exposure 92 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=10:  /category=79 /promote=0
+exposure 93 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=2:  /category=79 /promote=0
+exposure 94 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=10:  /category=79 /promote=0
+exposure 95 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=2:  /category=79 /promote=0
+exposure 96 UDWHAZ03 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=10:  /category=79 /promote=0
+exposure 97 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(LNDARE01)<US><US> /category=79 /promote=not-exposed
+exposure 98 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(LNDARE01)<US><US> /category=68 /promote=not-exposed
+exposure 99 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(UWTROC03)<US><US> /category=79 /promote=not-exposed
+exposure 100 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 101 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 102 OBSTRN04 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 103 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 104 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 105 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 106 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 107 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 108 OBSTRN04 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 109 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 110 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 111 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 112 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 113 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 114 OBSTRN04 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 115 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 116 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 117 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 118 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 119 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 120 OBSTRN04 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=10: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 121 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(LNDARE01)<US><US> /category=79 /promote=not-exposed
+exposure 122 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(LNDARE01)<US><US> /category=79 /promote=not-exposed
+exposure 123 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(UWTROC03)<US><US> /category=79 /promote=not-exposed
+exposure 124 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(UWTROC03)<US><US> /category=79 /promote=not-exposed
+exposure 125 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 126 OBSTRN04 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 127 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 128 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 129 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 130 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 131 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 132 OBSTRN04 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 133 OBSTRN04 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 134 OBSTRN04 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 135 OBSTRN04 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 136 OBSTRN04 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 137 OBSTRN04 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 138 OBSTRN04 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 139 OBSTRN04 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 140 OBSTRN04 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 141 OBSTRN04 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 142 OBSTRN04 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 143 OBSTRN04 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 144 OBSTRN04 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=10: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 145 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(LNDARE01)<US><US> /category=79 /promote=not-exposed
+exposure 146 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(LNDARE01)<US><US> /category=68 /promote=not-exposed
+exposure 147 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(UWTROC03)<US><US> /category=79 /promote=not-exposed
+exposure 148 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 149 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 150 OBSTRN04 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 151 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 152 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 153 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 154 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 155 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 156 OBSTRN04 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 157 OBSTRN04 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 158 OBSTRN04 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 159 OBSTRN04 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 160 OBSTRN04 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 161 OBSTRN04 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 162 OBSTRN04 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 163 OBSTRN04 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 164 OBSTRN04 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 165 OBSTRN04 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 166 OBSTRN04 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 167 OBSTRN04 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 168 OBSTRN04 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=10: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 169 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(LNDARE01)<US><US> /category=79 /promote=not-exposed
+exposure 170 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(LNDARE01)<US><US> /category=68 /promote=not-exposed
+exposure 171 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(UWTROC03)<US><US> /category=79 /promote=not-exposed
+exposure 172 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 173 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 174 OBSTRN04 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 175 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 176 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 177 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 178 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 179 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 180 OBSTRN04 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 181 OBSTRN04 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 182 OBSTRN04 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 183 OBSTRN04 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 184 OBSTRN04 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 185 OBSTRN04 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 186 OBSTRN04 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 187 OBSTRN04 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 188 OBSTRN04 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 189 OBSTRN04 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 190 OBSTRN04 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER51);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 191 OBSTRN04 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=2: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 192 OBSTRN04 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=10: ;SY(UWTROC04)<US><US> /category=79 /promote=not-exposed
+exposure 193 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 194 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(WRECKS01)<US><US> /category=68 /promote=not-exposed
+exposure 195 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(WRECKS05)<US><US> /category=79 /promote=not-exposed
+exposure 196 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 197 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 198 WRECKS02 EXPSOU=-1 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 199 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 200 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 201 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 202 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 203 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 204 WRECKS02 EXPSOU=-1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 205 WRECKS02 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 206 WRECKS02 EXPSOU=-1 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 207 WRECKS02 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 208 WRECKS02 EXPSOU=-1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 209 WRECKS02 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 210 WRECKS02 EXPSOU=-1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 211 WRECKS02 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 212 WRECKS02 EXPSOU=-1 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 213 WRECKS02 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 214 WRECKS02 EXPSOU=-1 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 215 WRECKS02 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 216 WRECKS02 EXPSOU=-1 depth=6 WATLEV=4 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 217 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 218 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(WRECKS01)<US><US> /category=68 /promote=not-exposed
+exposure 219 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(WRECKS05)<US><US> /category=79 /promote=not-exposed
+exposure 220 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 221 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 222 WRECKS02 EXPSOU=1 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 223 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 224 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 225 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 226 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 227 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 228 WRECKS02 EXPSOU=1 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 229 WRECKS02 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 230 WRECKS02 EXPSOU=1 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 231 WRECKS02 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 232 WRECKS02 EXPSOU=1 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 233 WRECKS02 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 234 WRECKS02 EXPSOU=1 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 235 WRECKS02 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 236 WRECKS02 EXPSOU=1 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 237 WRECKS02 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 238 WRECKS02 EXPSOU=1 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 239 WRECKS02 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 240 WRECKS02 EXPSOU=1 depth=6 WATLEV=4 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 241 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 242 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(WRECKS01)<US><US> /category=68 /promote=not-exposed
+exposure 243 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(WRECKS05)<US><US> /category=79 /promote=not-exposed
+exposure 244 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 245 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 246 WRECKS02 EXPSOU=2 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 247 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 248 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 249 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 250 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 251 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 252 WRECKS02 EXPSOU=2 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 253 WRECKS02 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 254 WRECKS02 EXPSOU=2 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 255 WRECKS02 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 256 WRECKS02 EXPSOU=2 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 257 WRECKS02 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 258 WRECKS02 EXPSOU=2 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 259 WRECKS02 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 260 WRECKS02 EXPSOU=2 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 261 WRECKS02 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 262 WRECKS02 EXPSOU=2 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 263 WRECKS02 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 264 WRECKS02 EXPSOU=2 depth=6 WATLEV=4 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 265 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 266 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=2 DRVAL1=10: ;SY(WRECKS01)<US><US> /category=68 /promote=not-exposed
+exposure 267 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=2: ;SY(WRECKS05)<US><US> /category=79 /promote=not-exposed
+exposure 268 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 269 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=2: ;SY(WRECKS01)<US><US> /category=79 /promote=not-exposed
+exposure 270 WRECKS02 EXPSOU=3 depth=1e+06 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 271 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 272 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=2 DRVAL1=10: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=68 /promote=not-exposed
+exposure 273 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 274 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 275 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=2: ;SY(DANGER51);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDS13);SY(SOUNDS52)<US><US><US> /category=79 /promote=not-exposed
+exposure 276 WRECKS02 EXPSOU=3 depth=3.2 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 277 WRECKS02 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 278 WRECKS02 EXPSOU=3 depth=5 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=68 /promote=not-exposed
+exposure 279 WRECKS02 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 280 WRECKS02 EXPSOU=3 depth=5 WATLEV=3 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 281 WRECKS02 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG15)<US><US><US> /category=79 /promote=not-exposed
+exposure 282 WRECKS02 EXPSOU=3 depth=5 WATLEV=4 DRVAL1=10: ;SY(ISODGR51)<US><US> /category=68 /promote=not-exposed
+exposure 283 WRECKS02 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 284 WRECKS02 EXPSOU=3 depth=6 WATLEV=2 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 285 WRECKS02 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 286 WRECKS02 EXPSOU=3 depth=6 WATLEV=3 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 287 WRECKS02 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=2: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+exposure 288 WRECKS02 EXPSOU=3 depth=6 WATLEV=4 DRVAL1=10: ;SY(DANGER52);TX('Wk',3,1,2,'15110',2,0,CHBLK,21);SY(SOUNDG16)<US><US><US> /category=79 /promote=not-exposed
+288 actual exposure/depth/water-level conditional cases retained
+398 focused checks passed

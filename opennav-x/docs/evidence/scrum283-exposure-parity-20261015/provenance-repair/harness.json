@@ -1,0 +1,58 @@
+{
+  "commit": "da19af1cb903bec98ed38c870336b365f045a59d",
+  "files": {
+    "tools/verify-private-hazard-association.py": {
+      "bytes": 15938,
+      "sha256": "91754c0185de2bd052aa4a14be4e302e943c1e8341b40d2171efbc6bd4597240"
+    },
+    "tests/private_hazard_association_test.cpp": {
+      "bytes": 5924,
+      "sha256": "2cba32d79d669740d87e376796d272216ea8c336b72e832aa84b3396724d4e04"
+    },
+    "tests/private_hazard_cases.inc": {
+      "bytes": 8133,
+      "sha256": "25019b47a153f3a79e50e7180dec81173241121ffe24c24cf0c9022e46d386da"
+    },
+    "tests/private_hazard_allocation_test.cpp": {
+      "bytes": 670,
+      "sha256": "c560e1da318a576250873e2bba7d04306e59e41af92f544817f9026cbf07950f"
+    },
+    "tools/verify-anchor-loader.py": {
+      "bytes": 17917,
+      "sha256": "1e121864fda65fe56b1d420fcbb839b1be4812417d19544a836d21ce268c52d3"
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "bytes": 17285,
+      "sha256": "dfc2382c14b8a3c8869d35b0a432bcac5c27ed99563c50f60a0c895c7e4f4568"
+    },
+    "tools/ocharts-adapter-source.lock.json": {
+      "bytes": 30171,
+      "sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353"
+    },
+    "upstream.lock.json": {
+      "bytes": 459,
+      "sha256": "20c68c0847fffcbac69c575efcc3b9c0c00c6f5f1b72460cb89976c0f2b6f0c9"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 992,
+      "sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 4969,
+      "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2307,
+      "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1241,
+      "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+    }
+  },
+  "platform": "linux",
+  "compiler": "g++",
+  "nativeSdk": null,
+  "applicationBuilt": false,
+  "runtimeProductQualification": false
+}
