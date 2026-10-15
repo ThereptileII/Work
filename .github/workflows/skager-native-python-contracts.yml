@@ -1,4 +1,4 @@
-name: SKAGER focused native Python contracts
+name: SKAGER focused native contracts
 on:
   push:
     branches: [skager-native-python-contracts]
@@ -14,11 +14,16 @@ on:
         required: false
         type: boolean
         default: false
+      installer_filesystem_only:
+        description: Run cold installer interop and filesystem guards in native PS5.1 x86/x64
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
 jobs:
   geometry:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only) }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only) }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -130,4 +135,52 @@ jobs:
         with:
           name: installer-receipt-contracts-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: ${{ runner.temp }}/skager-installer-receipt-contracts
+          if-no-files-found: error
+  installer-filesystem:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.installer_filesystem_only }}
+    runs-on: windows-2022
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [x86, x64]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Qualify first-use installer interop and protected filesystem guards
+        shell: pwsh
+        env:
+          TEST_ARCHITECTURE: ${{ matrix.architecture }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installer-filesystem'
+          New-Item -ItemType Directory -Path $Evidence -ErrorAction Stop | Out-Null
+          $System = if ($env:TEST_ARCHITECTURE -ceq 'x86') { 'SysWOW64' } else { 'System32' }
+          $HostExe = Join-Path $env:WINDIR "$System/WindowsPowerShell/v1.0/powershell.exe"
+          if (-not (Test-Path -LiteralPath $HostExe -PathType Leaf)) { throw 'Requested native Windows PowerShell host missing' }
+          # Remove PS7-specific module inheritance before starting Windows PS5.1.
+          $env:PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+          $Results = @()
+          $Passed = $true
+          try {
+            foreach ($Test in @('test-installer-filesystem.ps1', 'test-lifecycle-protected-broker-guard.ps1')) {
+              $Log = Join-Path $Evidence ($Test + '.log')
+              & $HostExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "opennav-x/tools/$Test" *> $Log
+              $Code = $LASTEXITCODE
+              Get-Content -LiteralPath $Log
+              $Results += @{ test = $Test; exitCode = $Code; sha256 = (Get-FileHash -LiteralPath $Log -Algorithm SHA256).Hash.ToLowerInvariant() }
+              if ($Code -ne 0) { $Passed = $false }
+            }
+          } finally {
+            @{
+              schema = 1; commit = $env:GITHUB_SHA; run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
+              architecture = $env:TEST_ARCHITECTURE; hostExecutable = $HostExe; results = $Results
+              passed = ($Passed -and $Results.Count -eq 2); applicationBuilt = $false; installedProductAcceptance = $false
+            } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'result.json') -Encoding utf8
+          }
+          if (-not $Passed -or $Results.Count -ne 2) { throw 'Focused native installer contract failed; inspect retained original logs' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: installer-filesystem-${{ matrix.architecture }}-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/skager-installer-filesystem
           if-no-files-found: error
