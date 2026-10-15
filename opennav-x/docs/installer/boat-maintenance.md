@@ -105,6 +105,18 @@ two-generation inventory: retained ownership bytes/hash, exact generation and
 commit, canonical location, and all three source-pinned resource hashes. Plan
 and Commit recheck both live generations; historical baseline reads validate
 the frozen evidence without requiring retired generations to remain installed.
+If the original input-only profile instead references a distinct historical
+generation, `wmmRetention` uses schema 2 with exactly `schema`, `old`, `current`
+and `originalReference`. The old/current proofs retain their original meanings.
+The original profile bytes alone select the historical reference: its exact
+canonical WMM location must lie under the same existing installation's
+`generations/<32 lowercase hex>/app/plugins/wmm_pi/data/`. Its separately retained
+bounded ownership bytes and all three source-pinned resources must match both
+other generations. Arbitrary review paths, redirected paths, missing or unknown
+ownership and changed resources refuse. Plan and Commit repeat the live
+historical proof; later lineage reads use its frozen evidence. Schema 1 remains
+the unchanged two-generation form. Neither form publishes profile bytes or
+qualifies the stored pilot binding.
 
 This mode still refuses unknown keys, malformed encoding, mappings, calibration,
 unowned resources and unsupported values. Its extra bounded policies cover the

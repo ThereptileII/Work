@@ -255,17 +255,63 @@ function Get-ReconciliationGenerationWmmProof($Context) {
   Assert-ReconciliationGenerationWmmProof $Context $value
   return $value
 }
+function Get-ReconciliationWmmOriginalReferenceGeneration($Proof,$Current) {
+  # The original input-only bytes, never a review-supplied path, select this
+  # resource reference. It does not replace the prepared-parent identity.
+  $values=Read-ProfileForAudit (Join-Path $Proof.directory 'input-only.ini')
+  $location=$values['Directories/WMMDataLocation'];$old=$Proof.parent.context.installation
+  if($location -ceq (Get-CommissioningWmmLocation (Join-Path $old.generation 'app'))){return $null}
+  if($old.root -cne $Current.installation.root -or $location -isnot [string]){throw 'Original WMM reference requires the same owned installation root.'}
+  $generations=Assert-LocalPath (Join-Path $old.root 'generations');$separator=[string][IO.Path]::DirectorySeparatorChar
+  $prefix=$generations+$separator;$decoded=$location.Replace('\\','\')
+  $suffix=$separator+'app'+$separator+'plugins'+$separator+'wmm_pi'+$separator+'data'+$separator
+  if(-not $decoded.StartsWith($prefix,[StringComparison]::Ordinal) -or
+     $decoded.Substring($prefix.Length) -cnotmatch ('^[a-f0-9]{32}'+[regex]::Escape($suffix)+'$')){throw 'Exact original WMM path within the owned generations directory required.'}
+  $generation=Assert-LocalPath (Join-Path $generations $decoded.Substring($prefix.Length,32))
+  if($generation -ceq $old.generation -or $generation -ceq $Current.installation.generation -or
+     $location -cne (Get-CommissioningWmmLocation (Join-Path $generation 'app'))){throw 'Canonical distinct historical original WMM reference required.'}
+  return $generation
+}
+function Get-ReconciliationWmmOriginalReferenceProof([string]$Generation) {
+  $path=Assert-LocalPath (Join-Path $Generation 'ownership.json')
+  $stream=New-Object IO.FileStream($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  try {
+    if($stream.Length -le 0 -or $stream.Length -gt 1048576){throw 'Bounded historical WMM ownership required.'}
+    $bytes=New-Object byte[] ([int]$stream.Length);$offset=0
+    while($offset -lt $bytes.Length){$read=$stream.Read($bytes,$offset,$bytes.Length-$offset);if($read -eq 0){throw 'Historical WMM ownership ended early.'};$offset+=$read}
+  }finally{$stream.Dispose()}
+  $owner=(New-Object Text.UTF8Encoding($false,$true)).GetString($bytes)|ConvertFrom-Json
+  if($owner.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $owner.commit -isnot [string] -or $owner.commit -cnotmatch '^[a-f0-9]{40}$'){throw 'Owned historical WMM generation required.'}
+  $context=[pscustomobject]@{installation=[pscustomobject]@{generation=$Generation;commit=$owner.commit;ownershipSha256=(Get-CommissioningHash $bytes)}}
+  return Get-ReconciliationGenerationWmmProof $context
+}
 function Get-ReconciliationWmmRetention($Proof,$Current) {
-  return [pscustomobject]@{schema=1;old=(Get-ReconciliationGenerationWmmProof $Proof.parent.context);current=(Get-ReconciliationGenerationWmmProof $Current)}
+  $old=Get-ReconciliationGenerationWmmProof $Proof.parent.context;$currentProof=Get-ReconciliationGenerationWmmProof $Current
+  $reference=Get-ReconciliationWmmOriginalReferenceGeneration $Proof $Current
+  if($reference){return [pscustomobject]@{schema=2;old=$old;current=$currentProof;originalReference=(Get-ReconciliationWmmOriginalReferenceProof $reference)}}
+  return [pscustomobject]@{schema=1;old=$old;current=$currentProof}
 }
 function Assert-ReconciliationWmmRetention($Proof,$Current,$Value,[switch]$Live) {
-  if(@($Value.PSObject.Properties).Count -ne 3 -or $Value.schema -ne 1){throw 'Explicit two-generation WMM retention proof required.'}
+  $reference=Get-ReconciliationWmmOriginalReferenceGeneration $Proof $Current
+  if($reference){
+    $fields=@('schema','old','current','originalReference')
+    if(($Value.schema -isnot [int] -and $Value.schema -isnot [long]) -or $Value.schema -ne 2 -or (@($Value.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne
+       (@($fields|Sort-Object)|ConvertTo-Json -Compress)){throw 'Explicit historical original-reference WMM proof required.'}
+  }elseif(@($Value.PSObject.Properties).Count -ne 3 -or $Value.schema -ne 1){throw 'Explicit two-generation WMM retention proof required.'}
   Assert-ReconciliationGenerationWmmProof $Proof.parent.context $Value.old
   Assert-ReconciliationGenerationWmmProof $Current $Value.current
   if(($Value.old.resources|ConvertTo-Json -Depth 8 -Compress) -cne ($Value.current.resources|ConvertTo-Json -Depth 8 -Compress)){throw 'Old and current WMM source bytes differ.'}
+  if($reference){
+    $r=$Value.originalReference
+    if($r.commit -isnot [string] -or $r.commit -cnotmatch '^[a-f0-9]{40}$' -or
+       $r.ownershipSha256 -isnot [string] -or $r.ownershipSha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact historical original-reference WMM identity required.'}
+    $context=[pscustomobject]@{installation=[pscustomobject]@{generation=$reference;commit=$r.commit;ownershipSha256=$r.ownershipSha256}}
+    Assert-ReconciliationGenerationWmmProof $context $r
+    if(($Value.old.resources|ConvertTo-Json -Depth 8 -Compress) -cne ($r.resources|ConvertTo-Json -Depth 8 -Compress)){throw 'Historical original-reference WMM source bytes differ.'}
+  }
   if($Live){
     $actual=Get-ReconciliationWmmRetention $Proof $Current
-    if(($actual|ConvertTo-Json -Depth 12 -Compress) -cne ($Value|ConvertTo-Json -Depth 12 -Compress)){throw 'Live two-generation WMM retention proof changed.'}
+    if(($actual|ConvertTo-Json -Depth 12 -Compress) -cne ($Value|ConvertTo-Json -Depth 12 -Compress)){throw 'Live WMM retention generation proof changed.'}
   }
 }
 function Assert-ReconciliationCurrentRetention($Proof,[string]$Saved,[string]$Normalized,$Review,$Inspection,[datetime]$At) {
@@ -290,7 +336,8 @@ function Assert-ReconciliationCurrentRetention($Proof,[string]$Saved,[string]$No
       Assert-ReconciliationAlphaRetention $change.before $change.after
     }elseif($key -ceq 'Directories/WMMDataLocation'){
       $wmm=$true;Assert-ReconciliationWmmRetention $Proof $Inspection.currentContext $Review.wmmRetention
-      if($change.before -cne $Review.wmmRetention.old.location -or $change.after -cne $Review.wmmRetention.current.location){throw 'Only exact old-to-current owned WMM locations can be retained.'}
+      $originalLocation=if($Review.wmmRetention.schema -eq 2){$Review.wmmRetention.originalReference.location}else{$Review.wmmRetention.old.location}
+      if($change.before -cne $originalLocation -or $change.after -cne $Review.wmmRetention.current.location){throw 'Only exact original-reference-to-current owned WMM locations can be retained.'}
     }elseif($key -ceq 'OpenNav/OnlineAIS/v1/RadiusNm'){
       foreach($value in @($change.before,$change.after)){
         if($null -ne $value -and ($value -cnotmatch '^[1-9][0-9]{0,2}$' -or [int]$value -gt 200)){throw 'Retained AIS radius outside product bounds.'}

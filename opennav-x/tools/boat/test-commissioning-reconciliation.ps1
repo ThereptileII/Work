@@ -15,7 +15,16 @@ function Clone($Value){return ($Value|ConvertTo-Json -Depth 16|ConvertFrom-Json)
 $encoding=New-Object Text.UTF8Encoding($false,$true)
 if(-not $native) {
   # Explicit POSIX adapters do not qualify Win32 identity, metadata or ACLs.
-  function Assert-LocalPath([string]$Path){$p=[IO.Path]::GetFullPath($Path);if(-not $p.StartsWith($testRoot+[IO.Path]::DirectorySeparatorChar,[StringComparison]::Ordinal)){throw 'Escaped disposable root.'};return $p}
+  function Assert-LocalPath([string]$Path){
+    $p=[IO.Path]::GetFullPath($Path);if(-not $p.StartsWith($testRoot+[IO.Path]::DirectorySeparatorChar,[StringComparison]::Ordinal)){throw 'Escaped disposable root.'}
+    $walk=$p
+    while($walk.Length -gt $testRoot.Length){
+      if(([IO.File]::Exists($walk) -or [IO.Directory]::Exists($walk)) -and
+         ([IO.File]::GetAttributes($walk) -band [IO.FileAttributes]::ReparsePoint)){throw 'Redirected disposable path.'}
+      $walk=[IO.Path]::GetDirectoryName($walk)
+    }
+    return $p
+  }
   function New-PreparationDirectory($Context,[string]$Purpose){return New-RunDirectory $Context.workspace $Purpose}
   function Assert-ColdPrivateEvidence([string]$Directory,[string]$Sid){$null=Assert-LocalPath $Directory;if($Sid -cne 'S-1-5-21-123'){throw 'Wrong fixture account.'}}
   function Get-PreparationAccessAcl([string]$Path){$null=Assert-LocalPath $Path;return 'portable-fixture-acl'}
@@ -34,11 +43,13 @@ function Get-CommissioningContext([string]$Workspace) {
   return $value
 }
 function Assert-PreparationClosed([string[]]$Roots){foreach($root in $Roots){if(-not $root.StartsWith($testRoot+[IO.Path]::DirectorySeparatorChar,[StringComparison]::OrdinalIgnoreCase)){throw 'Process guard escaped fixture.'}}}
-function NewFixture([bool]$InputOnly=$false,[switch]$Retention) {
+function NewFixture([bool]$InputOnly=$false,[switch]$Retention,[switch]$HistoricalWmm,[scriptblock]$ChangeOriginalWmm=$null) {
+  if($HistoricalWmm -and -not $Retention){throw 'Historical WMM fixture requires explicit retention.'}
   $base=Join-Path $testRoot ([guid]::NewGuid().ToString('N'));$workspace=Join-Path $base 'workspace'
   $parent=Join-Path $workspace 'runs/20261001-000000-read-only-commissioning-aaaaaaaa'
   $profile=Join-Path $base 'profile';$stock=Join-Path $base 'stock';$managed=Join-Path $base 'managed';$installed=Join-Path $base 'installed'
   $oldGeneration=Join-Path $installed ('generations/'+('a'*32));$newGeneration=Join-Path $installed ('generations/'+('b'*32))
+  $referenceGeneration=if($HistoricalWmm){Join-Path $installed ('generations/'+('e'*32))}else{$oldGeneration}
   $roots=@($managed,(Join-Path $stock 'plugins'),(Join-Path $oldGeneration 'app/plugins')|Sort-Object -Unique)
   $newRoots=@($managed,(Join-Path $stock 'plugins'),(Join-Path $newGeneration 'app/plugins')|Sort-Object -Unique)
   $null=New-Item -ItemType Directory -Force -Path (@($parent,$profile)+$roots+@((Join-Path $newGeneration 'app/plugins'),(Join-Path $parent 'quarantine')))
@@ -46,7 +57,13 @@ function NewFixture([bool]$InputOnly=$false,[switch]$Retention) {
     [IO.File]::WriteAllText((Join-Path $base $name),('Inert, never executed: '+$name),$encoding)
   }
   $oldExe=Join-Path $oldGeneration 'app/opencpn.exe';$newExe=Join-Path $newGeneration 'app/opencpn.exe'
-  foreach($spec in @(@($oldGeneration,$oldExe,'c'),@($newGeneration,$newExe,'d'))) {
+  $specifications=@(@($oldGeneration,$oldExe,'c'),@($newGeneration,$newExe,'d'))
+  if($HistoricalWmm){
+    $referenceExe=Join-Path $referenceGeneration 'app/opencpn.exe';$null=New-Item -ItemType Directory -Force ([IO.Path]::GetDirectoryName($referenceExe))
+    [IO.File]::WriteAllText($referenceExe,'Inert historical WMM resource reference, never executed',$encoding)
+    $specifications+=,@($referenceGeneration,$referenceExe,'e')
+  }
+  foreach($spec in $specifications) {
     $managedFiles=@(@{path='app/opencpn.exe';sha256=(Get-Digest $spec[1])})
     if($Retention){
       $wmmDirectory=Join-Path $spec[0] 'app/plugins/wmm_pi/data';$null=New-Item -ItemType Directory -Force $wmmDirectory
@@ -66,7 +83,9 @@ function NewFixture([bool]$InputOnly=$false,[switch]$Retention) {
   if($Retention){
     # Entirely invented fixture data; never copy an actual vessel profile.
     $alpha='OpenNavXSettings 1\n"battery" ""\n"capacity" "10"\n"consumption" "measured"\n"corridor" "100"\n"current" "unconfigured"\n"display.instruments" "sog,depth"\n"display.rail" "sog,depth"\n"draft" "1"\n"efficiency" ""\n"hotel" ""\n"margin" ""\n"minimum_speed" "1"\n"model_source" ""\n"reserve" "10"\n'
-    $text=$text.Replace("ChartDir=original`r`n",("ChartDir=original`r`nWMMDataLocation="+(Get-CommissioningWmmLocation (Join-Path $oldGeneration 'app'))+"`r`n"))
+    $originalWmm=Get-CommissioningWmmLocation (Join-Path $referenceGeneration 'app')
+    if($ChangeOriginalWmm){$originalWmm=& $ChangeOriginalWmm $originalWmm $oldGeneration $newGeneration}
+    $text=$text.Replace("ChartDir=original`r`n",("ChartDir=original`r`nWMMDataLocation="+$originalWmm+"`r`n"))
     $text+="[OpenNav]`r`nAlphaSettings=$alpha`r`n[PlugIns/Dashboard]`r`nSumLogNM=10`r`n"
   }
   $text+='#'+(' '*(21380-$encoding.GetByteCount($text)-3))+"`r`n"
@@ -77,7 +96,7 @@ function NewFixture([bool]$InputOnly=$false,[switch]$Retention) {
   $live=$live.Replace('FrameWinX=1024','FrameWinX=1280')
   if($Retention){
     $pilot='"pilot.address" "42"\n"pilot.interface" "COM8"\n"pilot.name" ""\n"pilot.permission" "manual"\n'
-    $live=$live.Replace((Get-CommissioningWmmLocation (Join-Path $oldGeneration 'app')),(Get-CommissioningWmmLocation (Join-Path $newGeneration 'app')))
+    $live=$live.Replace($originalWmm,(Get-CommissioningWmmLocation (Join-Path $newGeneration 'app')))
     $live=$live.Replace('"capacity" "10"','"capacity" "20"').Replace('"reserve" "10"','"reserve" "20"').Replace('"draft" "1"','"draft" "2"').Replace('"display.rail" "sog,depth"','"display.rail" "depth,sog"').Replace('"reserve" "20"\n',('"reserve" "20"\n'+$pilot)).Replace('SumLogNM=10','SumLogNM=12')
     $live+="[OpenNav/OnlineAIS/v1]`r`nRadiusNm=50`r`n[OpenNav/Weather/v1]`r`nEnabled=1`r`n"
   }
@@ -106,8 +125,13 @@ function NewFixture([bool]$InputOnly=$false,[switch]$Retention) {
   $new=Clone $old;$new.session=2;$new.pluginRoots=$newRoots;$new.installation.generation=$newGeneration;$new.installation.executable=$newExe;$new.installation.commit='d'*40
   $new.installation.stateSha256=Get-Digest $state;$new.installation.ownershipSha256=Get-Digest (Join-Path $newGeneration 'ownership.json');$new.installation.executableSha256=Get-Digest $newExe
   $new.launchEnvironment.workingDirectory=Join-Path $newGeneration 'app';$new.launchEnvironment.path=$new.launchEnvironment.workingDirectory
-  $script:fixture=[pscustomobject]@{current=$new;record=$record;recordHash=$recordHash;ini=$current;parent=$parent;workspace=$workspace;old=$old;moves=$moves;originalCurrentHash=(Get-Digest $current)}
+  $script:fixture=[pscustomobject]@{current=$new;record=$record;recordHash=$recordHash;ini=$current;parent=$parent;workspace=$workspace;old=$old;moves=$moves;originalCurrentHash=(Get-Digest $current);referenceGeneration=$referenceGeneration;originalProfileTree=(Get-PreparationTree $profile)}
   return $script:fixture
+}
+function Assert-RetainedFixtureUntouched($F) {
+  Assert-PreparationTree $F.originalProfileTree
+  if((Get-Digest $F.record) -cne $F.recordHash -or -not(Test-Path (Join-Path $F.workspace 'commissioning-active.json'))){throw 'Rejected retention changed prepared ownership or active marker.'}
+  foreach($item in $F.moves){if([IO.File]::Exists($item.path) -or (Get-Digest $item.destination) -cne $item.sha256 -or (Get-Digest $item.backup) -cne $item.sha256){throw 'Rejected retention restored or changed quarantined plugins.'}}
 }
 $entry=Join-Path $PSScriptRoot 'reconcile-commissioning.ps1'
 $body=[IO.File]::ReadAllText($entry).Replace(". (Join-Path `$PSScriptRoot 'Commissioning.ps1')",'')
@@ -513,6 +537,7 @@ try {
     }
     Pass 'Explicit v2 retention closes the old transaction with whole current bytes and no pilot qualification' {
       $f=NewFixture -Retention;$plan=InspectPlan -Retention;$selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256
+      if($selected.review.wmmRetention.schema -ne 1 -or @($selected.review.wmmRetention.PSObject.Properties).Count -ne 3){throw 'Two-generation WMM schema changed.'}
       $oldBytes=[IO.File]::ReadAllBytes($f.ini);$done=Commit $plan
       if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or (Test-Path (Join-Path $selected.directory 'profile-stage.json')) -or
          (Test-Path (Join-Path $f.workspace 'commissioning-active.json'))){throw 'Retention changed profile bytes, staged publication or retained completed ownership.'}
@@ -589,6 +614,122 @@ try {
           }}
         }
         if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or -not(Test-Path (Join-Path $f.workspace 'commissioning-active.json'))){throw 'Refused WMM evidence changed profile/ownership.'}
+      }
+    }
+    Pass 'Explicit historical original-reference proof retains all three identities through Plan and Commit without rewriting the profile' {
+      $f=NewFixture -Retention -HistoricalWmm;$plan=InspectPlan -Retention
+      $selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256;$wmm=$selected.review.wmmRetention
+      if($wmm.schema -ne 2 -or @($wmm.PSObject.Properties).Count -ne 4 -or
+         $wmm.old.generation -cne $f.old.installation.generation -or $wmm.current.generation -cne $f.current.installation.generation -or
+         $wmm.originalReference.generation -cne $f.referenceGeneration){throw 'Historical reference replaced or lost a parent/current identity.'}
+      $done=Commit $plan;Assert-PreparationTree $f.originalProfileTree
+      if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or (Test-Path (Join-Path $selected.directory 'profile-stage.json')) -or
+         (Test-Path (Join-Path $f.workspace 'commissioning-active.json'))){throw 'Three-generation retention published profile bytes or failed to close ownership.'}
+      Assert-ReconciliationRetentionClaims (Read-Record $done.baselineRecord)
+      foreach($item in $f.moves){if((Get-Digest $item.path) -cne $item.sha256 -or (Get-Digest $item.backup) -cne $item.sha256){throw 'Historical WMM retention changed plugin bytes.'}}
+      $tree=Get-PreparationTree ([IO.Path]::GetDirectoryName($f.workspace));$resumed=Commit $plan
+      if(($resumed|ConvertTo-Json -Compress) -cne ($done|ConvertTo-Json -Compress)){throw 'Historical WMM completed retry changed its exact receipt.'}
+      Assert-PreparationTree $tree
+      [IO.Directory]::Move($f.referenceGeneration,($f.referenceGeneration+'-retired'))
+      $baseline=Read-CommissioningBaseline $f.workspace $done.baselineRecord $done.baselineRecordSha256
+      if($baseline.pilotBindingQualified -or $baseline.sha256 -cne $f.originalCurrentHash){throw 'Historical reference retirement erased retained-byte provenance.'}
+    }
+    Pass 'A two-generation original reference does not admit an unnecessary schema2 proof' {
+      $f=NewFixture -Retention
+      Refuse 'No surplus historical-reference authority' {InspectPlan -Retention -ChangeReview {
+        param($v);$v.wmmRetention.schema=2;$v.wmmRetention|Add-Member -NotePropertyName originalReference -NotePropertyValue $v.wmmRetention.old
+      }}
+      Assert-RetainedFixtureUntouched $f
+    }
+    foreach($kind in @('outside-root','unknown-generation','malformed-generation','malformed-suffix','current-as-reference')){
+      Pass ('Original WMM reference is derived only from the original canonical same-root path: '+$kind) {
+        $f=NewFixture -Retention -HistoricalWmm -ChangeOriginalWmm {
+          param($location,$old,$current)
+          switch($kind){
+            'outside-root'{return Get-CommissioningWmmLocation (Join-Path $testRoot ('unowned/generations/'+('e'*32)+'/app'))}
+            'unknown-generation'{return $location.Replace(('e'*32),('f'*32))}
+            'malformed-generation'{return $location.Replace(('e'*32),('z'*32))}
+            'malformed-suffix'{return $location+'other'}
+            'current-as-reference'{return Get-CommissioningWmmLocation (Join-Path $current 'app')}
+          }
+        }
+        Refuse 'No inferred historical resource authority' {InspectPlan -Retention}
+        Assert-RetainedFixtureUntouched $f
+      }
+    }
+    foreach($kind in @('schema1','schema-string','reference-swap-old','reference-swap-current','old-swap-reference','current-swap-reference','reference-commit','reference-path','reference-pin','reference-ownership','extra-reference')){
+      Pass ('Explicit historical WMM evidence cannot substitute or relabel identities: '+$kind) {
+        $f=NewFixture -Retention -HistoricalWmm
+        Refuse 'No review override of original-reference ownership' {InspectPlan -Retention -ChangeReview {
+          param($v)
+          switch($kind){
+            'schema1'{$v.wmmRetention.schema=1;$v.wmmRetention.PSObject.Properties.Remove('originalReference')}
+            'schema-string'{$v.wmmRetention.schema='2'}
+            'reference-swap-old'{$v.wmmRetention.originalReference=$v.wmmRetention.old}
+            'reference-swap-current'{$v.wmmRetention.originalReference=$v.wmmRetention.current}
+            'old-swap-reference'{$v.wmmRetention.old=$v.wmmRetention.originalReference}
+            'current-swap-reference'{$v.wmmRetention.current=$v.wmmRetention.originalReference}
+            'reference-commit'{$v.wmmRetention.originalReference.commit='0'*40}
+            'reference-path'{$v.wmmRetention.originalReference.location+='other'}
+            'reference-pin'{$v.wmmRetention.originalReference.resources[0].sha256='0'*64}
+            'reference-ownership'{$v.wmmRetention.originalReference.ownershipSha256='0'*64}
+            'extra-reference'{$v.wmmRetention|Add-Member -NotePropertyName otherReference -NotePropertyValue $v.wmmRetention.old}
+          }
+        }}
+        Assert-RetainedFixtureUntouched $f
+      }
+    }
+    foreach($kind in @('unowned','malformed-ownership','invalid-utf8','oversized-ownership','duplicate-owned-resource','missing-ownership','missing-resource','mutated-resource','extra-resource','redirected-generation')){
+      Pass ('Live historical WMM source refuses incomplete, unknown, changed or redirected ownership: '+$kind) {
+        $f=NewFixture -Retention -HistoricalWmm;$ownerPath=Join-Path $f.referenceGeneration 'ownership.json'
+        $resource=Join-Path $f.referenceGeneration 'app/plugins/wmm_pi/data/WMM.COF'
+        $pendingError=$null;$redirectTarget=$null
+        try {
+        switch($kind){
+          'unowned'{$owner=Read-Record $ownerPath;$owner.owner='Unowned';[IO.File]::WriteAllText($ownerPath,($owner|ConvertTo-Json -Depth 16),$encoding)}
+          'malformed-ownership'{[IO.File]::WriteAllText($ownerPath,'{not-json',$encoding)}
+          'invalid-utf8'{[IO.File]::WriteAllBytes($ownerPath,[byte[]]@(0xc3,0x28))}
+          'oversized-ownership'{[IO.File]::AppendAllText($ownerPath,(' '*1048576),$encoding)}
+          'duplicate-owned-resource'{$owner=Read-Record $ownerPath;$owner.managedFiles+=@($owner.managedFiles|Where-Object {$_.path -ceq 'app/plugins/wmm_pi/data/WMM.COF'});[IO.File]::WriteAllText($ownerPath,($owner|ConvertTo-Json -Depth 16),$encoding)}
+          'missing-ownership'{Remove-Item -LiteralPath $ownerPath}
+          'missing-resource'{Remove-Item -LiteralPath $resource}
+          'mutated-resource'{[IO.File]::WriteAllText($resource,'Changed inert resource',$encoding)}
+          'extra-resource'{[IO.File]::WriteAllText((Join-Path ([IO.Path]::GetDirectoryName($resource)) 'extra.txt'),'Unknown inert resource',$encoding)}
+          'redirected-generation'{
+            $redirectTarget=$f.referenceGeneration+'-source';[IO.Directory]::Move($f.referenceGeneration,$redirectTarget)
+            $type=if($native){'Junction'}else{'SymbolicLink'}
+            $null=New-Item -ItemType $type -Path $f.referenceGeneration -Target $redirectTarget
+          }
+        }
+        Refuse 'No incomplete historical reference may reach a plan' {InspectPlan -Retention}
+        Assert-RetainedFixtureUntouched $f
+        }catch{$pendingError=$_}
+        finally {
+          if($redirectTarget){
+            try {
+              if(Test-Path -LiteralPath $f.referenceGeneration){
+                if(-not ((Get-Item -LiteralPath $f.referenceGeneration -Force).Attributes -band [IO.FileAttributes]::ReparsePoint)){throw 'Fixture cleanup refuses an ordinary reference directory.'}
+                # Delete only the link/junction, never recurse through its target.
+                [IO.Directory]::Delete($f.referenceGeneration)
+              }
+              if(-not [IO.Directory]::Exists($redirectTarget)){throw 'Fixture cleanup lost the original reference target.'}
+            }catch{if(-not $pendingError){$pendingError=$_}}
+          }
+        }
+        if($pendingError){throw $pendingError}
+      }
+    }
+    foreach($kind in @('missing-reference','mutated-reference','replaced-ownership')){
+      Pass ('Commit repeats the exact live historical reference proof before any restore effect: '+$kind) {
+        $f=NewFixture -Retention -HistoricalWmm;$plan=InspectPlan -Retention
+        $resource=Join-Path $f.referenceGeneration 'app/plugins/wmm_pi/data/WMM.COF'
+        switch($kind){
+          'missing-reference'{Remove-Item -LiteralPath $resource}
+          'mutated-reference'{[IO.File]::WriteAllText($resource,'Changed after Plan',$encoding)}
+          'replaced-ownership'{$path=Join-Path $f.referenceGeneration 'ownership.json';$owner=Read-Record $path;$owner.commit='f'*40;[IO.File]::WriteAllText($path,($owner|ConvertTo-Json -Depth 16),$encoding)}
+        }
+        Refuse 'No commit may reuse stale historical evidence' {Commit $plan}
+        Assert-RetainedFixtureUntouched $f
       }
     }
   } finally {Set-Item Function:Get-CommissioningWmmResourcePins $savedWmmPins}
