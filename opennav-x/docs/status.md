@@ -76,12 +76,40 @@ performed by the dispatch.
 Attempt 1's Windows integration job `116266638089` is allocated older image
 `20261004.326.1` and refuses the selected SDK before native setup or compilation.
 The original failure remains recorded. Its Windows updater job succeeds with
-1,060 top-level Go tests, 14 skipped tests and 133 Python checks. Linux integration
-is still running; these component results do not qualify the application. Once
-the producer is terminal, only the failed Windows job and its dependent jobs are
-selected for one retry, preserving the frozen commit and successful results.
+1,060 top-level Go tests, 14 skipped tests and 133 Python checks. Original Linux
+job `116261621665` completes with **154 fixture CTests, 154 fixture-free CTests
+and 19 Python tests** on exact `977d37c7`; its original log and job identity are
+retained in the [candidate receipt](evidence/scrum209-candidate-977d37c7-20261015/linux-receipt.json).
+After attempt 1 ended, only the failed Windows integration/dependent jobs were
+requested again. Attempt 2 job `116274722975` passes SDK preflight and is compiling
+and testing the same frozen candidate. Successful Linux/updater results are
+retained; no dependency rebuild or image-check relaxation is selected. Runtime,
+package, installed lifecycle and boat acceptance remain pending.
 
 ## Bounded AIS helper and boat recovery preparation
+
+Cold reconciliation helpers `998f7521` / `fc150311` keep the old commissioning
+transaction and the later user-installed generation distinct, preserving the
+current profile and restoring verified quarantine bytes only to original paths.
+Independent review found and corrected interruption gaps before atomic profile
+publication and after final marker removal. Exact portable helper checks pass
+51 reconciliation and 127 baseline-adoption cases. A fully prepared journal-owned
+stage resumes; incomplete or changed staging still refuses with evidence retained.
+The [original native/Linux gate](https://github.com/ThereptileII/Work/actions/runs/38692225251)
+on `fc150311` passes Linux (86 session cases, including 51 reconciliation, plus
+127 adoption) but fails Windows at the exact creation-time/attributes assertion;
+adoption never starts and the native transaction step is skipped. Original
+artifact identity, size, SHA-256 and CRC authenticate. The journal stored a
+DateTime using PowerShell 5.1's millisecond JSON representation; correction
+`87b55cbb` stores exact decimal ticks instead. Exact native metadata/ACL and
+lineage assertions remain unchanged. The original log lacks expected/actual
+values, so final causal attribution awaits native confirmation. Independent
+review passes and 56 corrected portable reconciliation cases pass.
+The [corrected focused gate](https://github.com/ThereptileII/Work/actions/runs/38693208374)
+on exact `87b55cbb` is pending; neither run rebuilds the application. No actual
+boat reconciliation or launch is accepted from these portable tests.
+[Correction and retained failure evidence](evidence/scrum17-cold-reconciliation-20261015/correction-receipt.json).
+
 
 Separate helper `f1b6fc18` adds three fixed Online AIS settings actions with owned
 window/control checks and fresh post-click observations. Independent review and

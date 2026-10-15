@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "repository": "ThereptileII/Work",
+  "run": 38686209123,
+  "attempt": 1,
+  "commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+  "job": 116261621665,
+  "observedUtc": "2026-10-15T06:22:55.648205+00:00",
+  "conclusion": "success",
+  "jobSha256": "8c107befc7f9c79e6d16aca97689d72899b6ad0c9f655989153467e02e17493c",
+  "logSha256": "a736f4b03f8b056bc563aa77edac92fb182c87595531b8281fbf88c361544155",
+  "fixtureCtests": 154,
+  "fixtureFreeCtests": 154,
+  "pythonTests": 19,
+  "selectedSummaryLines": [
+    "2026-10-15T05:34:40.5231317Z Test project /home/runner/work/Work/Work/opennav-x/build/xnav-linux/test",
+    "2026-10-15T05:34:53.5435099Z 100% tests passed, 0 tests failed out of 154",
+    "2026-10-15T05:34:53.5435487Z Total Test time (real) =  13.02 sec",
+    "2026-10-15T05:34:53.9940914Z Ran 19 tests in 0.207s",
+    "2026-10-15T05:55:49.7012691Z Test project /home/runner/work/Work/Work/opennav-x/build/production-linux/test",
+    "2026-10-15T05:56:02.7862752Z 100% tests passed, 0 tests failed out of 154",
+    "2026-10-15T05:56:02.7863068Z Total Test time (real) =  13.08 sec"
+  ],
+  "nativeWindowsAcceptance": false,
+  "boatAcceptance": false,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38686209123/attempts/1"
+}

@@ -1,0 +1,96 @@
+{
+  "schema": 1,
+  "scope": "SCRUM-17 cold-reconciliation helper correction; no application qualification",
+  "integratedCommit": "87b55cbbfdecd516d79a0ff7fc327bba1a833dcf",
+  "reviewedSourceCommit": "1ae91f1fb0ff506aa8501a8461396654eba0cd54",
+  "sourceReceiptSha256": "126ae375844ef53a0cd81e6ee348e43269051719cd4eefcd865fdcb6531fa8ee",
+  "sourceSha256": {
+    "opennav-x/tools/boat/CommissioningReconciliation.ps1": "ec1b6a6fdefa5999d4f2ab11b603319ac2580ab593942c2a9f066c8793a84e58",
+    "opennav-x/tools/boat/reconcile-commissioning.ps1": "94f177fa53c779a1d49c768a7787dcfe5eac85d41629e90b993141fc784b5c9a",
+    "opennav-x/tools/boat/test-commissioning-reconciliation.ps1": "d38e5bbbd6db6fae28dffea823bac331dd152a9b2a29d36358eeace2e103cb75",
+    "opennav-x/tools/boat/Commissioning.ps1": "94c297b2af1df20f56356fa2f2e41e8062839578a48cef63aeb39e3f1efdb554",
+    "opennav-x/tools/boat/CommissioningBaseline.ps1": "6099a0abc191f141ca37bec7cb903a0bcabbad88f77b2ee1af4909cb751c85f9",
+    "opennav-x/tools/boat/Preparation.ps1": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+    "opennav-x/tools/boat/Common.ps1": "4bbab6f0833f77bdf505326d1115b91deaea6f0060297502b43687d7fd4716c8",
+    "opennav-x/tools/boat/CommissioningProfileLock.cs": "ca42d5612bd91f15302661fc36143ace79366685fc7135debd23f7c52d631f2c",
+    "opennav-x/tools/boat/InstalledResourceReview.ps1": "af65c290ae478f69971a1177ab7193565178503aed155a670357bbc85d59aca6"
+  },
+  "unrelatedSourceSnapshotDifferences": {
+    "paths": [
+      "opennav-x/tools/boat/ReviewWindow.ps1",
+      "opennav-x/tools/boat/ReviewWindowNative.cs",
+      "opennav-x/tools/boat/test-review-window.ps1"
+    ],
+    "reason": "Integrated AIS helper revisions differ from the isolated implementation base; these are not reconciliation inputs. No all-boat-source identity is claimed."
+  },
+  "originalRun": {
+    "run": 38692225251,
+    "attempt": 1,
+    "commit": "fc150311478612c86f3ea25456f81324448483ba",
+    "runConclusion": "failure",
+    "artifacts": [
+      {
+        "platform": "windows-2022",
+        "artifact": 11952322402,
+        "sha256": "42e7cf9e5e1fd3357cdfae8079ab168cee1fe8cd0917c7f522378d9a5d907089",
+        "bytes": 392,
+        "members": [
+          "session-preservation.log"
+        ]
+      },
+      {
+        "platform": "ubuntu-24.04",
+        "artifact": 11952726834,
+        "sha256": "e00b439a178d20bc57880c5d83d141b3e4b6dc411e33e58626fe44cd52a551d4",
+        "bytes": 4449,
+        "members": [
+          "baseline-adoption.log",
+          "session-preservation.log"
+        ]
+      }
+    ]
+  },
+  "originalResults": {
+    "linux": {
+      "job": 116280547865,
+      "sessionCases": 86,
+      "includedReconciliationCases": 51,
+      "baselineAdoptionCases": 127
+    },
+    "windows": {
+      "job": 116280547613,
+      "firstError": "Profile attributes or creation time changed. (Preparation.ps1:289)",
+      "completedNativeCounts": null,
+      "baselineAdoption": "not-started",
+      "transaction": "skipped"
+    }
+  },
+  "diagnosis": {
+    "confirmedSourceDefect": "Native creationUtc was serialized as a DateTime through Windows PowerShell 5.1 JavaScriptSerializer, whose date representation retains milliseconds instead of every DateTime tick. Exact native comparison remains unchanged.",
+    "causalLimit": "Original failure log does not contain actual and expected attributes/ticks or caller stack. The serialization defect aligns with this first failing metadata boundary; corrected native validation remains pending.",
+    "primarySources": [
+      "https://learn.microsoft.com/en-us/powershell/module/microsoft.powershell.utility/convertto-json?view=powershell-5.1",
+      "https://learn.microsoft.com/en-us/dotnet/api/system.web.script.serialization.javascriptserializer?view=netframework-4.8.1"
+    ]
+  },
+  "correctedPortable": {
+    "cases": 56,
+    "result": "passed",
+    "runtime": "PowerShell 7.6.6",
+    "logSha256": "4cec53510566c9a31dc16456d52ee8e8d4799863c473cb96fe803832f3c0b59c",
+    "sourceSha256Verified": true
+  },
+  "independentReview": "No material findings; exact metadata/ACL and lineage assertions preserved.",
+  "correctedNativeRun": {
+    "run": 38693208374,
+    "attempt": 1,
+    "commit": "87b55cbbfdecd516d79a0ff7fc327bba1a833dcf",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38693208374",
+    "status": "pending"
+  },
+  "limitations": [
+    "Corrected native Windows acceptance pending.",
+    "No boat mutation, navigation application launch or physical output.",
+    "Application candidate remains 977d37c79f652fd9b9e28e55f26ec259c35eea8e."
+  ]
+}
