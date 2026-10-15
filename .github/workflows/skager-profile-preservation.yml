@@ -8,6 +8,10 @@ on:
         type: boolean
         description: Run only the unfinished native transaction check; separate prerequisite evidence is required
         default: false
+      reconciliation_only:
+        type: boolean
+        description: Run only the changed native reconciliation contract; earlier prerequisite evidence stays separate
+        default: false
 permissions:
   contents: read
 concurrency:
@@ -15,7 +19,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   preservation:
-    if: ${{ !inputs.transaction_only }}
+    if: ${{ !inputs.transaction_only && !inputs.reconciliation_only }}
     strategy:
       fail-fast: false
       matrix:
@@ -49,7 +53,7 @@ jobs:
           path: opennav-x/evidence/local/session-preservation
           if-no-files-found: error
   transaction:
-    if: ${{ inputs.transaction_only }}
+    if: ${{ inputs.transaction_only && !inputs.reconciliation_only }}
     runs-on: windows-2022
     timeout-minutes: 10
     steps:
@@ -66,4 +70,26 @@ jobs:
         with:
           name: session-preservation-transaction-only-${{ github.sha }}
           path: opennav-x/evidence/local/session-preservation-transaction-only
+          if-no-files-found: error
+  reconciliation:
+    if: ${{ inputs.reconciliation_only }}
+    runs-on: windows-2022
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Only the changed disposable native reconciliation contract
+        shell: pwsh
+        env:
+          TRANSACTION_ONLY: ${{ inputs.transaction_only }}
+        run: |
+          if ($env:TRANSACTION_ONLY -eq 'true') { throw 'Select only one focused check.' }
+          $Evidence = 'opennav-x/evidence/local/reconciliation-only'
+          New-Item -ItemType Directory -Path $Evidence -Force | Out-Null
+          & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File opennav-x/tools/boat/test-commissioning-reconciliation.ps1 2>&1 | Tee-Object "$Evidence/reconciliation.log"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: reconciliation-only-${{ github.sha }}
+          path: opennav-x/evidence/local/reconciliation-only
           if-no-files-found: error
