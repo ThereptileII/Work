@@ -191,9 +191,16 @@ function OnlineAisFixture {
  $settings=$record.action -ceq 'OnlineAISSettings'
  Surface 'SKAGER vessel traffic' 390 100 398 460 @($(if($settings){'Close'}else{'Back'})) -Heading -Unowned:($record.case -ceq 'prototype-online-wrong-owner')
  $surface=$script:surfaces[$script:surfaces.Count-1];$script:onlineHeading=$surface.Controls[0]
+ # NamedDirectChild examines every direct drawer child. Match the existing
+ # TrafficListFixture heading instead of exposing a null WinForms accName.
+ $script:onlineHeading.AccessibleName='heading'
  $script:onlineBody=New-Object Windows.Forms.Panel;$script:onlineBody.AccessibleName='AIS scroll body'
  $script:onlineBody.Location=New-Object Drawing.Point(0,89);$script:onlineBody.Size=New-Object Drawing.Size(398,371)
  $surface.Controls.Add($script:onlineBody)
+ if($surface.Controls.Count -ne 2 -or $script:onlineHeading.AccessibilityObject.Name -cne 'heading' -or
+    $script:onlineBody.AccessibilityObject.Name -cne 'AIS scroll body') {
+  throw 'Online AIS fixture direct-child accessibility shape is incomplete.'
+ }
  $label=switch($record.action){'OnlineAISSettings'{'Online AIS settings'};'OnlineAISEnable'{'Enabled'};'OnlineAISDisable'{'Off'}}
  $button=Button $script:onlineBody $label 22 20 300;$button.AccessibleName=$label
  if($record.case -ceq 'prototype-online-duplicate'){$copy=Button $script:onlineBody $label 22 100 300;$copy.AccessibleName=$label}
