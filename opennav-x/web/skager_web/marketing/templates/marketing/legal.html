@@ -1,0 +1,22 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Legal — SKAGER{% endblock %}
+{% block description %}Terms of Service, Privacy Policy, Refund Policy, beta terms and safety, cookies and open-source licences for SKAGER.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">Legal</p>
+    <h1>Clear terms, plainly written.</h1>
+    <p class="lead">Everything that applies when you buy and use SKAGER, in one place.</p>
+    <p class="doc-version">{{ legal_version }}</p>
+  </header>
+  <div class="card-grid legal-cards">
+    <a class="info-card" href="{% url 'marketing:terms' %}"><h2>Terms of Service</h2><p>What you buy with Public Beta Access, how payment works and what we promise.</p></a>
+    <a class="info-card" href="{% url 'marketing:privacy' %}"><h2>Privacy Policy</h2><p>What data we collect, why, who processes it, and your rights.</p></a>
+    <a class="info-card" href="{% url 'marketing:refunds' %}"><h2>Refund Policy</h2><p>A full refund within 14 days, for any reason.</p></a>
+    <a class="info-card" href="{% url 'marketing:beta_terms' %}"><h2>Beta terms &amp; safety</h2><p>What the beta means, and how to use SKAGER safely at the helm.</p></a>
+    <a class="info-card" href="{% url 'marketing:cookies' %}"><h2>Cookies</h2><p>No tracking. Only what is needed to sign in.</p></a>
+    <a class="info-card" href="{% url 'marketing:open_source' %}"><h2>Open source &amp; licences</h2><p>OpenCPN, your rights under the GPL, source code and third-party notices.</p></a>
+  </div>
+  <section class="page-section"><h2>Who we are</h2><p>{{ operator.name }}, organisation number {{ operator.org_number }}, {{ operator.address }}. Email: {{ operator.email }}.</p></section>
+</div>
+{% endblock %}

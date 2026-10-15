@@ -26,7 +26,7 @@ filtering. Page responses use a restrictive content policy; no analytics,
 remote fonts, vendor scripts, payment forms or credentials are included.
 
 `tools/export_preview.py --output /absolute/fresh/dist --source-commit FULL_SHA`
-exports only 20 allowlisted informational pages and owned static assets from
+exports only allowlisted informational pages (17 plus every article) and owned static assets from
 these same Django templates. It never exports account/backend source or secrets.
 The separately hosted owner-private Sites preview is a static design review,
 not a replacement for the selected Django/PostgreSQL/Render production backend.

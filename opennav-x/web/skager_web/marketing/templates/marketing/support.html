@@ -1,41 +1,42 @@
 {% extends 'marketing/base.html' %}
-{% block title %}Support library — SKAGER{% endblock %}
-{% block description %}Practical SKAGER beta guidance for OpenCPN, installation, recovery, charts, AIS and data quality.{% endblock %}
+{% block title %}Help centre — SKAGER{% endblock %}
+{% block description %}Answers and guides for SKAGER and OpenCPN: installation, charts, AIS, instruments, autopilot, weather and energy.{% endblock %}
 {% block content %}
 <div class="content-shell container">
   <header class="page-intro">
-    <p class="eyebrow">Help at the helm</p>
-    <h1>Start with a clear answer.</h1>
-    <p class="lead">Setup, recovery and the meaning behind your readings. Guidance for the Windows beta and OpenCPN 5.12.4.</p>
-  </header>
-  <section class="page-section" aria-labelledby="search-heading">
-    <h2 id="search-heading" class="section-heading">Search the support library</h2>
-    <form method="get" action="{% url 'marketing:support' %}" role="search"{% if not query %} data-help-search{% endif %}>
-      <label for="support-query">What do you need help with?</label>
-      <input id="support-query" type="search" name="q" value="{{ query }}" maxlength="120" placeholder="Try installation, AIS or stale data" aria-describedby="support-search-hint">
-      <button class="button" type="submit">Search articles</button>
-      <p id="support-search-hint" class="meta">Search article titles and text. Leave out passwords, API keys and personal information.</p>
+    <p class="eyebrow">Help centre</p>
+    <h1>How can we help?</h1>
+    <p class="lead">Quick answers, step-by-step how-tos and in-depth guides for SKAGER, OpenCPN and your boat's systems.</p>
+    <form class="support-search" method="get" action="{% url 'marketing:support' %}" role="search">
+      <label class="visually-hidden" for="support-query">Search the help centre</label>
+      <input id="support-query" type="search" name="q" value="{{ query }}" maxlength="120" placeholder="Search: AIS, charts, autopilot…">
+      <button class="button" type="submit">Search</button>
     </form>
-    {% if query %}<p role="status">{{ articles|length }} result{{ articles|length|pluralize }} for “{{ query }}”. <a href="{% url 'marketing:support' %}">Show all articles</a></p>{% endif %}
-    <p data-search-status role="status" hidden></p>
+  </header>
+
+  {% if query %}
+  <section class="page-section" aria-labelledby="results-heading">
+    <h2 id="results-heading" class="section-heading" role="status">{{ result_count }} result{{ result_count|pluralize }} for “{{ query }}”</h2>
+    {% if faqs %}<div class="faq-list compact">{% for item in faqs %}<details><summary>{{ item.question }}</summary><p>{{ item.answer }}</p>{% if item.href %}<p><a href="{{ item.href.url }}">{{ item.href.label }} →</a></p>{% endif %}</details>{% endfor %}</div>{% endif %}
+    <div class="article-cards">
+      {% for article in articles %}{% include 'marketing/includes/article_card.html' %}{% endfor %}
+    </div>
+    {% if not articles and not faqs %}<div class="notice"><h3>No matching articles</h3><p>Try a shorter word such as “charts”, “AIS” or “install”, or browse <a href="{% url 'marketing:articles' %}">all articles</a>.</p></div>{% endif %}
+    <p><a href="{% url 'marketing:support' %}">Clear search</a></p>
   </section>
-  <div class="help-list">
-    {% for article in articles %}
-    <article class="help-item" data-search="{{ article.search_text }}">
-      <p class="eyebrow">{{ article.category }}</p>
-      <h2><a href="{% url 'marketing:article' article.slug %}">{{ article.title }}</a></h2>
-      <p>{{ article.summary }}</p>
-      <p class="meta">{{ article.applies_to }}</p>
-    </article>
-    {% empty %}
-    <div class="notice"><h2>No matching articles</h2><p>Try a shorter phrase such as “charts”, “update” or “OpenCPN”. You can also <a href="{% url 'marketing:support' %}">browse the full library</a>.</p></div>
-    {% endfor %}
-  </div>
-  <p class="notice" data-search-empty hidden>No matching articles. Try a shorter phrase such as “charts” or “AIS”.</p>
-  <aside class="notice page-section" aria-labelledby="support-status-heading">
-    <h2 id="support-status-heading">This is a support preview</h2>
-    <p>Public payments and downloads remain closed. Ticket submission and file uploads are not enabled here. No report is sent from these pages.</p>
-    <p><a href="{% url 'marketing:article' 'diagnostics-and-privacy' %}">Prepare a private problem report</a> · <a href="{% url 'marketing:installation' %}">Read the installation guide</a></p>
-  </aside>
+  {% else %}
+  <section class="support-doors" aria-label="Help centre sections">
+    <a class="door" href="{% url 'marketing:faq' %}"><span class="eyebrow">FAQ</span><h2>Quick answers</h2><p>Buying, compatibility, safety and privacy, in a sentence or two.</p></a>
+    <a class="door" href="{% url 'marketing:articles' %}"><span class="eyebrow">Articles</span><h2>Guides &amp; how-tos</h2><p>Install, connect, plan and recover, step by step and in depth.</p></a>
+    <a class="door" href="{% url 'marketing:account' %}"><span class="eyebrow">Your account</span><h2>Contact support</h2><p>Report a bug, request a feature or ask us directly from your account.</p></a>
+  </section>
+  <section class="page-section" aria-labelledby="popular-heading">
+    <h2 id="popular-heading" class="section-heading">Popular articles</h2>
+    <div class="article-cards">
+      {% for article in featured %}{% include 'marketing/includes/article_card.html' %}{% endfor %}
+    </div>
+    <p><a class="text-arrow" href="{% url 'marketing:articles' %}">All articles →</a></p>
+  </section>
+  {% endif %}
 </div>
 {% endblock %}

@@ -1,0 +1,21 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Articles and guides — SKAGER{% endblock %}
+{% block description %}Guides and how-tos for sailors using SKAGER and OpenCPN: boat PCs, charts, NMEA and Signal K, AIS, autopilots, weather, energy and recovery.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:support' %}">Help centre</a> <span aria-hidden="true">/</span> <span aria-current="page">Articles</span></nav>
+  <header class="page-intro">
+    <p class="eyebrow">Articles</p>
+    <h1>Guides for a better helm.</h1>
+    <p class="lead">In-depth guides on navigation tech, and step-by-step how-tos for SKAGER and OpenCPN.</p>
+  </header>
+  <nav class="jump-links" aria-label="Article categories">{% for category in categories %}<a href="#{{ category.name|slugify }}">{{ category.name }}</a>{% endfor %}</nav>
+  {% for category in categories %}
+  <section class="page-section" id="{{ category.name|slugify }}" aria-labelledby="{{ category.name|slugify }}-heading">
+    <h2 id="{{ category.name|slugify }}-heading">{{ category.name }}</h2>
+    <p class="meta">{{ category.description }}</p>
+    <div class="article-cards">{% for article in category.articles %}{% include 'marketing/includes/article_card.html' %}{% endfor %}</div>
+  </section>
+  {% endfor %}
+</div>
+{% endblock %}

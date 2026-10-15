@@ -1,0 +1,76 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}How it works — SKAGER{% endblock %}
+{% block description %}SKAGER is a new interface for OpenCPN. Install OpenCPN, add SKAGER, connect your instruments and cast off. Your charts and routes come with you.{% endblock %}
+{% block page %}how_it_works{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="page-hero" aria-labelledby="how-title">
+  <div class="container">
+    <p class="kicker">How it works</p>
+    <h1 id="how-title">A new interface.<br><span>The navigation you trust.</span></h1>
+    <p class="page-hero-sub">SKAGER sits on top of OpenCPN, the proven open-source chart plotter. OpenCPN does the navigation. SKAGER makes it a pleasure to use.</p>
+  </div>
+</section>
+
+<section class="layer-story" aria-labelledby="layers-title">
+  <div class="container layer-grid">
+    <div class="layer-stack" aria-hidden="true" data-reveal>
+      <div class="layer layer-top"><b>SKAGER</b><span>Chart-first interface · instruments · traffic · autopilot · energy · weather</span></div>
+      <div class="layer layer-mid"><b>OpenCPN</b><span>Charts · routes · waypoints · AIS · connections</span></div>
+      <div class="layer layer-base"><b>Your boat</b><span>GPS · AIS · NMEA 0183 · NMEA 2000 · Signal K</span></div>
+    </div>
+    <div class="chapter-copy" data-reveal>
+      <h2 id="layers-title">Three layers.<br><span>One calm screen.</span></h2>
+      <p>Your instruments talk to OpenCPN exactly as before. OpenCPN keeps your charts, routes and connections. SKAGER brings it all together in an interface designed for the helm.</p>
+    </div>
+  </div>
+</section>
+
+<section class="steps-section" aria-labelledby="steps-title">
+  <div class="container">
+    <h2 id="steps-title" class="visually-hidden">Getting started</h2>
+    <ol class="steps">
+      <li data-reveal><span class="step-number">01</span><h3>Install OpenCPN</h3><p>Install OpenCPN 5.12.4 for Windows from the official OpenCPN website. Already have it? Check the version and you are set.</p><a class="text-arrow" href="{% url 'marketing:article' 'opencpn-prerequisite' %}">Which version →</a></li>
+      <li data-reveal><span class="step-number">02</span><h3>Add SKAGER</h3><p>Download SKAGER from your account and run Setup. It checks your OpenCPN, shows what it will change and keeps a backup.</p><a class="text-arrow" href="{% url 'marketing:article' 'install-skager' %}">Installation guide →</a></li>
+      <li data-reveal><span class="step-number">03</span><h3>Connect your boat</h3><p>Your GPS, AIS and instruments already connected to OpenCPN appear in SKAGER, each with its source and age.</p><a class="text-arrow" href="{% url 'marketing:article' 'nmea-0183-2000-signal-k' %}">Connecting instruments →</a></li>
+      <li data-reveal><span class="step-number">04</span><h3>Cast off</h3><p>Pick a route, check the next turn, glance at the rail. Day, dusk or night, everything you need is on one screen.</p><a class="text-arrow" href="{% url 'marketing:features' %}">See the features →</a></li>
+    </ol>
+  </div>
+</section>
+
+<section class="trust" aria-labelledby="yours-title">
+  <div class="container">
+    <h2 id="yours-title" data-reveal>Everything you have.<br><span>Nothing you lose.</span></h2>
+    <div class="trust-grid">
+      <div data-reveal><h3>Your charts</h3><p>The charts, licences and chart plugins you use in OpenCPN work in SKAGER as they are.</p></div>
+      <div data-reveal><h3>Your routes and waypoints</h3><p>They stay in your OpenCPN profile. Nothing is imported, copied or converted.</p></div>
+      <div data-reveal><h3>Your connections</h3><p>Set up an instrument once in OpenCPN; SKAGER uses the same connection.</p></div>
+      <div data-reveal><h3>Your way back</h3><p>Legacy opens the classic OpenCPN interface whenever you want it, and Safe Mode helps if something will not start.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="requirements-band" aria-labelledby="req-title">
+  <div class="container requirements-grid" data-reveal>
+    <div><p class="kicker">What you need</p><h2 id="req-title">A Windows PC<br><span>and OpenCPN.</span></h2></div>
+    <dl class="requirement-list">
+      <div><dt>Computer</dt><dd>64-bit Windows PC</dd></div>
+      <div><dt>OpenCPN</dt><dd>5.12.4 for Windows, installed separately</dd></div>
+      <div><dt>Display</dt><dd>1280 × 800 or larger, touch recommended</dd></div>
+      <div><dt>Charts</dt><dd>Your own, from your chart provider</dd></div>
+      <div><dt>Instruments</dt><dd>Optional: NMEA 0183, NMEA 2000 or Signal K</dd></div>
+    </dl>
+    <a class="cta-ghost" href="{% url 'marketing:installation' %}">Full requirements <span aria-hidden="true">→</span></a>
+  </div>
+</section>
+
+<section class="finale" aria-labelledby="how-cta">
+  <div class="container finale-inner" data-reveal>
+    <h2 id="how-cta">Four steps<br><span>to a better helm.</span></h2>
+    <div class="hero-actions"><a class="cta" href="{% url 'marketing:pricing' %}">Get SKAGER <span aria-hidden="true">↗</span></a><a class="cta-ghost" href="{% url 'marketing:faq' %}">Read the FAQ <span aria-hidden="true">→</span></a></div>
+  </div>
+</section>
+{% endblock %}

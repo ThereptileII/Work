@@ -1,8 +1,8 @@
 {% extends 'marketing/base.html' %}
 {% load static %}
 {% block page %}home{% endblock %}
-{% block extra_head %}<link rel="preload" href="{% static 'marketing/fonts/InterVariable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
   <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
   <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
 {% block footer_status %}{% endblock %}
@@ -77,12 +77,7 @@
       <h2 id="chart-title">More chart.<br><span>Less searching.</span></h2>
       <p>SKAGER keeps what matters on screen and lets you switch off the rest. Choose your layers, and nothing else gets in your way.</p>
     </div>
-    <div class="chapter-visual visual-chart" data-declutter data-reveal aria-hidden="true">
-      <div class="proto-screen proto-fragment fragment-chart" data-theme="day" inert>
-        <div class="fragment-map" data-chart-clone="layers"></div>
-        <div class="fragment-drawer" data-fit="398x640">{% include 'marketing/includes/skager_layers.html' %}</div>
-      </div>
-    </div>
+    {% include 'marketing/includes/visual_layers.html' %}
   </div>
 </section>
 
@@ -93,9 +88,7 @@
       <h2 id="boat-title">Know your boat.<br><span>At a glance.</span></h2>
       <p>Wind, speed, depth and heel, together on one calm screen. One look tells you everything, in figures you can read across the cockpit.</p>
     </div>
-    <div class="chapter-visual visual-view" data-instruments data-reveal aria-hidden="true">
-      <div class="fit" data-fit="1014x698"><div class="proto-screen proto-fragment fragment-view" data-theme="day" inert>{% include 'marketing/includes/skager_instruments.html' %}</div></div>
-    </div>
+    {% include 'marketing/includes/visual_instruments.html' %}
   </div>
 </section>
 
@@ -106,9 +99,7 @@
       <h2 id="pilot-title">Autopilot.<br><span>At your fingertips.</span></h2>
       <p>Engage, adjust and hand back the helm from the screen you already navigate on. One degree or ten, one tap.</p>
     </div>
-    <div class="chapter-visual visual-pilot" data-pilot data-reveal aria-hidden="true">
-      <div class="fit" data-fit="398x520"><div class="proto-screen proto-fragment fragment-drawer-only" data-theme="day" inert>{% include 'marketing/includes/skager_autopilot.html' %}</div></div>
-    </div>
+    {% include 'marketing/includes/visual_autopilot.html' %}
   </div>
 </section>
 
@@ -119,9 +110,7 @@
       <h2 id="energy-title">Arrive with<br><span>energy to spare.</span></h2>
       <p>Know how much charge you’ll have when you get there, before you leave the dock. Range, reserve and arrival, worked out for your route.</p>
     </div>
-    <div class="chapter-visual visual-view" data-energy data-reveal aria-hidden="true">
-      <div class="fit" data-fit="1014x698"><div class="proto-screen proto-fragment fragment-view energy-focus" data-theme="day" inert>{% include 'marketing/includes/skager_energy.html' %}</div></div>
-    </div>
+    {% include 'marketing/includes/visual_energy.html' %}
   </div>
 </section>
 
@@ -132,12 +121,7 @@
       <h2 id="weather-title">The forecast.<br><span>On your chart.</span></h2>
       <p>Wind across your route, hour by hour. Pick the perfect window and sail it with the breeze on your side.</p>
     </div>
-    <div class="chapter-visual visual-chart" data-weather data-reveal aria-hidden="true">
-      <div class="proto-screen proto-fragment fragment-chart" data-theme="day" inert>
-        <div class="fragment-map" data-chart-clone="wind"></div>
-        <div class="chart-advisory forecast-advisory"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 17h9"></path></svg><span><b>Forecast wind · <span data-forecast-hour>15:00</span></b><span data-forecast-speed>14</span> kn from SW · along your route</span><button aria-label="Forecast details">↗</button></div>
-      </div>
-    </div>
+    {% include 'marketing/includes/visual_weather.html' %}
   </div>
 </section>
 

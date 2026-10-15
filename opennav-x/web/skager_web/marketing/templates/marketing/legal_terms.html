@@ -1,0 +1,67 @@
+{% extends 'marketing/legal_base.html' %}
+{% block title %}Terms of Service — SKAGER{% endblock %}
+{% block description %}The terms for SKAGER Public Beta Access, your account and our services.{% endblock %}
+{% block doc_name %}Terms of Service{% endblock %}
+{% block doc_heading %}Terms of Service{% endblock %}
+{% block doc_lead %}The agreement between you and us when you buy SKAGER Public Beta Access and use your account.{% endblock %}
+{% block doc_body %}
+<section class="page-section" id="about"><h2>1. About these terms</h2>
+<p>These terms apply when you create a SKAGER account, buy Public Beta Access, or use our downloads, updates, customer portal and support (together, the “services”). Please read them together with the <a href="{% url 'marketing:beta_terms' %}">Beta terms &amp; safety notice</a>, the <a href="{% url 'marketing:refunds' %}">Refund Policy</a> and the <a href="{% url 'marketing:privacy' %}">Privacy Policy</a>.</p>
+<p>Nothing in these terms limits your rights under the open-source licences that cover parts of SKAGER, or your mandatory rights as a consumer.</p></section>
+
+<section class="page-section" id="who"><h2>2. Who we are</h2>
+<p>SKAGER is provided by {{ operator.name }}, organisation number {{ operator.org_number }}, {{ operator.address }} (“we”, “us”). You can reach us at {{ operator.email }}.</p></section>
+
+<section class="page-section" id="service"><h2>3. What Public Beta Access includes</h2>
+<p>Public Beta Access is a one-time purchase. For as long as the SKAGER public beta runs, it gives you:</p>
+<ul><li>downloads of SKAGER for Windows and the beta updates we release;</li><li>your SKAGER account and customer portal;</li><li>the help centre, support, bug reporting and feature requests;</li><li>release notes and information about what comes next.</li></ul>
+<p>You may install SKAGER on the computers you use to navigate your own boat. Your access is personal: please do not share your account.</p>
+<p>Charts, chart licences, OpenCPN, instruments and third-party online services are not part of the purchase.</p></section>
+
+<section class="page-section" id="beta"><h2>4. Beta software</h2>
+<p>SKAGER is in public beta. Features may change, be added or be removed, and you may meet bugs. We release updates to fix problems and improve the product, and we tell you what changed in the release notes. When the public beta ends, we will tell you in advance what comes next. Software you have already downloaded keeps working, and your rights under its open-source licences remain.</p></section>
+
+<section class="page-section" id="account"><h2>5. Your account</h2>
+<p>You sign in with your email address and a one-time code. Keep access to that email address secure and tell us if you believe someone else has used your account. You must give accurate information when you buy.</p></section>
+
+<section class="page-section" id="price"><h2>6. Price and payment</h2>
+<p>The price is shown on the <a href="{% url 'marketing:pricing' %}">pricing page</a> and at checkout, in US dollars. Any applicable taxes are shown before you pay. Payments are processed by Stripe; we never see or store your full card details. Your purchase is complete when the payment succeeds, and we send a receipt by email.</p></section>
+
+<section class="page-section" id="refunds"><h2>7. Refunds and your right of withdrawal</h2>
+<p>You can ask for a full refund for any reason within 14 days of purchase, as described in our <a href="{% url 'marketing:refunds' %}">Refund Policy</a>. This is at least as generous as the statutory right of withdrawal for consumers in the EU, so you keep the full 14 days even after you download SKAGER. When we refund your purchase, your access to the services ends.</p></section>
+
+<section class="page-section" id="open-source"><h2>8. Open-source software</h2>
+<p>SKAGER builds on OpenCPN and includes components licensed under the GNU General Public License and other open-source licences. Those licences, not these terms, govern your use, copying, modification and distribution of that software. Your payment is for our services. It does not take away, and these terms do not restrict, any right those licences give you. We publish the corresponding source for each release; see <a href="{% url 'marketing:open_source' %}">Open source &amp; licences</a>.</p>
+<p>The SKAGER name and logo are our trademarks. The open-source licences do not grant rights to use them.</p></section>
+
+<section class="page-section" id="use"><h2>9. Acceptable use</h2>
+<p>Use the services lawfully and fairly. In particular, do not:</p>
+<ul><li>share, sell or transfer your account or downloads access;</li><li>try to break, overload or get around the security of our services;</li><li>use the support channels to send unlawful, abusive or harmful content;</li><li>misrepresent your identity or your connection with SKAGER.</li></ul>
+<p>This section applies to our services. It does not restrict what the open-source licences allow you to do with the software itself.</p></section>
+
+<section class="page-section" id="safety"><h2>10. Navigation and safety</h2>
+<p>SKAGER is an aid to navigation. You remain responsible for the safe navigation of your vessel, including keeping a proper lookout, carrying an independent means of navigation and current charts, and checking the data you rely on. Advisory features never steer the vessel. Autopilot control is off until you enable it and only works with supported equipment. Please read the <a href="{% url 'marketing:beta_terms' %}">Beta terms &amp; safety notice</a>, which forms part of these terms.</p></section>
+
+<section class="page-section" id="third-party"><h2>11. Third-party products and services</h2>
+<p>SKAGER works with OpenCPN, your charts, your instruments and optional online services such as forecast and Online AIS providers. Those are provided by third parties under their own terms. OpenCPN is a separate open-source project that does not endorse SKAGER.</p></section>
+
+<section class="page-section" id="availability"><h2>12. Availability and changes</h2>
+<p>We work to keep the services available, but we cannot promise they will be uninterrupted. We may change the services, for example to improve security or add features. If a change significantly reduces what you bought, we will tell you in advance and you may ask for a refund of the unused value.</p></section>
+
+<section class="page-section" id="liability"><h2>13. Liability</h2>
+<p>If we fail to meet these terms, we are responsible for loss you suffer that is a foreseeable result of that failure. We are not responsible for loss that was not foreseeable, for loss caused by events outside our reasonable control, or for loss caused by navigation decisions made without the care described in section 10.</p>
+<p>Nothing in these terms limits our liability for death or personal injury caused by our negligence, for intent or gross negligence, or any liability that cannot be limited by law. Your statutory rights as a consumer are not affected.</p></section>
+
+<section class="page-section" id="ending"><h2>14. Ending your access</h2>
+<p>You can stop using the services and ask us to delete your account at any time. We may suspend or end your access if you seriously or repeatedly break these terms, after warning you where reasonable. Ending access does not affect your rights under the open-source licences.</p></section>
+
+<section class="page-section" id="changes"><h2>15. Changes to these terms</h2>
+<p>We may update these terms, for example when the services or the law change. We will publish the new version here with its date and, for significant changes, tell you by email in advance. Changes do not take away what you have already paid for.</p></section>
+
+<section class="page-section" id="law"><h2>16. Governing law and disputes</h2>
+<p>These terms are governed by Swedish law. If you are a consumer living in another country, you also keep the protection of the mandatory consumer laws of that country.</p>
+<p>If something goes wrong, please contact us first; most problems are quickly solved. Consumers in Sweden can also turn to the National Board for Consumer Disputes (Allmänna reklamationsnämnden, ARN). Consumers elsewhere in the EU can get free help from the European Consumer Centre in their country. Disputes may be brought before the courts of Sweden, or the courts where you live if the law gives you that right.</p></section>
+
+<section class="page-section" id="contact"><h2>17. Contact</h2>
+<p>{{ operator.name }}, {{ operator.address }}. Email: {{ operator.email }}.</p></section>
+{% endblock %}

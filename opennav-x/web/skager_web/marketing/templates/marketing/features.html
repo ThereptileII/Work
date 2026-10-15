@@ -1,11 +1,125 @@
 {% extends 'marketing/base.html' %}
-{% block title %}The experience — SKAGER App{% endblock %}
-{% block description %}Explore SKAGER’s chart workspace, passage, traffic and instruments, with clear beta limitations and an OpenCPN foundation.{% endblock %}
+{% load static %}
+{% block title %}Features — SKAGER{% endblock %}
+{% block description %}Chart, traffic, instruments, autopilot, energy and weather on one calm screen. See every SKAGER feature, as it looks at the helm.{% endblock %}
+{% block page %}features{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
 {% block content %}
-<section class="container page-intro"><p class="eyebrow">THE EXPERIENCE</p><h1>Less searching.<br><span>More understanding.</span></h1><p class="lead">Your passage is a connected picture.<br>Your workspace should be, too.</p><p class="intro-note">These capabilities are implemented in the developing native application. Release qualification and device-specific acceptance remain in progress.</p></section>
-<section class="container feature-story" aria-labelledby="chart-title"><div class="feature-copy"><p class="eyebrow">01 / CHART &amp; PASSAGE</p><h2 id="chart-title">Keep the journey<br>in view.</h2><p>Work with your OpenCPN charts, routes and waypoints in a focused chart workspace. Open route details, review a passage, and edit names without losing the wider picture.</p><p>Day, dusk and night presentation and interface layout settings help you arrange the workspace around the task.</p><p class="feature-caveat">Charts and chart licenses are separate. Compatibility depends on the supported OpenCPN installation and its chart providers.</p></div><div class="route-art" aria-label="Conceptual passage illustration"><span class="eyebrow">A PASSAGE HAS A RHYTHM</span><div class="route-line"><span class="route-step"><i></i><b>Prepare</b><small>Chart &amp; route</small></span><span class="route-step"><i></i><b>Review</b><small>Details in context</small></span><span class="route-step"><i></i><b>Observe</b><small>Available inputs</small></span></div><p>Plan with context.<br><span>Keep the decision yours.</span></p><small class="art-label">Concept illustration</small></div></section>
-<section class="container feature-story feature-story-reverse" aria-labelledby="awareness-title"><div class="feature-copy"><p class="eyebrow">02 / TRAFFIC &amp; INSTRUMENTS</p><h2 id="awareness-title">A fuller picture.<br>Clearer limits.</h2><p>Review available AIS traffic, vessel instruments, alerts and source health alongside the chart. Distinguish measured input from optional forecast information.</p><p>Unavailable, stale or uncertain information is represented explicitly. SmartNav is an advisory aid; it never steers the vessel or replaces your judgment.</p><p class="feature-caveat">AIS, sensors, forecasts and other integrations need their own compatible sources. Their presence in the interface does not guarantee data coverage.</p></div><div class="source-art"><span class="eyebrow">KNOW WHAT YOU ARE SEEING</span><div><span class="source-icon" aria-hidden="true">⌖</span><span><b>Position</b><small>Source and freshness matter</small></span></div><div><span class="source-icon" aria-hidden="true">≈</span><span><b>Measured &amp; forecast</b><small>Different information, clearly identified</small></span></div><div><span class="source-icon" aria-hidden="true">—</span><span><b>Unavailable</b><small>An honest gap, never invented data</small></span></div><small class="art-label">Information principles · not live status</small></div></section>
-<section class="container feature-story" aria-labelledby="foundation-title"><div class="feature-copy"><p class="eyebrow">03 / AN OPENCPN FOUNDATION</p><h2 id="foundation-title">A fresh perspective.<br>A familiar foundation.</h2><p>SKAGER works with a separately installed, supported OpenCPN application. Charts, routes, tracks, waypoints and connections remain in the OpenCPN profile.</p><p>Legacy provides the familiar OpenCPN interface. Safe Mode provides a recovery path if the SKAGER interface or a plugin does not start.</p><p class="feature-caveat">The planned beta targets a Windows x64 host with the Win32/x86 OpenCPN 5.12.4 application and plugin interface. Broader compatibility is not promised.</p><a class="text-link" href="{% url 'marketing:installation' %}">Read the installation prerequisites <span aria-hidden="true">↗</span></a></div><div class="foundation-art"><span class="eyebrow">YOUR EXISTING FOUNDATION</span><p>SKAGER <span>workspace</span></p><div class="foundation-connector" aria-hidden="true"></div><p>OpenCPN <span>navigation &amp; profile</span></p><div class="foundation-tags"><span>Charts</span><span>Routes</span><span>Waypoints</span><span>Connections</span></div><small class="art-label">Concept illustration</small></div></section>
-<section class="container page-section"><div class="notice"><span class="eyebrow">A CLEAR BOUNDARY</span><h2>Awareness first. Control stays deliberate.</h2><p>Hardware control is unavailable or off by default until its qualification and explicit setup requirements are met. Supported pilot functions require device identity, fresh measured feedback and separate permission. SmartNav never steers.</p><p>The beta is not approved for navigation or production use. Always keep independent navigation and recovery arrangements.</p></div></section>
-<section class="container closing-cta"><div><p class="eyebrow">CONTINUE EXPLORING</p><h2>Your next perspective.</h2></div><div class="actions"><a class="button" href="{% url 'marketing:pricing' %}">GET SKAGER <span aria-hidden="true">↗</span></a><a class="text-link" href="{% url 'marketing:support' %}">Help &amp; guides <span aria-hidden="true">→</span></a></div></section>
+<section class="page-hero" aria-labelledby="features-title">
+  <div class="container">
+    <p class="kicker">Features</p>
+    <h1 id="features-title">Everything your boat knows.<br><span>On one calm screen.</span></h1>
+    <p class="page-hero-sub">Chart, traffic, instruments, autopilot, energy and weather, designed together for the helm. This is SKAGER, exactly as you will use it.</p>
+  </div>
+</section>
+
+<section class="showcase" aria-label="The SKAGER screen">
+  <div class="container">
+    <div class="showcase-frame">
+      <div class="fit" data-fit="1280x800"><div class="proto-screen fragment-full" data-theme="day" data-switch-screen inert aria-hidden="true">
+{% include 'marketing/includes/skager_screen.html' %}
+      </div></div>
+    </div>
+    <div class="theme-switch" role="group" aria-label="Display mode" data-theme-switch>
+      <button type="button" data-set-theme="day" aria-pressed="true">Day</button><button type="button" data-set-theme="dusk" aria-pressed="false">Dusk</button><button type="button" data-set-theme="night" aria-pressed="false">Night</button>
+    </div>
+{% include 'marketing/includes/skager_theme_icons.html' %}
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="f-chart">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Chart &amp; passage</p>
+      <h2 id="f-chart">More chart.<br><span>Less searching.</span></h2>
+      <p>Your OpenCPN charts with a calm, modern presentation. Switch layers on and off, see the next turn before you reach it, and keep the whole passage in view.</p>
+      <ul class="feature-points"><li>Next-turn card with distance, time and new course</li><li>Route corridor and safety depth along your passage</li><li>Chart layers you choose: symbols, soundings, contours, AIS, wind</li><li>North up, course up or head up</li></ul>
+    </div>
+    {% include 'marketing/includes/visual_layers.html' %}
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="f-traffic">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Traffic</p>
+      <h2 id="f-traffic">Every ship around you.<br><span>One tap away.</span></h2>
+      <p>AIS targets on the chart with course vectors. Tap one to see who it is, how close it will pass and when, and where the information comes from.</p>
+      <ul class="feature-points"><li>Closest point of approach and time to it</li><li>Onboard AIS first, Online AIS for traffic beyond radio range</li><li>Source and age on every target</li></ul>
+    </div>
+    <div class="chapter-visual visual-pilot" data-reveal aria-hidden="true">
+      <div class="fit" data-fit="398x600"><div class="proto-screen proto-fragment fragment-drawer-only fragment-tall" data-theme="day" inert>{% include 'marketing/includes/skager_ais.html' %}</div></div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="f-instruments">
+  <div class="container chapter-grid wide">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Instruments</p>
+      <h2 id="f-instruments">Know your boat.<br><span>At a glance.</span></h2>
+      <p>Speed, depth, wind and battery in the rail beside the chart, and a full instrument view when you want the detail.</p>
+      <ul class="feature-points"><li>Large figures, readable across the cockpit</li><li>Every value shows its source and age</li><li>Choose the four values your rail shows</li></ul>
+    </div>
+    {% include 'marketing/includes/visual_instruments.html' %}
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="f-pilot">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Autopilot</p>
+      <h2 id="f-pilot">Autopilot.<br><span>At your fingertips.</span></h2>
+      <p>Engage, adjust and hand back the helm from the screen you navigate on. Works with supported pilots once you switch control on.</p>
+      <ul class="feature-points"><li>Standby and Auto, ±1° and ±10° steps</li><li>Every command confirmed by the pilot's own feedback</li><li>Off until you enable it, and always one tap from Standby</li></ul>
+    </div>
+    {% include 'marketing/includes/visual_autopilot.html' %}
+  </div>
+</section>
+
+<section class="chapter" id="energy" aria-labelledby="f-energy">
+  <div class="container chapter-grid wide">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Energy</p>
+      <h2 id="f-energy">Arrive with<br><span>energy to spare.</span></h2>
+      <p>For electric and hybrid boats: charge now, charge on arrival, range and reserve, worked out for the route you are sailing.</p>
+      <ul class="feature-points"><li>Estimated battery over the whole passage</li><li>Your reserve, kept in view</li><li>Propulsion, battery and motor temperature at a glance</li></ul>
+    </div>
+    {% include 'marketing/includes/visual_energy.html' %}
+  </div>
+</section>
+
+<section class="chapter" id="weather" aria-labelledby="f-weather">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">Weather</p>
+      <h2 id="f-weather">The forecast.<br><span>On your chart.</span></h2>
+      <p>Forecast wind drawn across your route, hour by hour, with its source and time. Measured wind stays separate, so you always know which is which.</p>
+    </div>
+    {% include 'marketing/includes/visual_weather.html' %}
+  </div>
+</section>
+
+<section class="trust" aria-labelledby="f-trust">
+  <div class="container">
+    <p class="kicker" data-reveal>Built for trust</p>
+    <h2 id="f-trust" data-reveal>Calm, honest,<br><span>and always a way back.</span></h2>
+    <div class="trust-grid">
+      <div data-reveal><h3>Your data stays in OpenCPN</h3><p>Charts, routes, waypoints and connections stay in your OpenCPN profile. Nothing is copied or converted.</p></div>
+      <div data-reveal><h3>Legacy and Safe Mode</h3><p>Switch to the classic OpenCPN interface any time, or start with the minimum to sort out a problem.</p></div>
+      <div data-reveal><h3>Honest readings</h3><p>Missing or old data is shown as missing or old. Never as zero, never as live.</p></div>
+      <div data-reveal><h3>Day, dusk and night</h3><p>The whole interface follows the light, so your eyes stay ready for the water.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="finale" aria-labelledby="features-cta">
+  <div class="container finale-inner" data-reveal>
+    <h2 id="features-cta">Ready when<br><span>you are.</span></h2>
+    <div class="hero-actions"><a class="cta" href="{% url 'marketing:pricing' %}">Get SKAGER <span aria-hidden="true">↗</span></a><a class="cta-ghost" href="{% url 'marketing:how_it_works' %}">How it works <span aria-hidden="true">→</span></a></div>
+  </div>
+</section>
 {% endblock %}

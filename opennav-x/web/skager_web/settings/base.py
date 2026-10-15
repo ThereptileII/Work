@@ -27,8 +27,19 @@ TEMPLATES = [{
     "OPTIONS": {"context_processors": [
         "django.template.context_processors.request",
         "skager_web.marketing.assets.marketing_asset_versions",
+        "skager_web.marketing.assets.site_status",
     ]},
 }]
+# Public checkout, accounts and downloads open together at launch.
+MARKETING_PUBLIC_ACCESS_OPEN = False
+# The seller named in the legal documents. Fill in before payments open (SCRUM-61/62/63).
+MARKETING_OPERATOR = {
+    "name": "[Operator legal name]",
+    "org_number": "[organisation number]",
+    "address": "[registered address], Sweden",
+    "email": "[contact email]",
+}
+MARKETING_LEGAL_VERSION = "Draft 0.1 · 15 October 2026 · for legal review"
 STATIC_URL = "/static/"
 USE_TZ = True
 TIME_ZONE = "UTC"

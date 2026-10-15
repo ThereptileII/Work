@@ -1,0 +1,26 @@
+{% extends 'marketing/legal_base.html' %}
+{% block title %}Cookie notice — SKAGER{% endblock %}
+{% block description %}SKAGER uses no analytics, advertising or tracking cookies. Here are the few cookies needed to sign in.{% endblock %}
+{% block doc_name %}Cookies{% endblock %}
+{% block doc_heading %}Cookie notice{% endblock %}
+{% block doc_lead %}No analytics, no advertising, no tracking. Only what is needed to sign in safely.{% endblock %}
+{% block doc_body %}
+<section class="page-section" id="none"><h2>1. Browsing the website</h2>
+<p>Reading our website sets no cookies, and we use no analytics or advertising tools. That is why you will not see a cookie banner.</p></section>
+
+<section class="page-section" id="signin"><h2>2. Signing in to your account</h2>
+<p>When you sign in, we use three strictly necessary cookies. They cannot be switched off, because sign-in does not work without them, and they are never used for tracking.</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Cookie</th><th scope="col">Purpose</th><th scope="col">Lifetime</th></tr></thead>
+<tbody>
+<tr><td><code>__Host-skager_challenge</code></td><td>Links the one-time code we email you to your sign-in attempt</td><td>10 minutes</td></tr>
+<tr><td><code>__Host-skager_session</code></td><td>Keeps you signed in</td><td>20 minutes</td></tr>
+<tr><td><code>__Host-skager_csrf</code></td><td>Protects your account forms against forged requests</td><td>20 minutes</td></tr>
+</tbody></table></div></section>
+
+<section class="page-section" id="security"><h2>3. Security cookies from our host</h2>
+<p>If our hosting provider's bot protection is active, it may set a short-lived security cookie, <code>__cf_bm</code>, to tell people from automated traffic. It lasts up to 30 minutes and is not used for tracking.</p></section>
+
+<section class="page-section" id="checkout"><h2>4. Checkout</h2>
+<p>When you pay, you are taken to Stripe's checkout page, which uses its own cookies for payment security and fraud prevention under Stripe's privacy policy.</p></section>
+{% endblock %}

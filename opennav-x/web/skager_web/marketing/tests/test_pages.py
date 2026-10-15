@@ -18,8 +18,8 @@ class Links(HTMLParser):
 
 
 class MarketingPages(SimpleTestCase):
-    pages = ("home", "features", "pricing", "support", "installation",
-             "open_source", "beta_terms", "privacy", "account", "downloads")
+    pages = ("home", "features", "how_it_works", "pricing", "installation", "support", "faq", "articles",
+             "open_source", "legal", "terms", "privacy", "refunds", "beta_terms", "cookies", "account", "downloads")
 
     def test_pages_and_article_links_resolve_without_database_or_vendors(self):
         paths = [reverse("marketing:" + name) for name in self.pages]
@@ -38,7 +38,9 @@ class MarketingPages(SimpleTestCase):
 
     def test_search_matches_article_body_and_has_explicit_empty_state(self):
         result = self.client.get(reverse("marketing:support"), {"q": "transducer"})
-        self.assertEqual([a["slug"] for a in result.context["articles"]], ["sensors-and-stale-data"])
+        self.assertIn("sensors-and-stale-data", [a["slug"] for a in result.context["articles"]])
+        faq = self.client.get(reverse("marketing:support"), {"q": "refund"})
+        self.assertTrue(faq.context["faqs"])
         empty = self.client.get(reverse("marketing:support"), {"q": "zz-no-match-zz"})
         self.assertContains(empty, "No matching articles")
         self.assertEqual(empty.context["articles"], ())
@@ -51,8 +53,8 @@ class MarketingPages(SimpleTestCase):
         self.assertEqual(len(long.context["query"]), 120)
 
     def test_unknown_article_is_not_a_file_or_template_lookup(self):
-        self.assertEqual(self.client.get("/support/not-a-guide/").status_code, 404)
-        self.assertEqual(self.client.get("/support/..%2Fprivacy/").status_code, 404)
+        self.assertEqual(self.client.get("/support/articles/not-a-guide/").status_code, 404)
+        self.assertEqual(self.client.get("/support/articles/..%2Fprivacy/").status_code, 404)
 
     def test_information_pages_reject_posts(self):
         for name in self.pages:

@@ -21,8 +21,9 @@ django.setup()
 from django.test import Client
 from skager_web.marketing.content import ARTICLES
 
-PAGES = ("/", "/features/", "/pricing/", "/support/", "/install/",
-         "/open-source/", "/beta-terms/", "/privacy/", "/account/", "/downloads/")
+PAGES = ("/", "/features/", "/how-it-works/", "/pricing/", "/install/", "/support/", "/support/faq/",
+         "/support/articles/", "/open-source/", "/legal/", "/legal/terms/", "/legal/privacy/",
+         "/legal/refunds/", "/legal/beta-terms/", "/legal/cookies/", "/account/", "/downloads/")
 
 
 def main():
@@ -37,7 +38,7 @@ def main():
         parser.error("output must not exist; retain previous previews separately")
     output.mkdir(parents=True)
     client = Client()
-    for path in PAGES + tuple("/support/" + a["slug"] + "/" for a in ARTICLES):
+    for path in PAGES + tuple("/support/articles/" + a["slug"] + "/" for a in ARTICLES):
         response = client.get(path)
         if response.status_code != 200:
             raise RuntimeError(f"Preview page refused: {path}")

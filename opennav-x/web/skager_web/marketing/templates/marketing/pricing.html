@@ -1,9 +1,59 @@
 {% extends 'marketing/base.html' %}
-{% block title %}The planned beta offer — SKAGER App{% endblock %}
-{% block description %}SKAGER’s planned USD 20 one-time beta service offer. Public checkout is closed; read prerequisites, limitations and open-source rights.{% endblock %}
+{% load static %}
+{% block title %}Pricing — SKAGER Public Beta Access{% endblock %}
+{% block description %}SKAGER Public Beta Access: one payment of USD 20, no subscription. Downloads, updates, support and your account included, with a 14-day full refund.{% endblock %}
+{% block page %}pricing{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
 {% block content %}
-<section class="container page-intro"><p class="eyebrow">THE PLANNED BETA OFFER</p><h1>A considered start.<br><span>A clear commitment.</span></h1><p class="lead">One planned payment for beta services.<br>Room to understand the details first.</p></section>
-<section class="container offer-layout" aria-labelledby="offer-title"><div class="offer-panel"><p class="eyebrow">SKAGER APP · PLANNED BETA SERVICES</p><h2 id="offer-title">A clearer course.</h2><p class="offer-price"><span class="currency">USD</span> 20<span class="payment-frequency">One-time payment</span></p><p>A planned paid beta service offer around the SKAGER application. Final service scope and purchase terms must be published before checkout opens.</p><div class="offer-status"><span class="status-mark" aria-hidden="true"></span><span>Checkout is closed</span></div><a class="button button-secondary" href="{% url 'marketing:beta_terms' %}">Read the beta terms <span aria-hidden="true">↗</span></a><p class="small-copy">No purchase, reservation or payment is available from this page.</p></div><div class="offer-details"><p class="eyebrow">BEFORE ANY PURCHASE</p><h2>Know what you are<br>signing up for.</h2><dl class="definition-list"><div><dt>A beta, with visible limits</dt><dd>The product is still being qualified. It is not approved for navigation or production use. Public access requires release acceptance and a separate opening decision.</dd></div><div><dt>An OpenCPN prerequisite</dt><dd>You need a separately installed, supported OpenCPN application. Charts, chart licenses, external data and compatible hardware are separate requirements.</dd></div><div><dt>Services and software rights</dt><dd>The USD 20 offer is for beta services. Paying does not remove your rights under the applicable GPL licenses. Source and license obligations apply independently of a purchase.</dd></div><div><dt>Final details before checkout</dt><dd>The service scope, seller information, applicable taxes and purchase conditions must be available before you can pay. This page is a planned offer, not an active order.</dd></div></dl></div></section>
-<section class="container page-section question-section"><div class="section-heading"><p class="eyebrow">A FEW PRACTICAL QUESTIONS</p><h2>Clarity before commitment.</h2></div><div class="faq-list"><details><summary>Can I buy or download SKAGER now?</summary><p>No. Public payments, accounts and downloads remain closed while qualification is in progress. There is no active checkout or reservation on this site.</p><a class="text-link" href="{% url 'marketing:downloads' %}">Read about download availability <span aria-hidden="true">→</span></a></details><details><summary>What Windows and OpenCPN setup is planned?</summary><p>The planned beta targets a Windows x64 host with the Win32/x86 OpenCPN 5.12.4 application and plugin interface. A matching version label alone does not establish compatibility; the supported installer and SKAGER’s checks matter.</p><a class="text-link" href="{% url 'marketing:installation' %}">Check the prerequisites <span aria-hidden="true">→</span></a></details><details><summary>Does payment change my open-source rights?</summary><p>No. A payment for beta services does not take away rights granted by the applicable GPL licenses. Open-source license and corresponding-source requirements remain in force.</p><a class="text-link" href="{% url 'marketing:open_source' %}">Read about open source and licenses <span aria-hidden="true">→</span></a></details><details><summary>Are charts, hardware and external services included?</summary><p>They are separate requirements. Compatible charts, chart licenses, sensors, AIS and optional external data services depend on your installation and provider. Their availability is not guaranteed by the beta offer.</p></details></div></section>
-<section class="container closing-cta"><div><p class="eyebrow">THE BEST FIRST STEP</p><h2>Get to know your setup.</h2></div><a class="button" href="{% url 'marketing:installation' %}">Read the prerequisites <span aria-hidden="true">↗</span></a></section>
+<section class="page-hero pricing-hero" aria-labelledby="pricing-title">
+  <div class="container">
+    <p class="kicker">Pricing</p>
+    <h1 id="pricing-title">One price.<br><span>Everything included.</span></h1>
+    <p class="page-hero-sub">Join the SKAGER public beta for a single payment. No subscription, no tiers, no surprises.</p>
+  </div>
+</section>
+
+<section class="plan-section" aria-label="Public Beta Access">
+  <div class="container plan-grid">
+    <article class="plan-card" data-reveal>
+      <p class="kicker">Public Beta Access</p>
+      <p class="plan-price"><span class="currency">USD</span><b>20</b></p>
+      <p class="plan-term">One-time payment</p>
+      <ul class="plan-includes">
+        <li>SKAGER for Windows, with every beta update</li>
+        <li>Your SKAGER account and downloads</li>
+        <li>Help centre, FAQ and guides</li>
+        <li>Support, bug reports and feature requests</li>
+        <li>Release notes and a say in what comes next</li>
+      </ul>
+      {% if public_access_open %}
+      <a class="cta plan-cta" href="{% url 'marketing:account' %}">Get SKAGER <span aria-hidden="true">↗</span></a>
+      {% else %}
+      <a class="cta plan-cta" href="{% url 'marketing:account' %}">Log in to get SKAGER <span aria-hidden="true">↗</span></a>
+      <p class="plan-note">The public beta is opening soon. Invited testers, log in with your account.</p>
+      {% endif %}
+      <p class="plan-small">Price in US dollars. Any applicable taxes are shown before you pay. Secure payment by Stripe.</p>
+    </article>
+    <div class="plan-side">
+      <div class="promise" data-reveal><h3>14-day full refund</h3><p>Not for you? Ask within 14 days and get every cent back.</p><a class="text-arrow" href="{% url 'marketing:refunds' %}">Refund policy →</a></div>
+      <div class="promise" data-reveal><h3>Your open-source rights stay</h3><p>You pay for our services, never for your freedoms under the GPL.</p><a class="text-arrow" href="{% url 'marketing:open_source' %}">Open source →</a></div>
+      <div class="promise" data-reveal><h3>Works with what you have</h3><p>Your OpenCPN charts, routes and instruments. A 64-bit Windows PC.</p><a class="text-arrow" href="{% url 'marketing:installation' %}">Requirements →</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="faq-preview" aria-labelledby="pricing-faq">
+  <div class="container">
+    <h2 id="pricing-faq" data-reveal>Questions before<br><span>you buy.</span></h2>
+    <div class="faq-list" data-reveal>
+      <details><summary>Is there a subscription?</summary><p>No. Public Beta Access is a single payment of USD 20.</p></details>
+      <details><summary>Are charts included?</summary><p>No. SKAGER uses the charts you already have in OpenCPN. Buy and update charts from your chart provider.</p></details>
+      <details><summary>What do I need to run SKAGER?</summary><p>A 64-bit Windows PC and OpenCPN 5.12.4 for Windows, installed separately. A touch display of 1280 × 800 or larger is recommended at the helm.</p></details>
+      <details><summary>What if I change my mind?</summary><p>Ask for a refund within 14 days of purchase and you get the full amount back. No questions asked.</p></details>
+    </div>
+    <p data-reveal><a class="cta-ghost" href="{% url 'marketing:faq' %}">All questions <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
 {% endblock %}

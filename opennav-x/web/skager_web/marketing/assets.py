@@ -17,3 +17,11 @@ def marketing_asset_versions(request):
     # Application inputs are immutable while deployed; a new version restarts
     # Django. Static exports use these same templates and current owned assets.
     return _versions()
+
+
+def site_status(request):
+    # One switch for launch: status wording and calls to action follow it everywhere.
+    from django.conf import settings
+    return {"public_access_open": getattr(settings, "MARKETING_PUBLIC_ACCESS_OPEN", False),
+            "operator": getattr(settings, "MARKETING_OPERATOR", {}),
+            "legal_version": getattr(settings, "MARKETING_LEGAL_VERSION", "")}

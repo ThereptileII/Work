@@ -549,7 +549,7 @@
   window.addEventListener('resize', () => fitted.forEach(fit));
 
   // The feature charts reuse the tour's real chart artwork rather than shipping a second copy.
-  const chartSource = document.querySelector('[data-tour-screen] #ps-chartSvg');
+  const chartSource = document.querySelector('#ps-chartSvg');
   // Chromium misplaces scaled, centre-anchored SVG text, so give it an explicit left edge measured
   // in the visitor's own font. The chart looks exactly as before.
   if (chartSource && chartSource.getBBox) {
@@ -774,6 +774,24 @@
     reducedMotion.addEventListener('change', update);
     update();
   }
+
+  /* ---------- Features: try day, dusk and night on the real screen ---------- */
+  document.querySelectorAll('[data-theme-switch]').forEach((group) => {
+    const target = document.querySelector('[data-switch-screen]');
+    if (!target) return;
+    const icons = Object.fromEntries([...document.querySelectorAll('template[data-theme-icon]')].map((t) => [t.dataset.themeIcon, t.innerHTML]));
+    const button = target.querySelector('#ps-themeButton');
+    group.addEventListener('click', (event) => {
+      const choice = event.target.closest('[data-set-theme]');
+      if (!choice) return;
+      const theme = choice.dataset.setTheme;
+      target.classList.add('is-theming');
+      target.dataset.theme = theme;
+      if (button && icons[theme]) button.innerHTML = icons[theme];
+      group.querySelectorAll('[data-set-theme]').forEach((b) => b.setAttribute('aria-pressed', String(b === choice)));
+      setTimeout(() => target.classList.remove('is-theming'), 1000);
+    });
+  });
 
   /* ---------- reveal on scroll ---------- */
   const revealables = [...document.querySelectorAll('[data-reveal]')];
