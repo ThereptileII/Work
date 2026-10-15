@@ -1,12 +1,17 @@
 #!/usr/bin/env python3
 """Authenticate inert CI artifacts with transport-only GitHub mocks; no network."""
+import copy
+from contextlib import redirect_stdout
 import hashlib
+import importlib.util
 import io
 import json
+import os
 from pathlib import Path
 import tempfile
 import struct
 import unittest
+from unittest import mock
 import zipfile
 
 import fetch_ci_inputs as fetcher
@@ -30,7 +35,7 @@ def zipped(entries, symlink=None):
 
 class TransportGitHub(GitHub):
     """Retain the actual JSON/API/pagination implementation above this seam."""
-    def __init__(self, kind='staging', entries=None):
+    def __init__(self, kind='staging', entries=None, *, run_id='123', artifact_id='456'):
         super().__init__(REPO)
         self.calls = []
         self.kind = kind
@@ -40,32 +45,32 @@ class TransportGitHub(GitHub):
         workflow = fetcher.STAGING if kind == 'staging' else fetcher.DEPENDENCIES
         job = 'windows-integration' if kind == 'staging' else 'windows-dependencies'
         prefix = 'staging-build-' + SHA if kind == 'staging' else 'windows-dependencies-' + 'b' * 64
-        self.selection = dict(repository=REPO, runId='123', runAttempt='2', headSha=SHA,
-            artifactId='456', artifactName=prefix + '-run123-attempt2',
+        self.selection = dict(repository=REPO, runId=run_id, runAttempt='2', headSha=SHA,
+            artifactId=artifact_id, artifactName=prefix + '-run' + run_id + '-attempt2',
             artifactDigest='sha256:' + hashlib.sha256(self.payload).hexdigest())
-        self.run = dict(id=123, run_attempt=2, head_sha=SHA, path=workflow, event='workflow_dispatch',
+        self.run = dict(id=int(run_id), run_attempt=2, head_sha=SHA, path=workflow, event='workflow_dispatch',
                         head_repository=dict(full_name=REPO), status='completed', conclusion='success')
         self.jobs = [dict(name=job, status='completed', conclusion='success', head_sha=SHA,
-                          run_id=123, run_attempt=2)]
-        self.artifact = dict(id=456, name=self.selection['artifactName'], expired=False,
+                          run_id=int(run_id), run_attempt=2)]
+        self.artifact = dict(id=int(artifact_id), name=self.selection['artifactName'], expired=False,
             digest=self.selection['artifactDigest'], size_in_bytes=len(self.payload),
-            workflow_run=dict(id=123, head_sha=SHA))
+            workflow_run=dict(id=int(run_id), head_sha=SHA))
 
     def _run(self, arguments, *, data=None, output=None):
         self.calls.append(arguments)
         assert data is None and arguments[0] == 'api'
         endpoint = arguments[1]
-        if endpoint == self.base + '/actions/artifacts/456/zip':
+        if endpoint == self.base + '/actions/artifacts/' + self.selection['artifactId'] + '/zip':
             assert output is not None
             output.write(self.payload)
             return None
         assert output is None
-        if endpoint == self.base + '/actions/runs/123/attempts/2':
+        if endpoint == self.base + '/actions/runs/' + self.selection['runId'] + '/attempts/2':
             result = self.run
-        elif endpoint.startswith(self.base + '/actions/runs/123/attempts/2/jobs?per_page=100&page='):
+        elif endpoint.startswith(self.base + '/actions/runs/' + self.selection['runId'] + '/attempts/2/jobs?per_page=100&page='):
             page = int(endpoint.rsplit('=', 1)[1])
             result = dict(jobs=self.jobs[(page - 1) * 100:page * 100])
-        elif endpoint == self.base + '/actions/artifacts/456':
+        elif endpoint == self.base + '/actions/artifacts/' + self.selection['artifactId']:
             result = self.artifact
         else:
             raise AssertionError('Unexpected transport endpoint: ' + endpoint)
@@ -140,6 +145,151 @@ class Authentication(unittest.TestCase):
         gh.artifact['name'] = gh.selection['artifactName'] = 'staging-build-' + SHA + '-run123-attempt1'
         with self.assertRaisesRegex(ValueError, 'exact producer attempt'):
             self.authority(gh)
+
+
+class RunnerSelections(unittest.TestCase):
+    def setUp(self):
+        self.sources = [TransportGitHub('dependencies'),
+                        TransportGitHub('dependencies', run_id='124', artifact_id='457')]
+        self.runners = [dict(ImageOS='win22', ImageVersion=version,
+                             RUNNER_OS='Windows', RUNNER_ARCH='X64')
+                        for version in ('20261004.326.1', '20261012.333.1')]
+        self.document = dict(schemaVersion=1, repository=REPO, images=[
+            dict(runner=runner, selection=gh.selection)
+            for runner, gh in zip(self.runners, self.sources)])
+
+    def refuse_before_github(self, document, *, kind='dependencies', environment=None):
+        with mock.patch.dict(os.environ, environment or self.runners[0], clear=True), \
+                mock.patch.object(fetcher, 'read_json', return_value=document), \
+                mock.patch.object(fetcher, 'GitHub') as transport, \
+                mock.patch('sys.argv', ['fetch_ci_inputs.py', kind, '--selection', 'unused.json',
+                                       '--output', 'unused', '--provenance', 'unused-authority.json']):
+            with self.assertRaises(ValueError):
+                fetcher.main()
+            transport.assert_not_called()
+
+    def test_both_exact_choices_download_only_the_selected_authenticated_artifact(self):
+        for runner, gh in zip(self.runners, self.sources):
+            with self.subTest(image=runner['ImageVersion']), tempfile.TemporaryDirectory() as temp, \
+                    mock.patch.dict(os.environ, runner, clear=True):
+                root = Path(temp)
+                result = fetcher.fetch(gh, self.document, root / 'artifact', root / 'authority.json',
+                                       kind='dependencies')
+                self.assertEqual(result['runId'], gh.selection['runId'])
+                self.assertEqual(result['artifactId'], gh.selection['artifactId'])
+                self.assertEqual(set(result), {'schemaVersion', 'repository', 'workflowPath', 'runId',
+                    'runAttempt', 'headSha', 'job', 'conclusion', 'artifactId', 'artifactName',
+                    'artifactDigest', 'bundleSha256'})
+                self.assertEqual(gh.calls[-1], ['api', gh.base + '/actions/artifacts/' +
+                                              gh.selection['artifactId'] + '/zip'])
+                other = self.sources[1] if gh is self.sources[0] else self.sources[0]
+                self.assertFalse(any('/actions/runs/' + other.selection['runId'] + '/' in call[1] or
+                                     '/actions/artifacts/' + other.selection['artifactId'] in call[1]
+                                     for call in gh.calls))
+
+    def test_legacy_dependencies_and_staging_keep_exact_seven_field_selection(self):
+        for gh in (TransportGitHub('dependencies'), TransportGitHub()):
+            with mock.patch.dict(os.environ, {}, clear=True):
+                self.assertIs(fetcher.resolve_selection(gh.selection, kind=gh.kind), gh.selection)
+                self.assertEqual(fetcher.authenticated_artifact(gh, gh.selection, kind=gh.kind)['job'],
+                                 'windows-dependencies' if gh.kind == 'dependencies' else 'windows-integration')
+
+    def test_existing_cli_resolves_map_before_constructing_original_transport(self):
+        gh = self.sources[1]
+        with tempfile.TemporaryDirectory() as temp, \
+                mock.patch.dict(os.environ, {**self.runners[1], 'GITHUB_REPOSITORY':REPO}, clear=True), \
+                mock.patch.object(fetcher, 'read_json', return_value=self.document), \
+                mock.patch.object(fetcher, 'GitHub', return_value=gh) as transport, \
+                mock.patch('sys.argv', ['fetch_ci_inputs.py', 'dependencies', '--selection', 'unused.json',
+                    '--output', str(Path(temp) / 'artifact'), '--provenance', str(Path(temp) / 'authority.json')]), \
+                redirect_stdout(io.StringIO()) as output:
+            fetcher.main()
+            transport.assert_called_once_with(REPO)
+            self.assertEqual(json.loads(output.getvalue())['artifactId'], gh.selection['artifactId'])
+
+    def test_unknown_missing_or_non_native_actual_identity_refuses_before_github(self):
+        cases = [{}, {**self.runners[0], 'ImageVersion':'20261015.1.1'},
+                 {**self.runners[0], 'ImageVersion':''},
+                 {**self.runners[0], 'ImageVersion':'20261004.326.1 '},
+                 {**self.runners[0], 'RUNNER_OS':'Linux'},
+                 {**self.runners[0], 'RUNNER_ARCH':'ARM64'},
+                 {**self.runners[0], 'ImageOS':'win25'}]
+        for environment in cases:
+            with self.subTest(environment=environment):
+                # Supply an explicit empty identity rather than the default helper environment.
+                self.refuse_before_github(self.document, environment={key: environment.get(key, '')
+                                                                      for key in fetcher.RUNNER_KEYS})
+
+    def test_duplicate_runner_identity_refuses_instead_of_taking_first_or_last(self):
+        document = copy.deepcopy(self.document)
+        document['images'][1]['runner'] = self.runners[0]
+        self.refuse_before_github(document)
+
+    def test_map_schema_and_count_are_closed(self):
+        cases = [None, [], {}, {**self.document, 'schemaVersion':True},
+                 {**self.document, 'schemaVersion':2}, {**self.document, 'fallback':self.sources[0].selection},
+                 {**self.document, 'images':[]}, {**self.document, 'images':{}},
+                 {**self.document, 'images':[self.document['images'][0]] * (fetcher.MAX_RUNNER_SELECTIONS + 1)}]
+        for document in cases:
+            with self.subTest(document=document):
+                self.refuse_before_github(document)
+
+    def test_every_nonselected_entry_must_have_exact_wellformed_identity(self):
+        for runner in (None, [], {}, {**self.runners[1], 'extra':'unused'},
+                       {**self.runners[1], 'RUNNER_ARCH':'x64'},
+                       {**self.runners[1], 'ImageVersion':False},
+                       {**self.runners[1], 'ImageVersion':'latest'},
+                       {**self.runners[1], 'ImageVersion':'1.' + '2' * 64}):
+            document = copy.deepcopy(self.document)
+            document['images'][1]['runner'] = runner
+            with self.subTest(runner=runner):
+                self.refuse_before_github(document)
+        for entry in (None, {}, {**self.document['images'][1], 'fallback':True}):
+            document = copy.deepcopy(self.document); document['images'][1] = entry
+            with self.subTest(entry=entry):
+                self.refuse_before_github(document)
+
+    def test_every_nonselected_artifact_pin_is_validated_before_github(self):
+        cases = [None, [], {}, {**self.sources[1].selection, 'repository':'attacker/fork'},
+                 {**self.sources[1].selection, 'runId':'latest'},
+                 {**self.sources[1].selection, 'runAttempt':'02'},
+                 {**self.sources[1].selection, 'headSha':'A' * 40},
+                 {**self.sources[1].selection, 'artifactId':457},
+                 {**self.sources[1].selection, 'artifactDigest':'sha256:' + 'G' * 64},
+                 {**self.sources[1].selection, 'artifactName':self.sources[0].selection['artifactName']},
+                 {**self.sources[1].selection, 'default':True}]
+        for selection in cases:
+            document = copy.deepcopy(self.document); document['images'][1]['selection'] = selection
+            with self.subTest(selection=selection):
+                self.refuse_before_github(document)
+
+    def test_runner_map_cannot_change_staging_selection_schema(self):
+        self.refuse_before_github(self.document, kind='staging')
+
+    def test_duplicate_json_keys_refuse_before_selection_resolution(self):
+        with tempfile.TemporaryDirectory() as temp:
+            path = Path(temp) / 'selection.json'
+            path.write_text('{"schemaVersion":1,"schemaVersion":1}')
+            with self.assertRaisesRegex(ValueError, 'Duplicate'):
+                fetcher.read_json(path)
+
+    def test_misbound_map_cannot_bypass_existing_bundle_runner_verifier(self):
+        spec = importlib.util.spec_from_file_location('bundle_fixtures',
+            Path(__file__).with_name('test-windows-dependency-bundle.py'))
+        fixtures = importlib.util.module_from_spec(spec); spec.loader.exec_module(fixtures)
+        fixture = fixtures.BundleTests('test_no_success_assertion')
+        self.addCleanup(fixture.doCleanups)
+        fixture.setUp()
+        with redirect_stdout(io.StringIO()):
+            fixture.seal()
+        authority = json.loads(fixture.authority.read_text())
+        selection = {key: authority[key] for key in fetcher.SELECTION_KEYS}
+        document = dict(schemaVersion=1, repository=selection['repository'], images=[
+            dict(runner=self.runners[0], selection=selection)])
+        with mock.patch.dict(os.environ, self.runners[0]):
+            self.assertEqual(fetcher.resolve_selection(document, kind='dependencies'), selection)
+            with self.assertRaisesRegex(ValueError, 'runner image differs'):
+                fixtures.bundle.verify_bundle(fixture.root, fixture.output, fixture.authority)
 
 
 class Download(unittest.TestCase):

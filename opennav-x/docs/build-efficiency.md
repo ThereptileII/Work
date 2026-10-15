@@ -102,6 +102,18 @@ retry. An empty input retains first-producer behavior with a validated native
 Windows x64 identity. Select a successful refreshed artifact explicitly before
 the next coherent application candidate; preserve the original failed run.
 
+The selection lock may retain its original seven artifact fields or use an exact
+runner map: `schemaVersion: 1`, `repository`, and an `images` list of entries with
+`runner` and `selection`. Each runner records `ImageOS`, `ImageVersion`,
+`RUNNER_OS`, and `RUNNER_ARCH`; each selection contains the original seven pinned
+artifact fields. The fetch helper validates every entry, permits at most eight
+distinct native Windows x64 identities, and resolves only the exact allocated
+runner before contacting GitHub. Unknown identities stop; there is no fallback.
+The downloaded SDK must still pass the unchanged bundle verifier's actual runner,
+Python and source/workflow fingerprint checks, followed by the existing fresh
+native tool checks.
+Staging package selections keep the original single-artifact schema.
+
 Reject mismatched, missing, expired, tampered or relocated inputs. Select or build
 a valid SDK explicitly rather than silently accepting partial restoration.
 Keep same-job fixture-success receipts separate from cross-run SDK provenance.

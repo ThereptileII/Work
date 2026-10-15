@@ -16,17 +16,71 @@ from release_manifest import require
 DEPENDENCIES = '.github/workflows/skager-windows-dependencies.yml'
 STAGING = '.github/workflows/opennav-baseline.yml'
 MAX_BYTES = 8 * 1024**3
+SELECTION_KEYS = frozenset({'repository', 'runId', 'runAttempt', 'headSha',
+                            'artifactId', 'artifactName', 'artifactDigest'})
+RUNNER_KEYS = ('ImageOS', 'ImageVersion', 'RUNNER_OS', 'RUNNER_ARCH')
+MAX_RUNNER_SELECTIONS = 8
 
 
-def authenticated_artifact(gh, selection, *, kind):
+def _validate_selection(selection, *, kind):
     require(kind in {'dependencies', 'staging'}, 'Unsupported input kind')
-    required = {'repository', 'runId', 'runAttempt', 'headSha', 'artifactId', 'artifactName', 'artifactDigest'}
-    require(set(selection) == required, 'Exact immutable artifact selection required')
-    require(selection['repository'] == gh.repo, 'Repository differs')
+    require(isinstance(selection, dict) and set(selection) == SELECTION_KEYS and
+            all(isinstance(value, str) for value in selection.values()),
+            'Exact immutable artifact selection required')
+    repository(selection['repository'])
     run_id, attempt = decimal(selection['runId']), decimal(selection['runAttempt'])
     sha(selection['headSha'])
     decimal(selection['artifactId'])
     require(re.fullmatch(r'sha256:[a-f0-9]{64}', selection['artifactDigest']), 'Artifact digest required')
+    prefix = ('windows-dependencies-[a-f0-9]{64}' if kind == 'dependencies'
+              else 'staging-build-' + selection['headSha'])
+    require(re.fullmatch(prefix + '-run' + run_id + '-attempt' + attempt, selection['artifactName']),
+            'Artifact name does not bind the exact producer attempt')
+
+
+def _runner_key(identity):
+    require(isinstance(identity, dict) and set(identity) == set(RUNNER_KEYS) and
+            all(isinstance(value, str) and 0 < len(value) <= 64 for value in identity.values()) and
+            identity['RUNNER_OS'] == 'Windows' and identity['RUNNER_ARCH'] == 'X64' and
+            re.fullmatch(r'win[0-9]+', identity['ImageOS']) and
+            re.fullmatch(r'[0-9]+(?:\.[0-9]+)+', identity['ImageVersion']),
+            'Exact native Windows runner identity required')
+    return tuple(identity[key] for key in RUNNER_KEYS)
+
+
+def resolve_selection(document, *, kind):
+    """Resolve a closed runner map to an ordinary immutable artifact pin."""
+    require(kind in {'dependencies', 'staging'}, 'Unsupported input kind')
+    if isinstance(document, dict) and set(document) == SELECTION_KEYS:
+        _validate_selection(document, kind=kind)
+        return document  # Existing single-selection callers retain their schema.
+    require(kind == 'dependencies', 'Runner selections are only valid for dependencies')
+    require(isinstance(document, dict) and set(document) == {'schemaVersion', 'repository', 'images'} and
+            type(document['schemaVersion']) is int and document['schemaVersion'] == 1 and
+            isinstance(document['images'], list) and
+            1 <= len(document['images']) <= MAX_RUNNER_SELECTIONS,
+            'Bounded exact runner selection map required')
+    repo = repository(document['repository'])
+    actual = _runner_key({key: os.environ.get(key, '') for key in RUNNER_KEYS})
+    seen, selected = set(), None
+    for entry in document['images']:
+        require(isinstance(entry, dict) and set(entry) == {'runner', 'selection'},
+                'Exact runner selection entry required')
+        key = _runner_key(entry['runner'])
+        require(key not in seen, 'Duplicate runner selection identity')
+        seen.add(key)
+        _validate_selection(entry['selection'], kind=kind)
+        require(entry['selection']['repository'] == repo, 'Runner selection repository differs')
+        if key == actual:
+            selected = entry['selection']
+    require(selected is not None, 'No SDK selected for the exact current Windows runner')
+    return selected
+
+
+def authenticated_artifact(gh, selection, *, kind):
+    _validate_selection(selection, kind=kind)
+    require(selection['repository'] == gh.repo, 'Repository differs')
+    run_id, attempt = selection['runId'], selection['runAttempt']
     workflow, job = (DEPENDENCIES, 'windows-dependencies') if kind == 'dependencies' else (STAGING, 'windows-integration')
     run = gh.api(f'{gh.base}/actions/runs/{run_id}/attempts/{attempt}')
     require(str(run.get('id')) == run_id and str(run.get('run_attempt')) == attempt and
@@ -53,10 +107,6 @@ def authenticated_artifact(gh, selection, *, kind):
             artifact.get('workflow_run', {}).get('head_sha') == selection['headSha'] and
             type(artifact.get('size_in_bytes')) is int and 0 < artifact['size_in_bytes'] <= MAX_BYTES,
             'Artifact provenance, expiry, size or digest differs')
-    prefix = ('windows-dependencies-[a-f0-9]{64}' if kind == 'dependencies'
-              else 'staging-build-' + selection['headSha'])
-    require(re.fullmatch(prefix + '-run' + run_id + '-attempt' + attempt, selection['artifactName']),
-            'Artifact name does not bind the exact producer attempt')
     return dict(schemaVersion=1, repository=gh.repo, workflowPath=workflow, runId=run_id,
                 runAttempt=attempt, headSha=selection['headSha'], job=job, conclusion='success',
                 artifactId=selection['artifactId'], artifactName=selection['artifactName'],
@@ -101,6 +151,7 @@ def unpack(archive, destination, kind):
 
 
 def fetch(gh, selection, output, provenance, *, kind):
+    selection = resolve_selection(selection, kind=kind)
     require(not provenance.exists() and not provenance.is_symlink() and
             not provenance.resolve().is_relative_to(output.resolve()),
             'Fresh external provenance location required')
@@ -128,7 +179,7 @@ def main():
     parser.add_argument('--output', type=Path, required=True)
     parser.add_argument('--provenance', type=Path, required=True)
     args = parser.parse_args()
-    selection = read_json(args.selection)
+    selection = resolve_selection(read_json(args.selection), kind=args.kind)
     require(os.environ.get('GITHUB_REPOSITORY') == selection['repository'], 'Current repository differs')
     result = fetch(GitHub(repository(selection['repository'])), selection, args.output,
                    args.provenance, kind=args.kind)
