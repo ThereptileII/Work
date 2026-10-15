@@ -3,9 +3,28 @@
 
 ## Current Staging candidate
 
+`1ffd09ddf2fa6588def2907485f6e14e89bc3a7d` /
+[38722465573](https://github.com/ThereptileII/Work/actions/runs/38722465573)
+is the single replacement candidate, still `0.4.0-beta2.4`. It incorporates the
+bounded installer refusal-report correction `df02dec2`. The actual original
+catch path reproduces the missing report; independent review finds no blocking
+issue. Before requesting this application build, native
+[38722080504](https://github.com/ThereptileII/Work/actions/runs/38722080504)
+passes the corrected engine under both x86/x64 Windows PowerShell 5.1: 39 new
+report checks per architecture, including real foreign-shell COM and signed
+barriers, plus the existing filesystem, shortcut and protected-broker checks.
+[Authenticated focused result](evidence/scrum22-installer-operation-report-20261015/native-receipt.json).
+The application run retains private Staging trust, unchanged verified SDK and
+all relevant package/security gates; extended/design suites are off. No second
+application build is active. Packaging remains necessary because the fix changes
+the installed lifecycle engine. Native helper success does not qualify either
+the replacement package or the failed original package.
+
+## Previous candidate and preserved installer failure
+
 `b4c40e6e9166d7e8340dec2879d2a8ad510b7458` /
 [38705678784](https://github.com/ThereptileII/Work/actions/runs/38705678784)
-is the single current candidate. It includes the native-tested installer observer
+is the previous candidate. It includes the native-tested installer observer
 correction and the authenticated retained-plugin results below. Private Staging
 trust is selected; extended and design suites are off. The unchanged verified
 SDK is reused subject to the existing fresh native source/environment checks.
@@ -30,11 +49,10 @@ foreign Start Menu group refusal case: Install returns the expected failure
 code, but its operation report is missing. Source inspection identifies the
 failure-report writer requiring an installation root which the refusal correctly
 never created. The native exception itself was not retained, so that mechanism
-is a source diagnosis pending a focused regression. A bounded installer fix and
-independent review are underway under SCRUM-22; no replacement application build
-has been requested. Installer compilation alone does not qualify installed
-behavior. No SDK, source
-or environment check is relaxed. The proposed multi-image selector is retained on
+was then reproduced by the focused actual-catch regression. The bounded fix and
+independent review passed under SCRUM-22 before the replacement above was
+requested. Installer compilation alone does not qualify installed behavior.
+No SDK, source or environment check is relaxed. The proposed multi-image selector is retained on
 its separate branch, unused without a second qualified SDK.
 [Dependency allocation and unchanged SDK binding](evidence/scrum209-candidate-977d37c7-20261015/dependency-old-image-preflight-receipt.json).
 [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
@@ -60,8 +78,10 @@ An initial private-review staging attempt refused an unprotected new child
 directory before Plan; read-only inspection confirms the original inspection
 directory remains protected and unchanged. The review now uses a fresh sibling
 created by the maintained private-directory helper, without changing the
-original ACL. Actual reconciliation is in progress; no application launch or
-physical output is authorized by this preservation work.
+original ACL. Actual Plan `60666477…` now binds the unchanged profile baseline;
+Commit of that pinned plan is running once with a retained process/log handle.
+Reconciliation is not yet accepted; no application launch or physical output is
+authorized by this preservation work.
 
 Installed-updater helper `14ff2896` (reviewed original `02a943f6`) adds explicitly
 bound interactive self-hosted admission for a disposable Windows target.
