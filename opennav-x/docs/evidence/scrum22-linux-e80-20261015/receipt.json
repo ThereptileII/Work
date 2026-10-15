@@ -1,0 +1,559 @@
+{
+  "schema": 1,
+  "issue_scope": [
+    "SCRUM-22",
+    "SCRUM-209"
+  ],
+  "tested_candidate": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+  "evidence_revision": "Later docs-only commit; not a new product revision or runtime qualification.",
+  "repository": "ThereptileII/Work",
+  "run": {
+    "id": 38744236920,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38744236920",
+    "observation_utc": "2026-10-15T14:11:13Z",
+    "scope": "Linux integrated and fixture-free gates plus seven focused-contract jobs; the full Windows product result is outside this receipt."
+  },
+  "jobs": [
+    {
+      "id": 116453779566,
+      "name": "Linux integrated regression gate",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T14:09:11Z"
+    },
+    {
+      "id": 116453779591,
+      "name": "contracts (windows-2022)",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:42Z",
+      "completed_at": "2026-10-15T13:46:50Z"
+    },
+    {
+      "id": 116453779744,
+      "name": "contracts (ubuntu-24.04)",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T13:41:33Z"
+    },
+    {
+      "id": 116453780000,
+      "name": "updater-contracts / verify (windows-2022, 386)",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T13:53:06Z"
+    },
+    {
+      "id": 116453780066,
+      "name": "pilot-serial-contracts / serial",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T13:38:53Z"
+    },
+    {
+      "id": 116453780111,
+      "name": "updater-contracts / verify (ubuntu-24.04, amd64)",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T13:39:28Z"
+    },
+    {
+      "id": 116453780119,
+      "name": "updater-contracts / Native startup update interactions",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:40Z",
+      "completed_at": "2026-10-15T13:43:51Z"
+    },
+    {
+      "id": 116453780568,
+      "name": "updater-contracts / Native protected mode routing and ordinary restart",
+      "conclusion": "success",
+      "started_at": "2026-10-15T13:37:41Z",
+      "completed_at": "2026-10-15T13:39:10Z"
+    },
+    {
+      "id": 116453782316,
+      "name": "updater-contracts / Native Win32 owned-file acquisition",
+      "conclusion": "skipped",
+      "started_at": "2026-10-15T13:37:38Z",
+      "completed_at": "2026-10-15T13:37:38Z"
+    },
+    {
+      "id": 116453782403,
+      "name": "updater-contracts / Windows PowerShell 5.1 supervised image ownership",
+      "conclusion": "skipped",
+      "started_at": "2026-10-15T13:37:38Z",
+      "completed_at": "2026-10-15T13:37:38Z"
+    },
+    {
+      "id": 116453782508,
+      "name": "updater-contracts / Focused actual Lifecycle startup diagnostics",
+      "conclusion": "skipped",
+      "started_at": "2026-10-15T13:37:38Z",
+      "completed_at": "2026-10-15T13:37:38Z"
+    },
+    {
+      "id": 116453783303,
+      "name": "updater-contracts / Native SCM with original retained broker",
+      "conclusion": "skipped",
+      "started_at": "2026-10-15T13:37:38Z",
+      "completed_at": "2026-10-15T13:37:38Z"
+    },
+    {
+      "id": 116453783501,
+      "name": "updater-contracts / Native Win32 ordinary image ownership",
+      "conclusion": "skipped",
+      "started_at": "2026-10-15T13:37:38Z",
+      "completed_at": "2026-10-15T13:37:38Z"
+    }
+  ],
+  "linux_steps": [
+    {
+      "name": "Build integrated application and run regressions without exceptions",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 8,
+      "started_at": "2026-10-15T13:39:26Z",
+      "completed_at": "2026-10-15T13:49:42Z"
+    },
+    {
+      "name": "Public ENC chart and plugin rendering gate",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 28,
+      "started_at": "2026-10-15T13:57:43Z",
+      "completed_at": "2026-10-15T13:58:54Z"
+    },
+    {
+      "name": "Apply Linux endurance policy (explicit user-directed skip)",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 29,
+      "started_at": "2026-10-15T13:58:54Z",
+      "completed_at": "2026-10-15T13:58:54Z"
+    },
+    {
+      "name": "Build fixture-free Linux product and run its loader check",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 30,
+      "started_at": "2026-10-15T13:58:54Z",
+      "completed_at": "2026-10-15T14:09:06Z"
+    },
+    {
+      "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+      "status": "completed",
+      "conclusion": "success",
+      "number": 31,
+      "started_at": "2026-10-15T14:09:06Z",
+      "completed_at": "2026-10-15T14:09:09Z"
+    }
+  ],
+  "linux_runtime": {
+    "runner_image": "ubuntu-24.04",
+    "runner_image_version": "20261012.334.1",
+    "os_version": "24.04.5",
+    "compiler": "GNU 13.3.0 / 8 byte pointers"
+  },
+  "counts": {
+    "linux_integrated_ctest": {
+      "passed": 154,
+      "failed": 0
+    },
+    "linux_fixture_free_ctest": {
+      "passed": 154,
+      "failed": 0
+    },
+    "ubuntu_contracts_ctest": {
+      "passed": 118,
+      "failed": 0,
+      "additional_restart_repeats": 10
+    },
+    "windows_contracts_ctest": {
+      "passed": 115,
+      "failed": 0,
+      "additional_restart_repeats": 10
+    },
+    "pilot_serial_ctest": {
+      "passed": 3,
+      "failed": 0
+    },
+    "native_protected_mode_ctest": {
+      "passed": 3,
+      "failed": 0
+    },
+    "native_restart_protocol_checks": 886,
+    "native_marker_publication_checks": 87,
+    "native_commissioning_restart": {
+      "checks": 384,
+      "cases": 24
+    },
+    "native_shortcut_checks": {
+      "windows_contracts_x64": 305,
+      "windows_contracts_x86": 305,
+      "startup_job_x64": 305
+    },
+    "native_filesystem_checks": {
+      "windows_contracts_x64": 44,
+      "windows_contracts_x86": 44
+    },
+    "linux_gtk_lifecycle_checks": 17,
+    "linux_frame_recapture_checks": 41,
+    "counting_rule": "Separate executions, not a unique-test total. Go JSON events and Python suites below exclude separate non-JSON native probes.",
+    "updater_ubuntu_go_json_events": {
+      "topLevel_pass": 795,
+      "subtest_pass": 3205,
+      "package_pass": 13,
+      "package_skip": 3
+    },
+    "updater_ubuntu_python_suites": [
+      18,
+      16,
+      33,
+      12,
+      10,
+      14,
+      7,
+      16
+    ],
+    "updater_windows_go_json_events": {
+      "topLevel_pass": 1060,
+      "subtest_pass": 3637,
+      "package_pass": 11,
+      "topLevel_skip": 14,
+      "package_skip": 5
+    },
+    "updater_windows_python_suites": [
+      18,
+      16,
+      33,
+      12,
+      10,
+      14,
+      7,
+      16,
+      7
+    ],
+    "linux_offline_component_executables": {
+      "passed": 13,
+      "total": 13,
+      "source_commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "harness_commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "source_dirty": true,
+      "harness_dirty": true,
+      "scope": "Offline production component libraries with owned fixtures; no product/profile/chart/network/hardware acceptance",
+      "limitation": "Dirty flags are preserved as emitted; this component receipt is not a clean-tree provenance attestation."
+    }
+  },
+  "original_logs": [
+    {
+      "file": "job-116453779566-original.log",
+      "bytes": 993855,
+      "sha256": "9a1e42463d45c70e34c3b4cea52664831db8ebf52d98129f0972775fe428be15"
+    },
+    {
+      "file": "job-116453779591-original.log",
+      "bytes": 162045,
+      "sha256": "f1b30f49808b54dd6b7d0549ba3bece43efa9c204b4d038fc03404a8b3b9f79e"
+    },
+    {
+      "file": "job-116453779744-original.log",
+      "bytes": 130894,
+      "sha256": "ab94519e5a7aad9e902321a8bc4940145a4e79c7d8b25aba4a99a0bdc840927b"
+    },
+    {
+      "file": "job-116453780000-original.log",
+      "bytes": 5729171,
+      "sha256": "0ee7cf217aa8cbcf53ae4a130159468d887f7291f1d59e9714608f9e61669a1f"
+    },
+    {
+      "file": "job-116453780066-original.log",
+      "bytes": 31071,
+      "sha256": "696c22ec1aca03ad4eb2d1a10ed10c2c4031adb1d34eeda84b3bdfdb69a4309a"
+    },
+    {
+      "file": "job-116453780111-original.log",
+      "bytes": 4583249,
+      "sha256": "678e083da0c0946a41816a658eef0749dd399f3faee3bdef720d9c24322a006f"
+    },
+    {
+      "file": "job-116453780119-original.log",
+      "bytes": 48290,
+      "sha256": "f314a24487b0ae9e6e7c84affff7d3394c7162fc504b9d258af34fb51022b271"
+    },
+    {
+      "file": "job-116453780568-original.log",
+      "bytes": 26565,
+      "sha256": "c6436065264e221cbe5f98ec695b0647ec836b774c4fb126586eac384848af59"
+    }
+  ],
+  "original_metadata": [
+    {
+      "file": "20261015T141113Z-run.json",
+      "sha256": "98b70afb5b3a2a283feb6a2866460bfa26d982884dae38e1a3340decf547c3d7"
+    },
+    {
+      "file": "20261015T141113Z-jobs.json",
+      "sha256": "b70703f37c98bd9fc99eb2ea2ae5cef1e43d456a56533b50ebf0e739a7841a85"
+    },
+    {
+      "file": "artifacts-original.json",
+      "sha256": "3a5622cd0aa95b0ac5c772bb1fff1e3916a38e436d135f9272a23f98624192a0"
+    }
+  ],
+  "artifact": {
+    "id": 11979468874,
+    "name": "linux-integration-e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "bytes": 14637306,
+    "sha256": "b8c28c02788b0fc727918cd4f76334f891492f310e77bc10883498c150960390",
+    "api_digest_matches": true,
+    "all_zip_crcs_valid": true,
+    "file_members": 3984,
+    "download_count": 1,
+    "contains_application_binary": false,
+    "selected_members": [
+      {
+        "name": "charts-results.json",
+        "bytes": 67244,
+        "sha256": "8a887197bbb6c0418aae276ad28ea1fa8f5a7ef087a187ebb9c89cebd2c78ebc"
+      },
+      {
+        "name": "charts-profile/opennav-diagnostics.json",
+        "bytes": 37660,
+        "sha256": "ebd85b7e729576f08d4151878256fb7527b20fdf6ddd402073211e5cd904db09"
+      },
+      {
+        "name": "installer-loader-selftest.json",
+        "bytes": 1041,
+        "sha256": "c31b905f3e344628310e9d24f3b270aa29b38e6f300858355fb020c2ac9b0080"
+      },
+      {
+        "name": "soak/results.json",
+        "bytes": 299,
+        "sha256": "4c7765e5063f33449406c31f414b3d9824b528044a2eb3479381be643bc2e539"
+      },
+      {
+        "name": "boat-feedback-linux/result.json",
+        "bytes": 3708,
+        "sha256": "dd29824f3e971c4afddef8bd9b62059738dfa93ecbdea16374049118a61f9b83"
+      },
+      {
+        "name": "linux-mode-cycle-results.json",
+        "bytes": 4626,
+        "sha256": "dcc92b98916a18793c87896897fffb35b568d615df138ac4a9c53456ef4cddb1"
+      },
+      {
+        "name": "xnav-linux-tests.log",
+        "bytes": 28983,
+        "sha256": "9596a6619e6274505cb6050457ec3a9821b8f12aa121dba781f085915208abb0"
+      },
+      {
+        "name": "production-linux-tests.log",
+        "bytes": 28995,
+        "sha256": "8766f5b7104c8a6912b4e7d933f3f1ed0878301ec204f5f77e6f1fc099b069a0"
+      },
+      {
+        "name": "production-linux-configure.log",
+        "bytes": 12461,
+        "sha256": "9e69a6ddacd202056c6fcf3230ac030d091d1c0f5565b85da47a3ca3376518cb"
+      }
+    ]
+  },
+  "source_contracts": [
+    {
+      "path": ".github/workflows/opennav-baseline.yml",
+      "sha256": "3f9f9bdedb974ec3facee660e9417a1580fac87ca32b10627908fdcc8d803e93"
+    },
+    {
+      "path": "opennav-x/tools/smoke-charts.py",
+      "sha256": "b44f37efac520764ae91210979b96059a958d3638be18652d785212c79551492"
+    },
+    {
+      "path": "opennav-x/tools/diagnostic_snapshot.py",
+      "sha256": "22cb876134cd15229f8634b5045fcec5b8ea588aaed8699cd1db099cdde18a86"
+    },
+    {
+      "path": "opennav-x/tools/workspace-fixtures.py",
+      "sha256": "3089f70a10c9bcded01854f18b710c7d0ffacf1d8deae1438588e0125e382f43"
+    },
+    {
+      "path": "opennav-x/src/integration/DashboardPresentation.h",
+      "sha256": "3b4111cfa297643cc022ac2b63061c99f2d125f7dfba8d5145d2500d9be1305a"
+    },
+    {
+      "path": "opennav-x/src/integration/DashboardPresentation.cpp",
+      "sha256": "618a6a80123d1e201a4dea9461c4efac143d0a1172178beca40417168a3b4237"
+    },
+    {
+      "path": "opennav-x/src/integration/OpenCPNIntegration.cpp",
+      "sha256": "c67db905db036bd8aa8129a6fbbd66733a826ab156b899e4d17877f895bc19eb"
+    },
+    {
+      "path": "opennav-x/tools/test-boat-feedback-widgets.py",
+      "sha256": "ddb27293af6b533fb9b7ce92a45d9ba3659e87d9e33dd2b33588753e765fd049"
+    },
+    {
+      "path": "opennav-x/cmake/BoatFeedbackTests.cmake",
+      "sha256": "33d4551948a9e83b76bf4b44a82752610c3228bf6bd7d1b171899b165cf46ac0"
+    },
+    {
+      "path": "opennav-x/tools/verify-upstream.py",
+      "sha256": "f3874d54810c744b729883037efe33d62b3b8944f65f8dcf7548c491802d2605"
+    },
+    {
+      "path": "opennav-x/tools/prepare-integration.py",
+      "sha256": "c57b70fdc2556dac7554a26c3253aaa3add2e05af94fae51146e637a1467a780"
+    }
+  ],
+  "windows_native_pe": {
+    "job_id": 116453779591,
+    "hosts": [
+      "PowerShell 7",
+      "Windows PowerShell 5.1 x64",
+      "Windows PowerShell 5.1 x86"
+    ],
+    "powershell_5_1_version": "5.1.20348.5622",
+    "result_lines": [
+      "2026-10-15T13:40:38.1018036Z Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.",
+      "2026-10-15T13:40:43.8249790Z Installer large raw-backed export extent and boundary fixtures passed.",
+      "2026-10-15T13:40:44.9278155Z AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+      "2026-10-15T13:40:45.0178701Z Installer staged PE import closure fixtures passed.",
+      "2026-10-15T13:40:48.5621237Z Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.",
+      "2026-10-15T13:41:07.3617957Z Installer large raw-backed export extent and boundary fixtures passed.",
+      "2026-10-15T13:41:12.1779616Z AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+      "2026-10-15T13:41:12.3021349Z Installer staged PE import closure fixtures passed.",
+      "2026-10-15T13:41:22.0494485Z Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.",
+      "2026-10-15T13:41:42.8701852Z Installer large raw-backed export extent and boundary fixtures passed.",
+      "2026-10-15T13:41:48.1828702Z AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.",
+      "2026-10-15T13:41:48.3123443Z Installer staged PE import closure fixtures passed."
+    ],
+    "scope": "Synthetic PE/ABI/bounds/closure cases plus real native system-directory and Microsoft VC14 signature checks; no installed product or third-party TLS security qualification."
+  },
+  "chart_mode": {
+    "status": "passed; native screenshot review and physical GPU gate remain separate",
+    "authority": "Linux development",
+    "phases": [
+      {
+        "requested_rendering": "software",
+        "opengl_enabled": false,
+        "workspace_startup_state": 2098127,
+        "workspace_returned_state": 2098127,
+        "workspace_final_persisted_state": 2098125,
+        "native_legacy_window_present": true,
+        "native_returned_window_present": false,
+        "returned_plugin_loaded": true
+      },
+      {
+        "requested_rendering": "opengl",
+        "opengl_enabled": true,
+        "workspace_startup_state": 2098127,
+        "workspace_returned_state": 2098127,
+        "workspace_final_persisted_state": 2098125,
+        "native_legacy_window_present": true,
+        "native_returned_window_present": false,
+        "returned_plugin_loaded": true
+      }
+    ],
+    "first_ready_contract": "Wait only for publication newer than the pre-restart baseline, matching returned PID and dashboard_ready=true; then assert ENC, pane geometry/state, rail and native visibility once. Missing/invalid readiness and timeouts fail.",
+    "observer_boundary": "Fixture-only existing presentation observer, enabled and layout depth zero, on the UI thread. Hide flags precede manager.Update; this does not attest native repaint completion.",
+    "final_saved_diagnostic": {
+      "build_commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "test_fixtures": true,
+      "publication_monotonic_ms": "1293393",
+      "ui_ticks": "4",
+      "readiness": {
+        "dashboard_ready": true,
+        "process_id": 25035
+      },
+      "role": "Final archived profile snapshot; not separately retained as the exact first-ready assertion sample."
+    }
+  },
+  "fixture_free_loader": {
+    "status": "passed",
+    "checks": 5,
+    "loader": {
+      "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "commissioning_restart_protocol": 0,
+      "version": "0.4.0-beta2.4",
+      "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "compiler": "GNU 13.3.0 / 8 byte pointers",
+      "plugins_loaded": false,
+      "test_fixtures": false,
+      "resources": {
+        "gshhs/poly-c-1.dat": true,
+        "s57data/s57objectclasses.csv": true,
+        "uidata/styles.xml": true,
+        "s57data/chartsymbols.xml": true
+      },
+      "update_qualified_plugins_deferred": 0,
+      "update_qualified_core_output": 0,
+      "normal_config_directory": "/etc",
+      "passed": true,
+      "xnav_hardware_output_policy": "manual-commissioning",
+      "update_qualified_config": 0,
+      "update_startup_health": 0,
+      "xnav_manual_control_contract": 1,
+      "build_purpose": "INSTALLED PRODUCT",
+      "profile_initialized": false,
+      "contract": "OpenNavX.LoaderSelfTest.1"
+    },
+    "app_sha256": "8454c5c5628ba4716a24b4bd72a29ece2da8039bba8bed4d146d692b0da0bbae"
+  },
+  "linux_mode_cycle": {
+    "steps": [
+      {
+        "step": "XNav to Legacy",
+        "persistence": "pass"
+      },
+      {
+        "step": "Legacy to XNav",
+        "persistence": "pass"
+      },
+      {
+        "step": "Final IPC close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Safe override and close",
+        "persistence": "pass"
+      },
+      {
+        "step": "Persisted XNav after Safe Mode",
+        "persistence": "pass"
+      }
+    ],
+    "executable_sha256": "ea43fe0db1bf5411163f8c361e441a18063180eeb55858622e4a3f480e2521e6",
+    "executable_build_commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23"
+  },
+  "skips": {
+    "endurance": {
+      "status": "skipped",
+      "reason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+      "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "runId": "38744236920",
+      "runAttempt": "1",
+      "release_duration": false
+    },
+    "design": {
+      "status": "not_requested_not_performed",
+      "designValidationDefault": false,
+      "acceptance": "not claimed",
+      "note": "Functional chart checks and screenshots do not constitute opt-in prototype/design review."
+    }
+  },
+  "boundaries": [
+    "No rerun, new application build, dispatch, boat operation, physical output, or publication was performed during evidence collection.",
+    "Original logs and complete artifact remain private; repository contains only this compact receipt.",
+    "Linux completion does not accept native Windows UI/GPU, installed boat generation, third-party plugin TLS security, endurance, or public release.",
+    "All pane geometry, originally hidden pane, ENC, rail, saved-state and separate native-window assertions remain enabled."
+  ],
+  "linux_offline_component_provenance": {
+    "dirty_flag_definition": "Boolean of git status --porcelain in the parent checkout; default untracked reporting is included. Both flags use this same value for a matching expected commit.",
+    "recorded_preparation": "Original job log records git clone into opennav-x/upstream/OpenCPN. That nested clone is absent from the tracked tree and not excluded by repository ignore rules, providing an expected untracked preparation cause under normal Git behavior.",
+    "limitation": "The original raw status/diff is not in the retained log or artifact; the complete dirty cause and absence of additional root edits are not established.",
+    "independent_upstream_check": "verify-upstream.py checks exact locked HEAD and clean tracked upstream files. prepare-integration.py reconstructs the reviewed patch index and compares the consumed tracked integration worktree against it.",
+    "component_binding": "CMake manifest records candidate commit and exact target names/paths; the runner checks configured/requested/checkout commit agreement and hashes every executed binary. This is not a closed per-input source inventory or clean-tree attestation.",
+    "new_mismatched_input_observed": false,
+    "classification": "Evidence scope note; no actual new source-identity blocker found."
+  }
+}
