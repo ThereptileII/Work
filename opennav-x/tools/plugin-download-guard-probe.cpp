@@ -1,5 +1,10 @@
 // Test-only context for byte-identical slices of pinned plugin_handler.cpp.
 // No application profile, plugin loader, or marine code is initialized.
+#ifdef _WIN32
+// archive_entry.h includes windows.h; wx later requires Winsock 2 declarations.
+// Select Winsock 2 first so windows.h cannot introduce conflicting Winsock 1.
+#include <winsock2.h>
+#endif
 #include <algorithm>
 #include <archive.h>
 #include <archive_entry.h>
