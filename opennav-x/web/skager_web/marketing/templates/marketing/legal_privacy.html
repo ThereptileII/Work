@@ -21,7 +21,9 @@
 <div class="table-wrap"><table>
 <thead><tr><th scope="col">Data</th><th scope="col">Why</th><th scope="col">Legal basis</th></tr></thead>
 <tbody>
-<tr><td>Account: email address, sign-in times</td><td>To create your account and let you sign in with a one-time code</td><td>Contract</td></tr>
+<tr><td>Account: email address, password (stored only as a secure hash by our sign-in provider), account status, log-in times</td><td>To set up the account that comes with your purchase and let you log in with your password and a one-time code</td><td>Contract</td></tr>
+<tr><td>Delivery: name and shipping address for hardware orders, tracking reference</td><td>To ship your order and handle returns</td><td>Contract</td></tr>
+<tr><td>SKAGER Cloud: subscription status and billing period</td><td>To provide and bill the subscription</td><td>Contract</td></tr>
 <tr><td>Orders: amount, currency, any discount code, and Stripe checkout and payment references. Stripe collects your card and billing details directly.</td><td>To take payment, grant access, send receipts and handle refunds</td><td>Contract; legal obligation (bookkeeping)</td></tr>
 <tr><td>Boats you add to your account: the boat's name</td><td>To organise your account, downloads and support around your boat</td><td>Contract</td></tr>
 <tr><td>Downloads: which release you downloaded and when</td><td>To deliver downloads to customers only and prevent abuse</td><td>Contract; legitimate interest (security)</td></tr>
@@ -48,6 +50,7 @@
 <tr><td>Supabase</td><td>Sign-in and our customer database</td></tr>
 <tr><td>Stripe</td><td>Payments. Stripe also acts as an independent controller for fraud prevention and its legal obligations.</td></tr>
 <tr><td>Resend</td><td>Sending sign-in codes, receipts and service emails</td></tr>
+<tr><td>Shipping carriers</td><td>Delivering hardware orders. They receive your name, address and the parcel details.</td></tr>
 </tbody></table></div>
 <p>Some of these providers are based in, or use services in, the United States. Where data leaves the EU/EEA, the transfer relies on the EU–US Data Privacy Framework or the European Commission's standard contractual clauses.</p></section>
 

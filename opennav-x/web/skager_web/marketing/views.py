@@ -14,6 +14,7 @@ PAGES = {
     "installation": "installation", "open_source": "open_source", "legal": "legal",
     "terms": "legal_terms", "privacy": "legal_privacy", "refunds": "legal_refunds",
     "beta_terms": "legal_beta_terms", "cookies": "legal_cookies",
+    "checkout": "checkout", "welcome": "welcome",
 }
 
 

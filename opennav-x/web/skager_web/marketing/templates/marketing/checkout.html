@@ -1,0 +1,58 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Get SKAGER — Checkout{% endblock %}
+{% block description %}Get SKAGER Public Beta Access for USD 20. Add the SKAGER GPS module, pay securely with Stripe and start sailing with SKAGER today.{% endblock %}
+{% block page %}checkout{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/checkout.css' %}?v={{ marketing_checkout_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>
+  <script src="{% static 'marketing/checkout.js' %}?v={{ marketing_checkout_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="checkout" aria-labelledby="checkout-title">
+  <div class="container checkout-grid">
+    <div class="checkout-visual">
+      <p class="kicker">Get SKAGER</p>
+      <h1 id="checkout-title">Your helm.<br><span>Upgraded tonight.</span></h1>
+      <figure class="helm-scene" aria-label="SKAGER running on a helm display aboard a sailing yacht at dusk">
+        <div class="helm-sky" aria-hidden="true"><span class="helm-sun"></span><span class="helm-island"></span><span class="helm-sea"></span></div>
+        <div class="helm-window" aria-hidden="true"></div>
+        <div class="helm-console" aria-hidden="true"><span class="helm-vent"></span><span class="helm-compass"><i></i></span><span class="helm-throttle"><i></i></span></div>
+        <div class="helm-display">
+          <div class="helm-bezel">
+            <div class="fit" data-fit="1280x800"><div class="proto-screen fragment-full" data-theme="dusk" inert aria-hidden="true">
+{% include 'marketing/includes/skager_screen.html' %}
+            </div></div>
+            <span class="helm-glass" aria-hidden="true"></span>
+          </div>
+          <span class="helm-brand" aria-hidden="true">SKAGER</span>
+        </div>
+        <div class="helm-wheel" aria-hidden="true"><i></i></div>
+        <figcaption class="visually-hidden">An illustration of SKAGER on a 16-inch helm display at dusk.</figcaption>
+      </figure>
+      <ul class="checkout-promises">
+        <li><b>Instant access.</b> Download SKAGER for Windows as soon as you have paid.</li>
+        <li><b>Every beta update.</b> New features land in your account as they ship.</li>
+        <li><b>14-day full refund.</b> Not for you? Get every cent back.</li>
+      </ul>
+    </div>
+
+    <form class="order-panel" id="checkout-form" novalidate>
+      <h2>Your order</h2>
+      <div class="order-line order-main"><div><b>SKAGER Public Beta Access</b><span>SKAGER for Windows, every beta update, your account, support</span></div><strong>USD 20</strong></div>
+      <fieldset class="addons" id="addons" hidden><legend>Add to your helm</legend><div id="addon-list"></div><p class="addon-ship" id="addon-ship" hidden></p></fieldset>
+      <details class="discount"><summary>Have a discount code?</summary><label for="discount-code" class="visually-hidden">Discount code</label><input id="discount-code" name="discountCode" maxlength="64" autocomplete="off" spellcheck="false" placeholder="Discount code"><p class="hint">Your discount is applied on the secure payment page before you pay.</p></details>
+      <label class="email-field" for="checkout-email">Email address<input id="checkout-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+      <p class="hint">Your SKAGER account is created with this email when you pay. We send your receipt and sign-in code here.</p>
+      <div class="order-total"><span>Total</span><strong id="order-total">USD 20.00</strong></div>
+      <p class="hint" id="total-note">Price in US dollars. Any discount is shown before you pay.</p>
+      <button class="cta order-cta" id="checkout-submit" type="submit" disabled>Continue to secure payment <span aria-hidden="true">→</span></button>
+      <p class="order-message" id="checkout-message" role="status" aria-live="polite"></p>
+      <p class="hint terms">By continuing you agree to the <a href="{% url 'marketing:terms' %}">Terms</a> and the <a href="{% url 'marketing:beta_terms' %}">Beta terms &amp; safety</a>. See the <a href="{% url 'marketing:refunds' %}">Refund Policy</a> and <a href="{% url 'marketing:privacy' %}">Privacy Policy</a>.</p>
+      <p class="secure"><span aria-hidden="true">🔒</span> Secure payment by Stripe. Cards, Apple Pay and Google Pay.</p>
+      <p class="hint already">Already have SKAGER? <a href="/auth/login/">Log in</a></p>
+    </form>
+  </div>
+</section>
+{% endblock %}

@@ -5,7 +5,7 @@ import { readFileSync } from 'node:fs';
 
 // These are the original member assets copied by the packager. Load the actual
 // Worker routing against their bytes without a build or any provider access.
-const assets = Object.fromEntries(['portal.html', 'portal.js', 'portal.css'].map(name => [
+const assets = Object.fromEntries(['portal.html', 'portal.js', 'portal.css', 'auth.html', 'admin.html'].map(name => [
   '/' + name, { type: name.endsWith('.html') ? 'text/html' : name.endsWith('.css') ? 'text/css' : 'text/javascript',
     body: readFileSync(new URL('./static/' + name, import.meta.url)).toString('base64') },
 ]));
@@ -37,6 +37,38 @@ test('checkout return destinations serve the published member shell and its asse
     assert.equal(response.status, 200);
     assert.equal(await response.text(), readFileSync(new URL('./static' + path, import.meta.url), 'utf8'));
   }
+});
+test('member, sign-in and admin shells have fixed routes; public signup routes no longer exist', async () => {
+  const noBackend = async () => assert.fail('static shells never call the backend');
+  const shells: Record<string, string> = {
+    '/portal/downloads/': 'portal.html', '/portal/shop/': 'portal.html', '/portal/cloud/': 'portal.html', '/portal/account': 'portal.html',
+    '/auth/login/': 'auth.html', '/auth/forgot/': 'auth.html', '/auth/verify': 'auth.html',
+    '/admin/': 'admin.html', '/admin/orders/': 'admin.html', '/admin/settings/': 'admin.html',
+  };
+  for (const [path, file] of Object.entries(shells)) {
+    const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);
+    assert.equal(response.status, 200, path);
+    assert.equal(await response.text(), readFileSync(new URL('./static/' + file, import.meta.url), 'utf8'));
+  }
+  for (const path of ['/auth/signup/', '/auth/recover/', '/portal/other/', '/admin/products/']) {
+    assert.equal((await handleWorker(new Request('https://beta.skager.app' + path), noBackend)).status, 404, path);
+  }
+});
+test('only the admin image route accepts a larger body; product images may be cached', async () => {
+  const seen: number[] = [];
+  const upstream = async (_url: string, init: RequestInit) => { seen.push((init.body as Uint8Array).byteLength); return new Response('{}', { headers: { 'content-type': 'application/json' } }); };
+  const big = new Uint8Array(1024 * 1024);
+  const post = (path: string) => new Request('https://beta.skager.app' + path, { method: 'POST', body: big });
+  assert.equal((await handleWorker(post('/api/admin/product'), upstream)).status, 413);
+  assert.equal((await handleWorker(post('/api/admin/product-image'), upstream)).status, 200);
+  assert.deepEqual(seen, [big.byteLength]);
+  const tooBig = new Request('https://beta.skager.app/api/admin/product-image', { method: 'POST', body: new Uint8Array(3 * 1024 * 1024) });
+  assert.equal((await handleWorker(tooBig, upstream)).status, 413);
+  const image = await handleWorker(new Request('https://beta.skager.app/api/media/products/x.png'), async () => new Response('png', { headers: { 'content-type': 'image/png' } }));
+  assert.equal(image.headers.get('Cache-Control'), 'public, max-age=86400');
+  assert.equal(image.headers.get('Content-Type'), 'image/png');
+  const missing = await handleWorker(new Request('https://beta.skager.app/api/media/products/x.png'), async () => new Response('{}', { status: 404 }));
+  assert.equal(missing.headers.get('Cache-Control'), 'no-store');
 });
 test('download query parameters never get silently discarded or reach the backend', async () => {
   for (const method of ['GET', 'POST']) {

@@ -4,6 +4,9 @@ import ASSETS from './generated-assets.mjs';
 const ORIGIN = 'https://beta.skager.app';
 const EDGE = 'https://kelwgubkuvditalsbqpr.supabase.co/functions/v1/skager-web';
 const MAX_BODY = 262144;
+// Admin product images are sent as base64 JSON (2 MB image); every other route keeps the small limit.
+const IMAGE_ROUTE = '/api/admin/product-image';
+const IMAGE_BODY = 2 * 1024 * 1024 * 4 / 3 + 8192;
 const CSP = "default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' data:; font-src 'self'; connect-src 'self'; object-src 'none'; base-uri 'self'; form-action 'self' https://checkout.stripe.com; frame-ancestors 'none'";
 
 function finish(response) {
@@ -17,7 +20,7 @@ function finish(response) {
   return new Response(response.body, { status: response.status, headers });
 }
 
-async function readBounded(stream) {
+async function readBounded(stream, limit = MAX_BODY) {
   if (!stream) return new Uint8Array();
   const reader = stream.getReader();
   const chunks = [];
@@ -27,7 +30,7 @@ async function readBounded(stream) {
       const { value, done } = await reader.read();
       if (done) break;
       size += value.byteLength;
-      if (size > MAX_BODY) throw new RangeError();
+      if (size > limit) throw new RangeError();
       chunks.push(value);
     }
   } finally { await reader.cancel().catch(() => {}); reader.releaseLock(); }
@@ -52,7 +55,7 @@ export async function handleWorker(request, transport = fetch) {
       if (value && value.length <= 8192) headers.set(name, value);
     }
     let body;
-    try { if (request.method === 'POST') body = await readBounded(request.body); }
+    try { if (request.method === 'POST') body = await readBounded(request.body, url.pathname === IMAGE_ROUTE ? IMAGE_BODY : MAX_BODY); }
     catch { return finish(new Response('Request too large', { status: 413 })); }
     let failurePhase = 'timeout-init';
     try {
@@ -68,7 +71,9 @@ export async function handleWorker(request, transport = fetch) {
         throw new Error();
       }
       failurePhase = 'response-build';
-      const outputHeaders = new Headers({ 'Cache-Control': 'no-store' });
+      // Public product images may be cached; every other API response is private.
+      const media = url.pathname.startsWith('/api/media/') && response.ok;
+      const outputHeaders = new Headers({ 'Cache-Control': media ? 'public, max-age=86400' : 'no-store' });
       outputHeaders.set('Content-Type', response.headers.get('content-type') || 'application/json');
       failurePhase = 'cookie-copy';
       for (const value of response.headers.getSetCookie()) outputHeaders.append('Set-Cookie', value);
@@ -87,8 +92,9 @@ export async function handleWorker(request, transport = fetch) {
     return finish(new Response(null, { status: 303, headers: { Location: '/auth/login/', 'Cache-Control': 'no-store' } }));
   }
   let path = url.pathname;
-  if (/^\/portal(?:\/(?:account|orders|boats|downloads))?\/?$/.test(path)) path = '/portal.html';
-  else if (/^\/auth\/(?:login|signup|recover|verify)\/?$/.test(path)) path = '/auth.html';
+  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path)) path = '/portal.html';
+  else if (/^\/auth\/(?:login|forgot|verify)\/?$/.test(path)) path = '/auth.html';
+  else if (/^\/admin(?:\/(?:orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
   else if (path.endsWith('/')) path += 'index.html';
   const asset = ASSETS[path];
   if (!asset) return finish(new Response('Not found', { status: 404 }));

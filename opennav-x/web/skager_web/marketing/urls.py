@@ -21,6 +21,8 @@ urlpatterns = [
     path("legal/refunds/", views.page, {"page": "refunds"}, name="refunds"),
     path("legal/beta-terms/", views.page, {"page": "beta_terms"}, name="beta_terms"),
     path("legal/cookies/", views.page, {"page": "cookies"}, name="cookies"),
+    path("checkout/", views.page, {"page": "checkout"}, name="checkout"),
+    path("welcome/", views.page, {"page": "welcome"}, name="welcome"),
     path("account/", views.closed, {"destination": "account"}, name="account"),
     path("downloads/", views.closed, {"destination": "downloads"}, name="downloads"),
 ]

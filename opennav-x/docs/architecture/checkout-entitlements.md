@@ -1,5 +1,7 @@
 # Beta checkout and entitlements
 
+> **Superseded** by [customer-store.md](customer-store.md) for the purchase-created account flow (2026-10-15). Kept for the history of the v1 checkout boundary.
+
 The beta commerce boundary is deliberately closed to Stripe **TEST** mode. A
 server-side flag, a `rk_test_` restricted key (or existing `sk_test_` secret), a `whsec_` webhook secret, one `price_`
 ID, and an exact HTTPS return origin are required before either route exists.

@@ -1,4 +1,5 @@
 """Focused informational-site boundaries. No database, vendors or live services."""
+import re
 from html.parser import HTMLParser
 from urllib.parse import urlsplit
 
@@ -19,7 +20,7 @@ class Links(HTMLParser):
 
 class MarketingPages(SimpleTestCase):
     pages = ("home", "features", "how_it_works", "pricing", "installation", "support", "faq", "articles",
-             "open_source", "legal", "terms", "privacy", "refunds", "beta_terms", "cookies", "account", "downloads")
+             "open_source", "legal", "terms", "privacy", "refunds", "beta_terms", "cookies", "account", "downloads", "checkout", "welcome")
 
     def test_pages_and_article_links_resolve_without_database_or_vendors(self):
         paths = [reverse("marketing:" + name) for name in self.pages]
@@ -70,12 +71,27 @@ class MarketingPages(SimpleTestCase):
         self.assertNotIn("sessionid", response.cookies)
         self.assertEqual(self.client.get("/auth/login/").status_code, 404)
 
-    def test_public_access_is_closed_and_licenses_are_not_paywalled(self):
+    def test_accounts_come_only_from_checkout_and_licenses_are_not_paywalled(self):
         for name in ("account", "downloads"):
             response = self.client.get(reverse("marketing:" + name))
-            self.assertContains(response, "closed")
+            self.assertContains(response, 'href="/auth/login/"')
+            self.assertContains(response, 'href="/checkout/"')
             self.assertNotContains(response, 'type="password"')
             self.assertNotContains(response, 'type="email"')
+        # No public page offers sign-up: an account is created only by a purchase.
+        for name in self.pages:
+            with self.subTest(name=name):
+                html = self.client.get(reverse("marketing:" + name)).content.decode().lower()
+                found = re.search(r"sign[ -]?up|create (?:an |your )?account|\bregister\b|/auth/signup|type=\"password\"", html)
+                self.assertIsNone(found and found.group(0))
+        checkout = self.client.get(reverse("marketing:checkout"))
+        self.assertContains(checkout, 'id="checkout-email"')
+        self.assertContains(checkout, "account is created with this email when you pay")
+        self.assertContains(checkout, 'class="helm-scene"')
+        self.assertContains(checkout, 'data-fit="1280x800"')
+        self.assertNotContains(checkout, "<script>")
+        pricing = self.client.get(reverse("marketing:pricing"))
+        self.assertContains(pricing, 'class="cta plan-cta" href="/checkout/"')
         source = self.client.get(reverse("marketing:open_source"))
         self.assertContains(source, "https://opencpn.org/")
         self.assertContains(source, "GPL")

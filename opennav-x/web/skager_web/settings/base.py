@@ -31,7 +31,7 @@ TEMPLATES = [{
     ]},
 }]
 # Public checkout, accounts and downloads open together at launch.
-MARKETING_PUBLIC_ACCESS_OPEN = False
+MARKETING_PUBLIC_ACCESS_OPEN = True
 # The seller named in the legal documents. Fill in before payments open (SCRUM-61/62/63).
 MARKETING_OPERATOR = {
     "name": "[Operator legal name]",

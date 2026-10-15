@@ -122,24 +122,54 @@ test("GET never creates a boat; private failure details are not exposed", async 
   assert.equal(JSON.stringify(failure.data).includes("secret"), false);
 });
 test("empty customer pages render honestly; remote account/boat/order text is escaped", () => {
-  const data = { betaAccess: "inactive", account: { email: '<img src=x onerror="alert(1)">' }, boats: [], orders: [], checkoutAvailable: false };
-  for (const page of ["dashboard", "account", "boats", "orders", "downloads"]) {
+  const data = { betaAccess: "inactive", account: { email: '<img src=x onerror="alert(1)">' }, boats: [], orders: [], subscription: null };
+  for (const page of ["dashboard", "account", "orders", "downloads", "shop", "cloud"]) {
     const html = renderDashboard(data, page);
-    assert.ok(html.length > 100);
+    assert.ok(html.length > 30, page);
     assert.equal(html.includes('<img src=x'), false);
   }
-  const html = renderDashboard({ ...data, boats: [{ id: BOAT, name: "<script>alert(1)</script>", createdAt: created }] }, "boats");
+  const html = renderDashboard({ ...data, boats: [{ id: BOAT, name: "<script>alert(1)</script>", createdAt: created }] }, "account");
   assert.match(html, /&lt;script&gt;/);
   assert.equal(html.includes("<script>"), false);
-  assert.equal(renderDashboard(data).includes('id="checkout"'), false);
-  assert.match(renderDashboard({ ...data, checkoutAvailable: true }), /Continue to test checkout/);
-  assert.match(renderDashboard(data, "downloads"), /Release delivery is closed/);
+  assert.match(renderDashboard(data, "downloads"), /Downloads are being prepared/);
+  assert.match(renderDashboard(data, "orders"), /no orders yet/);
+  assert.match(renderDashboard(data, "shop"), /being stocked/);
+  // Inactive access never offers Cloud; the future platforms are visible but disabled.
+  assert.match(renderDashboard(data, "cloud", { products: [{ kind: "subscription", priceMinor: 200 }] }), /needs an active SKAGER Beta Access/);
+  const downloads = renderDashboard(data, "downloads");
+  for (const platform of ["Linux x64", "Linux ARM64", "macOS"]) assert.match(downloads, new RegExp(platform));
+  assert.equal((downloads.match(/disabled>Coming</g) || []).length, 4);
   assert.equal(escapeHTML("&<>'\""), "&amp;&lt;&gt;&#39;&quot;");
 });
-test("full discount states no money collected; paid totals have correct test label", () => {
-  assert.match(orderTotal({ fullyDiscounted: true, amountMinor: 0, currency: "USD" }), /no payment collected/);
-  assert.match(orderTotal({ fullyDiscounted: false, amountMinor: 2000, currency: "USD" }), /20.00 USD/);
-  assert.match(orderTotal({ fullyDiscounted: false, amountMinor: 2000, currency: "JPY" }), /Total recorded in JPY/);
+test("shop, cloud and orders render server data escaped, with refund only when the server allows it", () => {
+  const shop = renderDashboard({}, "shop", { shippingMinor: 1500, products: [
+    { id: BOAT, kind: "hardware", name: "<b>GPS</b>", summary: "s", priceMinor: 4900, imageUrl: "javascript:alert(1)" },
+    { id: ORDER, kind: "subscription", name: "Cloud", priceMinor: 200 }] });
+  assert.match(shop, /&lt;b&gt;GPS/);
+  assert.match(shop, /USD 49\.00/);
+  assert.equal(shop.includes("javascript:"), false);
+  assert.equal(shop.includes("Cloud"), false);
+  const cloud = renderDashboard({ betaAccess: "active", subscription: null }, "cloud", { products: [{ kind: "subscription", priceMinor: 200 }] });
+  assert.match(cloud, /id="cloud-subscribe"/);
+  assert.match(cloud, /USD 2\.00\/month/);
+  for (const feature of ["Boat data", "Online dashboard", "Web route planning"]) assert.match(cloud, new RegExp(feature));
+  const live = renderDashboard({ betaAccess: "active", subscription: { status: "active", currentPeriodEnd: created } }, "cloud", { products: [] });
+  assert.match(live, /id="cloud-manage"/);
+  assert.doesNotMatch(live, /cloud-subscribe/);
+  const order = { id: ORDER, kind: "access", createdAt: created, status: "paid", fulfillment: "unfulfilled", items: [
+    { name: "SKAGER Public Beta Access", quantity: 1, unitMinor: 2000 }, { name: "<i>GPS</i>", quantity: 1, unitMinor: 4900 }],
+    subtotalMinor: 6900, shippingMinor: 1500, discountMinor: 0, totalMinor: 8400, refundable: true };
+  const orders = renderDashboard({ orders: [order] }, "orders");
+  assert.match(orders, /data-refund=/);
+  assert.match(orders, /USD 84\.00/);
+  assert.match(orders, /Preparing to ship/);
+  assert.match(orders, /&lt;i&gt;GPS/);
+  assert.doesNotMatch(renderDashboard({ orders: [{ ...order, refundable: false }] }, "orders"), /data-refund=/);
+});
+test("full discount states nothing was charged; paid totals show the amount", () => {
+  assert.match(orderTotal({ totalMinor: 0, discountMinor: 2000 }), /nothing charged/);
+  assert.match(orderTotal({ totalMinor: 2000, discountMinor: 0 }), /USD 20\.00/);
+  assert.doesNotMatch(orderTotal({ totalMinor: 2000, discountMinor: 0 }), /nothing charged/);
 });
 test("static shells contain no customer data or inline execution; SQL grants no browser access", async () => {
   const sql = await readFile(new URL("./portal.sql", import.meta.url), "utf8");
@@ -159,49 +189,54 @@ test("static shells contain no customer data or inline execution; SQL grants no 
   }
 });
 
-test("auth shell preserves the intended form and CSRF submission with or without a trailing slash", async t => {
+test("auth shell: login sends password then code; forgot sends email; no signup exists", async t => {
   const source = await readFile(new URL("./static/auth.js", import.meta.url), "utf8");
-  for (const mode of ["login", "signup", "recover", "verify"]) {
+  assert.doesNotMatch(source, /signup|sign up|create an account|recover/i);
+  for (const mode of ["login", "forgot", "verify"]) {
     for (const slash of ["", "/"]) {
       await t.test(`/auth/${mode}${slash}`, async () => {
         const elements = new Map<string, any>();
         let submit: (event: any) => Promise<void>;
-        let next: any;
         const calls: { path: string; init: RequestInit }[] = [];
         const navigations: string[] = [];
-        const input = { name: "email", type: "email", value: mode === "verify" ? "123456" : "friend@example.test" };
-        elements.set("auth-input", input);
-        elements.set("auth-form", {
-          hidden: true,
-          addEventListener: (name: string, handler: typeof submit) => { assert.equal(name, "submit"); submit = handler; },
-          after: (link: any) => { next = link; },
-        });
+        const values: Record<string, string> = { "auth-email": " friend@example.test ", "auth-password": "correct horse", "auth-code": " 123456 " };
         const document = {
           title: "",
           getElementById: (id: string) => {
-            if (!elements.has(id)) elements.set(id, {});
+            if (!elements.has(id)) elements.set(id, { id, hidden: id === "auth-form", value: values[id] ?? "",
+              addEventListener: (name: string, handler: typeof submit) => { assert.equal(name, "submit"); submit = handler; } });
             return elements.get(id);
           },
-          createElement: () => ({}),
         };
         await new Script(source).runInNewContext({
           document, location: { pathname: `/auth/${mode}${slash}`, assign: (path: string) => navigations.push(path) },
           fetch: async (path: string, init: RequestInit) => {
             calls.push({ path, init });
-            return new Response(JSON.stringify(path === "/api/auth/session" ? { account: null, csrfToken: "c".repeat(64) } : { ok: true }));
+            if (path === "/api/auth/session") return new Response(JSON.stringify({ account: null, csrfToken: "c".repeat(64) }));
+            return new Response(JSON.stringify(path === "/api/auth/verify" ? { ok: true, next: "https://evil.example/portal/" } : { ok: true, email: "f***@example.test" }));
           },
         });
+        await new Promise(resolve => setImmediate(resolve));
         assert.equal(elements.get("auth-form").hidden, false);
-        assert.equal(input.name, mode === "verify" ? "code" : "email");
-        assert.equal(input.type, mode === "verify" ? "text" : "email");
+        assert.equal(elements.get("password-field").hidden, mode !== "login");
+        assert.equal(elements.get("code-field").hidden, mode !== "verify");
         await submit!({ preventDefault() {} });
-        assert.equal(calls[1].path, `/api/auth/${mode}`);
-        assert.equal(calls[1].init.method, "POST");
-        assert.equal(calls[1].init.credentials, "same-origin");
-        assert.equal((calls[1].init.headers as Record<string, string>)["X-CSRF-Token"], "c".repeat(64));
-        assert.deepEqual(JSON.parse(calls[1].init.body as string), mode === "verify" ? { code: "123456" } : { email: "friend@example.test" });
-        if (mode === "verify") assert.deepEqual(navigations, ["/portal/"]);
-        else assert.equal(next.href, "/auth/verify/");
+        const call = calls[1];
+        assert.equal(call.path, `/api/auth/${mode}`);
+        assert.equal(call.init.method, "POST");
+        assert.equal(call.init.credentials, "same-origin");
+        assert.equal((call.init.headers as Record<string, string>)["X-CSRF-Token"], "c".repeat(64));
+        const sent = JSON.parse(call.init.body as string);
+        if (mode === "verify") {
+          assert.deepEqual(sent, { code: "123456" });
+          assert.deepEqual(navigations, ["/portal/"], "verification only ever navigates inside the portal");
+          return;
+        }
+        assert.deepEqual(sent, mode === "login" ? { email: "friend@example.test", password: "correct horse" } : { email: "friend@example.test" });
+        assert.equal(elements.get("auth-password").value, "", "the password is not kept in the form");
+        assert.equal(elements.get("code-field").hidden, false);
+        await submit!({ preventDefault() {} });
+        assert.equal(calls[2].path, "/api/auth/verify");
       });
     }
   }
@@ -231,7 +266,10 @@ async function portalBrowser(path: string, respond: (path: string, init: Request
   const boatButton = element(), boatName = { ...element(), value: 'S/Y Aurora' };
   const checkout = element(), discount = { ...element(), value: ' FREE100 ' };
   const download = { ...element(), dataset: { releaseId: 'staging-test', artifactId: 'installer' } };
-  Object.assign(content, { querySelectorAll: () => content.innerHTML.includes('portal-download') ? [download] : [] });
+  const buy = { ...element(), dataset: { buy: BOAT } };
+  Object.assign(content, { querySelector: () => null, querySelectorAll: (selector: string) =>
+    selector === '.portal-download' && content.innerHTML.includes('portal-download') ? [download]
+      : selector === '[data-buy]' && content.innerHTML.includes('data-buy') ? [buy] : [] });
   const calls: { path: string; init: RequestInit }[] = [];
   const navigations: string[] = [], anchors: any[] = [];
   const document = {
@@ -250,13 +288,13 @@ async function portalBrowser(path: string, respond: (path: string, init: Request
     },
   };
   const url = new URL(path, 'https://beta.skager.app');
-  await new Script(source).runInNewContext({ document, URL,
+  await new Script(source).runInNewContext({ document, URL, URLSearchParams,
     location: { pathname: url.pathname, search: url.search, assign: (value: string) => navigations.push(value) },
     fetch: async (path: string, init: RequestInit) => { calls.push({ path, init }); return respond(path, init); },
   });
-  return { content, message, logout, boatForm, checkout, download, calls, navigations, anchors };
+  return { content, message, logout, boatForm, checkout, download, buy, calls, navigations, anchors };
 }
-const browserAccount = { betaAccess: 'active', account: { email: 'friend@example.test' }, boats: [], orders: [], checkoutAvailable: false };
+const browserAccount = { betaAccess: 'active', account: { email: 'friend@example.test' }, boats: [], orders: [], subscription: null };
 const browserSession = { account: { id: MINE }, csrfToken: 'c'.repeat(64) };
 const browserJSON = (body: unknown, status = 200) => new Response(JSON.stringify(body), { status });
 function browserDownload() {
@@ -322,12 +360,13 @@ test('expired session during boat refresh cannot be reported as successful accou
 });
 
 test('checkout return reads actual server order state and never trusts success query parameters', async () => {
-  const account = { ...browserAccount, betaAccess: 'inactive', orders: [{ id: ORDER, status: 'pending', createdAt: created, amountMinor: 2000, currency: 'USD', fullyDiscounted: false }] };
+  const account = { ...browserAccount, betaAccess: 'inactive', orders: [{ id: ORDER, kind: 'access', status: 'pending', createdAt: created,
+    items: [{ name: 'SKAGER Public Beta Access', quantity: 1, unitMinor: 2000 }], subtotalMinor: 2000, shippingMinor: 0, discountMinor: 0, totalMinor: 2000 }] };
   const browser = await portalBrowser('/portal/orders/?success=true&betaAccess=active&paid=true', async path => browserJSON(
     path === '/api/auth/session' ? browserSession : account));
   assert.deepEqual(browser.calls.map(call => call.path), ['/api/auth/session', '/api/portal/dashboard']);
-  assert.match(browser.content.innerHTML, /Pending/);
-  assert.doesNotMatch(browser.content.innerHTML, /Active in staging|portal-download/);
+  assert.match(browser.content.innerHTML, /Awaiting payment/);
+  assert.doesNotMatch(browser.content.innerHTML, /Paid|portal-download/);
   assert.deepEqual(browser.navigations, []);
 });
 
@@ -444,15 +483,16 @@ test('same-turn logout and refreshed dashboard JSON completion cannot restore pr
   assert.doesNotMatch(browser.message.textContent, /has been added/);
 });
 
-test('same-turn logout and checkout JSON completion cannot navigate to checkout', async () => {
+test('same-turn logout and shop checkout JSON completion cannot navigate to Stripe', async () => {
   const checkoutBody = deferredJSON(), logoutBody = deferredJSON();
-  const browser = await portalBrowser('/portal/account/', async path => {
+  const browser = await portalBrowser('/portal/shop/', async path => {
     if (path === '/api/auth/session') return browserJSON(browserSession);
-    if (path === '/api/portal/dashboard') return browserJSON({ ...browserAccount, betaAccess: 'inactive', checkoutAvailable: true });
+    if (path === '/api/portal/dashboard') return browserJSON(browserAccount);
+    if (path === '/api/store/catalog') return browserJSON({ shippingMinor: 1500, products: [{ id: BOAT, kind: 'hardware', name: 'GPS', priceMinor: 4900 }] });
     if (path === '/api/auth/logout') return logoutBody.response;
-    assert.equal(path, '/api/checkout/start'); return checkoutBody.response;
+    assert.equal(path, '/api/store/shop'); return checkoutBody.response;
   });
-  const checkingOut = browser.checkout.dispatch('click');
+  const checkingOut = browser.buy.dispatch('click');
   const loggingOut = browser.logout.dispatch('click');
   await Promise.all([checkoutBody.waiting, logoutBody.waiting]);
   logoutBody.complete({ ok: true });

@@ -663,13 +663,28 @@ ARTICLES = (
 FAQS = (
     {"name": "Buying SKAGER", "items": (
         {"question": "What does SKAGER cost?",
-         "answer": "Public Beta Access is a one-time payment of USD 20. There is no subscription.",
+         "answer": "Public Beta Access is a one-time payment of USD 20. SKAGER itself needs no subscription. "
+                   "SKAGER Cloud, for online services, is optional at USD 2 a month.",
          "link": ("pricing", "See what is included")},
+        {"question": "How do I get a SKAGER account?",
+         "answer": "Your account is created when you buy SKAGER. After paying, you confirm your email with a code and "
+                   "choose a password. Then you go straight to your downloads.",
+         "link": ("checkout", "Get SKAGER")},
+        {"question": "How do I log in?",
+         "answer": "Enter your email and password, then the one-time code we email you. Forgot your password? Choose "
+                   "“Forgot your password?” on the log-in page and set a new one with an emailed code."},
+        {"question": "Can I add the SKAGER GPS module?",
+         "answer": "Yes. Add it at checkout, or buy it later from the shop in your account. We ship within the EU/EEA, "
+                   "the UK, Norway and Switzerland."},
+        {"question": "What is SKAGER Cloud?",
+         "answer": "An optional subscription for USD 2 a month that brings your boat online: boat data, an online "
+                   "dashboard, web route planning and more as they launch. Start or cancel it any time from your account."},
         {"question": "What do I get for the payment?",
          "answer": "Access to the official beta downloads and update channel, your customer account, the support library, "
                    "support, bug reports and feature requests, and release information as the beta develops."},
         {"question": "Can I get a refund?",
-         "answer": "Yes. If SKAGER is not for you, ask for a full refund within 14 days of purchase. No questions asked.",
+         "answer": "Yes. If SKAGER is not for you, choose Refund on the Orders page of your account within 14 days of "
+                   "purchase. No questions asked. A refund closes your account.",
          "link": ("refunds", "Refund policy")},
         {"question": "Are charts included?",
          "answer": "No. SKAGER uses the charts you already have in OpenCPN. Buy and update charts from your chart provider.",
@@ -681,7 +696,8 @@ FAQS = (
                    "1280 × 800 is recommended at the helm.",
          "link": ("installation", "Requirements and installation")},
         {"question": "Does SKAGER work on Mac, Linux or tablets?",
-         "answer": "The public beta is for Windows. Other platforms may follow."},
+         "answer": "SKAGER is available for Windows today. Versions for Linux, Raspberry Pi and macOS are coming, and "
+                   "appear in your account as they launch."},
         {"question": "Which instruments can I connect?",
          "answer": "Anything OpenCPN can read: NMEA 0183, NMEA 2000 through a gateway, and Signal K. SKAGER uses the "
                    "connections you set up in OpenCPN.",

@@ -28,12 +28,8 @@
         <li>Support, bug reports and feature requests</li>
         <li>Release notes and a say in what comes next</li>
       </ul>
-      {% if public_access_open %}
-      <a class="cta plan-cta" href="{% url 'marketing:account' %}">Get SKAGER <span aria-hidden="true">↗</span></a>
-      {% else %}
-      <a class="cta plan-cta" href="{% url 'marketing:account' %}">Log in to get SKAGER <span aria-hidden="true">↗</span></a>
-      <p class="plan-note">The public beta is opening soon. Invited testers, log in with your account.</p>
-      {% endif %}
+      <a class="cta plan-cta" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a>
+      <p class="plan-note">Add the SKAGER GPS module at checkout.</p>
       <p class="plan-small">Price in US dollars. Any applicable taxes are shown before you pay. Secure payment by Stripe.</p>
     </article>
     <div class="plan-side">
@@ -48,10 +44,11 @@
   <div class="container">
     <h2 id="pricing-faq" data-reveal>Questions before<br><span>you buy.</span></h2>
     <div class="faq-list" data-reveal>
-      <details><summary>Is there a subscription?</summary><p>No. Public Beta Access is a single payment of USD 20.</p></details>
+      <details><summary>Is there a subscription?</summary><p>No. Public Beta Access is a single payment of USD 20. SKAGER Cloud, for online services, is an optional extra at USD 2 a month.</p></details>
+      <details><summary>How do I get my account?</summary><p>It is created when you buy. You confirm your email with a code, choose a password and go straight to your download.</p></details>
       <details><summary>Are charts included?</summary><p>No. SKAGER uses the charts you already have in OpenCPN. Buy and update charts from your chart provider.</p></details>
       <details><summary>What do I need to run SKAGER?</summary><p>A 64-bit Windows PC and OpenCPN 5.12.4 for Windows, installed separately. A touch display of 1280 × 800 or larger is recommended at the helm.</p></details>
-      <details><summary>What if I change my mind?</summary><p>Ask for a refund within 14 days of purchase and you get the full amount back. No questions asked.</p></details>
+      <details><summary>What if I change my mind?</summary><p>Choose Refund in your account within 14 days of purchase and you get the full amount back. No questions asked.</p></details>
     </div>
     <p data-reveal><a class="cta-ghost" href="{% url 'marketing:faq' %}">All questions <span aria-hidden="true">→</span></a></p>
   </div>

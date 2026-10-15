@@ -1,5 +1,7 @@
 # SKAGER private-beta email sign-in (SCRUM-40)
 
+> **Superseded** by [customer-store.md](customer-store.md) for the purchase-created account flow (2026-10-15). Kept for the history of the v1 checkout boundary.
+
 Cloudflare serves the public shell and forwards the API to the single Supabase
 Edge Function. No passwords, Supabase access tokens, refresh tokens or service
 keys reach browser JavaScript. The backend calls fixed HTTPS `/auth/v1/otp`,

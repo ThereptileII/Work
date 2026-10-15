@@ -23,7 +23,8 @@ from skager_web.marketing.content import ARTICLES
 
 PAGES = ("/", "/features/", "/how-it-works/", "/pricing/", "/install/", "/support/", "/support/faq/",
          "/support/articles/", "/open-source/", "/legal/", "/legal/terms/", "/legal/privacy/",
-         "/legal/refunds/", "/legal/beta-terms/", "/legal/cookies/", "/account/", "/downloads/")
+         "/legal/refunds/", "/legal/beta-terms/", "/legal/cookies/", "/account/", "/downloads/",
+         "/checkout/", "/welcome/")
 
 
 def main():
