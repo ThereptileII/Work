@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-15
 
+
+## Current Staging candidate
+
+`b4c40e6e9166d7e8340dec2879d2a8ad510b7458` /
+[38705678784](https://github.com/ThereptileII/Work/actions/runs/38705678784)
+is the single current candidate. It includes the native-tested installer observer
+correction and the authenticated retained-plugin results below. Private Staging
+trust is selected; extended and design suites are off. The unchanged verified
+SDK is reused subject to the existing fresh native source/environment checks.
+The run is pending; no installed-product or boat acceptance follows yet.
+The earlier `977d37c7` package remains failed rather than being relabelled.
+
 ## Replacement candidate after native updater job timeout
 
 Candidate `e538bbc8` / [38633971333](https://github.com/ThereptileII/Work/actions/runs/38633971333)
@@ -182,12 +194,17 @@ are retained. Corrected native gate
 on exact `d397ebfb`: Windows 86 session cases with 136 nested reconciliation,
 131 adoption and 27 explicit transaction groups; Linux 86/133/127. Both original
 artifacts authenticate by run/commit, size, SHA-256 and CRC. Full installed
-restart acceptance remains separate. Real Plan/Commit is next, following exact
-helper staging and a fresh independently reviewed inspection. A read-only boat recheck confirms the same
-profile/active-marker hashes, no running OpenCPN and all three remote-access
-services running. The current profile and active transaction are unchanged, no
-application was launched, and no physical command was sent. Retention must not
-qualify the saved pilot binding or grant launch authority.
+restart acceptance remains separate. The exact 161-file helper copy is staged
+on the boat, and fresh Inspect completes with a full private backup: 4,229
+profile entries, 4,483 ACL observations and the same 18 differences/hash. Its
+4,525,948-byte report exceeds the generic reader's 4,194,304-byte limit, so the
+subsequent read-only review-input read refuses before Plan/Commit. A dedicated
+bounded owned-inspection reader/producer correction is selected; the generic
+limit and complete tree/ACL evidence remain unchanged. [Actual size refusal](evidence/scrum17-cold-reconciliation-20261015/v2-actual-size-refusal.json).
+Boat checks confirm the same profile/active-marker hashes, no running OpenCPN
+and all three remote-access services running. The current profile and active
+transaction are unchanged, no application was launched, and no physical command
+was sent. Retention must not qualify the saved pilot binding or grant launch authority.
 [Sanitized actual inspection receipt](evidence/scrum17-cold-reconciliation-20261015/boat-inspection-receipt.json).
 
 

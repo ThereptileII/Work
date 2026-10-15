@@ -1,0 +1,23 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-17",
+  "status": "actual-inspection-emitted-above-generic-reader-bound",
+  "helperCommit": "d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+  "inspectionSha256": "22d52b3303d824f20729aa086fba7f30b28f49be98d306cfb4c33f7ef23a6f9e",
+  "inspectionBytes": 4525948,
+  "genericMaximumBytes": 4194304,
+  "profileEntries": 4229,
+  "aclObservations": 4483,
+  "differences": 18,
+  "privateProfileBackupComplete": true,
+  "readOnlyReviewInputs": "refused by Common.ps1 Read-Record size bound",
+  "profileChanged": false,
+  "planExecuted": false,
+  "commitExecuted": false,
+  "applicationLaunched": false,
+  "physicalOutput": false,
+  "correctionPending": "Dedicated bounded owned-inspection reader and producer bound; no generic limit change",
+  "originalHelperGate": "https://github.com/ThereptileII/Work/actions/runs/38703828242",
+  "privateEvidenceDirectory": "/home/standard/Work/skager-boat-cold-reconciliation-20261015",
+  "failedReaderErrorSha256": "5103a7e13ef9af6dec357ca317857b0713c53c0636546bee5edf31035c698c39"
+}
