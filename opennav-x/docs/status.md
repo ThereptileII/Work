@@ -1,9 +1,34 @@
 # SKAGER status — 2026-10-15
 
 
-## Current Staging candidate — integrated corrections under qualification
+## Installer trust correction — native boundary passes, replacement package required
 
-The single coherent replacement is
+Product correction `890ca0ab`, with owned-child lifetime support `b7f0329e`,
+removes the installer/launcher transaction-lock collision. Trust initialization
+starts only after the generation is committed; the existing native image owner
+pins the launcher and its physical ancestors across the lock handoff. The child
+revalidates the selected generation under its own exclusive lock. The parent
+waits for exact child exit, reacquires the lock and checks installation identity.
+Only the exact unattended `--initialize-trust` command suppresses the blocking
+failure dialog; ordinary startup retains its error guidance. The operation
+deadline remains fifteen seconds, with separate retained custody until exit.
+
+Focused native [38764328627](https://github.com/ThereptileII/Work/actions/runs/38764328627),
+attempt 1 at `b375e6bd3d743993a1415729becdc73ee3e47575`, passes six Go tests
+and 28 subtests without skips, then all 13 boundary cases under each actual
+x86/x64 Windows PowerShell 5.1 host. Real first/repeated trust initialization,
+missing configuration and nonmodal refusal use the freshly built GUI launcher;
+separate inert children test custody, intervening mutations and timeout cleanup.
+The original artifact, launcher identity and both native receipts authenticate.
+[Exact focused evidence and limitations](evidence/scrum22-installer-trust-20261015/README.md).
+This is not installed-package or boat acceptance. The new launcher and lifecycle
+engine require one replacement candidate with the existing package/lifecycle
+gates. All 30 SDK source inputs remain unchanged, allowing the existing strictly
+verified two-image dependency selection. Design and endurance runs remain off.
+
+## Previous Staging candidate — retained failures, not deployable
+
+The previous coherent candidate is
 `e80cb962e1a32d98bb75b964dca6eb516f7a5e23` /
 [38744236920](https://github.com/ThereptileII/Work/actions/runs/38744236920),
 attempt 1, still `0.4.0-beta2.4`. It includes the focused native installer PE32
