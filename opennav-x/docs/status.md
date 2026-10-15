@@ -36,6 +36,19 @@ changed/new package files. The original package remains unqualified; the correct
 installer still needs integrated lifecycle acceptance.
 [Original candidate and corrected native parser evidence](evidence/scrum209-candidate-1ffd09dd-20261015/README.md).
 
+Fresh passive boat inventory also identified a retained RTL-SDR AMD64 executable
+helper which the former x86-only installer scan refused. Correction `6786a1e5`
+adds bounded PE32+ import/forwarder inspection and per-edge architecture checks,
+without changing the x86 application/plugin ABI. The child helper uses its own
+application directory; a finite native Microsoft VC14 exception requires valid
+Microsoft signatures and matching architecture. The focused suite and original
+retained wx bytes pass native Windows PowerShell 5.1 in both x86/x64 hosts at
+[38740580580](https://github.com/ThereptileII/Work/actions/runs/38740580580).
+Seventeen exact retained helper/CRT files also pass inert local parsing with
+unchanged hashes. These are parser/closure checks, not external-helper TLS-version
+approval or installed-product acceptance. No boat program was launched or
+profile changed. [Authenticated native and local evidence](evidence/scrum209-installer-pe64-20261015/README.md).
+
 Linux job `116380307497` builds and passes preceding checks, then fails the
 OpenGL Legacy-to-XNav workspace assertion. Its tick-3 diagnostic still reports a
 visible Dashboard pane. Initial helper correction `9833ddbc` requires a newer
