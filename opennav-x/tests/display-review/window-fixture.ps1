@@ -7,8 +7,8 @@ if(-not $root.StartsWith([IO.Path]::GetTempPath(),[StringComparison]::OrdinalIgn
    [IO.Path]::GetFileName($root) -cnotmatch '^opennav-display-window-[a-f0-9]{32}$'){throw 'Unique temporary display fixture required.'}
 $record=Get-Content -LiteralPath (Join-Path $root 'fixture.json') -Raw|ConvertFrom-Json
 if($record.owner -cne 'OpenNavX.NativeDisplayWindow.Fixture.1' -or
-   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments','SelectFirstVisibleAis') -or
-   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal','prototype-ais-list','prototype-ais-empty','prototype-ais-wrong-name','prototype-ais-duplicate-list','prototype-ais-clipped-list','prototype-ais-overlay','prototype-ais-rename-down','prototype-ais-replace-down','prototype-ais-move-down','prototype-ais-no-identity','prototype-ais-old-tick')){throw 'Unknown fixed fixture.'}
+   $record.action -cnotin @('Display','ToggleFullscreen','ToggleOrientation','CyclePalette','PanRight','Resize1280x800','Capture','Navigation','Route','AIS','Instruments','SelectFirstVisibleAis','OnlineAISSettings','OnlineAISEnable','OnlineAISDisable') -or
+   $record.case -cnotin @('normal','return','course','wrong-page','wrong-geometry','canvas-child','ambiguous','replace-on-down','rename-on-down','move-on-down','duplicate-on-down','modal','maximized-offscreen','partial-offscreen','entirely-offscreen','minimized','demo','wrong-pid','prototype-normal','prototype-anchor','prototype-pilot','prototype-alerts','prototype-preferences','prototype-two-sheets','prototype-passage','prototype-traffic','prototype-back','prototype-unknown','prototype-wrong-owner','prototype-duplicate','prototype-clipped','prototype-signature','prototype-moved','prototype-rail-duplicate','prototype-modal','prototype-ais-list','prototype-ais-empty','prototype-ais-wrong-name','prototype-ais-duplicate-list','prototype-ais-clipped-list','prototype-ais-overlay','prototype-ais-rename-down','prototype-ais-replace-down','prototype-ais-move-down','prototype-ais-no-identity','prototype-ais-old-tick','prototype-online-normal','prototype-online-wrong-page','prototype-online-wrong-owner','prototype-online-duplicate','prototype-online-clipped','prototype-online-covered','prototype-online-missing','prototype-online-wrong-name','prototype-online-wrong-role','prototype-online-replace-down','prototype-online-old-tick','prototype-online-wrong-observation')){throw 'Unknown fixed fixture.'}
 Add-Type -AssemblyName System.Windows.Forms
 Add-Type -TypeDefinition @'
 using System;
@@ -181,6 +181,50 @@ function TrafficListFixture {
  })
  AisObservation 'AIS targets' 0 '10'
 }
+function OnlineObservation([string]$Page,[bool]$Enabled,[int]$Connection,[string]$Tick) {
+ $logs=Join-Path $root 'opennav-logs';$null=New-Item -ItemType Directory -Path $logs -Force
+ $data=@{build_commit=('a'*40);build_purpose='INSTALLED PRODUCT';data_mode='OPENCPN selected navigation';ui_page=$Page;
+   runtime=@{online_ais=@{enabled=$Enabled;connection_state=$Connection};ui_update=@{ticks=$Tick};display=@{route_creation_active=$false}}}
+ [IO.File]::WriteAllText((Join-Path $logs 'opennav-diagnostics.json'),($data|ConvertTo-Json -Depth 6 -Compress))
+}
+function OnlineAisFixture {
+ $settings=$record.action -ceq 'OnlineAISSettings'
+ Surface 'SKAGER vessel traffic' 390 100 398 460 @($(if($settings){'Close'}else{'Back'})) -Heading -Unowned:($record.case -ceq 'prototype-online-wrong-owner')
+ $surface=$script:surfaces[$script:surfaces.Count-1];$script:onlineHeading=$surface.Controls[0]
+ $script:onlineBody=New-Object Windows.Forms.Panel;$script:onlineBody.AccessibleName='AIS scroll body'
+ $script:onlineBody.Location=New-Object Drawing.Point(0,89);$script:onlineBody.Size=New-Object Drawing.Size(398,371)
+ $surface.Controls.Add($script:onlineBody)
+ $label=switch($record.action){'OnlineAISSettings'{'Online AIS settings'};'OnlineAISEnable'{'Enabled'};'OnlineAISDisable'{'Off'}}
+ $button=Button $script:onlineBody $label 22 20 300;$button.AccessibleName=$label
+ if($record.case -ceq 'prototype-online-duplicate'){$copy=Button $script:onlineBody $label 22 100 300;$copy.AccessibleName=$label}
+ if($record.case -ceq 'prototype-online-clipped'){$button.Top=350}
+ if($record.case -ceq 'prototype-online-covered') {
+  $cover=New-Object Windows.Forms.Panel;$cover.Location=$button.Location;$cover.Size=$button.Size
+  $script:onlineBody.Controls.Add($cover);$cover.BringToFront()
+ }
+ if($record.case -ceq 'prototype-online-wrong-name'){$button.AccessibleName='Unreviewed control'}
+ if($record.case -ceq 'prototype-online-wrong-role') {
+  $button.Hide();$decoy=New-Object Windows.Forms.Label;$decoy.Text=$label;$decoy.AccessibleName=$label
+  $decoy.Location=$button.Location;$decoy.Size=$button.Size;$script:onlineBody.Controls.Add($decoy)
+ }
+ if($record.case -ceq 'prototype-online-missing'){$button.Hide()}
+ $button.Add_MouseDown({param($sender,$event)
+  if($record.case -ceq 'prototype-online-replace-down') {
+   $sender.Hide();$copy=Button $script:onlineBody 'Enabled' 22 20 300;$copy.AccessibleName='Enabled'
+   $copy.Add_Click({SaveClick 'UNSAFE_REPLACEMENT'})
+  }
+ })
+ $button.Add_Click({param($sender,$event)
+  SaveClick $sender.Text
+  $script:onlineHeading.Controls[0].Text='Back'
+  if($record.action -ceq 'OnlineAISSettings'){$sender.Hide();$null=Button $script:onlineBody 'Enabled' 22 20 300}
+  $enabled=$record.action -ceq 'OnlineAISEnable'
+  if($record.case -ceq 'prototype-online-wrong-observation'){$enabled=$false}
+  OnlineObservation 'Online AIS settings' $enabled $(if($enabled){2}else{0}) $(if($record.case -ceq 'prototype-online-old-tick'){'10'}else{'11'})
+ })
+ $enabled=$record.action -ceq 'OnlineAISDisable'
+ OnlineObservation $(if($record.case -ceq 'prototype-online-wrong-page'){'AIS target'}elseif($settings){'AIS targets'}else{'Online AIS settings'}) $enabled $(if($enabled){4}else{0}) '10'
+}
 $started=[datetime]::UtcNow;$timer=New-Object Windows.Forms.Timer;$timer.Interval=100
 $timer.Add_Tick({
  if($record.case -ceq 'prototype-moved' -and (Test-Path -LiteralPath (Join-Path $root 'mutate')) -and -not (Test-Path -LiteralPath (Join-Path $root 'mutated'))) {
@@ -211,6 +255,7 @@ $form.Add_Shown({
   if($record.case -ceq 'prototype-passage'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading}
   if($record.case -cin @('prototype-traffic','prototype-back')){Surface 'SKAGER vessel traffic' 390 100 398 460 @($(if($record.case -ceq 'prototype-back'){'Back'}else{'Close'})) -Heading}
   if($record.case.StartsWith('prototype-ais-',[StringComparison]::Ordinal)){TrafficListFixture}
+  if($record.case.StartsWith('prototype-online-',[StringComparison]::Ordinal)){OnlineAisFixture}
   if($record.case -ceq 'prototype-unknown'){Surface 'Unknown plugin popup' 390 100 240 200 @('Close')}
   if($record.case -ceq 'prototype-wrong-owner'){Surface 'SKAGER passage' 390 100 398 460 @('Close') -Heading -Unowned}
   if($record.case -ceq 'prototype-duplicate'){Surface 'SKAGER chart tools' 390 100 190 64 @('Measure','Waypoint','+',[string][char]0x2212)}

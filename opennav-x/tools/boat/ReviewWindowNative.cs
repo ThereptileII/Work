@@ -42,6 +42,10 @@ namespace OpenNavX {
       public bool Enabled,Visible,DirectChild;
       public bool Prototype;public int SelectedMmsi;public long SurfaceHandle;
     }
+    public sealed class OnlineAisButton {
+      public long Handle;public string Label,Name,Class;
+      public bool Owned,DirectChild,Enabled,FullyVisible,Uncovered;
+    }
     [ComImport,Guid("618736e0-3c3d-11cf-810c-00aa00389b71"),InterfaceType(ComInterfaceType.InterfaceIsIDispatch)]
     private interface AccessibleNameObject {
       [DispId(-5003)] string this[[In,MarshalAs(UnmanagedType.Struct)] object child] {
@@ -366,6 +370,8 @@ namespace OpenNavX {
         case "Menu":return new string[]{"Menu"};case "Navigation":return new string[]{"Navigation"};
         case "Routes":return new string[]{"Routes"};case "Waypoints":return new string[]{"Waypoints"};
         case "AIS":return new string[]{"AIS targets"};case "Instruments":return new string[]{"Vessel instruments"};
+        case "OnlineAISSettings":return new string[]{"Online AIS settings"};
+        case "OnlineAISEnable":return new string[]{"Enabled"};case "OnlineAISDisable":return new string[]{"Off"};
         case "Advice":return new string[]{"SmartNav advisories"};case "PilotView":return new string[]{"Autopilot"};
         case "Anchor":return new string[]{"Anchor watch"};case "Settings":return new string[]{"Settings"};
         case "Sources":return new string[]{"SENSORS"};case "Route":return new string[]{"Route"};
@@ -383,6 +389,7 @@ namespace OpenNavX {
     public static string ActionContext(string action) {
       ActionLabels(action); // Unknown actions have no context, even without a window.
       switch(action) {
+        case "OnlineAISSettings":case "OnlineAISEnable":case "OnlineAISDisable":return "SKAGER vessel traffic";
         case "ChartContextInfo":return "SKAGER chart context";
         case "Layers":return "SKAGER chart layers";case "RevealChartPalettePreference":case "ChartPalettePreferences":return "Chart presentation";
         case "Display":return "SKAGER product page: Settings";
@@ -460,6 +467,57 @@ namespace OpenNavX {
       if(!Contains(info.Bounds,bounds))throw new InvalidOperationException("Palette navigation lies outside frame.");
       for(var parent=GetParent(button);parent!=IntPtr.Zero && parent!=frame;parent=GetParent(parent))if(!Contains(Bounds(parent),bounds))throw new InvalidOperationException("Expose the clipped palette navigation control normally before review.");
       return button;
+    }
+    public static OnlineAisButton ChooseOnlineAisButton(string action,string signature,string buttonClass,OnlineAisButton[] rows) {
+      if(ActionContext(action)!="SKAGER vessel traffic" || signature!=(action=="OnlineAISSettings"?"/Close":"/Back") ||
+         String.IsNullOrEmpty(buttonClass) || buttonClass=="Static" || rows==null || rows.Length>4096)
+        throw new InvalidOperationException("Exact Online AIS drawer, custom button role and bounded controls required.");
+      string label=ActionLabels(action)[0];OnlineAisButton found=null;var handles=new HashSet<long>();
+      foreach(var row in rows) {
+        if(row==null || row.Handle<=0 || !handles.Add(row.Handle))throw new InvalidOperationException("Ambiguous Online AIS control identity.");
+        if(row.Label!=label)continue;
+        if(found!=null || row.Name!=label || row.Class!=buttonClass || !row.Owned || !row.DirectChild ||
+           !row.Enabled || !row.FullyVisible || !row.Uncovered)
+          throw new InvalidOperationException("Online AIS action must be one owned, direct, enabled, fully visible custom button.");
+        found=row;
+      }
+      if(found==null)throw new InvalidOperationException("Fixed Online AIS action missing; no input sent.");
+      return found;
+    }
+    private static IntPtr OnlineAisSurface(IntPtr frame,int pid,string signature) {
+      var root=AssertFrame(frame,pid);AssertCapture(frame,pid,root);IntPtr surface=IntPtr.Zero;
+      if(root.Shell!="prototype" || VisiblePageLabels(frame).Length!=0)throw new InvalidOperationException("Existing installed traffic drawer required.");
+      foreach(var s in root.Surfaces)if(s.Title=="SKAGER vessel traffic") {
+        if(surface!=IntPtr.Zero || s.Signature!=signature)throw new InvalidOperationException("Exact Online AIS drawer heading required.");
+        surface=new IntPtr(s.Handle);
+      }
+      if(surface==IntPtr.Zero || GetWindow(surface,4)!=frame || Owner(surface)!=(uint)pid)
+        throw new InvalidOperationException("Owned Online AIS drawer missing.");
+      return surface;
+    }
+    public static void AssertOnlineAisSettings(IntPtr frame,int pid) {
+      var surface=OnlineAisSurface(frame,pid,"/Back");NamedDirectChild(surface,pid,"AIS scroll body");
+    }
+    private static IntPtr ResolveOnlineAisButton(IntPtr frame,int pid,string action) {
+      if(ActionContext(action)!="SKAGER vessel traffic")throw new InvalidOperationException("Unknown Online AIS action.");
+      string heading=action=="OnlineAISSettings"?"Close":"Back",signature="/"+heading,label=ActionLabels(action)[0];
+      var surface=OnlineAisSurface(frame,pid,signature);var body=NamedDirectChild(surface,pid,"AIS scroll body");
+      string buttonClass=null;
+      foreach(var h in Children(surface))if(Text(h)==heading && Class(h)!="Static" && Owner(h)==(uint)pid &&
+          GetParent(GetParent(h))==surface) {
+        if(buttonClass!=null || !IsWindowEnabled(h))throw new InvalidOperationException("Unique traffic heading button required.");
+        buttonClass=Class(h); // XNavButton also owns the fixed Close/Back control.
+      }
+      var rows=new List<OnlineAisButton>();
+      foreach(var h in Children(body))if(Text(h)==label) {
+        if(rows.Count>=4096)throw new InvalidOperationException("Online AIS control inventory exceeded.");
+        var r=Bounds(h);var hit=WindowFromPoint(new Point{X=(r.Left+r.Right)/2,Y=(r.Top+r.Bottom)/2});
+        rows.Add(new OnlineAisButton{Handle=h.ToInt64(),Label=label,Name=AccessibleName(h),Class=Class(h),
+          Owned=Owner(h)==(uint)pid,DirectChild=GetParent(h)==body,Enabled=IsWindowEnabled(h),
+          FullyVisible=Contains(Bounds(frame),r) && Contains(Bounds(surface),r) && Contains(Bounds(body),r),
+          Uncovered=hit==h || IsChild(h,hit)});
+      }
+      return new IntPtr(ChooseOnlineAisButton(action,signature,buttonClass,rows.ToArray()).Handle);
     }
     [StructLayout(LayoutKind.Sequential)] private struct ScrollInfo {public uint Size,Mask;public int Min,Max;public uint Page;public int Pos,TrackPos;}
     [DllImport("user32.dll")] private static extern bool GetScrollInfo(IntPtr h,int bar,ref ScrollInfo info);
@@ -584,6 +642,10 @@ namespace OpenNavX {
       return new ChartObservation{SurfaceHandle=surface.ToInt64(),Rows=rows.ToArray()};
     }
     public static void Click(IntPtr frame,int pid,string action) {
+      if(action=="OnlineAISSettings" || action=="OnlineAISEnable" || action=="OnlineAISDisable") {
+        var target=ResolveOnlineAisButton(frame,pid,action);
+        ClickReviewedButton(frame,pid,target,delegate{return ResolveOnlineAisButton(frame,pid,action);},true);return;
+      }
       if(action=="ChartInfoRead"){ReadChartInformation(frame,pid);return;}
       if(action=="ChartContextInfo") {
         var target=ResolveChartInfoButton(frame,pid);

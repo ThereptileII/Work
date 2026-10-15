@@ -1,7 +1,46 @@
 # Read-only vessel/UI review. No application launch or equipment commands.
 . (Join-Path $PSScriptRoot 'Common.ps1')
 function Get-WindowReviewActions {
-  return @('ChartContextInfo','ChartInfoRead','Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
+  return @('ChartContextInfo','ChartInfoRead','Capture','Resize1280x800','Menu','Navigation','Routes','Waypoints','AIS','OnlineAISSettings','OnlineAISEnable','OnlineAISDisable','Instruments','Advice','PilotView','Anchor','Settings','Sources','Display','ToggleFullscreen','ToggleOrientation','Route','Energy','Diagnostics','System','Alerts','Escape','CyclePalette','ZoomIn','ZoomOut','Center','PanRight','PageUp','PageDown','SelectFirstVisibleWaypoint','SelectFirstVisibleAis','Layers','ChartPalettePreferences','RevealChartPalettePreference')
+}
+function Convert-WindowReviewOnlineAis($Data,[string]$Commit,[datetime]$Written,[datetime]$Now,[string]$Page) {
+  if($Page -cnotin @('AIS targets','Online AIS settings') -or $Commit -cnotmatch '^[a-f0-9]{40}$' -or
+     $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
+     $Data.build_purpose -cne 'INSTALLED PRODUCT' -or $Data.data_mode -cne 'OPENCPN selected navigation' -or
+     $Data.ui_page -cne $Page -or $Data.runtime.display.route_creation_active -isnot [bool] -or
+     $Data.runtime.display.route_creation_active -ne $false){throw 'Fresh exact installed Online AIS page observation required.'}
+  [UInt64]$tick=0
+  if([string]$Data.runtime.ui_update.ticks -cnotmatch '^[0-9]{1,20}$' -or
+     -not [UInt64]::TryParse([string]$Data.runtime.ui_update.ticks,[ref]$tick)){throw 'Exact Online AIS observation tick required.'}
+  $health=$Data.runtime.online_ais
+  if($health.enabled -isnot [bool] -or ($health.connection_state -isnot [int] -and $health.connection_state -isnot [long]) -or
+     $health.connection_state -lt 0 -or $health.connection_state -gt 6){throw 'Exact Online AIS preference and connection observation required.'}
+  return [pscustomobject]@{tick=$tick;page=$Page;enabled=$health.enabled;connectionState=[int]$health.connection_state}
+}
+function Invoke-WindowReviewOnlineAis([IntPtr]$Frame,[int]$ProcessId,[string]$Action,[string]$Workspace,[string]$Commit) {
+  if($Action -cnotin @('OnlineAISSettings','OnlineAISEnable','OnlineAISDisable')){throw 'Unsupported Online AIS action.'}
+  $config=Get-Target $Workspace
+  $path=Assert-LocalPath (Join-Path (Join-Path $config.profileDirectory 'opennav-logs') 'opennav-diagnostics.json')
+  $page=if($Action -ceq 'OnlineAISSettings'){'AIS targets'}else{'Online AIS settings'}
+  $before=Convert-WindowReviewOnlineAis (Read-Record $path) $Commit (Get-Item -LiteralPath $path).LastWriteTimeUtc ([datetime]::UtcNow) $page
+  [OpenNavX.ReviewWindowNative]::Click($Frame,$ProcessId,$Action)
+  # Observe a new product publication after the sole click. Enabled is the
+  # preference, not proof of service connection; Off is not a network outage.
+  $deadline=[datetime]::UtcNow.AddSeconds(3)
+  do {
+    [OpenNavX.ReviewWindowNative]::AssertOnlineAisSettings($Frame,$ProcessId)
+    try {
+      $after=Convert-WindowReviewOnlineAis (Read-Record $path) $Commit (Get-Item -LiteralPath $path).LastWriteTimeUtc ([datetime]::UtcNow) 'Online AIS settings'
+      if($after.tick -gt $before.tick -and
+         ($Action -ceq 'OnlineAISSettings' -or
+          ($Action -ceq 'OnlineAISEnable' -and $after.enabled) -or
+          ($Action -ceq 'OnlineAISDisable' -and -not $after.enabled -and $after.connectionState -eq 0))) {
+        return [pscustomobject]@{before=$before;after=$after;scope='Observed settings/preference only; no service, outage or chart responsiveness acceptance.'}
+      }
+    } catch {if([datetime]::UtcNow -ge $deadline){throw}}
+    Start-Sleep -Milliseconds 100
+  } while([datetime]::UtcNow -lt $deadline)
+  throw 'Online AIS action has no fresh matching product observation; no input retry.'
 }
 function Convert-WindowReviewChart($Data,[string]$Commit,[datetime]$Written,[datetime]$Now) {
   if($Commit -cnotmatch '^[a-f0-9]{40}$' -or $Written -gt $Now -or ($Now-$Written).TotalSeconds -gt 5 -or $Data.build_commit -cne $Commit -or
@@ -163,13 +202,14 @@ function Invoke-WindowReview($Job) {
       $null=Read-WindowReview $Job;$process.Refresh()
       Assert-WindowReviewProcess $process $Job $review.launch ([Diagnostics.Process]::GetCurrentProcess().SessionId)
       if($process.MainWindowHandle -ne $frame){throw 'Reviewed main window changed.'}
-      $selection=$null;$chartInformation=$null
+      $selection=$null;$chartInformation=$null;$onlineAis=$null
       switch($Job.reviewAction) {
         'Capture' {}
         'ChartInfoRead' {$chartInformation=[OpenNavX.ReviewWindowNative]::ReadChartInformation($frame,$process.Id)}
         'Resize1280x800' {$resize=[OpenNavX.ReviewWindowNative]::Resize1280x800($frame,$process.Id)}
         'Escape' {[OpenNavX.ReviewWindowNative]::Escape($frame,$process.Id)}
         'PanRight' {Invoke-WindowReviewPan $frame $process.Id $Job.workspace $Job.buildCommit}
+        {$_ -cin @('OnlineAISSettings','OnlineAISEnable','OnlineAISDisable')} {$onlineAis=Invoke-WindowReviewOnlineAis $frame $process.Id $Job.reviewAction $Job.workspace $Job.buildCommit}
         {$_ -cin @('SelectFirstVisibleWaypoint','SelectFirstVisibleAis')} {$selection=Invoke-WindowReviewSelection $frame $process.Id $Job.reviewAction $Job.workspace $Job.buildCommit}
         default {[OpenNavX.ReviewWindowNative]::Click($frame,$process.Id,$Job.reviewAction)}
       }
@@ -188,7 +228,7 @@ function Invoke-WindowReview($Job) {
       return @{status='passed';action='ReviewWindow';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;launchResultSha256=$Job.launchResultSha256;
         reviewHelperSha256=$Job.reviewHelperSha256;nativeHelperSha256=$Job.nativeHelperSha256;
-        before=$before;after=$after;resize=$resize;nativeWindow=$after.window;selection=$selection;chartInformation=$chartInformation;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
+        before=$before;after=$after;resize=$resize;nativeWindow=$after.window;selection=$selection;chartInformation=$chartInformation;onlineAis=$onlineAis;pages=@([OpenNavX.ReviewWindowNative]::VisiblePageLabels($frame));
         inputMethod='Targeted reviewed HWND mouse messages, focused-HWND Escape or exact-canvas Right arrow; no global input';readOnly=$true;actionsSent=$(if($Job.reviewAction -cin @('Capture','ChartInfoRead')){0}else{1});review='Private native pixels require human per-step visual review; no feature acceptance inferred.'}
     } finally {$null=[OpenNavX.ReviewWindowNative]::SetThreadDpiAwarenessContext($oldDpi)}
   } finally {$process.Dispose()}

@@ -49,6 +49,11 @@ Pass 'New native Preferences cases are admitted by the disposable fixture catalo
  foreach($name in @('prototype-preferences','prototype-two-sheets','prototype-anchor','prototype-pilot','prototype-alerts')) {
   if($names -cnotcontains $name){throw ('Native fixture refuses its new test case: '+$name)}
  }
+ foreach($name in @('prototype-online-normal','prototype-online-wrong-page','prototype-online-wrong-owner','prototype-online-duplicate',
+   'prototype-online-clipped','prototype-online-covered','prototype-online-missing','prototype-online-wrong-name',
+   'prototype-online-wrong-role','prototype-online-replace-down','prototype-online-old-tick','prototype-online-wrong-observation')) {
+  if($names -cnotcontains $name){throw ('Native fixture refuses its Online AIS test case: '+$name)}
+ }
 }
 $rail=@('Chart','Passage','Traffic','Energy','Instruments','Anchor','Radar','Settings')
 Pass 'Prototype shell requires all eight exact sibling controls' {
@@ -144,7 +149,7 @@ foreach($field in @('Id','Path','SessionId','MainWindowHandle','HasExited','Star
 }
 Pass 'All pointer labels resolve to actual current source controls' {
   $root=[IO.Path]::GetFullPath((Join-Path $PSScriptRoot '..\..').Replace('\',[IO.Path]::DirectorySeparatorChar))
-  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','ContextCard.cpp','Theme.h')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
+  $source='';foreach($name in @('Shell.cpp','ProductPanel.cpp','ProductSettings.cpp','ChartPresentationDrawer.cpp','ContextCard.cpp','Theme.h','AisDrawer.cpp')){$source+=[IO.File]::ReadAllText((Join-Path $root ('src/ui/'+$name)))}
   $source+=[IO.File]::ReadAllText((Join-Path $root 'src/integration/OpenCPNIntegration.cpp'))
   foreach($action in Get-WindowReviewActions | Where-Object {$_ -cnotin @('Capture','ChartInfoRead','Resize1280x800','Escape','PanRight','SelectFirstVisibleWaypoint','SelectFirstVisibleAis')}) {
     foreach($label in [OpenNavX.ReviewWindowNative]::ActionLabels($action)) {
@@ -336,5 +341,71 @@ Refuse 'Text-only observer cannot resolve a pointer label' {[OpenNavX.ReviewWind
 Pass 'Pure chart result explicitly leaves renderer-symbol proof unresolved' {
  $result=New-Object OpenNavX.ReviewWindowNative+ChartObservation
  if(-not $result.IncludesHiddenDetails -or $result.ResolvedRendererSymbolObserved){throw 'Chart descriptions claim resolved renderer evidence.'}
+}
+function OnlineButton([string]$Label) {
+ $row=New-Object OpenNavX.ReviewWindowNative+OnlineAisButton
+ $row.Handle=1;$row.Label=$Label;$row.Name=$Label;$row.Class='FixedCustomControl'
+ $row.Owned=$true;$row.DirectChild=$true;$row.Enabled=$true;$row.FullyVisible=$true;$row.Uncovered=$true
+ return $row
+}
+foreach($spec in @(@('OnlineAISSettings','Online AIS settings','/Close'),@('OnlineAISEnable','Enabled','/Back'),@('OnlineAISDisable','Off','/Back'))) {
+ Pass ('One fixed owned Online AIS button '+$spec[0]) {
+  $chosen=[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($spec[0],$spec[2],'FixedCustomControl',@((OnlineButton $spec[1])))
+  if($chosen.Handle -ne 1 -or [OpenNavX.ReviewWindowNative]::ActionContext($spec[0]) -cne 'SKAGER vessel traffic'){throw 'Wrong fixed AIS target.'}
+ }
+ foreach($field in @('Owned','DirectChild','Enabled','FullyVisible','Uncovered')) {
+  Refuse ('Online AIS refuses '+$field+' / '+$spec[0]) {
+   $row=OnlineButton $spec[1];$row.$field=$false
+   [OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($spec[0],$spec[2],'FixedCustomControl',@($row))
+  }
+ }
+ foreach($field in @('Name','Class','Label')) {
+  Refuse ('Online AIS refuses wrong '+$field+' / '+$spec[0]) {
+   $row=OnlineButton $spec[1];$row.$field='Other control'
+   [OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($spec[0],$spec[2],'FixedCustomControl',@($row))
+  }
+ }
+ Refuse ('Online AIS refuses duplicate action '+$spec[0]) {
+  $other=OnlineButton $spec[1];$other.Handle=2
+  [OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($spec[0],$spec[2],'FixedCustomControl',@((OnlineButton $spec[1]),$other))
+ }
+ foreach($signature in @('/Other','/Close|Back','')) {
+  Refuse ('Online AIS refuses wrong drawer '+$spec[0]) {[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($spec[0],$signature,'FixedCustomControl',@((OnlineButton $spec[1])))}
+ }
+}
+foreach($action in @('Enabled','Off','OnlineAisEnable','Set AISStream key','Remove key','Apply radius','AUTO','PilotView')) {
+ Refuse ('No arbitrary Online AIS action '+$action) {[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton($action,'/Back','FixedCustomControl',@((OnlineButton 'Enabled')))}
+}
+foreach($kind in @('Static','',$null)) {
+ Refuse 'Online AIS requires an observed custom heading button class' {[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton('OnlineAISEnable','/Back',$kind,@((OnlineButton 'Enabled')))}
+}
+foreach($rows in @(@(),@($null),@((OnlineButton 'Enabled'),(OnlineButton 'Off')))) {
+ Refuse 'Online AIS missing or duplicate native identities refuse' {[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton('OnlineAISEnable','/Back','FixedCustomControl',$rows)}
+}
+Refuse 'Online AIS control inventory remains bounded' {[OpenNavX.ReviewWindowNative]::ChooseOnlineAisButton('OnlineAISEnable','/Back','FixedCustomControl',(New-Object 'OpenNavX.ReviewWindowNative+OnlineAisButton[]' 4097))}
+$onlineData=CopyValue $aisData;$onlineData.ui_page='Online AIS settings'
+$onlineData.runtime | Add-Member online_ais ([pscustomobject]@{enabled=$false;connection_state=0})
+Pass 'Fresh installed Online AIS preference remains distinct from connection success' {
+ $value=CopyValue $onlineData;$value.runtime.online_ais.enabled=$true;$value.runtime.online_ais.connection_state=1
+ $read=Convert-WindowReviewOnlineAis $value ('a'*40) $now $now 'Online AIS settings'
+ if(-not $read.enabled -or $read.connectionState -ne 1 -or $read.tick -ne 10){throw 'Credential-missing preference was incorrectly treated as connected.'}
+}
+foreach($field in @('build_commit','build_purpose','data_mode','ui_page')) {
+ Refuse ('Online AIS observation refuses mismatched '+$field) {$value=CopyValue $onlineData;$value.$field='wrong';Convert-WindowReviewOnlineAis $value ('a'*40) $now $now 'Online AIS settings'}
+}
+foreach($written in @($now.AddSeconds(-6),$now.AddSeconds(1))) {
+ Refuse 'Online AIS refuses stale/future observation' {Convert-WindowReviewOnlineAis $onlineData ('a'*40) $written $now 'Online AIS settings'}
+}
+foreach($value in @('false',0,$null)) {
+ Refuse 'Online AIS preference must be an exact boolean' {$data=CopyValue $onlineData;$data.runtime.online_ais.enabled=$value;Convert-WindowReviewOnlineAis $data ('a'*40) $now $now 'Online AIS settings'}
+}
+foreach($value in @(-1,7,'0',0.5,$null)) {
+ Refuse 'Online AIS connection observation must be an exact current enum' {$data=CopyValue $onlineData;$data.runtime.online_ais.connection_state=$value;Convert-WindowReviewOnlineAis $data ('a'*40) $now $now 'Online AIS settings'}
+}
+foreach($value in @('-1','18446744073709551616','',$null)) {
+ Refuse 'Online AIS publication tick must be exact and bounded' {$data=CopyValue $onlineData;$data.runtime.ui_update.ticks=$value;Convert-WindowReviewOnlineAis $data ('a'*40) $now $now 'Online AIS settings'}
+}
+foreach($value in @($true,'false',$null)) {
+ Refuse 'Online AIS refuses route creation or an ambiguous state' {$data=CopyValue $onlineData;$data.runtime.display.route_creation_active=$value;Convert-WindowReviewOnlineAis $data ('a'*40) $now $now 'Online AIS settings'}
 }
 [pscustomobject]@{status='passed';count=$checks.Count;checks=@($checks);nativeInteropCompiled=$true;nativeActionsExecuted=$false;boatAccess=$false;hardwareCommands=$false} | ConvertTo-Json -Depth 5

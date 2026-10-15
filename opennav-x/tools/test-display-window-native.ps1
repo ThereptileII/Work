@@ -1,6 +1,6 @@
 # Disposable native display controls only. Never loads a navigation application.
 [CmdletBinding()]
-param([Parameter(Mandatory=$true)][string]$Evidence,[switch]$IsolatedLocal)
+param([Parameter(Mandatory=$true)][string]$Evidence,[switch]$IsolatedLocal,[switch]$OnlineAisOnly)
 Set-StrictMode -Version Latest;$ErrorActionPreference='Stop'
 if([Environment]::OSVersion.Platform -ne 'Win32NT' -or ($env:GITHUB_ACTIONS -cne 'true' -and -not $IsolatedLocal)){throw 'Native CI or explicit disposable local desktop required.'}
 if(@(Get-Process -Name opencpn -ErrorAction SilentlyContinue).Count){throw 'Display fixtures refuse coexistence with any navigation application.'}
@@ -47,7 +47,17 @@ try {
   @('SelectFirstVisibleAis','prototype-ais-replace-down',''),@('SelectFirstVisibleAis','prototype-ais-move-down',''),
   @('SelectFirstVisibleAis','prototype-ais-no-identity','AIS_FIRST_VISIBLE_ROW','refuse-after-selection'),
   @('SelectFirstVisibleAis','prototype-ais-old-tick','AIS_FIRST_VISIBLE_ROW','refuse-after-selection'),
+  @('OnlineAISSettings','prototype-online-normal','Online AIS settings'),
+  @('OnlineAISEnable','prototype-online-normal','Enabled'),@('OnlineAISDisable','prototype-online-normal','Off'),
+  @('OnlineAISEnable','prototype-online-wrong-page',''),@('OnlineAISEnable','prototype-online-wrong-owner',''),
+  @('OnlineAISEnable','prototype-online-duplicate',''),@('OnlineAISEnable','prototype-online-clipped',''),
+  @('OnlineAISEnable','prototype-online-covered',''),@('OnlineAISEnable','prototype-online-missing',''),
+  @('OnlineAISEnable','prototype-online-wrong-name',''),@('OnlineAISEnable','prototype-online-wrong-role',''),
+  @('OnlineAISEnable','prototype-online-replace-down',''),
+  @('OnlineAISEnable','prototype-online-old-tick','Enabled','refuse-after-selection'),
+  @('OnlineAISEnable','prototype-online-wrong-observation','Enabled','refuse-after-selection'),
   @('CyclePalette','prototype-normal','Status Day'))) {
+  if($OnlineAisOnly -and $spec[0] -cnotin @('OnlineAISSettings','OnlineAISEnable','OnlineAISDisable')){continue}
   $directory=Join-Path ([IO.Path]::GetTempPath()) ('opennav-display-window-'+[guid]::NewGuid().ToString('N'));$null=New-Item -ItemType Directory -Path $directory
   $fixtureCase=if($spec[1] -cin @('missing-diagnostics','stale-diagnostics','wrong-commit')){'normal'}else{$spec[1]}
   [IO.File]::WriteAllText((Join-Path $directory 'fixture.json'),(@{owner='OpenNavX.NativeDisplayWindow.Fixture.1';action=$spec[0];case=$fixtureCase}|ConvertTo-Json -Compress))
@@ -97,6 +107,10 @@ try {
       if($spec[1] -ceq 'stale-diagnostics'){[IO.File]::SetLastWriteTimeUtc($diagnostic,[datetime]::UtcNow.AddSeconds(-10))}
      }
      Invoke-WindowReviewPan ([IntPtr]$ready.handle) $process.Id $directory $commit
+    } elseif($spec[0] -cin @('OnlineAISSettings','OnlineAISEnable','OnlineAISDisable')) {
+     $script:displayProfile=$directory
+     $observed=Invoke-WindowReviewOnlineAis ([IntPtr]$ready.handle) $process.Id $spec[0] $directory ('a'*40)
+     if($observed.after.tick -le $observed.before.tick -or $observed.after.page -cne 'Online AIS settings'){throw 'Online AIS action lacks a fresh observed page.'}
     } elseif($spec[0] -ceq 'SelectFirstVisibleAis') {
      $script:displayProfile=$directory
      $selection=Invoke-WindowReviewSelection ([IntPtr]$ready.handle) $process.Id $spec[0] $directory ('a'*40)
@@ -108,7 +122,7 @@ try {
    $clickPath=Join-Path $directory 'clicks.txt';[string[]]$clicks=@()
    if(Test-Path -LiteralPath $clickPath){$clicks=@(Get-Content -LiteralPath $clickPath)}
    if($spec.Count -eq 4 -and $spec[3] -ceq 'refuse-after-selection') {
-    if(-not $refused -or ($clicks -join ',') -cne $spec[2]){throw 'Unconfirmed AIS identity must refuse after exactly one inert row selection.'}
+    if(-not $refused -or ($clicks -join ',') -cne $spec[2]){throw 'Unconfirmed AIS observation must refuse after exactly one inert input.'}
    } elseif($spec[2] -ceq 'CAPTURE') {
     if($refused -or @($clicks).Count -or $before.Shell -cne 'prototype' -or $before.Surfaces.Count -lt 3){throw ('Native prototype capture failed: '+$spec[1]+': '+$reason)}
    } elseif($spec[2] -ceq 'RESIZED'){

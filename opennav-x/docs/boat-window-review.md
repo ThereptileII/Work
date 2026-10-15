@@ -39,6 +39,8 @@ Each invocation permits exactly one of these actions:
 | `Escape` | One Escape press/release to the same process's focused child HWND |
 | `SelectFirstVisibleWaypoint` | First enabled, fully visible waypoint row on the Waypoints list; opens its existing detail page |
 | `SelectFirstVisibleAis` | First enabled, fully visible target row on the AIS targets list; opens its existing detail page |
+| `OnlineAISSettings` | `Online AIS settings` in the owned traffic drawer's list view |
+| `OnlineAISEnable`, `OnlineAISDisable` | `Enabled` or `Off` in that drawer's Online AIS settings view |
 
 The implementation selects fixed captions reviewed in `Shell.cpp` and
 `ProductPanel.cpp`; there is no arbitrary caption, coordinate, key, command ID,
@@ -47,7 +49,7 @@ enabled, fully visible custom control HWND after a native hit-test. Escape is
 also HWND-targeted. **No global `SendInput` or keyboard modifiers are used**:
 focus theft cannot redirect a review chord into another application. PilotView
 only opens the panel; STBY, AUTO, heading buttons, control enablement, route
-activation/editing and configuration writers cannot be requested.
+activation/editing and arbitrary configuration writers cannot be requested.
 
 The frame must be foreground, enabled, visible and unminimized. Unknown modal
 dialogs, ambiguous controls, clipped/offscreen buttons, missing controls or
@@ -56,6 +58,52 @@ scroll automatically to locate a control, dismiss native dialogs, retry clicks,
 force-kill applications or restart Windows. Page-changing preferences, palette
 and chart viewport may be saved normally by OpenCPN; “read-only” here means no
 vessel/equipment command or navigation-object mutation.
+
+## Bounded Online AIS preference check (SCRUM-301)
+
+After `AIS` opens the current Traffic list, invoke `OnlineAISSettings` separately
+and inspect its screenshot before `OnlineAISEnable` or `OnlineAISDisable`.
+These three fixed actions require the existing owned `SKAGER vessel traffic`
+drawer, its direct `AIS scroll body`, the source's Close/Back heading and one
+direct custom button with its exact caption and accessibility name. Clipped,
+covered, disabled, missing, foreign, renamed and duplicate targets refuse. There
+is no automatic scrolling, key entry/removal, radius adjustment or input retry.
+
+Each action observes fresh exact-build installed diagnostics from the configured
+profile's `opennav-logs/opennav-diagnostics.json` before input and requires a newer
+publication showing the expected settings page afterward. Enable/disable also
+require the matching boolean preference; disable requires the Disabled provider
+state. A click without that observation reports failure, even if input was sent.
+The private result records the before/after ticks, page, preference and connection
+enum without credential contents. No existing launch/hash/PID/session guard is
+replaced. These settings persist normally; record and restore the original state.
+
+Use the same launch receipt/hash/product commit for separate `Escape`, `ZoomOut`,
+`ZoomIn` and `PanRight` invocations, examining each image and fresh UI ticks, then
+return to `AIS` and the settings view to disable or restore. A usable stored key
+must already exist for real service acquisition. Enabled alone does not establish
+Connected, target receipt or chart marks. Off is an explicit user disable, **not a
+network outage**; actual report silence/offline/reconnect acceptance remains open.
+Advancing Shell ticks and screenshots provide coarse responsiveness evidence,
+not input-to-frame latency or asynchronous chart-paint timing.
+
+The focused portable policy check is `tools/boat/test-review-window.ps1`. The
+harmless native fixture can be selected without a navigation application:
+
+```powershell
+powershell.exe -NoProfile -ExecutionPolicy Bypass -File tools/test-display-window-native.ps1 `
+  -Evidence <new-private-evidence-directory> -OnlineAisOnly
+```
+
+This requires disposable Windows CI, or `-IsolatedLocal` for an explicitly
+authorized disposable local desktop. It refuses coexistence with OpenCPN. The
+14 native cases cover all three actions, wrong page/owner, duplicate, clipped,
+covered, absent, wrong accessibility name/role, replacement during press, stale
+publication and mismatched post-click preference. They exercise only inert
+Windows Forms controls and synthetic diagnostic observations, never a provider,
+credential, physical output or installed product. The existing
+`skager-boat-ais-check.yml` runs these cases with the maintained native fixture;
+portable passes do not qualify Win32 input or actual installed AIS behavior.
 
 Resize uses a temporary per-thread DPI context and DWM visible-frame bounds.
 It never changes Windows resolution, DPI, taskbar, monitor configuration or
