@@ -64,6 +64,15 @@ original plugin destination must be absent, with its original directory present.
 Unknown, occupied, redirected, retired or missing paths refuse. No directory is
 recreated and no old plugin is placed in the current generation.
 
+Complete inspection inventories have a dedicated 16 MiB limit. The reader
+requires the owned private cold-run path, exact context/record kind and expected
+SHA-256; it hashes and parses the same bytes while excluding concurrent writers.
+Inspect checks its serialized size before publication and verifies readability
+before returning success. Other records retain the generic 4 MiB limit, and
+full backup/tree/ACL checks still run during Plan/Commit. A reader-only correction
+may reuse an unchanged pinned inspection and backup after those checks; it does
+not require another full backup or grant launch permission.
+
 The independent review uses the existing `OpenNavX.SessionPreservationReview.1`
 schema and exact per-key before/after decisions, with `parentPreparedSha256`,
 `inspectionSha256` and an additional exact `connectionDisposition`:

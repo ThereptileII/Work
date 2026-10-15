@@ -11,11 +11,16 @@ trust is selected; extended and design suites are off. The unchanged verified
 SDK is reused subject to the existing fresh native source/environment checks.
 Attempt 1 Windows integration refuses before compilation: hosted image
 `20261004.326.1` differs from the SDK's required `20261012.333.1`. Windows
-updater verification and native contract jobs pass; original Linux integration
-is still running. GitHub declines the coordinator's one failed-job-only rerun
-request while the overall run remains active; no new attempt or cancellation
-occurred. Preserve the original jobs and select only the failed Windows job
-and its dependents after terminal state. [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
+updater verification and native contract jobs pass. Original Linux integration
+job `116324544446` now passes, including both executions of the 154-case CTest
+suite; its original artifact is authenticated. GitHub declined the first
+failed-job-only rerun request while the overall run remained active, then
+accepted it after terminal state. Attempt 2 job `116340382423` reruns only
+Windows integration and its dependents on the same source, but receives the
+same older image and refuses at the same early gate. No third identical retry
+is selected. Successful original jobs are retained without repetition; exact
+eligible SDK producers for the allocated image are being checked.
+[Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
 No installed-product or boat acceptance follows yet.
 The earlier `977d37c7` package remains failed rather than being relabelled.
 
@@ -212,8 +217,13 @@ before reporting success. The generic 4 MiB limit and full tree/ACL checks
 remain unchanged. Independent source review finds no confirmed defects;
 165 focused portable checks pass, including complete large inventories, the
 exact size ceiling, invalid UTF-8, wrong record/context/hash and retained
-tree/ACL refusals. Native Windows validation remains pending; this helper-only
-change does not rebuild or relabel application candidate `b4c40e6e`.
+tree/ACL refusals. Exact helper run `38709570067` / `1f17fc80` passes Linux and
+the Windows prerequisite phase. The Windows job then reaches its 10-minute
+limit during the separate transaction phase; original prerequisite logs/artifact
+are retained and no transaction pass is claimed. An explicit transaction-only
+continuation will verify the unfinished phase, with unchanged helper inputs and
+separate evidence. This helper-only change does not rebuild or relabel
+application candidate `b4c40e6e`.
 [Actual size refusal](evidence/scrum17-cold-reconciliation-20261015/v2-actual-size-refusal.json).
 Boat checks confirm the same profile/active-marker hashes, no running OpenCPN
 and all three remote-access services running. The current profile and active
