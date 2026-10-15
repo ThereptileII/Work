@@ -88,14 +88,22 @@ data: chart ingestion, tessellation generation, whole private DLL ABI/lifecycle,
 software/OpenGL drawing and real-chart/boat acceptance remain open.
 [Authenticated actual-query evidence](evidence/scrum283-actual-area-query-20261015/native/README.md).
 
-Fresh native jobs again allocate image `20261004.326.1`, while the existing
-qualified dependency bundle is bound to `20261012.333.1`. One explicitly guarded
-older-image producer is running at `bfbfdca7` /
-[38735490052](https://github.com/ThereptileII/Work/actions/runs/38735490052).
-Its image guard passes; all 30 source/recipe inputs still match the existing
-producer. The exact-image selector proposal remains inactive until a second
-bundle is fully qualified. No image or provenance check is relaxed, and no new
-full application build is requested yet.
+The guarded older-image dependency producer at `bfbfdca7` /
+[38735490052](https://github.com/ThereptileII/Work/actions/runs/38735490052)
+now succeeds on `20261004.326.1`: OpenSSL 4,283, curl 1,569 and zlib 13 checks
+pass. Its original artifact `11976566007` is authenticated, with all 296 ZIP
+members and 295 payload files checked. All 30 bound inputs match the current
+candidate. The independently reviewed exact-image selector (`b8f0a012`) passes
+27 focused checks and now selects this SDK or the existing authenticated
+`20261012.333.1` SDK by the actual runner identity. Unknown images still refuse;
+no image, source, toolchain or artifact check is relaxed.
+
+All four maintained runtime DLL hashes differ between producers; inert byte
+comparison locates the differences in build metadata/date bytes. This supports
+unchanged source/code evidence but does not transfer an exact-byte native
+PluginHandler receipt. The next coherent candidate must retain its selected
+inputs and complete any required focused native runtime qualification. These
+SDK/helper results do not qualify the failed application candidate above.
 
 ## Previous candidate and preserved installer failure
 
