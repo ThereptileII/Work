@@ -394,7 +394,13 @@ try:
    xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
    child,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0
   entry['workspace_after_legacy_close']=workspace.saved(profile)
-  owned.discard(pid);count+=1;handle,pid=window('SKAGER / OpenCPN');owned.add(pid);ready();returned=data(enc)
+  owned.discard(pid);count+=1;handle,pid=window('SKAGER / OpenCPN');owned.add(pid);ready()
+  # Finalize Canvases precedes deferred Dashboard suppression. Diagnostics are
+  # throttled independently to one second, so an ENC-bearing snapshot can still
+  # describe the earlier visible pane. Require the first newer publication;
+  # never retry the workspace/rail assertions until they happen to pass.
+  returned=read_json_snapshot(profile/'opennav-diagnostics.json',timeout=8,after=data(enc))
+  assert enc(returned), 'Returned XNav publication lost the loaded ENC'
   entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in returned['runtime']['display']['rail_regions']), 'Mode cycle lost XNav rail'
   entry['captures'].append(capture('chart-'+rendering+'-06-returned'))
