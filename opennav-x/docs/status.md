@@ -17,9 +17,16 @@ suite; its original artifact is authenticated. GitHub declined the first
 failed-job-only rerun request while the overall run remained active, then
 accepted it after terminal state. Attempt 2 job `116340382423` reruns only
 Windows integration and its dependents on the same source, but receives the
-same older image and refuses at the same early gate. No third identical retry
-is selected. Successful original jobs are retained without repetition; exact
-eligible SDK producers for the allocated image are being checked.
+same older image and refuses at the same early gate. A dependency-only producer
+then receives the newer `20261012.333.1` image and refuses the explicitly
+requested older image before any build. Independent inspection confirms all 30
+bound SDK inputs still match the frozen candidate. On that new allocation
+evidence, a selected Windows-only attempt 3 is requested: job `116350139778`
+passes SDK authentication, image/Python/source preflight and native AIS/TLS,
+then begins application compilation. It remains pending; no SDK, source or
+environment check is relaxed. The proposed multi-image selector is retained on
+its separate branch, unused without a second qualified SDK.
+[Dependency allocation and unchanged SDK binding](evidence/scrum209-candidate-977d37c7-20261015/dependency-old-image-preflight-receipt.json).
 [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
 No installed-product or boat acceptance follows yet.
 The earlier `977d37c7` package remains failed rather than being relabelled.
@@ -220,10 +227,21 @@ exact size ceiling, invalid UTF-8, wrong record/context/hash and retained
 tree/ACL refusals. Exact helper run `38709570067` / `1f17fc80` passes Linux and
 the Windows prerequisite phase. The Windows job then reaches its 10-minute
 limit during the separate transaction phase; original prerequisite logs/artifact
-are retained and no transaction pass is claimed. An explicit transaction-only
-continuation will verify the unfinished phase, with unchanged helper inputs and
-separate evidence. This helper-only change does not rebuild or relabel
-application candidate `b4c40e6e`.
+are retained. Explicit transaction-only continuation
+[38711468946](https://github.com/ThereptileII/Work/actions/runs/38711468946)
+passes 27 transaction and 23 native profile-lock labels on `177f2203`.
+All 161 helper files match `1f17fc80`; the original run remains cancelled.
+[Composed helper evidence](evidence/scrum17-cold-reconciliation-20261015/inspection-bound-transaction-receipt.json)
+does not rebuild or relabel application candidate `b4c40e6e`.
+Exact `1f17fc80` tools are staged on the boat and read the original inspection
+successfully. Independent review of all 18 actual differences finds a distinct
+historical WMM resource reference in the original profile: it is neither the
+prepared-parent nor current generation. Read-only inspection verifies that
+third generation's ownership and all three source-pinned resource files;
+the current profile remains unchanged. The strict existing two-generation
+review refuses this case, so Plan/Commit has not started. An explicit historical
+reference proof is needed; substituting review values or rewriting the profile
+is not permitted.
 [Actual size refusal](evidence/scrum17-cold-reconciliation-20261015/v2-actual-size-refusal.json).
 Boat checks confirm the same profile/active-marker hashes, no running OpenCPN
 and all three remote-access services running. The current profile and active
