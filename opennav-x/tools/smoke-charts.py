@@ -22,6 +22,7 @@ import urllib.request
 import zipfile
 from diagnostic_snapshot import read_json_snapshot
 from smoke_startup import defer_boat_setup, native_setup_window
+from bundled_plugins import require_bundled_windows_plugins
 root=Path(__file__).resolve().parents[1];windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 url='https://www.charts.noaa.gov/ENCs/US5SEAFL.zip'
@@ -248,6 +249,7 @@ try:
   assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'
   if rendering=='software':assert not chart(d)['opengl_enabled']
   else:entry['gl_status']='enabled; inspect renderer log' if chart(d)['opengl_enabled'] else 'host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open'
+  if windows:require_bundled_windows_plugins(d)
   for name in ['Dashboard','WMM','GRIB']:
    assert any(p['name'].lower()==name.lower() and p['enabled'] and p['initialized'] for p in d['runtime']['plugins']),(name,d['runtime']['plugins'])
   entry['captures'].append(capture('chart-'+rendering+'-01-loaded'))

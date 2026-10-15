@@ -11,6 +11,7 @@ import uuid
 from diagnostic_snapshot import read_json_snapshot
 from smoke_startup import defer_boat_setup, native_setup_window
 from peer_boundary import PeerBoundary
+from bundled_plugins import require_bundled_windows_plugins
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
@@ -73,6 +74,7 @@ try:
     report.setdefault('first_start_setup',[]).append(defer_boat_setup(
         data,lambda target:ui.pointer_text(pid,'Later'),
         native_window=lambda:native_setup_window(ui,pid)))
+    require_bundled_windows_plugins(data())
     data(lambda d:d['runtime']['display']['light']=='Day')
     capture_chart('01-xnav-unavailable.png')
     # Exercise the visible palette control through actual foreground pointer
