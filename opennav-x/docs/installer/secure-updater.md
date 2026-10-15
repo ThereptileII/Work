@@ -72,6 +72,11 @@ Existing valid state is preserved, including newer authenticated metadata after
 a later refresh fails. Root rotation follows TUF; switching bootstrap trust or
 channel requires an independently authorized migration, not a server instruction.
 
+Only the exact sole `--initialize-trust` argument reports failure on standard
+error and exits nonzero without a message box. Ordinary startup and malformed
+arguments retain their user-facing failure dialog. This unattended entry does
+not launch the application or skip trust validation.
+
 Windows directories have a protected ACL and explicit current-user owner.
 Reparse paths, broadened permissions, unknown retained files and concurrent
 state writers are refused. SHA-256 binds the selected state generation and each
@@ -92,6 +97,32 @@ generation publication. It requires a previously authenticated known-good
 generation. Navigation files and stock OpenCPN are never part of the updater's
 replacement set. Historical installations remain manually installable and
 repairable; they first need a new healthy generation before automatic updating.
+
+Explicit trust initialization follows committed generation state, shell
+registration and removal of `transaction.json`. While still holding the exclusive
+`transaction.lock`, Lifecycle binds the unique managed `app/skager-start.exe`
+hash and pins its executable and physical ancestors with `UpdateImageOwner`.
+It releases the transaction lock before starting the child through the existing
+suspended native creation and image corroboration path. The child acquires the
+same exclusive lock and rechecks the selected generation and stock identity
+before any trust writes, including before a missing-configuration success.
+Protected-enrollment and armed-update restrictions remain in force.
+
+The parent retains image custody until the original child handle signals exit.
+It then repeats the mutation guards, reacquires the transaction lock and checks
+the unchanged owner, state and generation-ownership records, stock hash and
+absence of a transaction journal before accepting success. Contention or an
+intervening identity change fails explicitly; it does not authorize rollback or
+replacement of another actor's state.
+
+The trust child's existing fifteen-second operation deadline is unchanged.
+On timeout the parent attempts to terminate only its returned owned child, then
+waits for exact exit. An ambiguous start or failed termination can therefore
+retain custody indefinitely; the deadline is not a bound on guardian lifetime.
+A failed exit wait does not release image custody or permit success/revalidation.
+The first failure and any cleanup failure remain visible. The committed
+installation remains recoverable, but a failed or interrupted trust attempt
+requires explicit inspection/recovery and cannot reset its once marker.
 
 ## Startup proof and recovery
 
@@ -128,6 +159,13 @@ custody and ACLs, actual named-pipe/PID receipts, interruption recovery and nati
 popup interactions. Staging requires these checks before expensive Windows
 application compilation. The integrated installer and actual application still
 need their exact-commit Windows/boat acceptance; fixture tests are not that proof.
+
+The focused [installer trust fixture](../../tools/test-installer-trust.ps1) runs
+the actual launcher against generated public trust data and inert owned
+generations. It covers first/repeated initialization, nonmodal failures, parent
+revalidation, image custody and timeout cleanup in native PowerShell 5.1 x86/x64.
+It does not inject an ambiguous native resume failure or qualify an installed
+product; those limitations remain separate from the source contract above.
 
 The installed-package smoke additionally bootstraps the actual launcher and
 application, applies the exact Setup with supervised mode, verifies its live
