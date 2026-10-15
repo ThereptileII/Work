@@ -63,6 +63,16 @@ collect-zoom-evidence.py openssl_loaded.py win32-pe-import-probe.cpp
 win32_plugin_inventory.py win32_module_observation.py plugin-guard-owned-trust.ps1
 installed_customer_launch.py installed_b0_fixture.py
 '''.split())
+# These five modules run the installed-qualification harness and its fixture
+# preparation. Pin complete paths so an identically named future/runtime module does
+# not inherit this exemption. Corresponding-source packaging remains unchanged.
+QUALIFICATION_HELPER_PATHS = frozenset('''
+tools/installed_updater_approval.py
+tools/installed_updater_coordinator.py
+tools/installed_updater_host.py
+tools/prepare-installed-updater-profile-windows.py
+tools/run-installed-updater-journey-windows.py
+'''.split())
 DOC_FILES = frozenset('''
 README.md AGENTS.md FIRST_TASK.md PROJECT_GOAL.md START_HERE.md
 OpenNavX_Codex_Project_Specification.md .gitignore
@@ -107,6 +117,8 @@ def classify_path(raw: str, layout: str) -> tuple[str, str]:
         name = path.name
         if raw.startswith('tools/update-verifier/'):
             return 'product', 'installed secure startup updater and its pinned source'
+        if raw in QUALIFICATION_HELPER_PATHS:
+            return 'helpers', 'reviewed installed qualification harness; retain candidate identity'
         if raw.startswith(('tools/boat/', 'tools/prototype/', 'tools/fixtures/',
                            'tools/diagnostics/', 'tools/downloader-trust-shim/')):
             return 'helpers', 'focused test/retest helper; retain candidate identity'

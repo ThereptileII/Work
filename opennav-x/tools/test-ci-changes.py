@@ -62,6 +62,42 @@ class ClassificationTests(unittest.TestCase):
         self.expect(['.github/workflows/skager-windows-dependencies.yml'],
                     ['helpers', 'dependencies'], 'monorepo')
 
+    def test_five_exact_installed_qualification_paths_do_not_build_application(self):
+        paths = ['tools/installed_updater_approval.py', 'tools/installed_updater_coordinator.py',
+                 'tools/installed_updater_host.py', 'tools/prepare-installed-updater-profile-windows.py',
+                 'tools/run-installed-updater-journey-windows.py']
+        self.assertEqual(ci.QUALIFICATION_HELPER_PATHS, set(paths))
+        for layout in ('local', 'monorepo'):
+            prefix = 'opennav-x/' if layout == 'monorepo' else ''
+            for path in paths:
+                with self.subTest(layout=layout, path=path):
+                    result = self.expect([prefix + path], ['helpers'], layout)
+                    self.assertEqual(result['reasons'][0]['category'], 'helpers')
+            batch = [prefix + path for path in paths] + [prefix + 'docs/evidence/host.json',
+                                                      prefix + 'tools/test-installed-updater-host.py']
+            self.expect(batch, ['helpers', 'docs'], layout)
+        forced = ci.classify(paths, force_product=True)
+        self.assertTrue(forced['product'])
+        self.assertTrue(forced['dependencies'])
+        self.assertTrue(forced['helpers'])
+
+    def test_qualification_path_exemptions_do_not_cover_nearby_unreviewed_or_nested_modules(self):
+        for path in ('tools/installed_updater_approval_http.py', 'tools/installed_updater_runtime.py',
+                     'tools/installed_updater_host_runtime.py',
+                     'tools/future/installed_updater_host.py',
+                     'tools/future/run-installed-updater-journey-windows.py'):
+            with self.subTest(path=path):
+                result = self.expect([path], ['product', 'dependencies', 'helpers'])
+                self.assertEqual(result['reasons'][0]['category'], 'unknown')
+        for path in ('tools/update-verifier/brokerenroll/installed_updater_host.py',
+                     'src/application/installed_updater_coordinator.py',
+                     'installer/windows/installed_updater_approval.py', 'tools/hardware_output_policy.py'):
+            with self.subTest(path=path):
+                self.expect(['tools/installed_updater_host.py', path], ['product', 'helpers'])
+        self.expect(['tools/installed_updater_host.py', 'tools/windows_dependency_bundle.py'],
+                    ['product', 'dependencies', 'helpers'])
+        self.expect(['tools/installed_updater_host.py', 'tools/secret_scanning.py'], ['helpers'])
+
     def test_dependency_producer_and_test_named_producer_inputs(self):
         for path in ('tools/build-curl-windows.ps1', 'tools/windows-curl.lock.json',
                      'tools/patch-curl-test-openssl.py', 'tools/windows_dependency_bundle.py',
