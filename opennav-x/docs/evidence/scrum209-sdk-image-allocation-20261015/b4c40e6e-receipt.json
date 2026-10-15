@@ -1,0 +1,59 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "status": "blocked-before-native-setup",
+  "runId": 38705678784,
+  "attempt": 1,
+  "candidateCommit": "b4c40e6e9166d7e8340dec2879d2a8ad510b7458",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38705678784",
+  "job": {
+    "id": 116330471368,
+    "name": "windows-integration",
+    "conclusion": "failure",
+    "failedStep": "Verify immutable SDK image, Python and source before native setup"
+  },
+  "firstCausalFailure": {
+    "originalLogLine": 189,
+    "message": "Immutable Windows dependency bundle rejected: current Windows runner image differs; fresh producer required"
+  },
+  "runnerImage": {
+    "name": "windows-2022",
+    "requiredVersion": "20261012.333.1",
+    "allocatedVersion": "20261004.326.1",
+    "allocatedVersionLogLine": 18
+  },
+  "earlierNativeQualification": {
+    "runId": 38704113599,
+    "attempt": 1,
+    "helperCommit": "b096faa20828c5c85b81e4418d074e157cde1457",
+    "candidateCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+    "allocatedImageVersion": "20261012.333.1",
+    "conclusion": "success",
+    "interpretation": "Differing hosted image allocations; this early refusal does not invalidate the earlier exact native fixture evidence."
+  },
+  "secondaryFailure": {
+    "step": "Upload evidence artifact",
+    "originalLogLine": 204,
+    "message": "No files were found with the provided path: opennav-x/evidence/local. No artifacts will be uploaded.",
+    "cause": "Early SDK refusal occurred before the native evidence directory existed."
+  },
+  "limits": {
+    "productAcceptance": false,
+    "boatAcceptance": false,
+    "sourceOrPythonMismatchEstablished": false,
+    "windowsNativeCompilationStarted": false,
+    "windowsApplicationBuildStarted": false
+  },
+  "privateOriginals": {
+    "directory": "/home/standard/Work/skager-candidate-b4c40e6e-38705678784",
+    "jobLog": {
+      "name": "windows-integration-job-116330471368.log",
+      "bytes": 18548,
+      "sha256": "e2e226fa8ebaeab21f74f666fe7b5001c5829aeb5d6f6c73d7574d156716f407"
+    },
+    "verification": {
+      "name": "first-failure-verification.json",
+      "sha256": "7272dd88d43a888902c4c32d9159bf4b4161847b04fb9052800de4f1bd930590"
+    }
+  }
+}
