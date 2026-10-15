@@ -1,0 +1,188 @@
+{
+  "baseCommit": "d372fd24e93305000d489cb3785bbac7aa7f8f92",
+  "status": "focused checks passed; reviewed by independent Codex agent and coordinator; full application and native acceptance pending",
+  "files": {
+    "opennav-x/src/integration/DashboardPresentation.cpp": {
+      "bytes": 3338,
+      "sha256": "618a6a80123d1e201a4dea9461c4efac143d0a1172178beca40417168a3b4237"
+    },
+    "opennav-x/src/integration/DashboardPresentation.h": {
+      "bytes": 1699,
+      "sha256": "3b4111cfa297643cc022ac2b63061c99f2d125f7dfba8d5145d2500d9be1305a"
+    },
+    "opennav-x/src/integration/OpenCPNIntegration.cpp": {
+      "bytes": 72627,
+      "sha256": "c67db905db036bd8aa8129a6fbbd66733a826ab156b899e4d17877f895bc19eb"
+    },
+    "opennav-x/tests/NavigationObjectScenario.cpp": {
+      "bytes": 62439,
+      "sha256": "39ebb8631658e1df07f1f7ceeac8ea4a939abfcdef56be44ccb0375eecfe7f18"
+    },
+    "opennav-x/tools/diagnostic_snapshot.py": {
+      "bytes": 2599,
+      "sha256": "22cb876134cd15229f8634b5045fcec5b8ea588aaed8699cd1db099cdde18a86"
+    },
+    "opennav-x/tools/smoke-charts.py": {
+      "bytes": 26881,
+      "sha256": "b44f37efac520764ae91210979b96059a958d3638be18652d785212c79551492"
+    },
+    "opennav-x/tools/test-diagnostic-snapshot.py": {
+      "bytes": 10409,
+      "sha256": "3b7806e7ae5da29ca20fd4ad161a14bbbb9d18bda2bc7d2a48db6825e5369ee2"
+    }
+  },
+  "validation": {
+    "pythonHelperTests": {
+      "command": "python -B opennav-x/tools/test-diagnostic-snapshot.py -v",
+      "passed": 14,
+      "originalOutput": "terminal tool result; tests not repeated for logging"
+    },
+    "pythonSyntax": "three changed Python files compile() passed",
+    "dashboardActualComponent": {
+      "passed": 18,
+      "source": "Actual DashboardPresentation.cpp plus extracted maintained NavigationObjectScenario Dashboard block, with new readiness checks",
+      "boundary": "Private Xvfb; actual wxAui panes; host integration IsXNav stub and null global manager; no OpenCPN application execution"
+    },
+    "dashboardSourceCompile": {
+      "fixtures0": true,
+      "fixtures1": true,
+      "testObserverAbsentFromFixture0": true,
+      "fixtureFreeSymbolSetUnchanged": true,
+      "fixtureFreeObjectLimit": "Object bytes differ due to wxASSERT source line and source path; no byte-identical product claim"
+    },
+    "exactDiagnosticSerializationBlock": {
+      "fixtures0Syntax": true,
+      "fixtures1Syntax": true
+    },
+    "fullAppSmoke": "not run",
+    "nativeWindows": "not run"
+  },
+  "localArtifacts": {
+    "dashboard-readiness-probe.cpp": {
+      "bytes": 5321,
+      "sha256": "9646b367bb37b3c23673d9bcfd273d6d2d9f30a9917adb4c7f84ba14c97adf67"
+    },
+    "compile-command.json": {
+      "bytes": 881,
+      "sha256": "78eab8e826625e9fae1e1173103ce3eee13779da3d0c866ddb50883e3edee697"
+    },
+    "compile.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile-fixtures0.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "compile-fixtures1.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "xvfb.log": {
+      "bytes": 817,
+      "sha256": "12dcabf0449b9ff85d589b86d110c814777977daca56e7ba8ec300c5334fe397"
+    },
+    "dashboard-component.log": {
+      "bytes": 142,
+      "sha256": "5872146944a9ddbb6f8507a27a640436b7bad11fd1d3383d705df0162eb9b4e8"
+    },
+    "dashboard-component-result.json": {
+      "bytes": 197,
+      "sha256": "98e9e8bfc5053b368ed5c75537bacecfb0c2788bcaad93d2b2691702f9cc59fb"
+    },
+    "compile-baseline-fixtures0.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "workspace-serialization.cpp": {
+      "bytes": 543,
+      "sha256": "c8a39a6191d62dfe8edf331b0b41cb18a004c6de7a3cc4ca92eef92a411dc9a2"
+    },
+    "serialization-fixtures0.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    "serialization-fixtures1.log": {
+      "bytes": 0,
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  },
+  "scope": "SCRUM22 deterministic fixture readiness and current process binding only; no pane mutation by observation, no weakened assertions, no full build/CI/boat/release",
+  "issue": "SCRUM-22",
+  "implementationIdentity": "Seven source paths and SHA256 values below bind this evidence; containing Git commit is authoritative.",
+  "testedSourceFiles": {
+    "opennav-x/src/integration/DashboardPresentation.cpp": {
+      "bytes": 3338,
+      "sha256": "618a6a80123d1e201a4dea9461c4efac143d0a1172178beca40417168a3b4237"
+    },
+    "opennav-x/src/integration/DashboardPresentation.h": {
+      "bytes": 1544,
+      "sha256": "14f4ae430ad4373e8691c1bdf685baa1a41ebc08e193e39bf509bda4de8f1806"
+    },
+    "opennav-x/src/integration/OpenCPNIntegration.cpp": {
+      "bytes": 72627,
+      "sha256": "c67db905db036bd8aa8129a6fbbd66733a826ab156b899e4d17877f895bc19eb"
+    },
+    "opennav-x/tests/NavigationObjectScenario.cpp": {
+      "bytes": 62439,
+      "sha256": "39ebb8631658e1df07f1f7ceeac8ea4a939abfcdef56be44ccb0375eecfe7f18"
+    },
+    "opennav-x/tools/diagnostic_snapshot.py": {
+      "bytes": 2599,
+      "sha256": "22cb876134cd15229f8634b5045fcec5b8ea588aaed8699cd1db099cdde18a86"
+    },
+    "opennav-x/tools/smoke-charts.py": {
+      "bytes": 26877,
+      "sha256": "787c0ef33044eae711d72436e416c038e8c93f354fecd4d53b0585489338ef59"
+    },
+    "opennav-x/tools/test-diagnostic-snapshot.py": {
+      "bytes": 10409,
+      "sha256": "3b7806e7ae5da29ca20fd4ad161a14bbbb9d18bda2bc7d2a48db6825e5369ee2"
+    }
+  },
+  "postTestChange": "Comments only in DashboardPresentation.h and smoke-charts.py clarify the phase boundary. Executable code and tests are unchanged after recorded checks.",
+  "phaseBoundary": {
+    "condition": "Existing presentation, XNav mode, live manager, not closed, enabled and layout depth zero.",
+    "readOnly": "Does not call Current(), create presentation, inspect desired pane flags, or mutate panes.",
+    "ordering": "Enable and outer EndLayout call Suppress synchronously. Its loop applies every wxAuiPaneInfo::Hide flag before manager_.Update. Hide is a flag setter; no callback or yield occurs in that loop.",
+    "reentrancy": "An Update-dispatched publication sees suppression flags already applied. A nested BeginLayout raises depth before Restore; readiness stays false until outer EndLayout reapplies suppression.",
+    "limit": "This observes UI-thread presentation state, not return from wxAUI Update or native repaint completion. Native visibility is separately asserted once.",
+    "selection": "Return uses the actual returned process ID plus an epoch newer than the file read before restarting Legacy. Readiness never filters ENC, pane state, geometry or rail contents; the first ready publication is asserted once.",
+    "failure": "Missing or malformed readiness fails immediately; wrong PID, stale epoch or incomplete phase times out."
+  },
+  "review": {
+    "independent": "candidate_windows_evidence: seven-file read-only review found no blocking defect; no tests rerun or edits made.",
+    "coordinator": "Root accepted phase/reentrancy explanation and independent review; authorized immutable commit and compact evidence."
+  },
+  "originalFailure": {
+    "candidate": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+    "run": "38722465573",
+    "job": "116380307497",
+    "logSha256": "5b647bdc276fe4ef73fe63a082347adc4665f20f7fbe8e251c024f01e7a085c6",
+    "artifactId": "11967781061",
+    "artifactSha256": "2726c4fe38961b7ee8ebf2850553f0f786847ce8767715c3e9ae7f4b8de419ea",
+    "sample": {
+      "tick": 3,
+      "publicationMonotonicMs": "1429678",
+      "evaluationMonotonicMs": "1429662",
+      "actualPaneState": 2098125,
+      "expectedSuppressedPaneState": 2098127
+    },
+    "causalLimit": "Original stale/readiness ambiguity is preserved as failed evidence. Source review did not establish a reachable pre-tail nested publication in the failing fixture; this change makes the required phase observable instead of inferring it from a log or added delay."
+  },
+  "retainedPrivateEvidence": "/home/standard/Work/linux-workspace-readiness-20261015",
+  "evidenceFiles": {
+    "dashboard-readiness-probe.cpp": {
+      "bytes": 5321,
+      "sha256": "9646b367bb37b3c23673d9bcfd273d6d2d9f30a9917adb4c7f84ba14c97adf67"
+    },
+    "compile-command.json": {
+      "bytes": 881,
+      "sha256": "78eab8e826625e9fae1e1173103ce3eee13779da3d0c866ddb50883e3edee697"
+    },
+    "dashboard-component.log": {
+      "bytes": 142,
+      "sha256": "5872146944a9ddbb6f8507a27a640436b7bad11fd1d3383d705df0162eb9b4e8"
+    }
+  }
+}

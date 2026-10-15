@@ -30,6 +30,12 @@ extern "C" void OpenNavDashboardLayout(bool begin) {
 }
 
 namespace opennav::integration {
+#if XNAV_ENABLE_TEST_FIXTURES
+bool TestDashboardPresentationReady() {
+  return opennav::IsXNav() && !closed && g_pauimgr && presentation &&
+         presentation->TestReady();
+}
+#endif
 void EnableDashboardPresentation() { if (auto* state = Current()) state->Enable(true); }
 void FinishDashboardPresentation() {
   closed = true;

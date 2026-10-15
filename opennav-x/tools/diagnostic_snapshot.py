@@ -14,8 +14,23 @@ def _publication_epoch(snapshot):
     return epoch
 
 
-def read_json_snapshot(path, timeout=2.0, *, after=None):
-    """Optionally require the first newer publication, without polling its contents."""
+def _workspace_ready(snapshot, process_id):
+    runtime = snapshot.get("runtime")
+    assert isinstance(runtime, dict), "Missing workspace diagnostic readiness"
+    readiness = runtime.get("test_workspace_readiness")
+    assert isinstance(readiness, dict), "Missing workspace diagnostic readiness"
+    observed_pid = readiness.get("process_id")
+    ready = readiness.get("dashboard_ready")
+    assert (type(observed_pid) is int and 0 < observed_pid <= 4294967295 and
+            type(ready) is bool), "Invalid workspace diagnostic readiness"
+    return observed_pid == process_id and ready
+
+
+def read_json_snapshot(path, timeout=2.0, *, after=None, workspace_pid=None):
+    """Wait for identity/phase only; never poll the asserted workspace contents."""
+    if workspace_pid is not None:
+        assert type(workspace_pid) is int and 0 < workspace_pid <= 4294967295, \
+            "Invalid workspace process identity"
     baseline = _publication_epoch(after) if after is not None else None
     deadline = time.monotonic() + timeout
     while True:
@@ -27,8 +42,15 @@ def read_json_snapshot(path, timeout=2.0, *, after=None):
                 raise
             time.sleep(.02)
             continue
-        if baseline is None or _publication_epoch(snapshot) > baseline:
+        fresh = baseline is None or _publication_epoch(snapshot) > baseline
+        ready = True
+        if workspace_pid is not None:
+            _publication_epoch(snapshot)
+            ready = _workspace_ready(snapshot, workspace_pid)
+        if fresh and ready:
             return snapshot
         if time.monotonic() >= deadline:
+            if workspace_pid is not None:
+                raise AssertionError("Ready workspace diagnostic did not arrive for process " + str(workspace_pid))
             raise AssertionError("Newer diagnostic publication did not arrive")
         time.sleep(.02)

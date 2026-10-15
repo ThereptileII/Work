@@ -591,16 +591,21 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
         const auto saved = manager.SavePerspective();
         DashboardPresentation presentation(manager);
         presentation.Register(visible); presentation.Register(hidden); presentation.Register(docked);
+        Check(!presentation.TestReady(), "Registered Dashboard is not ready before deferred enablement");
         presentation.Enable(true);
+        Check(presentation.TestReady(), "Completed Dashboard enablement is observable without changing pane state");
         Check(!manager.GetPane(visible).IsShown() && !manager.GetPane(hidden).IsShown() &&
               !manager.GetPane(docked).IsShown() && manager.GetPane(foreign).IsShown(),
               "Only registered Dashboard windows are suppressed; names cannot grant ownership");
         presentation.BeginLayout(); presentation.BeginLayout();
+        Check(!presentation.TestReady(), "Restoring panes during nested layout is not presentation readiness");
         Check(manager.GetPane(visible).IsShown() && !manager.GetPane(hidden).IsShown() && manager.GetPane(docked).IsShown(),
               "Plugin callbacks see original visible/hidden and docked state");
         presentation.EndLayout();
+        Check(!presentation.TestReady(), "Inner layout completion cannot signal presentation readiness");
         Check(manager.GetPane(visible).IsShown(), "Nested callback cannot resuppress outer layout");
         presentation.EndLayout();
+        Check(presentation.TestReady(), "Outer layout completion restores presentation readiness");
         Check(!manager.GetPane(visible).IsShown(), "Outer layout completion reapplies temporary presentation");
         auto* late = new wxPanel(other);
         manager.AddPane(late, wxAuiPaneInfo().Name("late pane").Float());
@@ -616,6 +621,7 @@ void ObjectScenarioStep(const vessel::Navigation &selected) {
         manager.LoadPerspective(saved, false);
         presentation.EndLayout();
         presentation.Enable(false);
+        Check(!presentation.TestReady(), "Disabled presentation is not ready");
         Check(manager.SavePerspective() == saved, "Exact original floating/docked workspace restored before persistence");
         presentation.Enable(true);
         manager.DetachPane(hidden); presentation.Unregister(hidden); delete hidden;

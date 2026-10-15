@@ -1027,6 +1027,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 #if XNAV_ENABLE_TEST_FIXTURES
     // Copied wxAUI state for the isolated plugin-workspace regression.
     runtime["test_workspace_perspective"] = manager.SavePerspective();
+    runtime["test_workspace_readiness"]["process_id"] = wxGetProcessId();
+    runtime["test_workspace_readiness"]["dashboard_ready"] =
+        integration::TestDashboardPresentationReady();
 #endif
     if (shell) {
       runtime["display"]["light"] = wxString::FromUTF8(shell->LightName());

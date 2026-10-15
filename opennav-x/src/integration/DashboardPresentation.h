@@ -1,5 +1,6 @@
 #pragma once
 
+#include "integration/BuildFeatures.h"
 #include <wx/aui/aui.h>
 #include <wx/weakref.h>
 #include <optional>
@@ -8,6 +9,11 @@
 namespace opennav::integration {
 void EnableDashboardPresentation();
 void FinishDashboardPresentation();
+#if XNAV_ENABLE_TEST_FIXTURES
+// Observe the existing phase only; never create a presentation or inspect the
+// pane flags whose correctness the workspace fixture must assert separately.
+bool TestDashboardPresentationReady();
+#endif
 // Application-thread presentation only. Registration comes from the bundled
 // Dashboard's actual pane windows, never translated captions or pane names.
 // The plugin continues receiving data. Neither this state nor suppression is
@@ -22,6 +28,11 @@ class DashboardPresentation {
   void BeginLayout();
   void EndLayout();
   bool Enabled() const { return enabled_; }
+#if XNAV_ENABLE_TEST_FIXTURES
+  // UI-thread phase only: Suppress applies every Hide flag before Update can
+  // dispatch layout events. This does not attest native repaint completion.
+  bool TestReady() const { return enabled_ && depth_ == 0; }
+#endif
  private:
   struct Pane {
     explicit Pane(wxWindow* value) : window(value) {}

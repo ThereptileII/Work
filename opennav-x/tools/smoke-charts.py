@@ -388,18 +388,21 @@ try:
   entry['workspace_after_xnav_close']=workspace.saved(profile)
   handle,pid=window('SKAGER Legacy / OpenCPN');owned.add(pid);ready();entry['captures'].append(capture('chart-'+rendering+'-05-legacy'))
   entry['workspace_native_legacy']=capture_workspace('chart-'+rendering+'-dashboard-legacy')
+  # Legacy does not publish XNav diagnostics. Bind the return to a publication
+  # newer than this pre-restart file, even if an OS process id is later reused.
+  return_baseline=data(enc)
   if windows:
    p=ui.monitor_process(pid);ui.click_menu(handle,'Switch to SKAGER');ui.wait_clean_exit(p)
   else:
    xdo('windowfocus',handle,'mousemove',600,400,'click',3);time.sleep(.3);xdo('key','End','Return')
    child,status=os.waitpid(pid,0);assert os.waitstatus_to_exitcode(status)==0
   entry['workspace_after_legacy_close']=workspace.saved(profile)
-  owned.discard(pid);count+=1;handle,pid=window('SKAGER / OpenCPN');owned.add(pid);ready()
-  # Finalize Canvases precedes deferred Dashboard suppression. Diagnostics are
-  # throttled independently to one second, so an ENC-bearing snapshot can still
-  # describe the earlier visible pane. Require the first newer publication;
-  # never retry the workspace/rail assertions until they happen to pass.
-  returned=read_json_snapshot(profile/'opennav-diagnostics.json',timeout=8,after=data(enc))
+  owned.discard(pid);count+=1;handle,pid=window('SKAGER / OpenCPN');owned.add(pid)
+  # Finalize Canvases precedes Dashboard enablement. Observe the returned
+  # process's enabled Dashboard outside plugin layout, never desired pane flags.
+  # Assert the first ready publication once, even when its workspace is wrong.
+  returned=read_json_snapshot(profile/'opennav-diagnostics.json',timeout=90,
+                             after=return_baseline,workspace_pid=pid)
   assert enc(returned), 'Returned XNav publication lost the loaded ENC'
   entry['workspace_returned']=workspace.assert_restored(returned['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in returned['runtime']['display']['rail_regions']), 'Mode cycle lost XNav rail'
