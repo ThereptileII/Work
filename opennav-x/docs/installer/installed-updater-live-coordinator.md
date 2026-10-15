@@ -129,6 +129,78 @@ is an operational guard against accidental boat/non-disposable execution, not
 cryptographic host attestation. Actual same-account/token/desktop capability and
 an independently prepared disconnected stock/profile fixture remain required.
 
+### Explicit interactive self-hosted admission
+
+The default remains the hosted path with a schema-1 B0 declaration. An explicitly
+selected disposable non-boat Windows target can instead use
+`--host-mode=interactive-self-hosted` and a schema-2 B0 admission declaration.
+Schema 2 retains every original field and adds exactly this original private
+record (the example values are placeholders, never an admitted target):
+
+```json
+"hostAdmission": {
+  "kind": "interactive-self-hosted",
+  "runnerId": "<approved GitHub runner ID>",
+  "runnerGroupId": "<approved GitHub runner group ID>",
+  "labels": ["self-hosted", "Windows", "X64", "skager-disposable-interactive"],
+  "clientSid": "<actual independently approved intended client SID>"
+}
+```
+
+Runner IDs are canonical decimal strings; labels contain the complete exact
+assigned label set, without duplicates (four to eight labels). The four example
+labels are required. The SID must equal the original client-registration SID.
+The existing `declarationSha256` pin binds the entire record through the original
+request and independently authored postproduction approval. A flag, adjacent
+record, environment variable, freshly calculated hash or job label alone grants
+no installation authority.
+
+The read-only GitHub jobs API must corroborate the exact current in-progress
+repository/run/attempt/head/workflow/job tuple and approved runner ID, group ID
+and labels. The maintained native capability observer must corroborate the real
+intended SID, original FULL/LIMITED primary-token pair, interactive default
+desktop and normal secure-desktop prompt policy. Service/session-zero runners
+and silent-elevation policy cannot qualify this route. Checks precede local
+coordinator effects and repeat before one-use consumption and installation.
+The Go consumption record, protected owner, independent approval transport,
+package checks and same-account launcher remain unchanged. This binds a GitHub
+runner registration and actual account; it is not hardware attestation.
+
+After the user selects the target, the operator supplies its actual verified
+runner identity, qualified B0/B1 originals and the original hash-pinned journey
+configuration. The existing maintained tool creates the disconnected fixture:
+
+```powershell
+python opennav-x/tools/prepare-installed-updater-profile-windows.py `
+  --disposable-opt-in=SCRUM-311-disposable-create-installed-profile `
+  --host-mode=interactive-self-hosted `
+  --journey-config=C:\Qualification\journey.json `
+  --journey-config-sha256=<independently reviewed original configuration SHA-256>
+```
+
+It reads the same original pending request and schema-2 admission declaration,
+verifies their linkage, expiry, live exact host/job and native SID/prompt
+eligibility before any profile creation. It only creates the absent known-folder
+`opencpn` profile using the maintained disconnected fixture; existing or partial
+profiles refuse. This is a separately authorized preparation operation. Its
+configuration/request are not postproduction approval, and it never consumes an
+approval, enrolls, installs or changes UAC/desktop policy. A read-only
+`SKAGER_APPROVAL_READ_TOKEN` supplies the existing bounded GitHub API adapter.
+
+Then invoke the joined CLI above with the same original configuration and
+`--host-mode=interactive-self-hosted`. Independent postproduction approval and
+the one-use original native owner remain mandatory. Standalone B0/phase CLIs
+remain hosted-only; a schema-2 declaration cannot bypass the joined coordinator
+through the standalone B0 wrapper. Existing hosted probes and their legacy
+operational guards are unchanged.
+
+No actual target is admitted by these instructions, and no runner is configured
+or selected automatically. A manually selected pending GitHub job on that exact
+interactive target is still required. Eligibility and portable tests do not
+witness human secure-desktop consent: customer UAC and product acceptance flags
+remain false until separately qualified by the actual installed journey and
+human observation. Hosted silent elevation never supplies that evidence.
+
 The independently hash-pinned configuration is bounded to 64 KiB, strict JSON,
 with exactly these fields; none supplies authorization merely by existing:
 

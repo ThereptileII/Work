@@ -2,6 +2,7 @@
 import importlib.util
 import json
 import ctypes
+import os
 from pathlib import Path
 import subprocess
 import installed_b0_fixture as fixture
@@ -17,6 +18,35 @@ PATH = Path(__file__).with_name('test-installed-protected-b0-startup-windows.py'
 spec = importlib.util.spec_from_file_location('initial_b0', PATH)
 b0 = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(b0)
+
+
+class StandaloneAdmissionTests(unittest.TestCase):
+    def test_external_or_schema2_cannot_bypass_joined_approval_via_standalone_b0(self):
+        names = ('declaration','declaration-sha256','approved-client-request-sha256',
+            'approved-bootstrap-policy-sha256','approved-provisioner-sha256','approved-broker-sha256',
+            'timestamp-sha256','evidence','disposable-opt-in')
+        args = ['--'+name+'='+('a'*64 if 'sha256' in name else b0.OPT_IN if name=='disposable-opt-in' else '/unused')
+                for name in names]
+        for mode in ('self-hosted','github-hosted'):
+            environment = dict(GITHUB_ACTIONS='true',RUNNER_OS='Windows',RUNNER_ENVIRONMENT=mode,
+                               GITHUB_REPOSITORY='ThereptileII/Work')
+            with self.subTest(mode=mode),mock.patch.dict(os.environ,environment,clear=True), \
+                    mock.patch.object(b0.sys,'platform','win32'),mock.patch('builtins.print'), \
+                    mock.patch.object(b0,'prepare',return_value={'hostAdmission':{'schema2':'never standalone'}}) as prepare, \
+                    mock.patch.object(b0,'run') as run:
+                self.assertEqual(b0.main(args),1)
+                run.assert_not_called()
+                if mode=='self-hosted': prepare.assert_not_called()
+
+    def test_standalone_phase_does_not_admit_self_hosted_environment(self):
+        args = ['--fixtures=/unused','--fixtures-sha256='+'a'*64,'--evidence=/unused',
+            '--disposable-opt-in='+b0.phase.OPT_IN,'--phase=no-update',
+            '--expected-selected-head-sha256='+'a'*64,'--timestamp-sha256='+'b'*64]
+        with mock.patch.dict(os.environ,dict(GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='self-hosted',
+                GITHUB_REPOSITORY='ThereptileII/Work'),clear=True),mock.patch.object(b0.sys,'platform','win32'), \
+                mock.patch.object(b0.phase,'prepare') as prepare,mock.patch('builtins.print'):
+            self.assertEqual(b0.phase.main(args),1)
+            prepare.assert_not_called()
 
 
 class FakeBefore:

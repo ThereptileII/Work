@@ -210,7 +210,7 @@ class ExecuteTests(unittest.TestCase):
         def api(endpoint, **kwargs):
             if '/jobs?' in endpoint:
                 return dict(total_count=1, jobs=[dict(id=int(f.runner['jobId']), name=f.runner['jobName'], status='in_progress',
-                    run_id=int(f.runner['runId']), run_attempt=int(f.runner['runAttempt']), head_sha=f.runner['headSha'])])
+                    run_id=int(f.runner['runId']), run_attempt=int(f.runner['runAttempt']), head_sha=f.runner['headSha'], labels=['windows-2022'])])
             return dict(id=int(f.runner['runId']), run_attempt=int(f.runner['runAttempt']), head_sha=f.runner['headSha'],
                 path=self.config['pendingWorkflow'], event='workflow_dispatch', status='in_progress',
                 head_repository=dict(full_name='ThereptileII/Work'))
@@ -246,6 +246,38 @@ class ExecuteTests(unittest.TestCase):
                 if kind == 'plan': self.plan['no-update'] = '0' * 64
                 with self.assertRaises(ValueError): cli.execute(config, self.environment)
                 cli.coordinator.run_live.assert_not_called()
+
+    def test_explicit_self_hosted_mode_requires_schema2_and_actual_host_validation(self):
+        target = dict(kind=cli.host_admission.MODE, runnerId='901', runnerGroupId='17',
+            labels=['self-hosted', 'Windows', 'X64', 'skager-disposable-interactive'],
+            clientSid=self.f.f.client['clientSid'])
+        self.initial['hostAdmission'] = target
+        with patch.object(cli.host_admission, 'validate_live') as host:
+            self.assertEqual(cli.execute(self.config, self.environment, cli.host_admission.MODE), {'state':'observed'})
+            self.assertEqual(host.call_args.args[:3], (target, self.config['runner'], self.config['pendingWorkflow']))
+            self.assertEqual(cli.coordinator.run_live.call_args.kwargs['pending_workflow'], self.config['pendingWorkflow'])
+        cli.coordinator.run_live.reset_mock()
+        with self.assertRaises(ValueError): cli.execute(self.config, self.environment)
+        cli.coordinator.run_live.assert_not_called()
+        self.initial.pop('hostAdmission')
+        with self.assertRaises(ValueError): cli.execute(self.config, self.environment, cli.host_admission.MODE)
+        cli.coordinator.run_live.assert_not_called()
+
+    def test_failed_external_host_validation_has_no_coordinator_effect(self):
+        self.initial['hostAdmission'] = {'not': 'an authority grant'}
+        with patch.object(cli.host_admission, 'validate_live', side_effect=ValueError('refused')):
+            with self.assertRaises(ValueError): cli.execute(self.config, self.environment, cli.host_admission.MODE)
+        cli.coordinator.run_live.assert_not_called()
+
+    def test_hosted_environment_cannot_hide_actual_self_hosted_job_labels(self):
+        real = cli.coordinator.http.GitHubReads.return_value.read_api
+        def api(endpoint, **kwargs):
+            value = real(endpoint, **kwargs)
+            if '/jobs?' in endpoint: value['jobs'][0]['labels'] = ['self-hosted', 'Windows', 'X64']
+            return value
+        cli.coordinator.http.GitHubReads.return_value.read_api = api
+        with self.assertRaises(ValueError): cli.execute(self.config, self.environment)
+        cli.coordinator.run_live.assert_not_called()
 
 
 if __name__ == '__main__':

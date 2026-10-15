@@ -8,6 +8,7 @@ import tempfile
 from dataclasses import replace
 import subprocess
 import os
+import json
 import unittest
 from unittest.mock import Mock, patch
 
@@ -59,11 +60,77 @@ class CoordinatorTests(unittest.TestCase):
         coordinator.journey.phase.profile_preserved.return_value = True
         self.calls, self.cancelled, self.now = [], False, self.f.f.now
 
-    def make(self):
+    def make(self, **options):
         return coordinator.Coordinator(source=self.f.source, bind_arguments=self.f.arguments,
             initial=self.initial, phases={}, output=Path('/unused/result.json'),
             handoff=lambda *a: None, consumer=self.consumer, reads=self.reads,
-            cancelled=lambda: self.cancelled, utcnow=lambda: self.now)
+            cancelled=lambda: self.cancelled, utcnow=lambda: self.now, **options)
+
+    def external(self):
+        f = self.f.f
+        target = dict(kind='interactive-self-hosted', runnerId='901', runnerGroupId='17',
+            labels=['self-hosted','Windows','X64','skager-disposable-interactive'], clientSid=f.client['clientSid'])
+        declared = dict(f.declaration, schema=2, hostAdmission=target)
+        request = f.prepare_originals(declaration=declared)
+        approval = fixture.fixture_module.encode(dict(f.approval, requestSha256=request.request_sha256))
+        self.f.arguments.update(request_bytes=request.original_bytes, declaration=json.dumps(declared, indent=2).encode())
+        self.f.members = {'request.json':request.original_bytes, 'approval.json':approval,
+            'approval-pins.json':fixture.fixture_module.encode(dict(schema=1, purpose=coordinator.transport.PINS_PURPOSE,
+                requestSha256=request.request_sha256, approvalSha256=coordinator.binding.sha256(approval), pins=dict(request.pins)))}
+        self.f.source = replace(self.f.source, artifact_name=coordinator.transport.artifact_name('700','1',request.request_sha256))
+        self.f.artifact['name'] = self.f.source.artifact_name
+        self.f.set_archive(self.f.make_archive())
+        self.initial = dict(request=dict(clientSid=target['clientSid']), hostAdmission=target)
+        self.owner.sid = target['clientSid']; self.owner.actual_sid.return_value = target['clientSid']
+        environment = dict(GITHUB_ACTIONS='true', RUNNER_OS='Windows', RUNNER_ENVIRONMENT='self-hosted',
+            GITHUB_REPOSITORY='ThereptileII/Work', GITHUB_EVENT_NAME='workflow_dispatch', GITHUB_SHA=f.runner['headSha'],
+            GITHUB_RUN_ID=f.runner['runId'], GITHUB_RUN_ATTEMPT=f.runner['runAttempt'])
+        workflow = '.github/workflows/installed-journey.yml'
+        run = dict(id=123, run_attempt=2, head_sha=f.runner['headSha'], path=workflow, event='workflow_dispatch',
+            status='in_progress', conclusion=None, head_repository=dict(full_name='ThereptileII/Work'))
+        job = dict(id=456, name=f.runner['jobName'], run_id=123, run_attempt=2, head_sha=f.runner['headSha'],
+            status='in_progress', conclusion=None, runner_id=901, runner_group_id=17, labels=target['labels'])
+        def read(endpoint, **kwargs):
+            if '/runs/123/attempts/2' in endpoint:
+                return dict(total_count=1,jobs=[job]) if '/jobs?' in endpoint else run
+            return self.f.read_api(endpoint, **kwargs)
+        self.reads.read_api = read
+        capability = dict(state='available',normalTokenAvailable=True,consentPromptAvailable=True,
+            nativeCustomerAcceptance=False,consentPromptAcceptance=False,observations=dict(current=dict(sid=target['clientSid'])))
+        for p in (patch.dict(os.environ, environment, clear=True), patch.object(coordinator.sys,'platform','win32'),
+                  patch.object(coordinator.host_admission.customer,'inspect_customer_capability',return_value=capability)):
+            p.start(); self.addCleanup(p.stop)
+        return workflow, job
+
+    def test_schema2_preserves_real_approval_and_single_consumption_after_three_host_checks(self):
+        workflow, job = self.external()
+        self.assertEqual(self.make(pending_workflow=workflow).run(), {'state':'observed'})
+        coordinator.host_admission.customer.inspect_customer_capability.assert_called()
+        self.assertEqual(coordinator.host_admission.customer.inspect_customer_capability.call_count, 3)
+        self.consumer.consume.assert_called_once()
+        coordinator.journey.run_joined.assert_called_once()
+
+    def test_bad_external_host_has_no_receipt_child_owner_or_install_effect(self):
+        workflow, job = self.external(); job['runner_id'] = 902
+        with self.assertRaises(ValueError): self.make(pending_workflow=workflow).run()
+        coordinator.journey.admission.BeforeEnrollment.assert_not_called()
+        self.consumer.pin.assert_not_called()
+        self.consumer.consume.assert_not_called()
+        coordinator.journey.run_joined.assert_not_called()
+
+    def test_changed_external_runner_during_approval_never_consumes(self):
+        workflow, job = self.external()
+        actual = coordinator.host_admission.validate_live
+        calls = []
+        def check(*args):
+            calls.append(None)
+            if len(calls) == 2: job['runner_id'] = 902
+            return actual(*args)
+        with patch.object(coordinator.host_admission,'validate_live',side_effect=check), self.assertRaises(ValueError):
+            self.make(pending_workflow=workflow).run()
+        self.consumer.pin.assert_called_once()
+        self.consumer.consume.assert_not_called()
+        coordinator.journey.run_joined.assert_not_called()
 
     def test_real_transport_binding_reaches_exact_one_consumption_and_join(self):
         c = self.make()

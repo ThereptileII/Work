@@ -226,9 +226,9 @@ def _originals(request, client_request, declaration, release_policy, expected_se
     for name in ('packageSha256', 'productBuildSha256', 'executableSha256', 'inventorySha256'):
         _hex(client['installed'][name])
     _keys(client['stock'], ('path', 'version', 'arch', 'executableSha256', 'upstreamCommit'))
-    _keys(declared, ('schema', 'b0', 'setup', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
-                     'trustConfig', 'bootstrapCache', 'artifactDirectory', 'preserveSettings'))
-    require(type(declared['schema']) is int and declared['schema'] == 1)
+    import installed_updater_host as host
+    admitted = host.declaration(declared)
+    require(admitted is None or admitted['clientSid'] == client['clientSid'])
     _keys(declared['b0'], ('version', 'commit', 'recovery', 'source', 'policy'))
     require(client['installed']['version'] == declared['b0']['version'] == request.version and
             client['installed']['commit'] == declared['b0']['commit'] == request.commit and

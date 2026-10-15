@@ -8,6 +8,7 @@ import json
 import os
 from pathlib import Path
 import tempfile
+from types import SimpleNamespace
 import unittest
 from unittest.mock import patch
 
@@ -227,6 +228,77 @@ class Tests(unittest.TestCase):
                  patch.object(helper, 'Native') as native, self.assertRaises(ValueError):
                 helper.prepare(opt_in)
             contents.assert_not_called()
+            native.assert_not_called()
+
+    def external_context(self):
+        # Original files and real hash/path verification; only HTTP transport and
+        # the native capability observation are inert seams.
+        spec = importlib.util.spec_from_file_location('profile_approval_fixture',
+            Path(__file__).with_name('test-installed-updater-approval.py'))
+        fixture = importlib.util.module_from_spec(spec); spec.loader.exec_module(fixture)
+        f = fixture.HandoffTests(); f.setUp()
+        spec = importlib.util.spec_from_file_location('profile_host_fixture',
+            Path(__file__).with_name('test-installed-updater-host.py'))
+        module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
+        h = module.HostTests(); h.setUp()
+        h.runner = f.runner; h.job['name'] = f.runner['jobName']
+        cli = helper.module('run-installed-updater-journey-windows')
+        client = self.root / 'client.json'; client.write_bytes(f.client_bytes)
+        declared = dict(f.declaration, schema=2, hostAdmission=h.target,
+                        clientRequest=dict(path=str(client),sha256=cli.binding.sha256(f.client_bytes)))
+        raw = json.dumps(declared).encode()
+        admission = self.root / 'admission.json'; admission.write_bytes(raw)
+        request = dict(f.request, pins=dict(f.pins, declarationSha256=cli.binding.sha256(raw)))
+        request_path = self.root / 'request.json'; request_path.write_bytes(cli.binding._encode(request))
+        config = {key:None for key in cli.CONFIG_KEYS}
+        config.update(schema=1,purpose='installed-updater-journey-cli',runner=f.runner,challenge=f.request['challenge'],
+            pendingWorkflow=h.workflow,request=dict(path=str(request_path),sha256=cli.binding.sha256(request_path.read_bytes())),
+            admission=dict(path=str(admission),sha256=cli.binding.sha256(raw)))
+        path = self.root / 'journey.json'; path.write_text(json.dumps(config))
+        self.native.close = lambda: None
+        patches = [patch.object(helper,'module',return_value=cli),
+            patch.dict(helper.os.environ,dict(h.environment,SKAGER_APPROVAL_READ_TOKEN='inert'),clear=True),
+            patch.object(helper.sys,'platform','win32'),
+            patch.object(cli,'datetime',SimpleNamespace(now=lambda *_:f.now)),
+            patch.object(cli.coordinator.http,'GitHubReads',return_value=SimpleNamespace(read_api=h.read)),
+            patch.object(cli.host_admission.customer,'inspect_customer_capability',side_effect=lambda:h.capability)]
+        for p in patches: p.start(); self.addCleanup(p.stop)
+        return cli,h,dict(host_mode='interactive-self-hosted',journey_config=str(path),
+                          journey_config_sha256=cli.binding.sha256(path.read_bytes()))
+
+    def test_explicit_verified_self_hosted_profile_preparation_is_executable_without_install_authority(self):
+        cli,h,options = self.external_context()
+        output = io.StringIO()
+        with patch.object(helper,'Native',return_value=self.native),redirect_stdout(output):
+            self.assertEqual(helper.main(['--disposable-opt-in='+helper.OPT_IN,
+                '--host-mode='+options['host_mode'],'--journey-config='+options['journey_config'],
+                '--journey-config-sha256='+options['journey_config_sha256']]),0)
+        result = json.loads(output.getvalue())
+        self.assertEqual(result['state'],'disposable-profile-created')
+        self.assertFalse(result['customerUacAcceptance'])
+        self.assertFalse(result['nativeInstalledAcceptance'])
+        self.assertTrue(self.native.profile_root.exists())
+
+    def test_self_hosted_identity_or_config_refusal_precedes_any_profile_write(self):
+        cli,h,options = self.external_context()
+        for key,value in [('runner_id',902),('runner_group_id',18),('status','completed'),('labels',[])]:
+            original = dict(h.job); h.job[key] = value
+            with self.subTest(key=key), patch.object(helper,'Native') as native, \
+                    patch.object(helper,'contents') as contents, self.assertRaises(ValueError):
+                helper.prepare(helper.OPT_IN,**options)
+            native.assert_not_called(); contents.assert_not_called()
+            self.assertFalse(self.native.profile_root.exists()); h.job = original
+        for changed in (dict(h.capability,consentPromptAvailable=False),
+                        dict(h.capability,normalTokenAvailable=False),
+                        dict(h.capability,observations=dict(current=dict(sid='S-1-5-21-9-8-7-6')))):
+            original = h.capability; h.capability = changed
+            with self.subTest(capability=changed),patch.object(helper,'Native') as native,self.assertRaises(ValueError):
+                helper.prepare(helper.OPT_IN,**options)
+            native.assert_not_called(); h.capability = original
+        for changed in (dict(options,journey_config_sha256='0'*64),dict(options,journey_config=None),
+                        dict(options,host_mode='github-hosted')):
+            with self.subTest(changed=changed),patch.object(helper,'Native') as native,self.assertRaises(ValueError):
+                helper.prepare(helper.OPT_IN,**changed)
             native.assert_not_called()
 
     def test_cli_has_no_path_override_duplicate_or_failure_details(self):

@@ -10,6 +10,7 @@ from datetime import datetime, timezone
 import hashlib
 import subprocess
 import os
+import sys
 import time
 from pathlib import Path
 
@@ -18,6 +19,7 @@ import installed_updater_approval_http as http
 import installed_updater_approval_transport as transport
 import installed_updater_approval_rendezvous as rendezvous
 import installed_updater_journey as journey
+import installed_updater_host as host_admission
 
 FAILURE = 'Installed updater coordinator refused; preserve original state and evidence.'
 
@@ -229,7 +231,7 @@ class Coordinator:
     """
     def __init__(self, *, source, bind_arguments, initial, phases, output, handoff,
                  consumer, reads, cancelled=lambda: False,
-                 utcnow=lambda: datetime.now(timezone.utc)):
+                 utcnow=lambda: datetime.now(timezone.utc), pending_workflow=None):
         require(type(source) in (transport.ApprovalSource, rendezvous.TrustedStatusLocator) and callable(handoff) and
                 type(consumer) is NativeConsumption and type(reads) is http.GitHubReads)
         self.source, self.arguments = source, deepcopy(bind_arguments)
@@ -238,6 +240,19 @@ class Coordinator:
         self.consumer, self.reads = consumer, reads
         self.cancelled, self.utcnow = cancelled, utcnow
         self.attempted = False
+        self.pending_workflow = pending_workflow
+
+    def _host(self, request):
+        declared = binding._json(self.arguments['declaration'], 64 << 10)
+        admitted = host_admission.declaration(declared)
+        require(admitted == self.initial.get('hostAdmission') and
+                binding.sha256(self.arguments['declaration']) == dict(request.pins)['declarationSha256'])
+        if admitted is not None:
+            require(binding._runner(self.arguments['expected_runner']) == request.runner)
+            host_admission.validate_live(admitted, self.arguments['expected_runner'], self.pending_workflow,
+                                         os.environ, sys.platform, self.reads.read_api)
+        else:
+            require(os.environ.get('RUNNER_ENVIRONMENT') != 'self-hosted')
 
     def run(self):
         require(not self.attempted)
@@ -253,6 +268,7 @@ class Coordinator:
         resolved = None
         try:
             require(not self.cancelled())
+            self._host(request)  # No local writes or native child before host validation.
             # Keep the actual account and original deny-write executable owner
             # through approval wait, consumption and the complete installed run.
             owner = journey.admission.BeforeEnrollment(self.initial)
@@ -283,6 +299,8 @@ class Coordinator:
             # independent approval lifetime as well as the request deadline.
             approval = _rebind(approval, self.arguments, self.utcnow())
             self.consumer.check()
+            self._host(request)
+            approval = _rebind(approval, self.arguments, self.utcnow())
             self.consumer.consume(consumption_record(approval))
             # Expiration/cancellation after consumption permanently refuses this
             # attempt. Never turn an uncertain native effect into another call.
@@ -292,6 +310,8 @@ class Coordinator:
             require(owner.actual_sid() == owner.sid and
                     journey.phase.profile_preserved(profile, owner.profile()))
             pins = dict(approval.request.pins)
+            self._host(request)
+            _rebind(approval, self.arguments, self.utcnow())
             return journey.run_joined(self.initial, self.phases,
                 dict(request=pins['clientRequestSha256'], policy=pins['bootstrapPolicySha256'],
                      provisioner=pins['provisionerSha256'], broker=pins['brokerSha256'],
@@ -306,7 +326,7 @@ class Coordinator:
 
 def run_live(*, source, bind_arguments, initial, phases, output, handoff,
              read_only_token, consumer_executable, consumer_sha256,
-             qualification_parent, consumption_receipt, cancelled=lambda: False):
+             qualification_parent, consumption_receipt, cancelled=lambda: False, pending_workflow=None):
     """Execute one already-authorized live pending-job composition.
 
     source and bind_arguments must come from independently authenticated operator
@@ -318,4 +338,4 @@ def run_live(*, source, bind_arguments, initial, phases, output, handoff,
         initial=initial, phases=phases, output=output, handoff=handoff,
         consumer=NativeConsumption(consumer_executable, consumer_sha256,
                                    qualification_parent, consumption_receipt),
-        reads=http.GitHubReads(read_only_token), cancelled=cancelled).run()
+        reads=http.GitHubReads(read_only_token), cancelled=cancelled, pending_workflow=pending_workflow).run()

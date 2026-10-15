@@ -13,6 +13,13 @@ retry, remove fixed objects itself, or force a process to exit. Only the product
 authenticated customer uninstall performs its normal removal. Never run it
 on the boat or a machine with physical equipment connected.
 
+This standalone CLI remains hosted-only and accepts schema-1 declarations.
+Schema-2 explicit interactive self-hosted admission is available only through
+the [joined coordinator](../docs/installer/installed-updater-live-coordinator.md#explicit-interactive-self-hosted-admission),
+which preserves independent postproduction approval and native one-use custody.
+That procedure also names the maintained disconnected-profile preparer and its
+explicit host-binding options; it grants no actual host or UAC acceptance.
+
 Before running, an operator must independently authenticate the original B0
 recovery/source/policy, exact same-commit native operator kit, final provisioner
 and its loader/publisher, supported stock OpenCPN, and the original public trust

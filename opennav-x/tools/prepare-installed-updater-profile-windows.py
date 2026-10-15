@@ -264,10 +264,19 @@ def _prepare(native, files):
                 customerUacAcceptance=False, nativeProductAcceptance=False)
 
 
-def prepare(opt_in):
+def prepare(opt_in, *, host_mode='github-hosted', journey_config=None, journey_config_sha256=None):
     native, stage = None, 'host-guard'
     try:
-        host(os.environ, sys.platform, opt_in)  # Before any reads or native effects.
+        if host_mode == 'github-hosted':
+            require(journey_config is None and journey_config_sha256 is None)
+            host(os.environ, sys.platform, opt_in)  # Before any reads or native effects.
+        else:
+            require(opt_in == OPT_IN)
+            cli = module('run-installed-updater-journey-windows')
+            cli.host(os.environ, sys.platform, host_mode)
+            require(journey_config is not None and journey_config_sha256 is not None)
+            config = cli.binding._json(cli.original(dict(path=journey_config, sha256=journey_config_sha256), 64 << 10), 64 << 10)
+            cli.validate_profile_host(config, os.environ)  # Before Native()/any filesystem effect.
         stage = 'fixture-input'
         files = contents()
         stage = 'known-folder'
@@ -292,8 +301,16 @@ def main(arguments=None):
                 raise ValueError(FAILURE)
         parser = Parser(allow_abbrev=False)
         parser.add_argument('--disposable-opt-in', required=True, action=phase.Once)
+        parser.add_argument('--host-mode', default='github-hosted', action=phase.Once)
+        parser.add_argument('--journey-config', action=phase.Once)
+        parser.add_argument('--journey-config-sha256', action=phase.Once)
         args = parser.parse_args(arguments)
-        print(json.dumps(prepare(args.disposable_opt_in), sort_keys=True))
+        if args.host_mode == 'github-hosted' and args.journey_config is None and args.journey_config_sha256 is None:
+            result = prepare(args.disposable_opt_in)
+        else:
+            result = prepare(args.disposable_opt_in, host_mode=args.host_mode,
+                             journey_config=args.journey_config, journey_config_sha256=args.journey_config_sha256)
+        print(json.dumps(result, sort_keys=True))
         return 0
     except (Exception, KeyboardInterrupt, SystemExit) as error:
         # Fixed enum and bounded unsigned numbers only; never exception text,

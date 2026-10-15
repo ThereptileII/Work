@@ -143,6 +143,37 @@ class HandoffTests(unittest.TestCase):
             with self.subTest(setup=setup), self.assertRaises(ValueError):
                 self.prepare_originals(declaration=declaration)
 
+    def test_schema2_private_host_is_bound_by_original_postproduction_approval(self):
+        declared = dict(self.declaration, schema=2, hostAdmission=dict(kind='interactive-self-hosted',
+            runnerId='901', runnerGroupId='17', labels=['self-hosted','Windows','X64','skager-disposable-interactive'],
+            clientSid=self.client['clientSid']))
+        request = self.prepare_originals(declaration=declared)
+        raw = json.dumps(declared, indent=2).encode()
+        approval = encode(dict(self.approval, requestSha256=request.request_sha256))
+        options = dict(request_bytes=request.original_bytes, declaration=raw,
+            approved_request_sha256=request.request_sha256, approval_bytes=approval,
+            approved_approval_sha256=handoff.sha256(approval), approved_pins=dict(request.pins))
+        self.assertEqual(self.bind(**options).original_declaration_bytes, raw)
+        for key, value in [('runnerId','902'), ('runnerGroupId','18'),
+                           ('labels',['self-hosted','Windows','X64','other']), ('clientSid','S-1-5-21-9-8-7-6')]:
+            changed = deepcopy(declared); changed['hostAdmission'][key] = value
+            with self.subTest(key=key), self.assertRaises(ValueError):
+                self.bind(**dict(options, declaration=json.dumps(changed, indent=2).encode()))
+        # Merely recomputing the submitted request/declaration pins cannot reuse
+        # the independently authored original approval.
+        changed = deepcopy(declared); changed['hostAdmission']['runnerId'] = '902'
+        replacement = self.prepare_originals(declaration=changed)
+        with self.assertRaises(ValueError):
+            self.bind(**dict(options, request_bytes=replacement.original_bytes,
+                declaration=json.dumps(changed, indent=2).encode(),
+                approved_request_sha256=replacement.request_sha256, approved_pins=dict(replacement.pins)))
+
+    def test_schema2_cannot_authorize_a_different_intended_client_sid(self):
+        declared = dict(self.declaration, schema=2, hostAdmission=dict(kind='interactive-self-hosted',
+            runnerId='901', runnerGroupId='17', labels=['self-hosted','Windows','X64','skager-disposable-interactive'],
+            clientSid='S-1-5-21-9-8-7-6'))
+        with self.assertRaises(ValueError): self.prepare_originals(declaration=declared)
+
     def test_independent_setup_metadata_must_match_policy_size_hash_and_declared_path(self):
         for field, value in (('path', r'C:\approved\other.exe'), ('path', 'bad\npath'),
                              ('sha256', 'f' * 64), ('bytes', 1233), ('bytes', True),

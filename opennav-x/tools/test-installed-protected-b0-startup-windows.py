@@ -17,6 +17,7 @@ import sys
 
 import updater_package as updater
 from installed_b0_fixture import InstalledB0Fixture
+import installed_updater_host as host_admission
 
 
 def phase_driver():
@@ -88,9 +89,7 @@ def prepare(path, sha, approved_request, approved_policy):
     path, identity = phase.approved_file({'path': str(path), 'sha256': sha}, 64 << 10)
     retained = [(path, identity, sha)]
     declaration = phase.strict(path.read_bytes())
-    phase.keys(declaration, ('schema', 'b0', 'setup', 'operatorKit', 'clientRequest', 'brokerBootstrapPolicy', 'approvedBaseline',
-                             'trustConfig', 'bootstrapCache', 'artifactDirectory', 'preserveSettings'))
-    require(type(declaration['schema']) is int and declaration['schema'] == 1)
+    admitted_host = host_admission.declaration(declaration)
     b0 = phase.fixture(declaration['b0'], retained)
     request_record = declaration['clientRequest']
     phase.keys(request_record, ('path', 'sha256'))
@@ -99,6 +98,7 @@ def prepare(path, sha, approved_request, approved_policy):
     request_path, identity = phase.approved_file(request_record, 1 << 20)
     retained.append((request_path, identity, approved_request))
     request = phase.strict(request_path.read_bytes())
+    require(admitted_host is None or admitted_host['clientSid'] == request.get('clientSid'))
     phase.keys(request, ('schema', 'purpose', 'clientSid', 'installed', 'stock', 'trustConfiguration', 'trustConfigSha256'))
     phase.keys(request['installed'], ('version', 'commit', 'generation', 'packageSha256', 'productBuildSha256',
                                        'executableSha256', 'inventorySha256'))
@@ -153,7 +153,7 @@ def prepare(path, sha, approved_request, approved_policy):
         pair = item['section'], item['key']
         require(pair not in seen)
         seen.add(pair)
-    return dict(b0=b0, setup=setup_path, setupSha256=declaration['setup']['sha256'], request=request, kit=kit_path, brokerPolicy=policy, retained=retained, settings=settings,
+    return dict(b0=b0, setup=setup_path, setupSha256=declaration['setup']['sha256'], request=request, kit=kit_path, brokerPolicy=policy, retained=retained, settings=settings, hostAdmission=admitted_host,
                 requestPath=request_path, trustPath=trust_path, cache=cache, artifact=artifact,
                 directories=(cache_parent, (artifact, artifact_id)), cacheSeeded=False)
 
@@ -332,6 +332,7 @@ def main(argv=None):
                     broker=phase.pin(args.approved_broker_sha256),
                     timestamp=phase.pin(args.timestamp_sha256))
         prepared = prepare(Path(args.declaration), args.declaration_sha256, pins['request'], pins['policy'])
+        require(prepared['hostAdmission'] is None)  # Schema 2 requires the independently approved joined coordinator.
         evidence = Path(args.evidence)
         require(evidence.is_absolute() and not evidence.exists() and not evidence.is_symlink())
         updater._plain(evidence.parent)
