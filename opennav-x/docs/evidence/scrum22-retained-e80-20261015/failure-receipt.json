@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-22",
+  "originalArtifact": {
+    "schema": 1,
+    "runId": "38757982655",
+    "runAttempt": "1",
+    "jobId": "116501411584",
+    "helperCommit": "842ded95bc226c681bdb36e9ebd177acd1924c04",
+    "frozenProduct": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "runConclusion": "failure",
+    "jobConclusion": "failure",
+    "artifactId": "11985442640",
+    "artifactName": "staging-retest-evidence-38744236920-attempt1-harness842ded95bc226c681bdb36e9ebd177acd1924c04-run38757982655-attempt1",
+    "artifactBytes": 25070763,
+    "artifactSha256": "01184262a101963594b27543e08be7866172bb26ef4bd769b99762805b088905",
+    "crcVerifiedMembers": 5516,
+    "originalJobLogSha256": "cc22d28382b1326818ee11391c8764d6032045e3ac6417b95dc9362b694eb48f",
+    "originalArtifactMetadataSha256": "f3e830f4ff0dc9daf57393f9ff3a96b31b92430ee85ab976dd5869bee6b0ba5e",
+    "custodyOnly": true,
+    "productAcceptance": false
+  },
+  "inputBinding": {
+    "schema": 1,
+    "source": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "harness": "842ded95bc226c681bdb36e9ebd177acd1924c04",
+    "producer": {
+      "schemaVersion": 1,
+      "repository": "ThereptileII/Work",
+      "workflowPath": ".github/workflows/opennav-baseline.yml",
+      "runId": "38744236920",
+      "runAttempt": "1",
+      "headSha": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "job": "windows-integration",
+      "conclusion": "success",
+      "artifactId": "11983131179",
+      "artifactName": "staging-build-e80cb962e1a32d98bb75b964dca6eb516f7a5e23-run38744236920-attempt1",
+      "artifactDigest": "sha256:2b94abd90b8bef5a4291206c645938965acada2e7300b8b1cbeeeee890d779dc",
+      "archiveSha256": "7c6f65cf8a76b1872b5aa46c274d19864c9d784de9bc4ca35b2c587ee98959f2"
+    },
+    "restoreReceiptSha256": "5018882ca54a664ce801cea9189aa82f2e89985d6b56101753c00c0cf4f25c33",
+    "retestReceiptSha256": "54ce2135cc28564edd8570f612b870695872eb827820656543a81dbf703e93b9",
+    "installerReportSha256": "9bb820611dc5e516d89214c7556b38db319fd27d1018e25410169ba204075052",
+    "sourceFiles": {
+      "opennav-x/installer/windows/Lifecycle.ps1": {
+        "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+        "gitBlob": "7e7ccf43f2f0425036323cba7ebe054c1e39f8af",
+        "gitBytesSha256": "0530e1570e4357d9706b4f846509ee6ae99fd66053d1aa2f46f0c577517feb68",
+        "windowsCrLfSha256": "e56ac7fa76be4ce112295de627162b4f5d283458cca1de1d115171d0aa033b40"
+      },
+      "opennav-x/tools/update-verifier/launcher/provision.go": {
+        "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+        "gitBlob": "c909bff0a657575ee09f62434e84b06ce0356306",
+        "gitBytesSha256": "61557b718bf3a86c68acd094195e27d7647907e5312d87fe213d295094cacfd7",
+        "windowsCrLfSha256": "430ee084e3700c89bda96e2d380b4285fdc505d5b54e705b2f849d696a5ee455"
+      },
+      "opennav-x/tools/update-verifier/launcher/native_windows.go": {
+        "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+        "gitBlob": "2d96f844d2c236edd44bcbc3f063d7f17d4989c1",
+        "gitBytesSha256": "2f2803806406f06d7eab777c89560816525cd1252824e3b1ec90dfe7ada556da",
+        "windowsCrLfSha256": "a688219fa000d7835d68826b4e47122a66f4e3e606d0b921adb92492a74b0da1"
+      },
+      "opennav-x/tools/update-verifier/cmd/skager-start/main.go": {
+        "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+        "gitBlob": "391f33a32e12b6af0384788c00a9eca961ce5b2c",
+        "gitBytesSha256": "de05d8a107d46d0c259a80f49bcb1d581c95918740ec2068c970aa3689d7d172",
+        "windowsCrLfSha256": "dfd0b56e99ac55a148d9dc9f2bb45eca92a013e7b28c34e2deb824d5235148d4"
+      },
+      "opennav-x/tools/smoke-installer-windows.py": {
+        "commit": "842ded95bc226c681bdb36e9ebd177acd1924c04",
+        "gitBlob": "a8c6b789417e496612ed8d283742e27664e5dfa1",
+        "gitBytesSha256": "0fae7d5c33c181c640821082c412f9441e6a6868f210b2f3387a0d6f623af86f",
+        "windowsCrLfSha256": "15653bc83b4b50b49ea3cf1ec60693da92499195025072457b0ca25c4c91079c"
+      },
+      "opennav-x/tools/qualify-staging-windows.ps1": {
+        "commit": "842ded95bc226c681bdb36e9ebd177acd1924c04",
+        "gitBlob": "35e06fde3f3f1ac454fb4f8cab4d7afdf2da5a74",
+        "gitBytesSha256": "b9b5705d4f269f14a8bf76142b2089b5e1541ca641038f86e4f2913bb7beabbe",
+        "windowsCrLfSha256": "2acc4cb6af07810b8c88d059d306a8cbdd71f2127d3821e48c2af5cd8803712a"
+      }
+    },
+    "exactOriginalProducerBinding": true,
+    "exactSealedArchiveBinding": true,
+    "exactSetupAndSourceBinding": true
+  },
+  "actualRunnerImageVersion": "20261012.333.1",
+  "fullRetest": {
+    "scope": "all",
+    "status": "failed",
+    "publicAccess": false,
+    "releaseQualification": false
+  },
+  "failure": {
+    "phase": "smoke-installer-windows.py: actual fresh installation after seven prerequisite/refusal checks",
+    "engineMember": "installer-engine/20261015-153116-824-Install.log",
+    "engineSha256": "b3b0354c665e963d3270cecf903cdc185581a6015fd1aa304f47cb764f27f768",
+    "message": "Update trust provisioning did not finish; current installed app remains recoverable.",
+    "lastSuccessfulEngineMessage": "Loader/resource self-test passed for e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "parentTimeoutMilliseconds": 15000,
+    "childStderrRetained": false,
+    "orphanLauncherPidAtJobCleanup": 3620
+  },
+  "sourceAnalysis": {
+    "boundary": "Frozen product installer/launcher lock ordering; later smoke helper reports the failure",
+    "lifecycleLock": "Lifecycle.ps1:1145 opens transaction.lock with FileShare.None; finally:1312 releases it",
+    "lifecycleChild": "Lifecycle.ps1:1248 launches --initialize-trust while retaining that lock; :1253 waits for child exit",
+    "childLock": "launcher/provision.go:24 requests the same lock; native_windows.go:157 uses nonsharing CreateFile and returns installation transaction is busy on failure",
+    "childErrorUi": "cmd/skager-start/main.go:12 calls ReportFailure before exit; launcher/native_windows.go:25 invokes synchronous MessageBoxW",
+    "inference": "The lock collision is established by the frozen source. A child error followed by blocking error UI explains the parent timeout; the specific child error was not captured in runtime logs.",
+    "noEvidenceForTimeoutInflation": true
+  },
+  "passedPrefixReceiptSha256": "62bc15db62a633d4cd9cc70eba07360de6765943192ef1fa675e37b08d5d75df",
+  "installedProductAccepted": false,
+  "chartsStepExecuted": false,
+  "packageBytesChanged": false,
+  "applicationRebuilt": false,
+  "retryDispatched": false,
+  "boatAcceptance": false,
+  "publication": false
+}

@@ -1,0 +1,316 @@
+{
+  "schema": 1,
+  "source": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+  "harness": "842ded95bc226c681bdb36e9ebd177acd1924c04",
+  "runId": "38757982655",
+  "runAttempt": "1",
+  "reports": [
+    {
+      "member": "boat-feedback-windows/result.json",
+      "sha256": "550a62baef19045c637e447343a321d1ec58bb64b50c009860f3db7ffb6d1550",
+      "bytes": 3884,
+      "status": null,
+      "result": null,
+      "passed": true,
+      "checkCount": 0,
+      "compiledComponentCount": 13
+    },
+    {
+      "member": "objects-input-profile/objects-fixture-results.json",
+      "sha256": "ec18a48fff4bddc7bba8076b7428a2fafc004f4b72d4399876c4c4163bcde894",
+      "bytes": 4357,
+      "status": null,
+      "result": "passed",
+      "passed": null,
+      "checkCount": 28,
+      "checks": [
+        {
+          "check": "Actual wx primary hints follow Day/Dusk/Night; input updates retain accessibility and Legacy hints"
+        },
+        {
+          "check": "Actual wx live text caches raw value and width; unchanged updates avoid layout and text/resize changes reflow"
+        },
+        {
+          "check": "Dashboard presentation preserves ownership, nesting, reload, geometry and deleted/recreated window lifetime"
+        },
+        {
+          "check": "XNav workspace restoration is bound to actual owned pane pointers and manager"
+        },
+        {
+          "check": "No startup GPS; real input connection added after deferred initialization"
+        },
+        {
+          "check": "Late-added GPS and actual TCP AIVDM AIS acquire without process restart"
+        },
+        {
+          "check": "Thread boundary rejects worker access"
+        },
+        {
+          "check": "Waypoint context native range/bearing, antimeridian, freshness, missing/invalid and thread guards"
+        },
+        {
+          "check": "Waypoint create, edit and stale selection rejection"
+        },
+        {
+          "check": "Deletion uses OpenCPN undo; retained snapshot survives"
+        },
+        {
+          "check": "Go To native temporary route, GPS/identity guards and user-waypoint lifetime"
+        },
+        {
+          "check": "Route name edit, upstream reversal and immutable revision guard"
+        },
+        {
+          "check": "Repeated waypoint identity and layer protections"
+        },
+        {
+          "check": "Activation uses selected navigation; active route edits refused"
+        },
+        {
+          "check": "Selected Stop identity/revision, A-to-B, duplicate, missing, deleted and thread guards"
+        },
+        {
+          "check": "Stop navigation and explicit anchor-watch creation"
+        },
+        {
+          "check": "Confirmed route/anchor exclusion, cancel, stale selections, both watches and native mark persistence"
+        },
+        {
+          "check": "Anchor observation, whole-metre label, anchor icon and owned-mark removal"
+        },
+        {
+          "check": "Anchor ownership preserves repurposed user marks and recognizes both historical watch descriptions"
+        },
+        {
+          "check": "AIS upstream CPA/TCPA, unavailable sentinel, loss, freshness and lifetime"
+        },
+        {
+          "check": "Actual modal defers detail rebuild and rejects a changed rendered activation selection"
+        },
+        {
+          "check": "Open route detail follows external rename, activation, normal waypoint advance and completion"
+        },
+        {
+          "check": "Open deleted-route detail removes activation/edit actions without reopening"
+        },
+        {
+          "check": "Options canvas reconfiguration from hidden XNav page restores chart"
+        },
+        {
+          "check": "Options reconfiguration while already on Navigation explicitly commits pane restoration"
+        },
+        {
+          "check": "Open waypoint detail refreshes rename/protection and refuses invalid, ambiguous and deleted selections"
+        },
+        {
+          "check": "Chart centering rejects missing, nonfinite and duplicate waypoint identities without viewport mutation"
+        },
+        {
+          "check": "Route, waypoint and AIS chart selection use owned deferred cards"
+        }
+      ]
+    },
+    {
+      "member": "objects-input-results.json",
+      "sha256": "15ee6a11c14a8c4175c58df539e7249a436b68bf90a6517064d5ded1af2de588",
+      "bytes": 27784,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 3,
+      "nativeEditConfirmation": "Themed property sheet saves and refreshes; delete cancellation preserves mark",
+      "transportErrors": [],
+      "checks": [
+        "Navigation object and AIS contracts through actual integrated executable",
+        "Deferred chart-selection cards and clean close",
+        "Route and restored waypoint persisted in existing OpenCPN navobj.db"
+      ]
+    },
+    {
+      "member": "route-progress-results.json",
+      "sha256": "cb5f461e4086a65f391d24e46fe228e1061ad8442df648d7cd34b415cd822620",
+      "bytes": 22972,
+      "status": null,
+      "result": "passed",
+      "passed": null,
+      "checkCount": 26
+    },
+    {
+      "member": "route-standard-progress-results.json",
+      "sha256": "e9714bc7283bc6ae202482d025b2320ff98c96dfa89f4d6183e368b3571a6532",
+      "bytes": 22972,
+      "status": null,
+      "result": "passed",
+      "passed": null,
+      "checkCount": 26
+    },
+    {
+      "member": "recovery-results.json",
+      "sha256": "05af0aedb4d2086816de08eb2b89ec3b6b24d61ba57e4e18f10fb012674acf00",
+      "bytes": 2240,
+      "status": null,
+      "result": "passed; native screenshot review required",
+      "passed": null,
+      "checkCount": 5
+    },
+    {
+      "member": "user-flows-results.json",
+      "sha256": "f07a15f4d5c3fb5fd2fda00e38516d761cbe52d014f154d97b4183ad25ee58d6",
+      "bytes": 32679,
+      "status": null,
+      "result": "passed; native screenshots require review",
+      "passed": null,
+      "checkCount": 8
+    },
+    {
+      "member": "production-recovery-results.json",
+      "sha256": "b8f6c9a704b0c831655f7cdf0e65b6a979191ccb64f1c43435b70ca56590ddaa",
+      "bytes": 7004,
+      "status": "passed",
+      "result": null,
+      "passed": null,
+      "checkCount": 7,
+      "packageSha256": "e2182746356a1d4bc6808d9699de336f9ea364785de7beca16228621bf6dcffc",
+      "filesVerified": 1046
+    },
+    {
+      "member": "mode-cycle-results.json",
+      "sha256": "70fdb0c46b8a48c76822faf036a77a83657f97a5f045e350a0e961bf9a9e081a",
+      "bytes": 5562,
+      "status": null,
+      "result": "interaction and fixture persistence passed; visual review required",
+      "passed": null,
+      "checkCount": 0
+    },
+    {
+      "member": "peer-two-instances-results.json",
+      "sha256": "2a35c87bdf504c02274c67e9df09806d71e14787017be2737123983886afc75f",
+      "bytes": 2008,
+      "status": null,
+      "result": "PASS",
+      "passed": null,
+      "checkCount": 0
+    },
+    {
+      "member": "signalk-results.json",
+      "sha256": "0160d6c9d12deb42f05e0fee06afc57b5628f7f35d704965fb34b182d832f1bf",
+      "bytes": 683,
+      "status": "passed",
+      "result": null,
+      "passed": null,
+      "checkCount": 5
+    },
+    {
+      "member": "recording-results.json",
+      "sha256": "d22ec5524fae7b7190bf6b734d3ac48f1ee62289b39b43a0de12c91793f489f2",
+      "bytes": 8228,
+      "status": null,
+      "result": "passed; screenshot review required",
+      "passed": null,
+      "checkCount": 6
+    },
+    {
+      "member": "pilot-results.json",
+      "sha256": "2e2a6fc2709d78dec427d3c611e659570e2f1aa6bc2d8ed398d281247cb21efb",
+      "bytes": 2692,
+      "status": null,
+      "result": "passed; screenshot review required",
+      "passed": null,
+      "checkCount": 7
+    },
+    {
+      "member": "boat-input-results.json",
+      "sha256": "90487a5381f1dc4c1a5af5daa7e318d0eb033bc7f5005ac240cc7192c597293f",
+      "bytes": 2025,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 5
+    },
+    {
+      "member": "instruments-input-results.json",
+      "sha256": "7cd966eafa2a805343576568459e5ff41dcc74761b819842b763e0de68e98468",
+      "bytes": 1969,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 4
+    },
+    {
+      "member": "n2k-input-results.json",
+      "sha256": "0c02baa2222097d6ca920f4369f0db4001bcf0e04209f027e077217ddeee0edc",
+      "bytes": 2099,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 7
+    },
+    {
+      "member": "navigation-input-results.json",
+      "sha256": "191bb5764f8b3da049a0dc7824b2ebc2b16e302ef562380d7f4461e01f1c0594",
+      "bytes": 8178,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 0
+    },
+    {
+      "member": "route-input-results.json",
+      "sha256": "2b51adfa5d60a0008c828ab88ba786914d14098d39e171aefb22f0b36296c518",
+      "bytes": 28817,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 0
+    },
+    {
+      "member": "route-standard-input-results.json",
+      "sha256": "a187edaea254f3c7e997c717c422b4fee17fe5847f1291c70e78af9330171f8c",
+      "bytes": 29044,
+      "status": null,
+      "result": "loopback transport and lifecycle passed; numeric and stale screenshot review required",
+      "passed": null,
+      "checkCount": 0
+    }
+  ],
+  "signedUpdateContracts": [
+    {
+      "architecture": "x64",
+      "sessionChecks": 61,
+      "operationChecks": 129,
+      "storeChecks": 245,
+      "installedBarrierChecks": 42,
+      "previousRestorationChecks": 106,
+      "sessionLogSha256": "de7103c579d038ca39937e9086d4ce1ffbad1eb821c159c88f147cf422187f93",
+      "previousRestorationLogSha256": "5dee89c5b87d1515522685b4398bb2944ba86b3f220d9d3160233d80982b0526",
+      "installedProductAccepted": false,
+      "boatAccess": false
+    },
+    {
+      "architecture": "x86",
+      "sessionChecks": 61,
+      "operationChecks": 129,
+      "storeChecks": 245,
+      "installedBarrierChecks": 42,
+      "previousRestorationChecks": 106,
+      "sessionLogSha256": "de7103c579d038ca39937e9086d4ce1ffbad1eb821c159c88f147cf422187f93",
+      "previousRestorationLogSha256": "2a024126b231d1bb26fa95d3b6991652a5947464c91ccda54119a056be2aee20",
+      "installedProductAccepted": false,
+      "boatAccess": false
+    }
+  ],
+  "installerChecksBeforeFailure": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+    "Unknown installation ownership refused without adding logs or changing files",
+    "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+    "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication"
+  ],
+  "installerAccepted": false,
+  "chartsStepExecuted": false,
+  "fullQualificationAccepted": false,
+  "designAcceptance": false,
+  "boatAcceptance": false
+}
