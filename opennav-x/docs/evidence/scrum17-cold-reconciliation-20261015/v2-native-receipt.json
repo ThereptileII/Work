@@ -1,0 +1,222 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.ColdReconciliation.NativeReceipt.1",
+  "issue": "SCRUM-17",
+  "status": "passed-scoped-native-helper-gate",
+  "sourceCommit": "d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+  "workflow": ".github/workflows/skager-profile-preservation.yml",
+  "runId": 38703828242,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38703828242",
+  "runConclusion": "success",
+  "jobs": [
+    {
+      "id": 116318196581,
+      "name": "preservation (ubuntu-24.04)",
+      "conclusion": "success",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38703828242/job/116318196581",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Focused preservation and existing adoption contracts",
+          "conclusion": "success"
+        },
+        {
+          "name": "Actual disposable closed-session transaction and interruptions",
+          "conclusion": "skipped"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    },
+    {
+      "id": 116318197067,
+      "name": "preservation (windows-2022)",
+      "conclusion": "success",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38703828242/job/116318197067",
+      "steps": [
+        {
+          "name": "Set up job",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Focused preservation and existing adoption contracts",
+          "conclusion": "success"
+        },
+        {
+          "name": "Actual disposable closed-session transaction and interruptions",
+          "conclusion": "success"
+        },
+        {
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success"
+        },
+        {
+          "name": "Post Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+          "conclusion": "success"
+        },
+        {
+          "name": "Complete job",
+          "conclusion": "success"
+        }
+      ]
+    }
+  ],
+  "originalArtifacts": [
+    {
+      "id": 11957847234,
+      "name": "session-preservation-windows-2022-d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+      "bytes": 9621,
+      "sha256": "ccd1554fc73953dc2d699ad3a039524a6a0e61ab41b083db69c8dff229204185",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "session-preservation.log",
+          "bytes": 22644,
+          "crc32": "43c9461e",
+          "sha256": "46f5822a93bae74dd4928e227b1aa8dec627f62ff8d5f2664f158674b1e0724a"
+        },
+        {
+          "name": "baseline-adoption.log",
+          "bytes": 28966,
+          "crc32": "40de2620",
+          "sha256": "fa9791be15aa4e93b707159394442e2eee063c2a6ab12a9c04d16559fc362083"
+        },
+        {
+          "name": "transaction.log",
+          "bytes": 5692,
+          "crc32": "e24255df",
+          "sha256": "2535a0c066c793ce3796203e9a5e71a5be46b57c2782366e1ca1516334469a79"
+        }
+      ]
+    },
+    {
+      "id": 11956848706,
+      "name": "session-preservation-ubuntu-24.04-d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+      "bytes": 5559,
+      "sha256": "29b6b747d391bb93e12431e681a562815e4a4ef7351061b146e324a0345c9cf5",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "bytes": 8730,
+          "crc32": "a570ab58",
+          "sha256": "e07e5e2c0d7f980004f709a005cc4f454d73ec02b574c398952d86dce5e94dd2"
+        },
+        {
+          "name": "session-preservation.log",
+          "bytes": 15741,
+          "crc32": "a35022fb",
+          "sha256": "e64b4dcdbcdd667b82a08033c41b30d02b9b25f6b75450fd203c63ef7d72bd24"
+        }
+      ]
+    }
+  ],
+  "authentication": {
+    "originalRunJobsAndArtifactApiMetadataPreserved": true,
+    "artifactApiDigestsAndSizesMatched": true,
+    "allZipMemberCrcChecksPassed": true,
+    "apiPayloadSha256": {
+      "run": "ebb95fa960ad73233b612969dd2aa6deb8d16b448f380104f7db9dc2a0faf6ef",
+      "jobs": "aac06e949da3509986833249ab71b8c1db699a9d7862605f56ef812eff347d41",
+      "artifacts": "e252b4b2ba1f0978173bbffc3eaa9d4e906b6ed155631583199ec898f2dd8265"
+    }
+  },
+  "reports": {
+    "linux": {
+      "sessionPreservation": 86,
+      "reconciliation": 133,
+      "baselineAdoption": 127,
+      "nativeProfileLockAndAcl": false
+    },
+    "windows": {
+      "sessionPreservation": 86,
+      "reconciliation": 136,
+      "reconciliationNativeProfileLockAndAcl": true,
+      "baselineAdoption": 131,
+      "baselineAdoptionNativeTransactionAcceptance": true,
+      "closedSessionTransaction": 27,
+      "profileLockFixture": {
+        "status": "passed",
+        "native": true,
+        "checkCount": 23
+      }
+    }
+  },
+  "coveredBoundary": [
+    "Explicit v2 cold retention preserves all current profile bytes and unqualified pilot lineage",
+    "Fresh passive Inventory/Prepare/Apply/launch verification against inert exact-identity fixtures",
+    "PowerShell 5.1 raw Hashtable/JSON digest normalization, permutation stability and sensitivity to all seven reviewed fields",
+    "Exact passive evidence, authority, ownership, profile, resource and interruption refusals; native file lock, ACL, metadata and rollback operations",
+    "Existing native adoption/resource and closed-session preservation transaction fixtures"
+  ],
+  "sourceTransport": {
+    "sourceCommit": "d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+    "fileCount": 161,
+    "archive": {
+      "name": "review-tools.zip",
+      "bytes": 578354,
+      "sha256": "007fa03916a8d3b0db60de4826ecee5f36d7f0aa3c91a64a7d1dfaf9c9941199"
+    },
+    "manifest": {
+      "name": "manifest.json",
+      "bytes": 22297,
+      "sha256": "86cb91c6cb78e4fbfa98c867da0a558c829d2474ba0d4a6970f5f30260c220be"
+    },
+    "bootstrap": [
+      {
+        "name": "Common.ps1",
+        "gitBlob": "d1bf7f005f5c31b637b04fdd336aeeb14538b737",
+        "sha256": "4bbab6f0833f77bdf505326d1115b91deaea6f0060297502b43687d7fd4716c8"
+      },
+      {
+        "name": "stage-review-tools.ps1",
+        "gitBlob": "6376967ca4d5463e260811f94a0b4964db98a98d",
+        "sha256": "701e03e6ae84137b9b173804393e9b5247b797b5bccd429a42858ab20a548574"
+      }
+    ],
+    "allArchivedBytesMatchExactGitObjects": true,
+    "allSiblingDependenciesPresent": true,
+    "boundedDynamicDependencyArraysVerified": 3,
+    "wholeToolSuiteAccepted": false
+  },
+  "limitations": [
+    "Identity/process discovery uses explicit inert fixture adapters; no actual installed application or vessel profile is qualified",
+    "No product build, package, installation, navigation behavior, boat acceptance or physical pilot qualification follows from this helper gate",
+    "The broker dependency-closure suite passed 28 local checks but is not executed by this workflow; Windows restart acceptance remains open",
+    "Unchanged tool bytes inherit evidence only where the original accepted scope and exact bytes independently match; the complete 161-file tool suite is not accepted by this run",
+    "No source bundle was staged to the boat and no application, transport or actuator command was executed by this evidence task",
+    "Earlier failed run 38701955180 and its original evidence remain failed and preserved"
+  ],
+  "applicationLaunched": false,
+  "boatAccess": false,
+  "physicalOutput": false,
+  "windowsRestartAccepted": false,
+  "wholeProductAccepted": false,
+  "actualBoatReconciled": false
+}
