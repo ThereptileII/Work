@@ -61,3 +61,23 @@ separate. No new build, release or boat acceptance follows from these records.
 
 The pre-existing [linux-receipt.json](linux-receipt.json) records the original
 Linux regression result independently and is unchanged by this evidence update.
+
+## Retained native plugin qualification
+
+The [retained native run 38704113599, attempt 1](https://github.com/ThereptileII/Work/actions/runs/38704113599)
+passed using helper `b096faa20828c5c85b81e4418d074e157cde1457` against the
+original producer `977d37c79f652fd9b9e28e55f26ec259c35eea8e` from run
+`38686209123`, attempt 2. The application was not rebuilt.
+
+The [sanitized receipt](plugin-retained-native-receipt.json) records the
+verified result artifact `11957991338`, its SHA-256, the independently reviewed
+retained inventory and 99 consumed-source bindings. Only the standalone probe
+changed. Native results passed 13 plugin download cases, the ignored-failure
+negative mutant, verified cleanup, 58 loader checks, 17,625 deterministic
+forwarder checks and 282 plugin TLS byte-policy checks.
+
+Original logs, metadata, downloaded artifact and the independently checked
+[verification receipt](/home/standard/Work/skager-plugin-retained-38704113599/verification.json)
+remain private. This qualifies the native fixtures; it does not grant installed
+product or boat acceptance, or resolve the earlier installer qualification
+failure recorded in [native-receipt.json](native-receipt.json).

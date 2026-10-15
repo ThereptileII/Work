@@ -1,0 +1,71 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "status": "verified-native-fixture-pass",
+  "completedUtc": "2026-10-15T08:16:35Z",
+  "scope": "Retained SDK native Win32 plugin download and loader fixtures; no application rebuild",
+  "qualification": {
+    "runId": 38704113599,
+    "attempt": 1,
+    "jobId": 116319147639,
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38704113599",
+    "helperCommit": "b096faa20828c5c85b81e4418d074e157cde1457"
+  },
+  "producer": {
+    "runId": 38686209123,
+    "attempt": 2,
+    "candidateCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+    "jobId": 116274722975,
+    "jobConclusion": "success",
+    "runConclusion": "failure",
+    "artifactId": 11954081545,
+    "artifactSha256": "1edc1ee9c26567c9c7f1798c90b672b93083b01bf76df0d2e24dd487c57738f2"
+  },
+  "resultArtifact": {
+    "id": 11957991338,
+    "bytes": 12733517,
+    "sha256": "76f1642078131f8c49366b1039abd7f0fdc8967d921d7b89aac66f014159c59f"
+  },
+  "sourceBinding": {
+    "consumedInputs": 99,
+    "onlyChangedConsumedInput": "opennav-x/tools/plugin-download-guard-probe.cpp",
+    "independentlyReviewedInventorySha256": "7666db6cce687cb045c7b58b4145bd1bb312c09daf6cd69bafc76047635fdfd9",
+    "patchedProductionSourceSha256": {
+      "model/src/plugin_handler.cpp": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
+      "model/src/downloader.cpp": "6163ffeab05b71573e56c568e89616237817226ad2a65558e1f32ea2b7ad81ab",
+      "model/include/model/downloader.h": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346"
+    }
+  },
+  "nativeResults": {
+    "pluginDownloadCases": {
+      "passed": 13,
+      "total": 13,
+      "refusalsPreservedInstalledFilesAndRecords": true,
+      "forbiddenHttpRequests": 0,
+      "ignoredDownloadFailureMutation": "rejected: failed download entered archive installation",
+      "cleanup": "verified",
+      "cleanupErrors": []
+    },
+    "loaderChecksPassed": 58,
+    "deterministicWin32ForwarderChecksPassed": 17625,
+    "pluginTlsBytePolicyChecksPassed": 282
+  },
+  "originalEvidence": {
+    "privateDirectory": "/home/standard/Work/skager-plugin-retained-38704113599",
+    "verification": {
+      "name": "verification.json",
+      "bytes": 1062,
+      "sha256": "f07500dcd49faa3e807d9c7e281ba3db8e75a8430189280799f7e8d04abc393a"
+    },
+    "nativePluginResultSha256": "7894e00fa8bc1ac520c1ad5b48d01ff818464f50207dcb33ca8babbc8f1663e3"
+  },
+  "acceptance": {
+    "nativeFixturePass": true,
+    "applicationRebuilt": false,
+    "installedProductAccepted": false,
+    "boatAccepted": false,
+    "vendorPluginExecuted": false,
+    "pluginFactoryExecuted": false
+  }
+}

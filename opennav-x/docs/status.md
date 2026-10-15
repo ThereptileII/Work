@@ -107,7 +107,7 @@ is dispatched with reviewed inventory hash `7666db6cce687cb045c7b58b4145bd1bb312
 Attempt 1 refuses an older hosted image before SDK restore. Attempt 2 receives
 the exact selected image and authenticates the retained inputs, but its separate
 PluginHandler probe fails to compile because archive headers include Windows
-Winsock 1 before wxWidgets selects Winsock 2. Windows-only include correction `36dc0e65` is being qualified by
+Winsock 1 before wxWidgets selects Winsock 2. Windows-only include correction `36dc0e65` passes
 [38704113599](https://github.com/ThereptileII/Work/actions/runs/38704113599),
 using separate harness `b096faa2` and the same immutable producer/inventory.
 The harness authenticates its own exact revision and 99 consumed inputs, allowing
@@ -115,8 +115,14 @@ only explicitly reviewed probe/console differences with both hashes retained.
 Independent review closed three missing transitive authentication imports before
 dispatch; focused 36 workflow and 39 capture checks pass. No SDK is rebuilt;
 production downloader slices and assertions remain unchanged. This is not an
-application build failure. The gate does not rebuild the application or qualify
-the failed installer.
+application build failure. Original artifact `11957991338` authenticates by
+identity, size, SHA-256 and CRC. All 13 native PluginHandler cases pass, the
+ignored-failure mutant is rejected, cleanup is verified, and 58 loader, 17,625
+forwarder and 282 TLS byte-policy checks pass. The gate does not rebuild the
+application or qualify the failed installer. Independent source audit confirms
+the SDK's 29 maintained inputs and producer workflow remain unchanged; the next
+coherent application/package build reuses that authenticated SDK with fresh
+native environment checks.
 [Independent input review](evidence/scrum209-candidate-977d37c7-20261015/plugin-input-review.json).
 
 ## Bounded AIS helper and boat recovery preparation
@@ -172,8 +178,12 @@ and broker-closure 28 checks pass.
 [Original refusal](evidence/scrum17-cold-reconciliation-20261015/v2-native-refusal.json)
 and [isolated diagnosis](evidence/scrum17-cold-reconciliation-20261015/v2-canonicalization-probe.json)
 are retained. Corrected native gate
-[38703828242](https://github.com/ThereptileII/Work/actions/runs/38703828242) is
-pending before real Plan/Commit. A read-only boat recheck confirms the same
+[38703828242](https://github.com/ThereptileII/Work/actions/runs/38703828242) passes
+on exact `d397ebfb`: Windows 86 session cases with 136 nested reconciliation,
+131 adoption and 27 explicit transaction groups; Linux 86/133/127. Both original
+artifacts authenticate by run/commit, size, SHA-256 and CRC. Full installed
+restart acceptance remains separate. Real Plan/Commit is next, following exact
+helper staging and a fresh independently reviewed inspection. A read-only boat recheck confirms the same
 profile/active-marker hashes, no running OpenCPN and all three remote-access
 services running. The current profile and active transaction are unchanged, no
 application was launched, and no physical command was sent. Retention must not
