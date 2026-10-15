@@ -3,6 +3,9 @@
 Read and follow [the project agent instructions](opennav-x/AGENTS.md) before
 working anywhere in this repository. They define the Jira backlog, Staging
 delivery policy, safety boundaries, model delegation and required evidence.
+Internal administration, including creating skills and maintaining agent
+instructions, needs no Jira ticket or board scan. Product work remains tracked
+under the scope rule in the project instructions.
 
 The scoped read-only Claude specialist is [tools/agents/claude-review](tools/agents/claude-review).
 Follow [its workflow and isolation rules](tools/agents/README.md). Codex owns

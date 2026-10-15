@@ -1,12 +1,12 @@
 ---
 name: skager-jira
-description: Read, select, triage and update SKAGER work in Navigare/SCRUM using the actual Jira board, issue metadata and evidence. Use for backlog coordination and customer-feedback intake design, not as authorization to implement, deploy or publish.
+description: Read, select, triage and update SKAGER work in Navigare/SCRUM using the actual Jira board, issue metadata and evidence. Use for product backlog coordination and customer-feedback intake design; internal skills/agent administration needs no ticket. Does not authorize implementation, deployment or publication.
 ---
 
 # SKAGER Jira
 
 Jira [Navigare / SCRUM](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
-is the sole development backlog. Keep technical evidence in the repository or
+is the sole product-development backlog. Keep technical evidence in the repository or
 linked artifacts; do not create a competing roadmap or TODO system.
 
 Locate the SKAGER checkout and read its `AGENTS.md`, `opennav-x/AGENTS.md`,
@@ -15,6 +15,24 @@ Locate the SKAGER checkout and read its `AGENTS.md`, `opennav-x/AGENTS.md`,
 not this installed skill. The later delivery policy takes precedence over older
 channel/design scheduling rules. This skill does not authorize external writes
 outside the user's task, builds, tests, automations, delivery or public access.
+
+## Decide whether Jira is needed
+
+Routine internal administration needs no ticket, board scan, transition or Jira
+progress comment. This includes creating/maintaining skills, agent instructions,
+local agent-tool setup and internal workflow housekeeping. Perform the authorized
+admin task directly and keep ordinary Git history where relevant; no Jira key is
+needed in its branch or commit. Do not create retrospective admin tickets.
+
+Product features, customer bugs, security/data-preservation changes, installer/
+updater work, release/CI gates and acceptance evidence remain tracked. Judge the
+actual effect: an agent guide is admin, but changing a qualification script or a
+release requirement is product work. Track only the product portion of mixed
+work; incidental admin needs no separate issue. Preserve existing historical
+tickets unless the user asks to change them. These distinctions do not relax
+secrets, permissions or safety requirements.
+
+The board workflow below applies to product work and explicit Jira requests.
 
 ## Establish the live state
 

@@ -24,11 +24,28 @@ The current project goal is:
 ## Jira-driven public-beta work
 
 [Navigare / SCRUM board](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
-is the sole development backlog. The public-beta requirements are captured in
+is the sole product-development backlog. The public-beta requirements are captured in
 `docs/public-beta-contract.md`; that contract and technical evidence are not a
 second roadmap. Do not maintain a competing private TODO list.
 
-At the beginning of each substantial cycle:
+### Product work versus internal administration
+
+User decision: 2026-10-15. Routine internal administration does not need a Jira
+ticket, board scan, transition or progress comment. Examples include creating or
+maintaining Codex skills, agent instructions, local agent-tool setup and internal
+workflow documentation. Make these changes directly, use ordinary Git history
+where relevant, and report the outcome; a Jira key is not required in their
+branch or commit names. Do not create retrospective admin tickets by default.
+
+Track product features, customer bugs, product security/data-preservation work,
+installer/updater changes, release/CI gates and acceptance evidence in Jira.
+Classify by effect rather than filename: documenting a release gate or changing
+a qualification script is product work; editing an agent guide is normally admin.
+For mixed work, track the product part and handle incidental admin without a
+separate ticket. Existing historical admin tickets need not be deleted or
+rewritten. Authorization, secrets and safety rules still apply to both kinds.
+
+At the beginning of each substantial product-development cycle:
 
 1. Read the board, its actual column/status mapping, In Progress and Testing
    issues, and all unresolved `scope-public-beta` issues. Complete pagination.
@@ -60,8 +77,9 @@ review wrapper. This supersedes the earlier Astra High and Luna/Sol allocation.
 Use isolated worktrees for delegated implementation; retain the wrapper's
 snapshot, secret-exclusion and read-only boundaries for Claude reviews. Codex
 owns final decisions and integration. The root agent is the single coordinator for
-integration, full application builds and releases. Tie every task to its Jira
-issue, assign non-overlapping file ownership and acceptance criteria, and return
+integration, full application builds and releases. Tie each delegated product task to its Jira
+issue; internal admin tasks need no issue. Assign non-overlapping file ownership
+and acceptance criteria, and return
 focused test results to the coordinator. Subagents must not independently
 start duplicate full builds, deliveries or boat operations. Integrate a coherent
 batch and inspect the combined change; request one build/delivery when its

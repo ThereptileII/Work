@@ -3,7 +3,10 @@
 Product-owner decision: 2026-10-04.
 Workflow authority: [SCRUM-97](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-97).
 CI implementation: [SCRUM-290](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-290).
-Jira remains the sole backlog; this document records the delivery policy.
+Jira remains the sole product backlog; this document records the delivery policy.
+The 2026-10-15 [administration rule](../AGENTS.md#product-work-versus-internal-administration)
+exempts internal skills, agent setup and workflow housekeeping from tickets and
+board scans. Product/release changes and acceptance remain tracked.
 
 ## Default channel and delivery authority
 

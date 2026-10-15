@@ -3,6 +3,11 @@
 Versioned source for the user-requested reusable development guides (SCRUM-371)
 and provider workflows (SCRUM-372).
 These are agent tooling, not application resources, test acceptance or a backlog.
+The issue links above are historical. Under the 2026-10-15 user decision,
+creating/maintaining these skills is internal administration: no new Jira ticket,
+board scan or Jira progress update is required. Use ordinary version history.
+Product changes or acceptance work discovered during administration remain
+subject to the project Jira rule.
 
 | Skill | Use |
 | --- | --- |

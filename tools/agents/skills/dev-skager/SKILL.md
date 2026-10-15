@@ -13,13 +13,20 @@ This skill captures working methods, not a second backlog or release approval.
 Find the intended Git checkout from the active workspace/task attachments. Confirm
 it contains `opennav-x/AGENTS.md`; do not assume the shell starts inside the repo
 or that a historical worktree is still current. Read root/project `AGENTS.md`,
-`opennav-x/docs/delivery-workflow.md` and the selected Jira issue. Use
+`opennav-x/docs/delivery-workflow.md` and, for product work, the selected Jira issue. Use
 `opennav-x/docs/status.md` as a handoff, then verify drift-prone claims against
 current Git, CI and Jira. Skills supplement these authorities; later explicit
 user instructions win.
 
-For a substantial cycle use [skager-jira](../skager-jira/SKILL.md) to select and
-record work. Respect an explicit user reprioritization rather than silently
+Internal administration (skills, agent instructions, local agent-tool setup and
+workflow housekeeping) needs no Jira ticket, board scan or Jira progress update.
+Make the authorized change directly, keep ordinary version history and report
+the result. Product features, defects, release/CI gates, security and acceptance
+remain Jira-tracked; classify by effect, not filename. Mixed work needs a product
+issue for its product part, not a separate ticket for incidental admin.
+
+For a substantial product cycle use [skager-jira](../skager-jira/SKILL.md) to select
+and record work. Respect an explicit user reprioritization rather than silently
 adding unrelated launch work. Inspect relevant pinned OpenCPN source before
 changing its integration; preserve navigation/storage semantics and small
 integration hooks. Do not build a parallel route, AIS or connection database.
@@ -30,7 +37,8 @@ integration hooks. Do not build a parallel route, AIS or connection database.
   defect, test-fixture defect, build-input defect and transport failure;
   compilation or a helper exception alone does not identify an application crash.
 - Split independent work into small bounded assignments when delegation is
-  authorized. Give each an issue, isolated worktree, exclusive files and concrete
+  authorized. Give each product task its issue (admin tasks are exempt), an
+  isolated worktree, exclusive files and concrete
   acceptance. Root alone integrates, requests full builds and operates the boat.
   Check current model availability and AGENTS rather than pinning old model names
   here. No agent independently starts duplicate builds or deliveries.

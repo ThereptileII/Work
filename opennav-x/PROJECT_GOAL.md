@@ -24,11 +24,13 @@ blanket visual-promotion requirements in the preserved source documents without
 changing functional, security or data-preservation gates.
 
 [Navigare / SCRUM](https://swedishcountrysideliving.atlassian.net/jira/software/projects/SCRUM/boards/1)
-is the authoritative and sole backlog. Select work, record dependencies and
+is the authoritative and sole product backlog. Select product work, record dependencies and
 priorities, and track acceptance there according to [AGENTS.md](AGENTS.md) and
 [SCRUM-97](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-97).
 Repository contracts and evidence explain implementation and validation; they
-do not replace Jira planning or maintain a competing TODO system.
+do not replace Jira planning or maintain a competing TODO system. Routine
+internal administration, such as skills and agent instructions, needs no Jira
+ticket or board scan under the later 2026-10-15 rule in AGENTS.md.
 
 The product-owner decision in [SCRUM-89](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-89)
 selects **SKAGER** as the brand, **SKAGER App** as the product and **skager.app**
