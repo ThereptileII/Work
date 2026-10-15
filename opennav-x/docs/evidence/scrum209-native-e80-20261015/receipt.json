@@ -1,0 +1,776 @@
+{
+  "schema": 1,
+  "scope": "Original Windows producer outcomes for SCRUM-208/209/212/301; sanitized evidence receipt.",
+  "candidate": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+  "repository": "ThereptileII/Work",
+  "run": 38744236920,
+  "attempt": 1,
+  "job": 116461918332,
+  "job_conclusion": "success",
+  "run_url": "https://github.com/ThereptileII/Work/actions/runs/38744236920",
+  "job_url": "https://github.com/ThereptileII/Work/actions/runs/38744236920/job/116461918332",
+  "archive": {
+    "file": "windows-build-evidence.zip",
+    "artifact_id": 11983241024,
+    "bytes": 65382852,
+    "sha256": "0632afdef595c2c8f59d42e4e7830132f5c88cadb2d0faa78b49e0a7fbe2ce79",
+    "independent_archive_rehash_matches": true,
+    "full_crc_pass_reported_by_custody_owner": 18125,
+    "full_crc_not_repeated": true
+  },
+  "extraction": {
+    "source_file": "extraction.json",
+    "bytes": 28452,
+    "sha256": "1bd02d0b9cd1143162547ce1b1d5a81e74770c392e20cc29222ad434e5400c9d",
+    "originals_retained_privately": true,
+    "archive_rehash": "Matched the authenticated artifact digest; no new download.",
+    "selected_members": "Original JSON/XML/log contents read and hashed; both CTest XML name lists compared.",
+    "not_performed": [
+      "new test execution",
+      "build",
+      "full CRC repeat",
+      "boat operation"
+    ],
+    "source_closure_limit": "The AIS report and trust prerequisites retain their source/runtime identities. This extraction does not repeat their complete input-closure validation."
+  },
+  "ctest": {
+    "distinct_test_names": 146,
+    "executions": 292,
+    "same_ordered_names_in_both_reports": true,
+    "variants": {
+      "fixture": {
+        "member": "windows-xnav-tests.xml",
+        "passed": 146,
+        "failed": 0,
+        "disabled": 0,
+        "skipped": 0,
+        "timestamp_as_recorded": "2026-10-15T14:21:38"
+      },
+      "product": {
+        "member": "windows-production-tests.xml",
+        "passed": 146,
+        "failed": 0,
+        "disabled": 0,
+        "skipped": 0,
+        "timestamp_as_recorded": "2026-10-15T14:41:56"
+      }
+    },
+    "names": [
+      "DateTimeFormatTest.LMTTimeZoneOneHourEast",
+      "DateTimeFormatTest.LMTTimeZone30MinEast",
+      "DateTimeFormatTest.LMTTimeZoneWest",
+      "DateTimeFormatTest.CustomFormatStringEnUS",
+      "DateTimeFormatTest.CustomFormatStringUTC",
+      "DateTimeFormatTest.CustomFormatStringEST",
+      "DateTimeFormatTest.CustomTimeZone",
+      "DateTimeFormatTest.ShowTimezoneTrue",
+      "DateTimeFormatTest.ShowTimezoneFalse",
+      "DateTimeFormatTest.ShowTimezoneDefault",
+      "DateTimeFormatTest.LocalTimezoneEST",
+      "DateTimeFormatTest.LocalTimezoneCETSwedish",
+      "MsgFixture.ObservableMsg",
+      "Messaging.NavMsg",
+      "Messaging.All0183",
+      "Observable.torture",
+      "Drivers.Registry",
+      "Navmsg2000.to_string",
+      "FileDriver.Registration",
+      "FileDriver.output",
+      "Listeners.vector",
+      "Guernsey.play_log",
+      "FindDriver.lookup",
+      "Registry.persistence",
+      "Position.ParseGGA",
+      "Priority.Framework",
+      "Priority.DifferentSource",
+      "AIS.Decoding",
+      "AIS.AISVDO",
+      "AIS.AISVDM",
+      "Navmsg.ActiveMessages",
+      "Instance.WxInstanceChk",
+      "FormatTime.Basic",
+      "SemanticVersion.Basic",
+      "Filter.Create",
+      "Filter.ListSystemFilters",
+      "RestServer.start_stop",
+      "RestServer.Ping",
+      "RestServer.Pong",
+      "RestServer.Version",
+      "RestServer.Object",
+      "RestServer.CheckWrite",
+      "RestServer.PluginMessage",
+      "OpenNavDiagnostics.FreshnessFrameCoherence",
+      "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+      "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+      "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+      "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential",
+      "OpenNavPilotPresentation.MeasuredMagneticHeadingAndCommands",
+      "OpenNavPilotPresentation.PendingAndTimeoutNeverInventConfirmation",
+      "OpenNavPilotPresentation.InvalidFreshnessAndHeading",
+      "OpenNavPilotPresentation.PermissionAndReplay",
+      "OpenNavPilotPresentation.ProductStatusOnlyOverridesOldPermission",
+      "OpenNavPilotPresentation.StatusOnlyShowsFeedbackLossAndDoesNotPromiseSetup",
+      "OpenNavAnchorView.CurrentPositionAndUnavailableStates",
+      "OpenNavAnchorView.ChangedPositionAndInvalidObservationsSuppressed",
+      "OpenNavAnchorView.HistoryOwnedBoundedAndNeverRefreshedByReading",
+      "OpenNavAnchorView.DistanceUnitsPreserveSmallMovementAndUnavailable",
+      "OpenNavAnchorGeometry.PinnedMercatorProjectionIncludingAntimeridian",
+      "OpenNavAnchorGeometry.InvalidCoordinatesUnavailable",
+      "OpenNavAnchorGeometry.SelectedFixReplayBetweenNormalWatchTicks",
+      "OpenNavAnchorGeometry.InvalidFixResetAndMovedWatchDoNotReuseDistance",
+      "OpenNavPassage.CurrentObservationProvenance",
+      "OpenNavEnergyView.CurrentObservationProvenance",
+      "OpenNavInstruments.CurrentDirectionalProvenance",
+      "OpenNavSourceHealth.PerMeasurementAndIndependentAis",
+      "OpenNavFooter.OwnedNavigationAndHealth",
+      "OpenNavHorizon.OwnedAdviceAndActions",
+      "OpenNavRouteGeometry.AntimeridianFirstMiddleFinalMatchUpstream",
+      "OpenNavRouteGeometry.ActualReverseAndEditChangeRevision",
+      "OpenNavRouteGeometry.RemovedRouteIsNotDereferencedAndSnapshotSurvivesDeletion",
+      "OpenNavRouteGeometry.RepeatedObjectAndGuidAreRejected",
+      "OpenNavRouteGeometry.NestedEventGuardRejectsEditThenRestore",
+      "OpenNavRouteGeometry.OpenRouteOrPointEditRemainsUnavailable",
+      "OpenNavRouteGeometry.CopyRefusesWorkerThread",
+      "OpenNavRouteGeometry.CrossTrackReaderCopiesNativeGettersOnlyWhenProgressValid",
+      "OpenNavMarine.N2kBatteryPreservesInstanceAndSign",
+      "OpenNavMarine.RealAddressClaimUnifiesPackAcrossDifferentPgns",
+      "OpenNavMarine.N2kHighVoltageSaturationIsUnavailable",
+      "OpenNavMarine.N2kSocAndSohDoNotInventCapacity",
+      "OpenNavMarine.N2kRejectsEveryTruncatedEnvelope",
+      "OpenNavMarine.N2kHeadingRequiresReferenceProvenance",
+      "OpenNavMarine.N2kWindDoesNotConfuseNorthAndRelativeAngles",
+      "OpenNavMarine.N2kDepthRudderRpmAndTankUnits",
+      "OpenNavMarine.NmeaMissingValuesNeverBecomeZero",
+      "OpenNavMarine.NmeaChecksumsStatusAndWindUnits",
+      "OpenNavMarine.SignalKIntegerRatioAndPackIdentity",
+      "OpenNavMarine.SignalKContextTimestampAndNulls",
+      "OpenNavMarine.SignalKFractionalTimestampNativeClockResolution",
+      "OpenNavMarine.SignalKSourceMissingAndUnknownPaths",
+      "OpenNavMarine.SignalKPropulsionAndExplicitExtensionMapping",
+      "OpenNavMarine.ConfiguredLiveBatteryFeedsEnergyWithoutDemoDefaults",
+      "OpenNavMarine.PersistedPropulsionMappingsPreserveAgeAndDomain",
+      "OpenNavMarine.DcWideRangeVoltageCurrentFromBoatWire",
+      "OpenNavMarine.DcWideRangeSentinelsAndUnsignedVoltage",
+      "OpenNavMarine.DcWideRangePrecedenceKeepsEpochCoherent",
+      "OpenNavMarine.EngineTemperaturePreservesFieldMeaningAndLength",
+      "OpenNavMarine.TransmissionGearUsesPinnedDecoder",
+      "OpenNavMarine.BetaPgnTruncationAndReservedIdentity",
+      "OpenNavMarine.ErrorCodesCannotBecomePlausibleMeasurements",
+      "OpenNavMarine.BoundBoatFieldsUseActualPinnedMarineDecoder",
+      "OpenNavMarine.NmeaRejectsUntrustedBytesBeforeWxParsing",
+      "OpenNavMarine.N2kRejectsInvalidPriorityAndBoundedRandomEnvelopes",
+      "OpenNavMarine.SignalKRejectsDeepOrMalformedExternalText",
+      "OpenNavMarine.SignalKUnicodeSourceAndDriverFraming",
+      "OpenNavAisClock.UsesPinnedWxUtcTickConvention",
+      "OpenNavAisClock.SameElapsedTimeInUtcAndEastAndWestTimezones",
+      "OpenNavAisClock.RetainsStaleObservationAge",
+      "OpenNavAisClock.RejectsFutureMissingImplausibleAndOverflowReports",
+      "OpenNavSettings.PersistsInSharedProfileWithoutChangingOtherEntries",
+      "OpenNavSettings.CorruptRecordPreservedAndFailsClosed",
+      "OpenNavSettings.DisplayPreferencesRoundTripWithoutChangingOlderSettings",
+      "OpenNavSettings.InvalidDisplayRecordPreservedAndInvalidSaveRejected",
+      "OpenNavSettings.DisplayFailedFlushRestoresAppliedValue",
+      "OpenNavSettings.FailedFlushRestoresPreviousValue",
+      "OpenNavSettings.VesselProfileKeepsLegacyRecordAndUnconfiguredEnergy",
+      "OpenNavSettings.VesselSaveFailedFlushRestoresAllThreeEntries",
+      "OpenNavSettings.VesselSavePersistsEditedChartNameAndBattery",
+      "OpenNavSettings.WorkerCannotWriteConfiguration",
+      "OpenNavOnlineAIS.DefaultOffAndPersistentOptInNeedsValidLiveViewport",
+      "OpenNavOnlineAIS.UnknownConfigurationIsPreservedAndDisabled",
+      "OpenNavOnlineAIS.InvalidViewportAndReplayStopNetworking",
+      "OpenNavOnlineAIS.FailedEnableRestoresTheExactPreviousPreference",
+      "OpenNavOnlineAIS.DisableStopsImmediatelyEvenWhenPersistenceFails",
+      "OpenNavOnlineAIS.CredentialIsSeparateAndDoesNotImplicitlyEnable",
+      "OpenNavOnlineAIS.FailedRemovalStillDisablesAndSuccessfulRemovalVerifiesAbsence",
+      "OpenNavOnlineAIS.WorkerCannotWriteSettingsOrCredentials",
+      "OpenNavOnlineAIS.PinnedOrderedBoundingBoxPreservesDatelineAndWorldExtent",
+      "OpenNavOnlineAIS.InvalidAndOverflowViewportCannotCreateSubscription",
+      "OpenNavRecovery.ActualJournalCountsCrashesAndPreservesRetryEvidence",
+      "OpenNavRecovery.HealthyRequiresDeferredInitializationAndThirtySeconds",
+      "OpenNavRecovery.CorruptJournalFailsClosedWithoutTouchingNavigationData",
+      "OpenNavRecovery.QualificationPreservesOriginalJournalAndMissingNamespace",
+      "OpenNavRecovery.QualificationStillRefusesUnsafeOrCorruptOriginalJournal",
+      "OpenNavWindowsDiscovery.RepeatedNativeListsAreReleased",
+      "OpenNavWindowsDiscovery.FailedListsAreNotReleasedAsHandles",
+      "OpenNavWindowsDiscovery.PortQueryReleasesActualRegistryHandle",
+      "OpenNavWindowsDiscovery.MissingPortValueStillReleasesRegistryHandle",
+      "OpenNavWindowsDiscovery.ActualGarminQueriesDoNotAccumulateHandles",
+      "Buffer.Single",
+      "Buffer.Size_3",
+      "Buffer.Hakefjord",
+      "Buffer.RateLimit1",
+      "Buffer.RateAndSizeLimit",
+      "Buffer.OverrunEvent",
+      "N0183Nuffer.Basic"
+    ],
+    "peer_refusal_cases": [
+      "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+      "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+      "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+      "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential"
+    ]
+  },
+  "peer_cli": {
+    "receipt": {
+      "schema": 1,
+      "owner": "OpenNavX.CI.PeerCli.1",
+      "status": "success",
+      "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "runId": "38744236920",
+      "runAttempt": "1",
+      "job": "windows-integration",
+      "sourcesSha256": {
+        "tools/test-peer-cli.py": "eb36aa06e5e68f933e1df8d99449c1c35a0dff78200783e137391432c7b32ad5",
+        "tools/peer-cli-receipt.py": "5abb4a6887e2c6aa981aca116974ec98ec388278be5efb61aa2e46586be02c50",
+        "tools/build-pristine-windows.ps1": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+      },
+      "executableSha256": "3a39d65171372beb65ba7dcf284b5cf163ad39b2a4d3cf342630f9564349186b"
+    },
+    "source_hash_matches_candidate": {
+      "tools/test-peer-cli.py": "CRLF-checkout",
+      "tools/peer-cli-receipt.py": "CRLF-checkout",
+      "tools/build-pristine-windows.ps1": "CRLF-checkout"
+    },
+    "original_success_summary_observed": true,
+    "claims": [
+      "generate-key and store-key refused",
+      "expected unavailable reason",
+      "no key/stdout output",
+      "isolated configuration unchanged"
+    ],
+    "scope": "Disposable native runner; does not qualify the installed boat CLI/profile."
+  },
+  "ais": {
+    "passed": true,
+    "scope": "Actual AIS MSVC Win32 loopback only",
+    "productAcceptance": false,
+    "wfpAcceptance": false,
+    "boatAcceptance": false,
+    "dependencyBuilds": false,
+    "requestedChecks": {
+      "providerTlsLifecycles": 8,
+      "transportCases": 18,
+      "sessionChecks": 178
+    },
+    "observed": {
+      "providerTlsLifecycles": 8,
+      "provider_labels": [
+        "normal IPv4",
+        "disable-enable IPv4",
+        "credential-change IPv4",
+        "open-disable-enable IPv4",
+        "open-credential-change IPv4",
+        "send-viewport IPv4",
+        "send-disable-enable IPv4",
+        "normal IPv6"
+      ],
+      "transportCases": 18,
+      "transport_results": [
+        "PASS binary: messages=1 maximum=42 opened=1 errors=0 close=1000",
+        "PASS compressed: messages=1 maximum=4096 opened=1 errors=0 close=1000",
+        "PASS exact-limit: messages=1 maximum=65536 opened=1 errors=0 close=1000",
+        "PASS message-too-large: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS compressed-exact-limit: messages=1 maximum=65536 opened=1 errors=0 close=1000",
+        "PASS inflate-bomb: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS fragmented: messages=1 maximum=64000 opened=1 errors=0 close=1000",
+        "PASS fragment-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS two-reports-across-receive-cap: messages=2 maximum=40000 opened=1 errors=0 close=1000",
+        "PASS empty-fragment-flood: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS advertised-32bit-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS advertised-64bit-overflow: messages=0 maximum=0 opened=1 errors=0 close=1009",
+        "PASS continuous-small-reports: messages=500 maximum=1000 opened=1 errors=0 close=1000",
+        "PASS http-status-overflow: messages=0 maximum=0 opened=0 errors=1 close=0",
+        "PASS http-header-overflow: messages=0 maximum=0 opened=0 errors=1 close=0",
+        "PASS redirect-refused: messages=0 maximum=0 opened=0 errors=1 close=0",
+        "PASS untrusted-certificate: messages=0 maximum=0 opened=0 errors=1 close=0",
+        "PASS hostname-mismatch: messages=0 maximum=0 opened=0 errors=1 close=0"
+      ],
+      "sessionChecks": 251
+    },
+    "session_count_note": "Original session.log reports 251 passing checks; requestedChecks.sessionChecks retains 178 as the requested minimum, not the observed count.",
+    "dependency_authority": {
+      "mode": "cross-run-bundle",
+      "producer": {
+        "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+        "job": "windows-dependencies",
+        "repository": "ThereptileII/Work",
+        "runAttempt": "1",
+        "runId": "38735490052",
+        "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+      },
+      "fingerprint": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+      "abi": {
+        "abi": "x86",
+        "architecture": "Win32",
+        "curl": "8.22.0",
+        "openssl": "3.5.9",
+        "runtime": "MultiThreadedDLL (/MD)",
+        "zlib": "1.3.2"
+      },
+      "toolchainSha256": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03"
+    },
+    "runtime": {
+      "ais_provider_test_client.exe": {
+        "bytes": 249856,
+        "sha256": "68b7d5ed57dfec628ca9d4180229ca9f3e0bdc307e0a77f02dda311a2b937023"
+      },
+      "ais_session_native.exe": {
+        "bytes": 105472,
+        "sha256": "6ceb68130e04e0dbd8c88b843b8763db5f45f75d53403e46dd6fde4e9e31143a"
+      },
+      "ais_transport_test_client.exe": {
+        "bytes": 171520,
+        "sha256": "d1e3932afd5ddb269237e2212bc5474c6ce22fbacfbca85bb3b1a59f35c69d28"
+      },
+      "libcrypto-3.dll": {
+        "bytes": 4491776,
+        "sha256": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c"
+      },
+      "libssl-3.dll": {
+        "bytes": 1067520,
+        "sha256": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49"
+      },
+      "zlib1.dll": {
+        "bytes": 73216,
+        "sha256": "fdaddd402ca0521f07bd6aab356a25db46c218e5be769b3fb6038150e9f25c20"
+      }
+    },
+    "binding_note": "Original report contains source/project/runtime identities; this extraction hashes the original report and does not repeat its source-closure validation."
+  },
+  "tls_source_probes": {
+    "status": "passed",
+    "scope": "Native actual-source-slice probes; not installed-product chart or network acceptance.",
+    "invocations": [
+      {
+        "summary_member": "downloader-trust-windows/summary.json",
+        "prerequisites_member": "downloader-trust-windows/prerequisites.json",
+        "core_downloader_cases_passed": 12,
+        "core_wxcurl_cases_passed": 12,
+        "cleanup": "verified",
+        "source_and_runtime_hashes": {
+          "downloaderCppSha256": "e1e44c9b1779c015980dbe920b1d8dccf5836f82b9b4141fdcdf16360d9357f6",
+          "downloaderHeaderSha256": "678bcf95d3548f5401b211c2b657311c5631dd9f81517ea89f6f97f20ef0d509",
+          "probeSha256": "3ded69b6a9124f5daf3b9bc2d7b7e0e628a38676fc93ca102472fc16a26fabfc",
+          "wxCurlBaseSha256": "9a89a2cee35ff8b5787466d4fa5971cba207abb77fefdb5b295bdaa2ee933a37",
+          "wxCurlHttpSha256": "3e69a0154f97830c5e0f519088d19040fff4f28e9d58945fc9c2ef8175d981b2",
+          "wxCurlHeaderSha256": "ec9e5afad68d482a03247955a7fb85f9f7c05d35e3cf0a67204a7d2c50004aa8",
+          "wxCurlSourceKind": "integrated-core",
+          "wxCurlProbeSha256": "c1b58752e982681cc8d462dfeaab58f368f19e3d4fc8ea91264e9082438a7d40",
+          "curlManifestSha256": "3d879c219514f6fae85a6077195ab34b39ce9e4427d424a2e7028645d2eb1af2",
+          "selectedMaintainedRuntimeDlls": {
+            "libcrypto-3.dll": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c",
+            "libcurl.dll": "8e2284aa95f8ea4e27b9a539b13177ee5a6133a77f070d40daf3bb5dd2c1d8db",
+            "libssl-3.dll": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49",
+            "zlib1.dll": "fdaddd402ca0521f07bd6aab356a25db46c218e5be769b3fb6038150e9f25c20"
+          },
+          "otherRuntimeDllIdentities": "Retained in original prerequisites.json, referenced by member digest."
+        }
+      },
+      {
+        "summary_member": "ocharts-private-wxcurl-trust-windows/summary.json",
+        "prerequisites_member": "ocharts-private-wxcurl-trust-windows/prerequisites.json",
+        "repeated_core_downloader_cases_passed": 12,
+        "private_ocharts_wxcurl_cases_passed": 12,
+        "cleanup": "verified",
+        "source_and_runtime_hashes": {
+          "downloaderCppSha256": "e1e44c9b1779c015980dbe920b1d8dccf5836f82b9b4141fdcdf16360d9357f6",
+          "downloaderHeaderSha256": "678bcf95d3548f5401b211c2b657311c5631dd9f81517ea89f6f97f20ef0d509",
+          "probeSha256": "b0ff22cf70f4621945897db5f05188dca978583429edc11c53554d43f29f38cc",
+          "wxCurlBaseSha256": "4825dce23ce8b3db2a38590297e76554fc1efa81ef5f9be69995986777323fff",
+          "wxCurlHttpSha256": "bd25f77046084f5505f79fd4ccfcd33a2085f4ac88375efca473404bded3c7b4",
+          "wxCurlHeaderSha256": "11518959b97f0bf296b0f851fa74665b1de9ea3ca755c0eba42feee89d8d350a",
+          "wxCurlSourceKind": "verified-private-ocharts",
+          "wxCurlProbeSha256": "8c3b468ad5ea9ff5d3835dd9fffa81dab52e7ac2425a0fcc8ae70e2ea927bcbc",
+          "curlManifestSha256": "3d879c219514f6fae85a6077195ab34b39ce9e4427d424a2e7028645d2eb1af2",
+          "ochartsPreparationSha256": "32a41bb3da1890c749a961f7a751dbf37616073ed671f806cbae771a01b088dc",
+          "selectedMaintainedRuntimeDlls": {
+            "libcrypto-3.dll": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c",
+            "libcurl.dll": "8e2284aa95f8ea4e27b9a539b13177ee5a6133a77f070d40daf3bb5dd2c1d8db",
+            "libssl-3.dll": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49",
+            "zlib1.dll": "fdaddd402ca0521f07bd6aab356a25db46c218e5be769b3fb6038150e9f25c20"
+          },
+          "otherRuntimeDllIdentities": "Retained in original prerequisites.json, referenced by member digest."
+        }
+      }
+    ],
+    "core_downloader_outcomes_in_both_invocations": [
+      {
+        "case": "valid",
+        "accepted": true,
+        "exitCode": 0
+      },
+      {
+        "case": "https_redirect",
+        "accepted": true,
+        "exitCode": 0
+      },
+      {
+        "case": "http_downgrade",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "local_file_redirect",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "partial_transfer",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "wrong_host",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "expired",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "untrusted",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "write_exception",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "valid_unrelated_cwd",
+        "accepted": true,
+        "exitCode": 0
+      },
+      {
+        "case": "initial_http",
+        "accepted": false,
+        "exitCode": 1
+      },
+      {
+        "case": "trust_removed",
+        "accepted": false,
+        "exitCode": 1
+      }
+    ],
+    "wxcurl_outcomes_matching_for_both_source_kinds": [
+      {
+        "case": "valid",
+        "accepted": true,
+        "headAccepted": true,
+        "badOptionBlocked": true,
+        "exitCode": 0
+      },
+      {
+        "case": "https_redirect",
+        "accepted": true,
+        "headAccepted": true,
+        "badOptionBlocked": true,
+        "exitCode": 0
+      },
+      {
+        "case": "http_downgrade",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "single_slash_https",
+        "accepted": true,
+        "headAccepted": true,
+        "badOptionBlocked": true,
+        "exitCode": 0
+      },
+      {
+        "case": "single_slash_http_downgrade",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "mixed_case_http_downgrade",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "local_file_redirect",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "wrong_host",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "expired",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "untrusted",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      },
+      {
+        "case": "valid_unrelated_cwd",
+        "accepted": true,
+        "headAccepted": true,
+        "badOptionBlocked": true,
+        "exitCode": 0
+      },
+      {
+        "case": "trust_removed",
+        "accepted": false,
+        "headAccepted": false,
+        "badOptionBlocked": true,
+        "exitCode": 1
+      }
+    ],
+    "counting_boundary": "The second invocation repeats the same 12 core Downloader cases. Its other 12 cases use verified private o-charts wxCurl; the first uses integrated core wxCurl. These are not 48 distinct cases or 24 private cases."
+  },
+  "peer_buffer": {
+    "passed": 1,
+    "failed": 0,
+    "scope": "Actual peer response-buffer source slice compiled with native MSVC Win32; not peer-sharing restoration."
+  },
+  "private_module": {
+    "status": "passed",
+    "scope": "real installed host imports/binding/unload; no chart rendering",
+    "nativeProductAcceptance": false,
+    "cases": [
+      {
+        "name": "option-without-selftest",
+        "exit": 2,
+        "expected": 2
+      },
+      {
+        "name": "default",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "module",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "wrong-original",
+        "exit": 1,
+        "expected": 1
+      }
+    ],
+    "profilesUnchanged": true,
+    "host": {
+      "opencpn.exe": {
+        "bytes": 16002560,
+        "sha256": "de568678745b45c2673d143a9269b501de6226a00b64c19f34ccde8c708a5bf1"
+      },
+      "skager-ocharts-adapter.dll": {
+        "bytes": 1373184,
+        "sha256": "6ec3296957533a0d9eaae633ea410f01fea4ddfbaf1cf93d5877c6809b2b57bd"
+      },
+      "openssl-build.json": {
+        "bytes": 4147,
+        "sha256": "d0c4828bc53f8fd500eff4258e9a0891d64fddc41cce1aa1866afa0206cbbbef"
+      },
+      "libssl-3.dll": {
+        "bytes": 1067520,
+        "sha256": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49"
+      },
+      "libcrypto-3.dll": {
+        "bytes": 4491776,
+        "sha256": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c"
+      }
+    },
+    "original": {
+      "bytes": 2088960,
+      "sha256": "99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875"
+    },
+    "vendorArchive": {
+      "bytes": 1049179,
+      "sha256": "83153e5cc5ebce978f7e0af6f07f50b86cfb957e9b7432780cd899fe5012fda5"
+    },
+    "loadedOpenSSL": {
+      "libssl-3.dll": {
+        "bytes": 1067520,
+        "sha256": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49"
+      },
+      "libcrypto-3.dll": {
+        "bytes": 4491776,
+        "sha256": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c"
+      }
+    },
+    "module": {
+      "binding_reason": 0,
+      "plugin_initialized": false,
+      "passed": true,
+      "unload_succeeded": true,
+      "module_loaded": true,
+      "child_process_creation_blocked": true,
+      "adapter_bytes": "1373184",
+      "original_dll_executed": false,
+      "binding_state": 1,
+      "point_style_unavailable_before_init": true,
+      "adapter_sha256": "6ec3296957533a0d9eaae633ea410f01fea4ddfbaf1cf93d5877c6809b2b57bd",
+      "contract": "SKAGER.ChartModuleCheck.1",
+      "host_imports_resolved": true,
+      "factory_called": false,
+      "scope": "DLL imports/binding/unload only; no renderer or chart acceptance",
+      "original_sha256": "99edcfd4419d606ef5c3fd554759e853cfda1fe4f38c05e26266f335a5a5b875",
+      "resources_verified": true,
+      "loaded_modules_observed": true
+    }
+  },
+  "openssl_runtime_reprobes": [
+    {
+      "member": "openssl-consumer-runtime-6084d0e060e546a5afee52bcf727a2eb.json",
+      "status": "passed",
+      "producer_version": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)",
+      "consumer_version": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)",
+      "cpuChanged": false,
+      "executableSha256": "1411af42c4d3f2d5bc838201500680113dd96214f535ecbcba6c39c767e805e4",
+      "scope": "Runtime observation only; original producer evidence unchanged"
+    },
+    {
+      "member": "openssl-consumer-runtime-417ae056efba47efbc58b2c7b78fb153.json",
+      "status": "passed",
+      "producer_version": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)",
+      "consumer_version": "OpenSSL 3.5.9 29 Sep 2026 (Library: OpenSSL 3.5.9 29 Sep 2026)",
+      "cpuChanged": false,
+      "executableSha256": "1411af42c4d3f2d5bc838201500680113dd96214f535ecbcba6c39c767e805e4",
+      "scope": "Runtime observation only; original producer evidence unchanged"
+    }
+  ],
+  "production_package_loader": {
+    "commissioning_restart_protocol": 1,
+    "commit": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "passed": true,
+    "resources": {
+      "uidata/styles.xml": true,
+      "s57data/s57objectclasses.csv": true,
+      "s57data/chartsymbols.xml": true,
+      "gshhs/poly-c-1.dat": true
+    },
+    "xnav_manual_control_contract": 1,
+    "version": "0.4.0-beta2.4",
+    "update_qualified_core_output": 1,
+    "profile_initialized": false,
+    "test_fixtures": false,
+    "contract": "OpenNavX.LoaderSelfTest.1",
+    "plugins_loaded": false,
+    "update_qualified_config": 1,
+    "update_startup_health": 1,
+    "build_purpose": "INSTALLED PRODUCT",
+    "compiler": "MSVC 19.44.35229.0 / 4 byte pointers",
+    "update_qualified_plugins_deferred": 1,
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "xnav_hardware_output_policy": "manual-commissioning"
+  },
+  "counting_boundary": "Separate fixture/product executions and repeated core probes are not a unique-test total. Positive/negative trust cases all count as passed when expected outcomes match.",
+  "acceptance_boundary": {
+    "producer_component_evidence_only": true,
+    "remaining_gates_not_established_by_this_receipt": [
+      "Downstream exact-candidate Windows qualifier: fresh install/update, retained fixture/product behavior, and its original results.",
+      "Exact-candidate retained PluginHandler gate using authenticated source/runtime inputs; producer compilation and the four module checks do not replace it.",
+      "Fresh installed boat generation, retained plugin/helper closure, profile preservation, and scoped passive commissioning observations."
+    ],
+    "not_claimed": [
+      "live-provider acceptance",
+      "chart rendering or chart acceptance",
+      "WFP acceptance",
+      "physical output or actuator acceptance",
+      "release or deployment approval"
+    ],
+    "qualification_timing": "Downstream qualification was still running when extraction was assigned. This receipt does not determine its later result.",
+    "documentation_head_is_not_runtime_candidate": true
+  },
+  "members": {
+    "windows-xnav-tests.xml": {
+      "bytes": 129669,
+      "sha256": "d955f33fdbe6be003d6f4a4984de2943fd4163a8bc751494edbb7a3f8e74f615"
+    },
+    "windows-production-tests.xml": {
+      "bytes": 130434,
+      "sha256": "82c5d8a55e39e4cc03337cc1ff6868877a26ba6db81dc0158c5591bb0f512f34"
+    },
+    "windows-peer-cli-receipt.json": {
+      "bytes": 649,
+      "sha256": "54e597935264241cb880bd861d633ce5d0e0fa7308fbf6e641780cb8ce552e9f"
+    },
+    "windows-xnav-Win32.log": {
+      "bytes": 1237628,
+      "sha256": "f76de5ae5dc1247990afc910d24230c9441a46c3f1ce56463ffd6475b49272de"
+    },
+    "ais-native-runtime/report.json": {
+      "bytes": 207389,
+      "sha256": "35f09a5d6183ae0eae49566507208212eb8f9eb772b655facf8acf5026566719"
+    },
+    "ais-native-runtime/provider.log": {
+      "bytes": 3500,
+      "sha256": "3ec436f1bb8c4742cd78b1d085a62924a528da4348cd1dd958a70b12bd43a8ca"
+    },
+    "ais-native-runtime/transport.log": {
+      "bytes": 1412,
+      "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807"
+    },
+    "ais-native-runtime/session.log": {
+      "bytes": 27,
+      "sha256": "76e3795ef79e2823a969b1b46771b58ed70b2b1e1de9d8dd628319421b408041"
+    },
+    "downloader-trust-windows/summary.json": {
+      "bytes": 19280,
+      "sha256": "f7edd00b5bd6d916f7901f2844b1e20c806a6d9c754ba67033c94d1522be85ba"
+    },
+    "downloader-trust-windows/prerequisites.json": {
+      "bytes": 8410,
+      "sha256": "2fcf9e2b73e810509ae048e2965e105e88b8d59bf1f9783f8092f8adeff4afe2"
+    },
+    "ocharts-private-wxcurl-trust-windows/summary.json": {
+      "bytes": 19280,
+      "sha256": "6eaa609df4d7dac6a11cba9374d99ce763ce05d9ac008ecfbd983a73df2cbec7"
+    },
+    "ocharts-private-wxcurl-trust-windows/prerequisites.json": {
+      "bytes": 8518,
+      "sha256": "5c4e0bd6d86725c5121b12ce13055b3717ce0fa09866d9e0a77b2dc03813a0d2"
+    },
+    "peer-buffer-windows.log": {
+      "bytes": 1589,
+      "sha256": "77a8cf3a6716c7e3884edffab11f80b9f7178305806352106fd4f72a280dffc5"
+    },
+    "ocharts-real-host-module/summary.json": {
+      "bytes": 18382,
+      "sha256": "e135b86929d89b9152c673d0ccd27337e13ef72800e4c44abebfccfd9bd857ca"
+    },
+    "ocharts-real-host-module/module.json": {
+      "bytes": 6961,
+      "sha256": "7c23e119371ac47562feafaf8725f8043c4879796092b80d6014cf86ba1abbfd"
+    },
+    "openssl-consumer-runtime-6084d0e060e546a5afee52bcf727a2eb.json": {
+      "bytes": 2311,
+      "sha256": "ab93b9131f72a9db9a627e6f0784609dbded2efd404ff9deef186d8e8a7aefec"
+    },
+    "openssl-consumer-runtime-417ae056efba47efbc58b2c7b78fb153.json": {
+      "bytes": 2311,
+      "sha256": "ab93b9131f72a9db9a627e6f0784609dbded2efd404ff9deef186d8e8a7aefec"
+    },
+    "production-package-selftest.json": {
+      "bytes": 933,
+      "sha256": "0fdf016306ba2bbe195ece2536dacf84343512f411d9b11498d932fd85b899cf"
+    }
+  }
+}
