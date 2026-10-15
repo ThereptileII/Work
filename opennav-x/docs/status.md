@@ -1,7 +1,7 @@
 # SKAGER status — 2026-10-15
 
 
-## Current Staging candidate
+## Current Staging candidate — qualification failed, corrections in progress
 
 `1ffd09ddf2fa6588def2907485f6e14e89bc3a7d` /
 [38722465573](https://github.com/ThereptileII/Work/actions/runs/38722465573)
@@ -19,6 +19,24 @@ all relevant package/security gates; extended/design suites are off. No second
 application build is active. Packaging remains necessary because the fix changes
 the installed lifecycle engine. Native helper success does not qualify either
 the replacement package or the failed original package.
+
+The Windows producer `116388013514` now succeeds. Its original retained-input
+qualifier `116405193249` fails fresh installation because the installer's PE
+reader rejects the packaged wxWidgets export directory. The earlier foreign
+Start Menu refusal/report case passes. Source inspection finds the separate
+installer reader still contains the 1 MiB export/RVA assumption already removed
+from the application reader; correction is being tested against retained bytes
+before another application/package build. This package remains unqualified.
+
+Linux job `116380307497` builds and passes preceding checks, then fails the
+OpenGL Legacy-to-XNav workspace assertion. Its tick-3 diagnostic still reports a
+visible Dashboard pane. Helper correction `9833ddbc` requires the first newer
+diagnostic publication before the unchanged workspace/rail/native visibility
+assertions; it never waits for a failing pane state to turn green. Seven focused
+freshness tests and eleven existing plugin tests pass. The source establishes
+a readiness/publication gap but does not prove completion of deferred suppression;
+actual corrected Linux execution and the skipped fixture-free build remain
+required. [Original failure and bounded helper proof](evidence/scrum22-linux-chart-readiness-20261015/diagnosis.json).
 
 ## Previous candidate and preserved installer failure
 

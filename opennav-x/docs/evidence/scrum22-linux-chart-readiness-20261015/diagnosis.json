@@ -1,0 +1,122 @@
+{
+  "schema": 1,
+  "issue_scope": [
+    "SCRUM-209",
+    "SCRUM-22"
+  ],
+  "candidate_commit": "1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+  "run_id": 38722465573,
+  "run_attempt": 1,
+  "job_id": 116380307497,
+  "job_url": "https://github.com/ThereptileII/Work/actions/runs/38722465573/job/116380307497",
+  "original_log_sha256": "5b647bdc276fe4ef73fe63a082347adc4665f20f7fbe8e251c024f01e7a085c6",
+  "artifact": {
+    "id": 11967781061,
+    "name": "linux-integration-1ffd09ddf2fa6588def2907485f6e14e89bc3a7d",
+    "sha256": "2726c4fe38961b7ee8ebf2850553f0f786847ce8767715c3e9ae7f4b8de419ea",
+    "api_digest_matches": true,
+    "contains_linux_application_binary": false
+  },
+  "failure": {
+    "step": 28,
+    "name": "Public ENC chart and plugin rendering gate",
+    "original_source": "opennav-x/tools/smoke-charts.py:398",
+    "assertion": "Expected temporary XNav hiding or restored Legacy visibility",
+    "rendering": "opengl",
+    "phase": "returned from Legacy to XNav",
+    "pane_state_observed": 2098125,
+    "pane_state_expected": 2098127,
+    "diagnostic_ui_ticks": "3",
+    "publication_monotonic_ms": "1429678",
+    "evaluation_monotonic_ms": "1429662",
+    "finalize_canvases_utc": "2026-10-15T11:07:52.562Z",
+    "last_retained_log_utc": "2026-10-15T11:07:52.624Z",
+    "assertion_utc": "2026-10-15T11:07:53.831Z"
+  },
+  "proven": [
+    "Integrated Linux application build and preceding regression steps succeeded.",
+    "Software rendering completed all workspace saved/native visibility checks.",
+    "The OpenGL returned diagnostic had loaded NOAA ENC and initialized plugins but a visible Dashboard pane.",
+    "The existing return helper accepts any ENC-bearing diagnostic, without requiring a publication newer than readiness.",
+    "The upstream Finalize Canvases log precedes AfterDeferredInitialization, which enables Dashboard suppression.",
+    "The diagnostic publisher is independently throttled to one second.",
+    "The failure handler killed the current process, so there is no subsequent native diagnostic proving whether suppression completed."
+  ],
+  "classification": {
+    "confirmed": "helper freshness gap and failed workspace assertion",
+    "working_explanation": "A pre-suppression diagnostic can survive the log-based readiness wait and be accepted by data(enc).",
+    "not_established": [
+      "persistent product visibility failure",
+      "native pass with corrected helper",
+      "environment or transport fault"
+    ]
+  },
+  "helper_commit": "91e1fc47111bfbda0b845b4f89db49842dff93c9",
+  "changed_files": [
+    "opennav-x/tools/diagnostic_snapshot.py",
+    "opennav-x/tools/smoke-charts.py",
+    "opennav-x/tools/test-diagnostic-snapshot.py"
+  ],
+  "checks": {
+    "diagnostic_snapshot": {
+      "status": "passed",
+      "cases": 7
+    },
+    "bundled_plugins": {
+      "status": "passed",
+      "cases": 11
+    },
+    "python_compile": "passed",
+    "git_diff_check": "passed",
+    "ci_changes": {
+      "helpers": true,
+      "product": false,
+      "dependencies": false
+    },
+    "native_application_retest": "not run; no Linux binary retained in the inspected artifact"
+  },
+  "preserved": [
+    "original failed evidence",
+    "all workspace visibility/geometry assertions",
+    "originally hidden pane requirement",
+    "XNav rail visibility assertion",
+    "actual native window visibility checks",
+    "candidate product and Windows producer identity"
+  ],
+  "coordinator_followup": "Integrate/review helper separately; actual Linux gate replacement and skipped fixture-free Linux build remain unaccepted. No full build, dispatch, publication, boat operation, or release action was performed.",
+  "source_order_evidence": [
+    {
+      "path": "opennav-x/src/integration/OpenCPNIntegration.cpp",
+      "lines": "938-946",
+      "proves": "one-second publication throttle"
+    },
+    {
+      "path": "opennav-x/patches/opencpn-5.12.4-xnav.patch",
+      "lines": "580-587",
+      "proves": "AfterDeferredInitialization at OnInitTimer tail after RefreshAllCanvas and usb watcher Start"
+    },
+    {
+      "path": "opennav-x/src/integration/OpenCPNIntegration.cpp",
+      "lines": "1256-1257",
+      "proves": "AfterDeferredInitialization immediately calls EnableDashboardPresentation"
+    },
+    {
+      "path": "opennav-x/src/integration/DashboardPresentation.cpp",
+      "lines": "34,62-80",
+      "proves": "enabled suppression preserves original pane and calls Hide"
+    },
+    {
+      "upstream_commit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+      "path": "gui/src/ocpn_frame.cpp",
+      "lines": "5022-5054",
+      "proves": "Finalize Canvases log before additional canvas, status, size, refresh and watcher work"
+    },
+    {
+      "path": "opennav-x/tools/smoke-charts.py",
+      "candidate_lines": "120-128,397-398",
+      "proves": "readiness checks finalization log and sleeps one second; original return accepted any ENC-bearing snapshot"
+    }
+  ],
+  "ordering_limit": "Fresh publication guarantees epoch greater than the sample read after ready(), not an explicit suppression-complete marker. No retained trace ties publication 1429678 or a newer publication to completion of AfterDeferredInitialization. Do not claim native fix or post-suppression publication ordering from the portable helper tests.",
+  "integrated_helper_commit": "9833ddbc"
+}
