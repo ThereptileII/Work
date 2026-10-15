@@ -24,14 +24,27 @@ and installer compilation. [Authenticated original native outcomes and scope](ev
 The downstream qualifier `116490177486` stops before installer lifecycle in
 `smoke-navigation.py`'s object workflow: the second waypoint-edit dialog is not
 found after the preceding edit/save and delete/cancel interaction. The first
-edit completed; a static dialog-name mismatch is not established. Original
-failure evidence is preserved while the action/modal sequencing is investigated.
-No application rebuild is requested; exact compiled/package inputs are retained.
+edit completed; a static dialog-name mismatch is not established. Helper
+`842ded95` now waits for the exact owned delete modal to close and its owner to
+re-enable after the existing single Cancel. Seven existing and 17 focused checks
+pass, including an event-queue reproduction that rejects the former sequence.
+The original failure's precise input ordering was not captured and is not claimed.
+One [retained full runtime retest, 38757982655](https://github.com/ThereptileII/Work/actions/runs/38757982655),
+uses that separate helper revision against the unchanged e80 package; it remains
+pending. No application rebuild is requested. Setup, recovery and source leaves,
+their sealed inventories and exact hashes are now independently authenticated.
 The separate retained PluginHandler run
 [38756849052](https://github.com/ThereptileII/Work/actions/runs/38756849052)
-uses the independently authenticated new inventory pin for this candidate.
-Exact packaged lifecycle, that focused native gate and fresh boat acceptance
-remain pending. The original full run is failed, not relabelled as accepted.
+refused both attempts before native tests: the allocated newer Windows image
+selects a different authenticated SDK from the one bound to this older-image
+candidate. Exact TLS binding correctly stops; there are no further allocation
+retries. A bounded test-only correction separates current-host tool reprobes
+from the candidate's original authenticated subject SDK. Application SDK/image
+verification remains strict. [Original custody, both refusals and runtime boundaries](evidence/scrum211-retained-e80-20261015/README.md).
+Exact packaged lifecycle, the focused native gate and fresh boat acceptance remain
+pending. SCRUM-290 also tracks the narrow composition extension needed to deliver
+an authenticated full runtime retest; the historical installer/chart suffix path
+does not accept this case. The original full run remains failed, not relabelled.
 The boat remains on its previous installed revision; a passive availability
 check confirms SSH, Tailscale and RustDesk running with no OpenCPN/chart-helper
 process. No actuator output, Production promotion or public release is
