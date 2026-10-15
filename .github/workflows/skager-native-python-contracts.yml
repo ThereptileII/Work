@@ -19,11 +19,17 @@ on:
         required: false
         type: boolean
         default: false
+      installer_pe_only:
+        description: Test installer PE bounds and the authenticated retained wx DLL in native PS5.1 x86/x64
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
+  actions: read
 jobs:
   geometry:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only) }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only && !inputs.installer_pe_only) }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -183,4 +189,106 @@ jobs:
         with:
           name: installer-filesystem-${{ matrix.architecture }}-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: ${{ runner.temp }}/skager-installer-filesystem
+          if-no-files-found: error
+  installer-pe:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.installer_pe_only }}
+    runs-on: windows-2022
+    timeout-minutes: 10
+    strategy:
+      fail-fast: false
+      matrix:
+        architecture: [x86, x64]
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Authenticate exact retained native wx input without loading it
+        shell: python
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          import hashlib, json, os, stat, subprocess, zipfile
+          from pathlib import Path
+          repo = 'ThereptileII/Work'
+          source = '1ffd09ddf2fa6588def2907485f6e14e89bc3a7d'
+          run, job, artifact = 38722465573, 116388013514, 11969697633
+          digest = 'dabcc028d945a8a0005084593f5c675e3b5a556023c583ab68d9b88582640748'
+          module_digest = 'beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3'
+          name = 'plugin-guard-inputs-' + source + '-run38722465573-attempt1'
+          def api(path):
+              return json.loads(subprocess.check_output(['gh', 'api', 'repos/' + repo + path]))
+          metadata = api('/actions/artifacts/' + str(artifact))
+          producer = api('/actions/jobs/' + str(job))
+          original = api('/actions/runs/' + str(run) + '/attempts/1')
+          assert metadata['name'] == name and not metadata['expired']
+          assert metadata['size_in_bytes'] == 131376585 and metadata['digest'] == 'sha256:' + digest
+          assert metadata['workflow_run']['id'] == run and metadata['workflow_run']['head_sha'] == source
+          assert producer['run_id'] == run and producer['head_sha'] == source and producer['run_attempt'] == 1
+          assert producer['name'] == 'windows-integration' and producer['conclusion'] == 'success'
+          assert original['head_sha'] == source and original['run_attempt'] == 1
+          # The original qualifier failed. Only this successful producer and its
+          # exact inert DLL are reused; this is not original-run acceptance.
+          evidence = Path(os.environ['RUNNER_TEMP']) / 'skager-installer-pe'
+          evidence.mkdir()
+          archive = Path(os.environ['RUNNER_TEMP']) / 'installer-pe-original.zip'
+          download = ['gh', 'api', 'repos/' + repo + '/actions/artifacts/' + str(artifact) + '/zip']
+          # Recent gh guards binary API output against terminal escapes, even
+          # when stdout is redirected. Older hosted versions predate the flag.
+          if '--allow-escape-sequences' in subprocess.check_output(['gh', 'api', '--help'], text=True):
+              download.append('--allow-escape-sequences')
+          with archive.open('xb') as output:
+              subprocess.run(download, stdout=output, check=True)
+          assert archive.stat().st_size == metadata['size_in_bytes']
+          with archive.open('rb') as handle:
+              assert hashlib.file_digest(handle, 'sha256').hexdigest() == digest
+          member = 'plugin-guard-inputs/data/runtime/wxmsw32u_core_vc14x.dll'
+          with zipfile.ZipFile(archive) as bundle:
+              matches = [item for item in bundle.infolist() if item.filename.casefold() == member.casefold()]
+              assert len(matches) == 1 and matches[0].filename == member
+              entry = matches[0]
+              assert entry.file_size == 7467008 and not entry.is_dir()
+              assert stat.S_IFMT(entry.external_attr >> 16) in (0, stat.S_IFREG)
+              assert bundle.testzip() is None
+              raw = bundle.read(entry)
+          assert hashlib.sha256(raw).hexdigest() == module_digest
+          target = evidence / 'wxmsw32u_core_vc14x.dll'
+          target.write_bytes(raw)
+          (evidence / 'input-receipt.json').write_text(json.dumps({
+              'schema': 1, 'productCommit': source, 'harnessCommit': os.environ['GITHUB_SHA'],
+              'producerRun': run, 'producerAttempt': 1, 'producerJob': job,
+              'artifact': artifact, 'artifactSha256': digest, 'moduleSha256': module_digest,
+              'moduleBytes': len(raw), 'crcPassed': True, 'applicationBuilt': False,
+              'installedProductAcceptance': False}, indent=2) + '\n', encoding='utf-8')
+          print('Authenticated retained PE bytes; no module loaded.')
+      - name: Exercise actual installer PE parser and refusal budgets
+        shell: pwsh
+        env:
+          TEST_ARCHITECTURE: ${{ matrix.architecture }}
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installer-pe'
+          $System = if ($env:TEST_ARCHITECTURE -ceq 'x86') { 'SysWOW64' } else { 'System32' }
+          $HostExe = Join-Path $env:WINDIR "$System/WindowsPowerShell/v1.0/powershell.exe"
+          if (-not (Test-Path -LiteralPath $HostExe -PathType Leaf)) { throw 'Requested native Windows PowerShell host missing' }
+          $env:PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+          $Log = Join-Path $Evidence 'test-installer-pe.log'
+          $Module = Join-Path $Evidence 'wxmsw32u_core_vc14x.dll'
+          $Code = 1
+          try {
+            & $HostExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/test-installer-pe.ps1 -RetainedPeFiles $Module *> $Log
+            $Code = $LASTEXITCODE
+            Get-Content -LiteralPath $Log
+          } finally {
+            @{
+              schema = 1; commit = $env:GITHUB_SHA; run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
+              architecture = $env:TEST_ARCHITECTURE; hostExecutable = $HostExe; exitCode = $Code
+              applicationBuilt = $false; installedProductAcceptance = $false
+            } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $Evidence 'result.json') -Encoding utf8
+          }
+          if ($Code -ne 0) { throw 'Native installer PE parser check failed; inspect original log' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: installer-pe-${{ matrix.architecture }}-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            ${{ runner.temp }}/skager-installer-pe/*.json
+            ${{ runner.temp }}/skager-installer-pe/*.log
           if-no-files-found: error
