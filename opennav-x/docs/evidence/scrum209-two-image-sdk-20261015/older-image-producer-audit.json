@@ -1,0 +1,81 @@
+{
+  "selection": {
+    "repository": "ThereptileII/Work",
+    "runId": "38735490052",
+    "runAttempt": "1",
+    "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+    "artifactId": "11976566007",
+    "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38735490052-attempt1",
+    "artifactDigest": "sha256:b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831"
+  },
+  "authority": {
+    "schemaVersion": 1,
+    "repository": "ThereptileII/Work",
+    "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+    "runId": "38735490052",
+    "runAttempt": "1",
+    "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+    "job": "windows-dependencies",
+    "conclusion": "success",
+    "artifactId": "11976566007",
+    "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38735490052-attempt1",
+    "artifactDigest": "sha256:b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831",
+    "bundleSha256": "67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f"
+  },
+  "artifactBytes": 117986121,
+  "crcVerifiedMembers": 296,
+  "payloadFiles": 295,
+  "runner": {
+    "ImageOS": "win22",
+    "ImageVersion": "20261004.326.1",
+    "RUNNER_ARCH": "X64",
+    "RUNNER_OS": "Windows"
+  },
+  "fingerprint": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+  "toolchainSha256": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03",
+  "originalSourceInputs": {
+    "docs/third-party/OpenSSL-3.5.9/LICENSE.txt": "exact-git-blob",
+    "docs/third-party/OpenSSL-3.5.9/provenance.json": "exact-git-blob",
+    "docs/third-party/curl-8.22.0/LICENSE.txt": "exact-git-blob",
+    "docs/third-party/curl-8.22.0/provenance.json": "exact-git-blob",
+    "docs/third-party/zlib-1.3.2/LICENSE.txt": "exact-git-blob",
+    "docs/third-party/zlib-1.3.2/provenance.json": "exact-git-blob",
+    "tools/build-curl-windows.ps1": "exact-Windows-CRLF-checkout",
+    "tools/build-openssl-windows.ps1": "exact-Windows-CRLF-checkout",
+    "tools/build-pristine-windows.ps1": "exact-Windows-CRLF-checkout",
+    "tools/build-zlib-windows.ps1": "exact-Windows-CRLF-checkout",
+    "tools/curl_package.py": "exact-Windows-CRLF-checkout",
+    "tools/openssl_package.py": "exact-Windows-CRLF-checkout",
+    "tools/patch-curl-test-openssl.py": "exact-Windows-CRLF-checkout",
+    "tools/test-curl-source-preflight.ps1": "exact-Windows-CRLF-checkout",
+    "tools/test-zlib-source-verification.ps1": "exact-Windows-CRLF-checkout",
+    "tools/windows-curl-environment.ps1": "exact-Windows-CRLF-checkout",
+    "tools/windows-curl-import-layout.cmake": "exact-Windows-CRLF-checkout",
+    "tools/windows-curl.lock.json": "exact-Windows-CRLF-checkout",
+    "tools/windows-native-tool-facts.cmake": "exact-Windows-CRLF-checkout",
+    "tools/windows-native-tool-facts.ps1": "exact-Windows-CRLF-checkout",
+    "tools/windows-openssl.lock.json": "exact-Windows-CRLF-checkout",
+    "tools/windows-parent-environment.ps1": "exact-Windows-CRLF-checkout",
+    "tools/windows-zlib.lock.json": "exact-Windows-CRLF-checkout",
+    "tools/windows_dependency_bundle.py": "exact-Windows-CRLF-checkout",
+    "tools/windows_dependency_evidence.py": "exact-Windows-CRLF-checkout",
+    "tools/windows_dependency_receipt.py": "exact-Windows-CRLF-checkout",
+    "tools/windows_dependency_reuse.py": "exact-Windows-CRLF-checkout",
+    "tools/windows_dependency_stage.py": "exact-Windows-CRLF-checkout",
+    "tools/windows_gettext.py": "exact-Windows-CRLF-checkout",
+    ".github/workflows/skager-windows-dependencies.yml": "exact-Windows-CRLF-checkout"
+  },
+  "upstreamTestsPassed": {
+    "curl": 1569,
+    "openssl": 4283,
+    "zlib": 13
+  },
+  "upstreamLogDigests": {
+    "openssl": "f403a153f11890097bb44636551cbe2d4927fdcea34cbc34e9ebf711d9b9493f",
+    "zlib": "8cd08184a2776fd921f9f7d5972d76621713d27ecb4d2f4d946ec3170c760488",
+    "curl": "424897811a1886a7636adaa6a79eafa55a3365f6815b28dd25a21431df9945c7",
+    "zlibSource": "dcbbbbd3170d99c36d11fe0d11f109f9c9cf8d0a3553c925e9fec1e38a224dd6"
+  },
+  "portableCustodyVerified": true,
+  "freshNativeConsumptionPerformed": false
+}

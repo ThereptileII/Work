@@ -1,0 +1,133 @@
+{
+  "schemaVersion": 1,
+  "repository": "ThereptileII/Work",
+  "scope": "SDK producer custody and input comparison only",
+  "productOrInstalledAcceptance": false,
+  "olderImageProducerJob": {
+    "id": 116423613068,
+    "run_id": 38735490052,
+    "run_attempt": 1,
+    "head_sha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+    "status": "completed",
+    "conclusion": "success",
+    "started_at": "2026-10-15T12:33:05Z",
+    "completed_at": "2026-10-15T13:30:32Z",
+    "html_url": "https://github.com/ThereptileII/Work/actions/runs/38735490052/job/116423613068"
+  },
+  "originalPrivateEvidenceRoots": {
+    "olderImage": "/home/standard/Work/candidate-windows-1ffd-evidence-20261015/older-sdk-38735490052",
+    "newerImage": "/home/standard/Work/skager-sdk-38618335277-audit",
+    "originalNativePluginGate": "/home/standard/Work/skager-plugin-retained-38704113599"
+  },
+  "olderImageOriginalFileIdentities": {
+    "run.json": {
+      "bytes": 12088,
+      "sha256": "3127b3e047628eec43184d9dfd68b2fa6b7d107e98c9e3f9dd09b9ff4be4ffd3"
+    },
+    "jobs.json": {
+      "bytes": 4055,
+      "sha256": "e3008510944eb76c07f0445f3e3b679c711a2f35dc37392942e663f176cbc136"
+    },
+    "artifact.json": {
+      "bytes": 806,
+      "sha256": "dd199449546b534870ee967adf8613487826ebc149ce67737eedc511163d4cf9"
+    },
+    "job.json": {
+      "bytes": 4028,
+      "sha256": "32c0670c552d48532eebbbb9e702455560b4f49e35b45fa8c8999e9f942d3db7"
+    },
+    "producer-job.log": {
+      "bytes": 5783675,
+      "sha256": "d2ab3ae5c3ae84a9fcede515b14aad556c6a36b005461b1be0b9c5da5093c4e6"
+    },
+    "artifacts.json": {
+      "bytes": 1627,
+      "sha256": "ccf54b46f0ff089d228c1f865a9dfe5b124c32ef1a9aa5f0c403eda6e42c0732"
+    },
+    "selection.json": {
+      "bytes": 401,
+      "sha256": "9c655fcd78bf55c81f409c21b51fd4326ab1e6de84cfb3cbf3007eac42202a3a"
+    },
+    "provenance.json": {
+      "bytes": 640,
+      "sha256": "8cc383ec4ef4c26884fd81f59b4edf0cd1d7c3e3d579951dfe38a75d0d839f80"
+    },
+    "audit.json": {
+      "bytes": 4192,
+      "sha256": "441e81ac0412b44203b78d8bcafb9e888443a052d2ac8e2539d0485f39c4053f"
+    },
+    "native-input-comparison.json": {
+      "bytes": 22791,
+      "sha256": "720729a88acb7b7d24cbee2b0fc6f5f404706806ecb4b0866cbae07957994b6d"
+    },
+    "pe-byte-differences.json": {
+      "bytes": 4408,
+      "sha256": "f613a31a466aa2f46bfee37877038bec61ba15a21fc2aa9554e1933fc637f58f"
+    },
+    "windows-dependency-bundle.two-image.lock.json": {
+      "bytes": 1358,
+      "sha256": "7890ea5ddfbac40c92cf541e417f309d7dc2a9e2fea1fd853aaeba300c7e620f"
+    },
+    "newer-selection-reauthenticated.json": {
+      "bytes": 554,
+      "sha256": "42e3a2236b8a7b161302db0534422b6257350ed2a30f2288c7b197b0397b346d"
+    }
+  },
+  "originalSdkArchives": {
+    "olderImage": {
+      "bytes": 117986121,
+      "sha256": "b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831"
+    },
+    "newerImage": {
+      "bytes": 117986124,
+      "sha256": "08f4fa9ca058564822ba9b69ef19aca0cbf3ea84953657d838e054709ab83ca9"
+    }
+  },
+  "selectorProposalCommit": "78c155fda0274af98a1803cfedc573155929b05b",
+  "proposedTwoImageLockSha256": "7890ea5ddfbac40c92cf541e417f309d7dc2a9e2fea1fd853aaeba300c7e620f",
+  "originalSdkInputsUnchangedThrough": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+  "minimumRetainedWorkflow": {
+    "path": ".github/workflows/skager-plugin-download-retained.yml",
+    "inspectedSource": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "inputs": {
+      "producer_run": "NEW candidate opennav-baseline run ID",
+      "producer_attempt": "NEW candidate producer attempt",
+      "producer_commit": "Exact 40-character NEW candidate source SHA",
+      "inventory_sha256": "Independently authenticated NEW capture inventory.json SHA256"
+    },
+    "executeOnlyAfterRunAndWindowsJobCompleted": true,
+    "mandatorySuccessfulProducerSteps": [
+      "Compile fixture-free product and run installed security and unit checks",
+      "Retain exact plugin-download SDK inputs for no-rebuild qualification"
+    ],
+    "requiresMatchingConsumedSourceAndSelectedDependencyAuthority": true,
+    "automaticRetryAuthorized": false,
+    "dispatchPerformed": false
+  },
+  "evidenceFiles": {
+    "native-input-comparison.json": {
+      "bytes": 22791,
+      "sha256": "720729a88acb7b7d24cbee2b0fc6f5f404706806ecb4b0866cbae07957994b6d"
+    },
+    "newer-image-native-consumer-audit.json": {
+      "bytes": 2803,
+      "sha256": "efd14aa40b714a5f2d89bf18131eda05cdb1b3438597a2f582f50d5fb2b2593e"
+    },
+    "newer-image-producer-audit.json": {
+      "bytes": 4192,
+      "sha256": "a764d6f965ca5ce2a6605dcc1e46cd75038057c13ff1baa8596fabe242a4d8d2"
+    },
+    "older-image-producer-audit.json": {
+      "bytes": 4192,
+      "sha256": "441e81ac0412b44203b78d8bcafb9e888443a052d2ac8e2539d0485f39c4053f"
+    },
+    "pe-byte-differences.json": {
+      "bytes": 4408,
+      "sha256": "f613a31a466aa2f46bfee37877038bec61ba15a21fc2aa9554e1933fc637f58f"
+    },
+    "source-input-comparison.json": {
+      "bytes": 6497,
+      "sha256": "660af53ba38c58570d25be328cbad5e4ab4d04075fd60bad728a7536f3769411"
+    }
+  }
+}

@@ -1,0 +1,172 @@
+{
+  "schema": 1,
+  "diagnosticOnly": true,
+  "rawFileIdentitiesRemainDifferent": true,
+  "noVerifierNormalizationPerformed": true,
+  "outputs": [
+    {
+      "path": "build/windows-openssl-3.5.9/install/bin/libcrypto-3.dll",
+      "bytesCompared": 4491776,
+      "lengthsEqual": true,
+      "differentByteCount": 34,
+      "identifiedFields": [
+        {
+          "kind": "COFF timestamp",
+          "start": 272,
+          "end": 276,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 4092828,
+          "end": 4092832,
+          "differentBytes": 3
+        },
+        {
+          "kind": "CodeView RSDS GUID",
+          "start": 4102100,
+          "end": 4102116,
+          "differentBytes": 16
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 4092856,
+          "end": 4092860,
+          "differentBytes": 3
+        }
+      ],
+      "otherDifferingStrings": [
+        {
+          "start": 3635984,
+          "end": 3636023,
+          "newerImage": "built on: Wed Oct 14 18:55:26 2026 UTC\u0000",
+          "olderImage": "built on: Thu Oct 15 12:37:55 2026 UTC\u0000"
+        }
+      ],
+      "unclassifiedDifferentByteCount": 9,
+      "exactHashMatch": false
+    },
+    {
+      "path": "build/windows-openssl-3.5.9/install/bin/libssl-3.dll",
+      "bytesCompared": 1067520,
+      "lengthsEqual": true,
+      "differentByteCount": 25,
+      "identifiedFields": [
+        {
+          "kind": "COFF timestamp",
+          "start": 280,
+          "end": 284,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 968124,
+          "end": 968128,
+          "differentBytes": 3
+        },
+        {
+          "kind": "CodeView RSDS GUID",
+          "start": 971284,
+          "end": 971300,
+          "differentBytes": 16
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 968152,
+          "end": 968156,
+          "differentBytes": 3
+        }
+      ],
+      "otherDifferingStrings": [],
+      "unclassifiedDifferentByteCount": 0,
+      "exactHashMatch": false
+    },
+    {
+      "path": "build/windows-openssl-3.5.9/install/bin/openssl.exe",
+      "bytesCompared": 722944,
+      "lengthsEqual": true,
+      "differentByteCount": 28,
+      "identifiedFields": [
+        {
+          "kind": "COFF timestamp",
+          "start": 264,
+          "end": 268,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 599044,
+          "end": 599048,
+          "differentBytes": 3
+        },
+        {
+          "kind": "CodeView RSDS GUID",
+          "start": 599980,
+          "end": 599996,
+          "differentBytes": 16
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 599072,
+          "end": 599076,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 599100,
+          "end": 599104,
+          "differentBytes": 3
+        }
+      ],
+      "otherDifferingStrings": [],
+      "unclassifiedDifferentByteCount": 0,
+      "exactHashMatch": false
+    },
+    {
+      "path": "build/windows-zlib-1.3.2/install/bin/zlib1.dll",
+      "bytesCompared": 73216,
+      "lengthsEqual": true,
+      "differentByteCount": 6,
+      "identifiedFields": [
+        {
+          "kind": "COFF timestamp",
+          "start": 272,
+          "end": 276,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 64900,
+          "end": 64904,
+          "differentBytes": 3
+        }
+      ],
+      "otherDifferingStrings": [],
+      "unclassifiedDifferentByteCount": 0,
+      "exactHashMatch": false
+    },
+    {
+      "path": "build/windows-curl-8.22.0/install/bin/libcurl.dll",
+      "bytesCompared": 638464,
+      "lengthsEqual": true,
+      "differentByteCount": 6,
+      "identifiedFields": [
+        {
+          "kind": "COFF timestamp",
+          "start": 296,
+          "end": 300,
+          "differentBytes": 3
+        },
+        {
+          "kind": "debug directory timestamp",
+          "start": 600444,
+          "end": 600448,
+          "differentBytes": 3
+        }
+      ],
+      "otherDifferingStrings": [],
+      "unclassifiedDifferentByteCount": 0,
+      "exactHashMatch": false
+    }
+  ]
+}

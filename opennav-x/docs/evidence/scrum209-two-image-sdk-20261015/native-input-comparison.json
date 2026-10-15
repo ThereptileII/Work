@@ -1,0 +1,682 @@
+{
+  "schema": 1,
+  "oldManifest": {
+    "bytes": 51426,
+    "sha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5"
+  },
+  "newManifest": {
+    "bytes": 51426,
+    "sha256": "67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f"
+  },
+  "nativeGateResults": {
+    "bytes": 309338,
+    "sha256": "7894e00fa8bc1ac520c1ad5b48d01ff818464f50207dcb33ca8babbc8f1663e3"
+  },
+  "newerImageProducer": {
+    "headSha": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+    "job": "windows-dependencies",
+    "repository": "ThereptileII/Work",
+    "runAttempt": "1",
+    "runId": "38618335277",
+    "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+  },
+  "olderImageProducer": {
+    "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+    "job": "windows-dependencies",
+    "repository": "ThereptileII/Work",
+    "runAttempt": "1",
+    "runId": "38735490052",
+    "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+  },
+  "sameRecipeFingerprint": true,
+  "runnerComparison": {
+    "newer": {
+      "ImageOS": "win22",
+      "ImageVersion": "20261012.333.1",
+      "RUNNER_ARCH": "X64",
+      "RUNNER_OS": "Windows"
+    },
+    "older": {
+      "ImageOS": "win22",
+      "ImageVersion": "20261004.326.1",
+      "RUNNER_ARCH": "X64",
+      "RUNNER_OS": "Windows"
+    }
+  },
+  "pythonComparison": {
+    "newer": {
+      "executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "zlibCompile": "1.3.1",
+      "zlibNg": null,
+      "zlibRuntime": "1.3.1"
+    },
+    "older": {
+      "executable": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+      "sha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "version": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+      "zlibCompile": "1.3.1",
+      "zlibNg": null,
+      "zlibRuntime": "1.3.1"
+    },
+    "identical": true
+  },
+  "toolchainDigestComparison": {
+    "newer": "978e7a154c8e8d6dc388af73c247ecb6f32636c389f02e80f2d0f29a12018bfb",
+    "older": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03",
+    "identical": false
+  },
+  "outputs": [
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/bin/libcrypto-3.dll",
+      "newerImage": {
+        "sha256": "1c6eaa9614cc64920f4f9e4121aabb042d59b2e056306fad6b756a850d9302ce",
+        "bytes": 4491776
+      },
+      "olderImage": {
+        "sha256": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c",
+        "bytes": 4491776
+      },
+      "identical": false
+    },
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/bin/libssl-3.dll",
+      "newerImage": {
+        "sha256": "292674cce1433331ed278837d5328d291b28e4a51f78ea550f82f9b82e3f49e9",
+        "bytes": 1067520
+      },
+      "olderImage": {
+        "sha256": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49",
+        "bytes": 1067520
+      },
+      "identical": false
+    },
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/bin/openssl.exe",
+      "newerImage": {
+        "sha256": "49c6ee5f442af314061bd6442ef2a8522406fd4ba0c1e51cb88a2684491dfbca",
+        "bytes": 722944
+      },
+      "olderImage": {
+        "sha256": "1411af42c4d3f2d5bc838201500680113dd96214f535ecbcba6c39c767e805e4",
+        "bytes": 722944
+      },
+      "identical": false
+    },
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/include/openssl/opensslv.h",
+      "newerImage": {
+        "sha256": "dfd0ec688fe70c910984451361e325744a939ace239f5619ec4e27868db975ee",
+        "bytes": 3580
+      },
+      "olderImage": {
+        "sha256": "dfd0ec688fe70c910984451361e325744a939ace239f5619ec4e27868db975ee",
+        "bytes": 3580
+      },
+      "identical": true
+    },
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/lib/libcrypto.lib",
+      "newerImage": {
+        "sha256": "7ecf7051fc06fff93983a8c35b194809bb60d7e9c6aaf480b6ffdcefe7b10e7c",
+        "bytes": 1383006
+      },
+      "olderImage": {
+        "sha256": "7ecf7051fc06fff93983a8c35b194809bb60d7e9c6aaf480b6ffdcefe7b10e7c",
+        "bytes": 1383006
+      },
+      "identical": true
+    },
+    {
+      "kind": "openssl",
+      "path": "build/windows-openssl-3.5.9/install/lib/libssl.lib",
+      "newerImage": {
+        "sha256": "399fd950e92b03dc7a69c08ff045882c2882d9da1bdf17c73ccfc7b70dcedfd1",
+        "bytes": 147790
+      },
+      "olderImage": {
+        "sha256": "399fd950e92b03dc7a69c08ff045882c2882d9da1bdf17c73ccfc7b70dcedfd1",
+        "bytes": 147790
+      },
+      "identical": true
+    },
+    {
+      "kind": "zlib",
+      "path": "build/windows-zlib-1.3.2/install/bin/zlib1.dll",
+      "newerImage": {
+        "sha256": "7fc22be237fe99e26f1948afa2cd795903f7b98bd8b68bd99bd21242d061f65d",
+        "bytes": 73216
+      },
+      "olderImage": {
+        "sha256": "fdaddd402ca0521f07bd6aab356a25db46c218e5be769b3fb6038150e9f25c20",
+        "bytes": 73216
+      },
+      "identical": false
+    },
+    {
+      "kind": "zlib",
+      "path": "build/windows-zlib-1.3.2/install/include/zconf.h",
+      "newerImage": {
+        "sha256": "019fd0df6247f5af904564806485913c0c274ff08df87757875464a63abeda90",
+        "bytes": 17584
+      },
+      "olderImage": {
+        "sha256": "019fd0df6247f5af904564806485913c0c274ff08df87757875464a63abeda90",
+        "bytes": 17584
+      },
+      "identical": true
+    },
+    {
+      "kind": "zlib",
+      "path": "build/windows-zlib-1.3.2/install/include/zlib.h",
+      "newerImage": {
+        "sha256": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+        "bytes": 103848
+      },
+      "olderImage": {
+        "sha256": "818667d6ab6a37fe7469cb06a7f0cb2c2cb2f2c948a03e5accf1a4a74bf3020a",
+        "bytes": 103848
+      },
+      "identical": true
+    },
+    {
+      "kind": "zlib",
+      "path": "build/windows-zlib-1.3.2/install/lib/zlib1.lib",
+      "newerImage": {
+        "sha256": "732487db2642911719150a0f575f3e4f10217ef5295f3eb88811943796eb6e31",
+        "bytes": 19128
+      },
+      "olderImage": {
+        "sha256": "732487db2642911719150a0f575f3e4f10217ef5295f3eb88811943796eb6e31",
+        "bytes": 19128
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/bin/libcurl.dll",
+      "newerImage": {
+        "sha256": "0a39fc592e20366dd2dfcda0d47841bce909e27da21af7a12cafa19bde9e9ef2",
+        "bytes": 638464
+      },
+      "olderImage": {
+        "sha256": "8e2284aa95f8ea4e27b9a539b13177ee5a6133a77f070d40daf3bb5dd2c1d8db",
+        "bytes": 638464
+      },
+      "identical": false
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/curl.h",
+      "newerImage": {
+        "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528",
+        "bytes": 136595
+      },
+      "olderImage": {
+        "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528",
+        "bytes": 136595
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/curlver.h",
+      "newerImage": {
+        "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc",
+        "bytes": 3052
+      },
+      "olderImage": {
+        "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc",
+        "bytes": 3052
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/easy.h",
+      "newerImage": {
+        "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565",
+        "bytes": 4000
+      },
+      "olderImage": {
+        "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565",
+        "bytes": 4000
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/header.h",
+      "newerImage": {
+        "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395",
+        "bytes": 2922
+      },
+      "olderImage": {
+        "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395",
+        "bytes": 2922
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/mprintf.h",
+      "newerImage": {
+        "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9",
+        "bytes": 3078
+      },
+      "olderImage": {
+        "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9",
+        "bytes": 3078
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/multi.h",
+      "newerImage": {
+        "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a",
+        "bytes": 21154
+      },
+      "olderImage": {
+        "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a",
+        "bytes": 21154
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/options.h",
+      "newerImage": {
+        "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0",
+        "bytes": 2402
+      },
+      "olderImage": {
+        "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0",
+        "bytes": 2402
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/stdcheaders.h",
+      "newerImage": {
+        "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c",
+        "bytes": 1362
+      },
+      "olderImage": {
+        "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c",
+        "bytes": 1362
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/system.h",
+      "newerImage": {
+        "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa",
+        "bytes": 14943
+      },
+      "olderImage": {
+        "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa",
+        "bytes": 14943
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/typecheck-gcc.h",
+      "newerImage": {
+        "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681",
+        "bytes": 58092
+      },
+      "olderImage": {
+        "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681",
+        "bytes": 58092
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/urlapi.h",
+      "newerImage": {
+        "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e",
+        "bytes": 5870
+      },
+      "olderImage": {
+        "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e",
+        "bytes": 5870
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/include/curl/websockets.h",
+      "newerImage": {
+        "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b",
+        "bytes": 3197
+      },
+      "olderImage": {
+        "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b",
+        "bytes": 3197
+      },
+      "identical": true
+    },
+    {
+      "kind": "curl",
+      "path": "build/windows-curl-8.22.0/install/lib/libcurl.lib",
+      "newerImage": {
+        "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+        "bytes": 22760
+      },
+      "olderImage": {
+        "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40",
+        "bytes": 22760
+      },
+      "identical": true
+    }
+  ],
+  "pluginHandlerBindings": [
+    {
+      "retainedPath": "sdk/curl/lib/libcurl.lib",
+      "sdkPath": "build/windows-curl-8.22.0/install/lib/libcurl.lib",
+      "nativeTested": {
+        "bytes": 22760,
+        "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40"
+      },
+      "olderImage": {
+        "bytes": 22760,
+        "sha256": "2263c0caca0a57f82f1c2539d1b15b8bd310a250932dba87d04408083711dd40"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "runtime/libcurl.dll",
+      "sdkPath": "build/windows-curl-8.22.0/install/bin/libcurl.dll",
+      "nativeTested": {
+        "bytes": 638464,
+        "sha256": "0a39fc592e20366dd2dfcda0d47841bce909e27da21af7a12cafa19bde9e9ef2"
+      },
+      "olderImage": {
+        "bytes": 638464,
+        "sha256": "8e2284aa95f8ea4e27b9a539b13177ee5a6133a77f070d40daf3bb5dd2c1d8db"
+      },
+      "identical": false
+    },
+    {
+      "retainedPath": "runtime/libssl-3.dll",
+      "sdkPath": "build/windows-openssl-3.5.9/install/bin/libssl-3.dll",
+      "nativeTested": {
+        "bytes": 1067520,
+        "sha256": "292674cce1433331ed278837d5328d291b28e4a51f78ea550f82f9b82e3f49e9"
+      },
+      "olderImage": {
+        "bytes": 1067520,
+        "sha256": "433dd982041c82f35d9348368b14160b31e18f2919bfdff414f9993ff6ff8c49"
+      },
+      "identical": false
+    },
+    {
+      "retainedPath": "runtime/libcrypto-3.dll",
+      "sdkPath": "build/windows-openssl-3.5.9/install/bin/libcrypto-3.dll",
+      "nativeTested": {
+        "bytes": 4491776,
+        "sha256": "1c6eaa9614cc64920f4f9e4121aabb042d59b2e056306fad6b756a850d9302ce"
+      },
+      "olderImage": {
+        "bytes": 4491776,
+        "sha256": "ea2da3369d07da91a1c81cef982c56beb6e95248de30c093059d5ab963568f4c"
+      },
+      "identical": false
+    },
+    {
+      "retainedPath": "runtime/zlib1.dll",
+      "sdkPath": "build/windows-zlib-1.3.2/install/bin/zlib1.dll",
+      "nativeTested": {
+        "bytes": 73216,
+        "sha256": "7fc22be237fe99e26f1948afa2cd795903f7b98bd8b68bd99bd21242d061f65d"
+      },
+      "olderImage": {
+        "bytes": 73216,
+        "sha256": "fdaddd402ca0521f07bd6aab356a25db46c218e5be769b3fb6038150e9f25c20"
+      },
+      "identical": false
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/curl.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/curl.h",
+      "nativeTested": {
+        "bytes": 136595,
+        "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528"
+      },
+      "olderImage": {
+        "bytes": 136595,
+        "sha256": "9ec2e9040d8d95545a4c331461c54748651edc3852a6ceca0672f858103e0528"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/curlver.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/curlver.h",
+      "nativeTested": {
+        "bytes": 3052,
+        "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc"
+      },
+      "olderImage": {
+        "bytes": 3052,
+        "sha256": "c4ed114da4eca953a328fa2efa8128308fc32879f15b58c245b2592f4bfaf9dc"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/easy.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/easy.h",
+      "nativeTested": {
+        "bytes": 4000,
+        "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565"
+      },
+      "olderImage": {
+        "bytes": 4000,
+        "sha256": "f101da02dd373151ea7b00082cb62c9d6e482361ab26b6d430ee96aab1b71565"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/header.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/header.h",
+      "nativeTested": {
+        "bytes": 2922,
+        "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395"
+      },
+      "olderImage": {
+        "bytes": 2922,
+        "sha256": "e92525a91bb1119034dd45dd42d255ff9b6a49d964ca7105964e0107671b3395"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/mprintf.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/mprintf.h",
+      "nativeTested": {
+        "bytes": 3078,
+        "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9"
+      },
+      "olderImage": {
+        "bytes": 3078,
+        "sha256": "a79657fa15db71e732bcb58bc4645ab65bdb3222767f34be5bab56aa0d4f4cc9"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/multi.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/multi.h",
+      "nativeTested": {
+        "bytes": 21154,
+        "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a"
+      },
+      "olderImage": {
+        "bytes": 21154,
+        "sha256": "0466a7c91067cb11c98f37e16103b992b66e84221467c2a70ef951877502f77a"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/options.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/options.h",
+      "nativeTested": {
+        "bytes": 2402,
+        "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0"
+      },
+      "olderImage": {
+        "bytes": 2402,
+        "sha256": "32fe87f843367d25a9db91a47386652402f08c9668617b4c51295ef31d93f8b0"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/stdcheaders.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/stdcheaders.h",
+      "nativeTested": {
+        "bytes": 1362,
+        "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c"
+      },
+      "olderImage": {
+        "bytes": 1362,
+        "sha256": "d7588b86814a35ffc3766ff6242e6f6705e04401fc9c208a195caff3503af81c"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/system.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/system.h",
+      "nativeTested": {
+        "bytes": 14943,
+        "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa"
+      },
+      "olderImage": {
+        "bytes": 14943,
+        "sha256": "edb2c507a084448a5e3c7e2b9c65c408e22ffeaca5ab0c1ee2e76d82a21113fa"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/typecheck-gcc.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/typecheck-gcc.h",
+      "nativeTested": {
+        "bytes": 58092,
+        "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681"
+      },
+      "olderImage": {
+        "bytes": 58092,
+        "sha256": "62bf346ae4dc33bc61cd99a9e935c62dfbcd8120399cdbd5874d15897a57e681"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/urlapi.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/urlapi.h",
+      "nativeTested": {
+        "bytes": 5870,
+        "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e"
+      },
+      "olderImage": {
+        "bytes": 5870,
+        "sha256": "d888326d5bdebb84b5fe133d7ef7703d4e88732757ce4d6b0476f0c668d38a6e"
+      },
+      "identical": true
+    },
+    {
+      "retainedPath": "sdk/curl/include/curl/websockets.h",
+      "sdkPath": "build/windows-curl-8.22.0/install/include/curl/websockets.h",
+      "nativeTested": {
+        "bytes": 3197,
+        "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b"
+      },
+      "olderImage": {
+        "bytes": 3197,
+        "sha256": "05b70dbce5274aa6e360703bb17d67a0390fea18bf4437745a25b08b55d6962b"
+      },
+      "identical": true
+    }
+  ],
+  "pluginHandlerBindingsIdentical": false,
+  "nativeFixtureTools": [
+    {
+      "nativeFixturePath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x86\\cl.exe",
+      "nativeFixtureSha256": "303bfbe5523af2e925871a1bc7fd2ec5f199a69208a3b6716724c3e6d6b6962d",
+      "olderImageObservedHashes": [
+        "303bfbe5523af2e925871a1bc7fd2ec5f199a69208a3b6716724c3e6d6b6962d"
+      ],
+      "match": true
+    },
+    {
+      "nativeFixturePath": "C:\\Program Files\\Microsoft Visual Studio\\2022\\Enterprise\\VC\\Tools\\MSVC\\14.44.35207\\bin\\Hostx64\\x86\\dumpbin.exe",
+      "nativeFixtureSha256": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+      "olderImageObservedHashes": [
+        "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5"
+      ],
+      "match": true
+    },
+    {
+      "nativeFixturePath": "C:\\Program Files\\CMake\\bin\\cmake.EXE",
+      "nativeFixtureSha256": "3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3",
+      "olderImageObservedHashes": [
+        "3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3"
+      ],
+      "match": true
+    },
+    {
+      "nativeFixturePath": "C:\\hostedtoolcache\\windows\\Python\\3.12.10\\x64\\python.exe",
+      "nativeFixtureSha256": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "olderImageObservedHashes": [
+        "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a"
+      ],
+      "match": true
+    },
+    {
+      "nativeFixturePath": "C:\\Program Files\\PowerShell\\7\\pwsh.EXE",
+      "nativeFixtureSha256": "bfb46af89433268872ddb43d1ca7a3f433452ee91ed356a9786940f90118e285",
+      "olderImageObservedHashes": [
+        "bfb46af89433268872ddb43d1ca7a3f433452ee91ed356a9786940f90118e285"
+      ],
+      "match": true
+    }
+  ],
+  "producerToolFactComparisons": [
+    {
+      "path": "evidence/local/windows-curl-parent-tool-facts.json",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "path": "evidence/local/windows-openssl-child-tool-facts.json",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "path": "evidence/local/windows-openssl-parent-tool-facts.json",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "path": "evidence/local/windows-zlib-1.3.2/windows-zlib-child-tool-facts.json",
+      "identical": true,
+      "differences": []
+    },
+    {
+      "path": "evidence/local/windows-zlib-1.3.2/windows-zlib-parent-tool-facts.json",
+      "identical": true,
+      "differences": []
+    }
+  ],
+  "actualNativeRerunPerformed": false,
+  "limits": [
+    "Artifact/producer and selector identities are distinct from actual tested source/runtime/tool identities.",
+    "This comparison does not relax the bundle runner/Python/toolchain verifier or retained workflow source/capture gates."
+  ]
+}

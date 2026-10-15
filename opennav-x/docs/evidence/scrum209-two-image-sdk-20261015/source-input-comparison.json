@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "sources": {
+    "candidate": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "olderImageProducer": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+    "newerImageProducer": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7"
+  },
+  "boundInputCount": 30,
+  "allIdentical": true,
+  "definition": "windows_dependency_bundle.INPUTS plus WORKFLOW",
+  "inputs": [
+    {
+      "path": "opennav-x/docs/third-party/OpenSSL-3.5.9/LICENSE.txt",
+      "sha256": "7d5450cb2d142651b8afa315b5f238efc805dad827d91ba367d8516bc9d49e7a",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/docs/third-party/OpenSSL-3.5.9/provenance.json",
+      "sha256": "5ca5e2ee69692fdbeae2e24407c2bb618f0020c1ebf5ac26df90311b4ab0ccbf",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/docs/third-party/curl-8.22.0/LICENSE.txt",
+      "sha256": "82f2f4427d6545ee5aaac4f0b80428da6cc8ba41c2cf5da3a03680ec327b9681",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/docs/third-party/curl-8.22.0/provenance.json",
+      "sha256": "a38c255d03bbc5eac094da37ae5e02a84b487886bd85b48a1bc9999a86ac2f9f",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/docs/third-party/zlib-1.3.2/LICENSE.txt",
+      "sha256": "e32ff4e00d9d94930537635291da39e7e612703334bf6fde8c7f1686fe8a45a2",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/docs/third-party/zlib-1.3.2/provenance.json",
+      "sha256": "3f1cc37b9423fc80975bcd1bb5bf70faebc8e33b84e60d6743f6a7f32b402a7e",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/build-curl-windows.ps1",
+      "sha256": "de5a0753dda3d738e1cb22c858e8d92188c8e2b7443c56600a8b14656902657a",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/build-openssl-windows.ps1",
+      "sha256": "62d56b9d031b4f276e75074933d2fd40c1a65daf0df5b01b17bc1d2773c13bf3",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/build-pristine-windows.ps1",
+      "sha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/build-zlib-windows.ps1",
+      "sha256": "2641b0b049a14985c05a1a345093e0f2aebe29a0a28c3d6351217cca316ee382",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/curl_package.py",
+      "sha256": "fa9f82a96840c277e2c95b510b66a8d8f02ab900cb1fd539c52880124963f90a",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/openssl_package.py",
+      "sha256": "5bb8a1fd4f68ea80dbe4e1c49fb0d2f3fa20584d1bfa8748a0eac9fdeca64063",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/patch-curl-test-openssl.py",
+      "sha256": "73085cdf3eea9396a3a8c733973da848a085d433bc80f88c9531318eb11a9c9d",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/test-curl-source-preflight.ps1",
+      "sha256": "99de2b6f33762cba01b0e1a4d3e70501f115a5b58d7112eff42864843e9f16f6",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/test-zlib-source-verification.ps1",
+      "sha256": "b457b5b5cc224cc669c34299b5b5078d3d4c2b2f52681729594d17dc827e18b9",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-curl-environment.ps1",
+      "sha256": "54f5afb3d29f5cb97f43bb86407be8d9da5f80875aa670653103f1f44f2a5742",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-curl-import-layout.cmake",
+      "sha256": "b1bcb55ee4305a4a7b6f790fd972a930ab3b655bc4d3d8e1a46206bd05d09c50",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-curl.lock.json",
+      "sha256": "e3c2f9346cc3b793bca1813840e1d81148eaaba7a202421cf0e44dcf307ed888",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-native-tool-facts.cmake",
+      "sha256": "555a61a0123281914f19f91957de9385f9b31c44ab5e4c9bc08cdf9fadbf1a7b",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-native-tool-facts.ps1",
+      "sha256": "ecf8dc81c01591d5d35f3f25a8c9d2683eaf5e930c33e77fc0b4fabad43d9f8c",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-openssl.lock.json",
+      "sha256": "df596603e33a205e62e04c3418a2d6f157ea989d50936700d440c2678b40ae23",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-parent-environment.ps1",
+      "sha256": "d422218dcffeb36126580eeb545c4a2e66903cfd5e64fa43133e6a66a54c3091",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows-zlib.lock.json",
+      "sha256": "9b1bc99c1ed47647744d523d65f4fb18f2a52d96aab24c85acf5c334c0dc0fb5",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_dependency_bundle.py",
+      "sha256": "78cc2b817c4baa33ffaac86626511a0a5987163e7f3561a37d3b11da41dd1301",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_dependency_evidence.py",
+      "sha256": "9d3c6656d85f22e5e8a29761e0bc79e8ed7b95f2fa5c5c44d8ab9acb1a9942ef",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_dependency_receipt.py",
+      "sha256": "74457dce87d6529773b743be4c7afa9059cd8182662dcbfebea6f8b07142d350",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_dependency_reuse.py",
+      "sha256": "08e014603f91bced2a96482c6af7a02b3d9587d32450b8c5d7954da367915844",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_dependency_stage.py",
+      "sha256": "1c009a9bd10ef56df87bcd6912c364ac024b0640a7f5087996665a8b05140bec",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": "opennav-x/tools/windows_gettext.py",
+      "sha256": "05679f075120edc2cd82f553249a48a0ea25ab89fe12a0aa714263afd5095894",
+      "identicalAcrossAllThreeSources": true
+    },
+    {
+      "path": ".github/workflows/skager-windows-dependencies.yml",
+      "sha256": "940e140aeea8817d95507d78046d9ecd24c48320ed760318f03bb59f8f50614d",
+      "identicalAcrossAllThreeSources": true
+    }
+  ]
+}
