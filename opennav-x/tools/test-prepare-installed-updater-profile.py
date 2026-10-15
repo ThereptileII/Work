@@ -319,6 +319,24 @@ class Tests(unittest.TestCase):
         native.assert_not_called()
         self.assertFalse(self.native.profile_root.exists())
 
+    def test_self_hosted_missing_or_arm64_architecture_refuses_before_profile_effects(self):
+        cli,h,options = self.external_context()
+        for arch in (None, 'ARM64'):
+            environment = dict(helper.os.environ)
+            environment.pop('RUNNER_ARCH', None)
+            if arch is not None:
+                environment['RUNNER_ARCH'] = arch
+            with self.subTest(arch=arch), patch.dict(helper.os.environ,environment,clear=True), \
+                    patch.object(cli.host_admission.customer,'inspect_customer_capability') as observer, \
+                    patch.object(helper,'contents') as contents,patch.object(helper,'Native') as native, \
+                    self.assertRaises(ValueError):
+                helper.prepare(helper.OPT_IN,**options)
+            observer.assert_not_called()
+            contents.assert_not_called()
+            native.assert_not_called()
+            self.assertEqual(h.calls,[])
+            self.assertFalse(self.native.profile_root.exists())
+
     def test_cli_has_no_path_override_duplicate_or_failure_details(self):
         for args in (['--profile', str(self.root), '--disposable-opt-in', helper.OPT_IN],
                      ['--disposable-opt-in', helper.OPT_IN, '--disposable-opt-in', helper.OPT_IN],

@@ -82,7 +82,7 @@ class CoordinatorTests(unittest.TestCase):
         self.f.set_archive(self.f.make_archive())
         self.initial = dict(request=dict(clientSid=target['clientSid']), hostAdmission=target)
         self.owner.sid = target['clientSid']; self.owner.actual_sid.return_value = target['clientSid']
-        environment = dict(GITHUB_ACTIONS='true', RUNNER_OS='Windows', RUNNER_ENVIRONMENT='self-hosted',
+        environment = dict(GITHUB_ACTIONS='true', RUNNER_OS='Windows', RUNNER_ARCH='X64', RUNNER_ENVIRONMENT='self-hosted',
             GITHUB_REPOSITORY='ThereptileII/Work', GITHUB_EVENT_NAME='workflow_dispatch', GITHUB_SHA=f.runner['headSha'],
             GITHUB_RUN_ID=f.runner['runId'], GITHUB_RUN_ATTEMPT=f.runner['runAttempt'])
         workflow = '.github/workflows/installed-journey.yml'

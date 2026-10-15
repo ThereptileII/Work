@@ -51,7 +51,8 @@ def environment(values, platform, mode='github-hosted'):
             values.get('GITHUB_ACTIONS') == 'true' and values.get('RUNNER_OS') == 'Windows' and
             values.get('GITHUB_REPOSITORY') == REPOSITORY and
             values.get('GITHUB_EVENT_NAME') == 'workflow_dispatch' and
-            values.get('RUNNER_ENVIRONMENT') == ('self-hosted' if mode == MODE else 'github-hosted'))
+            values.get('RUNNER_ENVIRONMENT') == ('self-hosted' if mode == MODE else 'github-hosted') and
+            (mode != MODE or values.get('RUNNER_ARCH') == 'X64'))
 
 
 def validate_live(approved, runner, workflow, values, platform, read_api):

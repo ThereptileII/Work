@@ -14,7 +14,7 @@ class HostTests(unittest.TestCase):
         self.runner = dict(repository=host.REPOSITORY, headSha='a' * 40, runId='123',
                            runAttempt='2', jobId='456', jobName='Installed journey')
         self.workflow = '.github/workflows/installed-journey.yml'
-        self.environment = dict(GITHUB_ACTIONS='true', RUNNER_OS='Windows', RUNNER_ENVIRONMENT='self-hosted',
+        self.environment = dict(GITHUB_ACTIONS='true', RUNNER_OS='Windows', RUNNER_ARCH='X64', RUNNER_ENVIRONMENT='self-hosted',
             GITHUB_REPOSITORY=host.REPOSITORY, GITHUB_EVENT_NAME='workflow_dispatch',
             GITHUB_SHA='a' * 40, GITHUB_RUN_ID='123', GITHUB_RUN_ATTEMPT='2')
         self.run = dict(id=123, run_attempt=2, head_sha='a' * 40, path=self.workflow,
@@ -44,6 +44,18 @@ class HostTests(unittest.TestCase):
         self.assertEqual(len(self.calls), 2)
         self.assertIs(self.capability['nativeCustomerAcceptance'], False)
         self.assertIs(self.capability['consentPromptAcceptance'], False)
+
+    def test_missing_or_non_x64_architecture_refuses_before_live_or_native_observation(self):
+        for arch in (None, 'ARM64', 'X86', 'x64'):
+            self.environment.pop('RUNNER_ARCH', None)
+            if arch is not None:
+                self.environment['RUNNER_ARCH'] = arch
+            with self.subTest(arch=arch), \
+                    patch.object(host.customer, 'inspect_customer_capability') as native, \
+                    self.assertRaises(ValueError):
+                host.validate_live(self.target, self.runner, self.workflow, self.environment, 'win32', self.read)
+            native.assert_not_called()
+            self.assertEqual(self.calls, [])
 
     def test_wrong_missing_changed_runner_group_labels_and_job_tuple_refuse(self):
         for key, value in [('runner_id', 902), ('runner_id', None), ('runner_id', True),
