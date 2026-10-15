@@ -1,69 +1,257 @@
 {% extends 'marketing/base.html' %}
 {% load static %}
+{% block page %}home{% endblock %}
+{% block extra_head %}<link rel="preload" href="{% static 'marketing/fonts/InterVariable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
+{% block footer_status %}{% endblock %}
 {% block content %}
-<section class="cinematic-hero" aria-labelledby="hero-title">
-  <div class="hero-atmosphere" aria-hidden="true"></div>
-  <div class="container cinematic-heading">
-    <p class="eyebrow"><span class="status-mark" aria-hidden="true"></span> BUILT AROUND YOUR BOAT</p>
-    <h1 id="hero-title">NAVIGATION.<br><span>REIMAGINED.</span></h1>
-    <p class="hero-description">Navigation, vessel intelligence and passage planning.<br>One coherent view of the water ahead.</p>
-    <div class="actions"><a class="button" href="{% url 'marketing:pricing' %}">GET SKAGER <span aria-hidden="true">↗</span></a><a class="text-link" href="#in-action">SEE IT IN ACTION <span aria-hidden="true">↓</span></a></div>
-    <p class="hero-availability">Developing Windows beta · public access closed</p>
-  </div>
-  <figure class="living-scene container" id="in-action" data-marine-scene data-mode="night" data-motion="static" aria-labelledby="scene-caption">
-    <div class="scene-toolbar"><span class="scene-wordmark">SKAGER <small>EXPERIENCE CONCEPT</small></span><div class="scene-controls" data-scene-controls hidden><div class="scene-modes" role="group" aria-label="Illustration appearance"><button type="button" data-scene-mode="day" aria-pressed="false">Day</button><button type="button" data-scene-mode="dusk" aria-pressed="false">Dusk</button><button type="button" data-scene-mode="night" aria-pressed="true">Night</button></div><button class="motion-toggle" type="button" data-motion-toggle aria-pressed="false">Play scene</button></div></div>
-    <div class="scene-window">
-      <svg class="marine-chart" viewBox="0 0 1200 560" role="img" aria-labelledby="chart-title chart-desc">
-        <title id="chart-title">An imagined passage through an archipelago</title><desc id="chart-desc">Original illustrative chart with island contours, a cyan route, a boat, wind arrows and AIS symbols. No real geography, measurements or live boat data.</desc>
-        <defs>
-          <pattern id="chart-grid" width="80" height="80" patternUnits="userSpaceOnUse"><path d="M80 0H0V80" fill="none" class="chart-grid"/></pattern>
-          <pattern id="wind-field" width="110" height="100" patternUnits="userSpaceOnUse" patternTransform="rotate(-22)"><path d="M32 45H60M53 39L60 45 53 51" fill="none" class="wind-vector"/></pattern>
-          <radialGradient id="chart-glow"><stop stop-color="#47d9e4" stop-opacity=".14"/><stop offset="1" stop-color="#47d9e4" stop-opacity="0"/></radialGradient>
-          <filter id="route-glow" x="-50%" y="-50%" width="200%" height="200%"><feGaussianBlur stdDeviation="6"/></filter>
-        </defs>
-        <path class="sea-fill" d="M0 0H1200V560H0Z"/>
-        <path fill="url(#chart-grid)" d="M0 0H1200V560H0Z"/>
-        <ellipse cx="680" cy="290" rx="520" ry="330" fill="url(#chart-glow)"/>
-        <g class="chart-contours" fill="none">
-          <path d="M-80 370C70 350 90 250 220 267S370 200 320 80 450 20 500-60M-80 404C100 400 140 286 230 300S415 220 360 80 480 45 540-60M-70 447C130 438 180 320 260 334S458 220 403 85 525 45 580-60"/>
-          <path d="M900-80C785 50 950 140 1030 118S1120 260 1270 215M940-80C835 45 970 103 1045 85S1150 222 1270 180M1100 610C950 470 1040 397 1140 403S1220 290 1270 310M1060 610C890 478 990 355 1110 368S1220 260 1270 275"/>
-          <path d="M450 610C420 480 345 460 280 482S150 480 165 560M480 610C465 450 350 425 265 450S110 465 130 560"/>
-        </g>
-        <g class="chart-islands">
-          <path d="M-30-20H400C365 30 285 20 280 80S340 190 250 220 150 192 100 250 10 305-30 300Z"/>
-          <path d="M875-20H1230V160C1150 190 1135 80 1040 94S870 70 875-20Z"/>
-          <path d="M1080 580H1230V350C1175 365 1200 445 1120 437S993 480 1080 580Z"/>
-          <path d="M190 580C165 535 223 486 281 508S375 490 402 580Z"/>
-          <path d="M477 85C490 57 535 62 550 90S520 133 491 119 463 109 477 85Z"/>
-          <path d="M815 403C830 382 862 395 866 415S841 445 820 431 805 421 815 403Z"/>
-        </g>
-        <g class="island-detail" fill="none"><path d="M10 48C110 65 180 20 240 55M15 85C88 115 155 60 224 92M33 220C76 166 138 189 169 138M940 16C990 38 1090 2 1144 49M1100 515L1170 475"/></g>
-        <g class="wind-drift"><path fill="url(#wind-field)" d="M360 145H1150V520H360Z"/></g>
-        <path class="route-halo" d="M370 535L500 397 630 310 755 225 805 125" fill="none" filter="url(#route-glow)"/>
-        <path class="route-history" d="M370 535L500 397 630 310" fill="none"/>
-        <path class="route-ahead" d="M630 310L755 225 805 125" fill="none"/>
-        <g class="route-waypoints"><circle cx="500" cy="397" r="6"/><circle cx="755" cy="225" r="7"/><circle cx="805" cy="125" r="6"/></g>
-        <g class="boat-travel"><circle class="boat-pulse" cx="630" cy="310" r="30"/><g transform="translate(630 310) rotate(56)"><path class="boat-shape" d="M0-22L11 13 0 8-11 13Z"/><path class="boat-center" d="M0-13V5"/></g></g>
-        <g class="ais-targets"><g transform="translate(885 295) rotate(-35)"><path d="M0-13L8 9H-8Z"/><path class="ais-course" d="M0-20V-65"/></g><g transform="translate(548 185) rotate(126)"><path d="M0-11L7 8H-7Z"/><path class="ais-course" d="M0-18V-58"/></g></g>
-        <g class="chart-labels"><text x="70" y="180">OUTER ISLANDS</text><text x="961" y="56">NORTHERN SOUND</text><text x="902" y="319">AIS · ILLUSTRATED</text><text x="660" y="355">YOUR PERSPECTIVE</text></g>
-        <g class="compass-mark" transform="translate(1120 65)"><circle r="25"/><path d="M0-17L6 11 0 6-6 11Z"/><text y="-34" text-anchor="middle">N</text></g>
-      </svg>
-      <div class="scene-route-note"><span class="eyebrow">PASSAGE / ILLUSTRATION</span><p>See the next decision.</p><span class="scene-note-detail">Route context · advisory only</span></div>
-      <div class="scene-data-rail" aria-label="Illustrated vessel information categories"><span class="eyebrow">VESSEL CONTEXT</span><div><span>Wind</span><b>Direction &amp; source</b></div><div><span>Depth</span><b>Measured input</b></div><div><span>Energy</span><b>Reserve awareness</b></div><small>Concept labels<br>No vessel connected</small></div>
-      <span class="chart-coordinate" aria-hidden="true">IMAGINED WATERS / SKAGER</span>
+<section class="hero" aria-labelledby="hero-title">
+  <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <p class="kicker"><span class="pulse-dot" aria-hidden="true"></span>Built around your boat</p>
+    <h1 id="hero-title"><span class="line">Navigation.</span><span class="line accent">Reimagined.</span></h1>
+    <p class="hero-sub">Charts, traffic, wind, depth, energy and autopilot. One beautiful screen, made for the helm.</p>
+    <div class="hero-actions">
+      <a class="cta" href="{% url 'marketing:pricing' %}">Get SKAGER <span aria-hidden="true">↗</span></a>
+      <a class="cta-ghost" href="#smart-navigation">Watch it sail <span aria-hidden="true">↓</span></a>
     </div>
-    <figcaption id="scene-caption"><span><i class="status-mark" aria-hidden="true"></i>Original animated illustration · no live navigation data</span><span>Concept composition, not a product screenshot</span></figcaption>
-    <p class="scene-status" data-scene-status role="status" hidden></p>
-  </figure>
-  <div class="container hero-bottom"><span>CHART. VESSEL. PASSAGE.</span><a href="#product">Discover a clearer perspective <span aria-hidden="true">↓</span></a></div>
+  </div>
+  <div class="hero-hud" aria-hidden="true">
+    <div><span>SOG</span><b data-hero-value="sog">6.3</b><small>kn</small></div>
+    <div><span>COG</span><b data-hero-value="cog">052°</b></div>
+    <div><span>Depth</span><b data-hero-value="depth">12.4</b><small>m</small></div>
+    <div><span>Wind</span><b data-hero-value="wind">14</b><small>kt</small></div>
+  </div>
+  <a class="scroll-cue" href="#smart-navigation" aria-label="Scroll to see SKAGER in motion"><span></span></a>
 </section>
-<section class="container meet-section experience-section" id="product" aria-labelledby="meet-title"><p class="eyebrow">MEET SKAGER</p><h2 id="meet-title">One interface.<br><span>Your entire boat.</span></h2><p class="section-lead">Chart, AIS, wind, depth and energy. Bring the available information together, so the passage feels like one connected picture.</p><div class="capability-strip"><span>Navigation</span><span>AIS</span><span>Wind &amp; depth</span><span>Energy</span><span>Passage</span><span>Weather</span></div><a class="text-link" href="{% url 'marketing:features' %}">Explore the product &amp; its requirements <span aria-hidden="true">↗</span></a></section>
-<section class="container experience-section split-experience" aria-labelledby="navigation-title"><div><p class="eyebrow">01 / NAVIGATION WITHOUT THE CLUTTER</p><h2 id="navigation-title">More chart.<br><span>Less searching.</span></h2><p>Routes, AIS and contextual information stay close to the chart. A clear hierarchy, touch controls and day, dusk and night presentation keep the workspace focused.</p><a class="text-link" href="#in-action">Explore the illustration <span aria-hidden="true">↑</span></a></div><div class="perspective-art" aria-label="Conceptual chart-first workspace diagram"><div class="art-topline"><span>CHART FIRST</span><span>CONCEPT</span></div><div class="perspective-route"><i></i><i></i><i></i></div><div class="perspective-label">Room to see ahead.</div><div class="perspective-tabs"><span>Chart</span><span>Route</span><span>Traffic</span></div></div></section>
-<section class="container experience-section vessel-section" aria-labelledby="vessel-title"><div class="section-pair"><div><p class="eyebrow">02 / KNOW YOUR BOAT</p><h2 id="vessel-title">Instruments become<br><span>understanding.</span></h2></div><p>Depth, wind, speed, heading and available vessel sources share a consistent view. Source health and freshness help you understand what the information can tell you.</p></div><div class="vessel-categories"><div><span class="instrument-symbol" aria-hidden="true">↗</span><h3>Motion</h3><p>Speed · heading · position</p></div><div><span class="instrument-symbol" aria-hidden="true">≈</span><h3>Conditions</h3><p>Wind · depth · source health</p></div><div><span class="instrument-symbol" aria-hidden="true">⊕</span><h3>Vessel</h3><p>Available energy &amp; sensor inputs</p></div></div><p class="experience-caveat">Compatible sources are required. Missing, stale and uncertain information stays explicit.</p></section>
-<section class="energy-experience" id="energy" aria-labelledby="energy-title"><div class="container experience-section split-experience"><div><p class="eyebrow">03 / ELECTRIC PROPULSION &amp; ENERGY</p><h2 id="energy-title">Beyond a<br><span>battery percentage.</span></h2><p>Put available battery and propulsion information in the context of your route. Explore range, reserve and arrival estimates with their assumptions in view.</p><p class="experience-caveat">Energy estimates are advisory. Their usefulness depends on compatible inputs and calibration; they are never a guarantee of range.</p></div><div class="energy-art"><div class="art-topline"><span>ENERGY / CONCEPT</span><span>ADVISORY</span></div><div class="battery-outline" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></div><p>Destination.<br>Consumption.<br><span>Reserve.</span></p><div class="energy-legend"><span><i></i>Available input</span><span><i></i>Estimated passage</span></div><small>Illustration · no measurements or range prediction</small></div></div></section>
-<section class="container experience-section split-experience smart-experience" id="smart-navigation" aria-labelledby="smart-title"><div class="passage-art"><div class="art-topline"><span>SMART PASSAGE / CONCEPT</span><span>ADVISORY</span></div><div class="passage-event"><i></i><div><small>LOOK AHEAD</small><p>Next route event</p></div></div><div class="passage-event"><i></i><div><small>ADD CONTEXT</small><p>Wind. Traffic. Energy.</p></div></div><div class="passage-event"><i></i><div><small>KEEP THE DECISION</small><p>With you, at the helm.</p></div></div></div><div><p class="eyebrow">04 / SMART PASSAGE</p><h2 id="smart-title">Understand<br><span>what is ahead.</span></h2><p>Bring the next route event, passage timing and available wind, AIS and energy context into focus. SmartNav supports your awareness and judgment.</p><p class="experience-caveat">Advisory only. SmartNav never steers. Hardware control remains unavailable or off by default until separately qualified and explicitly configured.</p></div></section>
-<section class="weather-experience" id="weather" aria-labelledby="weather-title"><div class="container experience-section"><div class="section-pair"><div><p class="eyebrow">05 / WEATHER IN CONTEXT</p><h2 id="weather-title">The forecast.<br><span>On your chart.</span></h2></div><div><p>Forecast wind direction and speed belong alongside the passage. SKAGER’s developing chart overlay identifies forecast time, source and age, separately from measured wind.</p><p class="experience-caveat">A compatible forecast source, position and coverage are required. Missing coverage stays unavailable. Route weather, waves, currents and tides are future possibilities.</p></div></div><div class="forecast-art" aria-label="Illustrative wind-field pattern, not a forecast"><div class="forecast-arrows" aria-hidden="true">↗ &nbsp; ↗ &nbsp; ↗ &nbsp; ↑ &nbsp; ↑ &nbsp; ↗<br>↗ &nbsp; ↗ &nbsp; ↑ &nbsp; ↑ &nbsp; ↗ &nbsp; ↗<br>→ &nbsp; ↗ &nbsp; ↗ &nbsp; ↑ &nbsp; ↑ &nbsp; ↗</div><div class="forecast-caption"><span>WIND / ILLUSTRATION</span><span>No forecast loaded</span></div></div></div></section>
-<section class="container experience-section helm-section" aria-labelledby="helm-title"><p class="eyebrow">06 / DESIGNED FOR THE HELM</p><h2 id="helm-title">Your attention belongs<br><span>on the water.</span></h2><p class="section-lead">Large touch targets. A focused workspace. Day, dusk and night presentation. Designed around a 1280 × 800 helm display, with real hardware qualification still in progress.</p><div class="helm-foundation"><span class="eyebrow">A PROVEN FOUNDATION</span><h3>Built on the OpenCPN navigation engine.</h3><p>SKAGER works with a separately installed, supported OpenCPN application. Charts and chart licenses are separate. Your OpenCPN charts, routes, waypoints and connections remain the foundation.</p><a class="text-link" href="{% url 'marketing:installation' %}">Installation prerequisites <span aria-hidden="true">↗</span></a></div></section>
-<section class="myboat-experience" id="my-boat" aria-labelledby="myboat-title"><div class="container experience-section split-experience"><div><p class="eyebrow">07 / THE CONNECTED BOAT · FUTURE VISION</p><h2 id="myboat-title">Your boat.<br><span>A digital home.</span></h2><p>Meet the vision for My Boat: an ownership experience shaped around your vessel, from software and support to future passage planning and boat health.</p><p class="experience-caveat">Future concept, not shipped. Cloud telemetry, remote alerts, voyages, analytics, route transfer, backup and settings sync are not available. Accounts and public downloads remain closed.</p><a class="text-link" href="{% url 'marketing:account' %}">Account availability <span aria-hidden="true">↗</span></a></div><div class="myboat-art"><div class="art-topline"><span>MY BOAT</span><span>FUTURE CONCEPT</span></div><svg viewBox="0 0 400 180" aria-hidden="true"><path d="M40 130H355L325 151H95Z"/><path d="M203 20V130M194 33L90 117H194ZM213 51L286 117H213Z"/><path class="boat-water" d="M22 164Q80 154 140 164T260 164T378 164"/></svg><h3>Built around ownership.</h3><div class="myboat-grid"><span>Software &amp; support</span><span>Passage planning</span><span>Boat health</span><span>Voyages &amp; sync</span></div><small>Concept categories · no boat connected</small></div></div></section>
-<section class="container final-experience"><p class="eyebrow">A CLEARER PERSPECTIVE STARTS HERE</p><h2>Your boat deserves<br><span>a better interface.</span></h2><div class="actions"><a class="button" href="{% url 'marketing:pricing' %}">GET SKAGER <span aria-hidden="true">↗</span></a><a class="text-link" href="{% url 'marketing:account' %}">Already own SKAGER? Log in <span aria-hidden="true">→</span></a></div><p class="experience-caveat">Explore the planned beta offer. Public purchases, accounts and downloads are closed pending qualification and launch approval.</p></section>
+
+<section class="tour" id="smart-navigation" data-tour aria-labelledby="tour-title">
+  <div class="tour-sticky">
+    <div class="container tour-layout">
+      <div class="tour-copy">
+        <p class="kicker">See it sail</p>
+        <h2 id="tour-title" class="visually-hidden">SKAGER in motion</h2>
+        <ol class="tour-beats">
+          <li data-beat="0" class="is-active"><h3>This is SKAGER.</h3><p>Everything your boat knows. On one calm, clear screen.</p></li>
+          <li data-beat="1"><span class="beat-number">01</span><h3>Your route, drawn ahead.</h3><p>See the next turn long before you reach it. Distance, bearing and time, right where you look.</p></li>
+          <li data-beat="2"><span class="beat-number">02</span><h3>Every ship around you.</h3><p>Traffic appears on your chart with course and closest approach. One tap tells you who they are.</p></li>
+          <li data-beat="3"><span class="beat-number">03</span><h3>Wind you can see.</h3><p>The forecast flows across your chart, so you plan the passage around the weather.</p></li>
+          <li data-beat="4"><span class="beat-number">04</span><h3>Day. Dusk. Night.</h3><p>The whole display follows the light, so your eyes stay ready for the water.</p></li>
+        </ol>
+        <div class="tour-steps" aria-hidden="true"><span data-step="1">Route</span><span data-step="2">Traffic</span><span data-step="3">Wind</span><span data-step="4">Light</span></div>
+      </div>
+      <div class="tour-stage" data-tour-stage>
+        <div class="device">
+          <div class="screen" data-tour-screen aria-hidden="true">
+            <div class="ui-top">
+              <span class="ui-brand">SKAGER</span>
+              <span class="ui-divider"></span>
+              <span class="ui-route"><small>Active route</small><b>Sandhamn</b><span>18.2 NM · ETA 14:42</span></span>
+              <span class="ui-status"><i></i>GPS<i></i>AIS<i></i>N2K<i></i>AP</span>
+              <span class="ui-modes"><span data-mode="day" class="is-active">Day</span><span data-mode="dusk">Dusk</span><span data-mode="night">Night</span></span>
+            </div>
+            <div class="ui-chart">
+              <canvas data-tour-canvas></canvas>
+              <div class="ui-nav">
+                <span class="is-active"><svg viewBox="0 0 24 24"><path d="M4 11l16-7-7 16-2-7z"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5"/></svg></span>
+                <i></i>
+                <span><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="18" cy="7" r="2"/><path d="M7.5 15.5C11 13 9 9 16.5 8"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><path d="M12 3v18M7 20l5-17 5 17M8 14h8"/></svg></span>
+                <span><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v13M5 13c0 4 3 7 7 7s7-3 7-7M8 11h8"/></svg></span>
+              </div>
+              <div class="ui-rail">
+                <div class="ui-tile"><small>SOG</small><b><span data-value="sog">6.3</span><em>kn</em></b><span class="ui-live">Live · GPS</span></div>
+                <div class="ui-tile"><small>Depth</small><b><span data-value="depth">8.4</span><em>m</em></b><span class="ui-live">Live · N2K</span></div>
+                <div class="ui-tile"><small>Wind</small><b><span data-value="wind">14.3</span><em>kt</em></b><span class="ui-live">TWA 72° · Port</span></div>
+                <div class="ui-tile"><small>Battery</small><b><span data-value="battery">68</span><em>%</em></b><span class="ui-live">Arrival 43%</span></div>
+              </div>
+              <div class="ui-card ui-turn" data-card="turn"><small>Next turn</small><b><span data-value="side">Starboard</span> in <span data-value="next">0.8</span> NM</b><span>Then steer <span data-value="course">072°</span></span></div>
+              <div class="ui-card ui-ais" data-card="ais"><small>AIS · <span data-value="aisType">Cargo</span></small><b data-value="aisName">BALTIC TERN</b><span><span data-value="aisRange">0.9</span> NM away</span><span data-value="aisPass">Passing astern</span></div>
+              <div class="ui-card ui-weather" data-card="weather"><small>Forecast wind · 15:00</small><b>14 kt from SW</b><span class="ui-timeline"><i></i></span></div>
+            </div>
+            <div class="ui-bottom">
+              <span class="ui-button is-active">Follow</span><span class="ui-button">Course ↑</span><span class="ui-button">Route</span>
+              <span class="ui-nav-values"><small>BTW</small><b data-value="btw">072°</b><small>DTW</small><b><span data-value="dtw">0.8</span> NM</b><small>XTE</small><b>0.02</b></span>
+              <span class="ui-pilot"><small>Autopilot</small><b>Auto</b><strong data-value="heading">072°</strong></span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="meet" id="product" aria-labelledby="meet-title">
+  <div class="container">
+    <p class="kicker" data-reveal>Meet SKAGER</p>
+    <h2 id="meet-title" class="meet-title" data-reveal>One interface.<br><span>Your entire boat.</span></h2>
+    <p class="meet-lead" data-reveal>Stop switching between plotters, apps and instruments. SKAGER brings everything aboard together, and shows you only what matters right now.</p>
+  </div>
+  <div class="marquee" aria-label="Navigation, AIS, wind, depth, energy, autopilot, weather, anchor watch and My Boat">
+    <div class="marquee-track" aria-hidden="true">
+      <span>Navigation</span><span>AIS</span><span>Wind</span><span>Depth</span><span>Energy</span><span>Autopilot</span><span>Weather</span><span>Anchor watch</span><span>My Boat</span>
+      <span>Navigation</span><span>AIS</span><span>Wind</span><span>Depth</span><span>Energy</span><span>Autopilot</span><span>Weather</span><span>Anchor watch</span><span>My Boat</span>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="chart-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">01 · Navigation</p>
+      <h2 id="chart-title">More chart.<br><span>Less searching.</span></h2>
+      <p>SKAGER clears the clutter and keeps what matters on screen. Big touch targets, a clear hierarchy and nothing in your way.</p>
+    </div>
+    <div class="chapter-visual visual-declutter" data-reveal aria-hidden="true">
+      <svg viewBox="0 0 560 380">
+        <rect width="560" height="380" class="dc-water"/>
+        <path class="dc-band" d="M-20 300C60 260 120 300 170 250S220 120 300 110 380 40 420-20H-20Z"/>
+        <path class="dc-land" d="M-20 250C50 220 100 250 140 210S190 90 260 80 330 20 360-20H-20Z"/>
+        <path class="dc-band" d="M600 260C520 250 470 290 450 340S470 400 600 400Z"/>
+        <path class="dc-land" d="M600 290C540 285 500 315 490 350S510 400 600 400Z"/>
+        <path class="dc-land" d="M330 250c14-18 44-14 52 4s-12 34-32 30-30-18-20-34z"/>
+        <g class="dc-clutter">
+          <text x="200" y="160">12.4</text><text x="250" y="190">9.8</text><text x="300" y="150">14.1</text><text x="420" y="120">21.0</text><text x="460" y="200">18.6</text><text x="380" y="300">7.2</text><text x="250" y="330">6.1</text><text x="120" y="320">5.4</text><text x="470" y="60">25.3</text><text x="320" y="210">11.2</text>
+          <text x="60" y="140" class="dc-name">FL(2) 6s 12m 8M</text><text x="390" y="340" class="dc-name">Q(6)+LFl 15s</text><text x="300" y="90" class="dc-name">Rk · Wk · Obstn</text><text x="440" y="250" class="dc-name">Cable area</text>
+          <circle cx="230" cy="230" r="5"/><circle cx="405" cy="180" r="5"/><circle cx="350" cy="120" r="4"/><circle cx="500" cy="300" r="5"/>
+          <path d="M150 360l12-20 12 20zM470 150l10-16 10 16zM270 270l9-14 9 14z"/>
+          <path class="dc-hatch" d="M380 60l140 0M380 76l140 0M380 92l140 0M380 108l140 0"/>
+        </g>
+        <path class="dc-route" d="M90 350L230 260 360 190 520 120"/>
+        <circle class="dc-wp" cx="230" cy="260" r="7"/><circle class="dc-wp" cx="360" cy="190" r="7"/><circle class="dc-wp" cx="520" cy="120" r="7"/>
+        <g transform="translate(160 305) rotate(56)"><path class="dc-boat" d="M0-14L9 10 0 5-9 10Z"/></g>
+      </svg>
+      <span class="dc-toggle"><i></i>Declutter</span>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="boat-title">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">02 · Instruments</p>
+      <h2 id="boat-title">Know your boat.<br><span>At a glance.</span></h2>
+      <p>Speed, depth, wind and battery, live beside the chart. One look tells you everything, in letters you can read across the cockpit.</p>
+    </div>
+    <div class="chapter-visual visual-rail" data-rail data-reveal aria-hidden="true">
+      <div class="tile"><small>SOG</small><b><span data-rail-value="sog">6.3</span><em>kn</em></b><svg viewBox="0 0 120 34" preserveAspectRatio="none"><polyline data-spark points="0,17 120,17"/></svg></div>
+      <div class="tile"><small>Depth</small><b><span data-rail-value="depth">8.4</span><em>m</em></b><span class="meter" data-depth-meter><i></i></span></div>
+      <div class="tile"><small>Wind</small><b><span data-rail-value="wind">14.3</span><em>kt</em></b><span class="dial"><i data-wind-needle></i><em data-rail-value="dir">225°</em></span></div>
+      <div class="tile"><small>Battery</small><b><span data-rail-value="battery">68</span><em>%</em></b><span class="battery" data-battery-bar><i></i></span></div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="pilot-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">03 · Autopilot</p>
+      <h2 id="pilot-title">Autopilot.<br><span>At your fingertips.</span></h2>
+      <p>Engage, adjust and hand back the helm from the screen you already navigate on. One degree or ten, one tap.</p>
+    </div>
+    <div class="chapter-visual visual-pilot" data-pilot data-reveal aria-hidden="true">
+      <div class="rose"><svg viewBox="0 0 240 240" data-pilot-rose><circle cx="120" cy="120" r="108"/><g class="ticks"><path d="M120 12v16M120 212v16M12 120h16M212 120h16"/></g><text x="120" y="46">N</text><text x="198" y="125">E</text><text x="120" y="204">S</text><text x="42" y="125">W</text></svg><span class="rose-boat"></span></div>
+      <div class="pilot-readout"><small>Autopilot · Auto</small><b data-pilot-heading>143°</b><span>Heading hold</span></div>
+      <div class="pilot-keys"><span data-key="-10">−10</span><span data-key="-1">−1</span><span data-key="auto" class="wide">Auto</span><span data-key="+1">+1</span><span data-key="+10">+10</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="energy" aria-labelledby="energy-title">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">04 · Energy</p>
+      <h2 id="energy-title">Arrive with<br><span>energy to spare.</span></h2>
+      <p>Know how much charge you’ll have when you get there, before you leave the dock. Range, reserve and arrival, worked out for your route.</p>
+    </div>
+    <div class="chapter-visual visual-energy" data-energy data-reveal aria-hidden="true">
+      <svg viewBox="0 0 520 300">
+        <defs><linearGradient id="energy-gradient" x1="0" x2="1"><stop offset="0" class="stop-a"/><stop offset="1" class="stop-b"/></linearGradient></defs>
+        <path class="en-land" d="M-10 70C60 40 120 90 170 60S260-10 300-10H-10Z"/><path class="en-land" d="M530 230C470 220 430 260 420 310H530Z"/>
+        <path class="en-route-bg" d="M60 240C140 230 170 160 250 150S380 120 460 60"/>
+        <path class="en-route" data-energy-path pathLength="1" d="M60 240C140 230 170 160 250 150S380 120 460 60"/>
+        <circle class="en-end" cx="460" cy="60" r="8"/><text class="en-label" x="470" y="40">Möja</text>
+        <circle class="en-start" cx="60" cy="240" r="6"/><text class="en-label" x="40" y="270">Sandhamn</text>
+        <g data-energy-boat><circle class="en-boat-ring" r="16"/><circle class="en-boat" r="6"/></g>
+      </svg>
+      <div class="energy-readout">
+        <div><small>Now</small><b><span data-energy-now>92</span><em>%</em></b></div>
+        <div><small>On arrival</small><b>43<em>%</em></b></div>
+        <div><small>Reserve</small><b>20<em>%</em></b></div>
+      </div>
+      <span class="energy-bar" data-energy-bar><i></i><span class="reserve"></span></span>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="weather" aria-labelledby="weather-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">05 · Weather</p>
+      <h2 id="weather-title">The forecast.<br><span>On your chart.</span></h2>
+      <p>Wind across your route, hour by hour. Pick the perfect window and sail it with the breeze on your side.</p>
+    </div>
+    <div class="chapter-visual visual-weather" data-weather data-reveal aria-hidden="true">
+      <div class="chevrons">
+        {% for y in "012345" %}{% for x in "012345678" %}<span data-chevron data-x="{{ x }}" data-y="{{ y }}"><svg viewBox="0 0 20 20"><path d="M10 17V3M5.5 7.5L10 3l4.5 4.5"/></svg></span>{% endfor %}{% endfor %}
+      </div>
+      <svg class="weather-route" viewBox="0 0 540 320" preserveAspectRatio="none"><path d="M40 280C150 260 190 170 290 150S430 90 510 40"/></svg>
+      <div class="forecast-chip"><small>Forecast wind</small><b><span data-forecast-speed>14</span> kt · <span data-forecast-hour>15:00</span></b></div>
+      <div class="forecast-timeline" data-forecast-handle><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><i></i></div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="my-boat" aria-labelledby="myboat-title">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">06 · My Boat</p>
+      <h2 id="myboat-title">Your boat.<br><span>Always within reach.</span></h2>
+      <p>Battery, bilge and shore power on your phone. Voyages saved, routes ready and settings in sync. Peace of mind, wherever you are.</p>
+    </div>
+    <div class="chapter-visual visual-myboat" data-reveal aria-hidden="true">
+      <div class="phone">
+        <div class="phone-top"><small>My Boat</small><b>Linnea</b><span><i></i>Moored · Sandhamn</span></div>
+        <div class="phone-grid">
+          <div><small>Battery</small><b>92%</b><span class="bar"><i></i></span></div>
+          <div><small>Shore power</small><b>On</b><span class="ok">Charging</span></div>
+          <div><small>Bilge</small><b>Dry</b><span class="ok">All good</span></div>
+          <div><small>Cabin</small><b>18°</b><span class="ok">Normal</span></div>
+        </div>
+        <div class="phone-voyage"><small>Last voyage</small><b>Sandhamn → Möja</b><span>14.2 NM · 2 h 31 min</span><svg viewBox="0 0 220 50"><path d="M6 42C50 40 70 18 110 20S180 10 214 6"/></svg></div>
+        <div class="phone-toast"><i></i>Shore power connected</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="foundation" aria-labelledby="foundation-title">
+  <div class="container foundation-inner" data-reveal>
+    <div>
+      <p class="kicker">Built on OpenCPN</p>
+      <h2 id="foundation-title">Bring your charts.<br><span>Keep your routes.</span></h2>
+    </div>
+    <div>
+      <p>SKAGER runs on OpenCPN, the proven open-source chart plotter. Your charts, routes, waypoints and instruments come with you, from the first launch.</p>
+      <ul class="foundation-list"><li>Your charts</li><li>Your routes &amp; waypoints</li><li>Your instruments</li></ul>
+      <a class="cta-ghost" href="{% url 'marketing:installation' %}">What you need <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="finale" aria-labelledby="finale-title">
+  <svg class="finale-route" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 340C220 330 330 220 560 210S900 150 1080 110 1320 40 1460 30"/></svg>
+  <div class="container finale-inner" data-reveal>
+    <h2 id="finale-title">Your boat deserves<br><span>a better interface.</span></h2>
+    <div class="hero-actions">
+      <a class="cta" href="{% url 'marketing:pricing' %}">Get SKAGER <span aria-hidden="true">↗</span></a>
+      <a class="cta-ghost" href="{% url 'marketing:account' %}">Already own SKAGER? Log in <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
 {% endblock %}

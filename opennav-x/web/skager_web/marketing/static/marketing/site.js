@@ -31,58 +31,6 @@
     }
   }
 
-  const scene = document.querySelector('[data-marine-scene]');
-  if (scene) {
-    const controls = scene.querySelector('[data-scene-controls]');
-    const motionButton = scene.querySelector('[data-motion-toggle]');
-    const status = scene.querySelector('[data-scene-status]');
-    const reducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
-    const smallScreen = window.matchMedia('(max-width: 800px)');
-    const connection = navigator.connection;
-    let requestedMotion = true;
-    let visible = true;
-    const needsStatic = () => reducedMotion.matches || smallScreen.matches ||
-      Boolean(connection && (connection.saveData || ['slow-2g', '2g'].includes(connection.effectiveType))) ||
-      (navigator.hardwareConcurrency && navigator.hardwareConcurrency <= 2);
-    const updateMotion = () => {
-      const fallback = needsStatic();
-      const playing = !fallback && requestedMotion && visible && !document.hidden;
-      scene.dataset.motion = fallback ? 'static' : playing ? 'playing' : 'paused';
-      motionButton.disabled = fallback;
-      motionButton.setAttribute('aria-pressed', String(!fallback && requestedMotion));
-      motionButton.textContent = fallback ? 'Static scene' : requestedMotion ? 'Pause scene' : 'Play scene';
-      status.hidden = !fallback;
-      status.textContent = fallback ? 'Static illustration for reduced motion, mobile, data-saving or lower-performance devices. Day, dusk and night views remain available.' : '';
-    };
-    if (controls && motionButton && status) {
-      controls.hidden = false;
-      motionButton.addEventListener('click', () => {
-        requestedMotion = !requestedMotion;
-        updateMotion();
-      });
-      scene.querySelectorAll('[data-scene-mode]').forEach((button) => {
-        button.addEventListener('click', () => {
-          scene.dataset.mode = button.dataset.sceneMode;
-          scene.querySelectorAll('[data-scene-mode]').forEach((mode) => {
-            mode.setAttribute('aria-pressed', String(mode === button));
-          });
-        });
-      });
-      reducedMotion.addEventListener('change', updateMotion);
-      smallScreen.addEventListener('change', updateMotion);
-      if (connection && connection.addEventListener) connection.addEventListener('change', updateMotion);
-      document.addEventListener('visibilitychange', updateMotion);
-      if ('IntersectionObserver' in window) {
-        const observer = new IntersectionObserver((entries) => {
-          visible = entries[0].isIntersecting;
-          updateMotion();
-        }, { threshold: 0 });
-        observer.observe(scene);
-      }
-      updateMotion();
-    }
-  }
-
   const toggle = document.querySelector('.menu-toggle');
   const navigation = document.querySelector('#site-navigation');
   if (!toggle || !navigation) return;

@@ -30,8 +30,9 @@ exports only 20 allowlisted informational pages and owned static assets from
 these same Django templates. It never exports account/backend source or secrets.
 The separately hosted owner-private Sites preview is a static design review,
 not a replacement for the selected Django/PostgreSQL/Render production backend.
-Its account/download pages explain that access is closed. The chart illustration
-is explicitly labelled and is not a product screenshot or navigable chart.
+Its account/download pages explain that access is closed. The homepage scene
+(`static/marketing/home.js`) is a code-drawn, invented archipelago in the SKAGER
+palettes; it is not a navigable chart and carries no real geography or data.
 Provenance records the exact website source revision and asset hashes.
 
 Dependencies are pinned to Django 5.2.17 LTS and psycopg 3.3.6. The versions

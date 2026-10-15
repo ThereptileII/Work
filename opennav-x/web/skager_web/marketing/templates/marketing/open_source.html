@@ -1,4 +1,5 @@
 {% extends 'marketing/base.html' %}
+{% load static %}
 {% block title %}Open source and licenses — SKAGER{% endblock %}
 {% block description %}OpenCPN attribution, open-source license rights and SKAGER's version-specific source delivery commitment.{% endblock %}
 {% block content %}
@@ -23,6 +24,10 @@
       <h2>Source that matches your release</h2>
       <p>Each qualified public release will provide version-specific links to its corresponding source and notice package, tied to the software actually released. These links will be available independently of paid account access. The official upstream repository alone does not supply SKAGER's corresponding source.</p>
       <div class="notice"><h3>Source publication is a release gate</h3><p>Public downloads remain closed. This preview does not announce a SKAGER release or offer an invented source archive. The exact source mapping, notice package and required compliance review must be complete before public release.</p></div>
+    </section>
+    <section class="page-section">
+      <h2>Website typeface</h2>
+      <p>This website uses Inter, copyright © 2016 The Inter Project Authors, licensed under the SIL Open Font License 1.1. The site serves a Latin subset of Inter 4.1. <a class="text-link" href="{% static 'marketing/fonts/Inter-OFL.txt' %}">Read the font license</a> · <a class="text-link" href="https://github.com/rsms/inter">Inter project</a></p>
     </section>
     <p><a class="text-link" href="{% url 'marketing:article' 'licensing-and-source' %}">Read the licensing support article</a> · <a href="{% url 'marketing:beta_terms' %}">Beta terms review draft</a></p>
   </div>

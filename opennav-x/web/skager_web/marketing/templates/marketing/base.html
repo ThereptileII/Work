@@ -9,8 +9,9 @@
   <meta name="description" content="{% block description %}Navigation, vessel intelligence and passage planning, built around your boat. Explore the developing SKAGER experience.{% endblock %}">
   <link rel="stylesheet" href="{% static 'marketing/site.css' %}?v={{ marketing_css_version }}">
   <script src="{% static 'marketing/site.js' %}?v={{ marketing_js_version }}" defer></script>
+  {% block extra_head %}{% endblock %}
 </head>
-<body>
+<body data-page="{% block page %}page{% endblock %}">
   <a class="skip-link" href="#content">Skip to content</a>
   <header class="site-header">
     <div class="container header-inner">
@@ -35,7 +36,7 @@
       <nav aria-label="Product links"><span class="eyebrow">Explore</span><a href="{% url 'marketing:features' %}">Product details</a><a href="{% url 'marketing:pricing' %}">GET SKAGER</a><a href="{% url 'marketing:downloads' %}">Download availability</a><a href="{% url 'marketing:account' %}">Account availability</a></nav>
       <nav aria-label="Support and legal links"><span class="eyebrow">Good to know</span><a href="{% url 'marketing:installation' %}">Installation prerequisites</a><a href="{% url 'marketing:support' %}">Help &amp; guides</a><a href="{% url 'marketing:open_source' %}">Open source &amp; licenses</a><a href="{% url 'marketing:beta_terms' %}">Beta terms</a><a href="{% url 'marketing:privacy' %}">Privacy</a></nav>
     </div>
-    <div class="container footer-bottom"><p><span class="status-mark" aria-hidden="true"></span> Public beta is closed. Qualification is in progress.</p><p>SKAGER is built on OpenCPN. OpenCPN is a separate prerequisite.</p></div>
+    <div class="container footer-bottom">{% block footer_status %}<p><span class="status-mark" aria-hidden="true"></span> Public beta is closed. Qualification is in progress.</p>{% endblock %}<p>SKAGER is built on OpenCPN. OpenCPN is a separate prerequisite.</p></div>
   </footer>
   {% block extra_scripts %}{% endblock %}
 </body>
