@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Stripe"
+  short_description: "Test checkout, discounts and verified entitlements"
+  default_prompt: "Use $skager-stripe to verify SKAGER test checkout, discount and entitlement behavior."

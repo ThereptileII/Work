@@ -11,6 +11,11 @@ Auth, Edge Functions and PostgreSQL. Stripe stays TEST-only. Follow repository
 backlog. This skill does not authorize deployment, provider changes, tester
 invitations, public launch or paid upgrades beyond the user's existing scope.
 
+For provider-specific setup or diagnosis, load only the relevant installed
+`skager-resend`, `skager-cloudflare`, `skager-supabase` or `skager-stripe` guide
+(versioned fallback: `tools/agents/skills/<name>/SKILL.md`). A full publication
+does not require loading all four when their layers are already verified.
+
 ## Establish the candidate
 
 The website may live in a separate active Git worktree from the desktop candidate.

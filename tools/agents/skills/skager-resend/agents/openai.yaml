@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Resend"
+  short_description: "Login email, SMTP and delivery troubleshooting"
+  default_prompt: "Use $skager-resend to diagnose SKAGER login-email delivery at the failing layer."

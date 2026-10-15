@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Cloudflare"
+  short_description: "Worker, DNS and private R2 operations"
+  default_prompt: "Use $skager-cloudflare to verify SKAGER Worker routing or private R2 access."

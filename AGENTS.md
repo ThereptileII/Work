@@ -11,6 +11,8 @@ functional, native Windows, boat, security or release gates.
 
 Reusable Codex skill sources are versioned in [tools/agents/skills](tools/agents/skills/README.md):
 `dev-skager`, `skager-build`, `skager-test`, `skager-jira` and `skager-web-publish`.
+Provider operations use `skager-resend`, `skager-cloudflare`, `skager-supabase`
+or `skager-stripe` as relevant; `skager-web-publish` coordinates publication.
 Use the relevant installed skill when available; otherwise read its source
 entrypoint. Load only the needed specialty and conditional references. These
 guides supplement project authority and never grant new deployment, physical

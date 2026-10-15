@@ -1,0 +1,4 @@
+interface:
+  display_name: "SKAGER Supabase"
+  short_description: "Auth, Edge Functions and private database operations"
+  default_prompt: "Use $skager-supabase to diagnose SKAGER authentication or backend configuration."
