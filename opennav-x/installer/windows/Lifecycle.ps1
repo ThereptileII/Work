@@ -220,8 +220,23 @@ function Assert-LifecycleMutation {
   Assert-NoProtectedBrokerEnrollment
   Assert-NoSignedUpdateArmed $Root
 }
-function AtomicJson([string]$Path, $Value) {
-  if ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
+function AtomicJson([string]$Path, $Value, [switch]$ExternalFailureReport) {
+  if ($ExternalFailureReport) {
+    # A refusal can precede first installation-root creation. Only the exact
+    # caller-selected external failed-operation report may prove that absence;
+    # installation records retain their strict existing-root mutation guards.
+    $full = PlainPath $Path
+    $installation = PlainPath $Root
+    if ($Action -notin @('Install','Update') -or -not $Report -or
+        $full -cne (PlainPath $Report) -or $Value.status -cne 'failed' -or $Value.action -cne $Action -or
+        $full.Equals($installation, [StringComparison]::OrdinalIgnoreCase) -or
+        $full.StartsWith($installation+[IO.Path]::DirectorySeparatorChar, [StringComparison]::OrdinalIgnoreCase)) {
+      throw 'Only the exact external failed-operation report permits an absent installation root.'
+    }
+    Assert-NoProtectedBrokerEnrollment
+    Assert-NoSignedUpdateArmed $Root $true
+  }
+  elseif ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
   else { Assert-LifecycleMutation }
   $null = PlainPath $Path
   $temp = $Path + '.' + [guid]::NewGuid().ToString('N') + '.tmp'
@@ -229,7 +244,11 @@ function AtomicJson([string]$Path, $Value) {
   try {
     $file = New-Object IO.FileStream($temp, [IO.FileMode]::CreateNew, [IO.FileAccess]::Write, [IO.FileShare]::None)
     try { $file.Write($bytes, 0, $bytes.Length); $file.Flush($true) } finally { $file.Dispose() }
-    if ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
+    if ($ExternalFailureReport) {
+      Assert-NoProtectedBrokerEnrollment
+      Assert-NoSignedUpdateArmed $Root $true
+    }
+    elseif ($Action -in @('Preflight','Diagnostics')) { Assert-NoSignedUpdateArmed $Root ($Action -eq 'Preflight') }
     else { Assert-LifecycleMutation }
     # Windows PowerShell 5.1 converts $null to an empty string for this .NET
     # string parameter; File.Replace rejects that as an invalid backup path.
@@ -1206,7 +1225,12 @@ try {
   exit 0
 } catch {
   Log ('FAILED: ' + $_.Exception.Message)
-  if ($Report) { try { AtomicJson (PlainPath $Report) @{status='failed';action=$Action;error=$_.Exception.Message;log=@($SessionLog)} } catch {} }
+  if ($Report) {
+    try {
+      $externalFailure = $Action -in @('Install','Update') -and -not (Test-Path -LiteralPath $Root)
+      AtomicJson (PlainPath $Report) @{status='failed';action=$Action;error=$_.Exception.Message;log=@($SessionLog)} -ExternalFailureReport:$externalFailure
+    } catch {}
+  }
   exit 1
 } finally {
   if ($OwnsRoot -and (Test-Path -LiteralPath (Join-Path $Root 'owner.json'))) {
