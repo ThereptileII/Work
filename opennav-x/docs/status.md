@@ -1,7 +1,21 @@
 # SKAGER status — 2026-10-15
 
 
-## Current Staging candidate — qualification failed, corrections in progress
+## Current Staging candidate — integrated corrections under qualification
+
+The single coherent replacement is
+`e80cb962e1a32d98bb75b964dca6eb516f7a5e23` /
+[38744236920](https://github.com/ThereptileII/Work/actions/runs/38744236920),
+attempt 1, still `0.4.0-beta2.4`. It includes the focused native installer PE32
+extent and AMD64 helper fixes, the Linux Dashboard readiness fixture correction,
+and the authenticated two-image SDK selection described below. The original
+full run was requested once with private Staging trust; extended/design suites
+are off. Native/Linux integration, exact packaged lifecycle, retained
+PluginHandler qualification as needed and fresh boat acceptance remain pending.
+The boat remains on its previous installed revision; no actuator output,
+Production promotion or public release is authorized by this run.
+
+## Previous candidate — preserved qualification failures and focused corrections
 
 `1ffd09ddf2fa6588def2907485f6e14e89bc3a7d` /
 [38722465573](https://github.com/ThereptileII/Work/actions/runs/38722465573)
