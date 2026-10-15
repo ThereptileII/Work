@@ -1,0 +1,43 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-17",
+  "status": "independent-review-refused-before-plan",
+  "helperSourceCommit": "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+  "stagedFiles": 161,
+  "stagingCompletionSha256": "97bcc27741286f10d8f586bdac57fd09377890c5ae96dafd451dc4b4a413e75e",
+  "inspectionSha256": "22d52b3303d824f20729aa086fba7f30b28f49be98d306cfb4c33f7ef23a6f9e",
+  "inspectionBytes": 4525948,
+  "privateReviewSha256": "1943dde993427e7c341ce0f29a4430304f45dd4b05d241f314d6a94eac1235ec",
+  "changedKeys": 18,
+  "profileSha256BeforeAndAfter": "7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559",
+  "activeMarkerSha256Unchanged": "68f88dd2f34232fad809fb18c6a00defdcadfb384ecc88cd8ac9a33e763e8991",
+  "finding": {
+    "key": "Directories/WMMDataLocation",
+    "source": "CommissioningReconciliation.ps1 / Assert-ReconciliationCurrentRetention",
+    "originalReferenceMatchesPreparedParentGeneration": false,
+    "originalReferenceMatchesCurrentGeneration": false,
+    "originalReferenceMatchesVerifiedHistoricalGeneration": true,
+    "historicalSourceCommit": "0da2c64379d5a9cc4b9b2bd068de6e0b69816577",
+    "historicalOwnershipSha256": "9477c66f1422f807c8c3c7315895482d4c9fbed7538bae3c3b7e96f652dbfe7a",
+    "sameOwnedInstallationRoot": true,
+    "canonicalGenerationPath": true,
+    "allThreeSourcePinnedResourcesMatchParentAndCurrent": true,
+    "resourceCount": 3,
+    "noReferenceSubstitutionAllowed": true
+  },
+  "nextAction": "Extend the explicit resource proof for the independently verified historical reference while retaining original/current identity and no-profile-write boundaries; focused native qualification required before use.",
+  "applicationCount": 0,
+  "applicationLaunched": false,
+  "profileChanged": false,
+  "planCreated": false,
+  "commitInvoked": false,
+  "pluginsRestored": false,
+  "activeMarkerRemoved": false,
+  "physicalCommands": false,
+  "privateEvidenceCommitted": false,
+  "limits": [
+    "Resource-only ownership/hash inspection does not qualify the historical application or pilot binding.",
+    "Actual Plan/Commit was not invoked after independent review found the unsupported reference.",
+    "No private paths, configuration values, credentials or ownership payloads are included in this receipt."
+  ]
+}
