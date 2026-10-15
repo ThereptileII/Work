@@ -46,6 +46,27 @@ a readiness/publication gap but does not prove completion of deferred suppressio
 actual corrected Linux execution and the skipped fixture-free build remain
 required. [Original failure and bounded helper proof](evidence/scrum22-linux-chart-readiness-20261015/diagnosis.json).
 
+The focused SCRUM-283 exposure fixture now also passes native MSVC x86 at
+`63abf84b` / [38735688962](https://github.com/ThereptileII/Work/actions/runs/38735688962).
+All four actual-source variants pass, retaining 26 baseline and 288 exposure
+records, 93 original/corrected differences and the required original failure.
+The independent source-provenance findings are corrected by `66cdad37`:
+closed staged includes, exact private inventories and owned-header identities.
+The previous host-selection failure is retained; the corrected lane selects a
+single Python/Perl executable. Only consumed locked wx inputs are prepared,
+with all 1,612 extracted files verified unchanged. No application or private DLL
+was built. Geographic-query, private-DLL/real-chart and boat acceptance remain
+open. [Authenticated native receipt](evidence/scrum283-exposure-parity-20261015/native/native-receipt.json).
+
+Fresh native jobs again allocate image `20261004.326.1`, while the existing
+qualified dependency bundle is bound to `20261012.333.1`. One explicitly guarded
+older-image producer is running at `bfbfdca7` /
+[38735490052](https://github.com/ThereptileII/Work/actions/runs/38735490052).
+Its image guard passes; all 30 source/recipe inputs still match the existing
+producer. The exact-image selector proposal remains inactive until a second
+bundle is fully qualified. No image or provenance check is relaxed, and no new
+full application build is requested yet.
+
 ## Previous candidate and preserved installer failure
 
 `b4c40e6e9166d7e8340dec2879d2a8ad510b7458` /

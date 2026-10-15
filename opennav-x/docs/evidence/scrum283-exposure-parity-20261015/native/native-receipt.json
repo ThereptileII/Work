@@ -1,0 +1,146 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-283",
+  "harnessCommit": "63abf84b96428af5df970a885039071eeca06d5b",
+  "runId": 38735688962,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38735688962",
+  "jobId": 116424287786,
+  "status": "passed-focused-native-x86-fixture",
+  "artifact": {
+    "id": 11974130497,
+    "name": "private-hazard-native-63abf84b96428af5df970a885039071eeca06d5b-run38735688962-attempt1",
+    "size_in_bytes": 116287,
+    "digest": "sha256:ef579b22755c2b84c54153839da22ca42a0d226d5c6193a3eae377c4ead2e3c4"
+  },
+  "apiIdentityAndOriginalDigestAndAllCrcPassed": true,
+  "retainedOriginalFiles": {
+    "harness.json": {
+      "bytes": 3431,
+      "sha256": "f7bc8915c9904e4752e93a513235b3dce7be0cf43edd6c9b706b6b574ddc61c7"
+    },
+    "receipt.json": {
+      "bytes": 17609,
+      "sha256": "3dace4d4f690527ee7263d95f318b0c73760e48df22eb1fb78dd176751c83278"
+    },
+    "parity.json": {
+      "bytes": 638,
+      "sha256": "893969c7051cbbda66b45f2f2cc158303eb6dc802b1453ca3fb822cc0ffdf514"
+    },
+    "wx-postverification.json": {
+      "bytes": 151,
+      "sha256": "a87ded477aef949625f6ebcfa9d7f2c9fa714214c219c2c11102103c64da4fae"
+    },
+    "core/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "core/run.log": {
+      "bytes": 36799,
+      "sha256": "ce8d51099b3bb15bcad47407abd40ecb00c77b3e1ad371a1a8f5a7da0b51371e"
+    },
+    "original-private/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "original-private/run.log": {
+      "bytes": 37731,
+      "sha256": "36ada545a38881eb66c0b1b6286f82330f5324624ceff866abe34ebe9424d874"
+    },
+    "repaired-private/compile.log": {
+      "bytes": 93,
+      "sha256": "b692bbea22facb3a075969609eb8a29b57c35a7fce5074cad8ba4ab83612c184"
+    },
+    "repaired-private/run.log": {
+      "bytes": 36948,
+      "sha256": "da54c0693889e03d58d75e7d4e2ee4a9900ae0d8aa3c2ddac269c7ef4402f71e"
+    },
+    "patched-stock/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "patched-stock/run.log": {
+      "bytes": 37731,
+      "sha256": "36ada545a38881eb66c0b1b6286f82330f5324624ceff866abe34ebe9424d874"
+    },
+    "original-private/required-repair-negative.log": {
+      "bytes": 953,
+      "sha256": "1abc5b30247029eba84711b7a2d0483f70a60d12708f26143c88a1499912bd5a"
+    }
+  },
+  "fullArtifactInventory": {
+    "skager-hazard-inputs/wx-receipt.json": {
+      "bytes": 244378,
+      "sha256": "e32f7fdce9122164c04a00e7e918acc503193f4e13c438b190a1bf625c3cbb8c"
+    },
+    "skager-hazard-native/core/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "skager-hazard-native/core/run.log": {
+      "bytes": 36799,
+      "sha256": "ce8d51099b3bb15bcad47407abd40ecb00c77b3e1ad371a1a8f5a7da0b51371e"
+    },
+    "skager-hazard-native/harness.json": {
+      "bytes": 3431,
+      "sha256": "f7bc8915c9904e4752e93a513235b3dce7be0cf43edd6c9b706b6b574ddc61c7"
+    },
+    "skager-hazard-native/original-private/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "skager-hazard-native/original-private/required-repair-negative.log": {
+      "bytes": 953,
+      "sha256": "1abc5b30247029eba84711b7a2d0483f70a60d12708f26143c88a1499912bd5a"
+    },
+    "skager-hazard-native/original-private/run.log": {
+      "bytes": 37731,
+      "sha256": "36ada545a38881eb66c0b1b6286f82330f5324624ceff866abe34ebe9424d874"
+    },
+    "skager-hazard-native/parity.json": {
+      "bytes": 638,
+      "sha256": "893969c7051cbbda66b45f2f2cc158303eb6dc802b1453ca3fb822cc0ffdf514"
+    },
+    "skager-hazard-native/patched-stock/compile.log": {
+      "bytes": 37,
+      "sha256": "4e8ed184b77bdb7ffc0e99db2e946231331fd964c55f7600602913f68d5619e5"
+    },
+    "skager-hazard-native/patched-stock/run.log": {
+      "bytes": 37731,
+      "sha256": "36ada545a38881eb66c0b1b6286f82330f5324624ceff866abe34ebe9424d874"
+    },
+    "skager-hazard-native/receipt.json": {
+      "bytes": 17609,
+      "sha256": "3dace4d4f690527ee7263d95f318b0c73760e48df22eb1fb78dd176751c83278"
+    },
+    "skager-hazard-native/repaired-private/compile.log": {
+      "bytes": 93,
+      "sha256": "b692bbea22facb3a075969609eb8a29b57c35a7fce5074cad8ba4ab83612c184"
+    },
+    "skager-hazard-native/repaired-private/run.log": {
+      "bytes": 36948,
+      "sha256": "da54c0693889e03d58d75e7d4e2ee4a9900ae0d8aa3c2ddac269c7ef4402f71e"
+    },
+    "skager-hazard-native/source-inputs.json": {
+      "bytes": 67782,
+      "sha256": "81901fd279eafb9a515df0565c5e59d8320a41c113694c3e4fcb5b052bb35858"
+    },
+    "skager-hazard-native/wx-postverification.json": {
+      "bytes": 151,
+      "sha256": "a87ded477aef949625f6ebcfa9d7f2c9fa714214c219c2c11102103c64da4fae"
+    }
+  },
+  "applicationBuilt": false,
+  "privateDllRuntimeAcceptance": false,
+  "boatAcceptance": false,
+  "priorFailure": {
+    "runId": 38735354328,
+    "scope": "PowerShell host path selection before fixture compilation",
+    "correction": "Explicit first executable selection in 63abf84b"
+  },
+  "remaining": [
+    "Actual geographic associated-area query",
+    "Private DLL and real chart portrayal under software/OpenGL",
+    "Boat acceptance"
+  ]
+}

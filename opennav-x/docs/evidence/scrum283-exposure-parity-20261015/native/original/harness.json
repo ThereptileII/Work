@@ -1,0 +1,89 @@
+{
+  "commit": "63abf84b96428af5df970a885039071eeca06d5b",
+  "files": {
+    "tools/verify-private-hazard-association.py": {
+      "bytes": 16115,
+      "sha256": "b7c25eb4a8466779f9dd9cc3bf6668bd416c1bdf0da42cb56b9aa1d3a64f3d83"
+    },
+    "tests/private_hazard_association_test.cpp": {
+      "bytes": 6061,
+      "sha256": "e20273e05a41061d1b01074a051c908abab1f7ba65346a5ef93a54167eef7a37"
+    },
+    "tests/private_hazard_cases.inc": {
+      "bytes": 8286,
+      "sha256": "3fd8fb63e2d9dc3055ef626896c118c98685a51481312ae229d7550493fc16d4"
+    },
+    "tests/private_hazard_allocation_test.cpp": {
+      "bytes": 687,
+      "sha256": "bd409a7192063332d5fcaa0acb7de84f0331a7fa1ede273f0a8af7a98e229cd0"
+    },
+    "tools/verify-anchor-loader.py": {
+      "bytes": 18169,
+      "sha256": "b4e1493f70772f1209e8b9859870903a1155f745ff488497d34143e647098be6"
+    },
+    "tools/prepare-ocharts-adapter.py": {
+      "bytes": 17606,
+      "sha256": "81a3339c4f48442079f77c4dc8a4b47acbca3670331298830729a7a62997f997"
+    },
+    "tools/ocharts-adapter-source.lock.json": {
+      "bytes": 31085,
+      "sha256": "042a4dc7a25197ff39fa6ab44a2cd33c1ec71d9ca1db162bdebbe02166a078d7"
+    },
+    "upstream.lock.json": {
+      "bytes": 470,
+      "sha256": "a6d7baa663d57ac3bc0f4ddc1cb80013422e2cec0577b71096b7c410ef919175"
+    },
+    "tools/windows-wx.lock.json": {
+      "bytes": 1017,
+      "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+    },
+    "src/integration/ChartLightLabel.h": {
+      "bytes": 5079,
+      "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+    },
+    "src/integration/ChartNameText.h": {
+      "bytes": 2373,
+      "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+    },
+    "src/integration/ChartNameSpacing.h": {
+      "bytes": 1274,
+      "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+    }
+  },
+  "platform": "win32",
+  "compiler": "MSVC x86",
+  "nativeSdk": {
+    "receipt": "D:\\a\\_temp\\skager-hazard-inputs\\wx-receipt.json",
+    "bytes": 244378,
+    "sha256": "e32f7fdce9122164c04a00e7e918acc503193f4e13c438b190a1bf625c3cbb8c",
+    "authentication": "Caller prerequisite; this fixture does not authenticate or qualify an SDK",
+    "consumedFiles": {
+      "lib\\vc14x_dll\\wxbase32u.lib": {
+        "bytes": 2750232,
+        "sha256": "1036ab072e1ef6d55d0e959661d88e95d0aa3d684368f24f53bb048ccfa4b264"
+      },
+      "lib\\vc14x_dll\\wxmsw32u_core.lib": {
+        "bytes": 7219440,
+        "sha256": "5d458545250db5fb3526dedad7acee847a52c054364af36891347f4715e51963"
+      },
+      "lib\\vc14x_dll\\wxbase32u_vc14x.dll": {
+        "bytes": 2523136,
+        "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+      },
+      "lib\\vc14x_dll\\wxmsw32u_core_vc14x.dll": {
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      "lib\\vc14x_dll\\mswu\\wx\\setup.h": {
+        "bytes": 63242,
+        "sha256": "5c357dfa1d16a883bf0a3d1169f36d9bcdd699803942fdd3243025336c610438"
+      },
+      "include\\wx\\version.h": {
+        "bytes": 3694,
+        "sha256": "cf19ec85280caac5818d13b9452b5dcf2b2e6deb7b2b61667cd9a2d0466a0910"
+      }
+    }
+  },
+  "applicationBuilt": false,
+  "runtimeProductQualification": false
+}

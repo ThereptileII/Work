@@ -1,0 +1,399 @@
+[
+  {
+    "kind": "core",
+    "source": "D:\\a\\_temp\\skager-hazard-inputs\\core\\libs\\s52plib\\src\\s52cnsy.cpp",
+    "sha256": "d53318365790ba42fc02373460607b6088101aca5a16d7ef3513dedd988b3efa",
+    "bodies": {
+      "bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "wxString *GetStringAttrWXS(": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "static double _DEPVAL01(": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "static wxString *_UDWHAZ03(": "d0d372b8b66a1dcfbecce6d3a161211e1b9aa1d4a0954a2d0dce1f3309cbfb81",
+      "wxString *CSQUAPNT01(S57Obj *obj)\n": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "static void *OBSTRN04(void *param)\n": "eeb5f71482d1273e5890b771cac8a5a6177e0647cacabc8edcd87cd0d7a2d30c",
+      "static void *WRECKS02(void *param)\n": "c65c071fcf99ef50a84334ccca09e4e871ad485126b7d2fdb104d3afa59d0931"
+    },
+    "extracted": {
+      "conditional.inc": {
+        "bytes": 39553,
+        "sha256": "0bb97761ebf7400d8d32c39afcb9b10a2b53d30456c1f43efd9a36e48271b42a"
+      }
+    },
+    "compiledInputs": {
+      "bbox.h": {
+        "bytes": 8427,
+        "sha256": "e78cc510c0c881c4d4d98f4aec783aec6ce02326ffa410ef61a7db8bf8c6e52e"
+      },
+      "color_types.h": {
+        "bytes": 2200,
+        "sha256": "55664fa3c65f9521655f628f4033ae05252e43e7095794df588b577271d8602d"
+      },
+      "integration/ChartLightLabel.h": {
+        "bytes": 5079,
+        "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+      },
+      "integration/ChartNameSpacing.h": {
+        "bytes": 1274,
+        "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+      },
+      "integration/ChartNameText.h": {
+        "bytes": 2373,
+        "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+      },
+      "private_hazard_allocation_test.cpp": {
+        "bytes": 687,
+        "sha256": "bd409a7192063332d5fcaa0acb7de84f0331a7fa1ede273f0a8af7a98e229cd0"
+      },
+      "private_hazard_association_test.cpp": {
+        "bytes": 6061,
+        "sha256": "e20273e05a41061d1b01074a051c908abab1f7ba65346a5ef93a54167eef7a37"
+      },
+      "private_hazard_cases.inc": {
+        "bytes": 8286,
+        "sha256": "3fd8fb63e2d9dc3055ef626896c118c98685a51481312ae229d7550493fc16d4"
+      },
+      "s52s57.h": {
+        "bytes": 16886,
+        "sha256": "1568037424efc5faca27c1287a3c835d4525c1a6dc7313019836fabb5c193f6f"
+      },
+      "s52utils.h": {
+        "bytes": 3242,
+        "sha256": "185a9823c8d032aecec16fa9758513358d154dff702a6a4087a40c70dad4648d"
+      }
+    },
+    "command": [
+      "cl",
+      "/nologo",
+      "/std:c++17",
+      "/utf-8",
+      "/O2",
+      "/EHsc",
+      "/MD",
+      "/D_CRT_SECURE_NO_WARNINGS",
+      "/DWXUSINGDLL",
+      "/D_UNICODE",
+      "/DUNICODE",
+      "/D__WXMSW__",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\include",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll\\mswu",
+      "/ID:\\a\\_temp\\skager-hazard-native\\core\\fixture",
+      "/ID:\\a\\_temp\\skager-hazard-native\\core",
+      "D:\\a\\_temp\\skager-hazard-native\\core\\fixture\\private_hazard_association_test.cpp",
+      "/FoD:\\a\\_temp\\skager-hazard-native\\core\\",
+      "/FeD:\\a\\_temp\\skager-hazard-native\\core\\test.exe",
+      "/link",
+      "/MACHINE:X86",
+      "/LIBPATH:D:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll",
+      "wxbase32u.lib",
+      "wxmsw32u_core.lib"
+    ],
+    "compileExit": 0,
+    "machine": "I386",
+    "runExit": 0,
+    "binarySha256": "0f048146621646aec0984b26ad7c5d385671dcc66434c3dc38da19b9da0a946c",
+    "headerSha256": "1568037424efc5faca27c1287a3c835d4525c1a6dc7313019836fabb5c193f6f"
+  },
+  {
+    "kind": "original-private",
+    "source": "D:\\a\\_temp\\skager-hazard-inputs\\original\\libs\\s52plib\\src\\s52cnsy.cpp",
+    "sha256": "9a6194f9eb488ac5f25b67ef8e96b97d27acfc5b5748bb0e18e60adb998c9e50",
+    "bodies": {
+      "bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "wxString *GetStringAttrWXS(": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "static double _DEPVAL01(": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "static wxString *_UDWHAZ03(": "3c1854d9616c859f7de5b1b63e1edb717790cb3abfd760186dccdfd5a014d718",
+      "wxString *CSQUAPNT01(S57Obj *obj)\n": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "static void *OBSTRN04(void *param)\n": "d213e784462974ff667d8d9fc9d7d4e55441771097279f66ecc1a9cc2ae36e04",
+      "static void *WRECKS02(void *param)\n": "c838bc79817b74e7301af266e834bc910804fb44e2160feed7e8c4d38dd73a26"
+    },
+    "extracted": {
+      "conditional.inc": {
+        "bytes": 40974,
+        "sha256": "acd492efe213bbec57afe44c09113be23d01e6544a892c380835d0ad7ac576e3"
+      }
+    },
+    "compiledInputs": {
+      "bbox.h": {
+        "bytes": 5944,
+        "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+      },
+      "color_types.h": {
+        "bytes": 2142,
+        "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+      },
+      "integration/ChartLightLabel.h": {
+        "bytes": 5079,
+        "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+      },
+      "integration/ChartNameSpacing.h": {
+        "bytes": 1274,
+        "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+      },
+      "integration/ChartNameText.h": {
+        "bytes": 2373,
+        "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+      },
+      "private_hazard_allocation_test.cpp": {
+        "bytes": 687,
+        "sha256": "bd409a7192063332d5fcaa0acb7de84f0331a7fa1ede273f0a8af7a98e229cd0"
+      },
+      "private_hazard_association_test.cpp": {
+        "bytes": 6061,
+        "sha256": "e20273e05a41061d1b01074a051c908abab1f7ba65346a5ef93a54167eef7a37"
+      },
+      "private_hazard_cases.inc": {
+        "bytes": 8286,
+        "sha256": "3fd8fb63e2d9dc3055ef626896c118c98685a51481312ae229d7550493fc16d4"
+      },
+      "s52s57.h": {
+        "bytes": 16034,
+        "sha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a"
+      },
+      "s52utils.h": {
+        "bytes": 3151,
+        "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+      }
+    },
+    "command": [
+      "cl",
+      "/nologo",
+      "/std:c++17",
+      "/utf-8",
+      "/O2",
+      "/EHsc",
+      "/MD",
+      "/D_CRT_SECURE_NO_WARNINGS",
+      "/DPRIVATE_SOURCE",
+      "/DORIGINAL_PRIVATE",
+      "/DWXUSINGDLL",
+      "/D_UNICODE",
+      "/DUNICODE",
+      "/D__WXMSW__",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\include",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll\\mswu",
+      "/ID:\\a\\_temp\\skager-hazard-native\\original-private\\fixture",
+      "/ID:\\a\\_temp\\skager-hazard-native\\original-private",
+      "D:\\a\\_temp\\skager-hazard-native\\original-private\\fixture\\private_hazard_association_test.cpp",
+      "/FoD:\\a\\_temp\\skager-hazard-native\\original-private\\",
+      "/FeD:\\a\\_temp\\skager-hazard-native\\original-private\\test.exe",
+      "/link",
+      "/MACHINE:X86",
+      "/LIBPATH:D:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll",
+      "wxbase32u.lib",
+      "wxmsw32u_core.lib"
+    ],
+    "compileExit": 0,
+    "machine": "I386",
+    "runExit": 0,
+    "binarySha256": "20ac0da36747dcb7a6205fb1ec4450744e4ceb68e6371560bc4cf71d0b0fe866",
+    "headerSha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a",
+    "requiredRepairNegativeExit": 1
+  },
+  {
+    "kind": "repaired-private",
+    "source": "D:\\a\\_temp\\skager-hazard-inputs\\source\\libs\\s52plib\\src\\s52cnsy.cpp",
+    "sha256": "bf6a638248f296742ff618375b4b1e08699350f801dcac9e10452963c2107754",
+    "bodies": {
+      "bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "wxString *GetStringAttrWXS(": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "static double _DEPVAL01(": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "static wxString *_UDWHAZ03(": "cb3777142dc04957516d93460cfeec0571abafa749d832cc2cadeb69e18b2d91",
+      "wxString *CSQUAPNT01(S57Obj *obj)\n": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "static void *OBSTRN04(void *param)\n": "d213e784462974ff667d8d9fc9d7d4e55441771097279f66ecc1a9cc2ae36e04",
+      "static void *WRECKS02(void *param)\n": "c838bc79817b74e7301af266e834bc910804fb44e2160feed7e8c4d38dd73a26"
+    },
+    "extracted": {
+      "bridge.inc": {
+        "bytes": 684,
+        "sha256": "3053a3b995e6b834111650999f35b1a8f6bad5b7cf7bf36cc822a9a833394f93"
+      },
+      "conditional.inc": {
+        "bytes": 41321,
+        "sha256": "95065ec32016eeef5be92bc8455b47ebb1fe2474b0d80f6945237b0b6b8ddad3"
+      }
+    },
+    "compiledInputs": {
+      "bbox.h": {
+        "bytes": 5944,
+        "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+      },
+      "color_types.h": {
+        "bytes": 2142,
+        "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+      },
+      "integration/ChartLightLabel.h": {
+        "bytes": 5079,
+        "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+      },
+      "integration/ChartNameSpacing.h": {
+        "bytes": 1274,
+        "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+      },
+      "integration/ChartNameText.h": {
+        "bytes": 2373,
+        "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+      },
+      "private_hazard_allocation_test.cpp": {
+        "bytes": 687,
+        "sha256": "bd409a7192063332d5fcaa0acb7de84f0331a7fa1ede273f0a8af7a98e229cd0"
+      },
+      "private_hazard_association_test.cpp": {
+        "bytes": 6061,
+        "sha256": "e20273e05a41061d1b01074a051c908abab1f7ba65346a5ef93a54167eef7a37"
+      },
+      "private_hazard_cases.inc": {
+        "bytes": 8286,
+        "sha256": "3fd8fb63e2d9dc3055ef626896c118c98685a51481312ae229d7550493fc16d4"
+      },
+      "s52s57.h": {
+        "bytes": 16823,
+        "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+      },
+      "s52utils.h": {
+        "bytes": 3151,
+        "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+      }
+    },
+    "command": [
+      "cl",
+      "/nologo",
+      "/std:c++17",
+      "/utf-8",
+      "/O2",
+      "/EHsc",
+      "/MD",
+      "/D_CRT_SECURE_NO_WARNINGS",
+      "/DPRIVATE_SOURCE",
+      "/DPATCHED_PRIVATE",
+      "/DSKAGER_OCHARTS_ADAPTER",
+      "/DWXUSINGDLL",
+      "/D_UNICODE",
+      "/DUNICODE",
+      "/D__WXMSW__",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\include",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll\\mswu",
+      "/ID:\\a\\_temp\\skager-hazard-native\\repaired-private\\fixture",
+      "/ID:\\a\\_temp\\skager-hazard-native\\repaired-private",
+      "D:\\a\\_temp\\skager-hazard-native\\repaired-private\\fixture\\private_hazard_association_test.cpp",
+      "D:\\a\\_temp\\skager-hazard-native\\repaired-private\\fixture\\private_hazard_allocation_test.cpp",
+      "/FoD:\\a\\_temp\\skager-hazard-native\\repaired-private\\",
+      "/FeD:\\a\\_temp\\skager-hazard-native\\repaired-private\\test.exe",
+      "/link",
+      "/MACHINE:X86",
+      "/LIBPATH:D:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll",
+      "wxbase32u.lib",
+      "wxmsw32u_core.lib"
+    ],
+    "compileExit": 0,
+    "machine": "I386",
+    "runExit": 0,
+    "binarySha256": "dde0d4b1da979f2fb5ad0fa21a3ecc9973a01c89b5d9414995d147e2bb89ec4b",
+    "headerSha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+  },
+  {
+    "kind": "patched-stock",
+    "source": "D:\\a\\_temp\\skager-hazard-inputs\\source\\libs\\s52plib\\src\\s52cnsy.cpp",
+    "sha256": "bf6a638248f296742ff618375b4b1e08699350f801dcac9e10452963c2107754",
+    "bodies": {
+      "bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+      "bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+      "wxString *GetStringAttrWXS(": "d64d5a78e3fa0c3e509d904c8f531025a80494c52d17aa3ab5342d954627cc9a",
+      "static int _parseList(": "ced9b3c05e34beefcbca7f060d1eb7f77368e6517037a5d09c766b77ad6ff077",
+      "static double _DEPVAL01(": "db75a8dc6a18e1c8b2b42859e59895aca8b2139fd52351660d4b1726274e62d0",
+      "static wxString *_UDWHAZ03(": "cb3777142dc04957516d93460cfeec0571abafa749d832cc2cadeb69e18b2d91",
+      "wxString *CSQUAPNT01(S57Obj *obj)\n": "8bcfd3c3d01eb5732d8050cf300c5e113bd26e3f72b8e794fba300117f7117be",
+      "wxString SNDFRM02(S57Obj *obj, double depth_value_in)": "42d58963d38486a3d9a55f94bf890e76e08ff4ca1e8a0fd7e6fbd714bd14b5c6",
+      "static void *OBSTRN04(void *param)\n": "d213e784462974ff667d8d9fc9d7d4e55441771097279f66ecc1a9cc2ae36e04",
+      "static void *WRECKS02(void *param)\n": "c838bc79817b74e7301af266e834bc910804fb44e2160feed7e8c4d38dd73a26"
+    },
+    "extracted": {
+      "conditional.inc": {
+        "bytes": 41321,
+        "sha256": "95065ec32016eeef5be92bc8455b47ebb1fe2474b0d80f6945237b0b6b8ddad3"
+      }
+    },
+    "compiledInputs": {
+      "bbox.h": {
+        "bytes": 5944,
+        "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+      },
+      "color_types.h": {
+        "bytes": 2142,
+        "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+      },
+      "integration/ChartLightLabel.h": {
+        "bytes": 5079,
+        "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+      },
+      "integration/ChartNameSpacing.h": {
+        "bytes": 1274,
+        "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+      },
+      "integration/ChartNameText.h": {
+        "bytes": 2373,
+        "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+      },
+      "private_hazard_allocation_test.cpp": {
+        "bytes": 687,
+        "sha256": "bd409a7192063332d5fcaa0acb7de84f0331a7fa1ede273f0a8af7a98e229cd0"
+      },
+      "private_hazard_association_test.cpp": {
+        "bytes": 6061,
+        "sha256": "e20273e05a41061d1b01074a051c908abab1f7ba65346a5ef93a54167eef7a37"
+      },
+      "private_hazard_cases.inc": {
+        "bytes": 8286,
+        "sha256": "3fd8fb63e2d9dc3055ef626896c118c98685a51481312ae229d7550493fc16d4"
+      },
+      "s52s57.h": {
+        "bytes": 16823,
+        "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+      },
+      "s52utils.h": {
+        "bytes": 3151,
+        "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+      }
+    },
+    "command": [
+      "cl",
+      "/nologo",
+      "/std:c++17",
+      "/utf-8",
+      "/O2",
+      "/EHsc",
+      "/MD",
+      "/D_CRT_SECURE_NO_WARNINGS",
+      "/DPRIVATE_SOURCE",
+      "/DORIGINAL_PRIVATE",
+      "/DWXUSINGDLL",
+      "/D_UNICODE",
+      "/DUNICODE",
+      "/D__WXMSW__",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\include",
+      "/ID:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll\\mswu",
+      "/ID:\\a\\_temp\\skager-hazard-native\\patched-stock\\fixture",
+      "/ID:\\a\\_temp\\skager-hazard-native\\patched-stock",
+      "D:\\a\\_temp\\skager-hazard-native\\patched-stock\\fixture\\private_hazard_association_test.cpp",
+      "/FoD:\\a\\_temp\\skager-hazard-native\\patched-stock\\",
+      "/FeD:\\a\\_temp\\skager-hazard-native\\patched-stock\\test.exe",
+      "/link",
+      "/MACHINE:X86",
+      "/LIBPATH:D:\\a\\_temp\\skager-hazard-inputs\\wx\\lib\\vc14x_dll",
+      "wxbase32u.lib",
+      "wxmsw32u_core.lib"
+    ],
+    "compileExit": 0,
+    "machine": "I386",
+    "runExit": 0,
+    "binarySha256": "cde74b0326402c9d022b625057b92a457dd0a4c412cfccc6ad1b4f4d4fab7bf7",
+    "headerSha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+  }
+]
