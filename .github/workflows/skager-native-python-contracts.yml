@@ -19,6 +19,11 @@ on:
         required: false
         type: boolean
         default: false
+      installer_trust_only:
+        description: Test installer trust lock handoff and noninteractive launcher failures without building OpenCPN
+        required: false
+        type: boolean
+        default: false
       installer_pe_only:
         description: Test installer PE bounds and the authenticated retained wx DLL in native PS5.1 x86/x64
         required: false
@@ -39,7 +44,7 @@ permissions:
   actions: read
 jobs:
   geometry:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only && !inputs.installer_pe_only && !inputs.private_hazard_only && !inputs.private_hazard_query_only) }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only && !inputs.installer_trust_only && !inputs.installer_pe_only && !inputs.private_hazard_only && !inputs.private_hazard_query_only) }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -298,6 +303,99 @@ jobs:
         with:
           name: installer-filesystem-${{ matrix.architecture }}-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
           path: ${{ runner.temp }}/skager-installer-filesystem
+          if-no-files-found: error
+  installer-trust:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.installer_trust_only }}
+    runs-on: windows-2022
+    timeout-minutes: 12
+    env:
+      CGO_ENABLED: '0'
+      GOOS: windows
+      GOARCH: '386'
+      GO386: sse2
+      GOTOOLCHAIN: local
+    steps:
+      - name: Require one focused selection
+        if: ${{ inputs.plugin_capture_only || inputs.installer_receipt_only || inputs.installer_filesystem_only || inputs.installer_pe_only || inputs.private_hazard_only || inputs.private_hazard_query_only }}
+        shell: python
+        run: raise SystemExit('installer_trust_only cannot be combined with another focused selection')
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Check trust contracts and compile the actual GUI launcher
+        shell: pwsh
+        working-directory: opennav-x/tools/update-verifier
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installer-trust'
+          New-Item -ItemType Directory -Path $Evidence -ErrorAction Stop | Out-Null
+          $env:SKAGER_INSTALLER_TRUST_FIXTURE = Join-Path $Evidence 'public-trust-fixture.json'
+          go test -mod=readonly -count=1 -json ./launcher ./cmd/skager-start -run '^(TestInitializeTrust.*|TestInstallerTrustFixture|TestStartupFailureReporting|TestProvisioningOnceMarkerSurvivesFailureAndNeverResets|TestExplicitProvisioningWithoutInstalledConfigIsInert)$' *> (Join-Path $Evidence 'go-tests.jsonl')
+          $Code = $LASTEXITCODE
+          Get-Content -LiteralPath (Join-Path $Evidence 'go-tests.jsonl')
+          if ($Code -ne 0) { exit $Code }
+          $Rows = @(Get-Content -LiteralPath (Join-Path $Evidence 'go-tests.jsonl') | ConvertFrom-Json)
+          if (@($Rows | Where-Object { $_.Action -in @('skip','fail') }).Count) { throw 'Focused trust tests were skipped or failed' }
+          foreach ($Name in @('TestInstallerTrustFixture','TestStartupFailureReporting','TestProvisioningOnceMarkerSurvivesFailureAndNeverResets','TestExplicitProvisioningWithoutInstalledConfigIsInert')) {
+            if (@($Rows | Where-Object { $_.Action -ceq 'pass' -and $_.Test -ceq $Name }).Count -ne 1) { throw "Missing focused trust test: $Name" }
+          }
+          if (-not @($Rows | Where-Object { $_.Action -ceq 'pass' -and $_.Test -like 'TestInitializeTrust*' }).Count) { throw 'Missing selected-generation trust checks' }
+          go build -mod=readonly -trimpath -buildvcs=true -ldflags=-H=windowsgui -o (Join-Path $Evidence 'skager-start.exe') ./cmd/skager-start
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          go version -m (Join-Path $Evidence 'skager-start.exe') > (Join-Path $Evidence 'launcher-build-info.txt')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $BuildInfo = Get-Content -LiteralPath (Join-Path $Evidence 'launcher-build-info.txt') -Raw
+          if (-not $BuildInfo.Contains("vcs.revision=$env:GITHUB_SHA") -or -not $BuildInfo.Contains('vcs.modified=false')) { throw 'Launcher source identity differs' }
+      - name: Exercise actual process handoff in both Windows PowerShell hosts
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installer-trust'
+          $Launcher = Join-Path $Evidence 'skager-start.exe'
+          $LauncherHash = (Get-FileHash -LiteralPath $Launcher -Algorithm SHA256).Hash.ToLowerInvariant()
+          $env:PSModulePath = [Environment]::GetEnvironmentVariable('PSModulePath', 'Machine')
+          $Results = @()
+          $Passed = $true
+          try {
+            foreach ($Architecture in @('x86','x64')) {
+              $System = if ($Architecture -ceq 'x86') { 'SysWOW64' } else { 'System32' }
+              $HostExe = Join-Path $env:WINDIR "$System/WindowsPowerShell/v1.0/powershell.exe"
+              $Log = Join-Path $Evidence ($Architecture + '.log')
+              & $HostExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/test-installer-trust.ps1 -Launcher $Launcher -TrustFixture (Join-Path $Evidence 'public-trust-fixture.json') -Evidence (Join-Path $Evidence $Architecture) *> $Log
+              $Code = $LASTEXITCODE
+              Get-Content -LiteralPath $Log
+              $Results += @{architecture=$Architecture; host=$HostExe; exitCode=$Code; logSha256=(Get-FileHash -LiteralPath $Log -Algorithm SHA256).Hash.ToLowerInvariant()}
+              if ($Code -ne 0) { $Passed = $false }
+              else {
+                $Receipt = Get-Content -LiteralPath (Join-Path $Evidence "$Architecture/results.json") -Raw | ConvertFrom-Json
+                $Bits = if ($Architecture -ceq 'x86') { 32 } else { 64 }
+                if ($Receipt.status -cne 'passed' -or $Receipt.processBits -ne $Bits -or $Receipt.powershellEdition -cne 'Desktop' -or
+                    $Receipt.powershellVersion -notmatch '^5\.1\.' -or $Receipt.launcherSha256 -cne $LauncherHash -or
+                    $Receipt.productAcceptance -ne $false -or $Receipt.boatAcceptance -ne $false -or
+                    $Receipt.cases.Count -ne 13 -or @($Receipt.cases | Where-Object { $_.passed -ne $true }).Count) {
+                  throw 'Actual native host or trust result differs from the selected fixture'
+                }
+              }
+            }
+          } catch {
+            $Passed = $false
+            throw
+          } finally {
+            $Unchanged = (Get-FileHash -LiteralPath $Launcher -Algorithm SHA256).Hash.ToLowerInvariant() -ceq $LauncherHash
+            @{schema=1; commit=$env:GITHUB_SHA; run=$env:GITHUB_RUN_ID; attempt=$env:GITHUB_RUN_ATTEMPT;
+              results=$Results; launcherSha256=$LauncherHash; launcherUnchanged=$Unchanged;
+              passed=($Passed -and $Unchanged -and $Results.Count -eq 2); applicationBuilt=$false;
+              installedProductAcceptance=$false; boatAcceptance=$false} |
+              ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'result.json') -Encoding utf8
+          }
+          if (-not $Passed -or -not $Unchanged -or $Results.Count -ne 2) { throw 'Native installer trust boundary failed; preserve original evidence' }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: installer-trust-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/skager-installer-trust
           if-no-files-found: error
   installer-pe:
     if: ${{ github.event_name == 'workflow_dispatch' && inputs.installer_pe_only }}
