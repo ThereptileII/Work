@@ -162,7 +162,7 @@ jobs:
           $Results = @()
           $Passed = $true
           try {
-            foreach ($Test in @('test-installer-filesystem.ps1', 'test-lifecycle-protected-broker-guard.ps1')) {
+            foreach ($Test in @('test-installer-operation-report.ps1', 'test-installer-filesystem.ps1', 'test-lifecycle-protected-broker-guard.ps1')) {
               $Log = Join-Path $Evidence ($Test + '.log')
               & $HostExe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "opennav-x/tools/$Test" *> $Log
               $Code = $LASTEXITCODE
@@ -174,10 +174,10 @@ jobs:
             @{
               schema = 1; commit = $env:GITHUB_SHA; run = $env:GITHUB_RUN_ID; attempt = $env:GITHUB_RUN_ATTEMPT
               architecture = $env:TEST_ARCHITECTURE; hostExecutable = $HostExe; results = $Results
-              passed = ($Passed -and $Results.Count -eq 2); applicationBuilt = $false; installedProductAcceptance = $false
+              passed = ($Passed -and $Results.Count -eq 3); applicationBuilt = $false; installedProductAcceptance = $false
             } | ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'result.json') -Encoding utf8
           }
-          if (-not $Passed -or $Results.Count -ne 2) { throw 'Focused native installer contract failed; inspect retained original logs' }
+          if (-not $Passed -or $Results.Count -ne 3) { throw 'Focused native installer contract failed; inspect retained original logs' }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
