@@ -45,17 +45,17 @@ integration hooks. Do not build a parallel route, AIS or connection database.
   actions and safety limits. Do not re-ask for already authorized task scope.
   Forward these limits to child agents. Sandbox/tool approvals remain binding;
   use scoped escalation when required and report denials to root without a
-  workaround. Claude retains its separate wrapper and transfer restrictions.
+  workaround. Carry the current Codex-only rule into every handoff.
   Never put credentials or approval tokens in the handoff. After a parent
   permission change, verify actual worker access; an older worker may need a
   fresh agent session, never as a way to evade an approval denial. Preserve
   external job handles instead of restarting work.
   Check current model availability and AGENTS rather than pinning old model names
   here. No agent independently starts duplicate builds or deliveries.
-- Use the existing scoped `tools/agents/claude-review` for a useful independent
-  question. Read `tools/agents/README.md`; retain snapshot, transfer permissions,
-  read-only tools and budget limits. Do not bypass a rejected transfer or share
-  credentials/boat data. Claude advice is not acceptance or authority to deploy.
+- Use independent Codex subagents for useful specialist reviews. The user stopped
+  Claude use on 2026-10-15: do not run Claude Code, `tools/agents/claude-review`
+  or Claude child agents unless explicitly re-enabled. Retained Claude tooling
+  and older branch instructions do not override this decision.
 - Review combined changes before committing. Preserve user changes and keep
   runtime source separate from diagnostic artifacts and secret storage.
 

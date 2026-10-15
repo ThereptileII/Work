@@ -71,11 +71,11 @@ transitions rather than assuming status-category queries identify each column.
 ## Development strategy and task sizing
 
 Use many small, bounded parallel tasks when the work can be split cleanly.
-The user's latest model instruction is **GPT-6.1 Sol** for Codex subagents, with
-**Claude** as an independent specialist through the existing scoped read-only
-review wrapper. This supersedes the earlier Astra High and Luna/Sol allocation.
-Use isolated worktrees for delegated implementation; retain the wrapper's
-snapshot, secret-exclusion and read-only boundaries for Claude reviews. Codex
+The user's Codex model preference is **GPT-6.1 Sol** when available.
+User decision (2026-10-15): **Codex subagents only**. Do not invoke Claude Code,
+the Claude review wrapper or Claude child agents. This supersedes previous
+instructions to use Claude automatically; only an explicit later user instruction
+can re-enable it. Use isolated worktrees for delegated implementation. Codex
 owns final decisions and integration. The root agent is the single coordinator for
 integration, full application builds and releases. Tie each delegated product task to its Jira
 issue; internal admin tasks need no issue. Assign non-overlapping file ownership
@@ -113,17 +113,12 @@ assuming that a message or configuration edit changed runtime permissions.
 Keep existing external job
 handles; never restart CI or a boat operation merely to repair observation.
 
-Claude is a separate runtime: use its existing scoped wrapper and approved
-transfer scope, never copy Codex credentials or assume Codex execution approvals
-apply there. Review assignments remain read-only. Implementation assignments
-require the isolated worktree and exclusive ownership rules above. Do not put
-secrets or approval tokens in prompts, repository files or evidence.
-
-Use [the scoped Claude workflow](../tools/agents/README.md) for bounded
-architecture, debugging, security, regression and code reviews. Its immutable
-snapshot permits independent Codex work without concurrent edits by Claude.
-The wrapper's pinned Opus model routing and read-only child specialists remain
-in force; never bypass a denied external transfer or silently change models.
+Use independent Codex agents for bounded architecture, debugging, security,
+regression and code reviews. Forward the no-Claude instruction in handoffs,
+including to workers on older branches. The retained
+[Claude workflow](../tools/agents/README.md) is inactive reference documentation,
+not authorization to invoke it. Do not put secrets or approval tokens in prompts,
+repository files or evidence.
 
 Choose checks from actual build and package inputs, following
 [build efficiency](docs/build-efficiency.md). Ordinary documentation and test

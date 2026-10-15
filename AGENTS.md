@@ -7,8 +7,9 @@ Internal administration, including creating skills and maintaining agent
 instructions, needs no Jira ticket or board scan. Product work remains tracked
 under the scope rule in the project instructions.
 
-The scoped read-only Claude specialist is [tools/agents/claude-review](tools/agents/claude-review).
-Follow [its workflow and isolation rules](tools/agents/README.md). Codex owns
+User decision (2026-10-15): use Codex subagents only. Do not launch Claude,
+`tools/agents/claude-review` or Claude child agents unless the user explicitly
+re-enables them. The retained wrapper is inactive reference tooling. Codex owns
 final decisions and integration. Every delegated task must carry the existing
 user authorization and its limits using the permission-handoff rule in the
 project instructions; do not ask again for already authorized task scope.

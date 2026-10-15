@@ -1,5 +1,10 @@
 # Independent Claude reviews
 
+**Inactive by user decision, 2026-10-15.** Use Codex subagents only. Do not run
+this wrapper, Claude Code or Claude child agents unless the user explicitly
+re-enables Claude. The usage and isolation details below are retained for
+reference and do not authorize invocation.
+
 Codex leads implementation and makes final decisions. `claude-review` asks an
 independent Claude Code specialist for evidence-based advice; it is never an
 implementation, deployment, release-approval or physical-control entry point.
@@ -79,7 +84,7 @@ or implement changes. The trusted boundary includes the installed Claude binary,
 system runtime, kernel/bubblewrap and Anthropic service. This does not claim to
 contain a compromised runtime or kernel.
 
-## Automatic use and ownership
+## Ownership and conditional use (currently disabled)
 
 Include the applicable user authorization and allowed source/destination scope
 in each assignment, following the project AGENTS permission-handoff rule. Do not
@@ -88,8 +93,8 @@ Codex sandbox approvals do not grant Claude new tools, network destinations or
 write access; the wrapper's restrictions and current execution approvals remain
 binding. A materially different transfer needs its own applicable authorization.
 
-Use Claude proactively as a regular specialist for complicated design/planning,
-architecture, debugging, security and regression work, alongside Codex subagents.
+If the user explicitly re-enables Claude, it can assist with complicated
+design/planning, architecture, debugging, security and regression work.
 Give each assignment a distinct bounded question and acceptance criteria; Codex
 owns prioritization and integration. Run independent work in parallel, avoiding
 duplicate investigation and unnecessary review chains. Supply precise evidence;
@@ -101,8 +106,8 @@ replace focused tests or mandatory Windows/boat/release gates.
 
 Codex can continue independent edits after snapshot capture because Claude never
 sees the mutable source. Never point an unrestricted Claude session at a worktree
-Codex is modifying. Claude implementation is permitted within already authorized
-project tasks, using a dedicated Git worktree/branch, exclusive file ownership and
+Codex is modifying. Any future Claude implementation requires explicit
+re-enablement and an authorized project task, using a dedicated Git worktree/branch, exclusive file ownership and
 a separately restricted implementation session. Establish its file/tool boundaries
 before allowing writes; Codex reviews and integrates the changes. This wrapper
 intentionally has no implementation mode and its restrictions must not be relaxed.
