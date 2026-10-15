@@ -107,8 +107,13 @@ is dispatched with reviewed inventory hash `7666db6cce687cb045c7b58b4145bd1bb312
 Attempt 1 refuses an older hosted image before SDK restore. Attempt 2 receives
 the exact selected image and authenticates the retained inputs, but its separate
 PluginHandler probe fails to compile because archive headers include Windows
-Winsock 1 before wxWidgets selects Winsock 2. The reviewed Windows-only include
-ordering correction is being qualified with a separate harness revision;
+Winsock 1 before wxWidgets selects Winsock 2. Windows-only include correction `36dc0e65` is being qualified by
+[38704113599](https://github.com/ThereptileII/Work/actions/runs/38704113599),
+using separate harness `b096faa2` and the same immutable producer/inventory.
+The harness authenticates its own exact revision and 99 consumed inputs, allowing
+only explicitly reviewed probe/console differences with both hashes retained.
+Independent review closed three missing transitive authentication imports before
+dispatch; focused 36 workflow and 39 capture checks pass. No SDK is rebuilt;
 production downloader slices and assertions remain unchanged. This is not an
 application build failure. The gate does not rebuild the application or qualify
 the failed installer.
@@ -153,8 +158,21 @@ Dashboard distance. It cannot publish or change the current profile, qualify a
 saved pilot binding or authorize output; ordinary v1 session policy stays strict.
 Restrictions survive later baseline lineage, and subsequent passive launch
 requires a fresh source review bound to the exact build/profile/transport and
-plugin decisions. The selected native Windows/Linux gate
-[38701955180](https://github.com/ThereptileII/Work/actions/runs/38701955180) is
+plugin decisions. The initial native Windows/Linux gate
+[38701955180](https://github.com/ThereptileII/Work/actions/runs/38701955180) passes
+Linux (86 session, 131 nested reconciliation, 127 adoption) but Windows stops
+at the combined passive-source binding assertion. No real Plan/Commit follows.
+A pure synthetic PS5 probe reproduces different ordering for raw Hashtable and
+JSON-decoded plugin records. Correction `d397ebfb` projects the same seven fields
+before sorting, with stable permutation/roundtrip and per-field mutation checks;
+both synthetic native permutations now agree. All original identity comparisons
+remain, with field-name-only diagnostics. The newly transitive reconciliation
+module is also pinned in fresh restart tool copies. Local reconciliation 133
+and broker-closure 28 checks pass.
+[Original refusal](evidence/scrum17-cold-reconciliation-20261015/v2-native-refusal.json)
+and [isolated diagnosis](evidence/scrum17-cold-reconciliation-20261015/v2-canonicalization-probe.json)
+are retained. Corrected native gate
+[38703828242](https://github.com/ThereptileII/Work/actions/runs/38703828242) is
 pending before real Plan/Commit. A read-only boat recheck confirms the same
 profile/active-marker hashes, no running OpenCPN and all three remote-access
 services running. The current profile and active transaction are unchanged, no

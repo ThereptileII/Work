@@ -1,0 +1,131 @@
+{
+  "schema": 1,
+  "scope": "Original SCRUM-17 cold-retention v2 focused gate; failure preserved; no acceptance",
+  "observedUtc": "2026-10-15T08:02:02.366203+00:00",
+  "repository": "ThereptileII/Work",
+  "runId": 38701955180,
+  "runAttempt": 1,
+  "commit": "f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38701955180",
+  "conclusion": "failure",
+  "runMetadataSha256": "f531d5b6a6b8562972eb790e2f62cdd16df0451cff66e86c002168b5b138cd24",
+  "jobsMetadataSha256": "dfff047baceddc1ae19226272cac80e31701e604a7c35d262b7fa1efb79f00fd",
+  "jobs": [
+    {
+      "id": 116312030362,
+      "name": "preservation (windows-2022)",
+      "head_sha": "f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-15T07:54:46Z",
+      "completed_at": "2026-10-15T07:59:52Z"
+    },
+    {
+      "id": 116312030776,
+      "name": "preservation (ubuntu-24.04)",
+      "head_sha": "f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+      "run_attempt": 1,
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T07:54:46Z",
+      "completed_at": "2026-10-15T07:55:25Z"
+    }
+  ],
+  "artifacts": [
+    {
+      "id": 11956747363,
+      "name": "session-preservation-ubuntu-24.04-f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+      "platform": "linux",
+      "bytes": 5471,
+      "digest": "sha256:e28a3c282300a389e7187ba984eb49ff7c2406f2b9b948862e610dc8b51cf76d",
+      "downloadSha256": "e28a3c282300a389e7187ba984eb49ff7c2406f2b9b948862e610dc8b51cf76d",
+      "apiMetadataSha256": "b271f52ccb11a2c08b9507ae4c0d908298c2e24ec01869c45da2169bd2e1657b",
+      "crcVerified": true,
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "bytes": 8730,
+          "crc32": "bb12d4a5",
+          "sha256": "dda7a6f7f619aa41f76bbb821753e707d0c48b341d5e65b7786cd23d761bc469"
+        },
+        {
+          "name": "session-preservation.log",
+          "bytes": 15521,
+          "crc32": "b326eba9",
+          "sha256": "09a9d4ef2a5621793578f82db0b3363fb5e2e6f66070cf52d06624ace1433154"
+        }
+      ]
+    },
+    {
+      "id": 11955934407,
+      "name": "session-preservation-windows-2022-f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+      "platform": "windows",
+      "bytes": 422,
+      "digest": "sha256:1773724dfd9a610ab5b77f76f08c933040d36b87cfe76e2f634aa21d9ff50901",
+      "downloadSha256": "1773724dfd9a610ab5b77f76f08c933040d36b87cfe76e2f634aa21d9ff50901",
+      "apiMetadataSha256": "5ad29dd0bee41eb5bbfe4552fdcf26ddc1ca21830cc230807ccfbb9d658f38ea",
+      "crcVerified": true,
+      "members": [
+        {
+          "name": "session-preservation.log",
+          "bytes": 565,
+          "crc32": "fabd6e80",
+          "sha256": "dfe75dc750112d4236fa585d4ad85b304bab5a5e42f29556b873795af41da352"
+        }
+      ]
+    }
+  ],
+  "windows": {
+    "status": "failed",
+    "firstError": "Passive source evidence must bind this exact build, profile, inventory and transport scope.",
+    "source": "opennav-x/tools/boat/CommissioningBaseline.ps1",
+    "line": 175,
+    "character": 5,
+    "sessionCompletedCount": null,
+    "reconciliationCompletedCount": null,
+    "baselineAdoption": "not-started",
+    "nativeTransaction": "skipped",
+    "diagnosisLimit": "Original log names the combined exact-binding refusal, without identifying the mismatching field or establishing a product defect."
+  },
+  "linux": {
+    "baseline-adoption": {
+      "status": "passed",
+      "environment": "portable-filesystem-policy",
+      "count": 127,
+      "nativeTransactionAcceptance": false,
+      "applicationLaunched": false,
+      "boatAccess": false,
+      "physicalOutput": false,
+      "checksListed": 127
+    },
+    "session-preservation": {
+      "status": "passed",
+      "environment": "portable-disposable-contracts",
+      "count": 86,
+      "nativeAclOrProcessAcceptance": false,
+      "applicationLaunched": false,
+      "boatAccess": false,
+      "checksListed": 86,
+      "includedReconciliation": {
+        "status": "passed",
+        "count": 131,
+        "nativeProfileLockAndAcl": false,
+        "applicationLaunched": false,
+        "boatAccess": false,
+        "physicalOutput": false
+      }
+    }
+  },
+  "productAcceptance": false,
+  "boatAcceptance": false,
+  "applicationLaunched": false,
+  "testsRerunDuringObservation": false,
+  "sourceBindingsSha256": {
+    "opennav-x/tools/boat/CommissioningBaseline.ps1": "af44efdf565f87ffdca6eee65f9b8f2f3416457b1bff524c460fa5ec6b21d6a8",
+    "opennav-x/tools/boat/CommissioningReconciliation.ps1": "83c1300297ebd81c2e5e8966f74de956e6aa70fa18bd3b01fd70f0cc634f1d7e",
+    "opennav-x/tools/boat/test-session-preservation.ps1": "4e6ecef661e247776ba821b1868d7db7791647251c419cbaf0e5d148342778ba",
+    "opennav-x/tools/boat/test-commissioning-reconciliation.ps1": "39c4366e9f7951c5c54fbabfe73a279d7be3942ede30639593f9c9a14ca5b8af",
+    ".github/workflows/skager-profile-preservation.yml": "8c542d39975ebeb8a3e29496822a246a8d8869e6a70d0f207cb765553f562fbe"
+  }
+}

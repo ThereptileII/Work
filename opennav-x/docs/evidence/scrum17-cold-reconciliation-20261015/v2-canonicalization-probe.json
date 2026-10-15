@@ -1,0 +1,51 @@
+{
+  "schema": 1,
+  "scope": "Pure in-memory synthetic PS5 serialization; no application/profile/transport access",
+  "originalHelperCommit": "f6234063b8bab2aafeae88fa7cca9ab764e83b55",
+  "correctedHelperCommit": "d397ebfb020ef2c8a3eef8bd65ad7ba13fb78d89",
+  "observations": [
+    {
+      "case": "synthetic-json-roundtrip",
+      "stdoutSha256": "2d74c26ffdccea206d4391cc57054e83eef0375f423c4f841d4ef346c72674fa",
+      "powershell": "5.1.22621.6133",
+      "results": [
+        {
+          "reversed": false,
+          "equal": false,
+          "rawCount": 2,
+          "parsedCount": 2
+        },
+        {
+          "reversed": true,
+          "equal": true,
+          "rawCount": 2,
+          "parsedCount": 2
+        }
+      ]
+    },
+    {
+      "case": "synthetic-json-fixed",
+      "stdoutSha256": "fc196b7e1f889026aa1493525c21e0e7fe08b31d9b2cdbf6e873ed4cb22ad27f",
+      "powershell": "5.1.22621.6133",
+      "results": [
+        {
+          "reversed": false,
+          "equal": true,
+          "rawCount": 2,
+          "parsedCount": 2
+        },
+        {
+          "reversed": true,
+          "equal": true,
+          "rawCount": 2,
+          "parsedCount": 2
+        }
+      ]
+    }
+  ],
+  "originalFailureIdentifiedField": false,
+  "diagnosis": "Raw Hashtable sorting and JSON object sorting disagree in PS5; projection before sorting produces stable same-data ordering. This isolated proof does not replace native transaction verification.",
+  "boatAcceptance": false,
+  "applicationLaunched": false,
+  "physicalOutput": false
+}
