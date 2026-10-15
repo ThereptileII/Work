@@ -127,6 +127,7 @@ int main(int argc,char**argv) {
   requireRepair=argc>1 && std::string(argv[1])=="require-repair";
   std::cout<<"context layout "<<sizeof(chart_context)<<" "<<offsetof(chart_context,chart_scale)<<"\n";
   s52plib owner;CheckHazardConditionals(owner);
+  CheckExposureConditionals(owner);
 #ifdef PATCHED_PRIVATE
   {S57Obj fresh;Check(fresh.m_chart_context==nullptr);}
   CheckBridgeBoundary();

@@ -86,3 +86,68 @@ static std::string CheckHazardConditionals(s52plib& owner) {
   std::cout<<cases<<" actual conditional cases retained this source's missing/depth/quality and isolated-danger behavior\n";
   return receipt;
 }
+
+// Exercise the actual exposure-sensitive body and its OBSTRN04/WRECKS02 callers.
+// Values 1/2/3 are pinned s57expectedinput.csv attribute 93, not chart data.
+// The associated DEPARE list remains deterministic; no geographic query is mocked
+// as accepted. Safety contour 5 is supplied by the existing mariner fixture.
+static void CheckExposureConditionals(s52plib& owner) {
+  ps52plib=&owner;
+  int cases=0;
+  for(const char* procedure:{"UDWHAZ03","OBSTRN04","WRECKS02"}) {
+    for(int exposure:{-1,1,2,3}) {
+      for(double depth:{double(UNKNOWN),3.2,5.,6.}) {
+        for(int water:{2,3,4}) {
+          for(double surrounding:{2.,10.}) {
+            HazardObject object(std::strcmp(procedure,"WRECKS02")==0?"WRECKS":"UWTROC");
+            if(exposure!=-1)object.Int("EXPSOU",exposure);
+            if(depth!=UNKNOWN)object.Real("VALSOU",depth);
+            object.Int("WATLEV",water);
+            if(std::strcmp(procedure,"WRECKS02")==0)object.Int("CATWRK",2);
+            HazardObject area("DEPARE");area.Primitive_type=GEO_AREA;
+            area.Real("DRVAL1",surrounding);object.chart.associated.push_back(&area);
+            ObjRazRules rules{};rules.obj=&object;
+            bool promoted=true;  // Sentinel: direct body must write its result.
+            wxString result;
+            if(std::strcmp(procedure,"UDWHAZ03")==0) {
+              std::unique_ptr<wxString> command(_UDWHAZ03(&object,depth,&rules,&promoted));
+              Check(command!=nullptr);result=*command;
+              // Pinned _UDWHAZ03 reads EXPSOU only for UNKNOWN. Exposure 1
+              // suppresses area promotion; absent/2/3 promote unknown depth.
+              if(depth==UNKNOWN) {
+                if(exposure==1)Check(result.empty() && object.m_DisplayCat==OTHER);
+                else Check(object.m_DisplayCat==DISPLAYBASE &&
+                    (water==2?result.empty():result.Contains("SY(ISODGR51)")));
+              }
+              // A known depth above the contour is not promoted by this body.
+              if(depth==6.)Check(result.empty() && object.m_DisplayCat==OTHER);
+              // Known shallow/equal depths in the deep-area fixture exercise
+              // the repaired query. Dry water level suppresses the glyph, not
+              // DisplayBase. Retain original-private's missing-query behavior.
+              if(depth!=UNKNOWN && depth<=5. && surrounding==10.) {
+#ifdef ORIGINAL_PRIVATE
+                Check(result.empty() && object.m_DisplayCat==OTHER);
+#else
+                Check(object.m_DisplayCat==DISPLAYBASE &&
+                    (water==2?result.empty():result.Contains("SY(ISODGR51)")));
+#endif
+              }
+            } else {
+              char* command=static_cast<char*>(std::strcmp(procedure,"WRECKS02")==0
+                  ?WRECKS02(&rules):OBSTRN04(&rules));
+              Check(command!=nullptr);result=wxString(command,wxConvUTF8);free(command);
+            }
+            wxString shown=result;shown.Replace(wxString(char(31)),"<US>");
+            std::cout<<"exposure "<<++cases<<" "<<procedure<<" EXPSOU="<<exposure
+                <<" depth="<<depth<<" WATLEV="<<water<<" DRVAL1="<<surrounding
+                <<": "<<shown.ToStdString()<<" /category="<<object.m_DisplayCat
+                <<" /promote="<<(std::strcmp(procedure,"UDWHAZ03")==0
+                    ?(promoted?"1":"0"):"not-exposed")<<"\n";
+          }
+        }
+      }
+    }
+  }
+  Check(cases==288);
+  std::cout<<cases<<" actual exposure/depth/water-level conditional cases retained\n";
+}
