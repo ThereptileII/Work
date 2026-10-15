@@ -1,0 +1,741 @@
+{
+  "head": "2f9c41cbd3699f8d1bb7b0aee60650a74e558a29",
+  "originalRunAttemptJobAuthenticated": true,
+  "allStepsSuccessful": true,
+  "harnessAndCoreCheckoutBinding": {
+    "harness": {
+      "tools/verify-private-hazard-area-query.py": {
+        "git": {
+          "bytes": 15315,
+          "sha256": "1f8ef88134acc66ba422aba5e2e536229a8f958e23328b5ec7e992e2ddfefbe8"
+        },
+        "executed": {
+          "bytes": 15566,
+          "sha256": "80c7cae7a87337dc5d3ccda3823fa509788c53a92e6df2b15257718076f758ca"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tests/private_hazard_area_query_test.cpp": {
+        "git": {
+          "bytes": 12030,
+          "sha256": "e0ba2981e8ee8d257a8e22b78c863fe2fb35ba77baaeaf5e2fe7ffcbb58d7e89"
+        },
+        "executed": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tools/verify-private-hazard-association.py": {
+        "git": {
+          "bytes": 15938,
+          "sha256": "91754c0185de2bd052aa4a14be4e302e943c1e8341b40d2171efbc6bd4597240"
+        },
+        "executed": {
+          "bytes": 16115,
+          "sha256": "b7c25eb4a8466779f9dd9cc3bf6668bd416c1bdf0da42cb56b9aa1d3a64f3d83"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tools/verify-anchor-loader.py": {
+        "git": {
+          "bytes": 17917,
+          "sha256": "1e121864fda65fe56b1d420fcbb839b1be4812417d19544a836d21ce268c52d3"
+        },
+        "executed": {
+          "bytes": 18169,
+          "sha256": "b4e1493f70772f1209e8b9859870903a1155f745ff488497d34143e647098be6"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tools/prepare-ocharts-adapter.py": {
+        "git": {
+          "bytes": 17285,
+          "sha256": "dfc2382c14b8a3c8869d35b0a432bcac5c27ed99563c50f60a0c895c7e4f4568"
+        },
+        "executed": {
+          "bytes": 17606,
+          "sha256": "81a3339c4f48442079f77c4dc8a4b47acbca3670331298830729a7a62997f997"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tools/ocharts-adapter-source.lock.json": {
+        "git": {
+          "bytes": 30171,
+          "sha256": "0aaab29b5ad626f2215e5787b64ec7e3153f6a75223976370dbebb3967557353"
+        },
+        "executed": {
+          "bytes": 31085,
+          "sha256": "042a4dc7a25197ff39fa6ab44a2cd33c1ec71d9ca1db162bdebbe02166a078d7"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "upstream.lock.json": {
+        "git": {
+          "bytes": 459,
+          "sha256": "20c68c0847fffcbac69c575efcc3b9c0c00c6f5f1b72460cb89976c0f2b6f0c9"
+        },
+        "executed": {
+          "bytes": 470,
+          "sha256": "a6d7baa663d57ac3bc0f4ddc1cb80013422e2cec0577b71096b7c410ef919175"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "tools/windows-wx.lock.json": {
+        "git": {
+          "bytes": 992,
+          "sha256": "d8ceb7b75af2803eae6aca8adb2ea404b695dc573416d3f7899b80ecaf089d28"
+        },
+        "executed": {
+          "bytes": 1017,
+          "sha256": "2fb563c4de7819d4b10d7a567e59510cd033c3b9cb55ce4ebb654964da60267f"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "src/integration/ChartLightLabel.h": {
+        "git": {
+          "bytes": 4969,
+          "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+        },
+        "executed": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "src/integration/ChartNameText.h": {
+        "git": {
+          "bytes": 2307,
+          "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+        },
+        "executed": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "src/integration/ChartNameSpacing.h": {
+        "git": {
+          "bytes": 1241,
+          "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+        },
+        "executed": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "checkoutEncoding": "CRLF"
+      }
+    },
+    "core": {
+      "libs/s52plib/src/s52cnsy.cpp": {
+        "git": {
+          "bytes": 201105,
+          "sha256": "b27ece30ace23032d0b916c392230d1523e734cbf51a47338085a04a80fc2a7e"
+        },
+        "executed": {
+          "bytes": 207363,
+          "sha256": "d53318365790ba42fc02373460607b6088101aca5a16d7ef3513dedd988b3efa"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "libs/s52plib/src/s52s57.h": {
+        "git": {
+          "bytes": 16262,
+          "sha256": "96cdbeccf4c49aa536acf70e48d2bf8d10717bae6d27d6561f3dfe0fc7943cc2"
+        },
+        "executed": {
+          "bytes": 16886,
+          "sha256": "1568037424efc5faca27c1287a3c835d4525c1a6dc7313019836fabb5c193f6f"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "libs/s52plib/src/s52utils.h": {
+        "git": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "executed": {
+          "bytes": 3242,
+          "sha256": "185a9823c8d032aecec16fa9758513358d154dff702a6a4087a40c70dad4648d"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "libs/s52plib/src/color_types.h": {
+        "git": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "executed": {
+          "bytes": 2200,
+          "sha256": "55664fa3c65f9521655f628f4033ae05252e43e7095794df588b577271d8602d"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "libs/geoprim/src/bbox.h": {
+        "git": {
+          "bytes": 8213,
+          "sha256": "0684431124aaec409e2fb6a89eb354daf544c535d7b65e2b20a38b20cfc774a0"
+        },
+        "executed": {
+          "bytes": 8427,
+          "sha256": "e78cc510c0c881c4d4d98f4aec783aec6ce02326ffa410ef61a7db8bf8c6e52e"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "gui/src/s57obj.cpp": {
+        "git": {
+          "bytes": 11240,
+          "sha256": "ac94f691e616b52bd7924a90bd2150011f795b0eabe344cf94fcb2905f30f7b4"
+        },
+        "executed": {
+          "bytes": 11667,
+          "sha256": "ddd59ac50728068f2624ef36b3a6c48dd1bb87b0d15eb0054289b31b213e0c78"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "data/s57data/s57expectedinput.csv": {
+        "git": {
+          "bytes": 40407,
+          "sha256": "deebeea969817da8aa9b3d57801ac530e28e3ed10692f407b8ed80f680fee409"
+        },
+        "executed": {
+          "bytes": 41875,
+          "sha256": "b332c5050da84c5277c32686a4de8eb0af858e8d4f3673b216fc643a3c2e8de4"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "model/src/georef.cpp": {
+        "git": {
+          "bytes": 100060,
+          "sha256": "8da02302cff5e1116e49bbe2b36030156551280b27473da305b001e18d24e8f9"
+        },
+        "executed": {
+          "bytes": 102969,
+          "sha256": "fc432e9fef55d1db11202323d6181eacdb0ef6cb5dd1a3f9da4f9981d35b4325"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "model/include/model/georef.h": {
+        "git": {
+          "bytes": 37485,
+          "sha256": "a011daf612d73ad08bb408dd1b56c0b32f1bfb279145b4ef8bd30d4dfa3de816"
+        },
+        "executed": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "checkoutEncoding": "CRLF"
+      },
+      "gui/src/ocpn_plugin_gui.cpp": {
+        "git": {
+          "bytes": 95705,
+          "sha256": "a128457ac78cd6798557a291a99ed85ae78d1bcc8a7c9eef7c992a4132d83099"
+        },
+        "executed": {
+          "bytes": 98989,
+          "sha256": "792451e07e6a4ee3c3661cef10b4456a28bdb7a9a4e07eeff7ff9939849211fb"
+        },
+        "checkoutEncoding": "CRLF"
+      }
+    },
+    "patches": {
+      "patches/ocharts-skager-presentation.patch": {
+        "git": {
+          "bytes": 66221,
+          "sha256": "791b3d9df273d96f02fc5d9789eed13ae628599be76d02bef2412870b91fa604"
+        },
+        "executed": {
+          "bytes": 66221,
+          "sha256": "791b3d9df273d96f02fc5d9789eed13ae628599be76d02bef2412870b91fa604"
+        },
+        "checkoutEncoding": "exactGitBytes"
+      },
+      "patches/ocharts-wxcurl-trust.patch": {
+        "git": {
+          "bytes": 3456,
+          "sha256": "80467467a8ae398bad5ea8e7df0e8502398abbe600f72fb81b6d1a6ef905bcb1"
+        },
+        "executed": {
+          "bytes": 3456,
+          "sha256": "80467467a8ae398bad5ea8e7df0e8502398abbe600f72fb81b6d1a6ef905bcb1"
+        },
+        "checkoutEncoding": "exactGitBytes"
+      },
+      "patches/ocharts-private-hazard-association.patch": {
+        "git": {
+          "bytes": 3299,
+          "sha256": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff"
+        },
+        "executed": {
+          "bytes": 3299,
+          "sha256": "c7d007de282e4f0c955b41c520ad31ed597ffafd03ef08d57472d13fd8f4d4ff"
+        },
+        "checkoutEncoding": "exactGitBytes"
+      }
+    }
+  },
+  "workflowCallerGitInputs": {
+    ".github/workflows/skager-native-python-contracts.yml": {
+      "bytes": 23990,
+      "sha256": "60a02404143a02829c49193fcd023a4a8add9bfc8a18b5bdf0504c2189ead055"
+    },
+    "opennav-x/tools/test-windows-changed-units.py": {
+      "bytes": 36635,
+      "sha256": "6d16a466787ae4e30367e619e19be9a134ca631c2213743fa0756d0c68432d3e"
+    },
+    "opennav-x/tools/windows-curl-environment.ps1": {
+      "bytes": 8925,
+      "sha256": "54f5afb3d29f5cb97f43bb86407be8d9da5f80875aa670653103f1f44f2a5742"
+    }
+  },
+  "privateOriginalPatchedExactLocalAndNativeParity": {
+    "files": 219,
+    "sourceCommit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "gitlinkCommit": "38762f4e7b8faf39133cc40efc99b12b5200f04b",
+    "coreCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+  },
+  "compiledInputsFromExactLinuxFixture": {
+    "original-private": {
+      "actual-bodies.inc": {
+        "executed": {
+          "bytes": 19343,
+          "sha256": "f7bb93779e0cf06a78897f968bf5be0e21e4f797dc6beccd2e0e5a9bac10524e"
+        },
+        "linuxFixture": {
+          "bytes": 18741,
+          "sha256": "5106bd6b1dd66da91eb90c9484e213c46bab179537599f6425a45675c025d90a"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "bbox.h": {
+        "executed": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "linuxFixture": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "byteTransform": "unchanged"
+      },
+      "color_types.h": {
+        "executed": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "linuxFixture": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "byteTransform": "unchanged"
+      },
+      "geometry-types.inc": {
+        "executed": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "linuxFixture": {
+          "bytes": 6845,
+          "sha256": "f060cd56f0421f0155d6a04c789ebbcbdcb2c58adb4f78ee4315ae01ea98a1d1"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "georef.h": {
+        "executed": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "linuxFixture": {
+          "bytes": 37485,
+          "sha256": "a011daf612d73ad08bb408dd1b56c0b32f1bfb279145b4ef8bd30d4dfa3de816"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartLightLabel.h": {
+        "executed": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "linuxFixture": {
+          "bytes": 4969,
+          "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameSpacing.h": {
+        "executed": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "linuxFixture": {
+          "bytes": 1241,
+          "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameText.h": {
+        "executed": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "linuxFixture": {
+          "bytes": 2307,
+          "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "poly_math.h": {
+        "executed": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "linuxFixture": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "byteTransform": "unchanged"
+      },
+      "private_hazard_area_query_test.cpp": {
+        "executed": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "linuxFixture": {
+          "bytes": 12030,
+          "sha256": "e0ba2981e8ee8d257a8e22b78c863fe2fb35ba77baaeaf5e2fe7ffcbb58d7e89"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "s52s57.h": {
+        "executed": {
+          "bytes": 16034,
+          "sha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a"
+        },
+        "linuxFixture": {
+          "bytes": 16034,
+          "sha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a"
+        },
+        "byteTransform": "unchanged"
+      },
+      "s52utils.h": {
+        "executed": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "linuxFixture": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "byteTransform": "unchanged"
+      }
+    },
+    "repaired-private": {
+      "actual-bodies.inc": {
+        "executed": {
+          "bytes": 19690,
+          "sha256": "40603376c76767861eab52c5d6a496e5c0644ebd0049bebe156942c1f9b8d37e"
+        },
+        "linuxFixture": {
+          "bytes": 19078,
+          "sha256": "2451cb04d09e3668620ec715f13a90c11273ada58f4ec85a28bc7c189528f76c"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "bbox.h": {
+        "executed": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "linuxFixture": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "byteTransform": "unchanged"
+      },
+      "bridge.inc": {
+        "executed": {
+          "bytes": 684,
+          "sha256": "3053a3b995e6b834111650999f35b1a8f6bad5b7cf7bf36cc822a9a833394f93"
+        },
+        "linuxFixture": {
+          "bytes": 669,
+          "sha256": "d68feac2d083533968dfde71be303c20bd876e7408a70d44effce471330e4f6d"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "color_types.h": {
+        "executed": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "linuxFixture": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "byteTransform": "unchanged"
+      },
+      "geometry-types.inc": {
+        "executed": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "linuxFixture": {
+          "bytes": 6845,
+          "sha256": "f060cd56f0421f0155d6a04c789ebbcbdcb2c58adb4f78ee4315ae01ea98a1d1"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "georef.h": {
+        "executed": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "linuxFixture": {
+          "bytes": 37485,
+          "sha256": "a011daf612d73ad08bb408dd1b56c0b32f1bfb279145b4ef8bd30d4dfa3de816"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartLightLabel.h": {
+        "executed": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "linuxFixture": {
+          "bytes": 4969,
+          "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameSpacing.h": {
+        "executed": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "linuxFixture": {
+          "bytes": 1241,
+          "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameText.h": {
+        "executed": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "linuxFixture": {
+          "bytes": 2307,
+          "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "poly_math.h": {
+        "executed": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "linuxFixture": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "byteTransform": "unchanged"
+      },
+      "private_hazard_area_query_test.cpp": {
+        "executed": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "linuxFixture": {
+          "bytes": 12030,
+          "sha256": "e0ba2981e8ee8d257a8e22b78c863fe2fb35ba77baaeaf5e2fe7ffcbb58d7e89"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "s52s57.h": {
+        "executed": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "linuxFixture": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "byteTransform": "unchanged"
+      },
+      "s52utils.h": {
+        "executed": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "linuxFixture": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "byteTransform": "unchanged"
+      }
+    },
+    "polygon-bypass-negative": {
+      "actual-bodies.inc": {
+        "executed": {
+          "bytes": 19691,
+          "sha256": "5ef95b8859ac98874c5266527aa0ab91d4cbf46f334b77b1c6672d5102c8da80"
+        },
+        "linuxFixture": {
+          "bytes": 19079,
+          "sha256": "90b3626fdf68f11010df2f3afda292a81c64f76f1e46d928970b2437079eb5d2"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "bbox.h": {
+        "executed": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "linuxFixture": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "byteTransform": "unchanged"
+      },
+      "bridge.inc": {
+        "executed": {
+          "bytes": 684,
+          "sha256": "3053a3b995e6b834111650999f35b1a8f6bad5b7cf7bf36cc822a9a833394f93"
+        },
+        "linuxFixture": {
+          "bytes": 669,
+          "sha256": "d68feac2d083533968dfde71be303c20bd876e7408a70d44effce471330e4f6d"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "color_types.h": {
+        "executed": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "linuxFixture": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "byteTransform": "unchanged"
+      },
+      "geometry-types.inc": {
+        "executed": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "linuxFixture": {
+          "bytes": 6845,
+          "sha256": "f060cd56f0421f0155d6a04c789ebbcbdcb2c58adb4f78ee4315ae01ea98a1d1"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "georef.h": {
+        "executed": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "linuxFixture": {
+          "bytes": 37485,
+          "sha256": "a011daf612d73ad08bb408dd1b56c0b32f1bfb279145b4ef8bd30d4dfa3de816"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartLightLabel.h": {
+        "executed": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "linuxFixture": {
+          "bytes": 4969,
+          "sha256": "64d1fa48773369339402acd12d0be91847a5c69e145b8a072268c752a579e9ee"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameSpacing.h": {
+        "executed": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "linuxFixture": {
+          "bytes": 1241,
+          "sha256": "2f37a592dd4c311a371441cc42560a68286d65cb442a061a739dbcce9e5cd6f6"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "integration/ChartNameText.h": {
+        "executed": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "linuxFixture": {
+          "bytes": 2307,
+          "sha256": "da096196bd661f5e5bb47fdab0946a8987f707cf961f5eb9197090355a140635"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "poly_math.h": {
+        "executed": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "linuxFixture": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "byteTransform": "unchanged"
+      },
+      "private_hazard_area_query_test.cpp": {
+        "executed": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "linuxFixture": {
+          "bytes": 12030,
+          "sha256": "e0ba2981e8ee8d257a8e22b78c863fe2fb35ba77baaeaf5e2fe7ffcbb58d7e89"
+        },
+        "byteTransform": "CRLF expansion"
+      },
+      "s52s57.h": {
+        "executed": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "linuxFixture": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "byteTransform": "unchanged"
+      },
+      "s52utils.h": {
+        "executed": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "linuxFixture": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        },
+        "byteTransform": "unchanged"
+      }
+    }
+  },
+  "exactExtractedBodyHashesAgreeWithLinux": true,
+  "wx": {
+    "files": 1612,
+    "canonicalInventorySha256": "9447b3a43a37508102b9c309e64c8b22e0c4925f8b7274783784ddb232b74af1",
+    "archiveLockMatchesGit": true,
+    "fixtureSnapshotEqualsWorkflowReceipt": true,
+    "postverificationPassed": true
+  },
+  "results": {
+    "originalQueries": 29,
+    "repairedQueries": 29,
+    "originalChecks": 113,
+    "repairedChecks": 125,
+    "originalMissingCallbackNegativeExit": 1,
+    "polygonBypassNegativeExit": 1,
+    "allFixtureMachines": "I386"
+  },
+  "auditBoundary": "Artifact and job authenticated. Recorded hashes independently matched Git and exact retained local source/fixture bytes, including explicit Windows CRLF expansion. No CI binaries or wx files downloaded; their before/after and PE checks are trusted exact-workflow observations, not independent local re-execution."
+}

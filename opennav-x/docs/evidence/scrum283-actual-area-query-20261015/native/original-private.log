@@ -1,0 +1,31 @@
+query point-inside-triangle match
+query point-outside-polygon-inside-bounds empty
+query point-outside-area-bounds empty
+query nonassociable-skipped empty
+query first-plain-match-before-symbolized match
+query later-plain-match match
+query symbolized-fallback match
+query other-priority-group-ignored empty
+query no-tessellation empty
+query deferred-tessellation-not-accepted empty
+query triangle-bounds-filter empty
+query line-reference-inside match
+query line-reference-outside empty
+query area-reference-inside match
+query area-reference-outside empty
+query unsupported-primitive empty
+query second-triangle-1-4 match
+query outside-triangles-1-4 empty
+query second-triangle-1-5 match
+query outside-triangles-1-5 empty
+query second-triangle-1-6 match
+query outside-triangles-1-6 empty
+query second-triangle-0-4 match
+query outside-triangles-0-4 empty
+query second-triangle-0-5 match
+query outside-triangles-0-5 empty
+query second-triangle-0-6 match
+query outside-triangles-0-6 empty
+query later-primitive-transformed-reference-nonzero-chart-origin match
+linkage original: query works directly, conditional still omits it (retained negative)
+29 actual area-query cases; 113 checks passed

@@ -1,0 +1,3 @@
+# Preserve these original Windows artifact members byte-for-byte.
+parity.json -text whitespace=cr-at-eol
+source-inputs.json -text whitespace=cr-at-eol

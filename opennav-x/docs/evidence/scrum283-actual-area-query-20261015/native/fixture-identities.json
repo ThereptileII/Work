@@ -1,0 +1,280 @@
+{
+  "kind": "Sanitized derivative of authenticated native receipt; commands omitted, no fixture binaries included",
+  "originalArtifactMember": "skager-hazard-native/area-query/receipt.json",
+  "original": {
+    "bytes": 19657,
+    "sha256": "b9457441adc1df0cfb9892ffac284e966fe2095c7540bacc2b819cf5ab4e777f"
+  },
+  "variants": [
+    {
+      "kind": "original-private",
+      "compiledInputs": {
+        "actual-bodies.inc": {
+          "bytes": 19343,
+          "sha256": "f7bb93779e0cf06a78897f968bf5be0e21e4f797dc6beccd2e0e5a9bac10524e"
+        },
+        "bbox.h": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "color_types.h": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "geometry-types.inc": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "georef.h": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "integration/ChartLightLabel.h": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "integration/ChartNameSpacing.h": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "integration/ChartNameText.h": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "poly_math.h": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "private_hazard_area_query_test.cpp": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "s52s57.h": {
+          "bytes": 16034,
+          "sha256": "da106a80633b2e0fb9000b06f98e0b770fe23f7bde42116bcefced70fa38816a"
+        },
+        "s52utils.h": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        }
+      },
+      "unmodifiedBodySha256": {
+        "model/src/georef.cpp:void toSM(double lat,": "a0a69dd33858ce8ad91923008f6c007efedc4ca77ff225f594dcc49b1b67b7bb",
+        "model/src/georef.cpp:void fromSM(double x,": "0cec67ed03c0da4c9dab5c9a0e414dabe846d8d2f6cdc3882cab6decc9d8637d",
+        "gui/src/ocpn_plugin_gui.cpp:void toSM_Plugin(double lat,": "6da5c70c1788fa95b64947345e3557c7d965175da855694dd90094ae0e91ee86",
+        "gui/src/ocpn_plugin_gui.cpp:void fromSM_Plugin(double x,": "34cf7fb64db49991c25f5d9fda02082bf71ba906f15b5873339488878a849c2d",
+        "libs/geoprim/src/bbox.cpp:void LLBBox::Set(": "393d32b0a9378832931a753e184ddfc8de27e753cc47f644601e4966eef1d313",
+        "libs/geoprim/src/bbox.cpp:bool LLBBox::Contains(": "3e89380dfc403fd5e852494fccead4ceac83ef1e8c8db7e4b696a7cccb7fd267",
+        "libs/geoprim/src/poly_math.cpp:int CCW(MyPoint p0,": "524b6ce95f788a83d753984889e1814a2730d1cea3139867f20f8a64fa8c458a",
+        "libs/geoprim/src/poly_math.cpp:int Intersect(MyPoint p1,": "18d173ad8e70af667708e92e30a7f246052bc51ad5a6741c8b01299126b39377",
+        "libs/geoprim/src/poly_math.cpp:int G_PtInPolygon(MyPoint *rgpts,": "2b7f56eda7e3e7158713ee0d557a9e81f44521d137777c9783e7917eee81791f",
+        "libs/s52plib/src/mygeomOC.cpp:Extended_Geometry::~Extended_Geometry()": "5512da11d90eb38363864b39744f2546e9cd716dfb689a11f71f2f125bb9a2e3",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::PolyTessGeo()": "11ede0e1c0bf24f4ba1191d3ae27ed1c47884c9e1185b62f99d0fdaa8a1d5716",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::~PolyTessGeo()": "917bd0921b5d03b432efe0ef305eea6b932323cf846efce237dd83d420d0f8b1",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::PolyTriGroup()": "91454a0f86b70b24091e6e782100c6123d5bca748e4fbceabd4c44f7e9bf4195",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::~PolyTriGroup()": "88563454ae5f08aaf1bd1df3f2253276834c221937905b2463ba738e36544dc6",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::TriPrim()": "62f2fb02375c0e7e9392d041478ea40fba3d000241ae303e428e65f857911538",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::~TriPrim()": "871a8f850a1d1eaa40ec84d13550b5d0c30887db03782e6e74dbd6ce58e6fa08",
+        "libs/s52plib/src/mygeomOC.cpp:void TriPrim::FreeMem()": "dd4eb61c8c91b2a759ca303b20d974eb3cba4a05762de201780cd5d7a991d7ed",
+        "src/eSENCChart.cpp:void S57Obj::Init()": "da8f613dcd1b4c7ec6785192c90ebe18320e1f95f1b16d939105c069ecab7f1e",
+        "src/eSENCChart.cpp:int S57Obj::GetAttributeIndex( ": "402ca8bf48bae0157bb088c7cf0526200d22db13cab542c156738dccee04c9b0",
+        "src/eSENCChart.cpp:bool eSENCChart::IsPointInObjArea(": "2dd703a9d7fd895d595769cb0f57a815be2997509026a72e8292ffd9c6c9e159",
+        "src/eSENCChart.cpp:ListOfS57Obj *eSENCChart::GetAssociatedObjects(": "c169d26a879d2dfec3e6d318061443dfdcedb513245f581a05c1577728da06b2",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+        "libs/s52plib/src/s52cnsy.cpp:static wxString *_UDWHAZ03(": "3c1854d9616c859f7de5b1b63e1edb717790cb3abfd760186dccdfd5a014d718"
+      },
+      "compileExit": 0,
+      "mutation": null,
+      "machine": "I386",
+      "runExit": 0,
+      "binary": {
+        "bytes": 40448,
+        "sha256": "d4b69251ea50f97a465dbdaa932daf1e067d4180fc89ee9342f7b5e01cd86e5f"
+      },
+      "requiredRepairNegativeExit": 1
+    },
+    {
+      "kind": "repaired-private",
+      "compiledInputs": {
+        "actual-bodies.inc": {
+          "bytes": 19690,
+          "sha256": "40603376c76767861eab52c5d6a496e5c0644ebd0049bebe156942c1f9b8d37e"
+        },
+        "bbox.h": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "bridge.inc": {
+          "bytes": 684,
+          "sha256": "3053a3b995e6b834111650999f35b1a8f6bad5b7cf7bf36cc822a9a833394f93"
+        },
+        "color_types.h": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "geometry-types.inc": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "georef.h": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "integration/ChartLightLabel.h": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "integration/ChartNameSpacing.h": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "integration/ChartNameText.h": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "poly_math.h": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "private_hazard_area_query_test.cpp": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "s52s57.h": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "s52utils.h": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        }
+      },
+      "unmodifiedBodySha256": {
+        "model/src/georef.cpp:void toSM(double lat,": "a0a69dd33858ce8ad91923008f6c007efedc4ca77ff225f594dcc49b1b67b7bb",
+        "model/src/georef.cpp:void fromSM(double x,": "0cec67ed03c0da4c9dab5c9a0e414dabe846d8d2f6cdc3882cab6decc9d8637d",
+        "gui/src/ocpn_plugin_gui.cpp:void toSM_Plugin(double lat,": "6da5c70c1788fa95b64947345e3557c7d965175da855694dd90094ae0e91ee86",
+        "gui/src/ocpn_plugin_gui.cpp:void fromSM_Plugin(double x,": "34cf7fb64db49991c25f5d9fda02082bf71ba906f15b5873339488878a849c2d",
+        "libs/geoprim/src/bbox.cpp:void LLBBox::Set(": "393d32b0a9378832931a753e184ddfc8de27e753cc47f644601e4966eef1d313",
+        "libs/geoprim/src/bbox.cpp:bool LLBBox::Contains(": "3e89380dfc403fd5e852494fccead4ceac83ef1e8c8db7e4b696a7cccb7fd267",
+        "libs/geoprim/src/poly_math.cpp:int CCW(MyPoint p0,": "524b6ce95f788a83d753984889e1814a2730d1cea3139867f20f8a64fa8c458a",
+        "libs/geoprim/src/poly_math.cpp:int Intersect(MyPoint p1,": "18d173ad8e70af667708e92e30a7f246052bc51ad5a6741c8b01299126b39377",
+        "libs/geoprim/src/poly_math.cpp:int G_PtInPolygon(MyPoint *rgpts,": "2b7f56eda7e3e7158713ee0d557a9e81f44521d137777c9783e7917eee81791f",
+        "libs/s52plib/src/mygeomOC.cpp:Extended_Geometry::~Extended_Geometry()": "5512da11d90eb38363864b39744f2546e9cd716dfb689a11f71f2f125bb9a2e3",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::PolyTessGeo()": "11ede0e1c0bf24f4ba1191d3ae27ed1c47884c9e1185b62f99d0fdaa8a1d5716",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::~PolyTessGeo()": "917bd0921b5d03b432efe0ef305eea6b932323cf846efce237dd83d420d0f8b1",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::PolyTriGroup()": "91454a0f86b70b24091e6e782100c6123d5bca748e4fbceabd4c44f7e9bf4195",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::~PolyTriGroup()": "88563454ae5f08aaf1bd1df3f2253276834c221937905b2463ba738e36544dc6",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::TriPrim()": "62f2fb02375c0e7e9392d041478ea40fba3d000241ae303e428e65f857911538",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::~TriPrim()": "871a8f850a1d1eaa40ec84d13550b5d0c30887db03782e6e74dbd6ce58e6fa08",
+        "libs/s52plib/src/mygeomOC.cpp:void TriPrim::FreeMem()": "dd4eb61c8c91b2a759ca303b20d974eb3cba4a05762de201780cd5d7a991d7ed",
+        "src/eSENCChart.cpp:void S57Obj::Init()": "6b3695859d7954787ccade553802c30c9044c8b1c47b0cc63ff2988f5c6a72a1",
+        "src/eSENCChart.cpp:int S57Obj::GetAttributeIndex( ": "402ca8bf48bae0157bb088c7cf0526200d22db13cab542c156738dccee04c9b0",
+        "src/eSENCChart.cpp:bool eSENCChart::IsPointInObjArea(": "2dd703a9d7fd895d595769cb0f57a815be2997509026a72e8292ffd9c6c9e159",
+        "src/eSENCChart.cpp:ListOfS57Obj *eSENCChart::GetAssociatedObjects(": "c169d26a879d2dfec3e6d318061443dfdcedb513245f581a05c1577728da06b2",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+        "libs/s52plib/src/s52cnsy.cpp:static wxString *_UDWHAZ03(": "cb3777142dc04957516d93460cfeec0571abafa749d832cc2cadeb69e18b2d91"
+      },
+      "compileExit": 0,
+      "mutation": null,
+      "machine": "I386",
+      "runExit": 0,
+      "binary": {
+        "bytes": 46592,
+        "sha256": "9d59f9525f903463e3b37adaaaa9bae2356d2c0715d15beb8930e3d6f7ec24e5"
+      }
+    },
+    {
+      "kind": "polygon-bypass-negative",
+      "compiledInputs": {
+        "actual-bodies.inc": {
+          "bytes": 19691,
+          "sha256": "5ef95b8859ac98874c5266527aa0ab91d4cbf46f334b77b1c6672d5102c8da80"
+        },
+        "bbox.h": {
+          "bytes": 5944,
+          "sha256": "ad26a51746283ae8d297b3ac27e6bb1686d14d92f6689fc2e5ecc61c0acf6144"
+        },
+        "bridge.inc": {
+          "bytes": 684,
+          "sha256": "3053a3b995e6b834111650999f35b1a8f6bad5b7cf7bf36cc822a9a833394f93"
+        },
+        "color_types.h": {
+          "bytes": 2142,
+          "sha256": "0b226162ee9dd15140db40f16495caf1bd999f3691b15b43cf6efd6306826446"
+        },
+        "geometry-types.inc": {
+          "bytes": 7081,
+          "sha256": "9512705a5ef9586b90f7d02d8244872433c82acc5773051ba818c840beded37b"
+        },
+        "georef.h": {
+          "bytes": 38309,
+          "sha256": "dc35a27024d4584b2d49549b5ecdcb1492c4be83d1f78b6245eff626434102ae"
+        },
+        "integration/ChartLightLabel.h": {
+          "bytes": 5079,
+          "sha256": "2480404f2283715b359549ef442a1b71881b117cb3eba3928a9e35b8b092229c"
+        },
+        "integration/ChartNameSpacing.h": {
+          "bytes": 1274,
+          "sha256": "21007bdd438595cad679a9df06620e43c0f52a39074f9a29982e2b80ec1af019"
+        },
+        "integration/ChartNameText.h": {
+          "bytes": 2373,
+          "sha256": "306b7d4742596a38adb334dad6c3e33e8f44bd155fa1437d3ef31a6034005a31"
+        },
+        "poly_math.h": {
+          "bytes": 2027,
+          "sha256": "647b5418db7b9e4687198b7c86b651352a2e08d2a8d9e8a811bbc4e85538e90c"
+        },
+        "private_hazard_area_query_test.cpp": {
+          "bytes": 12322,
+          "sha256": "b243506308fa971a154fc25db9cc915ee4c781232754cb84fbd26b4b9aebe652"
+        },
+        "s52s57.h": {
+          "bytes": 16823,
+          "sha256": "a07900f6ae506f23d3f9d38449956a2171b7ee0b63bcafc241cd8968bb8ed24e"
+        },
+        "s52utils.h": {
+          "bytes": 3151,
+          "sha256": "4feeefb368bf1aafd1620c15fe54662b8d2f9651cecc4123648b18aecfd1f74d"
+        }
+      },
+      "unmodifiedBodySha256": {
+        "model/src/georef.cpp:void toSM(double lat,": "a0a69dd33858ce8ad91923008f6c007efedc4ca77ff225f594dcc49b1b67b7bb",
+        "model/src/georef.cpp:void fromSM(double x,": "0cec67ed03c0da4c9dab5c9a0e414dabe846d8d2f6cdc3882cab6decc9d8637d",
+        "gui/src/ocpn_plugin_gui.cpp:void toSM_Plugin(double lat,": "6da5c70c1788fa95b64947345e3557c7d965175da855694dd90094ae0e91ee86",
+        "gui/src/ocpn_plugin_gui.cpp:void fromSM_Plugin(double x,": "34cf7fb64db49991c25f5d9fda02082bf71ba906f15b5873339488878a849c2d",
+        "libs/geoprim/src/bbox.cpp:void LLBBox::Set(": "393d32b0a9378832931a753e184ddfc8de27e753cc47f644601e4966eef1d313",
+        "libs/geoprim/src/bbox.cpp:bool LLBBox::Contains(": "3e89380dfc403fd5e852494fccead4ceac83ef1e8c8db7e4b696a7cccb7fd267",
+        "libs/geoprim/src/poly_math.cpp:int CCW(MyPoint p0,": "524b6ce95f788a83d753984889e1814a2730d1cea3139867f20f8a64fa8c458a",
+        "libs/geoprim/src/poly_math.cpp:int Intersect(MyPoint p1,": "18d173ad8e70af667708e92e30a7f246052bc51ad5a6741c8b01299126b39377",
+        "libs/geoprim/src/poly_math.cpp:int G_PtInPolygon(MyPoint *rgpts,": "2b7f56eda7e3e7158713ee0d557a9e81f44521d137777c9783e7917eee81791f",
+        "libs/s52plib/src/mygeomOC.cpp:Extended_Geometry::~Extended_Geometry()": "5512da11d90eb38363864b39744f2546e9cd716dfb689a11f71f2f125bb9a2e3",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::PolyTessGeo()": "11ede0e1c0bf24f4ba1191d3ae27ed1c47884c9e1185b62f99d0fdaa8a1d5716",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTessGeo::~PolyTessGeo()": "917bd0921b5d03b432efe0ef305eea6b932323cf846efce237dd83d420d0f8b1",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::PolyTriGroup()": "91454a0f86b70b24091e6e782100c6123d5bca748e4fbceabd4c44f7e9bf4195",
+        "libs/s52plib/src/mygeomOC.cpp:PolyTriGroup::~PolyTriGroup()": "88563454ae5f08aaf1bd1df3f2253276834c221937905b2463ba738e36544dc6",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::TriPrim()": "62f2fb02375c0e7e9392d041478ea40fba3d000241ae303e428e65f857911538",
+        "libs/s52plib/src/mygeomOC.cpp:TriPrim::~TriPrim()": "871a8f850a1d1eaa40ec84d13550b5d0c30887db03782e6e74dbd6ce58e6fa08",
+        "libs/s52plib/src/mygeomOC.cpp:void TriPrim::FreeMem()": "dd4eb61c8c91b2a759ca303b20d974eb3cba4a05762de201780cd5d7a991d7ed",
+        "src/eSENCChart.cpp:void S57Obj::Init()": "6b3695859d7954787ccade553802c30c9044c8b1c47b0cc63ff2988f5c6a72a1",
+        "src/eSENCChart.cpp:int S57Obj::GetAttributeIndex( ": "402ca8bf48bae0157bb088c7cf0526200d22db13cab542c156738dccee04c9b0",
+        "src/eSENCChart.cpp:bool eSENCChart::IsPointInObjArea(": "2dd703a9d7fd895d595769cb0f57a815be2997509026a72e8292ffd9c6c9e159",
+        "src/eSENCChart.cpp:ListOfS57Obj *eSENCChart::GetAssociatedObjects(": "c169d26a879d2dfec3e6d318061443dfdcedb513245f581a05c1577728da06b2",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetIntAttr(S57Obj *obj,": "bccd41c4680115a9cebd2af40953796f46f9792527f5c58a9d2d136242307f23",
+        "libs/s52plib/src/s52cnsy.cpp:bool GetDoubleAttr(S57Obj *obj,": "8b6265dac68354442f997323d69402c74109ad739bf1bef5ffff29e66c8f9dc6",
+        "libs/s52plib/src/s52cnsy.cpp:static wxString *_UDWHAZ03(": "cb3777142dc04957516d93460cfeec0571abafa749d832cc2cadeb69e18b2d91"
+      },
+      "compileExit": 0,
+      "mutation": "IsPointInObjArea final return true instead of ret",
+      "machine": "I386",
+      "runExit": 1,
+      "binary": {
+        "bytes": 44032,
+        "sha256": "546455cda3e1abeacba2d1dc1dc3e514731b9eaa0042889cfa9f7380e0b9a933"
+      }
+    }
+  ]
+}

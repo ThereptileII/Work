@@ -1,0 +1,203 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-283",
+  "result": "passed",
+  "scope": "Focused actual associated-area query fixture, native MSVC x86; no application build or product/real-chart/boat qualification",
+  "harnessCommit": "2f9c41cbd3699f8d1bb7b0aee60650a74e558a29",
+  "implementationCommit": "f70c0eb8a488c3d0ff337f608325d51fccf95755",
+  "run": {
+    "repository": "ThereptileII/Work",
+    "id": 38740153247,
+    "attempt": 1,
+    "job": 116439435152,
+    "name": "private-hazard",
+    "event": "workflow_dispatch",
+    "workflow": ".github/workflows/skager-native-python-contracts.yml",
+    "createdAt": "2026-10-15T13:08:10Z",
+    "completedAt": "2026-10-15T13:09:28Z",
+    "conclusion": "success",
+    "queryOnly": true,
+    "conditionalFixtureRepeated": false,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38740153247",
+    "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38740153247/job/116439435152"
+  },
+  "artifact": {
+    "id": 11975036987,
+    "name": "private-hazard-native-2f9c41cbd3699f8d1bb7b0aee60650a74e558a29-run38740153247-attempt1",
+    "bytes": 184836,
+    "sha256": "7f856f42d0fa686b6af77bc10a9919db42893a0fca779a3ba4323e09547357a3",
+    "repositoryId": 864043804,
+    "apiDigestMatched": true,
+    "crcPassed": true,
+    "downloadCount": 1,
+    "members": {
+      "skager-hazard-native/area-query/harness.json": {
+        "bytes": 258892,
+        "sha256": "9e61db5dcec2793fade1ddf767234afea941130f09b4c414fa1913b578d80e92"
+      },
+      "skager-hazard-native/area-query/original-private/required-repair-negative.log": {
+        "bytes": 1141,
+        "sha256": "4fc879f38e04492ce4362e8d9815ce10b95f6c97cfa7bce10ba6d448b1a1c107"
+      },
+      "skager-hazard-native/area-query/original-private/compile.log": {
+        "bytes": 36,
+        "sha256": "6665a87e7b60534845a74069143205aeb1292e47521687a7eb7fb1c8ef323e14"
+      },
+      "skager-hazard-native/area-query/original-private/run.log": {
+        "bytes": 1218,
+        "sha256": "b4995892706c5fa67e81275496d08cfd3bc8c15a7d59a16e9e78858023f295e1"
+      },
+      "skager-hazard-native/area-query/parity.json": {
+        "bytes": 573,
+        "sha256": "fc30d5f874a5c395e3fa9d5e695657c1b2bbb1fb5f4103352fd2da5dace366cf"
+      },
+      "skager-hazard-native/area-query/polygon-bypass-negative/compile.log": {
+        "bytes": 36,
+        "sha256": "6665a87e7b60534845a74069143205aeb1292e47521687a7eb7fb1c8ef323e14"
+      },
+      "skager-hazard-native/area-query/polygon-bypass-negative/run.log": {
+        "bytes": 104,
+        "sha256": "7ff58c371727ba338bb8c34b948fcb0bd5119e0ccdbdea04146ce1079bff7fbd"
+      },
+      "skager-hazard-native/area-query/receipt.json": {
+        "bytes": 19657,
+        "sha256": "b9457441adc1df0cfb9892ffac284e966fe2095c7540bacc2b819cf5ab4e777f"
+      },
+      "skager-hazard-native/area-query/repaired-private/compile.log": {
+        "bytes": 36,
+        "sha256": "6665a87e7b60534845a74069143205aeb1292e47521687a7eb7fb1c8ef323e14"
+      },
+      "skager-hazard-native/area-query/repaired-private/run.log": {
+        "bytes": 1244,
+        "sha256": "a0c4717c972cf1a7f674ba435160a3748b0da224006181aa14d785633090fd9c"
+      },
+      "skager-hazard-native/area-query/source-inputs.json": {
+        "bytes": 68236,
+        "sha256": "d301a16593e71abe3df341b21fd701ce6cfaf0e53d31e51c90bb8d4de0c9affc"
+      },
+      "skager-hazard-native/wx-postverification.json": {
+        "bytes": 151,
+        "sha256": "7e2d618ffc8744220e533cbc71a8cc7c5bbcd497ce4ffb69a33998cfb0153ffe"
+      },
+      "skager-hazard-inputs/wx-receipt.json": {
+        "bytes": 244378,
+        "sha256": "dd9559ff3eece1ab8b19a29eca372ce9b22a9d5c5bb5eea5370528e32ca44391"
+      }
+    }
+  },
+  "runner": {
+    "image": "windows-2022",
+    "version": "20261012.333.1",
+    "os": "Windows Server 2022 10.0.20348",
+    "compiler": {
+      "bytes": 598416,
+      "sha256": "fc26dcba228dd91cd09429670f298f4608833c84841a4ceca8c4955b4d495a7b"
+    },
+    "compilerSelection": "MSVC 14.44.35207 Hostx86/x86 cl.exe",
+    "python": "3.12.10 (tags/v3.12.10:0cc8128, Apr  8 2025, 12:21:36) [MSC v.1943 64 bit (AMD64)]",
+    "machine": "I386",
+    "evidence": "Authenticated original job log and native harness.json"
+  },
+  "results": {
+    "originalQueries": 29,
+    "repairedQueries": 29,
+    "originalChecks": 113,
+    "repairedChecks": 125,
+    "originalMissingCallbackNegativeExit": 1,
+    "polygonBypassNegativeExit": 1,
+    "allFixtureMachines": "I386"
+  },
+  "wx": {
+    "version": "3.2.8",
+    "authentication": "Existing exact-workflow locked archive fetch validates bytes/SHA-256 before extraction; this fixture consumes only wx, not the maintained TLS SDK",
+    "archives": [
+      {
+        "file": "wxMSW-3.2.8_vc14x_Dev.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_Dev.7z",
+        "sha256": "2d1469322e89293e351260954f0575a18629a78d53a39e0545b1594f221f5810",
+        "bytes": 33824019
+      },
+      {
+        "file": "wxWidgets-3.2.8-headers.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxWidgets-3.2.8-headers.7z",
+        "sha256": "996041908057574ee3836a5f5e03f40858ffc61011231f19a5e87297b74b74e2",
+        "bytes": 1454469
+      },
+      {
+        "file": "wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+        "url": "https://github.com/wxWidgets/wxWidgets/releases/download/v3.2.8/wxMSW-3.2.8_vc14x_ReleaseDLL.7z",
+        "sha256": "a1a9b44932c9f3a6c309956535128cbd6a259200b1bfa150e8c108525204a014",
+        "bytes": 3781947
+      }
+    ],
+    "receiptMember": "skager-hazard-inputs/wx-receipt.json",
+    "receipt": {
+      "bytes": 244378,
+      "sha256": "dd9559ff3eece1ab8b19a29eca372ce9b22a9d5c5bb5eea5370528e32ca44391"
+    },
+    "fileCount": 1612,
+    "canonicalInventorySha256": "9447b3a43a37508102b9c309e64c8b22e0c4925f8b7274783784ddb232b74af1",
+    "fixtureSnapshotEqualsAuthenticatedWorkflowInventory": true,
+    "helperBeforeAfterInventoryPassed": true,
+    "workflowPostverification": {
+      "verifiedFiles": 1612,
+      "harnessCommit": "2f9c41cbd3699f8d1bb7b0aee60650a74e558a29",
+      "applicationBuilt": false,
+      "runtimeProductQualification": false
+    }
+  },
+  "sourceBinding": {
+    "originalFiles": 219,
+    "patchedFiles": 219,
+    "coreFiles": 10,
+    "patches": 3,
+    "harnessInputs": 11,
+    "coreCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "privateCommit": "c98bf5f0654a6aee52cd9a6b9fabc0d1cf8047e8",
+    "gitlinkCommit": "38762f4e7b8faf39133cc40efc99b12b5200f04b",
+    "nativeGitCheckout": "All 11 harness inputs and 10 pinned core input hashes independently matched explicit CRLF expansion of Git bytes; 3 patch bytes matched exactly",
+    "privateByteParity": "All 219 original and 219 production-patched source records exactly match the locked retained Linux source; original Git blob identities also independently verified",
+    "extractedBodies": "Every recorded extracted method hash agrees with exact Linux fixture proof",
+    "staging": "Every native staged-input record independently matched exact retained local fixture bytes or explicit CRLF expansion; path sets identical"
+  },
+  "localEvidence": {
+    "harnessCommit": "f70c0eb8a488c3d0ff337f608325d51fccf95755",
+    "receiptSha256": "15b119757c806f7a8156ac23e372ed6d1f084b8c52f64f88f5e5e43df60129e1",
+    "sourceInputsSha256": "52c2d34297db4b200007b40ce49089cb1bc2a4d78b6db467d13f1183fedf78d1",
+    "inputNegatives": "Exact-commit Linux helper additionally rejected injected bbox.h and redirected source before compile; not rerun by this native job"
+  },
+  "authenticationEvidence": {
+    "run.json": {
+      "bytes": 12150,
+      "sha256": "ae39df52ec64c7376f0d6da849c81a091637ce520b00962052e73b6afbdbadb7"
+    },
+    "attempt.json": {
+      "bytes": 12172,
+      "sha256": "25188172fd7bdbf35ef40775b900c01a658fe5640b570f4a0827c243c52a01e1"
+    },
+    "job.json": {
+      "bytes": 2459,
+      "sha256": "5619ebe74056dddfac42f3a2b0c050a4d07faf02b8af6b2be4d3b7b00f7cfae8"
+    },
+    "artifacts.json": {
+      "bytes": 812,
+      "sha256": "bd02e68357ce6c855b54f1d0581a8c5a238c7e9a7efe706d627cf76a5af25810"
+    },
+    "job.log": {
+      "bytes": 31021,
+      "sha256": "990715970f3596b1df1ca9f4ec79ba01ddd211deb2f0305a421b30c343c28eec"
+    },
+    "members.json": {
+      "bytes": 2170,
+      "sha256": "f8b2b3965b879b6922666947059dd9a033e73db399067b9da69e156ccb77e595"
+    }
+  },
+  "auditBoundary": "Artifact and job authenticated. Recorded hashes independently matched Git and exact retained local source/fixture bytes, including explicit Windows CRLF expansion. No CI binaries or wx files downloaded; their before/after and PE checks are trusted exact-workflow observations, not independent local re-execution.",
+  "applicationBuilt": false,
+  "runtimeProductQualification": false,
+  "remainingGates": [
+    "Complete private DLL ABI and chart lifecycle validation",
+    "Software/GL rendering and licensed private real-chart parity",
+    "Fresh boat commissioning and installed-product acceptance controlled by coordinator"
+  ]
+}

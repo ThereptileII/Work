@@ -1,0 +1,9 @@
+{
+  "queryCases": 29,
+  "originalRepairedQueryBodiesIdentical": true,
+  "originalRepairedQueryResultsIdentical": true,
+  "originalMissingCallbackNegativeRejected": true,
+  "polygonBypassMutationRejected": true,
+  "repairedActualQueryConditionalLinkage": true,
+  "scope": "Actual area query and polygon/coordinate bodies using explicit synthetic tessellation; synchronous callback and borrowed list lifetime. Native only if this receipt platform is win32. No chart ingestion, tessellation generation, private DLL ABI, real-chart rendering or boat qualification."
+}
