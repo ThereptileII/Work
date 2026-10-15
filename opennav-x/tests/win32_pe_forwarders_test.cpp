@@ -35,6 +35,23 @@ Bytes Image(const std::vector<std::string>& targets = {}) {
   }
   return b;
 }
+Bytes LargeExportImage(const std::string& target = {}) {
+  // Exact directory size/EAT count observed in the retained Win32 wx core DLL.
+  // Keep raw backing beyond the directory so end checks cannot rely on EOF.
+  constexpr std::uint32_t directory_size = 0x11af00;
+  constexpr std::uint32_t export_rva = 0x1100;
+  constexpr std::uint32_t raw_size = export_rva - 0x1000 + directory_size + 0x200;
+  auto b = Image();
+  b.resize(0x200 + raw_size);
+  Put(b, 0x180, raw_size); Put(b, 0x188, raw_size);
+  Put(b, 0xfc, directory_size); Put(b, 0x314, 19522); Put(b, 0x31c, 0x1140);
+  if (!target.empty()) {
+    const auto rva = export_rva + directory_size - static_cast<std::uint32_t>(target.size()) - 1;
+    Put(b, 0x340, rva);
+    Name(b, 0x200 + rva - 0x1000, target);
+  }
+  return b;
+}
 Bytes Import(Bytes b, const std::string& name, bool delayed = false) {
   const auto directory = delayed ? 0x160 : 0x100;
   Put(b, directory, 0x1a00); Put(b, directory + 4, delayed ? 64 : 40);
@@ -183,6 +200,37 @@ void Tests() {
   b = Image(); b.resize(0x50000); Put(b, 0x180, 0x4fe00); Put(b, 0x188, 0x4fe00);
   Put(b, 0x314, 65536); Put(b, 0x31c, 0x2000);
   Check(ReadWin32PeImports(b).parsed, "Bounded all-hole export address table refused");
+
+  // Large, fully backed export directories need no additional scan budget.
+  b = LargeExportImage();
+  r = ReadWin32PeImports(b);
+  Check(r.parsed && r.forwarders.empty(), "Fully backed large export directory refused");
+  b = LargeExportImage("helper.fn");
+  r = ReadWin32PeImports(b);
+  Check(r.parsed && r.forwarders == std::vector<std::string>{"helper.fn"},
+        "Large-directory final-byte NUL or far forwarder refused");
+  Check(RefuseLegacyPluginTlsImports(b).empty(), "Benign large export directory refused by TLS policy");
+  const auto large_legacy = LargeExportImage("libeay32.#209");
+  Check(RefuseLegacyPluginTlsImports(large_legacy).find("TLS export forwarder") != std::string::npos,
+        "Large-directory legacy forwarder admitted");
+  Check(closure(Image({"large.fn"}), {{"large.dll", large_legacy}})
+            .find("TLS export forwarder") != std::string::npos,
+        "Indirect large-directory legacy forwarder escaped closure");
+  const auto large_bad = [&](std::size_t at, std::uint32_t value, const char* expected = "") {
+    auto changed = b; Put(changed, at, value); Reject(changed, expected);
+  };
+  large_bad(0xf8, 0, "Invalid export directory extent");
+  large_bad(0xfc, 39, "Invalid export directory extent");
+  large_bad(0xfc, 0x11b101, "RVA has no complete raw backing");
+  large_bad(0xfc, 0xffffffff, "Invalid RVA range");
+  large_bad(0x188, 0x11afff, "RVA has no complete raw backing");
+  large_bad(0x31c, 0x11bfff, "RVA has no complete raw backing");
+  large_bad(0x314, 65537, "Export address table budget exceeded");
+  // This NUL is still raw-backed, but one byte beyond the export directory.
+  Put(b, 0x340, 0x11c000 - 9); Name(b, 0x11b200 - 9, "helper.fn");
+  Reject(b, "Export forwarder crosses directory boundary");
+  b = LargeExportImage("helper.fn"); b.resize(0x11b1ff);
+  Reject(b, "Invalid section raw range");
   for (std::size_t size = 0; size < valid.size(); ++size)
     Reject(Bytes(valid.begin(), valid.begin() + size));
   for (std::size_t at = 0; at < valid.size(); ++at) {

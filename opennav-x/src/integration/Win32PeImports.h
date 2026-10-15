@@ -149,8 +149,10 @@ inline Win32PeImports ReadWin32PeImports(const std::vector<unsigned char>& bytes
       const std::uint64_t rva = word(optional + 96, 4);
       const std::uint64_t size = word(optional + 100, 4);
       if (rva || size) {
-        require(rva && size >= 40 && size <= 1024u * 1024u,
-                "Invalid export directory extent");
+        // Export names can make an ordinary wxWidgets directory exceed 1 MiB.
+        // Complete raw backing bounds the extent; EAT/forwarder/name budgets
+        // below independently bound the work and returned declarations.
+        require(rva && size >= 40, "Invalid export directory extent");
         const auto base = offset(rva, size);
         const auto end = rva + size;  // offset already checked 32-bit RVA extent.
         const std::uint64_t entries = word(base + 20, 4);
