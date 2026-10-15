@@ -311,14 +311,430 @@
     "compiled-source-audit.json": "7821249f266d4462056e31b84bbc45508ac263d7d3daa96c062e25e8db5e47ea",
     "staging-audit.json": "472a2b08c55a08d5d4c97cd528d541b0d8e556d8a8d957d8952dde12ae98f7f8",
     "staging-source-runtime-boundaries.json": "6110c360083c34b7ee43c22209bc68a859601e49cde09e7faf7ad608e5dd4561",
-    "candidate-custody-summary.json": "1a1febe48991c57ad343db9b18ea067d5993694fcd47755ecf1428400cbd270d"
+    "candidate-custody-summary.json": "1a1febe48991c57ad343db9b18ea067d5993694fcd47755ecf1428400cbd270d",
+    "plugin-retained-38761760564/success-review.json": "8a56d1cca0b00886477b3916569cb7e446b4548dfc8cdebf3aff28be6140c419"
   },
   "acceptance": {
     "custodyAuthenticated": true,
-    "nativePluginHandlerAccepted": false,
+    "nativePluginHandlerAccepted": true,
     "installedProductAccepted": false,
     "baselineAccepted": false,
     "boatAccepted": false,
-    "published": false
+    "published": false,
+    "nativePluginHandlerScope": "Exact captured source slice and all eleven captured runtime DLLs, run 38761760564/a1; final installed runtime is separate."
+  },
+  "retainedNativeSuccess": {
+    "schema": 1,
+    "scope": "Native source-slice PluginHandler/Downloader probe only",
+    "frozenProduct": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+    "helperCommit": "a57098f01053baf283610efe8a9c883b6715904a",
+    "runId": "38761760564",
+    "runAttempt": "1",
+    "jobId": "116514570605",
+    "runConclusion": "success",
+    "jobConclusion": "success",
+    "startedAt": "2026-10-15T15:36:07Z",
+    "completedAt": "2026-10-15T15:40:19Z",
+    "runnerImage": "windows-2022",
+    "imageVersion": "20261004.326.1",
+    "originalArtifact": {
+      "artifactId": "11986286491",
+      "artifactName": "retained-plugin-qualification-e80cb962e1a32d98bb75b964dca6eb516f7a5e23-producer38744236920-attempt1-run38761760564-attempt1",
+      "artifactBytes": 12754835,
+      "artifactSha256": "0e8d040a900943fea907a062f22146b2af14acd2df550a5e5547a2188fe97e4a",
+      "crcVerifiedMembers": 5284
+    },
+    "originalFiles": {
+      "run-original.json": {
+        "sha256": "5c24887e78254be636b47898d45c5e7858ba6b96b45386d213321e9f284524ed"
+      },
+      "job-original.json": {
+        "sha256": "73ec55c8c103af48d160dc7070730caf2899b88f21db6cea230bc152e1e9ffa9"
+      },
+      "artifact-original.json": {
+        "sha256": "c45a314fddfca9b026ff65a7b8d1fe7d4bb500e19b1d647f732b6e940a384753"
+      },
+      "job-original.log": {
+        "sha256": "ae83c05161b8dece05727510296b2579420992521849c97f16528c094c270b18"
+      }
+    },
+    "originalMembers": {
+      "results": {
+        "member": "opennav-x/evidence/local/retained-plugin-download/results.json",
+        "bytes": 320704,
+        "sha256": "7853669a5232d75327c6bfcaee06e6ca2831bf073b331fa34235f08601c74358"
+      },
+      "authority": {
+        "member": "opennav-x/evidence/local/retained-plugin-auth/authority.json",
+        "bytes": 48868,
+        "sha256": "acdb259bef49232a16594bf7e1f7a8991938d0179051b1f590ce9b335ae17697"
+      },
+      "loader": {
+        "member": "opennav-x/evidence/local/retained-ocharts-loader/summary.json",
+        "bytes": 27007,
+        "sha256": "0e47f269ea21b65827a73640d86291d59bd4eb2a3d54282f923e9363fa69aab3"
+      },
+      "hostProvenance": {
+        "member": "dependency-provenance.json",
+        "bytes": 654,
+        "sha256": "7657c5c0a92dfeacf78aa7fa72d2f972473d9e9b58849fc159a90c6843562296"
+      },
+      "subjectProvenance": {
+        "member": "subject-dependency-provenance.json",
+        "bytes": 654,
+        "sha256": "7657c5c0a92dfeacf78aa7fa72d2f972473d9e9b58849fc159a90c6843562296"
+      },
+      "subjectBundle": {
+        "member": "subject-dependency-bundle/bundle.json",
+        "bytes": 51426,
+        "sha256": "67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f"
+      },
+      "native-pe-forwarders.log": {
+        "member": "opennav-x/evidence/local/retained-ocharts-loader/native-pe-forwarders.log",
+        "bytes": 57,
+        "sha256": "ab98e1755f71b3f2ab1f6e32b16019eaa83825df500b8d04e64f3b98e1417b9d"
+      },
+      "native-plugin-tls-byte-policy.log": {
+        "member": "opennav-x/evidence/local/retained-ocharts-loader/native-plugin-tls-byte-policy.log",
+        "bytes": 41,
+        "sha256": "2bd6e3df7463c61c67bd80ac807ad921c416394f4c9582fd0a70d7974ffbe8df"
+      }
+    },
+    "producer": {
+      "runId": "38744236920",
+      "runAttempt": "1",
+      "source": "e80cb962e1a32d98bb75b964dca6eb516f7a5e23",
+      "jobId": "116461918332",
+      "jobConclusion": "success",
+      "runConclusion": "failure",
+      "captureArtifactId": "11981229778",
+      "captureArtifactSha256": "40c3d7f3e7bd17077a9f1c0e3d3375a69ff26faa888464898d958b57be2c5bc7",
+      "captureSha256": "697916e6eea6f0edaabe83f5221d40475451354181db21a2ebbe20c22941c756",
+      "inventorySha256": "670e86e7b4fd8c047cb8449c22a2d75d9faa703454474e700f416f5d26a7b79e",
+      "inventoryFilesCompared": 1585,
+      "inventoryAndInputMappingsExactlyMatchOriginal": true
+    },
+    "sdkRoles": {
+      "hostArtifact": {
+        "schemaVersion": 1,
+        "repository": "ThereptileII/Work",
+        "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+        "runId": "38735490052",
+        "runAttempt": "1",
+        "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+        "job": "windows-dependencies",
+        "conclusion": "success",
+        "artifactId": "11976566007",
+        "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38735490052-attempt1",
+        "artifactDigest": "sha256:b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831",
+        "bundleSha256": "67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f"
+      },
+      "subjectArtifact": {
+        "schemaVersion": 1,
+        "repository": "ThereptileII/Work",
+        "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+        "runId": "38735490052",
+        "runAttempt": "1",
+        "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+        "job": "windows-dependencies",
+        "conclusion": "success",
+        "artifactId": "11976566007",
+        "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38735490052-attempt1",
+        "artifactDigest": "sha256:b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831",
+        "bundleSha256": "67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f"
+      },
+      "hostAuthority": {
+        "mode": "cross-run-bundle",
+        "producer": {
+          "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+          "job": "windows-dependencies",
+          "repository": "ThereptileII/Work",
+          "runAttempt": "1",
+          "runId": "38735490052",
+          "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+        },
+        "fingerprint": {
+          "abi": {
+            "abi": "x86",
+            "architecture": "Win32",
+            "curl": "8.22.0",
+            "openssl": "3.5.9",
+            "runtime": "MultiThreadedDLL (/MD)",
+            "zlib": "1.3.2"
+          },
+          "sha256": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+          "workflowSha256": "fae71dff3d7f26b67a01e6f7791e173d79506620695e2e038f0c5c96e0eecd9a"
+        },
+        "toolchainSha256": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03"
+      },
+      "subjectAuthority": {
+        "mode": "cross-run-bundle",
+        "producer": {
+          "headSha": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+          "job": "windows-dependencies",
+          "repository": "ThereptileII/Work",
+          "runAttempt": "1",
+          "runId": "38735490052",
+          "workflowPath": ".github/workflows/skager-windows-dependencies.yml"
+        },
+        "fingerprint": {
+          "abi": {
+            "abi": "x86",
+            "architecture": "Win32",
+            "curl": "8.22.0",
+            "openssl": "3.5.9",
+            "runtime": "MultiThreadedDLL (/MD)",
+            "zlib": "1.3.2"
+          },
+          "sha256": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+          "workflowSha256": "fae71dff3d7f26b67a01e6f7791e173d79506620695e2e038f0c5c96e0eecd9a"
+        },
+        "toolchainSha256": "1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03"
+      },
+      "originalCaptureAuthorityExact": true,
+      "actualCombination": "older host image / older captured subject",
+      "newerHostOlderSubjectNativeAcceptance": false,
+      "subjectOpenSslRuntimeStatus": "passed",
+      "subjectOpenSslRuntime": {
+        "status": "passed",
+        "cpuChanged": false,
+        "scope": "Runtime observation only; original producer evidence unchanged",
+        "executableSha256": "1411af42c4d3f2d5bc838201500680113dd96214f535ecbcba6c39c767e805e4",
+        "versionAndBuildOutputExact": true
+      }
+    },
+    "sourceBinding": {
+      "consumedInputCount": 99,
+      "unchangedCommonInputs": 98,
+      "exactConsumerChanges": {
+        "opennav-x/tools/test-plugin-download-guard-windows.py": {
+          "producer": {
+            "mode": "100644",
+            "gitBlob": "f46944ddb1b1025fb299d02027ae90afc46400ba"
+          },
+          "helper": {
+            "mode": "100644",
+            "gitBlob": "73c19fe76f46bcec6d133128b5806a28353b4cef"
+          },
+          "checkoutSha256": "84d19dfa4ef362c149cc606b81a9982013a7516f6bf74fb91ca1b46e483df614"
+        }
+      },
+      "allowedProbeChanges": [],
+      "helperOnlyInputs": {
+        "opennav-x/tools/plugin_subject_sdk.py": {
+          "mode": "100644",
+          "gitBlob": "1316d7de6922ffd42924bfdc54bc2f4184f57103",
+          "checkoutSha256": "7d394851ae857d9807cb5b381b30dfdaf21888facba3980324b22d5685335ccd",
+          "gitSha256": "ea810ac0d254a57e70af925432d25621f64735939a4af8ae4b5807cb13009d10"
+        }
+      },
+      "gitBlobsModesAndCheckoutHashesVerified": true,
+      "workflowSource": {
+        "helperCommit": "a57098f01053baf283610efe8a9c883b6715904a",
+        "gitSha256": "0a6ecb1c730752f8cc5129fd1cd0de442849b9c2b4317be1b80f97b90d9a5097",
+        "checkoutSha256": "ea966716d413a5184249eab154d8fc5f41b7c1967c0649ff683ca03b82e7c139"
+      },
+      "localInputCount": 17,
+      "localInputs": {
+        "tools/test-plugin-download-guard-windows.py": "84d19dfa4ef362c149cc606b81a9982013a7516f6bf74fb91ca1b46e483df614",
+        "tools/plugin-guard-owned-trust.ps1": "74a8dfbf7732883bb255a430fafd03f33fc090625c23b39e3717d665e0b80bfa",
+        "tools/test-plugin-download-guard.py": "d09f643164d07897e6d72e5c00c940027d6d1b85e1d73c4f52eef705ff214f76",
+        "tools/test-downloader-trust.py": "2721c2656c0a00549985a3d8996fe0da5243ed2069611e6bbbf09c954da7bd9a",
+        "tools/test-ais-runtime-windows.py": "391b3b5dd4e7bc273993703cde26f6993c8c679b70553b45780f109f251bddde",
+        "tools/windows_dependency_receipt.py": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+        "tools/windows_dependency_stage.py": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+        "tools/windows_dependency_bundle.py": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+        "tools/windows_dependency_reuse.py": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+        "tools/plugin_subject_sdk.py": "7d394851ae857d9807cb5b381b30dfdaf21888facba3980324b22d5685335ccd",
+        "tools/verify-openssl-runtime.py": "0554eb218e6621c3d3b22bd7db8d487d6ce51100b2578147d89409b23289e727",
+        "tools/plugin-download-guard-server.py": "800631c9b7f7b8af3b50d807e2dda89c6502c35950a9d365516d70bc2dfda92a",
+        "tools/plugin-download-guard-probe.cpp": "c2f579ec7d9b6f1e24576cf3c8ee067c378fa6db7bce603942d6f6f7b3b633df",
+        "tools/TrustProbeConsole.h": "ef44869941f4550341e502533c2c78aec0265cd04016ab08cd20918761639a36",
+        "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+        "tests/plugin_download_guard/CMakeLists.txt": "e2b5c45cbfb9ccf0d64024cdd1cfda524f457c8c7370c16e90e9a13fd5344f12",
+        "tests/plugin_download_guard/InputPaths.cmake": "e6144fac8cffb17e97723b65e375299ec31019544ec428c06f66318ca1d74c30"
+      },
+      "productionSource": {
+        "model/src/plugin_handler.cpp": {
+          "testedLfSha256": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
+          "packagedSha256": "21bd88cfd19dc3aed701fbc876417974d25fe96e14b787cf50237f3c1f315799",
+          "exactAfterExplicitCrLfToLf": true
+        },
+        "model/src/downloader.cpp": {
+          "testedLfSha256": "6163ffeab05b71573e56c568e89616237817226ad2a65558e1f32ea2b7ad81ab",
+          "packagedSha256": "e1e44c9b1779c015980dbe920b1d8dccf5836f82b9b4141fdcdf16360d9357f6",
+          "exactAfterExplicitCrLfToLf": true
+        },
+        "model/include/model/downloader.h": {
+          "testedLfSha256": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346",
+          "packagedSha256": "678bcf95d3548f5401b211c2b657311c5631dd9f81517ea89f6f97f20ef0d509",
+          "exactAfterExplicitCrLfToLf": true
+        }
+      },
+      "sdkRecipeFilesVerified": 29,
+      "sdkWorkflowAlsoVerified": true,
+      "temporarySubjectPathView": "Original subject manifests remain immutable; a temporary curl validation view rewrites only the two checked dependency prefixes and certificate-tool path to the authenticated subject payload. Hash/runtime claims bind original bytes."
+    },
+    "nativeOutcomes": {
+      "status": "passed",
+      "cases": [
+        {
+          "case": "valid",
+          "accepted": true,
+          "passed": true,
+          "archiveOpens": 1,
+          "archiveEntries": 2,
+          "installedFilesAndRecordsUnchanged": false,
+          "error": ""
+        },
+        {
+          "case": "https_redirect",
+          "accepted": true,
+          "passed": true,
+          "archiveOpens": 1,
+          "archiveEntries": 2,
+          "installedFilesAndRecordsUnchanged": false,
+          "error": ""
+        },
+        {
+          "case": "http_downgrade",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [Protocol \"http\" is disabled (in redirect)]"
+        },
+        {
+          "case": "local_file_redirect",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [Protocol \"file\" is disabled (in redirect)]"
+        },
+        {
+          "case": "initial_http",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [Public download URL must use HTTPS]"
+        },
+        {
+          "case": "interrupted_extractable_archive",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [OpenSSL SSL_read: OpenSSL/3.5.9: error:0A000126:SSL routines::unexpected eof while reading, errno 0]"
+        },
+        {
+          "case": "untrusted",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+        },
+        {
+          "case": "redirect_untrusted",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+        },
+        {
+          "case": "expired",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]"
+        },
+        {
+          "case": "redirect_expired",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]"
+        },
+        {
+          "case": "wrong_host",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']"
+        },
+        {
+          "case": "redirect_wrong_host",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']"
+        },
+        {
+          "case": "trust_removed",
+          "accepted": false,
+          "passed": true,
+          "archiveOpens": 0,
+          "archiveEntries": 0,
+          "installedFilesAndRecordsUnchanged": true,
+          "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+        }
+      ],
+      "ignoredFailureMutation": "rejected: failed download entered archive installation",
+      "httpTargetReachable": true,
+      "forbiddenHttpRequests": 0,
+      "cleanup": "verified",
+      "cleanupErrors": [],
+      "loaderChecks": 58,
+      "exportForwarderChecks": 17625,
+      "pluginTlsBytePolicyChecks": 282,
+      "loaderScope": "actual native loader/lock/hash/bind/status/fallback mechanics",
+      "vendorExecuted": false,
+      "pluginFactoryExecuted": false
+    },
+    "probeBinarySha256": {
+      "normal": "dcfff120c55240e625d7019b49cf8452040f93e8cb4a03230fb6376050179c97",
+      "mutant": "6686060c34b2339b65ed5e20dc6effdb70ae219964b4412b401cb3d21c2e33d8"
+    },
+    "nativeToolsSha256": {
+      "cl.exe": "303bfbe5523af2e925871a1bc7fd2ec5f199a69208a3b6716724c3e6d6b6962d",
+      "dumpbin.exe": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+      "cmake.EXE": "3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3",
+      "python.exe": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+      "pwsh.EXE": "bfb46af89433268872ddb43d1ca7a3f433452ee91ed356a9786940f90118e285"
+    },
+    "runtimeComparisonAuthoritySha256": "6110c360083c34b7ee43c22209bc68a859601e49cde09e7faf7ad608e5dd4561",
+    "allElevenNormalAndMutantRuntimeHashesMatchOriginalCapture": true,
+    "finalPackageExactRuntimeMatches": 8,
+    "allFourMaintainedTlsDllsExact": true,
+    "threeMsvcDllsDifferNoEquivalenceClaim": true,
+    "limits": {
+      "productAcceptance": false,
+      "boatAcceptance": false,
+      "releaseAcceptance": false,
+      "installedPackageRuntimeAcceptance": false,
+      "fullRetainedQualifier": "38757982655/a1 failed during installer trust initialization; successful prefix recorded separately",
+      "metadataNormalizationUsedForRuntimeAcceptance": false,
+      "newAppBuild": false,
+      "workerRerunsOrDownloadsRepeated": false
+    },
+    "runtimeComparison": "Exact eleven DLL size/hash pairs are captureRuntimeToFinalPackage in this document; both normal and mutant runtimeSha256 maps were checked against every captured pair.",
+    "originalCustody": "Original archive downloaded once; API source/run/attempt/size/digest authenticated and every member CRC checked before this read-only results review."
   }
 }

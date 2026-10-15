@@ -1,4 +1,4 @@
-# Retained e80 candidate custody and PluginHandler refusals — SCRUM-211
+# Retained e80 candidate custody and native PluginHandler result — SCRUM-211
 
 The Windows producer succeeded for frozen product
 `e80cb962e1a32d98bb75b964dca6eb516f7a5e23`,
@@ -74,6 +74,56 @@ was rebuilt, and this worker initiated no retry. Neither attempt executed the
 native loader/PluginHandler qualification. The earlier native result on the
 newer SDK is not transferred to this candidate.
 
+## Exact captured-runtime native pass
+
+[Run 38761760564 / attempt 1](https://github.com/ThereptileII/Work/actions/runs/38761760564/attempts/1),
+job `116514570605`, passed with helper
+`a57098f01053baf283610efe8a9c883b6715904a` against the same frozen producer and
+independently reviewed inventory pin. The original artifact `11986286491` is
+12,754,835 bytes, SHA-256
+`0e8d040a900943fea907a062f22146b2af14acd2df550a5e5547a2188fe97e4a`;
+all 5,284 member CRCs passed. Original API/log/report hashes and the complete
+thirteen outcomes are in `retainedNativeSuccess` in [custody.json](custody.json).
+
+| Native PluginHandler case | Outcome |
+| --- | --- |
+| Valid HTTPS; HTTPS redirect | Both installed the two-entry fixture archive |
+| HTTP downgrade; local-file redirect; initial HTTP | All refused before archive open; installed files and records unchanged |
+| Interrupted but extractable archive | Refused before archive open; installed files and records unchanged |
+| Untrusted; redirect to untrusted; expired; redirect to expired | All refused before archive open; installed files and records unchanged |
+| Wrong host; redirect to wrong host; trust removed | All refused before archive open; installed files and records unchanged |
+
+All thirteen cases passed. The ignored-download-failure mutant was rejected
+because it entered archive installation after a failed download. The HTTP
+control was reachable, forbidden HTTP requests were zero, and owned trust/server
+cleanup was verified with no cleanup errors. The same maintained workflow also
+passed 58 native loader groups, 17,625 deterministic export-forwarder checks and
+282 TLS byte-policy checks. It executed neither a vendor DLL nor a plugin
+factory; loader, rendering and lifecycle limits remain explicit in the original
+summary.
+
+The allocated Windows image was **20261004.326.1**. Both host and subject SDKs
+were the exact older producer `38735490052/1`, source
+`bfbfdca7573c14f4623d2b8b42159abedb99e351`, original artifact `11976566007`,
+ZIP SHA-256 `b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831`.
+Both roles bind manifest
+`67ec64a1752cd23e42535c6739e6d60e8b33f05e5ae9eb9f95da3bad6e1c434f`
+and toolchain `1cc7c6a0b2579b14f9c04c7f0ae83a5260bc335c941db0f1ae2d5d8433b91f03`.
+The new helper separates current-host SDK reprobes from immutable captured
+subject authority. This run exercised the **older-host/older-subject** combination;
+it provides no native acceptance of a newer-host/older-subject combination.
+
+Independent read-only review compared the embedded inventory and all mappings
+with the previously authenticated 1,585-file original capture. Normal and mutant
+runtime hash maps match all eleven captured DLLs. All 99 consumed Git blobs/modes
+were checked: 98 were unchanged, and the only consumer change was the exact
+reviewed `test-plugin-download-guard-windows.py` old/new blob pair. The one
+helper-only module `plugin_subject_sdk.py` has its exact Git blob and LF/Windows
+checkout hashes recorded; neither allowed probe source changed. All 17 local
+input hashes and the immutable workflow hashes matched. The three retained
+production source files match the final source archive after explicit CRLF-to-LF
+conversion; runtime byte acceptance uses no normalization.
+
 ## Captured runtime versus the final package
 
 Eight of the 11 captured runtime DLLs match the final recovery package exactly.
@@ -83,9 +133,10 @@ All four maintained TLS DLLs (`libcurl.dll`, `libcrypto-3.dll`, `libssl-3.dll`,
 identities are recorded in [custody.json](custody.json). No claim of metadata-only
 equivalence is made for these three MSVC DLLs.
 
-Consequently, a future passing gate on this retained capture would authenticate
-its precise captured source/runtime inputs, including the four TLS DLLs. It
-would not establish byte identity or installed acceptance for all final packaged
-runtime files. Final package and installer qualification remain separate gates.
-Later retained full-qualification results require their own receipt and do not
-change either original refusal recorded here.
+This pass authenticates the precise captured source/runtime inputs, including
+the four TLS DLLs. It does not establish byte identity or installed acceptance
+for all final packaged runtime files. The separate
+[full retained qualification](../scrum22-retained-e80-20261015/README.md) preserved
+a passing UI/functional prefix but failed during installer trust initialization.
+The original baseline remains failed; no release, boat or public-access
+acceptance is granted. Neither earlier SDK-binding refusal is overwritten.
