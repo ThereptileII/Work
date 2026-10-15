@@ -136,6 +136,7 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
   if(-not $Record -and -not $Sha256){return [pscustomobject]@{sha256=$script:CommissioningBaseline;bytes=21380;record=$null;recordSha256=$null}}
   if($Depth -ge 8 -or $Sha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Malformed or excessive baseline lineage.'}
   $record=Assert-LocalPath $Record;$directory=[IO.Path]::GetDirectoryName($record)
+  if([IO.Path]::GetFileName($record) -ceq 'reconciled-baseline.json'){return Read-ReconciledBaseline $Workspace $record $Sha256 $Depth}
   if([IO.Path]::GetFileName($record) -ceq 'completed-cold-baseline.json') {
     if([IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
        [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-cold-baseline-[a-f0-9]{8}$' -or
@@ -665,3 +666,6 @@ function Read-SessionPreservationParent([string]$Path,[string]$Hash) {
   }
   return $parent
 }
+
+# Separate lineage for explicit old-active/current-install reconciliation.
+. (Join-Path $PSScriptRoot 'CommissioningReconciliation.ps1')

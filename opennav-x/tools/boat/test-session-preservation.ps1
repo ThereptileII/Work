@@ -173,5 +173,9 @@ try{
   Pass 'Historical lineage remains readable after installed generation changes' {$context.installation.generation='new-fixture-generation';$null=Read-CommissioningBaseline $workspace $lineage (Get-Digest $lineage)}
   [IO.File]::WriteAllText($complete,'changed')
   Refuse 'Changed completion cannot authorize fresh commissioning' {Read-CommissioningBaseline $workspace $lineage (Get-Digest $lineage)}
-  [pscustomobject]@{status='passed';environment='portable-disposable-contracts';count=$checks.Count;checks=$checks.ToArray();nativeAclOrProcessAcceptance=$false;boatAccess=$false;applicationLaunched=$false}|ConvertTo-Json -Depth 5
+  Pass 'Distinct cross-generation reconciliation entrypoints and interruption fixture pass' {
+    $script:reconciliationResult=(& (Join-Path $PSScriptRoot 'test-commissioning-reconciliation.ps1') -PortableContracts:$PortableContracts -IsolatedLocal:$IsolatedLocal)|ConvertFrom-Json
+    if($script:reconciliationResult.status -cne 'passed'){throw 'Cold reconciliation fixture failed.'}
+  }
+  [pscustomobject]@{status='passed';environment='portable-disposable-contracts';count=$checks.Count;checks=$checks.ToArray();reconciliation=$script:reconciliationResult;nativeAclOrProcessAcceptance=$false;boatAccess=$false;applicationLaunched=$false}|ConvertTo-Json -Depth 5
 }finally{$script:CommissioningBaseline=$originalBaseline;Remove-Item -LiteralPath $testRoot -Recurse -Force}
