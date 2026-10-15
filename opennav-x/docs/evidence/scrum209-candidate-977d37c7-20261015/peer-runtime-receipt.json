@@ -1,0 +1,349 @@
+{
+  "schema": 1,
+  "scope": "SCRUM-212 original-candidate peer containment runtime evidence; no new tests or acceptance transfer",
+  "observedUtc": "2026-10-15T07:43:30.827493+00:00",
+  "repository": "ThereptileII/Work",
+  "runId": 38686209123,
+  "productCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+  "artifacts": {
+    "windows": {
+      "id": 11955130773,
+      "name": "windows-qualification-977d37c79f652fd9b9e28e55f26ec259c35eea8e-attempt2",
+      "bytes": 24977537,
+      "digest": "sha256:d27d7035b6973bcd1bb5176fc2d193408659528a626c99b2255fce6035e32c66",
+      "downloadSha256": "d27d7035b6973bcd1bb5176fc2d193408659528a626c99b2255fce6035e32c66",
+      "expired": false,
+      "createdAt": "2026-10-15T07:10:30Z",
+      "runId": 38686209123,
+      "headSha": "977d37c79f652fd9b9e28e55f26ec259c35eea8e"
+    },
+    "linux": {
+      "id": 11951211968,
+      "name": "linux-integration-977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "bytes": 14635028,
+      "digest": "sha256:a340ccbcc47744a752fe3a32442e3f6a0409a27ce958972cc1f3dfb4e0de8404",
+      "downloadSha256": "a340ccbcc47744a752fe3a32442e3f6a0409a27ce958972cc1f3dfb4e0de8404",
+      "expired": false,
+      "createdAt": "2026-10-15T05:56:28Z",
+      "runId": 38686209123,
+      "headSha": "977d37c79f652fd9b9e28e55f26ec259c35eea8e"
+    }
+  },
+  "jobs": {
+    "116290535162": {
+      "id": 116290535162,
+      "name": "Qualify retained native Staging inputs",
+      "run_attempt": 2,
+      "head_sha": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "status": "completed",
+      "conclusion": "failure",
+      "started_at": "2026-10-15T06:55:20Z",
+      "completed_at": "2026-10-15T07:10:33Z"
+    },
+    "116274722975": {
+      "id": 116274722975,
+      "name": "windows-integration",
+      "run_attempt": 2,
+      "head_sha": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T06:05:47Z",
+      "completed_at": "2026-10-15T06:55:18Z",
+      "logSha256": "898d54e1597409bf4f95e11046ef42662bccf380029a36bde1efc3d401f12083"
+    },
+    "116261621665": {
+      "id": 116261621665,
+      "name": "Linux integrated regression gate",
+      "run_attempt": 1,
+      "head_sha": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "status": "completed",
+      "conclusion": "success",
+      "started_at": "2026-10-15T05:20:21Z",
+      "completed_at": "2026-10-15T05:56:30Z",
+      "logSha256": "a736f4b03f8b056bc563aa77edac92fb182c87595531b8281fbf88c361544155"
+    }
+  },
+  "sourceBindings": {
+    "tools/smoke-peer-two-instances.py": {
+      "committedSha256": "99c9787a0bae8a1b7b63bc5fe65bc17769e5ea75aca34e92e5b449ad5469295e",
+      "crlfCheckoutSha256": "bf73bbfc80c2e33a2f1711831ff354bc543a5b2d85254a4a2c2c62cdb896f2d3"
+    },
+    "tools/smoke-modes-windows.py": {
+      "committedSha256": "4aa9c0589813119a514785c31438d12841c61842a0c5f9444f9d5db38c9ab9f0",
+      "crlfCheckoutSha256": "5bc4ac0769c20a9d7d70a80434cb3a6e4e04067b25eb79eeb365b72bb36b8244"
+    },
+    "tools/smoke-modes-linux.py": {
+      "committedSha256": "f390bdea437c4981cf1a6fa37566061fc42ebe3c3018e7d56ac88aeee16c09cf",
+      "crlfCheckoutSha256": "2ea0314781354eaee0c9958ab65f283d901d70e20e7d1ad4b31c845a3715ffae"
+    },
+    "tools/peer_boundary.py": {
+      "committedSha256": "12b7da31d9d84dc30a27039130d66f180cffd0c2035d5941523acf231e70f2be",
+      "crlfCheckoutSha256": "6d70afdeefed9852c0dcc525aed066bd296fbe5063ab8e6a733a6b95cf320f75"
+    },
+    "tools/test-peer-cli.py": {
+      "committedSha256": "26bd160af81effcd96766cd77af21c91a126a0322dcfa1e1eb0b8893581608d8",
+      "crlfCheckoutSha256": "eb36aa06e5e68f933e1df8d99449c1c35a0dff78200783e137391432c7b32ad5"
+    },
+    "tools/peer-cli-receipt.py": {
+      "committedSha256": "6e65cd848063031dffad5d0856beb67bfe158ab7819dacd7be2321e4a981761b",
+      "crlfCheckoutSha256": "5abb4a6887e2c6aa981aca116974ec98ec388278be5efb61aa2e46586be02c50"
+    },
+    "tools/build-pristine-windows.ps1": {
+      "committedSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3",
+      "crlfCheckoutSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+    },
+    "tools/qualify-staging-windows.ps1": {
+      "committedSha256": "b9b5705d4f269f14a8bf76142b2089b5e1541ca641038f86e4f2913bb7beabbe",
+      "crlfCheckoutSha256": "2acc4cb6af07810b8c88d059d306a8cbdd71f2127d3821e48c2af5cd8803712a"
+    }
+  },
+  "limits": [
+    "Original Staging run and native runtime job remain failed at later Setup Preflight; no package/candidate acceptance.",
+    "Linux is development evidence only.",
+    "Runtime exercised installed fixture application bytes, not a new candidate or production package.",
+    "Two-instance boundary observes process-owned TCP listeners and supported application logs; not packet capture, every outbound path, or physical network reachability proof.",
+    "Containment does not qualify restored sharing, credential migration, or upstream trust.",
+    "Mode result strings retain pending visual/screenshot review; this task claims peer/persistence evidence only."
+  ],
+  "originalReceiptSha256": "9c163847429039c2034b66a056cd0b1649fbd6ee2fb713ab5f3c61be47e7f6b7",
+  "reports": {
+    "windowsTwoInstances": {
+      "member": "peer-two-instances-results.json",
+      "sha256": "d147e61ae2f10efd3aae327c526f8a577037f3f5421f35d10f808e8776dc65b6",
+      "authority": "native Windows CI",
+      "test_source_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "product_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "restore_receipt_sha256": null,
+      "test_script_sha256": "bf73bbfc80c2e33a2f1711831ff354bc543a5b2d85254a4a2c2c62cdb896f2d3",
+      "executable_sha256": "f3117b262e169752febeed9accb25df61d9212ddbc252281153449a88409e935",
+      "result": "PASS",
+      "navigationFixturePreserved": true,
+      "cleanExitRequiredByExecutedHarness": true,
+      "credentialSentinelsAbsentFromRetainedPeerReportsAndStreams": true,
+      "profiles": [
+        {
+          "index": 1,
+          "launchMode": "ordinary",
+          "buildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+          "certPreservedAtExit": true,
+          "keyPreservedAtExit": true
+        },
+        {
+          "index": 2,
+          "launchMode": "portable",
+          "buildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+          "certPreservedAtExit": true,
+          "keyPreservedAtExit": true
+        }
+      ],
+      "observations": [
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        }
+      ]
+    },
+    "windowsModeCycle": {
+      "member": "mode-cycle-results.json",
+      "sha256": "00c6e2da7f438f6242a908a639c4ef135870494dae5779ec1051927bba17994d",
+      "result": "interaction and fixture persistence passed; visual review required",
+      "diagnosticBuildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "diagnosticSha256": "13a15ca18099808048ef4a70ffbc00af6365d08db241025123fc276369096f01",
+      "steps": [
+        {
+          "step": "theme / zoom / simulator start and pause",
+          "persistence": null
+        },
+        {
+          "step": "XNav to Legacy",
+          "persistence": "pass"
+        },
+        {
+          "step": "Legacy to XNav",
+          "persistence": "pass"
+        },
+        {
+          "step": "Final XNav close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Safe override and close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Persisted XNav after Safe Mode",
+          "persistence": "pass"
+        }
+      ],
+      "peerBoundary": [
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        }
+      ]
+    },
+    "linuxTwoInstances": {
+      "member": "peer-two-instances-results.json",
+      "sha256": "3a8c685c25e8770f6063f3f097d7e518a74d80257555d92af3bd5347cf98bc95",
+      "authority": "Linux development",
+      "test_source_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "product_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "restore_receipt_sha256": null,
+      "test_script_sha256": "99c9787a0bae8a1b7b63bc5fe65bc17769e5ea75aca34e92e5b449ad5469295e",
+      "executable_sha256": "dc80750724d2d44439af15b4f69c26c43f982a9321fca5569f18c37ae76a3461",
+      "result": "PASS",
+      "navigationFixturePreserved": true,
+      "cleanExitRequiredByExecutedHarness": true,
+      "credentialSentinelsAbsentFromRetainedPeerReportsAndStreams": true,
+      "profiles": [
+        {
+          "index": 1,
+          "launchMode": "ordinary",
+          "buildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+          "certPreservedAtExit": true,
+          "keyPreservedAtExit": true
+        },
+        {
+          "index": 2,
+          "launchMode": "ordinary",
+          "buildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+          "certPreservedAtExit": true,
+          "keyPreservedAtExit": true
+        }
+      ],
+      "observations": [
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        }
+      ]
+    },
+    "linuxModeCycle": {
+      "member": "linux-mode-cycle-results.json",
+      "sha256": "c4d4b7b6dd3273568a57b7d584561a74fc84f376059b977e5d744787a9d61478",
+      "result": "interaction and persistence passed; screenshot review required",
+      "diagnosticBuildCommit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "diagnosticSha256": "a8b84a797f68ee41321d829a0e2730059af8b5cd7a8bec6a77d2090616f1e787",
+      "steps": [
+        {
+          "step": "XNav to Legacy",
+          "persistence": "pass"
+        },
+        {
+          "step": "Legacy to XNav",
+          "persistence": "pass"
+        },
+        {
+          "step": "Final IPC close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Safe override and close",
+          "persistence": "pass"
+        },
+        {
+          "step": "Persisted XNav after Safe Mode",
+          "persistence": "pass"
+        }
+      ],
+      "peerBoundary": [
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        },
+        {
+          "profile_preserved": true,
+          "owned_tcp_listener_ports": []
+        }
+      ]
+    },
+    "windowsCli": {
+      "member": "windows-peer-cli-receipt.json",
+      "sha256": "2bb7cc41b3986067a5be147bc751cd4ce91184771cf0b441c5796eabdb3e1173",
+      "schema": 1,
+      "owner": "OpenNavX.CI.PeerCli.1",
+      "status": "success",
+      "commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+      "runId": "38686209123",
+      "runAttempt": "2",
+      "job": "windows-integration",
+      "sourcesSha256": {
+        "tools/test-peer-cli.py": "eb36aa06e5e68f933e1df8d99449c1c35a0dff78200783e137391432c7b32ad5",
+        "tools/peer-cli-receipt.py": "5abb4a6887e2c6aa981aca116974ec98ec388278be5efb61aa2e46586be02c50",
+        "tools/build-pristine-windows.ps1": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+      },
+      "executableSha256": "758faaaa63eff7ea6b50be26e02b0a9e967260047cc88004259099d7df129fc9",
+      "originalJobId": 116274722975,
+      "actualOriginalLogSuccessSummaryObserved": true,
+      "assertions": [
+        "generate-key/store-key both refuse with expected unavailable reason",
+        "no stdout or key echo",
+        "isolated configuration bytes unchanged"
+      ]
+    },
+    "linuxCli": {
+      "originalJobId": 116261621665,
+      "runAttempt": 1,
+      "jobStep": 12,
+      "jobStepConclusion": "success",
+      "actualOriginalLogSuccessSummaryObserved": true,
+      "jobLogSha256": "a736f4b03f8b056bc563aa77edac92fb182c87595531b8281fbf88c361544155",
+      "standaloneJsonReceipt": "not produced by original Linux workflow"
+    }
+  },
+  "laterInstallerFailure": {
+    "status": "failed",
+    "mode": "staging",
+    "authority": "native disposable Windows / PowerShell 5.1 / NSIS",
+    "harness_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+    "product_commit": "977d37c79f652fd9b9e28e55f26ec259c35eea8e",
+    "checks": [
+      "Official supported OpenCPN installed and exact PE executable SHA-256 verified"
+    ],
+    "operations": [
+      {
+        "action": "Preflight",
+        "status": null
+      }
+    ],
+    "member": "installer-staging.json",
+    "reportSha256": "e7870b68538771091ac446bfb5412ce78bd0c9c4bafa53e9c82fefd6bf720664",
+    "packageAccepted": false
+  }
+}

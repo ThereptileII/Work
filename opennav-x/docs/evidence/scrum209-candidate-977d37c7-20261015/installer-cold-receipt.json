@@ -1,0 +1,183 @@
+{
+  "schema": 1,
+  "scope": "Focused native installer observer and filesystem/guard evidence; no application or installed-package acceptance",
+  "repository": "ThereptileII/Work",
+  "successfulFocusedRun": {
+    "runId": 38700086122,
+    "runAttempt": 1,
+    "commit": "22f9108427009871807f47e1b7abf3e66c88f5f3",
+    "conclusion": "success",
+    "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38700086122",
+    "originalReceiptSha256": "8f4268efafbcf9d7203be5fa61a787fa78218ec55ed0191fb294284e40494561",
+    "runMetadataSha256": "f922414abfdd0bd0807e1dcd0ab83d9d3cdb8263efe6afeda91a7ab8359b07c1",
+    "jobsMetadataSha256": "75baeb87603fd41bf503ed6194959634ebdc6d862fa9dc740d430a3ca2739b23",
+    "artifacts": [
+      {
+        "id": 11956725747,
+        "sha256": "2548ed51aee14ec65efa49e26ca7d9fb9e9b8b9841b968091eb09eed946f9979",
+        "bytes": 3919,
+        "architecture": "x64",
+        "results": [
+          {
+            "sha256": "0b3471b67d3239be76da2a11aa289824d581f5713b916096aeaed02ddba82e5e",
+            "test": "test-installer-filesystem.ps1",
+            "exitCode": 0
+          },
+          {
+            "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9",
+            "test": "test-lifecycle-protected-broker-guard.ps1",
+            "exitCode": 0
+          }
+        ],
+        "observed": [
+          "Cold observer passed: PowerShell 5.1 64-bit, compiler temp available; native System.dll shadow; exact caller directories restored.",
+          "Compiler temp refusal evidence: type=System.ComponentModel.Win32Exception; nativeCode=3",
+          "Cold observer passed: PowerShell 5.1 64-bit, compiler temp unavailable; native System.dll shadow; exact caller directories restored.",
+          "44 native filesystem checks passed in PowerShell 5.1.20348.5622, 64-bit host.",
+          "Lifecycle protected-broker refusal and read-only diagnostics passed."
+        ],
+        "resultMember": "result.json",
+        "resultMemberSha256": "353c1675759d6017e00a9a36ca86da172e2d79e6acde1675507b70de5aef8bdb",
+        "applicationBuilt": false,
+        "installedProductAcceptance": false
+      },
+      {
+        "id": 11955542146,
+        "sha256": "467680de966afcb57ab61e362f5d90268a0562067275ffcc97d3a65e78cf207a",
+        "bytes": 3928,
+        "architecture": "x86",
+        "results": [
+          {
+            "sha256": "87d9ff27202585ddcae963572328564c31c4a977de1b82bfb3df36c8302e49b5",
+            "exitCode": 0,
+            "test": "test-installer-filesystem.ps1"
+          },
+          {
+            "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9",
+            "exitCode": 0,
+            "test": "test-lifecycle-protected-broker-guard.ps1"
+          }
+        ],
+        "observed": [
+          "Cold observer passed: PowerShell 5.1 32-bit, compiler temp available; native System.dll shadow; exact caller directories restored.",
+          "Compiler temp refusal evidence: type=System.ComponentModel.Win32Exception; nativeCode=3",
+          "Cold observer passed: PowerShell 5.1 32-bit, compiler temp unavailable; native System.dll shadow; exact caller directories restored.",
+          "44 native filesystem checks passed in PowerShell 5.1.20348.5622, 32-bit host.",
+          "Lifecycle protected-broker refusal and read-only diagnostics passed."
+        ],
+        "resultMember": "result.json",
+        "resultMemberSha256": "4e22bf8f9f919f6fbf301c2f161f877e6ba1dda00290a26cdcf7e5cd3940a900",
+        "applicationBuilt": false,
+        "installedProductAcceptance": false
+      }
+    ],
+    "jobs": [
+      {
+        "id": 116305906430,
+        "name": "installer-filesystem (x64)",
+        "run_attempt": 1,
+        "head_sha": "22f9108427009871807f47e1b7abf3e66c88f5f3",
+        "conclusion": "success"
+      },
+      {
+        "id": 116305906856,
+        "name": "installer-filesystem (x86)",
+        "run_attempt": 1,
+        "head_sha": "22f9108427009871807f47e1b7abf3e66c88f5f3",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "preservedFailedFocusedRun": {
+    "runId": 38699617052,
+    "runAttempt": 1,
+    "commit": "5c5719c85f3fbc399c46974343560c4890aedf97",
+    "conclusion": "failure",
+    "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38699617052",
+    "originalReceiptSha256": "ca24ed0c41d24eee81f43f836dbed566f6e396a57028eae87c3e8c841a977855",
+    "runMetadataSha256": "6deb13e156e1b1cc3e6d47f7abb261e47d461fc92c8e0589564eb9d7cb51e99b",
+    "jobsMetadataSha256": "9937588d7873bb9db83ffe2f352ff0376e9dc051d085da12225abc994aa700ba",
+    "artifacts": [
+      {
+        "id": 11956660597,
+        "sha256": "f143f48fbebdefe4e5f47f2627ed0956e1ed1ed14ecd122bcce1f0c45fe74b51",
+        "bytes": 1398,
+        "architecture": "x86",
+        "results": [
+          {
+            "test": "test-installer-filesystem.ps1",
+            "exitCode": 1,
+            "sha256": "9bf1be78237da76103c735e8f777979149e1040653d06d1f7dda6dcb3ee164c4"
+          },
+          {
+            "test": "test-lifecycle-protected-broker-guard.ps1",
+            "exitCode": 0,
+            "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9"
+          }
+        ],
+        "coldPositivePassed": true,
+        "protectedBrokerGuardsPassed": true,
+        "negativeFixture": "Win32Exception path-not-found not recognized by classifier",
+        "resultMember": "result.json",
+        "resultMemberSha256": "c672b7d072210df5ed8260c089b8ea7a89737187960907082e5f3b2698dd7876",
+        "applicationBuilt": false,
+        "installedProductAcceptance": false
+      },
+      {
+        "id": 11956035678,
+        "sha256": "d40940ae10f77bfa56ec8e80a930cae7600400523ca7d8ab30c2b1657ff39d5c",
+        "bytes": 1398,
+        "architecture": "x64",
+        "results": [
+          {
+            "test": "test-installer-filesystem.ps1",
+            "exitCode": 1,
+            "sha256": "ee013aee53eb45e39b4da1496efab33c8147cea651df738282cb79fa7bf455c4"
+          },
+          {
+            "test": "test-lifecycle-protected-broker-guard.ps1",
+            "exitCode": 0,
+            "sha256": "43d305a12bb0415163049f3c39b9fc862e46f308bb225338c46c4db9ad4652f9"
+          }
+        ],
+        "coldPositivePassed": true,
+        "protectedBrokerGuardsPassed": true,
+        "negativeFixture": "Win32Exception path-not-found not recognized by classifier",
+        "resultMember": "result.json",
+        "resultMemberSha256": "e5325b953dacc3a355dd2019bf648839059e58283aaeafa141e64b5201776580",
+        "applicationBuilt": false,
+        "installedProductAcceptance": false
+      }
+    ],
+    "jobs": [
+      {
+        "id": 116304352094,
+        "name": "installer-filesystem (x64)",
+        "run_attempt": 1,
+        "head_sha": "5c5719c85f3fbc399c46974343560c4890aedf97",
+        "conclusion": "failure"
+      },
+      {
+        "id": 116304352280,
+        "name": "installer-filesystem (x86)",
+        "run_attempt": 1,
+        "head_sha": "5c5719c85f3fbc399c46974343560c4890aedf97",
+        "conclusion": "failure"
+      }
+    ]
+  },
+  "covered": [
+    "First observer Add-Type in fresh Windows PowerShell 5.1 x86 and x64 hosts with real native System.dll shadow",
+    "Successful compilation and actual read-only broker observation",
+    "Real compiler TEMP-path refusal with NativeErrorCode 3; type remains absent",
+    "Distinct provider and process caller directories restored on success and failure",
+    "44 actual installer filesystem checks per host",
+    "Protected-broker present/unknown refusal, durable-write preservation, and read-only diagnostics"
+  ],
+  "limits": [
+    "Successful implementation/harness source is 22f9108427009871807f47e1b7abf3e66c88f5f3, separate from original application candidate 977d37c79f652fd9b9e28e55f26ec259c35eea8e.",
+    "Neither focused run built or installed an application.",
+    "The earlier failed run remains failed; its unavailable-TEMP classifier did not recognize native Win32Exception path-not-found.",
+    "Does not qualify installer Setup, application/package bytes, retained TLS closure, boat operation, or broad Jira issue acceptance."
+  ]
+}
