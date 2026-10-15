@@ -155,8 +155,8 @@ jobs:
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
-          $Python = (Get-Command python.exe -CommandType Application).Source
-          $Perl = (Get-Command perl.exe -CommandType Application).Source
+          $Python = (Get-Command python.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          $Perl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
           $Vswhere = Join-Path ${env:ProgramFiles(x86)} 'Microsoft Visual Studio/Installer/vswhere.exe'
           $Vs = @(& $Vswhere -latest -products '*' -requires Microsoft.VisualStudio.Component.VC.Tools.x86.x64 -property installationPath)
           if ($LASTEXITCODE -ne 0 -or $Vs.Count -ne 1) { throw 'Native MSVC selection failed' }
