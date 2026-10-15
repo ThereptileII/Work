@@ -78,10 +78,17 @@ An initial private-review staging attempt refused an unprotected new child
 directory before Plan; read-only inspection confirms the original inspection
 directory remains protected and unchanged. The review now uses a fresh sibling
 created by the maintained private-directory helper, without changing the
-original ACL. Actual Plan `60666477…` now binds the unchanged profile baseline;
-Commit of that pinned plan is running once with a retained process/log handle.
-Reconciliation is not yet accepted; no application launch or physical output is
-authorized by this preservation work.
+original ACL. Actual Plan `60666477…` binds the unchanged profile baseline;
+its single Commit completed successfully. Postverification confirms all four
+original quarantine paths restored, their quarantine copies absent, the current
+profile unchanged and the active commissioning marker removed. A fresh identity
+check at 12:08 UTC retains installed `f1a1e68c`, stock OpenCPN and the exact
+profile hashes, with no application running and SSH/Tailscale/RustDesk healthy.
+[Actual boat reconciliation receipt](evidence/scrum17-cold-reconciliation-20261015/boat-completion-receipt.json).
+The original timed-out Plan observation is preserved, without inventing an exit
+status or repeating the operation. Cold reconciliation is accepted; a new
+candidate installation, fresh read-only commissioning and navigation acceptance
+remain separate gates. No physical output was sent or authorized by this work.
 
 Installed-updater helper `14ff2896` (reviewed original `02a943f6`) adds explicitly
 bound interactive self-hosted admission for a disposable Windows target.

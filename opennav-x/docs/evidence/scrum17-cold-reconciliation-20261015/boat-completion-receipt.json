@@ -1,0 +1,119 @@
+{
+  "schema": 1,
+  "owner": "Skager.ColdReconciliationBoatReceipt.1",
+  "issue": "SCRUM-17",
+  "status": "verified-reconciled",
+  "helperCommit": "ab722554676afee631f35add60ce95365b5aa171",
+  "qualification": {
+    "runId": 38717837403,
+    "nativeChecks": 229,
+    "receipt": "historical-wmm-native-receipt.json"
+  },
+  "planSha256": "606664777398e533cabdefe31b0b74f722eb4e70e8e1aff9e76e18c163b998d9",
+  "completionSha256": "1312cb0aad9b2df8801cfc3495ebf24c7f85aac2cfe930dac1079598d188ba1d",
+  "baselineRecordSha256": "a6a735b10902f1aad7d301bf0158443cab01e6665c3ffb8251bd4ef3aba283f2",
+  "observationUtc": "2026-10-15T10:55:58.1825510Z",
+  "identityRecheckUtc": "2026-10-15T12:08:41.6535652Z",
+  "profileSha256": "7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559",
+  "profileChanged": false,
+  "profilePublished": false,
+  "otherProfileFilesPreserved": true,
+  "originalQuarantinePathsRestored": 4,
+  "originalQuarantineCopiesAbsent": true,
+  "installedCommit": "f1a1e68c81fb60324f47cc20a7c4479e1c60c0c8",
+  "installedExecutableSha256": "159eafcf71a65608e525c222e1a75901a703be58b5dd540fc1935a51fb24e3e1",
+  "installedStateSha256": "c1a9c758db4a0f7af9dba8014f58057f98c0b1b968e4a286519ca5ff88aef71a",
+  "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "activeMarkerPresent": false,
+  "applicationCount": 0,
+  "applicationLaunched": false,
+  "commandsSent": false,
+  "pilotBindingQualified": false,
+  "doNotAutoLaunch": true,
+  "remoteServices": [
+    {
+      "name": "sshd",
+      "running": true
+    },
+    {
+      "name": "Tailscale",
+      "running": true
+    },
+    {
+      "name": "RustDesk",
+      "running": true
+    }
+  ],
+  "originalEvidence": [
+    {
+      "name": "v4-actual-plan.json",
+      "bytes": 1009,
+      "sha256": "606664777398e533cabdefe31b0b74f722eb4e70e8e1aff9e76e18c163b998d9",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-retention-review.json",
+      "bytes": 1872100,
+      "sha256": "52a0e5885ceb5b5d8479b363f36063009a499997e8bfe5c1770c8ab89388c1c4",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-commit-request.ps1",
+      "bytes": 1535,
+      "sha256": "85ebf9c389317ecf7871c4340449601f0807e28764aa0dc48ea738b981464ffb",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-commit.stdout",
+      "bytes": 509,
+      "sha256": "13137484e3ea946dcb3d3bd6baac7cd40042c45501ba94071be5f29b2e00f8d2",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-commit.stderr",
+      "bytes": 1286,
+      "sha256": "aa01fa182fed948502201bd3c00ec6911bdc2c65934a769f05ecdbe0878ea2d3",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-post-verify-file.ps1",
+      "bytes": 4297,
+      "sha256": "6f5e320e9b8ff25983f17cc40f0421023db85d893777eb3317bd560308ddd17e",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-post-verify-file.stdout",
+      "bytes": 1689,
+      "sha256": "977529c83bb82afb476e5af0cda330d27db2b7f486961bc5f54d1e048350a871",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-identity-label-verification.ps1",
+      "bytes": 1867,
+      "sha256": "9e6998a28d40d7de367714b9f82f1c3db9e6c69d8d0b16e07eb3126eb33bc281",
+      "retention": "private local evidence; contents not published"
+    },
+    {
+      "name": "v4-identity-label-verification.stdout",
+      "bytes": 1341,
+      "sha256": "caceba758e9c27ee72da1dfcf4b82781918aff73e2e7c2ad17163eb4359775da",
+      "retention": "private local evidence; contents not published"
+    }
+  ],
+  "executionNotes": [
+    "Plan observation timed out locally while the exact remote process remained active. The original plan was observed complete and bound by SHA256; it was not restarted. A Plan exit status was not observed.",
+    "Commit ran once and returned reconciled; maintained Commit validates profile/plugin trees, ACLs and backups before publishing completion and removing the active marker last.",
+    "A fresh postcheck revalidated context, completion, baseline, original restored file hashes and absent quarantine copies, unchanged profile, marker absence and remote services.",
+    "The original postcheck field currentInstalledExecutableSha256 names the stock context executable. Its original output is preserved; the separately verified identity receipt explicitly separates stock and installed executable hashes.",
+    "Initial staging refused a new inherited-ACL child; original protected inspection ACL remained unchanged. A maintained private-directory helper created the sibling review directory.",
+    "An overlong postcheck command was refused before execution; a hash-checked script-file invocation then succeeded. No Commit was repeated."
+  ],
+  "acceptanceBoundary": {
+    "coldReconciliation": true,
+    "newCandidateInstalled": false,
+    "nativeProductAcceptance": false,
+    "boatNavigationAcceptance": false,
+    "freshReadOnlyCommissioningStillRequired": true,
+    "physicalOutputAuthorized": false
+  }
+}
