@@ -48,48 +48,12 @@ jobs:
               raise ValueError('Repository differs')
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
-          ref: ${{ inputs.producer_commit }}
+          ref: ${{ github.workflow_sha }}
           persist-credentials: false
-      - name: Preserve native Perl before installing the curl test host
+      - name: Fetch the exact immutable producer without changing the helper checkout
         shell: pwsh
         run: |
-          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
-          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
-        id: curl_msys
-        with:
-          msystem: MSYS
-          update: false
-          install: perl patch
-          path-type: inherit
-          cache: false
-      - name: Select explicit curl test Perl
-        shell: pwsh
-        env:
-          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
-        run: |
-          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
-          $Patch = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/patch.exe'
-          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
-          if (-not (Test-Path -LiteralPath $Patch -PathType Leaf)) { throw 'Explicit native patch tool missing' }
-          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-          "SKAGER_PLUGIN_PATCH=$Patch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
-      - name: Fetch pinned upstream source for the narrow production slice
-        shell: pwsh
-        run: |
-          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Authenticate selected immutable dependency SDK
-        shell: pwsh
-        env:
-          GH_TOKEN: ${{ github.token }}
-        run: |
-          python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
-          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
-      - name: Restore authenticated dependency inputs
-        shell: pwsh
-        run: |
-          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          git fetch --no-tags --depth=1 origin "$env:PRODUCER_COMMIT"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Authenticate exact retained producer artifact and reviewed inventory
         shell: python {0}
@@ -97,20 +61,117 @@ jobs:
           GH_TOKEN: ${{ github.token }}
         run: |
           # BEGIN RETAINED_PLUGIN_AUTH
-          import base64, hashlib, importlib.util, json, os, re, shutil, stat, subprocess, sys, tempfile, zipfile
+          import ast, base64, hashlib, importlib.util, json, os, re, shutil, stat, subprocess, sys, tempfile, zipfile
           from pathlib import Path, PurePosixPath
           sys.path.insert(0, str(Path('opennav-x/tools').resolve()))
-          from github_release_delivery import GitHub, decimal, file_hash, sha
-          from release_manifest import require
-          import windows_dependency_receipt as receipt
+
+          # Bootstrap the immutable-input gate with only stdlib/the dispatched
+          # recipe: a changed imported assertion must not authenticate itself.
+          GitHub = receipt = None
+          def require(condition, message):
+              if not condition:
+                  raise ValueError(message)
+          def sha(value):
+              require(isinstance(value, str) and re.fullmatch(r'[a-f0-9]{40}', value), 'Exact lowercase commit required')
+              return value
+          def decimal(value):
+              require(isinstance(value, str) and re.fullmatch(r'[1-9][0-9]{0,19}', value), 'Canonical identity required')
+              return value
+          def file_hash(path):
+              digest = hashlib.sha256()
+              with path.open('rb') as stream:
+                  for block in iter(lambda: stream.read(1024 ** 2), b''):
+                      digest.update(block)
+              return digest.hexdigest()
 
           MAX_BYTES = 3 * 1024 ** 3
           PRODUCTION = 'Compile fixture-free product and run installed security and unit checks'
           CAPTURE = 'Retain exact plugin-download SDK inputs for no-rebuild qualification'
+          MUTABLE_PROBES = {'opennav-x/tools/plugin-download-guard-probe.cpp',
+                            'opennav-x/tools/TrustProbeConsole.h'}
+          DECLARATIONS = ('opennav-x/tools/test-ocharts-loader-windows.py',
+                          'opennav-x/tools/windows_dependency_bundle.py')
+          DIRECT_INPUTS = {
+              '.gitattributes', '.github/workflows/opennav-baseline.yml',
+              '.github/workflows/skager-windows-dependencies.yml', 'opennav-x/upstream.lock.json',
+              'opennav-x/patches', 'opennav-x/tests/plugin_download_guard',
+              'opennav-x/tools/downloader-trust-shim',
+          } | {'opennav-x/tools/' + name for name in (
+              'test-plugin-download-guard-windows.py', 'test-plugin-download-guard.py',
+              'plugin-guard-owned-trust.ps1', 'plugin-download-guard-server.py',
+              'test-downloader-trust.py', 'test-ais-runtime-windows.py',
+              'retain-plugin-guard-inputs.py', 'fetch_ci_inputs.py',
+              'windows-dependency-bundle.lock.json',
+              'windows-dependency-consumer-compatibility.json',
+              'github_release_delivery.py', 'release_manifest.py',
+              'hardware_output_policy.py', 'packaged_notice_gate.py', 'freefont_payload.py',
+              'verify-upstream.py', 'verify-curl-bundle.ps1', 'verify-openssl-runtime.py',
+          )}
+
+          def git_inputs(commit, roots):
+              sha(commit)
+              raw = subprocess.check_output(['git', 'ls-tree', '-r', '-z', commit, '--', *sorted(roots)])
+              result = {}
+              for entry in raw.split(b'\0'):
+                  if not entry:
+                      continue
+                  metadata, name = entry.split(b'\t', 1)
+                  mode, kind, blob = metadata.decode('ascii').split()
+                  name = name.decode('utf-8')
+                  require(mode in {'100644', '100755'} and kind == 'blob' and name not in result,
+                          'Consumed input must be one regular Git file: ' + name)
+                  result[name] = {'mode': mode, 'gitBlob': sha(blob)}
+              require(all(any(name == root or name.startswith(root + '/') for name in result)
+                          for root in roots), 'Missing consumed input root')
+              return result
+
+          def input_declaration(path):
+              # Read only the unchanged declarative INPUTS expression, never
+              # execute a producer/helper module to discover its own authority.
+              tree = ast.parse(Path(path).read_text(encoding='utf-8-sig'))
+              values = [node.value for node in tree.body if isinstance(node, ast.Assign) and
+                        any(isinstance(target, ast.Name) and target.id == 'INPUTS' for target in node.targets)]
+              require(len(values) == 1, 'Unique consumed-input declaration required')
+              expression = compile(ast.Expression(values[0]), path, 'eval')
+              names = eval(expression, {'__builtins__': {}, 'tuple': tuple, 'sorted': sorted})
+              require(isinstance(names, tuple) and names and all(isinstance(name, str) and
+                      re.fullmatch(r'[A-Za-z0-9_./-]+', name) and '..' not in name.split('/') for name in names),
+                      'Canonical declared input paths required')
+              return {'opennav-x/' + name for name in names}
+
+          def authenticate_sources(candidate, helper):
+              sha(candidate); sha(helper)
+              # These declarations are immutable before evaluating their small
+              # input expressions. Their transitive files are compared below.
+              require(git_inputs(candidate, DECLARATIONS) == git_inputs(helper, DECLARATIONS),
+                      'Consumed-input declarations drifted from producer')
+              roots = set(DECLARATIONS) | MUTABLE_PROBES | DIRECT_INPUTS
+              for path in DECLARATIONS:
+                  require(subprocess.check_output(['git', 'hash-object', '--path=' + path, path], text=True).strip() ==
+                          git_inputs(helper, (path,))[path]['gitBlob'], 'Input declaration checkout drift: ' + path)
+                  roots.update(input_declaration(path))
+              old, current = git_inputs(candidate, roots), git_inputs(helper, roots)
+              require(set(old) == set(current), 'Consumed input inventory differs from producer')
+              require(all(old[name]['mode'] == current[name]['mode'] for name in old), 'Consumed input file mode changed')
+              changed = {name for name in old if old[name] != current[name]}
+              require(changed <= MUTABLE_PROBES, 'Immutable consumed input drift: ' + ', '.join(sorted(changed - MUTABLE_PROBES)))
+              records = {}
+              for name in sorted(old):
+                  path = Path(name)
+                  require(path.is_file() and not path.is_symlink(), 'Plain consumed checkout file required: ' + name)
+                  require(subprocess.check_output(['git', 'hash-object', '--path=' + name, name], text=True).strip() ==
+                          current[name]['gitBlob'], 'Consumed checkout differs from helper Git bytes: ' + name)
+                  records[name] = {'producer': old[name], 'helper': current[name], 'checkoutSha256': file_hash(path)}
+                  if name in MUTABLE_PROBES:
+                      for label, revision in (('producer', candidate), ('helper', helper)):
+                          raw = subprocess.check_output(['git', 'show', revision + ':' + name])
+                          records[name][label] = dict(records[name][label], sha256=hashlib.sha256(raw).hexdigest())
+              return {'producerCommit': candidate, 'helperCommit': helper,
+                      'allowedProbeChanges': sorted(changed), 'consumedInputs': records}
 
           def authenticate_workflow(gh, workflow_sha, path):
-              # The loader runner retains this file as its actual workflow.
-              # Refuse older/different recipes rather than mislabel their bytes.
+              # Authenticate the dispatched helper recipe independently of the
+              # immutable candidate. A repaired probe never relabels its producer.
               sha(workflow_sha)
               document = gh.api(f'{gh.base}/contents/{path.as_posix()}?ref={workflow_sha}')
               require(document.get('type') == 'file' and document.get('encoding') == 'base64' and
@@ -119,10 +180,10 @@ jobs:
               raw = base64.b64decode(document['content'].replace('\n', ''), validate=True)
               source = subprocess.check_output(['git', 'show', 'HEAD:' + path.as_posix()])
               require(len(raw) == document['size'] and raw == source,
-                      'Producer must contain the exact dispatch workflow recipe')
+                      'Helper must contain the exact dispatch workflow recipe')
               # Git blob equality preserves exact source without confusing
               # ordinary Windows checkout line endings with another recipe.
-              return {'gitSha256': hashlib.sha256(raw).hexdigest(), 'checkoutSha256': file_hash(path)}
+              return {'helperCommit': workflow_sha, 'gitSha256': hashlib.sha256(raw).hexdigest(), 'checkoutSha256': file_hash(path)}
 
           def authenticate(gh, run_id, attempt, commit):
               decimal(run_id); decimal(attempt); sha(commit)
@@ -220,20 +281,28 @@ jobs:
                       'Capture source/producer/dependency identity differs')
 
           def main():
+              global GitHub, receipt
               run_id, attempt, commit, pin = (os.environ[key] for key in
                   ('PRODUCER_RUN', 'PRODUCER_ATTEMPT', 'PRODUCER_COMMIT', 'INVENTORY_SHA256'))
               evidence = Path('opennav-x/evidence/local/retained-plugin-auth'); evidence.mkdir(parents=True)
               shutil.copyfile(__file__, evidence / 'authenticate-inputs.py')
               authority = dict(schema=1, status='failed', phase='source-identity', producerRun=run_id,
                   producerAttempt=attempt, producerCommit=commit, independentlyApprovedInventorySha256=pin,
+                  helperCommit=os.environ['GITHUB_WORKFLOW_SHA'],
                   workflowRef=os.environ['GITHUB_WORKFLOW_REF'], workflowSha=os.environ['GITHUB_WORKFLOW_SHA'],
                   qualificationRun=os.environ['GITHUB_RUN_ID'], qualificationAttempt=os.environ['GITHUB_RUN_ATTEMPT'],
                   productAcceptance=False, boatAcceptance=False)
               try:
                   require(re.fullmatch(r'[a-f0-9]{64}', pin), 'Independent inventory pin required')
-                  require(subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == commit,
-                          'Exact producer checkout required')
+                  helper = sha(os.environ['GITHUB_WORKFLOW_SHA'])
+                  require(os.environ['GITHUB_SHA'] == helper and
+                          subprocess.check_output(['git', 'rev-parse', 'HEAD'], text=True).strip() == helper,
+                          'Exact dispatched helper checkout required')
                   subprocess.run(['git', 'diff', '--exit-code', 'HEAD', '--', '.'], check=True)
+                  authority['sourceBinding'] = authenticate_sources(commit, helper)
+                  if GitHub is None:
+                      from github_release_delivery import GitHub
+                  import windows_dependency_receipt as receipt
                   gh = GitHub('ThereptileII/Work')
                   authority['workflowSource'] = authenticate_workflow(gh, os.environ['GITHUB_WORKFLOW_SHA'],
                       Path('.github/workflows/skager-plugin-download-retained.yml'))
@@ -253,18 +322,92 @@ jobs:
                   runner = importlib.util.module_from_spec(spec); spec.loader.exec_module(runner)
                   root = destination / 'plugin-guard-inputs'
                   data = runner.retained_inputs(root / 'data', root / 'inventory.json', pin, commit)
-                  expected, dependency_authority = runner.module('native_ais', 'test-ais-runtime-windows.py').dependency_inputs(
-                      Path('opennav-x').resolve(), Path('dependency-bundle').resolve(), Path('dependency-provenance.json').resolve())
-                  runner.bind_tls(data, expected)
-                  verify_capture(receipt._read_json(root / 'capture.json'), authority, pin,
-                                 file_hash(Path('opennav-x/tools/retain-plugin-guard-inputs.py')), dependency_authority)
-                  authority.update(status='inputs-authenticated-not-qualified', phase='input-authentication-complete')
+                  authority.update(status='source-and-artifact-authenticated-not-qualified',
+                                   phase='source-artifact-authentication-complete')
               finally:
                   (evidence / 'authority.json').write_text(json.dumps(authority, indent=2) + '\n', encoding='utf-8')
 
           if __name__ == '__main__':
               main()
           # END RETAINED_PLUGIN_AUTH
+      - name: Preserve native Perl before installing the curl test host
+        shell: pwsh
+        run: |
+          $NativePerl = (Get-Command perl.exe -CommandType Application -ErrorAction Stop | Select-Object -First 1).Source
+          "SKAGER_NATIVE_PERL=$NativePerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - uses: msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884
+        id: curl_msys
+        with:
+          msystem: MSYS
+          update: false
+          install: perl patch
+          path-type: inherit
+          cache: false
+      - name: Select explicit curl test Perl
+        shell: pwsh
+        env:
+          SKAGER_MSYS_ROOT: ${{ steps.curl_msys.outputs.msys2-location }}
+        run: |
+          $TestPerl = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/perl.exe'
+          $Patch = Join-Path $env:SKAGER_MSYS_ROOT 'usr/bin/patch.exe'
+          if (-not (Test-Path -LiteralPath $TestPerl -PathType Leaf)) { throw 'MSYS2 curl test Perl missing' }
+          if (-not (Test-Path -LiteralPath $Patch -PathType Leaf)) { throw 'Explicit native patch tool missing' }
+          "SKAGER_CURL_TEST_PERL=$TestPerl" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+          "SKAGER_PLUGIN_PATCH=$Patch" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
+      - name: Fetch pinned upstream source for the narrow production slice
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Authenticate selected immutable dependency SDK
+        shell: pwsh
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python opennav-x/tools/fetch_ci_inputs.py dependencies --selection opennav-x/tools/windows-dependency-bundle.lock.json --output dependency-bundle --provenance dependency-provenance.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Restore authenticated dependency inputs
+        shell: pwsh
+        run: |
+          python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Bind retained capture to the authenticated dependency SDK
+        shell: python {0}
+        run: |
+          # BEGIN RETAINED_PLUGIN_BIND
+          import importlib.util, json, os
+          from pathlib import Path
+          path = Path('opennav-x/evidence/local/retained-plugin-auth/authority.json')
+          spec = importlib.util.spec_from_file_location('retained_plugin_auth', path.with_name('authenticate-inputs.py'))
+          auth = importlib.util.module_from_spec(spec); spec.loader.exec_module(auth)
+          import windows_dependency_receipt as receipt
+          authority = receipt._read_json(path)
+          try:
+              auth.require(authority['status'] == 'source-and-artifact-authenticated-not-qualified' and
+                           authority['producerCommit'] == os.environ['PRODUCER_COMMIT'] and
+                           authority['helperCommit'] == os.environ['GITHUB_WORKFLOW_SHA'] and
+                           authority['independentlyApprovedInventorySha256'] == os.environ['INVENTORY_SHA256'],
+                           'Prior source/artifact authentication differs')
+              authority['phase'] = 'reviewed-inventory-source-dependency-binding'
+              auth.require(authority['sourceBinding'] == auth.authenticate_sources(
+                  authority['producerCommit'], authority['helperCommit']), 'Consumed source changed after authentication')
+              spec = importlib.util.spec_from_file_location('native_plugin_guard', 'opennav-x/tools/test-plugin-download-guard-windows.py')
+              runner = importlib.util.module_from_spec(spec); spec.loader.exec_module(runner)
+              root = Path('retained-plugin-inputs/plugin-guard-inputs')
+              pin = os.environ['INVENTORY_SHA256']
+              data = runner.retained_inputs(root / 'data', root / 'inventory.json', pin, authority['producerCommit'])
+              expected, dependency_authority = runner.module('native_ais', 'test-ais-runtime-windows.py').dependency_inputs(
+                  Path('opennav-x').resolve(), Path('dependency-bundle').resolve(), Path('dependency-provenance.json').resolve())
+              runner.bind_tls(data, expected)
+              auth.verify_capture(receipt._read_json(root / 'capture.json'), authority, pin,
+                  auth.file_hash(Path('opennav-x/tools/retain-plugin-guard-inputs.py')), dependency_authority)
+              authority.update(status='inputs-authenticated-not-qualified', phase='input-authentication-complete')
+          except Exception:
+              authority['status'] = 'failed'
+              raise
+          finally:
+              path.write_text(json.dumps(authority, indent=2) + '\n', encoding='utf-8')
+          # END RETAINED_PLUGIN_BIND
       - name: Run actual native loader and PluginHandler download qualification
         shell: pwsh
         run: |
