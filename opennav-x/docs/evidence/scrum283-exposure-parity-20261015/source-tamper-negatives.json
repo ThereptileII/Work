@@ -1,0 +1,31 @@
+{
+  "helperCommit": "43fd4eb219438b1b49ee15fd495a3ef7cf62e730",
+  "helperIdentity": {
+    "bytes": 13670,
+    "sha256": "4823482d6948f3320411bdf9769974de5450957b21b9d8b3d682cda9f2c49b26"
+  },
+  "cases": [
+    {
+      "case": "core source tamper",
+      "status": "passed",
+      "rejection": "Core fixture source differs from pinned OpenCPN: libs/s52plib/src/s52cnsy.cpp"
+    },
+    {
+      "case": "original source tamper",
+      "status": "passed",
+      "rejection": "Original private source differs from lock: libs/s52plib/src/s52cnsy.cpp"
+    },
+    {
+      "case": "patched source tamper",
+      "status": "passed",
+      "rejection": "Patched source differs from production patch composition: libs/s52plib/src/s52cnsy.cpp"
+    },
+    {
+      "case": "disabled assertions",
+      "status": "passed",
+      "exit": 1,
+      "rejection": "Run without -O: fixture parity assertions are required"
+    }
+  ],
+  "scope": "Source/input guard negatives only; no native Windows execution"
+}

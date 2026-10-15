@@ -1,0 +1,29 @@
+{
+  "schema": 1,
+  "product": true,
+  "helpers": true,
+  "dependencies": true,
+  "docs": false,
+  "changed_paths": [
+    "opennav-x/tests/private_hazard_association_test.cpp",
+    "opennav-x/tests/private_hazard_cases.inc",
+    "opennav-x/tools/verify-private-hazard-association.py"
+  ],
+  "reasons": [
+    {
+      "path": "opennav-x/tests/private_hazard_association_test.cpp",
+      "category": "product",
+      "reason": "compiled test/fixture scope requires application build checks"
+    },
+    {
+      "path": "opennav-x/tests/private_hazard_cases.inc",
+      "category": "product",
+      "reason": "compiled test/fixture scope requires application build checks"
+    },
+    {
+      "path": "opennav-x/tools/verify-private-hazard-association.py",
+      "category": "unknown",
+      "reason": "unreviewed input; conservative product/dependency path"
+    }
+  ]
+}
