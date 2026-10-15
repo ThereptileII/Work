@@ -38,13 +38,19 @@ installer still needs integrated lifecycle acceptance.
 
 Linux job `116380307497` builds and passes preceding checks, then fails the
 OpenGL Legacy-to-XNav workspace assertion. Its tick-3 diagnostic still reports a
-visible Dashboard pane. Helper correction `9833ddbc` requires the first newer
-diagnostic publication before the unchanged workspace/rail/native visibility
-assertions; it never waits for a failing pane state to turn green. Seven focused
-freshness tests and eleven existing plugin tests pass. The source establishes
-a readiness/publication gap but does not prove completion of deferred suppression;
-actual corrected Linux execution and the skipped fixture-free build remain
-required. [Original failure and bounded helper proof](evidence/scrum22-linux-chart-readiness-20261015/diagnosis.json).
+visible Dashboard pane. Initial helper correction `9833ddbc` requires a newer
+publication but does not establish deferred Dashboard readiness. Correction
+`8b4497d9` now exposes the existing presentation phase only in fixture builds
+and binds the returned diagnostic to the actual new process, that phase and a
+pre-restart publication baseline. The first ready snapshot still faces every
+ENC, pane, rail and native-visibility assertion once; a failing pane is never
+polled until green. Fourteen helper tests, 18 actual Dashboard component checks,
+fixture-enabled/disabled compilation and independent review pass. The phase
+does not promise native repaint completion. The original failure remains
+preserved; actual corrected Linux execution and the skipped fixture-free build
+remain required.
+[Original failure](evidence/scrum22-linux-chart-readiness-20261015/diagnosis.json);
+[focused phase correction](evidence/scrum22-linux-workspace-readiness-20261015/verification.json).
 
 The focused SCRUM-283 exposure fixture now also passes native MSVC x86 at
 `63abf84b` / [38735688962](https://github.com/ThereptileII/Work/actions/runs/38735688962).
@@ -136,6 +142,15 @@ The original timed-out Plan observation is preserved, without inventing an exit
 status or repeating the operation. Cold reconciliation is accepted; a new
 candidate installation, fresh read-only commissioning and navigation acceptance
 remain separate gates. No physical output was sent or authorized by this work.
+
+A fresh read-only boat inventory at 12:46 UTC binds all 13 plugin candidates
+across three complete trees to the same unchanged profile. No application was
+launched or profile changed. The first invocation was refused by the session's
+PowerShell execution policy before script execution; the corrected invocation
+uses a process-only policy without changing permanent system settings. Exact
+vendor helper/source review and installed-candidate qualification remain
+separate from this inventory.
+[Sanitized inventory receipt](evidence/scrum17-cold-reconciliation-20261015/fresh-inventory-receipt.json).
 
 Installed-updater helper `14ff2896` (reviewed original `02a943f6`) adds explicitly
 bound interactive self-hosted admission for a disposable Windows target.

@@ -1,0 +1,22 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-17",
+  "action": "Inventory only",
+  "createdUtc": "2026-10-15T12:46:10.0399577Z",
+  "inventorySha256": "b70bbd5fdbc67cb60daea74404507f091eaf64442214bd435d786e3019d9321b",
+  "inventoryBytes": 87890,
+  "pluginCount": 13,
+  "completeTreeCount": 3,
+  "profileSha256": "7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559",
+  "baselineRecordSha256": "a6a735b10902f1aad7d301bf0158443cab01e6665c3ffb8251bd4ef3aba283f2",
+  "helperCommit": "ab722554676afee631f35add60ce95365b5aa171",
+  "stagedFileCount": 161,
+  "stagingCompletionSha256": "a4f8affc5c12672dade41c08cb4ce10258b6b333e6e6c5e08d7207221f7ffb01",
+  "applicationLaunched": false,
+  "profileModified": false,
+  "physicalOutput": false,
+  "persistentExecutionPolicyChanged": false,
+  "result": "Exact recovered profile accepted by maintained Inventory; installed/plugin/helper source review and fresh commissioning remain separate.",
+  "initialAttempt": "Refused by Windows PowerShell execution policy before maintained script ran. Corrected invocation used process-only -ExecutionPolicy Bypass.",
+  "privateEvidenceRetained": true
+}
