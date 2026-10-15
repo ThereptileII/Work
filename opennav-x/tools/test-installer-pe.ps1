@@ -1,3 +1,5 @@
+param([string[]]$RetainedPeFiles = @())
+
 $ErrorActionPreference = 'Stop'
 Set-StrictMode -Version Latest
 
@@ -133,6 +135,27 @@ function NewPeExportBudget([string]$Path, [int]$Entries, [string]$Target) {
   for ($i = 0; $i -lt $Entries; $i++) { SetU32 $bytes (0x440 + 4 * $i) 0x8e00 }
   $raw = [Text.Encoding]::ASCII.GetBytes($Target + [char]0)
   [Array]::Copy($raw, 0, $bytes, 0x8000, $raw.Length)
+  [IO.File]::WriteAllBytes($Path, $bytes)
+}
+function NewPeLargeExports([string]$Path, [string]$Target = '') {
+  NewPe $Path
+  [byte[]]$original = [IO.File]::ReadAllBytes($Path)
+  # Directory size and EAT count from retained native wx core. Keep raw bytes
+  # beyond the directory so directory-boundary tests cannot pass by checking EOF.
+  $directorySize = 0x11af00
+  $exportRva = 0x1100
+  $rawSize = $exportRva - 0x1000 + $directorySize + 0x200
+  [byte[]]$bytes = New-Object byte[] (0x200 + $rawSize)
+  [Array]::Copy($original, $bytes, $original.Length)
+  SetU32 $bytes 0x180 $rawSize; SetU32 $bytes 0x188 $rawSize
+  SetU32 $bytes 0xf8 $exportRva; SetU32 $bytes 0xfc $directorySize
+  SetU32 $bytes 0x314 19522; SetU32 $bytes 0x31c 0x1140
+  if ($Target) {
+    $targetRva = $exportRva + $directorySize - $Target.Length - 1
+    SetU32 $bytes 0x340 $targetRva
+    $raw = [Text.Encoding]::ASCII.GetBytes($Target + [char]0)
+    [Array]::Copy($raw, 0, $bytes, 0x200 + $targetRva - 0x1000, $raw.Length)
+  }
   [IO.File]::WriteAllBytes($Path, $bytes)
 }
 function RequireFailure([scriptblock]$Action, [string]$Pattern) {
@@ -273,7 +296,7 @@ try {
   foreach ($case in @(
       @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xf8 0 }},
       @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc 39 }},
-      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc 1048577 }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0xfc 1048577 }},
       @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0xfc 0x201 }},
       @{message='PE export address table budget exceeded'; mutate={ param($b) SetU32 $b 0x414 65537 }},
       @{message='PE RVA does not map'; mutate={ param($b) SetU32 $b 0x41c 0x2000 }},
@@ -294,6 +317,60 @@ try {
   RequireFailure { GetPeImports $plugin } 'PE declaration name budget exceeded'
   NewPeExportBudget $plugin 1 ('kernel32.' + ('A' * 4087))
   RequireFailure { GetPeImports $plugin } 'Empty or oversized PE export forwarder'
+  # Large extents do not increase EAT/name/forwarder work budgets or grant a
+  # TLS exception. The final-byte NUL and complete raw backing remain required.
+  NewPeLargeExports $plugin
+  if (@(GetPeImports $plugin).Count -ne 0) { throw 'Large all-hole export table refused.' }
+  [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+  SetU32 $exports 0x314 65536
+  [IO.File]::WriteAllBytes($plugin, $exports)
+  if (@(GetPeImports $plugin).Count -ne 0) { throw 'Bounded maximum all-hole EAT refused.' }
+  # The shared mapper accepts a large extent, but import descriptor directories
+  # retain their independent scan ceiling for both ordinary and delay imports.
+  foreach ($entry in @(0x100, 0x160)) {
+    NewPeLargeExports $plugin
+    [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+    SetU32 $exports $entry 0x1100; SetU32 $exports ($entry + 4) 1048577
+    [IO.File]::WriteAllBytes($plugin, $exports)
+    RequireFailure { GetPeImports $plugin } 'Invalid PE import directory'
+  }
+  NewPeLargeExports $plugin 'kernel32.ExitProcess'
+  if (@(GetPeImports $plugin) -notcontains 'kernel32.dll') { throw 'Large-directory far forwarder omitted.' }
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  NewPeLargeExports $plugin 'libeay32.#209'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import libeay32.dll'
+  NewPeForwarders $plugin @('helper.Run')
+  NewPeLargeExports $helperDll 'ssleay32.#1'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import ssleay32.dll'
+  Remove-Item -LiteralPath $helperDll
+  foreach ($case in @(
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xf8 0 }},
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc 39 }},
+      @{message='Invalid PE export directory'; mutate={ param($b) SetU32 $b 0xfc ([uint32]::MaxValue) }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0xfc 0x11b101 }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0x188 0x11afff }},
+      @{message='PE RVA points beyond raw section data'; mutate={ param($b) SetU32 $b 0x31c 0x11bfff }},
+      @{message='PE export address table budget exceeded'; mutate={ param($b) SetU32 $b 0x314 65537 }},
+      @{message='PE export forwarder crosses directory boundary'; mutate={ param($b)
+        $target = [Text.Encoding]::ASCII.GetBytes('kernel32.ExitProcess' + [char]0)
+        SetU32 $b 0x340 (0x11c000 - $target.Length + 1)
+        [Array]::Copy($target, 0, $b, 0x11b200 - $target.Length + 1, $target.Length)
+      }}
+    )) {
+    NewPeLargeExports $plugin 'kernel32.ExitProcess'
+    [byte[]]$exports = [IO.File]::ReadAllBytes($plugin)
+    & ($case.mutate) $exports
+    [IO.File]::WriteAllBytes($plugin, $exports)
+    RequireFailure { GetPeImports $plugin } $case.message
+  }
+  NewPeLargeExports $plugin
+  $truncated = [IO.File]::OpenWrite($plugin)
+  try { $truncated.SetLength(0x11b1ff) } finally { $truncated.Dispose() }
+  RequireFailure { GetPeImports $plugin } 'Invalid PE section range'
+  foreach ($range in @(@(0, 1), @(0x100000000L, 1), @(0xffffffffL, 2), @(1, 0), @(1, -1))) {
+    RequireFailure { PeRvaOffset ([byte[]]@(0)) @() $range[0] $range[1] } 'Invalid PE RVA range'
+  }
+  Write-Output 'Installer large raw-backed export extent and boundary fixtures passed.'
   # Import descriptor count is bounded before deduplication, too. Many repeated
   # declarations must not buy an unbounded parser walk or evade the name budget.
   NewPe $plugin
@@ -380,4 +457,17 @@ try {
   Write-Output 'Installer staged PE import closure fixtures passed.'
 } finally {
   Remove-Item -LiteralPath $temp -Recurse -Force -ErrorAction SilentlyContinue
+}
+
+# Optional inert proof against bytes authenticated by the caller's retained
+# artifact intake. This does not install, load or qualify those binaries.
+foreach ($path in $RetainedPeFiles) {
+  $before = Get-FileHash -LiteralPath $path -Algorithm SHA256
+  $imports = @(GetPeImports $path)
+  $after = Get-FileHash -LiteralPath $path -Algorithm SHA256
+  if ($before.Hash -cne $after.Hash) { throw 'Retained PE changed during parsing.' }
+  [pscustomobject]@{path=$before.Path;sha256=$before.Hash.ToLowerInvariant();
+    bytes=(Get-Item -LiteralPath $path).Length;imports=$imports;
+    powershell=$PSVersionTable.PSVersion.ToString();hostBits=([IntPtr]::Size * 8);
+    scope='Inert installer PE parser only; caller owns artifact authentication'} | ConvertTo-Json -Depth 4 -Compress
 }

@@ -728,7 +728,10 @@ function PeMachine([string]$Path) {
   } finally { $stream.Dispose() }
 }
 function PeRvaOffset([byte[]]$Bytes, $Sections, [long]$Rva, [long]$Length) {
-  if ($Rva -le 0 -or $Length -le 0 -or $Length -gt 1048576) { throw 'Invalid PE RVA range.' }
+  # An extent is bounded by PE32 address space and complete raw/file backing.
+  # Individual callers retain their descriptor, EAT and string work budgets.
+  if ($Rva -le 0 -or $Rva -gt 4294967295 -or $Length -le 0 -or
+      $Length -gt 4294967296 - $Rva) { throw 'Invalid PE RVA range.' }
   foreach ($section in $Sections) {
     $span = [Math]::Max($section.virtualSize, $section.rawSize)
     if ($Rva -ge $section.rva -and $Rva -lt ([long]$section.rva + $span)) {
@@ -868,7 +871,9 @@ function GetPeImports([string]$Path) {
   $exportRva = [long](PeU32 $bytes ($optional + 96))
   $exportSize = [long](PeU32 $bytes ($optional + 100))
   if ($exportRva -ne 0 -or $exportSize -ne 0) {
-    if ($exportRva -eq 0 -or $exportSize -lt 40 -or $exportSize -gt 1048576 -or
+    # Ordinary wxWidgets export names exceed 1 MiB. Validating their complete
+    # backing does not scan that extent; the EAT/forwarder budgets below do.
+    if ($exportRva -eq 0 -or $exportSize -lt 40 -or
         $exportRva + $exportSize -gt 4294967296) { throw "Invalid PE export directory: $Path" }
     $base = PeRvaOffset $bytes $sections $exportRva $exportSize
     $exportEnd = $exportRva + $exportSize
