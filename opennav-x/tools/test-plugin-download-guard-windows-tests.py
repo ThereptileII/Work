@@ -6,6 +6,7 @@ import importlib.util
 import json
 import os
 from pathlib import Path, PureWindowsPath
+import shutil
 import subprocess
 import sys
 import tempfile
@@ -230,7 +231,8 @@ class RetainedWorkflow(unittest.TestCase):
                             'content': base64.b64encode(b'exact recipe').decode()}
             with patch.object(self.namespace['subprocess'], 'check_output', return_value=b'exact recipe'):
                 result = self.namespace['authenticate_workflow'](GitHub(), 'e' * 40, path)
-                self.assertEqual(set(result), {'gitSha256', 'checkoutSha256'})
+                self.assertEqual(set(result), {'helperCommit', 'gitSha256', 'checkoutSha256'})
+                self.assertEqual(result['helperCommit'], 'e' * 40)
                 path.write_bytes(b'exact recipe\r\n')
                 result = self.namespace['authenticate_workflow'](GitHub(), 'e' * 40, path)
                 self.assertNotEqual(result['gitSha256'], result['checkoutSha256'])
@@ -245,6 +247,7 @@ class RetainedWorkflow(unittest.TestCase):
             def api(self, endpoint): raise ValueError('inert API refusal')
         env = {'PRODUCER_RUN': '123', 'PRODUCER_ATTEMPT': '2', 'PRODUCER_COMMIT': self.commit,
                'INVENTORY_SHA256': 'd' * 64, 'GITHUB_WORKFLOW_SHA': 'e' * 40,
+               'GITHUB_SHA': 'e' * 40,
                'GITHUB_WORKFLOW_REF': 'ThereptileII/Work/.github/workflows/skager-plugin-download-retained.yml@ref',
                'GITHUB_RUN_ID': '789', 'GITHUB_RUN_ATTEMPT': '1'}
         source = str(Path(__file__).resolve())
@@ -254,7 +257,8 @@ class RetainedWorkflow(unittest.TestCase):
                 os.chdir(directory)
                 with patch.dict(os.environ, env, clear=True), patch.dict(self.namespace,
                     {'GitHub': RefusingGitHub, '__file__': source}), \
-                    patch.object(subprocess, 'check_output', return_value=self.commit), \
+                    patch.object(subprocess, 'check_output', return_value='e' * 40), \
+                    patch.dict(self.namespace, {'authenticate_sources': lambda candidate, helper: {'producerCommit': candidate, 'helperCommit': helper}}), \
                     patch.object(subprocess, 'run'):
                     with self.assertRaisesRegex(ValueError, 'inert API refusal'): self.namespace['main']()
                 evidence = Path('opennav-x/evidence/local/retained-plugin-auth')
@@ -266,6 +270,29 @@ class RetainedWorkflow(unittest.TestCase):
                 self.assertTrue((evidence / 'authenticate-inputs.py').is_file())
                 self.assertFalse(Path('retained-plugin-inputs').exists())
             finally: os.chdir(previous)
+
+    def test_helper_checkout_and_dispatch_identity_must_agree(self):
+        base = {'PRODUCER_RUN': '123', 'PRODUCER_ATTEMPT': '2', 'PRODUCER_COMMIT': self.commit,
+                'INVENTORY_SHA256': 'd' * 64, 'GITHUB_WORKFLOW_SHA': 'e' * 40,
+                'GITHUB_SHA': 'e' * 40, 'GITHUB_WORKFLOW_REF': 'ThereptileII/Work/.github/workflows/skager-plugin-download-retained.yml@ref',
+                'GITHUB_RUN_ID': '789', 'GITHUB_RUN_ATTEMPT': '1'}
+        for head, dispatch in ((self.commit, 'e' * 40), ('e' * 40, self.commit)):
+            with self.subTest(head=head, dispatch=dispatch), tempfile.TemporaryDirectory() as directory:
+                previous = Path.cwd()
+                try:
+                    os.chdir(directory)
+                    env = dict(base, GITHUB_SHA=dispatch)
+                    with patch.dict(os.environ, env, clear=True), patch.dict(self.namespace, {'__file__': __file__}), \
+                            patch.object(subprocess, 'check_output', return_value=head):
+                        with self.assertRaisesRegex(ValueError, 'Exact dispatched helper checkout'):
+                            self.namespace['main']()
+                    result = json.loads(Path('opennav-x/evidence/local/retained-plugin-auth/authority.json').read_text())
+                    self.assertEqual(result['status'], 'failed')
+                    self.assertEqual(result['helperCommit'], 'e' * 40)
+                    self.assertEqual(result['producerCommit'], self.commit)
+                    self.assertFalse(Path('retained-plugin-inputs').exists())
+                finally:
+                    os.chdir(previous)
 
     def test_exact_producer_identity(self):
         for target, key, value in [('run', 'id', 124), ('run', 'run_attempt', 1),
@@ -328,6 +355,57 @@ class RetainedWorkflow(unittest.TestCase):
             with self.subTest(key=key):
                 capture = self.capture(); capture[key] = value
                 with self.assertRaises(ValueError): self.verify_capture(capture)
+
+    def test_post_restore_binding_uses_preserved_recipe_and_retains_failures(self):
+        auth_code = textwrap.dedent(self.workflow.split('          # BEGIN RETAINED_PLUGIN_AUTH\n', 1)[1].split(
+            '          # END RETAINED_PLUGIN_AUTH', 1)[0])
+        binding_code = textwrap.dedent(self.workflow.split('          # BEGIN RETAINED_PLUGIN_BIND\n', 1)[1].split(
+            '          # END RETAINED_PLUGIN_BIND', 1)[0])
+        source_binding = {'producerCommit': self.commit, 'helperCommit': 'e' * 40}
+        # SDK reads/native imports are inert adapters. The actual workflow's
+        # binding sequence, prior identity checks, capture validator and durable
+        # failure receipt execute, including loading its preserved source script.
+        runner = '''from types import SimpleNamespace
+def retained_inputs(root, manifest, pin, candidate):
+    assert pin == 'd' * 64 and candidate == 'a' * 40
+    return {'retained': True}
+def module(name, filename):
+    return SimpleNamespace(dependency_inputs=lambda *args: ({'authenticated': True}, {'mode': 'cross-run-bundle'}))
+def bind_tls(data, expected):
+    assert data == {'retained': True} and expected == {'authenticated': True}
+'''
+        for failure in (None, 'helper', 'source', 'capture'):
+            with self.subTest(failure=failure), tempfile.TemporaryDirectory() as directory:
+                previous, search_path = Path.cwd(), list(sys.path)
+                try:
+                    os.chdir(directory)
+                    evidence = Path('opennav-x/evidence/local/retained-plugin-auth'); evidence.mkdir(parents=True)
+                    script = evidence / 'authenticate-inputs.py'
+                    script.write_text(auth_code + '\nauthenticate_sources = lambda *args: ' + repr(source_binding) + '\n')
+                    tools = Path('opennav-x/tools'); tools.mkdir(parents=True)
+                    (tools / 'test-plugin-download-guard-windows.py').write_text(runner)
+                    capture_helper = tools / 'retain-plugin-guard-inputs.py'; capture_helper.write_bytes(b'inert original capture helper')
+                    authority = dict(self.authenticate(), status='source-and-artifact-authenticated-not-qualified',
+                                     helperCommit='e' * 40, independentlyApprovedInventorySha256='d' * 64,
+                                     sourceBinding=source_binding)
+                    capture = self.capture(); capture['helperSha256'] = self.namespace['file_hash'](capture_helper)
+                    if failure == 'helper': authority['helperCommit'] = 'b' * 40
+                    if failure == 'source': authority['sourceBinding'] = {'changed': True}
+                    if failure == 'capture': capture['dependencyAuthority'] = {'mode': 'same-job-receipt'}
+                    receipt = evidence / 'authority.json'; receipt.write_text(json.dumps(authority))
+                    captured = Path('retained-plugin-inputs/plugin-guard-inputs'); captured.mkdir(parents=True)
+                    (captured / 'capture.json').write_text(json.dumps(capture))
+                    env = {'PRODUCER_COMMIT': self.commit, 'GITHUB_WORKFLOW_SHA': 'e' * 40, 'INVENTORY_SHA256': 'd' * 64}
+                    with patch.dict(os.environ, env, clear=True):
+                        if failure:
+                            with self.assertRaises(ValueError): exec(compile(binding_code, '<retained-binding>', 'exec'), {})
+                        else:
+                            exec(compile(binding_code, '<retained-binding>', 'exec'), {})
+                    result = json.loads(receipt.read_text())
+                    self.assertEqual(result['status'], 'failed' if failure else 'inputs-authenticated-not-qualified')
+                    self.assertEqual(result['producerCommit'], self.commit)
+                finally:
+                    os.chdir(previous); sys.path[:] = search_path
         for key, value in [('runId', '124'), ('runAttempt', '1'), ('commit', 'b' * 40),
                            ('job', 'foreign'), ('architecture', 'x64')]:
             with self.subTest(producer=key):
@@ -369,8 +447,13 @@ class RetainedWorkflow(unittest.TestCase):
     def test_native_invocation_keeps_external_pin_and_no_application_build(self):
         self.assertEqual(self.workflow.count('workflow_dispatch:'), 1)
         self.assertNotIn('\n  push:', self.workflow)
-        self.assertIn('ref: ${{ inputs.producer_commit }}', self.workflow)
+        self.assertIn('ref: ${{ github.workflow_sha }}', self.workflow)
+        self.assertIn('git fetch --no-tags --depth=1 origin "$env:PRODUCER_COMMIT"', self.workflow)
         self.assertIn('persist-credentials: false', self.workflow)
+        self.assertLess(self.workflow.index('Authenticate exact retained producer artifact'),
+                        self.workflow.index('Authenticate selected immutable dependency SDK'))
+        self.assertLess(self.workflow.index('Bind retained capture to the authenticated dependency SDK'),
+                        self.workflow.index('Run actual native loader'))
         self.assertIn('test-ocharts-loader-windows.py --evidence', self.workflow)
         self.assertIn('--retained-inputs-sha256 "$env:INVENTORY_SHA256"', self.workflow)
         self.assertIn('--candidate-commit "$env:PRODUCER_COMMIT"', self.workflow)
@@ -378,6 +461,108 @@ class RetainedWorkflow(unittest.TestCase):
         self.assertIn('install: perl patch', self.workflow)
         self.assertNotIn('build-pristine-windows.ps1', self.workflow)
         self.assertNotIn('inventorySha256=pin', self.workflow)
+
+
+class SourceBindings(unittest.TestCase):
+    """Exercise the actual workflow gate against disposable producer/helper Git commits."""
+    @classmethod
+    def setUpClass(cls):
+        RetainedWorkflow.setUpClass()
+        cls.namespace = RetainedWorkflow.namespace
+        cls.repository = Path(__file__).resolve().parents[2]
+
+    def setUp(self):
+        self.temp = tempfile.TemporaryDirectory()
+        self.addCleanup(self.temp.cleanup)
+        self.root = Path(self.temp.name)
+        roots = set(self.namespace['DECLARATIONS']) | self.namespace['DIRECT_INPUTS'] | self.namespace['MUTABLE_PROBES']
+        for path in self.namespace['DECLARATIONS']:
+            roots.update(self.namespace['input_declaration'](str(self.repository / path)))
+        for name in sorted(roots):
+            source, target = self.repository / name, self.root / name
+            target.parent.mkdir(parents=True, exist_ok=True)
+            if source.is_dir():
+                shutil.copytree(source, target, dirs_exist_ok=True)
+            else:
+                shutil.copyfile(source, target)
+        self.git('init', '--quiet')
+        self.git('config', 'core.autocrlf', 'false')
+        self.git('config', 'core.hooksPath', str(self.root / 'no-hooks'))
+        self.producer = self.commit()
+
+    def git(self, *args):
+        env = dict(os.environ, GIT_CONFIG_NOSYSTEM='1', GIT_CONFIG_GLOBAL=os.devnull)
+        return subprocess.check_output(['git', '-C', str(self.root), *args], env=env, text=True).strip()
+
+    def commit(self):
+        self.git('add', '.')
+        self.git('-c', 'user.name=Inert Fixture', '-c', 'user.email=fixture@example.invalid',
+                 '-c', 'commit.gpgsign=false', 'commit', '--quiet', '-m', 'Inert source binding fixture')
+        return self.git('rev-parse', 'HEAD')
+
+    def bind(self, helper):
+        previous = Path.cwd()
+        try:
+            os.chdir(self.root)
+            return self.namespace['authenticate_sources'](self.producer, helper)
+        finally:
+            os.chdir(previous)
+
+    def test_only_console_probe_changes_are_recorded_with_both_hashes(self):
+        for name in self.namespace['MUTABLE_PROBES']:
+            with (self.root / name).open('ab') as stream:
+                stream.write(b'\n// inert helper-only header correction\n')
+        helper = self.commit()
+        result = self.bind(helper)
+        self.assertEqual(result['producerCommit'], self.producer)
+        self.assertEqual(result['helperCommit'], helper)
+        self.assertEqual(result['allowedProbeChanges'], sorted(self.namespace['MUTABLE_PROBES']))
+        for name in self.namespace['MUTABLE_PROBES']:
+            record = result['consumedInputs'][name]
+            self.assertNotEqual(record['producer']['sha256'], record['helper']['sha256'])
+            self.assertEqual(record['helper']['sha256'], record['checkoutSha256'])
+
+    def test_production_patch_dependency_and_native_assertion_drift_refuse(self):
+        for name in ('opennav-x/src/integration/OriginalPluginTlsGuard.h',
+                     'opennav-x/patches/opencpn-5.12.4-download-trust.patch',
+                     'opennav-x/tools/windows-curl.lock.json',
+                     'opennav-x/tools/windows-dependency-bundle.lock.json',
+                     'opennav-x/tools/windows-dependency-consumer-compatibility.json',
+                     'opennav-x/tools/verify-curl-bundle.ps1',
+                     'opennav-x/tools/test-plugin-download-guard-windows.py',
+                     'opennav-x/tools/release_manifest.py',
+                     'opennav-x/tools/hardware_output_policy.py',
+                     'opennav-x/tools/packaged_notice_gate.py',
+                     'opennav-x/tools/freefont_payload.py',
+                     'opennav-x/tests/windows_ocharts_loader/loader_test.cpp'):
+            with self.subTest(name=name):
+                path = self.root / name; original = path.read_bytes()
+                path.write_bytes(original + b'\nimmutable source changed\n')
+                with self.assertRaisesRegex(ValueError, 'Immutable consumed input drift'):
+                    self.bind(self.commit())
+                path.write_bytes(original)
+
+    def test_new_consumed_file_and_changed_declaration_refuse(self):
+        path = self.root / 'opennav-x/patches/unreviewed.patch'
+        path.write_text('Inert added production patch')
+        with self.assertRaisesRegex(ValueError, 'inventory differs'):
+            self.bind(self.commit())
+        path.unlink()
+        declaration = self.root / self.namespace['DECLARATIONS'][0]
+        declaration.write_text('INPUTS = ("tools/plugin-download-guard-probe.cpp",)\n')
+        with self.assertRaisesRegex(ValueError, 'declarations drifted'):
+            self.bind(self.commit())
+
+    def test_uncommitted_allowed_probe_or_declaration_drift_refuses(self):
+        for name in (*self.namespace['MUTABLE_PROBES'], *self.namespace['DECLARATIONS']):
+            with self.subTest(name=name):
+                path = self.root / name; original = path.read_bytes()
+                path.write_bytes(original + b'\nlocal uncommitted change\n')
+                try:
+                    with self.assertRaisesRegex(ValueError, 'checkout.*(differs|drift)'):
+                        self.bind(self.producer)
+                finally:
+                    path.write_bytes(original)
 
 
 if __name__ == '__main__':
