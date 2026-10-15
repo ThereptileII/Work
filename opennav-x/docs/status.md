@@ -30,21 +30,33 @@ re-enable after the existing single Cancel. Seven existing and 17 focused checks
 pass, including an event-queue reproduction that rejects the former sequence.
 The original failure's precise input ordering was not captured and is not claimed.
 One [retained full runtime retest, 38757982655](https://github.com/ThereptileII/Work/actions/runs/38757982655),
-uses that separate helper revision against the unchanged e80 package; it remains
-pending. No application rebuild is requested. Setup, recovery and source leaves,
-their sealed inventories and exact hashes are now independently authenticated.
+used that separate helper revision against the unchanged e80 package. The waypoint
+interaction now passes, followed by recovery, user-flow and product smoke checks.
+The retest fails later in fresh installation: the Lifecycle engine holds its
+exclusive transaction lock while its trust-initialization child attempts the same
+lock. The child reports failure through a blocking startup dialog; the parent
+records a 15-second timeout. The lock/error-dialog chain is source-supported;
+the child error text was not captured in the original log. This is a product
+installer/launcher defect, not a reason to increase test timeouts. A focused
+lock-handoff correction and native cross-process check are in progress before
+a new product package is requested. The e80 installer is not deployable.
+Setup, recovery and source leaves, their sealed inventories and exact hashes
+remain independently authenticated.
 The separate retained PluginHandler run
 [38756849052](https://github.com/ThereptileII/Work/actions/runs/38756849052)
 refused both attempts before native tests: the allocated newer Windows image
 selects a different authenticated SDK from the one bound to this older-image
 candidate. Exact TLS binding correctly stops; there are no further allocation
-retries. A bounded test-only correction separates current-host tool reprobes
-from the candidate's original authenticated subject SDK. Application SDK/image
-verification remains strict. [Original custody, both refusals and runtime boundaries](evidence/scrum211-retained-e80-20261015/README.md).
+retries. Reviewed correction `724adadc` separates current-host tool reprobes from the
+candidate's original authenticated subject SDK. Thirteen subject-policy and
+38 orchestration checks pass; original SDK payload and source bindings verify.
+[Native retained probe 38761760564](https://github.com/ThereptileII/Work/actions/runs/38761760564)
+is pending. Application SDK/image verification remains strict. [Original custody, both refusals and runtime boundaries](evidence/scrum211-retained-e80-20261015/README.md).
 Exact packaged lifecycle, the focused native gate and fresh boat acceptance remain
-pending. SCRUM-290 also tracks the narrow composition extension needed to deliver
-an authenticated full runtime retest; the historical installer/chart suffix path
-does not accept this case. The original full run remains failed, not relabelled.
+pending. SCRUM-290 composition helper `a57098f0` passes 24 composition,
+17 integration and 20 delivery checks. It correctly refuses the failed full
+retest and cannot turn the defective frozen installer into an accepted package.
+Both original and retained full runs remain failed, not relabelled.
 The boat remains on its previous installed revision; a passive availability
 check confirms SSH, Tailscale and RustDesk running with no OpenCPN/chart-helper
 process. No actuator output, Production promotion or public release is
