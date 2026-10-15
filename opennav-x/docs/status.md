@@ -69,9 +69,8 @@ validation off. Independent review confirms the parser bounds and unchanged SDK
 producer inputs. Final helper correction `977d37c7` waits for one newer native
 diagnostic publication after startup readiness, then checks plugins immediately;
 it never waits for a failing plugin list to turn green. Eleven plugin/freshness
-and five palette helper cases pass. Integrated compilation, runtime, package and
-installed acceptance are pending for this exact candidate; no boat install is
-performed by the dispatch.
+and five palette helper cases pass. The dispatch did not install on the boat. Compilation and downstream outcomes
+for this frozen candidate are recorded below; it remains an unqualified package.
 
 Attempt 1's Windows integration job `116266638089` is allocated older image
 `20261004.326.1` and refuses the selected SDK before native setup or compilation.
@@ -86,16 +85,33 @@ requested again. Attempt 2 job `116274722975` succeeds with 146 fixture CTests,
 Successful Linux/updater results are retained; no dependency rebuild or
 image-check relaxation is selected. Downstream qualification `116290535162`
 fails installer Preflight: PowerShell reports the native NSIS temporary
-`System.dll` as an invalid assembly. The original log is retained; source
-inspection must establish the resolution boundary before selecting a correction.
-Package assembly/delivery is skipped. [Native and downstream receipt](evidence/scrum209-candidate-977d37c7-20261015/native-receipt.json).
+`System.dll` as an invalid assembly. The original log is retained. Source inspection identifies the first cold
+`Add-Type` in the protected-broker observer: the NSIS extraction directory can
+shadow framework assembly resolution with its native `System.dll`. Correction
+`f259a731` compiles from the trusted framework directory and restores both caller
+directories in `finally`. Focused native run
+[38700086122](https://github.com/ThereptileII/Work/actions/runs/38700086122) on
+`22f91084` passes PS5.1 x86/x64 cold success, actual compiler-path failure and
+restoration, 44 filesystem checks per host, shortcuts and protected-broker
+refusals. Its earlier negative-fixture classifier failure remains recorded.
+These checks qualify the changed observer boundary, not the immutable failed
+`977d37c7` installer. A new packaged candidate is required; original package
+assembly/delivery is skipped. [Focused installer and original peer runtime
+evidence](evidence/scrum209-candidate-977d37c7-20261015/README.md). [Native and downstream receipt](evidence/scrum209-candidate-977d37c7-20261015/native-receipt.json).
 
 Independent review verifies all 1,585 retained plugin-input file hashes, exact
 source projections, 17 maintained TLS bindings and 11 Win32 runtime closures.
 After the producer becomes terminal, one
 [retained native PluginHandler gate](https://github.com/ThereptileII/Work/actions/runs/38697150458)
 is dispatched with reviewed inventory hash `7666db6cce687cb045c7b58b4145bd1bb312c09daf6cd69bafc76047635fdfd9`.
-It does not rebuild the application or qualify the failed installer.
+Attempt 1 refuses an older hosted image before SDK restore. Attempt 2 receives
+the exact selected image and authenticates the retained inputs, but its separate
+PluginHandler probe fails to compile because archive headers include Windows
+Winsock 1 before wxWidgets selects Winsock 2. The reviewed Windows-only include
+ordering correction is being qualified with a separate harness revision;
+production downloader slices and assertions remain unchanged. This is not an
+application build failure. The gate does not rebuild the application or qualify
+the failed installer.
 [Independent input review](evidence/scrum209-candidate-977d37c7-20261015/plugin-input-review.json).
 
 ## Bounded AIS helper and boat recovery preparation
@@ -130,10 +146,18 @@ acceptance. [Native receipt](evidence/scrum17-cold-reconciliation-20261015/nativ
 The qualified helper's actual boat Inspect now completes with a private full
 profile backup and 18 reviewed differences. The entire current connection value
 matches the original direction, so preserving this profile requires no INI write.
-Plan/Commit remain unperformed: current WMM resource location, saved pilot
-configuration, AIS radius, Weather flag and Dashboard accumulated distance need
-bounded reconciliation-specific retention rules. Existing session policy still
-refuses them. The current profile and active transaction are unchanged, no
+Plan/Commit remain unperformed. Integrated helper `f6234063` adds a separate
+v2 retained-current-state review for the exact owned WMM resources, bounded
+saved pilot/configuration fields, AIS radius, Weather flag and monotonic
+Dashboard distance. It cannot publish or change the current profile, qualify a
+saved pilot binding or authorize output; ordinary v1 session policy stays strict.
+Restrictions survive later baseline lineage, and subsequent passive launch
+requires a fresh source review bound to the exact build/profile/transport and
+plugin decisions. The selected native Windows/Linux gate
+[38701955180](https://github.com/ThereptileII/Work/actions/runs/38701955180) is
+pending before real Plan/Commit. A read-only boat recheck confirms the same
+profile/active-marker hashes, no running OpenCPN and all three remote-access
+services running. The current profile and active transaction are unchanged, no
 application was launched, and no physical command was sent. Retention must not
 qualify the saved pilot binding or grant launch authority.
 [Sanitized actual inspection receipt](evidence/scrum17-cold-reconciliation-20261015/boat-inspection-receipt.json).
