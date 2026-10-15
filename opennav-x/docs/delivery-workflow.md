@@ -129,25 +129,6 @@ documentation into the product. The newly retained test-support archive belongs
 to the composition run. Draft publication requires its assembly job to pass;
 later fetching/promotion also requires completed delivery evidence.
 
-Composition request version 1 retains its historical installer/chart suffix
-rules. Version 2 replaces the entire native runtime qualifier with an authenticated
-retained `all` run using the reviewed modal-completion helper repair. It preserves
-the failed original objects report and requires all current runtime reports,
-both native custody hosts, the original restart receipt and successful original
-prerequisite jobs. Its helper closure pins both complete Git trees and the exact
-three reviewed changed blobs; all other tracked inputs must match except evidence
-and status documents. The qualifier, driver and workflow recipe hashes are fixed.
-This binds the reviewed checkout/recipe, not a claim that the workspace was clean:
-the component report retains its boolean harness-dirty observation and null
-source-dirty value for a separately restored producer.
-
-Full-runtime composition uses the replacement recovery and installer results,
-derives inventory size from the frozen package, checks the versioned product TCP
-refusal policy, and copies original package/source/document bytes. An aggregate
-`all: passed`, another helper recipe or partial report set cannot authorize it.
-The outer qualification format remains version 2; neither request version grants
-boat acceptance, Production promotion or public access.
-
 If assembly succeeds but uploading the draft fails, use the separate retained
 publication workflow. Its committed request pins the original assembly, candidate
 artifact digest, qualification and manifest hashes, and existing draft identity.
