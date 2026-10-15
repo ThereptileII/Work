@@ -104,6 +104,14 @@ approvals still apply, and a one-command approval is not blanket authority for
 other commands or agents. Use the normal scoped escalation mechanism when
 required. If it is unavailable or denied, report the exact action and reason to
 the coordinator; do not bypass it or claim a permission change occurred.
+If the parent permission profile changes mid-task, verify the worker's actual
+access before claiming propagation. An already-running worker may retain its
+older environment. Preserve its handoff, stop only that worker and resume through
+a fresh agent under the current policy when needed; this is not a way to evade
+an approval denial. Verify access with a minimal task-relevant check rather than
+assuming that a message or configuration edit changed runtime permissions.
+Keep existing external job
+handles; never restart CI or a boat operation merely to repair observation.
 
 Claude is a separate runtime: use its existing scoped wrapper and approved
 transfer scope, never copy Codex credentials or assume Codex execution approvals

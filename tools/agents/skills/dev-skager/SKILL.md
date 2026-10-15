@@ -46,7 +46,10 @@ integration hooks. Do not build a parallel route, AIS or connection database.
   Forward these limits to child agents. Sandbox/tool approvals remain binding;
   use scoped escalation when required and report denials to root without a
   workaround. Claude retains its separate wrapper and transfer restrictions.
-  Never put credentials or approval tokens in the handoff.
+  Never put credentials or approval tokens in the handoff. After a parent
+  permission change, verify actual worker access; an older worker may need a
+  fresh agent session, never as a way to evade an approval denial. Preserve
+  external job handles instead of restarting work.
   Check current model availability and AGENTS rather than pinning old model names
   here. No agent independently starts duplicate builds or deliveries.
 - Use the existing scoped `tools/agents/claude-review` for a useful independent
