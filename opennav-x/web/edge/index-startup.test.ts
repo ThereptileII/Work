@@ -25,12 +25,12 @@ test('Deno entrypoint emits one enabled startup marker across repeated public re
     }
     const token = 'c'.repeat(64);
     for (let attempt = 0; attempt < 3; attempt++) {
-      const response = await handler!(new Request('https://kelwgubkuvditalsbqpr.supabase.co/skager-web/api/checkout/start', {
+      const response = await handler!(new Request('https://kelwgubkuvditalsbqpr.supabase.co/skager-web/api/store/checkout', {
         method: 'POST', headers: { Origin: 'https://beta.skager.app',
           Cookie: `__Host-skager_csrf=${token}`, 'X-CSRF-Token': token, 'Content-Type': 'application/json' }, body: '{}',
       }));
       assert.equal(response.status, 404);
-      assert.deepEqual(await response.json(), { error: 'Unavailable' });
+      assert.deepEqual(await response.json(), { error: 'Checkout is not available right now.' });
     }
     assert.deepEqual(warnings, [['skager-commerce:configuration-v1:STRIPE_TEST_SECRET_KEY']]);
   } finally {

@@ -1,6 +1,6 @@
 /** Supabase Edge boundary. Credentials exist only in platform secret bindings. */
 export type RuntimeEnv = Record<string, string>;
-export type Account = { id: string; email?: string };
+export type Account = { id: string; email?: string; passwordSet?: boolean };
 export type Context = {
   env: RuntimeEnv;
   fetch: typeof fetch;
@@ -46,7 +46,7 @@ export async function boundedBytes(response: Response, limit: number): Promise<U
 export function rpcClient(env: RuntimeEnv, transport: typeof fetch = fetch) {
   return async (name: string, args: Record<string, unknown>): Promise<unknown> => {
     if (env.SUPABASE_URL !== SUPABASE_ORIGIN || !env.SUPABASE_SERVICE_ROLE_KEY ||
-        !/^(skager_auth_|commerce_|portal_)[a-z0-9_]{1,80}$/.test(name)) {
+        !/^(skager_auth_|commerce_|portal_|store_)[a-z0-9_]{1,80}$/.test(name)) {
       throw new Error('Backend unavailable');
     }
     try {

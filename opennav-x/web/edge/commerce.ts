@@ -26,15 +26,15 @@ export type CommerceContext = {
   fetch?: typeof fetch;
   now?: () => number;
 };
-type Configuration = { key: string; secret: string; price: string; origin: string; coupons: string[];
+export type Configuration = { key: string; secret: string; price: string; origin: string; coupons: string[];
   promotions: string[]; selectedPromotion?: string | null };
 
-class BoundaryError extends Error {
+export class BoundaryError extends Error {
   constructor() { super('Stripe test operation unavailable'); }
 }
-const requireValue = (condition: unknown): void => { if (!condition) throw new BoundaryError(); };
-const object = (value: unknown): value is Json => value !== null && typeof value === 'object' && !Array.isArray(value);
-const integer = (value: unknown): value is number => Number.isSafeInteger(value);
+export const requireValue = (condition: unknown): void => { if (!condition) throw new BoundaryError(); };
+export const object = (value: unknown): value is Json => value !== null && typeof value === 'object' && !Array.isArray(value);
+export const integer = (value: unknown): value is number => Number.isSafeInteger(value);
 const reply = (status: number, value: Json) => new Response(JSON.stringify(value), { status,
   headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store',
     'X-Content-Type-Options': 'nosniff' } });
@@ -50,7 +50,7 @@ function requireConfiguration(binding: ConfigurationBinding, condition: unknown)
   if (!condition) throw new ConfigurationError(binding);
 }
 
-function configuration(env: CommerceContext['env']): Configuration {
+export function configuration(env: CommerceContext['env']): Configuration {
   requireConfiguration('STRIPE_TEST_CHECKOUT_ENABLED', env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
   const key = env.STRIPE_TEST_SECRET_KEY ?? '';
   requireConfiguration('STRIPE_TEST_SECRET_KEY', key.length <= MAX_STRIPE_KEY_BYTES && TEST_BEARER_KEY.test(key));
@@ -93,7 +93,7 @@ async function discountCode(req: Request): Promise<string | null> {
   return body.discountCode;
 }
 
-async function approvedPromotion(ctx: CommerceContext, config: Configuration, code: string): Promise<Json | null> {
+export async function approvedPromotion(ctx: CommerceContext, config: Configuration, code: string): Promise<Json | null> {
   const query = new URLSearchParams({ code, active: 'true', limit: '10' });
   const list = await stripeRequest(ctx, config, `promotion_codes?${query}`, 'GET');
   requireValue(list.object === 'list' && list.has_more === false && Array.isArray(list.data)
@@ -120,7 +120,7 @@ async function approvedPromotion(ctx: CommerceContext, config: Configuration, co
   return { promotion_id: promotion.id, coupon_id: coupon.id };
 }
 
-async function applicableCoupon(ctx: CommerceContext, config: Configuration,
+export async function applicableCoupon(ctx: CommerceContext, config: Configuration,
                                 couponId: string, available: boolean): Promise<Json | null> {
   requireValue(config.coupons.includes(couponId) && /^[A-Za-z0-9_-]{1,128}$/.test(couponId));
   requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(config.price));
@@ -148,7 +148,7 @@ async function applicableCoupon(ctx: CommerceContext, config: Configuration,
   return coupon;
 }
 
-async function boundedBytes(stream: ReadableStream<Uint8Array> | null, maximum: number): Promise<Uint8Array> {
+export async function boundedBytes(stream: ReadableStream<Uint8Array> | null, maximum: number): Promise<Uint8Array> {
   requireValue(stream !== null);
   const reader = stream!.getReader();
   const chunks: Uint8Array[] = [];
@@ -216,8 +216,8 @@ export function strictJson(raw: Uint8Array): Json {
   const result = JSON.parse(text); requireValue(object(result)); return result;
 }
 
-async function stripeRequest(ctx: CommerceContext, config: Configuration, path: string,
-                             method: string, body?: URLSearchParams): Promise<Json> {
+export async function stripeRequest(ctx: CommerceContext, config: Configuration, path: string,
+                             method: string, body?: URLSearchParams, idempotencyKey?: string): Promise<Json> {
   // Callers supply fixed paths plus regex-validated provider identifiers only.
   const url = STRIPE_API + path;
   const controller = new AbortController();
@@ -228,7 +228,7 @@ async function stripeRequest(ctx: CommerceContext, config: Configuration, path: 
       'Stripe-Version': STRIPE_API_VERSION, Accept: 'application/json', 'Accept-Encoding': 'identity' };
     if (body) {
       headers['Content-Type'] = 'application/x-www-form-urlencoded';
-      headers['Idempotency-Key'] = `skager-edge-test-v1-${body.get('client_reference_id')}`;
+      headers['Idempotency-Key'] = idempotencyKey ?? `skager-edge-test-v1-${body.get('client_reference_id')}`;
     }
     response = await (ctx.fetch ?? fetch)(url, { method, headers, body,
       redirect: 'manual', signal: controller.signal });
@@ -258,7 +258,7 @@ function sessionIdentity(session: Json, orderId?: string): void {
     && ['paid', 'unpaid', 'no_payment_required'].includes(session.payment_status));
 }
 
-function checkoutUrl(value: unknown, sessionId: string): string {
+export function checkoutUrl(value: unknown, sessionId: string): string {
   requireValue(typeof value === 'string' && value.length <= 4096 && !/[\x00-\x20\x7f]/.test(value));
   const url = new URL(value as string);
   requireValue(url.protocol === 'https:' && url.hostname === 'checkout.stripe.com'
@@ -359,7 +359,8 @@ async function existingBinding(ctx: CommerceContext, session: Json): Promise<Jso
   return binding;
 }
 
-export async function verifiedEvent(raw: Uint8Array, header: string, secret: string, now: number): Promise<Json> {
+/** Signature, timestamp, TEST mode and pinned API version only; callers check types and objects. */
+export async function verifiedSignature(raw: Uint8Array, header: string, secret: string, now: number): Promise<Json> {
   requireValue(raw.length > 0 && raw.length <= MAX_WEBHOOK_BYTES && /^[\x20-\x7e]{1,2048}$/.test(header));
   const parts = header.split(','); requireValue(parts.length <= 32);
   const timestamps: string[] = []; const signatures: string[] = [];
@@ -381,8 +382,14 @@ export async function verifiedEvent(raw: Uint8Array, header: string, secret: str
   const event = strictJson(raw);
   requireValue(event.object === 'event' && event.livemode === false && EVENT.test(event.id)
     && event.api_version === STRIPE_API_VERSION && !('account' in event) && !('context' in event)
-    && integer(event.created) && event.created > 0 && event.created < 1e12 && TYPES.has(event.type)
+    && integer(event.created) && event.created > 0 && event.created < 1e12 && typeof event.type === 'string'
     && object(event.data) && object(event.data.object));
+  return { event, digest: hex(await crypto.subtle.digest('SHA-256', raw)) };
+}
+
+export async function verifiedEvent(raw: Uint8Array, header: string, secret: string, now: number): Promise<Json> {
+  const { event, digest } = await verifiedSignature(raw, header, secret, now);
+  requireValue(TYPES.has(event.type));
   const item = event.data.object;
   if (event.type === 'charge.refunded') {
     requireValue(item.object === 'charge' && item.livemode === false && CHARGE.test(item.id)
@@ -391,8 +398,7 @@ export async function verifiedEvent(raw: Uint8Array, header: string, secret: str
       && integer(item.amount) && item.amount > 0
       && integer(item.amount_refunded) && item.amount_refunded > 0 && item.amount_refunded <= item.amount);
   } else structuralSession(item);
-  return { event_id: event.id, event_type: event.type, created: event.created,
-    digest: hex(await crypto.subtle.digest('SHA-256', raw)), object: item };
+  return { event_id: event.id, event_type: event.type, created: event.created, digest, object: item };
 }
 
 async function webhook(req: Request, ctx: CommerceContext, config: Configuration): Promise<Response> {

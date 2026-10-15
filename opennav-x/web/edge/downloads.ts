@@ -114,7 +114,8 @@ async function deadline<T>(run: (signal: AbortSignal) => Promise<T>, millisecond
 async function access(request: Request, ctx: DownloadContext): Promise<401 | 403 | string> {
   const account = await ctx.getAccount(request);
   if (!account || typeof account.id !== 'string' || !UUID.test(account.id)) return 401;
-  const result = await ctx.rpc('commerce_portal_access', { p_account_id: account.id });
+  if ((account as { passwordSet?: boolean }).passwordSet === false) return 403;
+  const result = await ctx.rpc('store_portal_access', { p_account_id: account.id });
   requireValue(object(result) && Object.hasOwn(result, 'entitlement'));
   if (result.entitlement === null) return 403;
   requireValue(object(result.entitlement) && typeof result.entitlement.status === 'string');
@@ -172,6 +173,20 @@ export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[
   };
 }
 
-// Qualification, immutable uploads and owner approval must precede a reviewed
-// nonempty source catalog. Environment configuration alone cannot add releases.
-export const handleDownloads = createDownloadHandler([]);
+// Reviewed source catalog. Each entry names a qualified staging candidate whose exact
+// bytes (length and SHA-256 from its release manifest) were uploaded to the private bucket.
+// Environment configuration can never add releases.
+export const RELEASES: readonly DownloadRelease[] = [{
+  id: 'beta2-3', version: '0.4.0-beta2.3', channel: 'staging',
+  sourceCommit: '3d7d2a44467c1b1ede917b78e5b183da2cfa023f',
+  qualification: { record: 'docs/evidence/release-beta2-3/qualification.json',
+    sha256: 'c0c3afc6bd327c4c9fdf8e22dd41a9aaab65a2f9b6b553606a34c70153b86457' },
+  artifacts: [
+    { id: 'installer', name: 'SKAGER-Beta2-Setup.exe', bytes: 185287653, sha256: '7abbf0d2d69a6a4216c545994dfdc1b82db3f9541880a9ef8a07d20dec040258' },
+    { id: 'recovery', name: 'SKAGER-Beta2-Portable-Recovery.zip', bytes: 191599179, sha256: 'ec90996e2dcfa5217831622b2a74a14ba58fc166bc99d7f8710eeddc97a8dbef' },
+    { id: 'checksums', name: 'SHA256SUMS.txt', bytes: 565, sha256: 'c91da6a173ddd57ae5bc10c90baa05751869f1d2a5b505f6d678aa755e4a718b' },
+    { id: 'source', name: 'SKAGER-Beta2-source.zip', bytes: 440599515, sha256: 'e355a3890df827867c98da47214aa2b3c3637df3798bc505404db5d01e4f1ad1' },
+    { id: 'release-notes', name: 'SKAGER-Beta2-Release-Notes.md', bytes: 8545, sha256: '9c079184900911f9aaacdc31cde742dbd7c8232ca66d11e7f99f1999020166d8' },
+  ],
+}];
+export const handleDownloads = createDownloadHandler(RELEASES);

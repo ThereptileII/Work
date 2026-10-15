@@ -1,5 +1,7 @@
-/** SCRUM-40: server-only Supabase email OTP and opaque, bounded sessions. */
-export type Account = { id: string; email: string };
+/** Server-only Supabase identity with opaque, bounded sessions.
+ * Accounts are created only by a purchase: the buyer confirms an emailed code and
+ * chooses a password. Later sign-ins need the password and then an emailed code. */
+export type Account = { id: string; email: string; passwordSet: boolean };
 export type AuthContext = {
   env: Record<string, string | undefined>;
   rpc: (name: string, args: Record<string, unknown>) => Promise<unknown>;
@@ -9,7 +11,9 @@ export type AuthContext = {
 };
 const SESSION = "__Host-skager_session";
 const CHALLENGE = "__Host-skager_challenge";
-const GENERIC = "If this address is eligible, a sign-in code has been sent.";
+const GENERIC = "If this address has a SKAGER account, we have sent it a code.";
+const WRONG = "Email or password is incorrect.";
+const CLOSED = "This account has been closed. Contact us if you think this is a mistake.";
 const INVALID =
   "The code could not be verified. Request a new code and try again.";
 const tokenPattern = /^[a-f0-9]{64}$/;
@@ -55,12 +59,6 @@ function email(value: unknown): string {
   return typeof value === "string" && value.length <= 254
     ? value.trim().toLowerCase()
     : "";
-}
-function invited(value: string, ctx: AuthContext): boolean {
-  return !!value &&
-    (ctx.env.SKAGER_INVITE_EMAILS || "").split(",").map((s) =>
-      s.trim().toLowerCase()
-    ).includes(value);
 }
 function enabled(ctx: AuthContext): boolean {
   return ctx.env.SKAGER_AUTH_ENABLED === "true";
@@ -234,39 +232,38 @@ function confirmedTimestamp(value: unknown): boolean {
 async function body(request: Request): Promise<Record<string, unknown>> {
   return await readJson(request, 2048);
 }
-async function provider(
-  ctx: AuthContext,
-  path: "otp" | "verify" | "user" | "invite",
-  payload?: unknown,
-  accessToken?: string,
-): Promise<Record<string, unknown> | null> {
+type ProviderCall = {
+  method: "GET" | "POST" | "PUT";
+  path: string;
+  payload?: unknown;
+  service?: boolean;
+  accessToken?: string;
+};
+async function provider(ctx: AuthContext, call: ProviderCall): Promise<Record<string, unknown> | null> {
   const base = new URL(ctx.env.SUPABASE_URL || "");
   if (base.href !== "https://kelwgubkuvditalsbqpr.supabase.co/") return null;
-  // Admin invitations use the server identity in both gateway and Auth headers.
-  // Ordinary OTP and canonical user verification retain the public API identity.
-  const apiKey = path === "invite"
-    ? ctx.env.SUPABASE_SERVICE_ROLE_KEY
-    : ctx.env.SUPABASE_ANON_KEY;
+  // Admin calls use the server identity; OTP, password and user checks use the public API key.
+  const apiKey = call.service ? ctx.env.SUPABASE_SERVICE_ROLE_KEY : ctx.env.SUPABASE_ANON_KEY;
   if (!apiKey) return null;
   const headers: Record<string, string> = {
     "apikey": apiKey,
     "content-type": "application/json",
     "accept-encoding": "identity",
   };
-  if (path === "invite") {
-    headers.authorization = `Bearer ${apiKey}`;
-  } else if (accessToken) headers.authorization = `Bearer ${accessToken}`;
-  const result = await (ctx.fetch || fetch)(new URL(`/auth/v1/${path}`, base), {
-    method: path === "user" ? "GET" : "POST",
+  if (call.service) headers.authorization = `Bearer ${apiKey}`;
+  else if (call.accessToken) headers.authorization = `Bearer ${call.accessToken}`;
+  const target = new URL(`/auth/v1/${call.path}`, base);
+  const result = await (ctx.fetch || fetch)(target, {
+    method: call.method,
     headers,
-    ...(payload ? { body: JSON.stringify(payload) } : {}),
+    ...(call.payload ? { body: JSON.stringify(call.payload) } : {}),
     redirect: "error",
     signal: AbortSignal.timeout(8000),
   });
-  if (
-    !result.ok || result.redirected ||
-    (result.url && result.url !== new URL(`/auth/v1/${path}`, base).href)
-  ) return null;
+  if (!result.ok || result.redirected || (result.url && result.url !== target.href)) {
+    await result.body?.cancel().catch(() => {});
+    return null;
+  }
   return await readJson(result, 65536);
 }
 function row(value: unknown): Record<string, unknown> | null {
@@ -274,6 +271,50 @@ function row(value: unknown): Record<string, unknown> | null {
   return found && typeof found === "object"
     ? found as Record<string, unknown>
     : null;
+}
+function validEmail(value: string): boolean {
+  return /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
+}
+export function validPassword(value: unknown): value is string {
+  return typeof value === "string" && value.length >= 10 && value.length <= 128 &&
+    value.trim().length >= 10 && !/[\u0000-\u001f\u007f]/.test(value);
+}
+async function passwordValid(ctx: AuthContext, address: string, password: string): Promise<boolean> {
+  if (typeof password !== "string" || !password || password.length > 128) return false;
+  const result = await provider(ctx, {
+    method: "POST", path: "token?grant_type=password", payload: { email: address, password },
+  });
+  // The tokens are discarded: SKAGER keeps its own opaque session.
+  return !!result && typeof result.access_token === "string";
+}
+async function sendThrottled(ctx: AuthContext, address: string): Promise<boolean> {
+  const ipHash = ctx.clientIp ? await hash(ctx.clientIp) : null;
+  const global = await ctx.rpc("skager_auth_throttle", { p_keys: ["send:global"], p_limit: 60, p_seconds: 900 });
+  return global === true && await ctx.rpc("skager_auth_throttle", {
+    p_keys: ["send:email:" + await hash(address), ...(ipHash ? ["send:ip:" + ipHash] : [])],
+    p_limit: 5, p_seconds: 900,
+  }) === true;
+}
+/** Send a code and bind a fresh challenge to this browser. */
+async function issueCode(request: Request, ctx: AuthContext, address: string,
+  purpose: "login" | "setup" | "reset"): Promise<string | null> {
+  const pending = readCookie(request, CHALLENGE);
+  if (tokenPattern.test(pending)) await ctx.rpc("store_challenge_take", { p_hash: await hash(pending) });
+  // A buyer without an Auth identity is invited (this creates it, unconfirmed);
+  // an existing identity receives an ordinary code. Public signup stays disabled.
+  const invited = purpose === "setup"
+    ? await provider(ctx, { method: "POST", path: "invite", payload: { email: address }, service: true })
+    : null;
+  const sent = invited ||
+    await provider(ctx, { method: "POST", path: "otp", payload: { email: address, create_user: false } });
+  if (!sent) return null;
+  const challenge = randomToken();
+  await ctx.rpc("store_challenge_create", { p_hash: await hash(challenge), p_email: address, p_purpose: purpose });
+  return cookie(CHALLENGE, challenge, 600);
+}
+function mask(address: string): string {
+  const [name, domain] = address.split("@");
+  return `${name.slice(0, 2)}${"•".repeat(Math.max(1, Math.min(6, name.length - 2)))}@${domain}`;
 }
 export async function getAccount(
   request: Request,
@@ -283,35 +324,30 @@ export async function getAccount(
   const raw = readCookie(request, SESSION);
   if (!tokenPattern.test(raw)) return null;
   try {
-    const found = row(
-      await ctx.rpc("skager_auth_session_get", { p_hash: await hash(raw) }),
-    );
-    if (
-      !found || !canonicalId(found.id) ||
-      typeof found.email !== "string" || !invited(email(found.email), ctx)
-    ) return null;
-    return { id: found.id, email: email(found.email) };
+    // Resolves only for an active (not refunded) customer with a confirmed identity.
+    const found = row(await ctx.rpc("store_session_get", { p_hash: await hash(raw) }));
+    if (!found || !canonicalId(found.id) || typeof found.email !== "string" ||
+      typeof found.password_set !== "boolean") return null;
+    return { id: found.id, email: email(found.email), passwordSet: found.password_set };
   } catch {
     return null;
   }
 }
+function isAdmin(account: Account, ctx: AuthContext): boolean {
+  return (ctx.env.SKAGER_ADMIN_EMAILS || "").split(",").map((s) => s.trim().toLowerCase())
+    .filter(Boolean).includes(account.email);
+}
+const ROUTES = ["/api/auth/session", "/api/auth/login", "/api/auth/claim", "/api/auth/forgot",
+  "/api/auth/verify", "/api/auth/password", "/api/auth/logout"];
 export async function handleAuth(
   request: Request,
   ctx: AuthContext,
 ): Promise<Response | null> {
   const route = new URL(request.url).pathname;
-  if (
-    ![
-      "/api/auth/session",
-      "/api/auth/login",
-      "/api/auth/signup",
-      "/api/auth/recover",
-      "/api/auth/verify",
-      "/api/auth/logout",
-    ].includes(route)
-  ) return null;
+  if (!ROUTES.includes(route)) return null;
   if (route === "/api/auth/session" && request.method === "GET") {
-    return response({ account: await getAccount(request, ctx) });
+    const account = await getAccount(request, ctx);
+    return response({ account: account ? { ...account, admin: isAdmin(account, ctx) } : null });
   }
   if (request.method !== "POST" || route === "/api/auth/session") {
     return response({ error: "Method not allowed." }, 405);
@@ -325,72 +361,84 @@ export async function handleAuth(
   try {
     if (route === "/api/auth/logout") {
       const raw = readCookie(request, SESSION);
-      if (tokenPattern.test(raw)) {
-        await ctx.rpc("skager_auth_session_delete", {
-          p_hash: await hash(raw),
-        });
-      }
+      if (tokenPattern.test(raw)) await ctx.rpc("skager_auth_session_delete", { p_hash: await hash(raw) });
       const pending = readCookie(request, CHALLENGE);
-      if (tokenPattern.test(pending)) {
-        await ctx.rpc("skager_auth_challenge_take", {
-          p_hash: await hash(pending),
-        });
-      }
-      return response({ ok: true }, 200, [
-        cookie(SESSION, "", 0),
-        cookie(CHALLENGE, "", 0),
-      ]);
+      if (tokenPattern.test(pending)) await ctx.rpc("store_challenge_take", { p_hash: await hash(pending) });
+      return response({ ok: true }, 200, [cookie(SESSION, "", 0), cookie(CHALLENGE, "", 0)]);
     }
     const data = await body(request);
+    if (route === "/api/auth/login") {
+      const address = email(data.email);
+      if (Object.keys(data).some((key) => !["email", "password"].includes(key)) || !validEmail(address) ||
+        typeof data.password !== "string") return response({ error: WRONG }, 400);
+      if (!await sendThrottled(ctx, address)) {
+        return response({ error: "Too many attempts. Please wait a few minutes and try again." }, 429);
+      }
+      const state = row(await ctx.rpc("store_customer_state", { p_email: address }));
+      const known = !!state && (state.state === "active" || state.state === "revoked") && state.claimed === true;
+      // The password is checked for every known account, so a closed account only
+      // reveals itself to someone who already knows its password.
+      if (!known || !await passwordValid(ctx, address, data.password)) return response({ error: WRONG }, 400);
+      if (state!.state === "revoked") return response({ error: CLOSED }, 403);
+      const challenge = await issueCode(request, ctx, address, "login");
+      if (!challenge) return response({ error: "We could not send your code. Please try again." }, 503);
+      return response({ ok: true, email: mask(address) }, 200, [challenge]);
+    }
+    if (route === "/api/auth/claim") {
+      if (Object.keys(data).length !== 1 || !(typeof data.sessionId === "string" || typeof data.email === "string")) {
+        return response({ error: "Request could not be completed." }, 400);
+      }
+      if (typeof data.sessionId === "string") {
+        if (!/^cs_test_[A-Za-z0-9]{8,200}$/.test(data.sessionId)) return response({ state: "unknown" }, 404);
+        const state = row(await ctx.rpc("store_claim_state", { p_session_id: data.sessionId, p_email: null }));
+        if (!state || typeof state.state !== "string") throw new Error("claim unavailable");
+        if (state.state === "pending") return response({ state: "pending" }, 202);
+        if (["done", "revoked"].includes(state.state)) return response({ state: state.state });
+        if (state.state !== "ready" || typeof state.email !== "string") return response({ state: "unknown" }, 404);
+        if (!await sendThrottled(ctx, state.email)) return response({ state: "throttled" }, 429);
+        const challenge = await issueCode(request, ctx, state.email, "setup");
+        if (!challenge) return response({ error: "We could not send your code. Please try again." }, 503);
+        return response({ state: "code_sent", email: mask(state.email) }, 200, [challenge]);
+      }
+      // By email: the same answer for everyone, so purchases cannot be discovered.
+      const address = email(data.email);
+      let challenge: string | null = null;
+      if (validEmail(address) && await sendThrottled(ctx, address)) {
+        const state = row(await ctx.rpc("store_claim_state", { p_session_id: null, p_email: address }));
+        if (state?.state === "ready") challenge = await issueCode(request, ctx, address, "setup");
+      }
+      return response({ state: "code_sent_if_eligible", message: GENERIC }, 200,
+        [challenge ?? cookie(CHALLENGE, randomToken(), 600)]);
+    }
+    if (route === "/api/auth/forgot") {
+      const address = email(data.email);
+      let challenge: string | null = null;
+      if (Object.keys(data).length === 1 && validEmail(address) && await sendThrottled(ctx, address)) {
+        const state = row(await ctx.rpc("store_customer_state", { p_email: address }));
+        if (state?.state === "active" && state.claimed === true) challenge = await issueCode(request, ctx, address, "reset");
+      }
+      return response({ ok: true, message: GENERIC }, 200, [challenge ?? cookie(CHALLENGE, randomToken(), 600)]);
+    }
+    if (route === "/api/auth/password") {
+      const account = await getAccount(request, ctx);
+      if (!account) return response({ error: "Please sign in again." }, 401);
+      if (Object.keys(data).some((key) => !["password", "current"].includes(key)) || !validPassword(data.password)) {
+        return response({ error: "Choose a password of at least 10 characters." }, 400);
+      }
+      // Changing an existing password needs the current one; setup and reset follow a verified code.
+      if (account.passwordSet && !await passwordValid(ctx, account.email, String(data.current ?? ""))) {
+        return response({ error: "Your current password is incorrect." }, 400);
+      }
+      const updated = await provider(ctx, {
+        method: "PUT", path: `admin/users/${account.id}`, payload: { password: data.password }, service: true,
+      });
+      if (!updated || updated.id !== account.id) return response({ error: "Your password could not be saved. Please try again." }, 503);
+      await ctx.rpc("store_password_set", { p_account_id: account.id });
+      return response({ ok: true });
+    }
+    // Verify a code.
     const pending = readCookie(request, CHALLENGE);
     const ipHash = ctx.clientIp ? await hash(ctx.clientIp) : null;
-    if (route !== "/api/auth/verify") {
-      const address = email(data.email);
-      const challenge = randomToken();
-      const globalAllowed = await ctx.rpc("skager_auth_throttle", {
-        p_keys: ["send:global"],
-        p_limit: 20,
-        p_seconds: 900,
-      });
-      const keys = [
-        "send:email:" + await hash(address),
-        ...(ipHash ? ["send:ip:" + ipHash] : []),
-      ];
-      const allowed = globalAllowed === true &&
-        await ctx.rpc("skager_auth_throttle", {
-          p_keys: keys,
-          p_limit: 5,
-          p_seconds: 900,
-        });
-      // Every begin response is identical, including denied invitations/provider errors.
-      if (
-        allowed === true && invited(address, ctx) &&
-        /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(address)
-      ) {
-        if (tokenPattern.test(pending)) {
-          await ctx.rpc("skager_auth_challenge_take", {
-            p_hash: await hash(pending),
-          });
-        }
-        // Public Supabase signups remain disabled. A privileged invite sends a
-        // confirmation code without auto-confirming email or granting a session.
-        // Confirmed existing users may receive an ordinary OTP on the signup form.
-        const invitation = route === "/api/auth/signup"
-          ? await provider(ctx, "invite", { email: address })
-          : null;
-        const sent = invitation ||
-          await provider(ctx, "otp", { email: address, create_user: false });
-        if (sent) {
-          await ctx.rpc("skager_auth_challenge_create", {
-            p_hash: await hash(challenge),
-            p_email: address,
-          });
-        }
-      }
-      return response({ ok: true, message: GENERIC }, 200, [
-        cookie(CHALLENGE, challenge, 600),
-      ]);
-    }
     if (
       !tokenPattern.test(pending) || typeof data.code !== "string" ||
       !/^\d{6,10}$/.test(data.code)
@@ -405,60 +453,51 @@ export async function handleAuth(
     });
     if (allowed !== true) return response({ error: INVALID }, 400);
     // Consume before calling the provider: retries/races/replay cannot create another session.
-    const challenge = row(
-      await ctx.rpc("skager_auth_challenge_take", {
-        p_hash: await hash(pending),
-      }),
-    );
+    const challenge = row(await ctx.rpc("store_challenge_take", { p_hash: await hash(pending) }));
     if (
       !challenge || typeof challenge.email !== "string" ||
-      !invited(challenge.email, ctx)
+      !["login", "setup", "reset"].includes(String(challenge.purpose))
     ) return response({ error: INVALID }, 400, [cookie(CHALLENGE, "", 0)]);
-    const verified = await provider(ctx, "verify", {
-      email: challenge.email,
-      token: data.code,
-      type: "email",
+    const verified = await provider(ctx, {
+      method: "POST", path: "verify", payload: { email: challenge.email, token: data.code, type: "email" },
     });
     if (!verified || typeof verified.access_token !== "string") {
       return response({ error: INVALID }, 400, [cookie(CHALLENGE, "", 0)]);
     }
-    const user = await provider(ctx, "user", undefined, verified.access_token);
+    const user = await provider(ctx, { method: "GET", path: "user", accessToken: verified.access_token });
     if (
       !user || !canonicalId(user.id) || user.email !== challenge.email ||
       user.aud !== "authenticated" || user.role !== "authenticated" ||
       user.is_anonymous !== false ||
       !confirmedTimestamp(user.email_confirmed_at)
     ) return response({ error: INVALID }, 400, [cookie(CHALLENGE, "", 0)]);
+    // Binds the subject to the customer; a refunded (closed) customer is refused here.
+    let linked: Record<string, unknown> | null;
+    try {
+      linked = row(await ctx.rpc("store_link_account", {
+        p_email: challenge.email, p_account_id: user.id, p_purpose: challenge.purpose,
+      }));
+    } catch {
+      return response({ error: CLOSED }, 403, [cookie(CHALLENGE, "", 0)]);
+    }
     const session = randomToken();
     const old = readCookie(request, SESSION);
-    if (tokenPattern.test(old)) {
-      await ctx.rpc("skager_auth_session_delete", { p_hash: await hash(old) });
+    if (tokenPattern.test(old)) await ctx.rpc("skager_auth_session_delete", { p_hash: await hash(old) });
+    if (await ctx.rpc("skager_auth_session_create", { p_hash: await hash(session), p_subject: user.id }) !== true) {
+      throw new Error("session unavailable");
     }
-    if (
-      await ctx.rpc("skager_auth_session_create", {
-        p_hash: await hash(session),
-        p_subject: user.id,
-      }) !== true
-    ) throw new Error("session unavailable");
-    return response({ ok: true }, 200, [
+    const passwordSet = linked?.password_set === true;
+    return response({ ok: true, next: passwordSet ? "/portal/" : "/portal/account/?setup=1" }, 200, [
       cookie(SESSION, session, 1200),
       cookie(CHALLENGE, "", 0),
     ]);
   } catch {
     // Provider/DB/body errors are deliberately never serialized or logged.
-    if (
-      ["/api/auth/login", "/api/auth/signup", "/api/auth/recover"].includes(
-        route,
-      )
-    ) {
-      return response({ ok: true, message: GENERIC }, 200, [
-        cookie(CHALLENGE, randomToken(), 600),
-      ]);
+    if (route === "/api/auth/forgot" || route === "/api/auth/claim") {
+      return response({ ok: true, message: GENERIC }, 200, [cookie(CHALLENGE, randomToken(), 600)]);
     }
     return response({
-      error: route === "/api/auth/verify"
-        ? INVALID
-        : "Request could not be completed.",
-    }, 400);
+      error: route === "/api/auth/verify" ? INVALID : "Request could not be completed. Please try again.",
+    }, route === "/api/auth/verify" ? 400 : 503);
   }
 }

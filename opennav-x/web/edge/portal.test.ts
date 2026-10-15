@@ -19,7 +19,7 @@ function context(overrides: Partial<PortalContext> = {}): PortalContext {
   return {
     env: { PORTAL_ENABLED: "true", STRIPE_TEST_ENVIRONMENT: "staging" },
     getAccount: async () => ({ id: MINE, email: "sailor@example.test" }),
-    rpc: async name => name === "commerce_portal_access" ? { entitlement: null, orders: [] } : [],
+    rpc: async name => name === "store_portal_access" ? { entitlement: null, orders: [] } : [],
     ...overrides,
   };
 }
@@ -46,22 +46,23 @@ test("owner comes from verified session, never account/owner query parameters", 
   const calls: string[] = [];
   const { data } = await result(context({ rpc: async (name, args) => {
     assert.deepEqual(args, { p_account_id: MINE }); calls.push(name);
-    return name === "commerce_portal_access" ? { entitlement: null, orders: [] }
+    return name === "store_portal_access" ? { entitlement: null, orders: [] }
       : [{ id: BOAT, name: "My boat", created_at: created, account_id: OTHER, secret: "not returned" }];
   } }), request(`/api/portal/dashboard?account_id=${OTHER}&owner=${OTHER}`));
-  assert.deepEqual(calls.sort(), ["commerce_portal_access", "portal_list_boats"]);
+  assert.deepEqual(calls.sort(), ["portal_list_boats", "store_portal_access"]);
   assert.deepEqual(data.boats, [{ id: BOAT, name: "My boat", createdAt: created }]);
   assert.equal(JSON.stringify(data).includes(OTHER), false);
   assert.equal(JSON.stringify(data).includes("not returned"), false);
 });
 test("paid and zero-total fulfillment grant identical active access; output sanitizes provider IDs", async () => {
   for (const amount of [2000, 0]) {
-    const { data } = await result(context({ rpc: async name => name === "commerce_portal_access" ? {
+    const { data } = await result(context({ rpc: async name => name === "store_portal_access" ? {
       entitlement: { status: "active", environment: "staging", product_code: "skager-beta", provider_id: "secret-entitlement" },
-      orders: [{ id: ORDER, created_at: created, status: "fulfilled", amount_minor: amount, currency: "USD", checkout_id: "cs_secret" }],
+      orders: [{ id: ORDER, created_at: created, status: "paid", kind: "access", total_minor: amount, checkout_id: "cs_secret",
+        items: [{ name: "SKAGER Public Beta Access", kind: "access", quantity: 1, unit_minor: 2000, secret: "x" }] }],
     } : [] }));
     assert.equal(data.betaAccess, "active");
-    assert.equal(data.orders[0].fullyDiscounted, amount === 0);
+    assert.equal(data.orders[0].totalMinor, amount);
     assert.equal(Object.hasOwn(data, "downloads"), false, "release availability comes from its independently authorized endpoint");
     assert.equal(JSON.stringify(data).includes("secret"), false);
   }
@@ -73,20 +74,23 @@ test("refunded/suspended, other product/environment and orders alone grant no ac
     { status: "active", environment: "production", product_code: "skager-beta" },
     { status: "active", environment: "staging", product_code: "other" },
   ]) {
-    const { data } = await result(context({ rpc: async name => name === "commerce_portal_access" ? {
-      entitlement, orders: [{ id: ORDER, created_at: created, status: "fulfilled", amount_minor: 2000, currency: "USD" }],
+    const { data } = await result(context({ rpc: async name => name === "store_portal_access" ? {
+      entitlement, orders: [{ id: ORDER, created_at: created, status: "paid", items: [] }],
     } : [] }));
     assert.equal(data.betaAccess, "inactive");
   }
 });
-test("suspended orders remain visible without granting access", async () => {
-  const { data } = await result(context({ rpc: async name => name === "commerce_portal_access" ? {
-    entitlement: { status: "suspended", environment: "staging", product_code: "skager-beta" },
-    orders: [{ id: ORDER, created_at: created, status: "suspended", amount_minor: 2000, currency: "USD" }],
+test("refunded orders remain visible without granting access, and setup accounts see nothing yet", async () => {
+  const { data } = await result(context({ rpc: async name => name === "store_portal_access" ? {
+    entitlement: null,
+    orders: [{ id: ORDER, created_at: created, status: "refunded", kind: "access", total_minor: 2000, items: [] }],
   } : [] }));
   assert.equal(data.betaAccess, "inactive");
-  assert.equal(data.orders[0].status, "suspended");
-  assert.match(renderDashboard(data, "orders"), /Suspended/);
+  assert.equal(data.orders[0].status, "refunded");
+  assert.match(renderDashboard(data, "orders"), /Refunded/);
+  const setup = await result(context({ getAccount: async () => ({ id: MINE, email: "s@example.test", passwordSet: false }),
+    rpc: async () => assert.fail("no data before a password exists") }));
+  assert.equal(setup.response.status, 403);
 });
 test("boat creation trims name and sends only session owner to the service RPC", async () => {
   const { response, data } = await result(context({ rpc: async (name, args) => {

@@ -1,7 +1,7 @@
 /** Private staging portal. The root router checks CSRF before every mutation. */
 export interface PortalContext {
   env: Record<string, string | undefined>;
-  getAccount(request: Request): Promise<{ id: string; email?: string } | null>;
+  getAccount(request: Request): Promise<{ id: string; email?: string; passwordSet?: boolean } | null>;
   rpc(name: string, args: Record<string, unknown>): Promise<unknown>;
 }
 
@@ -48,29 +48,41 @@ function boatList(value: unknown) {
   if (!Array.isArray(value)) throw new Error("Invalid boats response");
   return value.map(boat);
 }
+const ORDER_STATUS = ["pending", "paid", "refund_requested", "refunded", "expired"];
+function item(value: unknown) {
+  const row = object(value);
+  if (typeof row.name !== "string" || !Number.isSafeInteger(row.quantity) || !Number.isSafeInteger(row.unit_minor)) {
+    throw new Error("Invalid order item");
+  }
+  return { name: row.name, kind: row.kind, quantity: row.quantity, unitMinor: row.unit_minor,
+    interval: row.interval ?? null };
+}
 function commerce(value: unknown) {
   const data = object(value);
   const entitlement = data.entitlement ? object(data.entitlement) : null;
-  // Neither a redirect, an order alone, nor an amount grants access.
+  // Only a settled, non-refunded purchase grants access; a redirect or a pending order never does.
   const active = entitlement?.status === "active"
     && entitlement.environment === "staging" && entitlement.product_code === PRODUCT;
-  if (!Array.isArray(data.orders)) throw new Error("Invalid orders response");
-  const orders = data.orders.map(value => {
+  const orders = (Array.isArray(data.orders) ? data.orders : []).map(value => {
     const row = object(value);
-    if (typeof row.id !== "string" || !UUID.test(row.id)
-        || typeof row.created_at !== "string"
-        || !["pending", "fulfilled", "refunded", "suspended", "expired", "failed"].includes(String(row.status))
-        || !Number.isSafeInteger(row.amount_minor) || Number(row.amount_minor) < 0
-        || typeof row.currency !== "string" || !/^[A-Z]{3}$/.test(row.currency)) {
+    if (typeof row.id !== "string" || !UUID.test(row.id) || typeof row.created_at !== "string"
+        || !ORDER_STATUS.includes(String(row.status)) || !Array.isArray(row.items)) {
       throw new Error("Invalid order response");
     }
     return {
-      id: row.id, createdAt: row.created_at, status: row.status,
-      amountMinor: row.amount_minor, currency: row.currency,
-      fullyDiscounted: row.status === "fulfilled" && row.amount_minor === 0,
+      id: row.id, kind: row.kind, createdAt: row.created_at, status: row.status, fulfillment: row.fulfillment,
+      items: row.items.map(item), subtotalMinor: row.subtotal_minor, shippingMinor: row.shipping_minor,
+      discountMinor: row.discount_minor, totalMinor: row.total_minor, tracking: row.tracking ?? null,
+      shippedAt: row.shipped_at ?? null, refundable: row.refundable === true,
     };
   });
-  return { betaAccess: active ? "active" : "inactive", orders };
+  const subscription = data.subscription ? object(data.subscription) : null;
+  return {
+    betaAccess: active ? "active" : "inactive", orders,
+    subscription: subscription ? { status: subscription.status, currentPeriodEnd: subscription.current_period_end ?? null,
+      cancelAtPeriodEnd: subscription.cancel_at_period_end === true } : null,
+    hasBilling: data.customer ? object(data.customer).has_billing === true : false,
+  };
 }
 
 export async function handlePortal(request: Request, ctx: PortalContext): Promise<Response | null> {
@@ -88,15 +100,17 @@ export async function handlePortal(request: Request, ctx: PortalContext): Promis
   try {
     const account = await ctx.getAccount(request);
     if (!account || !UUID.test(account.id)) return json({ error: "Sign in required." }, 401);
+    // A new or reset account chooses its password before anything else.
+    if (account.passwordSet === false) return json({ error: "Choose a password first.", setup: true }, 403);
     const args = { p_account_id: account.id };
     if (path === "/api/portal/dashboard") {
       const [access, boats] = await Promise.all([
-        ctx.rpc("commerce_portal_access", args), ctx.rpc("portal_list_boats", args),
+        ctx.rpc("store_portal_access", args), ctx.rpc("portal_list_boats", args),
       ]);
       return json({
         account: { email: account.email || null }, environment: "staging",
         ...commerce(access), boats: boatList(boats),
-        checkoutAvailable: ctx.env.STRIPE_TEST_CHECKOUT_ENABLED === "true",
+        storeAvailable: ctx.env.STRIPE_TEST_CHECKOUT_ENABLED === "true",
       });
     }
     if (request.method === "GET") return json({ boats: boatList(await ctx.rpc("portal_list_boats", args)) });

@@ -60,11 +60,23 @@ test('downloads default off and empty; configuration never invents a qualified r
     assert.equal(calls.accounts, 0); assert.deepEqual(calls.rpc, []); assert.deepEqual(calls.signer, []);
   }
   const { ctx, calls } = fixture();
-  const empty = await handleDownloads(request(), ctx);
+  const handleEmpty = createDownloadHandler([]);
+  const empty = await handleEmpty(request(), ctx);
   assert.deepEqual(await empty?.json(), { available: false,
     reason: 'Release qualification and secure download delivery are pending.', releases: [] });
-  assert.equal((await handleDownloads(request('POST', selection), ctx))?.status, 404);
+  assert.equal((await handleEmpty(request('POST', selection), ctx))?.status, 404);
   assert.deepEqual(calls.signer, []);
+});
+
+test('the reviewed catalog publishes exactly the qualified beta2.3 artifacts', async () => {
+  const { ctx } = fixture();
+  const data = await (await handleDownloads(request(), ctx))?.json();
+  assert.equal(data.available, true);
+  assert.deepEqual(data.releases.map((r: any) => r.version), ['0.4.0-beta2.3']);
+  assert.equal(data.releases[0].sourceCommit, '3d7d2a44467c1b1ede917b78e5b183da2cfa023f');
+  assert.deepEqual(data.releases[0].artifacts.map((a: any) => a.id), ['installer', 'recovery', 'checksums', 'source', 'release-notes']);
+  assert.equal(data.releases[0].artifacts[0].sha256, '7abbf0d2d69a6a4216c545994dfdc1b82db3f9541880a9ef8a07d20dec040258');
+  assert.equal(JSON.stringify(data).includes('qualification'), false);
 });
 
 test('session and exact current entitlement gate both listing and signing, including zero-payment active access', async () => {
@@ -86,7 +98,7 @@ test('session and exact current entitlement gate both listing and signing, inclu
   assert.equal(data.available, true); assert.equal(data.releases[0].sourceCommit, release.sourceCommit);
   assert.deepEqual(data.releases[0].artifacts, release.artifacts);
   assert.equal(JSON.stringify(data).includes('qualification'), false);
-  assert.deepEqual(calls.rpc, [['commerce_portal_access', { p_account_id: accountId }]]);
+  assert.deepEqual(calls.rpc, [['store_portal_access', { p_account_id: accountId }]]);
   // The authority is active entitlement, never a payment amount or order list.
   assert.deepEqual(calls.signer, []);
 });
@@ -254,7 +266,7 @@ test('only selected signing consumes its verified account quota; denial and unce
     assert.equal(response?.status, options.throttle === false ? 429 : 503);
     assert.deepEqual(calls.signer, []);
     assert.deepEqual(calls.rpc, [
-      ['commerce_portal_access', { p_account_id: accountId }],
+      ['store_portal_access', { p_account_id: accountId }],
       ['skager_auth_throttle', { p_keys: ['download:account:' + accountId], p_limit: 10, p_seconds: 60 }],
     ]);
     assert.equal((await response?.text())?.includes(secret), false);
@@ -262,7 +274,7 @@ test('only selected signing consumes its verified account quota; denial and unce
   for (const amount_minor of [0, 2000]) {
     const { ctx, calls } = fixture({ throttle: true, orders: [{ status: 'fulfilled', amount_minor }] });
     assert.equal((await handle(request('POST', selection), ctx))?.status, 200);
-    assert.deepEqual(calls.rpc.map(([name]) => name), ['commerce_portal_access', 'skager_auth_throttle', 'commerce_portal_access']);
+    assert.deepEqual(calls.rpc.map(([name]) => name), ['store_portal_access', 'skager_auth_throttle', 'store_portal_access']);
   }
   for (const input of [request(), request('POST', JSON.stringify({ releaseId: 'unknown', artifactId: 'source' }))]) {
     const { ctx, calls } = fixture();
