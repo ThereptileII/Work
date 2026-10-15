@@ -9,8 +9,8 @@ $source = Join-Path (Split-Path $PSScriptRoot -Parent) 'installer/windows/Lifecy
 $tokens = $null; $errors = $null
 $ast = [Management.Automation.Language.Parser]::ParseFile($source, [ref]$tokens, [ref]$errors)
 if ($errors.Count) { throw 'Lifecycle.ps1 does not parse.' }
-$names = @('Hash','PlainPath','RelativePath','PeU16','PeU32','PeMachine','PeRvaOffset',
-  'PeModuleName','PeForwarderModule','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime')
+$names = @('Hash','PlainPath','RelativePath','PeU16','PeU32','PeU64','PeMachine','PeRvaOffset',
+  'PeModuleName','PeForwarderModule','PeImportName','GetPeImage','GetPeImports','GetCandidateSystemX86','GetCandidateSystemDirectory','GetCandidateVc14Runtime','AssertCandidateTlsRuntime')
 $definitions = @($ast.FindAll({
   param($node)
   $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -in $names
@@ -29,10 +29,21 @@ function Hash([string]$Path) {
 }
 # Linux can execute the parser fixtures, while Windows CI exercises the real
 # installer path guard and OS-provided SystemX86 resolver. Replace only these
-# two platform-dependent functions on Linux; all PE logic is the actual AST.
+# platform path/system/signature observations on Linux; all PE logic and
+# signature-policy assertions are the actual AST. Native hosts use real APIs.
 if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+  function PlainPath([string]$Path) { [IO.Path]::GetFullPath($Path) }
   function RelativePath([string]$Base, [string]$Name) { Join-Path $Base $Name }
   function GetCandidateSystemX86 { return $script:fixtureSystem }
+  function GetCandidateSystemDirectory([int]$Machine) {
+    if ($Machine -eq 0x14c) { return $script:fixtureSystem }
+    if ($Machine -eq 0x8664) { return $script:fixtureSystem64 }
+    throw 'Unsupported candidate system architecture.'
+  }
+  function Get-AuthenticodeSignature([string]$LiteralPath) {
+    if ($script:fixtureSignatures.ContainsKey($LiteralPath)) { return $script:fixtureSignatures[$LiteralPath] }
+    return [pscustomobject]@{Status='NotSigned';SignerCertificate=$null}
+  }
 }
 # The gate is exercised without the installer's top-level transaction, so it
 # has no session log. Capture what it reports instead of writing one.
@@ -158,6 +169,20 @@ function NewPeLargeExports([string]$Path, [string]$Target = '') {
   }
   [IO.File]::WriteAllBytes($Path, $bytes)
 }
+function ConvertFixtureToPe64([string]$Path, [uint64]$ImageBase = 0x140000000) {
+  # Reuse bounded normal/delay/export metadata cases with the PE32+ directory
+  # offsets and 64-bit image base. These fixtures are parsed, never executed.
+  [byte[]]$bytes = [IO.File]::ReadAllBytes($Path)
+  [byte[]]$directories = New-Object byte[] 128
+  [byte[]]$sections = New-Object byte[] (40 * (PeU16 $bytes 0x86))
+  [Array]::Copy($bytes, 0xf8, $directories, 0, 128)
+  [Array]::Copy($bytes, 0x178, $sections, 0, $sections.Length)
+  SetU16 $bytes 0x84 0x8664; SetU16 $bytes 0x94 240; SetU16 $bytes 0x98 0x20b
+  SetU64 $bytes 0xb0 $ImageBase; SetU32 $bytes 0x104 16
+  [Array]::Copy($directories, 0, $bytes, 0x108, 128)
+  [Array]::Copy($sections, 0, $bytes, 0x188, $sections.Length)
+  [IO.File]::WriteAllBytes($Path, $bytes)
+}
 function RequireFailure([scriptblock]$Action, [string]$Pattern) {
   $failed = $false
   try { & $Action }
@@ -171,10 +196,30 @@ $temp = Join-Path ([IO.Path]::GetTempPath()) ('opennav-pe-' + [guid]::NewGuid().
 $app = Join-Path $temp 'stage/app'
 $plugins = Join-Path $app 'plugins'
 $system = Join-Path $temp 'Windows/SysWOW64'
+$system64 = Join-Path $temp 'Windows/System32'
+$script:fixtureSignatures = @{}
 try {
-  $null = New-Item -ItemType Directory -Force -Path $plugins, $system
+  $null = New-Item -ItemType Directory -Force -Path $plugins, $system, $system64
   $script:fixtureSystem = $system
-  [IO.File]::WriteAllBytes((Join-Path $system 'kernel32.dll'), [byte[]]@(1))
+  $script:fixtureSystem64 = $system64
+  NewPe (Join-Path $system 'kernel32.dll')
+  NewPe64 (Join-Path $system64 'kernel32.dll') 'api-ms-win-core-synch-l1-2-0.dll'
+  foreach ($name in @('msvcp140.dll','vcruntime140.dll','vcruntime140_1.dll')) {
+    $path = Join-Path $system64 $name
+    NewPe64 $path 'kernel32.dll'
+    $script:fixtureSignatures[$path] = [pscustomobject]@{Status='Valid';SignerCertificate=[pscustomobject]@{
+      Subject='CN=Microsoft Windows Software Compatibility Publisher, O=Microsoft Corporation, C=US'}}
+  }
+  if ([Environment]::OSVersion.Platform -eq [PlatformID]::Win32NT) {
+    foreach ($machine in @(0x14c,0x8664)) {
+      $nativeSystem = GetCandidateSystemDirectory $machine
+      if ((PeMachine (Join-Path $nativeSystem 'kernel32.dll')) -ne $machine) { throw 'Native system resolver selected wrong ABI.' }
+    }
+    foreach ($name in @('msvcp140.dll','vcruntime140.dll','vcruntime140_1.dll')) {
+      $null = GetCandidateVc14Runtime (GetCandidateSystemDirectory 0x8664) $name
+    }
+    Write-Output 'Native system directories and signed AMD64 Microsoft VC14 prerequisites verified.'
+  }
   $exe = Join-Path $app 'opencpn.exe'
   $plugin = Join-Path $plugins 'retained_pi.dll'
   NewPe $exe 'kernel32.dll'
@@ -386,40 +431,114 @@ try {
   RequireFailure { GetPeImports $plugin } 'PE import descriptor budget exceeded'
   Write-Output 'Installer extensionless and export forwarder policy fixtures passed.'
   NewPe $plugin 'kernel32.dll'
-  # SCRUM-334: a retained third-party plugin binary that is not an x86 image
-  # cannot be loaded by the 32-bit host, so it is skipped for import scanning
-  # instead of aborting the installation. rtlsdr_pi ships such a file.
-  NewPe $plugin 'kernel32.dll'
-  [byte[]]$foreign = [IO.File]::ReadAllBytes($plugin)
-  SetU16 $foreign 0x84 0x8664
-  [IO.File]::WriteAllBytes($plugin, $foreign)
-  if ((PeMachine $plugin) -ne 0x8664) { throw 'PeMachine did not report the foreign machine type.' }
-  $script:fixtureLog.Clear()
+  # An auxiliary AMD64 process and every AMD64 DLL now receive the same
+  # bounded metadata/TLS checks, not the historical foreign-DLL skip.
+  $helperDirectory = Join-Path $plugins 'receiver/bin'
+  $null = New-Item -ItemType Directory -Path $helperDirectory -Force
+  $helper = Join-Path $helperDirectory 'retained-helper.ExE'
+  NewPe64 $helper 'kernel32.dll'
   AssertCandidateTlsRuntime (Join-Path $temp 'stage')
-  if (-not (@($script:fixtureLog) -match 'Skipped non-x86 binary')) { throw 'Skipping a foreign binary was not reported.' }
-  # The skip does not depend on what the unloadable binary imports.
-  NewPe $plugin 'libeay32.dll'
-  [byte[]]$foreign = [IO.File]::ReadAllBytes($plugin)
-  SetU16 $foreign 0x84 0x8664
-  [IO.File]::WriteAllBytes($plugin, $foreign)
-  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
-  # A foreign EXE can run outside the x86 host. Refuse even a clean import;
-  # the x86 scan cannot qualify its closure. Exercise a real PE32+ layout and
-  # a case-varied extension, while leaving the auxiliary-DLL exception above.
-  $auxiliary = Join-Path $plugins 'auxiliary.dll'
-  NewPe64 $auxiliary 'libeay32.dll'
-  [byte[]]$auxiliaryBytes = [IO.File]::ReadAllBytes($auxiliary)
-  SetU16 $auxiliaryBytes 0x96 0x2022  # Same PE32+ layout, DLL characteristic.
-  [IO.File]::WriteAllBytes($auxiliary, $auxiliaryBytes)
-  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
-  Remove-Item -LiteralPath $auxiliary
-  $helper = Join-Path $plugins 'retained-helper.ExE'
-  foreach ($import in @('kernel32.dll', 'libeay32.dll', 'ssleay32.dll')) {
-    NewPe64 $helper $import
-    $helperHash = Hash $helper
-    RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unqualified non-x86 executable helper in candidate: .*retained-helper.ExE'
-    if ((Hash $helper) -cne $helperHash) { throw 'Foreign executable refusal changed retained bytes.' }
+  if ((GetPeImage $helper).machine -ne 0x8664) { throw 'PE32+ machine was lost.' }
+  foreach ($import in @('libeay32.dll','ssleay32.dll')) {
+    foreach ($delay in @($false,$true)) {
+      NewPe $helper $import $delay; ConvertFixtureToPe64 $helper
+      $helperHash = Hash $helper
+      RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import'
+      if ((Hash $helper) -cne $helperHash) { throw 'Foreign executable refusal changed retained bytes.' }
+    }
   }
+  $auxiliary = Join-Path $helperDirectory 'receiver.dll'
+  NewPe64 $helper 'receiver.dll'; NewPe64 $auxiliary 'libeay32.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import'
+  NewPeForwarders $auxiliary 'ssleay32.SSL_new'; ConvertFixtureToPe64 $auxiliary
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Unsupported legacy TLS runtime dependency in candidate: import'
+  NewPe64 $auxiliary 'kernel32.dll'
+  $script:fixtureHashes[$auxiliary] = '2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Known obsolete TLS runtime in candidate'
+  $script:fixtureHashes.Clear()
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  NewPe $auxiliary 'kernel32.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'PE dependency architecture mismatch'
+  NewPe64 $auxiliary 'kernel32.dll'
+  NewPe $helper 'receiver.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'PE dependency architecture mismatch'
+  Remove-Item -LiteralPath $auxiliary
+  # The parent application's x86 CRT is not the child EXE's application root.
+  NewPe (Join-Path $app 'msvcp140.dll') 'kernel32.dll'
+  NewPe64 $helper 'msvcp140.dll'
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  if (-not (@($script:fixtureLog) -match 'Native Microsoft VC14 prerequisite')) { throw 'Native runtime prerequisite was not recorded.' }
+  # A helper-local same-name x86 DLL cannot fall through to the native CRT.
+  NewPe (Join-Path $helperDirectory 'msvcp140.dll') 'kernel32.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'PE dependency architecture mismatch'
+  Remove-Item -LiteralPath (Join-Path $helperDirectory 'msvcp140.dll')
+  NewPe64 $helper 'libcurl.dll'
+  NewPe (Join-Path $app 'libcurl.dll') 'kernel32.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Missing app-local PE import libcurl.dll'
+  Remove-Item -LiteralPath (Join-Path $app 'libcurl.dll')
+  NewPe64 $helper 'msvcp999.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Missing app-local PE import msvcp999.dll'
+  # x86 runtime imports still require an app-local file, never the native CRT.
+  Remove-Item -LiteralPath (Join-Path $app 'msvcp140.dll')
+  NewPe64 $helper 'kernel32.dll'; NewPe $plugin 'msvcp140.dll'
+  RequireFailure { AssertCandidateTlsRuntime (Join-Path $temp 'stage') } 'Missing app-local PE import msvcp140.dll'
+  NewPe $plugin 'kernel32.dll'
+  # Unsigned or missing redistributables and names outside the finite family
+  # are rejected. The Windows hosts exercise real Authenticode on this fixture.
+  $unsignedSystem = Join-Path $temp 'unsigned-system'
+  $null = New-Item -ItemType Directory -Path $unsignedSystem
+  NewPe64 (Join-Path $unsignedSystem 'msvcp140.dll') 'kernel32.dll'
+  RequireFailure { GetCandidateVc14Runtime $unsignedSystem 'msvcp140.dll' } 'lacks a valid Microsoft signature'
+  RequireFailure { GetCandidateVc14Runtime $unsignedSystem 'vcruntime140.dll' } 'Missing native Microsoft VC14 runtime'
+  RequireFailure { GetCandidateVc14Runtime $unsignedSystem 'libcrypto-3-x64.dll' } 'Unsupported native VC14 runtime name'
+  RequireFailure { GetCandidateVc14Runtime $unsignedSystem '../msvcp140.dll' } 'Unsupported native VC14 runtime name'
+  if ([Environment]::OSVersion.Platform -ne [PlatformID]::Win32NT) {
+    $crt = Join-Path $system64 'msvcp140.dll'
+    $valid = $script:fixtureSignatures[$crt]
+    foreach ($bad in @(
+        [pscustomobject]@{Status='NotTrusted';SignerCertificate=$valid.SignerCertificate},
+        [pscustomobject]@{Status='Valid';SignerCertificate=[pscustomobject]@{Subject='CN=Other, O=Other Corporation'}},
+        [pscustomobject]@{Status='Valid';SignerCertificate=$null})) {
+      $script:fixtureSignatures[$crt] = $bad
+      RequireFailure { GetCandidateVc14Runtime $system64 'msvcp140.dll' } 'lacks a valid Microsoft signature'
+    }
+    $script:fixtureSignatures[$crt] = $valid
+    NewPe $crt 'kernel32.dll'
+    RequireFailure { GetCandidateVc14Runtime $system64 'msvcp140.dll' } 'wrong architecture'
+    NewPe64 $crt 'kernel32.dll'
+  }
+  # Delay VA mode uses the complete 64-bit ImageBase, including high bits.
+  NewPe $helper 'kernel32.dll' $true
+  [byte[]]$delayBytes = [IO.File]::ReadAllBytes($helper)
+  SetU32 $delayBytes 0x340 0; SetU32 $delayBytes 0x344 (0x400000 + 0x1180)
+  [IO.File]::WriteAllBytes($helper, $delayBytes)
+  ConvertFixtureToPe64 $helper 0x400000
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  [byte[]]$delayBytes = [IO.File]::ReadAllBytes($helper)
+  SetU64 $delayBytes 0xb0 0x100400000
+  [IO.File]::WriteAllBytes($helper, $delayBytes)
+  RequireFailure { GetPeImports $helper } 'Invalid PE delay import VA'
+  # Machine/magic mismatches, unsupported machines, backing and work budgets
+  # remain failures in the PE32+ reader.
+  NewPe $helper 'kernel32.dll'
+  [byte[]]$foreign = [IO.File]::ReadAllBytes($helper); SetU16 $foreign 0x84 0x8664
+  [IO.File]::WriteAllBytes($helper, $foreign)
+  RequireFailure { GetPeImports $helper } 'Invalid PE optional header'
+  NewPe64 $helper 'kernel32.dll'
+  [byte[]]$foreign = [IO.File]::ReadAllBytes($helper); SetU16 $foreign 0x84 0xaa64
+  [IO.File]::WriteAllBytes($helper, $foreign)
+  RequireFailure { GetPeImports $helper } 'Unsupported PE machine'
+  NewPeLargeExports $helper 'KERNEL32.Sleep'; ConvertFixtureToPe64 $helper
+  AssertCandidateTlsRuntime (Join-Path $temp 'stage')
+  [byte[]]$broken64 = [IO.File]::ReadAllBytes($helper); SetU32 $broken64 0x194 0xfffff000L
+  [IO.File]::WriteAllBytes($helper, $broken64)
+  RequireFailure { GetPeImports $helper } 'Invalid PE section range'
+  NewPeForwarders $helper 'KERNEL32.Sleep'; ConvertFixtureToPe64 $helper
+  [byte[]]$broken64 = [IO.File]::ReadAllBytes($helper); SetU32 $broken64 0x414 65537
+  [IO.File]::WriteAllBytes($helper, $broken64)
+  RequireFailure { GetPeImports $helper } 'PE export address table budget exceeded'
+  NewPe64 $helper 'kernel32.dll'
+  Write-Output 'AMD64 helper, dependency ABI, system-runtime and PE32+ negative fixtures passed.'
   # An unreadable PE header must still fail through the existing parser,
   # rather than becoming an accepted foreign-machine exception.
   [byte[]]$brokenHelper = [IO.File]::ReadAllBytes($helper)

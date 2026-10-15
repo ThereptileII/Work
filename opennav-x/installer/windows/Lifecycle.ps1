@@ -711,11 +711,14 @@ function PeU32([byte[]]$Bytes, [long]$At) {
   if ($At -lt 0 -or $At -gt $Bytes.Length - 4) { throw 'Truncated PE uint32.' }
   return [BitConverter]::ToUInt32($Bytes, [int]$At)
 }
+function PeU64([byte[]]$Bytes, [long]$At) {
+  if ($At -lt 0 -or $At -gt $Bytes.Length - 8) { throw 'Truncated PE uint64.' }
+  return [BitConverter]::ToUInt64($Bytes, [int]$At)
+}
 function PeMachine([string]$Path) {
-  # Header-only machine-type probe used to pre-filter the import scan. Returns
-  # 0 when the file is not a readable PE, so such files still reach
-  # GetPeImports and fail there with its exact diagnosis; only a cleanly
-  # parsed non-x86 machine type is reported for skipping.
+  # Header-only architecture probe for OS-provided system modules. Returns 0
+  # for an unreadable PE header. Candidate modules use the complete bounded
+  # GetPeImage reader; no architecture is skipped during candidate scanning.
   $stream = [IO.File]::Open($Path, [IO.FileMode]::Open, [IO.FileAccess]::Read, [IO.FileShare]::Read)
   try {
     if ($stream.Length -lt 256) { return 0 }
@@ -786,7 +789,7 @@ function PeImportName([byte[]]$Bytes, $Sections, [long]$Rva) {
   $name = [Text.Encoding]::ASCII.GetString($Bytes, $start, $end - $start)
   return (PeModuleName $name)
 }
-function GetPeImports([string]$Path) {
+function GetPeImage([string]$Path) {
   $file = Get-Item -LiteralPath $Path -ErrorAction Stop
   # Cap one allocation to 128 MiB in the 32-bit installer host.
   if ($file.Length -lt 256 -or $file.Length -gt 134217728) { throw "Invalid PE file size: $Path" }
@@ -795,15 +798,19 @@ function GetPeImports([string]$Path) {
   if ((PeU16 $bytes 0) -ne 0x5a4d) { throw "Not a PE binary: $Path" }
   $pe = [long](PeU32 $bytes 60)
   if ($pe -gt $bytes.Length - 24 -or (PeU32 $bytes $pe) -ne 0x4550) { throw "Invalid PE header: $Path" }
-  if ((PeU16 $bytes ($pe + 4)) -ne 0x14c) { throw "Not the supported x86 PE ABI: $Path" }
+  $machine = PeU16 $bytes ($pe + 4)
+  if ($machine -notin @(0x14c, 0x8664)) { throw "Unsupported PE machine: $Path" }
   $sectionCount = PeU16 $bytes ($pe + 6)
   $optionalSize = PeU16 $bytes ($pe + 20)
   $optional = $pe + 24
-  if ($sectionCount -lt 1 -or $sectionCount -gt 96 -or $optionalSize -lt 224 -or
-      $optional -gt $bytes.Length - $optionalSize -or (PeU16 $bytes $optional) -ne 0x10b -or
-      (PeU32 $bytes ($optional + 92)) -lt 14) {
-    throw "Invalid PE32 optional header: $Path"
+  $directoryOffset = 96; $minimumOptional = 224; $magic = 0x10b
+  if ($machine -eq 0x8664) { $directoryOffset = 112; $minimumOptional = 240; $magic = 0x20b }
+  if ($sectionCount -lt 1 -or $sectionCount -gt 96 -or $optionalSize -lt $minimumOptional -or
+      $optional -gt $bytes.Length - $optionalSize -or (PeU16 $bytes $optional) -ne $magic -or
+      (PeU32 $bytes ($optional + $directoryOffset - 4)) -lt 14) {
+    throw "Invalid PE optional header for machine $machine`: $Path"
   }
+  [uint64]$imageBase = if ($machine -eq 0x8664) { PeU64 $bytes ($optional + 24) } else { PeU32 $bytes ($optional + 28) }
   $sectionStart = $optional + $optionalSize
   if ($sectionStart -gt $bytes.Length - (40 * $sectionCount)) { throw "Truncated PE sections: $Path" }
   $sections = @()
@@ -834,7 +841,7 @@ function GetPeImports([string]$Path) {
   $declarations = 0
   [long]$nameBytes = 0
   foreach ($directory in @(@{index=1; size=20}, @{index=13; size=32})) {
-    $entry = $optional + 96 + 8 * $directory.index
+    $entry = $optional + $directoryOffset + 8 * $directory.index
     $rva = [long](PeU32 $bytes $entry)
     $size = [long](PeU32 $bytes ($entry + 4))
     if ($rva -eq 0 -and $size -eq 0) { continue }
@@ -854,7 +861,12 @@ function GetPeImports([string]$Path) {
         $attributes = PeU32 $bytes $at
         if ($attributes -gt 1) { throw "Unsupported PE delay import attributes: $Path" }
         $nameRva = [long](PeU32 $bytes ($at + 4))
-        if ($attributes -eq 0) { $nameRva -= [long](PeU32 $bytes ($optional + 28)) }
+        if ($attributes -eq 0) {
+          # Delay descriptors hold a 32-bit VA even for PE32+. Do not truncate
+          # a high 64-bit image base into an apparently valid name RVA.
+          if ([uint64]$nameRva -le $imageBase) { throw "Invalid PE delay import VA: $Path" }
+          $nameRva = [long]([uint64]$nameRva - $imageBase)
+        }
       }
       if ($nameRva -le 0) { throw "Invalid PE import name RVA: $Path" }
       $declarations++
@@ -868,8 +880,8 @@ function GetPeImports([string]$Path) {
   }
   # A forwarded export declares another dependency even without an import
   # descriptor. Read only bounded raw-backed metadata, never execute a module.
-  $exportRva = [long](PeU32 $bytes ($optional + 96))
-  $exportSize = [long](PeU32 $bytes ($optional + 100))
+  $exportRva = [long](PeU32 $bytes ($optional + $directoryOffset))
+  $exportSize = [long](PeU32 $bytes ($optional + $directoryOffset + 4))
   if ($exportRva -ne 0 -or $exportSize -ne 0) {
     # Ordinary wxWidgets export names exceed 1 MiB. Validating their complete
     # backing does not scan that extent; the EAT/forwarder budgets below do.
@@ -908,7 +920,10 @@ function GetPeImports([string]$Path) {
       }
     }
   }
-  return @($imports)
+  return [pscustomobject]@{machine=[int]$machine; imports=@($imports)}
+}
+function GetPeImports([string]$Path) {
+  return @((GetPeImage $Path).imports)
 }
 function GetCandidateSystemX86 {
   # Use the OS-known x86 system directory, not a caller-controlled environment variable.
@@ -916,12 +931,44 @@ function GetCandidateSystemX86 {
   if ([string]::IsNullOrWhiteSpace($path)) { throw 'Windows x86 system DLL directory is unavailable.' }
   return $path
 }
+function GetCandidateSystemDirectory([int]$Machine) {
+  if ($Machine -eq 0x14c) { $path = GetCandidateSystemX86 }
+  elseif ($Machine -eq 0x8664 -and [Environment]::Is64BitOperatingSystem) {
+    $windows = [Environment]::GetFolderPath([Environment+SpecialFolder]::Windows)
+    if ([string]::IsNullOrWhiteSpace($windows)) { throw 'Windows directory is unavailable.' }
+    $native = if ([Environment]::Is64BitProcess) { 'System32' } else { 'Sysnative' }
+    $path = Join-Path $windows $native
+  } else { throw 'Unsupported candidate system architecture.' }
+  if (-not [IO.Directory]::Exists($path) -or
+      (PeMachine (Join-Path $path 'kernel32.dll')) -ne $Machine) {
+    throw 'Windows system directory does not match candidate architecture.'
+  }
+  return $path
+}
+function GetCandidateVc14Runtime([string]$System, [string]$Name) {
+  # An AMD64 child can use the installed Microsoft redist in native System32.
+  # This finite exception never admits TLS/general runtimes or a PATH result.
+  if ($Name -notmatch '^(?i:msvcp140(?:_1|_2|_atomic_wait|_codecvt_ids)?|vcruntime140(?:_1|_threads)?|concrt140|vcomp140)\.dll$') {
+    throw 'Unsupported native VC14 runtime name.'
+  }
+  $path = PlainPath (Join-Path $System $Name)
+  if (-not [IO.File]::Exists($path)) { throw "Missing native Microsoft VC14 runtime: $Name" }
+  $signature = Get-AuthenticodeSignature -LiteralPath $path
+  if ($signature.Status -ne 'Valid' -or -not $signature.SignerCertificate -or
+      $signature.SignerCertificate.Subject -notmatch '(^|,\s*)O=Microsoft Corporation(,|$)') {
+    throw "Native VC14 runtime lacks a valid Microsoft signature: $Name"
+  }
+  $image = GetPeImage $path
+  if ($image.machine -ne 0x8664) { throw "Native VC14 runtime has the wrong architecture: $Name" }
+  $version = [Diagnostics.FileVersionInfo]::GetVersionInfo($path).FileVersion
+  Log ("Native Microsoft VC14 prerequisite: $path (SHA-256 $(Hash $path); version $version)")
+  return $path
+}
 function AssertCandidateTlsRuntime([string]$Directory) {
   $app = RelativePath $Directory 'app'
   if (-not [IO.Directory]::Exists($app)) { throw 'Candidate app directory is missing.' }
-  $system = GetCandidateSystemX86
-  if (-not [IO.Directory]::Exists($system)) { throw 'Windows x86 system DLL directory is missing.' }
-  $binaries = New-Object 'System.Collections.Generic.Queue[string]'
+  $systems = @{}; $images = @{}
+  $binaries = New-Object 'System.Collections.Generic.Queue[object]'
   $seen = New-Object 'System.Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
   # SCRUM-208: exact stock 5.12.4 OpenSSL 3.0.5 identities from the retained
   # dependency audit. A plugin-local or renamed copy can arrive through
@@ -934,7 +981,7 @@ function AssertCandidateTlsRuntime([string]$Directory) {
   }
   foreach ($file in Get-ChildItem -LiteralPath $app -Recurse -Force -File) {
     if ($file.Extension -ieq '.dll' -or $file.Extension -ieq '.exe') {
-      $binaries.Enqueue($file.FullName)
+      $binaries.Enqueue([pscustomobject]@{path=$file.FullName; machine=0; application=''})
     }
   }
   foreach ($file in Get-ChildItem -LiteralPath $app -Recurse -Force -File) {
@@ -943,43 +990,59 @@ function AssertCandidateTlsRuntime([string]$Directory) {
     }
   }
   while ($binaries.Count -gt 0) {
-    $binary = $binaries.Dequeue()
-    if (-not $seen.Add($binary)) { continue }
-    $digest = Hash $binary
-    if ($obsoleteTls.ContainsKey($digest)) {
-      throw "Known obsolete TLS runtime in candidate: $($obsoleteTls[$digest]) at $binary (SHA-256 $digest)"
-    }
-    # Auxiliary foreign DLLs cannot load into the 32-bit host (rtlsdr_pi ships
-    # an x64 airspy.dll), so keep their existing import-scan exception. An EXE
-    # can instead run as a separate process; its foreign import closure is not
-    # qualified by this x86 parser. Refuse that candidate without changing the
-    # retained source. Filename and known-byte checks above still cover both.
-    $machine = PeMachine $binary
-    if ($machine -ne 0 -and $machine -ne 0x14c) {
-      if ([IO.Path]::GetExtension($binary) -ieq '.exe') {
-        throw "Unqualified non-x86 executable helper in candidate: $binary"
+    $item = $binaries.Dequeue(); $binary = $item.path
+    if (-not $images.ContainsKey($binary)) {
+      $digest = Hash $binary
+      if ($obsoleteTls.ContainsKey($digest)) {
+        throw "Known obsolete TLS runtime in candidate: $($obsoleteTls[$digest]) at $binary (SHA-256 $digest)"
       }
-      Log ("Skipped non-x86 binary for import scanning: $binary")
-      continue
+      $images[$binary] = GetPeImage $binary
     }
-    foreach ($name in @(GetPeImports $binary)) {
+    $image = $images[$binary]; $machine = $image.machine
+    # An already visited image must still satisfy each importing edge's ABI.
+    if ($item.machine -ne 0 -and $item.machine -ne $machine) {
+      throw "PE dependency architecture mismatch: $binary"
+    }
+    $application = $item.application
+    if (-not $application) {
+      $application = if ($machine -eq 0x14c) { $app } else { [IO.Path]::GetDirectoryName($binary) }
+    }
+    if (-not $seen.Add($binary + '|' + $application)) { continue }
+    if (-not $systems.ContainsKey($machine)) { $systems[$machine] = GetCandidateSystemDirectory $machine }
+    $system = $systems[$machine]
+    foreach ($name in @($image.imports)) {
       if ($name -ieq 'libeay32.dll' -or $name -ieq 'ssleay32.dll') {
         throw "Unsupported legacy TLS runtime dependency in candidate: import $name in $binary"
       }
-      $local = @(Get-ChildItem -LiteralPath ([IO.Path]::GetDirectoryName($binary)) -File |
+      # Preserve x86 plugin lookup. An AMD64 helper has its own executable
+      # directory; its parent's x86 app directory is not its application root.
+      $first = if ($machine -eq 0x14c) { [IO.Path]::GetDirectoryName($binary) } else { $application }
+      $local = @(Get-ChildItem -LiteralPath $first -File |
         Where-Object { $_.Name -ieq $name })
-      if (-not $local.Count) {
+      if (-not $local.Count -and $machine -eq 0x14c) {
         $local = @(Get-ChildItem -LiteralPath $app -File |
           Where-Object { $_.Name -ieq $name })
       }
       if ($local.Count) {
-        $binaries.Enqueue($local[0].FullName)
+        $binaries.Enqueue([pscustomobject]@{path=$local[0].FullName; machine=$machine; application=$application})
         continue
       }
       $runtime = $name -ine 'msvcrt.dll' -and
         $name -match '^(?i:msvcp|msvcr|vcruntime|vcomp|concrt|wx|lib|archive|zlib|glew)'
-      if (-not $runtime -and ($name -match '^(?i:api-ms-win-|ext-ms-win-)' -or
-          [IO.File]::Exists((Join-Path $system $name)))) { continue }
+      if ($machine -eq 0x8664 -and
+          $name -match '^(?i:msvcp140(?:_1|_2|_atomic_wait|_codecvt_ids)?|vcruntime140(?:_1|_threads)?|concrt140|vcomp140)\.dll$') {
+        $nativeRuntime = GetCandidateVc14Runtime $system $name
+        $binaries.Enqueue([pscustomobject]@{path=$nativeRuntime; machine=$machine; application=$application})
+        continue
+      }
+      if (-not $runtime) {
+        if ($name -match '^(?i:api-ms-win-|ext-ms-win-)') { continue }
+        $systemFile = Join-Path $system $name
+        if ([IO.File]::Exists($systemFile)) {
+          if ((PeMachine $systemFile) -ne $machine) { throw "System PE dependency architecture mismatch: $name" }
+          continue
+        }
+      }
       throw "Missing app-local PE import $name in $binary"
     }
   }

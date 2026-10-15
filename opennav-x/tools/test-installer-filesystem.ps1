@@ -15,7 +15,7 @@ $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)
 if ($ParseErrors) { throw ($ParseErrors | Out-String) }
 . (Join-Path $PSScriptRoot '../installer/windows/UpdateTransaction.ps1')
-foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Get-ProtectedBrokerObservation','Assert-NoProtectedBrokerEnrollment','Assert-LifecycleMutation','Assert-StatusOnlyOutput','Assert-ProductOutputPolicy','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','PreserveAdditions','AssertInstalledContent','PeU16','PeU32','PeMachine','PeRvaOffset','PeModuleName','PeForwarderModule','PeImportName','GetPeImports','GetCandidateSystemX86','AssertCandidateTlsRuntime','Failure')) {
+foreach ($Name in @('Log','Hash','PlainPath','RelativePath','ReadJson','Get-ProtectedBrokerObservation','Assert-NoProtectedBrokerEnrollment','Assert-LifecycleMutation','Assert-StatusOnlyOutput','Assert-ProductOutputPolicy','Resolve-OutputPolicy','AtomicJson','PeArchitecture','FileRecords','VerifyFiles','SelfTest','ExtractPayload','PreserveAdditions','AssertInstalledContent','PeU16','PeU32','PeU64','PeMachine','PeRvaOffset','PeModuleName','PeForwarderModule','PeImportName','GetPeImage','GetPeImports','GetCandidateSystemX86','GetCandidateSystemDirectory','GetCandidateVc14Runtime','AssertCandidateTlsRuntime','Failure')) {
   $Definitions = @($Ast.FindAll({ param($Node) $Node -is [System.Management.Automation.Language.FunctionDefinitionAst] -and $Node.Name -eq $Name }, $true))
   if ($Definitions.Count -ne 1) { throw "Expected one actual engine function: $Name" }
   . ([scriptblock]::Create($Definitions[0].Extent.Text))

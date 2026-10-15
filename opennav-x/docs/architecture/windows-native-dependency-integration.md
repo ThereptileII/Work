@@ -31,22 +31,45 @@ including nested or case-varied names, before self-test and state publication.
 Original plugins, user files and the prior active generation remain intact.
 Exact recorded rollback is a recovery operation and deliberately retains its
 original bytes; this does not qualify the older runtime for public release.
-The candidate gate also parses bounded x86 PE normal and delay imports for
+The candidate gate also parses bounded I386/PE32 and AMD64/PE32+ normal and delay imports for
 executables, plugins and their resolved local dependencies (including modules
-with non-DLL extensions). Missing application runtimes and legacy TLS imports
+with non-DLL extensions), including export forwarders. Each local dependency
+must match its importing image's architecture, even if already visited through
+another import. Missing application runtimes and legacy TLS imports
 are rejected even when the old DLL itself is absent. OS dependencies resolve
-through Windows' known x86 system directory, not a caller-supplied environment
-path. This is a static import check; it cannot qualify arbitrary plugin
+through Windows' known architecture-specific system directory, not a
+caller-supplied environment path. This is a static import check; it cannot qualify arbitrary plugin
 `LoadLibrary` behavior or replace native plugin/runtime acceptance.
-Auxiliary non-x86 DLLs retain their import-scan exception, but non-x86
-executable helpers are refused: the 32-bit host can start a separate process,
-and the x86 parser cannot qualify that process's dependency closure. This
-refusal preserves the original files and applies before candidate publication.
-The added PE32+ executable fixtures have portable layout validation; executing
-their guard assertions under PowerShell, including native Windows, is pending.
+
+An AMD64 auxiliary executable uses its own directory as its application root.
+Its closure does not fall back to the parent application's x86 DLLs. All staged
+AMD64 DLLs are scanned as well; the earlier foreign-DLL skip is removed.
+Unknown architectures and inconsistent machine/optional-header pairs fail.
+The OpenCPN application/plugin ABI remains x86; auxiliary-process support does
+not change `PeArchitecture`, package verification or host self-test requirements.
+
+The finite VC14 redistributable family (`msvcp140` and its `_1`, `_2`,
+`_atomic_wait`, `_codecvt_ids` variants; `vcruntime140` and its `_1`, `_threads`
+variants; `concrt140`; `vcomp140`, all `.dll`) may resolve to native System32 for
+an AMD64 helper when absent from its application directory. This is an installed
+Microsoft redistributable prerequisite, not a packaged or copied runtime. The
+installer uses the OS-known Windows directory and `Sysnative` from a 32-bit
+process, checks AMD64 PE metadata and a valid Microsoft Authenticode signature,
+records the path/hash/version, and traverses the runtime's imports. A local
+wrong-architecture copy is refused rather than bypassed. TLS/curl/general
+runtimes still require application-local files; the x86 host retains its existing
+application-local runtime policy.
+
+This scan enforces the existing legacy-name/import and known-obsolete-byte
+policy. It does not qualify arbitrary third-party TLS builds: in particular,
+parsing a retained helper's OpenSSL 3.5.0 sidecars is not security acceptance of
+that version or its source/provenance. No vendor files are replaced or deleted.
+All refusal paths remain before candidate self-test and publication, preserving
+the original plugin and active generation.
 
 The actual installer functions pass deterministic PowerShell parser/closure
-fixtures on Linux. Native PowerShell 5.1 in both host bitnesses, retained-plugin
+fixtures on Linux. Native PowerShell 5.1 in both host bitnesses, including actual
+native directory and Authenticode observations for the VC14 prerequisite, retained-plugin
 install/update/repair refusal, exact rollback and real package qualification
 remain required.
 
