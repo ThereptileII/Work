@@ -10,10 +10,20 @@ attempt 1, still `0.4.0-beta2.4`. It includes the focused native installer PE32
 extent and AMD64 helper fixes, the Linux Dashboard readiness fixture correction,
 and the authenticated two-image SDK selection described below. The original
 full run was requested once with private Staging trust; extended/design suites
-are off. Native/Linux integration, exact packaged lifecycle, retained
+are off. Linux job `116453779566` now passes: 154/154 integrated CTests and
+154/154 fixture-free CTests, the original software/OpenGL chart/mode gate, and
+all five fixture-free loader/resource checks. The original artifact digest and
+3,984 member CRCs verify. The corrected Legacy-to-XNav readiness assertions pass
+without polling pane state until green. Native Windows contracts also pass
+115/115 CTests and all ten additional restart repeats.
+[Exact original Linux/component evidence and limits](evidence/scrum22-linux-e80-20261015/README.md).
+
+Windows application compilation, exact packaged lifecycle, retained
 PluginHandler qualification as needed and fresh boat acceptance remain pending.
-The boat remains on its previous installed revision; no actuator output,
-Production promotion or public release is authorized by this run.
+The boat remains on its previous installed revision; a passive availability
+check confirms SSH, Tailscale and RustDesk running with no OpenCPN/chart-helper
+process. No actuator output, Production promotion or public release is
+authorized by this run.
 
 ## Previous candidate — preserved qualification failures and focused corrections
 
