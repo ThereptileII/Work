@@ -1,0 +1,235 @@
+{
+  "schema": 1,
+  "scope": "Original Linux integration qualification only; no reruns",
+  "candidateCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "run": {
+    "id": 38765418126,
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38765418126"
+  },
+  "job": {
+    "id": 116527477400,
+    "name": "Linux integrated regression gate",
+    "conclusion": "success",
+    "labels": [
+      "ubuntu-24.04"
+    ],
+    "startedAt": "2026-10-15T16:01:48Z",
+    "completedAt": "2026-10-15T16:46:58Z",
+    "stepCount": 33,
+    "successfulSteps": 32,
+    "originalMetadataSha256": "2a42f899c5101167161e53eaade32331e62338d33cf3d538d69ce0fbef22198d",
+    "originalLogBytes": 995477,
+    "originalLogSha256": "12ddee8e64d63a7576db44fe3471cf2f2ba5812f6057d6327a717547260f67fa"
+  },
+  "artifact": {
+    "id": 11992076552,
+    "name": "linux-integration-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "bytes": 14636581,
+    "sha256": "ba1b5ccf2c90ec68d8ae067df051b98cfbe5a085b880404eaaa5f9ea5cd0b073",
+    "githubDigestMatched": true,
+    "zipMembers": 3984,
+    "allCrcsPassed": true,
+    "rawArtifactListingSha256": "4162a04cb782db99c6f743e069111d73e0ec97036c16505fd80f6e830bdf0923"
+  },
+  "ctest": {
+    "runs": [
+      {
+        "member": "xnav-linux-tests.xml",
+        "tests": 154,
+        "failures": 0,
+        "skipped": 0,
+        "disabled": 0,
+        "uniqueNames": 154
+      },
+      {
+        "member": "production-linux-tests.xml",
+        "tests": 154,
+        "failures": 0,
+        "skipped": 0,
+        "disabled": 0,
+        "uniqueNames": 154
+      }
+    ],
+    "sameNamesInBothBuilds": true,
+    "distinctNames": 154,
+    "totalExecutions": 308,
+    "sortedNamesJsonSha256": "ce23007be40a42a7961a12e2d26102665ffc0d3708d9a75435ed9af4247cb98a"
+  },
+  "charts": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "phases": [
+      {
+        "requestedRendering": "software",
+        "openGlEnabled": false,
+        "workspaceStartupState": "2098127",
+        "workspaceReturnedState": "2098127",
+        "workspaceSavedAfterLegacyState": "2098125",
+        "workspaceFinalSavedState": "2098125",
+        "dashboardNativeVisibleAtStartup": false,
+        "dashboardNativeVisibleInLegacy": true,
+        "dashboardNativeVisibleAfterReturn": false,
+        "dashboardLoadedAfterReturn": true,
+        "captures": 8
+      },
+      {
+        "requestedRendering": "opengl",
+        "openGlEnabled": true,
+        "workspaceStartupState": "2098127",
+        "workspaceReturnedState": "2098127",
+        "workspaceSavedAfterLegacyState": "2098125",
+        "workspaceFinalSavedState": "2098125",
+        "dashboardNativeVisibleAtStartup": false,
+        "dashboardNativeVisibleInLegacy": true,
+        "dashboardNativeVisibleAfterReturn": false,
+        "dashboardLoadedAfterReturn": true,
+        "captures": 8
+      }
+    ],
+    "assertionContract": "Returned diagnostic must be newer than the pre-restart publication and match the returned process PID with completed Dashboard initialization. ENC, workspace suppression and rail visibility are then asserted once; native visibility is checked separately.",
+    "helperSource": [
+      {
+        "path": "opennav-x/tools/smoke-charts.py",
+        "gitBlob": "a501ad68041b4909564091893b0ad05da629cee5",
+        "sha256": "b44f37efac520764ae91210979b96059a958d3638be18652d785212c79551492"
+      },
+      {
+        "path": "opennav-x/tools/diagnostic_snapshot.py",
+        "gitBlob": "0eb37af69b3655ee1449d54563b5132117cad702",
+        "sha256": "22cb876134cd15229f8634b5045fcec5b8ea588aaed8699cd1db099cdde18a86"
+      },
+      {
+        "path": "opennav-x/tools/workspace-fixtures.py",
+        "gitBlob": "5905a0d24792528e170cf6f82215c95263af97c3",
+        "sha256": "3089f70a10c9bcded01854f18b710c7d0ffacf1d8deae1438588e0125e382f43"
+      }
+    ],
+    "finalRetainedDiagnostic": {
+      "buildCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "testFixtures": true,
+      "publicationMonotonicMs": "2139339",
+      "readiness": {
+        "dashboard_ready": true,
+        "process_id": 24638
+      },
+      "uiTicks": "7",
+      "visibleRailLabels": [
+        "sog",
+        "depth",
+        "aws",
+        "heading"
+      ]
+    },
+    "retentionLimit": "The final diagnostic is retained; it is not a separate trace of the first returned ready publication. Both phase results and original successful assertion step are retained."
+  },
+  "fixtureFree": {
+    "loaderChecks": 5,
+    "loaderPassed": true,
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+    "testFixtures": false,
+    "buildPurpose": "INSTALLED PRODUCT",
+    "profileInitialized": false,
+    "pluginsLoaded": false,
+    "appSha256": "5635b4ba7d07a63fb6738c70969f6ae9b10c6b624ca16cd1a59568ac76d9a53c",
+    "productionPilot": {
+      "result": "passed; screenshot review required",
+      "hardware": "NONE; loopback simulated translator",
+      "checks": 5,
+      "sentCount": 0,
+      "wireOutputCount": 0,
+      "receivedBytes": 0,
+      "transportFailures": 0
+    }
+  },
+  "additionalOriginalChecks": {
+    "peerTwoInstances": {
+      "result": "PASS",
+      "instances": 2,
+      "allProfilesPreserved": true,
+      "allOwnedTcpListenersEmpty": true
+    },
+    "pluginDownloadGuard": {
+      "status": "passed",
+      "cases": 13,
+      "forbiddenHttpRequests": 0,
+      "ignoredFailureMutation": "rejected: failed download entered archive installation",
+      "scope": "actual source plugin download guard with fixture application routing"
+    }
+  },
+  "skips": {
+    "endurance": {
+      "status": "skipped",
+      "reason": "User directed on 2026-10-04: deliver a stable SKAGER Windows boat-test candidate as fast as possible; skip endurance testing.",
+      "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "runId": "38765418126",
+      "runAttempt": "1",
+      "release_duration": false
+    },
+    "previewJobStep": [
+      "Exercise preview pages and all demo scenarios"
+    ],
+    "designValidation": {
+      "enabled": false,
+      "evidence": "Original job log SKAGER_DESIGN_VALIDATION: false; conditional image-review branches not executed."
+    }
+  },
+  "selectedMembers": [
+    {
+      "path": "xnav-linux-tests.xml",
+      "bytes": 134127,
+      "sha256": "db6c07a0d369344c56a09756630428128bfbad5197abf6fc8f1dcc20a5655bdf"
+    },
+    {
+      "path": "production-linux-tests.xml",
+      "bytes": 135030,
+      "sha256": "3af9cc4b3297db788ee60287c5671b19e06b2a02308372db14b827e2da212dec"
+    },
+    {
+      "path": "charts-results.json",
+      "bytes": 67244,
+      "sha256": "07d205a94dc315cb387747c00c60039740afcf2a5b29331bd5fc9fb3c1815ef4"
+    },
+    {
+      "path": "charts-profile/opennav-diagnostics.json",
+      "bytes": 37764,
+      "sha256": "bd57acbed34d2c812993e2c309694cd3461d1744957744b756e75fea36a183c4"
+    },
+    {
+      "path": "installer-loader-selftest.json",
+      "bytes": 1041,
+      "sha256": "6123aaa501fc20349919ad61d06835c630ac4f95e955b89066547ca342254bb5"
+    },
+    {
+      "path": "pilot-status-only/pilot-results.json",
+      "bytes": 904,
+      "sha256": "500466a06916215a7488f12afd5df5a21ffe0d5c2a6605d28d7a8757990388f5"
+    },
+    {
+      "path": "soak/results.json",
+      "bytes": 299,
+      "sha256": "26a0bdf27fecd36b4a00720bba8fba2ba197d6511937cc9d76876bff610933f0"
+    },
+    {
+      "path": "linux-mode-cycle-results.json",
+      "bytes": 4626,
+      "sha256": "285a9090caa753c20ef21485e3403ec3d94e532ecef966a33e2cad78ecf90580"
+    },
+    {
+      "path": "peer-two-instances-results.json",
+      "bytes": 1698,
+      "sha256": "7fade64535edb6d530e2661b69191ab4895bf455fddbc40b38d32a9d15b3b922"
+    },
+    {
+      "path": "plugin-download-guard.2Aa6u6/results/results.json",
+      "bytes": 22748,
+      "sha256": "0614dce3c9f6afb121684ff80b0bf3b3bac5ca17499079d3f8016cc6b9d6ab0f"
+    }
+  ],
+  "limitations": [
+    "Linux development evidence, not native Windows installer or installed-product acceptance.",
+    "Physical GPU, native screenshot review, target boat commissioning and release acceptance remain separate.",
+    "No endurance or design-validation pass is claimed.",
+    "Later documentation commits do not replace the tested candidate identity."
+  ]
+}
