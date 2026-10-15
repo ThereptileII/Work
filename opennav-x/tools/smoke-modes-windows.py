@@ -73,14 +73,17 @@ try:
     report.setdefault('first_start_setup',[]).append(defer_boat_setup(
         data,lambda target:ui.pointer_text(pid,'Later'),
         native_window=lambda:native_setup_window(ui,pid)))
+    data(lambda d:d['runtime']['display']['light']=='Day')
     capture_chart('01-xnav-unavailable.png')
-    ui.cycle_light(pid)
+    # Exercise the visible palette control through actual foreground pointer
+    # input: direct HWND mouse messages do not establish activation/capture.
+    ui.pointer_text(pid,'Day')
     data(lambda d:d['runtime']['display']['light']=='Dusk')
     capture_chart('02-xnav-dusk.png',light='Dusk')
-    ui.cycle_light(pid)
+    ui.pointer_text(pid,'Dusk')
     data(lambda d:d['runtime']['display']['light']=='Night')
     capture_chart('03-xnav-night.png',light='Night')
-    ui.cycle_light(pid)
+    ui.pointer_text(pid,'Night')
     data(lambda d:d['runtime']['display']['light']=='Day')
     ui.click_text(pid, '+')
     ui.click_text(pid, '−')
