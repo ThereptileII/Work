@@ -200,6 +200,10 @@ evidence paths may change while their exact content hashes remain fixed.
 `test-commissioning-reconciliation.ps1 -PortableContracts` exercises disposable
 entrypoints; Windows CI or explicit `-IsolatedLocal` additionally exercises native
 profile locks, ACL preservation and file operations with inert identity/process
-adapters. The existing session-preservation suite includes it, so the registered
-`skager-profile-preservation.yml` needs no workflow change. Portable results do
-not qualify native Windows behavior, the actual boat profile or any launch.
+adapters. The existing session-preservation suite includes it. For a
+reconciliation-only change, `skager-profile-preservation.yml` accepts the explicit
+`reconciliation_only=true` dispatch: native PowerShell 5.1 runs this fixed suite
+and uploads separate evidence. Do not combine it with `transaction_only`; the
+workflow refuses that selection. Default full checks remain unchanged. Earlier
+unchanged prerequisite evidence stays separate; portable or focused results do
+not qualify the actual boat profile or any launch.

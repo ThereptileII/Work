@@ -23,13 +23,43 @@ requested older image before any build. Independent inspection confirms all 30
 bound SDK inputs still match the frozen candidate. On that new allocation
 evidence, a selected Windows-only attempt 3 is requested: job `116350139778`
 passes SDK authentication, image/Python/source preflight and native AIS/TLS,
-then begins application compilation. It remains pending; no SDK, source or
-environment check is relaxed. The proposed multi-image selector is retained on
+both application builds, installed security checks, recovery packaging and
+installer compilation. Its two CTest executions each pass the same 146 distinct
+test names. Exact retained-input qualification now runs in job `116364569049`;
+installer compilation alone does not qualify installed behavior. No SDK, source
+or environment check is relaxed. The proposed multi-image selector is retained on
 its separate branch, unused without a second qualified SDK.
 [Dependency allocation and unchanged SDK binding](evidence/scrum209-candidate-977d37c7-20261015/dependency-old-image-preflight-receipt.json).
 [Original allocation failure](evidence/scrum209-sdk-image-allocation-20261015/b4c40e6e-receipt.json).
 No installed-product or boat acceptance follows yet.
 The earlier `977d37c7` package remains failed rather than being relabelled.
+[Authenticated native producer evidence](evidence/scrum209-candidate-b4c40e6e-20261015/native-producer-receipt.json).
+
+## Focused recovery and installed-updater qualification tools
+
+The historical WMM reference fix is integrated as `0defee7a`, independently
+reviewed from `87949177`. It retains the prepared-parent and current generation
+identities and derives a separate third-generation proof only from the original
+profile bytes. Its 226 portable checks pass. Native-only
+[38717837403](https://github.com/ThereptileII/Work/actions/runs/38717837403),
+exact helper/workflow `ab722554`, is pending; it runs the changed reconciliation
+contract without repeating unchanged transaction/adoption suites or compiling
+the application. A read-only boat checkpoint still confirms the original profile
+hash, no running OpenCPN process and SSH/Tailscale/RustDesk available. No actual
+reconciliation Plan/Commit or application launch has yet occurred.
+
+Installed-updater helper `14ff2896` (reviewed original `02a943f6`) adds explicitly
+bound interactive self-hosted admission for a disposable Windows target.
+The original declaration hash, independent approval and one-use consumption
+remain mandatory. Its 222 focused checks pass; independent review found a
+preparation request could expire during host observations. Follow-up `84d79bc7`
+(original `0ba45caf`) closes that gap with a post-observation deadline check;
+the new expiry test reproduces the old failure and passes after correction,
+alongside the valid path. Actual external target, qualified B0/B1 and observed
+human UAC execution remain required. `a66826ea` explicitly classifies only five
+reviewed qualification helpers; 20 classifier checks pass, with runtime and
+unknown paths retaining conservative build selection. These helper commits do
+not change or relabel the frozen `b4c40e6e` application.
 
 ## Replacement candidate after native updater job timeout
 
