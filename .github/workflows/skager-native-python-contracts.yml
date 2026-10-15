@@ -29,12 +29,17 @@ on:
         required: false
         type: boolean
         default: false
+      private_hazard_query_only:
+        description: Test the actual private associated-area query and polygon linkage only
+        required: false
+        type: boolean
+        default: false
 permissions:
   contents: read
   actions: read
 jobs:
   geometry:
-    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only && !inputs.installer_pe_only && !inputs.private_hazard_only) }}
+    if: ${{ github.event_name != 'workflow_dispatch' || (!inputs.plugin_capture_only && !inputs.installer_receipt_only && !inputs.installer_filesystem_only && !inputs.installer_pe_only && !inputs.private_hazard_only && !inputs.private_hazard_query_only) }}
     runs-on: windows-2022
     timeout-minutes: 5
     steps:
@@ -105,11 +110,13 @@ jobs:
           path: ${{ runner.temp }}/skager-plugin-capture-contracts
           if-no-files-found: error
   private-hazard:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.private_hazard_only }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.private_hazard_only || inputs.private_hazard_query_only) }}
     runs-on: windows-2022
     timeout-minutes: 15
     env:
       PYTHONUTF8: '1'
+      HAZARD_CONDITIONAL_ONLY: ${{ inputs.private_hazard_only && 'true' || 'false' }}
+      HAZARD_QUERY_ONLY: ${{ inputs.private_hazard_query_only && 'true' || 'false' }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Fetch pinned core and authenticate only consumed source and wx inputs
@@ -117,6 +124,7 @@ jobs:
         run: |
           import importlib.util, json, os, shutil, subprocess
           from pathlib import Path
+          assert (os.environ['HAZARD_CONDITIONAL_ONLY'] == 'true') != (os.environ['HAZARD_QUERY_ONLY'] == 'true'), 'Select exactly one hazard fixture'
           root = Path('opennav-x').resolve()
           def load(name, path):
               spec = importlib.util.spec_from_file_location(name, path)
@@ -151,7 +159,7 @@ jobs:
               'scope': 'Locked wx fixture inputs only; not maintained TLS SDK or product qualification',
               'archives': archives, 'files': inventory,
               'lock': native.record(root / 'tools/windows-wx.lock.json')}, indent=2) + '\n', encoding='utf-8')
-      - name: Compile and run four actual-source x86 fixtures
+      - name: Compile and run the selected actual-source x86 fixtures
         shell: pwsh
         run: |
           $ErrorActionPreference = 'Stop'
@@ -164,7 +172,11 @@ jobs:
           $Evidence = Join-Path $env:RUNNER_TEMP 'skager-hazard-native'
           . ./opennav-x/tools/windows-curl-environment.ps1
           Invoke-WindowsCurlEnvironment -VisualStudio $Vs[0] -TestPerl $Perl -Action {
-            & $Python opennav-x/tools/verify-private-hazard-association.py --core "$Inputs/core" --private-original "$Inputs/original" --private-patched "$Inputs/source" --wx-prefix "$Inputs/wx" --native-sdk-receipt "$Inputs/wx-receipt.json" --output $Evidence
+            if ($env:HAZARD_QUERY_ONLY -ceq 'true') {
+              & $Python opennav-x/tools/verify-private-hazard-area-query.py --core "$Inputs/core" --private-original "$Inputs/original" --private-patched "$Inputs/source" --wx-prefix "$Inputs/wx" --native-sdk-receipt "$Inputs/wx-receipt.json" --output "$Evidence/area-query"
+            } else {
+              & $Python opennav-x/tools/verify-private-hazard-association.py --core "$Inputs/core" --private-original "$Inputs/original" --private-patched "$Inputs/source" --wx-prefix "$Inputs/wx" --native-sdk-receipt "$Inputs/wx-receipt.json" --output $Evidence
+            }
             if ($LASTEXITCODE -ne 0) { throw 'Native hazard fixture failed; retain original evidence' }
           }
       - name: Verify complete locked wx inventory remains unchanged
