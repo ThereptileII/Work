@@ -21,7 +21,7 @@ This replaces the invited-beta flow described in
 3. Stripe returns to `/welcome/?session_id=…`. The page drops the reference
    from history and calls `POST /api/auth/claim`. While the webhook has not
    settled the order it answers `202 pending` (the page polls). Once paid it
-   emails a 6-digit code (Supabase invite/OTP) bound to the challenge cookie.
+   emails a one-time code (Supabase invite/OTP) bound to the challenge cookie.
 4. `POST /api/auth/verify` consumes the challenge, verifies the code with
    Supabase, links the Supabase user to the customer (`store_link_account`) and
    creates a 20-minute session. A first login lands on

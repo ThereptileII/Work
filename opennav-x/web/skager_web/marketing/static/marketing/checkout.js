@@ -128,7 +128,7 @@
     const askCode = (masked) => {
       step('code');
       emailForm.hidden = true; codeForm.hidden = false;
-      text.textContent = masked ? `We sent a 6-digit code to ${masked}. Enter it below to verify your email.` : 'If that email belongs to a SKAGER purchase, a code is on its way. Enter it below.';
+      text.textContent = masked ? `We sent a code to ${masked}. Enter it below to verify your email.` : 'If that email belongs to a SKAGER purchase, a code is on its way. Enter it below.';
       say(message, '');
       $('welcome-input').focus();
     };
