@@ -25,8 +25,16 @@ qualifier `116405193249` fails fresh installation because the installer's PE
 reader rejects the packaged wxWidgets export directory. The earlier foreign
 Start Menu refusal/report case passes. Source inspection finds the separate
 installer reader still contains the 1 MiB export/RVA assumption already removed
-from the application reader; correction is being tested against retained bytes
-before another application/package build. This package remains unqualified.
+from the application reader. Correction `5a3d0ebb` accepts the fully backed
+1,158,912-byte wx export extent while retaining PE32/file/section and independent
+import/EAT/forwarder/name limits. Focused native
+[38734026147](https://github.com/ThereptileII/Work/actions/runs/38734026147)
+at `f880ef8f` passes x86/x64 Windows PowerShell 5.1 fixtures and the authenticated
+retained wx DLL, without building the application. All 88 final packaged PEs are
+also covered by inert local parsing: 78 unchanged compiled PEs plus the ten
+changed/new package files. The original package remains unqualified; the corrected
+installer still needs integrated lifecycle acceptance.
+[Original candidate and corrected native parser evidence](evidence/scrum209-candidate-1ffd09dd-20261015/README.md).
 
 Linux job `116380307497` builds and passes preceding checks, then fails the
 OpenGL Legacy-to-XNav workspace assertion. Its tick-3 diagnostic still reports a
