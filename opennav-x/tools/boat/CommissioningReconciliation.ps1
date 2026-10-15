@@ -162,19 +162,96 @@ function Read-ReconciliationPlan([string]$Workspace,[string]$Plan,[string]$Hash,
      @(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime())).Count -ne $value.changedKeys){throw 'Exact review/inspection lineage differs.'}
   return [pscustomobject]@{proof=$proof;value=$value;inspection=$observed;directory=$directory;path=$plan;sha256=$Hash;baseline=$baseline}
 }
-function Assert-ReconciliationPlanLive($Plan,$Current,[switch]$Resume) {
+function Read-ReconciliationProfileStage($Plan) {
+  $journal=Join-Path $Plan.directory 'profile-stage.json'
+  if(-not(Test-Path -LiteralPath $journal)){return $null}
+  $value=Read-Record $journal;$original=Join-Path $Plan.inspection.currentContext.profile 'opencpn.ini'
+  # The name is derived from the pinned plan, not accepted from an arbitrary
+  # matching recovery file. The journal must exist before this path is created.
+  $stage=$original+'.opennav-recovery-'+$Plan.sha256.Substring(0,32)+'.partial'
+  $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
+  if($value.schema -ne 1 -or $value.owner -cne $script:ReconciliationOwner -or $value.status -cne 'prepared' -or
+     $value.planSha256 -cne $Plan.sha256 -or $value.parentPreparedSha256 -cne $Plan.proof.sha256 -or
+     $value.original -cne $original -or $value.stage -cne $stage -or $value.candidate -cne $Plan.baseline -or
+     $value.originalSha256 -cne $Plan.inspection.currentIniSha256 -or $value.candidateSha256 -cne $Plan.value.baselineSha256 -or
+     $value.bytes -ne $Plan.value.baselineBytes -or $value.native -isnot [bool] -or $value.native -ne $native -or
+     $value.originalSha256 -ceq $value.candidateSha256){throw 'Profile staging journal differs from its exact reconciliation plan.'}
+  Assert-PreparationStagePath $original $stage
+  if($native){
+    $value.metadata.creationUtc=[datetime]$value.metadata.creationUtc
+    Assert-PreparationNativeMetadata $value.metadata (Get-PreparationNativeMetadata $original) -AllowDaclAutoInherited
+  }else{Assert-PreparationAcl $value.acl (Get-PreparationAccessAcl $original)}
+  if(Test-Path -LiteralPath $stage){
+    if((Get-Digest $original) -cne $value.originalSha256 -or (Get-Digest $stage) -cne $value.candidateSha256 -or
+       (Get-Item -LiteralPath $stage -Force).Length -ne $value.bytes){throw 'Journalled profile stage or original bytes changed; retain evidence without publication.'}
+    if($native){Assert-PreparationNativeMetadata $value.metadata (Get-PreparationNativeMetadata $stage) -AllowDaclAutoInherited}
+    else{Assert-PreparationAcl $value.acl (Get-PreparationAccessAcl $stage)}
+  }
+  return $value
+}
+function Publish-ReconciliationStage([string]$Stage,[string]$Original) {
+  if([Environment]::OSVersion.Platform -eq 'Win32NT'){
+    [OpenNavX.PreparationNative]::Publish($Stage,$Original)
+  }else{[IO.File]::Replace($Stage,$Original,[NullString]::Value,$false)}
+}
+function Publish-ReconciliationProfile($Plan,$Current) {
+  $original=Join-Path $Current.profile 'opencpn.ini';$journal=Join-Path $Plan.directory 'profile-stage.json'
+  if(-not(Test-Path -LiteralPath $journal)){
+    $native=[Environment]::OSVersion.Platform -eq 'Win32NT'
+    $metadata=if($native){Get-PreparationNativeMetadata $original}else{$null}
+    Write-Record $journal @{schema=1;owner=$script:ReconciliationOwner;status='prepared';planSha256=$Plan.sha256;parentPreparedSha256=$Plan.proof.sha256;
+      original=$original;stage=($original+'.opennav-recovery-'+$Plan.sha256.Substring(0,32)+'.partial');candidate=$Plan.baseline;
+      originalSha256=$Plan.inspection.currentIniSha256;candidateSha256=$Plan.value.baselineSha256;bytes=$Plan.value.baselineBytes;
+      native=$native;metadata=$metadata;acl=(Get-PreparationAccessAcl $original)}
+  }
+  $staged=Read-ReconciliationProfileStage $Plan
+  if(-not(Test-Path -LiteralPath $staged.stage)){
+    Copy-PreparationFile $Plan.baseline $staged.stage $staged.candidateSha256 $staged.bytes
+    if($staged.native){
+      Set-PreparationStageAcl $original $staged.stage $staged.metadata.acl
+      [IO.File]::SetCreationTimeUtc($staged.stage,$staged.metadata.creationUtc)
+      [IO.File]::SetAttributes($staged.stage,[IO.FileAttributes]$staged.metadata.attributes)
+    }
+  }
+  # Recheck the complete trees, both contexts, exact marker, original bytes and
+  # staged bytes/metadata immediately before the same atomic publication API.
+  Assert-ReconciliationPlanLive $Plan (Get-CommissioningContext $Current.workspace) -Resume
+  $staged=Read-ReconciliationProfileStage $Plan
+  Publish-ReconciliationStage $staged.stage $original
+  if((Get-Digest $original) -cne $Plan.value.baselineSha256 -or (Test-Path -LiteralPath $staged.stage)){throw 'Reconciliation profile publication postcondition failed.'}
+  $null=Read-ReconciliationProfileStage $Plan
+}
+function Remove-ReconciliationActive($Plan) {
+  Assert-ReconciliationActive $Plan.proof $Plan.inspection.activeMarkerSha256
+  Remove-Item -LiteralPath (Join-Path $Plan.inspection.currentContext.workspace 'commissioning-active.json')
+}
+function Get-ReconciliationReceipt($Plan) {
+  $completion=Join-Path $Plan.directory 'completion.json';$baseline=Join-Path $Plan.directory 'reconciled-baseline.json'
+  return [pscustomobject]@{status='reconciled';completion=$completion;completionSha256=(Get-Digest $completion);baselineRecord=$baseline;
+    baselineRecordSha256=(Get-Digest $baseline);applicationLaunched=$false;doNotAutoLaunch=$true}
+}
+function Assert-ReconciliationPlanLive($Plan,$Current,[switch]$Resume,[switch]$Completed) {
   $created=[datetime]::Parse($Plan.value.createdUtc).ToUniversalTime();$now=[datetime]::UtcNow
   if(-not $Resume -and ($created -gt $now -or ($now-$created).TotalHours -gt 24)){throw 'Unstarted reconciliation plan expired or future-dated.'}
   Assert-CommissioningContext $Plan.inspection.currentContext $Current
   Assert-ReconciliationLiveIdentity $Plan.proof $Current
-  Assert-ReconciliationActive $Plan.proof $Plan.inspection.activeMarkerSha256
+  if($Completed){
+    if(-not $Resume -or (Test-Path -LiteralPath (Join-Path $Current.workspace 'commissioning-active.json'))){throw 'Completed reconciliation requires an absent active marker.'}
+  }else{Assert-ReconciliationActive $Plan.proof $Plan.inspection.activeMarkerSha256}
   $tree=$Plan.inspection.profileTree|ConvertTo-Json -Depth 10|ConvertFrom-Json
   $ini=Join-Path $tree.root 'opencpn.ini';$hash=Get-Digest $ini
-  if($hash -cne $Plan.inspection.currentIniSha256 -and (-not $Resume -or $hash -cne $Plan.value.baselineSha256)){throw 'Current profile drifted from the exact inspected bytes.'}
+  if(($Completed -and $hash -cne $Plan.value.baselineSha256) -or ($hash -cne $Plan.inspection.currentIniSha256 -and (-not $Resume -or $hash -cne $Plan.value.baselineSha256))){throw 'Current profile drifted from the exact inspected bytes.'}
   $entry=@($tree.entries|Where-Object {$_.path -ceq 'opencpn.ini'})
   if($entry.Count -ne 1){throw 'Ambiguous current profile inventory.'}
   $entry[0].sha256=$hash;$entry[0].bytes=(Get-Item -LiteralPath $ini).Length
-  Assert-PreparationTree $tree
+  $stage=Read-ReconciliationProfileStage $Plan
+  if($Resume -and $hash -ceq $Plan.value.baselineSha256 -and $hash -cne $Plan.inspection.currentIniSha256 -and -not $stage){throw 'Published profile lacks its exact staging journal.'}
+  $expectedTree=$tree|ConvertTo-Json -Depth 10|ConvertFrom-Json
+  if($stage -and (Test-Path -LiteralPath $stage.stage)){
+    if(-not $Resume -or $Completed){throw 'An unpublished stage requires the same unfinished commit.'}
+    $expectedTree.entries=@(@($expectedTree.entries)+@([pscustomobject]@{path=[IO.Path]::GetFileName($stage.stage);directory=$false;bytes=$stage.bytes;sha256=$stage.candidateSha256})|Sort-Object path)
+  }
+  Assert-PreparationTree $expectedTree
   foreach($currentTree in @($Plan.inspection.currentPluginTrees)){Assert-PreparationTree $currentTree}
   Assert-ReconciliationMoves $Plan.proof $Plan.directory -Resume:$Resume
   $acls=Get-SessionPreservationAcls (@($tree)+@($Plan.proof.inventory.trees)+@($Plan.inspection.currentPluginTrees)) $Plan.proof.parent.quarantine

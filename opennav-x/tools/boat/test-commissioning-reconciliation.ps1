@@ -139,18 +139,94 @@ try {
   }
   Pass 'Interrupted commit resumes only the same intent; no changed plan or occupied plugin is accepted' {
     $f=NewFixture $true;$plan=InspectPlan
-    $originalMove=${function:Publish-PreparedProfile}
-    function Publish-PreparedProfile([string]$Original,[string]$SavedCandidate,[string]$OriginalHash,[string]$CandidateHash,[int]$Length,[string]$Journal) {
-      & $originalMove $Original $SavedCandidate $OriginalHash $CandidateHash $Length $Journal
+    $originalMove=${function:Publish-ReconciliationProfile}
+    function Publish-ReconciliationProfile($Plan,$Current) {
+      & $originalMove $Plan $Current
       throw 'Inert forced interruption after actual profile publication.'
     }
     try{Refuse 'Controlled interruption retains the active ownership marker' {Commit $plan}}
-    finally{Set-Item Function:Publish-PreparedProfile $originalMove}
+    finally{Set-Item Function:Publish-ReconciliationProfile $originalMove}
     if(-not(Test-Path (Join-Path $f.workspace 'commissioning-active.json'))){throw 'Marker cleared by incomplete commit.'}
     $other=Clone $plan;$other.planSha256='0'*64
     Refuse 'Interrupted commit refuses plan substitution' {Commit $other}
     $done=Commit $plan
     if($done.status -cne 'reconciled'){throw 'Exact interrupted target did not resume.'}
+  }
+  Pass 'Interruption before atomic publication retains exactly one journalled stage and resumes it' {
+    $f=NewFixture $true;$plan=InspectPlan;$originalPublish=${function:Publish-ReconciliationStage}
+    function Publish-ReconciliationStage([string]$Stage,[string]$Original){throw 'Inert interruption immediately before atomic publication.'}
+    try{Refuse 'Staging interruption preserves the original live profile and active marker' {Commit $plan}}
+    finally{Set-Item Function:Publish-ReconciliationStage $originalPublish}
+    $selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256;$stage=Read-ReconciliationProfileStage $selected
+    if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or -not(Test-Path (Join-Path $f.workspace 'commissioning-active.json')) -or
+       (Get-Digest $stage.stage) -cne $selected.value.baselineSha256 -or
+       @(Get-ChildItem -LiteralPath $f.current.profile -Filter '*.partial' -Force).Count -ne 1){throw 'Exact staged recovery boundary not retained.'}
+    $done=Commit $plan
+    if($done.status -cne 'reconciled' -or (Test-Path -LiteralPath $stage.stage) -or (Get-Digest $f.ini) -cne $selected.value.baselineSha256){throw 'Same journalled stage did not resume and publish exactly.'}
+  }
+  $stageKinds=@('stage-bytes','stage-path','unowned-extra');if($native){$stageKinds+='stage-metadata'}
+  foreach($kind in $stageKinds){
+    Pass ('Interrupted staging refuses '+$kind+' without changing live bytes or ownership') {
+      $f=NewFixture $true;$plan=InspectPlan;$originalPublish=${function:Publish-ReconciliationStage}
+      function Publish-ReconciliationStage([string]$Stage,[string]$Original){throw 'Inert interruption before atomic publication.'}
+      try{Refuse ('Retain staged fixture for '+$kind) {Commit $plan}}
+      finally{Set-Item Function:Publish-ReconciliationStage $originalPublish}
+      $selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256;$stage=Read-ReconciliationProfileStage $selected
+      switch($kind){
+        'stage-bytes'{[IO.File]::AppendAllText($stage.stage,'tampered')}
+        'stage-metadata'{[IO.File]::SetCreationTimeUtc($stage.stage,[IO.File]::GetCreationTimeUtc($stage.stage).AddMinutes(1))}
+        'stage-path'{
+          $journal=Join-Path $selected.directory 'profile-stage.json';$value=Read-Record $journal
+          $value.stage=$f.ini+'.opennav-recovery-'+('f'*32)+'.partial'
+          [IO.File]::WriteAllText($journal,($value|ConvertTo-Json -Depth 16),$encoding)
+        }
+        'unowned-extra'{[IO.File]::WriteAllText(($f.ini+'.opennav-recovery-'+('e'*32)+'.partial'),'Unowned recovery-looking bytes',$encoding)}
+      }
+      $before=Get-PreparationTree $f.current.profile
+      Refuse ('Same plan cannot accept '+$kind) {Commit $plan}
+      Assert-PreparationTree $before
+      if((Get-Digest $f.ini) -cne $f.originalCurrentHash -or -not(Test-Path (Join-Path $f.workspace 'commissioning-active.json')) -or
+         @($f.moves|Where-Object {[IO.File]::Exists($_.path)}).Count){throw 'Refused staging recovery changed live state.'}
+    }
+  }
+  foreach($inputOnly in @($false,$true)){
+    Pass ('Interruption immediately after marker removal returns the same completed receipt without mutation; input-only='+$inputOnly) {
+      $f=NewFixture $inputOnly;$plan=InspectPlan;$originalRemove=${function:Remove-ReconciliationActive}
+      function Remove-ReconciliationActive($Plan){& $originalRemove $Plan;throw 'Inert interruption immediately after active marker removal.'}
+      try{Refuse 'Marker-removal interruption occurs only after durable completion' {Commit $plan}}
+      finally{Set-Item Function:Remove-ReconciliationActive $originalRemove}
+      if(Test-Path (Join-Path $f.workspace 'commissioning-active.json')){throw 'Fault did not reach the marker-removed boundary.'}
+      $selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256
+      $expected=Get-ReconciliationReceipt $selected|ConvertTo-Json -Compress
+      $before=Get-PreparationTree ([IO.Path]::GetDirectoryName($f.workspace))
+      foreach($attempt in 1..2){
+        $done=Commit $plan
+        if(($done|ConvertTo-Json -Compress) -cne $expected){throw 'Repeated commit did not return the existing exact receipt.'}
+        Assert-PreparationTree $before
+      }
+      if(-not $inputOnly -and (Get-Digest $f.ini) -cne $f.originalCurrentHash){throw 'Original IO1 current profile bytes changed.'}
+    }
+  }
+  foreach($kind in @('wrong-plan','profile','navigation','context','unknown-marker','missing-completion')){
+    Pass ('Completed retry refuses '+$kind+' without changing any retained bytes') {
+      $f=NewFixture;$plan=InspectPlan;$done=Commit $plan;$selected=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256
+      switch($kind){
+        'wrong-plan'{
+          $other=Clone (Read-Record $plan.plan);$other.createdUtc=[datetime]::UtcNow.AddSeconds(1).ToString('o')
+          [IO.File]::WriteAllText($plan.plan,($other|ConvertTo-Json -Depth 16),$encoding)
+          $plan.planSha256=Get-Digest $plan.plan
+          $null=Read-ReconciliationPlan $f.workspace $plan.plan $plan.planSha256
+        }
+        'profile'{[IO.File]::AppendAllText($f.ini,'changed')}
+        'navigation'{[IO.File]::AppendAllText((Join-Path $f.current.profile 'navobj.xml'),'changed')}
+        'context'{$f.current.session++}
+        'unknown-marker'{Write-Record (Join-Path $f.workspace 'commissioning-active.json') @{schema=1;owner='Unknown';record=$f.record;recordSha256=$f.recordHash}}
+        'missing-completion'{Remove-Item -LiteralPath $done.completion}
+      }
+      $before=Get-PreparationTree ([IO.Path]::GetDirectoryName($f.workspace))
+      Refuse ('Completed plan cannot accept '+$kind) {Commit $plan}
+      Assert-PreparationTree $before
+    }
   }
   Pass 'Profile exclusion lock prevents concurrent reconciliation' {
     $f=NewFixture;$held=Open-CommissioningProfileLock $f.current.profile

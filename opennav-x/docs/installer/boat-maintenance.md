@@ -86,6 +86,12 @@ unchanged current identity, marker, current profile, both loader inventories,
 ACLs and original backups. An unstarted plan expires after 24 hours. A durable
 parent intent pins one plan before mutation; individual original-path move
 journals permit recovery after profile publication or partial DLL restoration.
+Before profile publication, a separate journal pins the plan-derived staged path,
+its exact target bytes and native metadata. A retry admits only that validated
+stage into the otherwise unchanged complete profile inventory and publishes it
+through the same atomic replacement API. Changed/incomplete staging bytes,
+changed metadata, a substituted stage path and arbitrary extra files refuse;
+keep the evidence for investigation instead of deleting or ignoring them.
 Retry only Commit with the same plan/hash. Changed bytes, conflicting journals
 or other target choices refuse. Neither phase launches an application or sends
 physical output; restoring an output-capable stored connection is not permission
@@ -95,9 +101,15 @@ Completion and `reconciled-baseline.json` use distinct
 `explicit-cross-generation-reconciliation;current-user-state-origin-unverified`
 provenance. They preserve the original context and independently recorded current
 context; they never relabel the old proof as current. Only after verifying durable
-completion does Commit remove its exact active marker. The completed baseline
-can then be explicitly selected by fresh Inventory/Prepare after the next
-qualified installation, with a new source/plugin review and launch audit.
+completion does Commit remove its exact active marker. If the process stops
+immediately after removal, repeating Commit with the same pinned plan validates
+the existing completion/baseline lineage, original plugin paths, exact current
+profile, contexts and inventories under both locks, then returns the existing
+receipt without mutation. A changed plan or live state, missing completion or an
+unknown new marker refuses; an absent marker alone never proves success.
+The completed baseline can then be explicitly selected by fresh Inventory/Prepare
+after the next qualified installation, with a new source/plugin review and launch
+audit.
 
 `test-commissioning-reconciliation.ps1 -PortableContracts` exercises disposable
 entrypoints; Windows CI or explicit `-IsolatedLocal` additionally exercises native

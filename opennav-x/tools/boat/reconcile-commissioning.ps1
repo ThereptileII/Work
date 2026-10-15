@@ -22,7 +22,7 @@ try {
   Assert-NoManualPilotChild $Workspace;Assert-ReconciliationLiveIdentity $proof $context
   $intentPath=Join-Path $proof.directory 'restore-reconciliation-intent.json'
   if($Action -cne 'Commit' -and @(Get-ChildItem -LiteralPath $proof.directory -Filter 'restore*.json' -Force|Where-Object {$_.Name -notlike 'restore-inspection-*'}).Count){throw 'Restoration already started; resume its exact pinned choice.'}
-  Assert-ReconciliationActive $proof ''
+  if($Action -cne 'Commit'){Assert-ReconciliationActive $proof ''}
   $ini=Join-Path $context.profile 'opencpn.ini'
   if($Action -ceq 'Inspect') {
     $directory=New-PreparationDirectory $context 'cold-reconciliation'
@@ -77,11 +77,23 @@ try {
     if($intent.owner -cne $script:ReconciliationOwner -or $intent.parentPreparedSha256 -cne $proof.sha256 -or
        $intent.plan -ine $selected.path -or $intent.planSha256 -cne $selected.sha256){throw 'Reconciliation already has another durable plan; no substitution.'}
   } elseif(@(Get-ChildItem -LiteralPath $proof.directory -Filter 'restore*.json' -Force|Where-Object {$_.Name -notlike 'restore-inspection-*'}).Count){throw 'Another restoration has begun.'}
+  $marker=Join-Path $context.workspace 'commissioning-active.json'
+  if(-not(Test-Path -LiteralPath $marker)){
+    # Marker removal is the final durable effect. An exact completed transaction
+    # can return its existing receipt without writing or restoring anything.
+    if(-not $resume){throw 'No active transaction or pinned reconciliation intent.'}
+    $baselineRecord=Join-Path $selected.directory 'reconciled-baseline.json'
+    $null=Read-CommissioningBaseline $context.workspace $baselineRecord (Get-Digest $baselineRecord)
+    Assert-ReconciliationPlanLive $selected $context -Resume -Completed
+    Assert-CommissioningTrees $proof.inventory.trees $proof.parent.quarantine
+    Get-ReconciliationReceipt $selected|ConvertTo-Json
+    return
+  }
   Assert-ReconciliationPlanLive $selected $context -Resume:$resume
   if(-not $resume){Write-Record $intentPath @{owner=$script:ReconciliationOwner;plan=$selected.path;planSha256=$selected.sha256;parentPreparedSha256=$proof.sha256;applicationLaunched=$false}}
   Assert-ReconciliationPlanLive $selected (Get-CommissioningContext $Workspace) -Resume
   if((Get-Digest $ini) -cne $selected.value.baselineSha256) {
-    Publish-PreparedProfile $ini $selected.baseline $selected.inspection.currentIniSha256 $selected.value.baselineSha256 $selected.value.baselineBytes $intentPath
+    Publish-ReconciliationProfile $selected $context
   }
   $index=0
   foreach($item in @($proof.parent.quarantine)) {
@@ -103,6 +115,6 @@ try {
   $null=Read-CommissioningBaseline $context.workspace $baselineRecord (Get-Digest $baselineRecord)
   Assert-ReconciliationPlanLive $selected (Get-CommissioningContext $Workspace) -Resume
   # Remove only the still-identical active marker after verified durable effects.
-  Remove-Item -LiteralPath (Join-Path $context.workspace 'commissioning-active.json')
-  [pscustomobject]@{status='reconciled';completion=$completion;completionSha256=(Get-Digest $completion);baselineRecord=$baselineRecord;baselineRecordSha256=(Get-Digest $baselineRecord);applicationLaunched=$false;doNotAutoLaunch=$true}|ConvertTo-Json
+  Remove-ReconciliationActive $selected
+  Get-ReconciliationReceipt $selected|ConvertTo-Json
 } finally {if($transactionLock){$transactionLock.Dispose()};$profileLock.Dispose()}
