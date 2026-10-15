@@ -81,6 +81,13 @@ contain a compromised runtime or kernel.
 
 ## Automatic use and ownership
 
+Include the applicable user authorization and allowed source/destination scope
+in each assignment, following the project AGENTS permission-handoff rule. Do not
+ask again for an already approved transfer with the same scope and destination.
+Codex sandbox approvals do not grant Claude new tools, network destinations or
+write access; the wrapper's restrictions and current execution approvals remain
+binding. A materially different transfer needs its own applicable authorization.
+
 Use Claude proactively as a regular specialist for complicated design/planning,
 architecture, debugging, security and regression work, alongside Codex subagents.
 Give each assignment a distinct bounded question and acceptance criteria; Codex

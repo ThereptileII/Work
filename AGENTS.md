@@ -9,7 +9,10 @@ under the scope rule in the project instructions.
 
 The scoped read-only Claude specialist is [tools/agents/claude-review](tools/agents/claude-review).
 Follow [its workflow and isolation rules](tools/agents/README.md). Codex owns
-final decisions and integration. External review does not replace the required
+final decisions and integration. Every delegated task must carry the existing
+user authorization and its limits using the permission-handoff rule in the
+project instructions; do not ask again for already authorized task scope.
+External review does not replace the required
 functional, native Windows, boat, security or release gates.
 
 Reusable Codex skill sources are versioned in [tools/agents/skills](tools/agents/skills/README.md):

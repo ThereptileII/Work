@@ -85,6 +85,32 @@ start duplicate full builds, deliveries or boat operations. Integrate a coherent
 batch and inspect the combined change; request one build/delivery when its
 product inputs require it. Keep context limited and handoffs concise.
 
+### Permission handoff to subagents
+
+User decision: 2026-10-15. Existing user authorization follows delegated work
+within its original scope. Include a short permission handoff in every initial
+assignment, context-limited handoff and material scope update:
+
+- State the applicable user authorization and the assigned task, worktree/files,
+  permitted reads/writes, external destinations and focused checks.
+- Identify coordinator-only actions and applicable exclusions, including boat
+  operations, physical output, release publication and secret handling.
+- Do not ask the user again for task scope already authorized. Forward the same
+  authorization and limits when delegating further; a child cannot expand them.
+
+Codex subagents inherit the parent session's current sandbox/approval policy;
+this text carries intent, not an execution-permission override. Tool-specific
+approvals still apply, and a one-command approval is not blanket authority for
+other commands or agents. Use the normal scoped escalation mechanism when
+required. If it is unavailable or denied, report the exact action and reason to
+the coordinator; do not bypass it or claim a permission change occurred.
+
+Claude is a separate runtime: use its existing scoped wrapper and approved
+transfer scope, never copy Codex credentials or assume Codex execution approvals
+apply there. Review assignments remain read-only. Implementation assignments
+require the isolated worktree and exclusive ownership rules above. Do not put
+secrets or approval tokens in prompts, repository files or evidence.
+
 Use [the scoped Claude workflow](../tools/agents/README.md) for bounded
 architecture, debugging, security, regression and code reviews. Its immutable
 snapshot permits independent Codex work without concurrent edits by Claude.

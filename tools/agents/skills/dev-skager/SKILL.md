@@ -40,6 +40,13 @@ integration hooks. Do not build a parallel route, AIS or connection database.
   authorized. Give each product task its issue (admin tasks are exempt), an
   isolated worktree, exclusive files and concrete
   acceptance. Root alone integrates, requests full builds and operates the boat.
+  Carry the user's existing authorization into every handoff: assigned scope,
+  owned files, allowed reads/writes and destinations, plus coordinator-only
+  actions and safety limits. Do not re-ask for already authorized task scope.
+  Forward these limits to child agents. Sandbox/tool approvals remain binding;
+  use scoped escalation when required and report denials to root without a
+  workaround. Claude retains its separate wrapper and transfer restrictions.
+  Never put credentials or approval tokens in the handoff.
   Check current model availability and AGENTS rather than pinning old model names
   here. No agent independently starts duplicate builds or deliveries.
 - Use the existing scoped `tools/agents/claude-review` for a useful independent
