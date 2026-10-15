@@ -1,0 +1,436 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.NativeCandidateProducerReceipt.1",
+  "issues": [
+    "SCRUM-209",
+    "SCRUM-22",
+    "SCRUM-212"
+  ],
+  "status": "passed-native-producer-installed-qualification-pending",
+  "candidateCommit": "b4c40e6e9166d7e8340dec2879d2a8ad510b7458",
+  "workflow": ".github/workflows/opennav-baseline.yml",
+  "runId": 38705678784,
+  "runAttempt": 3,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38705678784",
+  "runStatusAtSnapshot": "in_progress",
+  "runConclusionAtSnapshot": null,
+  "nativeJob": {
+    "id": 116350139778,
+    "name": "windows-integration",
+    "conclusion": "success",
+    "startedAt": "2026-10-15T09:30:17Z",
+    "completedAt": "2026-10-15T10:05:38Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Authenticate immutable producer dependencies",
+        "conclusion": "success"
+      },
+      {
+        "number": 4,
+        "name": "Verify immutable SDK image, Python and source before native setup",
+        "conclusion": "success"
+      },
+      {
+        "number": 5,
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "conclusion": "success"
+      },
+      {
+        "number": 6,
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "conclusion": "success"
+      },
+      {
+        "number": 7,
+        "name": "Select explicit curl test Perl",
+        "conclusion": "success"
+      },
+      {
+        "number": 8,
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "conclusion": "success"
+      },
+      {
+        "number": 9,
+        "name": "Fetch pinned source",
+        "conclusion": "success"
+      },
+      {
+        "number": 10,
+        "name": "Prepare authenticated AIS inputs before application compilation",
+        "conclusion": "success"
+      },
+      {
+        "number": 11,
+        "name": "Native AIS observation and transport with verified maintained TLS",
+        "conclusion": "success"
+      },
+      {
+        "number": 12,
+        "name": "Prepare stock support after maintained AIS cache staging",
+        "conclusion": "success"
+      },
+      {
+        "number": 13,
+        "name": "Compile fixture application and run compiled security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "number": 14,
+        "name": "Verify packaged source reproduces the curl certificate-tool patch",
+        "conclusion": "success"
+      },
+      {
+        "number": 15,
+        "name": "Installed native peer CLI refuses key changes on the disposable runner",
+        "conclusion": "success"
+      },
+      {
+        "number": 16,
+        "name": "Compile fixture-free product and run installed security and unit checks",
+        "conclusion": "success"
+      },
+      {
+        "number": 17,
+        "name": "Check prepackage recovery retention with disposable real Git trees",
+        "conclusion": "success"
+      },
+      {
+        "number": 18,
+        "name": "Retain both native applications and exact tracked source before packaging",
+        "conclusion": "success"
+      },
+      {
+        "number": 19,
+        "name": "Upload unqualified compiled recovery before packaging can fail",
+        "conclusion": "success"
+      },
+      {
+        "number": 20,
+        "name": "Retain exact plugin-download SDK inputs for no-rebuild qualification",
+        "conclusion": "success"
+      },
+      {
+        "number": 21,
+        "name": "Preserve plugin-download SDK inventory and failed capture diagnostics",
+        "conclusion": "success"
+      },
+      {
+        "number": 22,
+        "name": "Resolve private chart imports in the real host without plugin initialization",
+        "conclusion": "success"
+      },
+      {
+        "number": 23,
+        "name": "Native public Downloader Windows trust and rejection gate",
+        "conclusion": "success"
+      },
+      {
+        "number": 24,
+        "name": "Exact peer response buffer on native MSVC Win32",
+        "conclusion": "success"
+      },
+      {
+        "number": 25,
+        "name": "Run actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093",
+        "conclusion": "success"
+      },
+      {
+        "number": 26,
+        "name": "Stage exact qualified startup updater and retained dependency source",
+        "conclusion": "success"
+      },
+      {
+        "number": 27,
+        "name": "Package fixture-free recovery before desktop qualification",
+        "conclusion": "success"
+      },
+      {
+        "number": 28,
+        "name": "Compile exact installer without running its desktop qualification yet",
+        "conclusion": "success"
+      },
+      {
+        "number": 29,
+        "name": "Seal compiled inputs before any desktop test can fail",
+        "conclusion": "success"
+      },
+      {
+        "number": 30,
+        "name": "Preserve actual producing attempt for downstream retries",
+        "conclusion": "success"
+      },
+      {
+        "number": 31,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      },
+      {
+        "number": 32,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "environment": {
+    "ImageOS": "win22",
+    "ImageVersion": "20261012.333.1",
+    "RUNNER_OS": "Windows",
+    "RUNNER_ARCH": "X64",
+    "applicationArchitecture": "Win32/x86",
+    "sdkImagePythonSourcePreflight": "passed",
+    "freshDependencyReprobes": "passed"
+  },
+  "nativeArtifacts": [
+    {
+      "id": 11963720707,
+      "name": "windows-build-evidence-b4c40e6e9166d7e8340dec2879d2a8ad510b7458-attempt3",
+      "bytes": 65382243,
+      "apiSha256": "7966c92545b209f3475f6abc854014720c61a9ecf336762c3ac847d354cd1e79",
+      "createdAt": "2026-10-15T10:05:35Z",
+      "expired": false,
+      "apiRunAndSourceIdentityMatched": true,
+      "originalAttemptSuffixAndJobTimeMatched": true,
+      "localArchiveVerified": true
+    },
+    {
+      "id": 11963700129,
+      "name": "plugin-guard-inputs-b4c40e6e9166d7e8340dec2879d2a8ad510b7458-run38705678784-attempt3",
+      "bytes": 131376585,
+      "apiSha256": "6a4f1f6de90c037add5e06c4e16f059968dbf0603c73298000130df7ba6cac5e",
+      "createdAt": "2026-10-15T10:02:04Z",
+      "expired": false,
+      "apiRunAndSourceIdentityMatched": true,
+      "originalAttemptSuffixAndJobTimeMatched": true,
+      "localArchiveVerified": false
+    },
+    {
+      "id": 11963014856,
+      "name": "staging-build-b4c40e6e9166d7e8340dec2879d2a8ad510b7458-run38705678784-attempt3",
+      "bytes": 1541311252,
+      "apiSha256": "a98884904d6450b8e5151024252f75a146cb513e67064c2d0f5fbbd4850f96a0",
+      "createdAt": "2026-10-15T10:05:23Z",
+      "expired": false,
+      "apiRunAndSourceIdentityMatched": true,
+      "originalAttemptSuffixAndJobTimeMatched": true,
+      "localArchiveVerified": false
+    },
+    {
+      "id": 11962584915,
+      "name": "compiled-recovery-b4c40e6e9166d7e8340dec2879d2a8ad510b7458-run38705678784-attempt3",
+      "bytes": 427841298,
+      "apiSha256": "2635554495801489b691e7a4e2da94bd25fa61bf146d8822d372c2373f5b3ca2",
+      "createdAt": "2026-10-15T10:01:51Z",
+      "expired": false,
+      "apiRunAndSourceIdentityMatched": true,
+      "originalAttemptSuffixAndJobTimeMatched": true,
+      "localArchiveVerified": false
+    }
+  ],
+  "downloadedEvidence": {
+    "artifactId": 11963720707,
+    "localBytes": 65382243,
+    "localSha256": "7966c92545b209f3475f6abc854014720c61a9ecf336762c3ac847d354cd1e79",
+    "apiDigestAndSizeMatched": true,
+    "allMemberCrcChecksPassed": true,
+    "zipMembers": 18125,
+    "uncompressedBytes": 213030792,
+    "selectedOriginalMembers": [
+      {
+        "name": "windows-peer-cli-receipt.json",
+        "bytes": 649,
+        "crc32": "eafc98ea",
+        "sha256": "3fe7d00533f2732e1e811c72e85d24b9ba554ea8064bef73f11d9ee271458980"
+      },
+      {
+        "name": "windows-xnav-Win32.log",
+        "bytes": 1237339,
+        "crc32": "4b5f9c34",
+        "sha256": "aa8af975895871f9294f05b4c4851fca03638da66a02e031e99fd9967fd553f4"
+      },
+      {
+        "name": "windows-production-Win32.log",
+        "bytes": 1179219,
+        "crc32": "a1410b42",
+        "sha256": "4a5e9659c28690b0b6e805743703906159ecbbd9eb4ad165a8e915c4496a7c9c"
+      },
+      {
+        "name": "downloader-trust-windows/summary.json",
+        "bytes": 19280,
+        "crc32": "dbac41c4",
+        "sha256": "c0b0797f04d80b7fbdf3ba5cb8ea66ae27be7dd4cc21fb43e3a82fc4792fe37c"
+      },
+      {
+        "name": "ocharts-private-wxcurl-trust-windows/summary.json",
+        "bytes": 19280,
+        "crc32": "8d4e10bf",
+        "sha256": "986b56e6f11c9ec0d42c1529db5632767371ccc8620da0b746156765583afa54"
+      },
+      {
+        "name": "ocharts-real-host-module/summary.json",
+        "bytes": 18382,
+        "crc32": "022ca101",
+        "sha256": "2e7b273eabaafe55fe74a1c38ef5b10d1cde802a23ede8dd4d7ee0427111ff3f"
+      },
+      {
+        "name": "ais-native-runtime/report.json",
+        "bytes": 207389,
+        "crc32": "02bacff7",
+        "sha256": "7bd00fe065f5a9e75bae1e00401b15a4e1560c449e4827c35c6f04e162413296"
+      },
+      {
+        "name": "ais-native-runtime/session.log",
+        "bytes": 27,
+        "crc32": "5dedfc26",
+        "sha256": "76e3795ef79e2823a969b1b46771b58ed70b2b1e1de9d8dd628319421b408041"
+      },
+      {
+        "name": "ais-native-runtime/transport.log",
+        "bytes": 1412,
+        "crc32": "5c563283",
+        "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807"
+      },
+      {
+        "name": "ais-native-runtime/provider.log",
+        "bytes": 3500,
+        "crc32": "808c189d",
+        "sha256": "edad90a21dc4da12d2a419e8ef9cc15b906b1a4276f92c961c3b940e197ae1be"
+      },
+      {
+        "name": "peer-buffer-windows.log",
+        "bytes": 1589,
+        "crc32": "1a6022a8",
+        "sha256": "260996b174d240e8faf34a7052a831729b73d0dd2917671d4327b09d99fd3890"
+      },
+      {
+        "name": "plugin-guard-capture.log",
+        "bytes": 98,
+        "crc32": "52fd7069",
+        "sha256": "0fbfc1a1da38805a49894bf0877b9aabd38b8880183ced661ab8cbf9832978c5"
+      },
+      {
+        "name": "windows-changed-units-xnav/summary.json",
+        "bytes": 72046,
+        "crc32": "9b41c0a7",
+        "sha256": "e08b51de65e4b8898482f6d674c7271e3a9a98aeb21955472022777f5d1f110c"
+      },
+      {
+        "name": "windows-changed-units-production/summary.json",
+        "bytes": 72046,
+        "crc32": "f986859f",
+        "sha256": "6211e09bb0d71babde5969b8436c5c9ad0dfe385827fb7f7e6ae2939672f1236"
+      }
+    ]
+  },
+  "authentication": {
+    "apiPayloadSha256": {
+      "producer-run": "78323f00fa14a26f0e493f49e0e60838696f881bb7148cb26a74e7e07abe2716",
+      "producer-jobs": "1db1356eb534ffecf024a3ac19491ed2d74625d90d34b17f24079f7bd8ad63df",
+      "annotations": "9e05ec74f8642c77639497c8720511648f696b3fdeed244e61292f09ed695fb0",
+      "artifacts": "262474a7839ba3a19f74c89dc90b67c61ba141aed6769ceaafa4e32cafe36043"
+    },
+    "nativeJobLog": {
+      "bytes": 2871103,
+      "sha256": "65e08f0720cf4b91b2232c996988149b7c5d6ce20543b089c2b8a817f6fa1123"
+    },
+    "artifactMetadataSha256": {
+      "11963720707": "adbddc7b25c3b2cb8c46143f8dd7af80959def1d808c8e86def77390523d3c10",
+      "11963700129": "410345e4bd2051bbfca98c43de577483f166ad407d7d848588907e3090059161",
+      "11963014856": "a5364304e5bd43b034cfd1ac67626e377e4ce12357447d6ac5acba4403b394b6",
+      "11962584915": "9e8576e271c2203ea4ee93a32fcabcaae0bebbd932981db8b73ac02a2ffaee24"
+    }
+  },
+  "outcomes": {
+    "compiledCTest": {
+      "fixture": {
+        "passed": 146,
+        "failed": 0
+      },
+      "fixtureFreeProduct": {
+        "passed": 146,
+        "failed": 0
+      },
+      "sameDistinctTestNameSet": true,
+      "distinctTestNamesAcrossBoth": 146,
+      "distinctTestNamesSha256": "431cb5b7903ddac2beef8e6524599cf19f5129336865d405830913d7cc41c6e2",
+      "executionsAreNotAddedAsUniqueTests": true
+    },
+    "peerCli": {
+      "status": "success",
+      "originalReceiptSourceRunAndExecutableBindingPassed": true,
+      "receiptStatusVerifiedAgainWithoutRepeatingCliSuite": true,
+      "assertionCountNotEmitted": true
+    },
+    "nativeAis": {
+      "passed": true,
+      "actualSessionChecks": 251,
+      "actualTransportScenarios": 18,
+      "actualProviderLifecycles": 8,
+      "providerAndServerMarkersDescribeSameEightExecutions": true,
+      "declaredRequestedSessionFloor": 178,
+      "dependencyBuilds": false,
+      "productAcceptance": false,
+      "boatAcceptance": false
+    },
+    "nativeDownloaderTrust": {
+      "status": "passed",
+      "publicDownloaderCases": 12,
+      "wxCurlCases": 12,
+      "privateWxCurlSummaryAlsoPassed": true,
+      "privateSummaryCaseCountsAreNotAddedAsUniqueTests": true
+    },
+    "privateChartHostModule": {
+      "status": "passed",
+      "expectedExitCases": 4,
+      "profilesUnchanged": true,
+      "nativeProductAcceptance": false
+    },
+    "peerBufferStandalone": {
+      "passed": 1,
+      "failed": 0,
+      "sameTestNameIncludedInCompiledCTestSet": false,
+      "reportedSeparatelyWithoutInventingAnAggregate": true
+    },
+    "changedUnits": {
+      "fixture": "passed-exact-candidate",
+      "fixtureFreeProduct": "passed-exact-candidate"
+    },
+    "recoveryRetention": "passed",
+    "pluginGuardInputCapture": "passed-retention-only",
+    "recoveryPackaging": "passed",
+    "installerCompilation": "passed-compilation-only",
+    "compiledInputSealing": "passed"
+  },
+  "downstreamAtSnapshot": {
+    "id": 116364569049,
+    "name": "Qualify retained native Staging inputs",
+    "status": "in_progress",
+    "conclusion": null,
+    "exactCompiledInputRestore": "passed",
+    "installedRuntimeQualification": "pending"
+  },
+  "limits": [
+    "Producer success, installer compilation and sealed retained inputs do not establish installed desktop, package, boat or release acceptance; downstream native qualification remains pending in this snapshot.",
+    "Original attempts 1 and 2 remain failed and preserved; this receipt records only the exact attempt 3 producer.",
+    "Only the 65 MB native diagnostic ZIP was downloaded and fully hash/CRC verified here. Larger compiled recovery, plugin SDK and sealed candidate ZIPs have authenticated API identity/digest/size metadata; their local bytes were not independently downloaded or CRC checked by this task.",
+    "CTests ran against fixture and fixture-free builds with the same 146 distinct test names; repeated copies of these CTest logs are not extra executions. The separate peer-buffer suite is reported separately.",
+    "AIS requestedChecks is a declaration, not an observed total; actual original session output records 251 passing checks.",
+    "TLS public and private summaries are scoped outputs and are not summed into an invented unique-test total.",
+    "No tests/builds were rerun, no CI dispatched/retried, and no boat, actuator, release or private external-transfer action was performed by this evidence task."
+  ],
+  "installedPackageAccepted": false,
+  "wholeProductAccepted": false,
+  "boatAccepted": false,
+  "releaseAccepted": false
+}
