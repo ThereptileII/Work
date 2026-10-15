@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Explicit, reviewed composition of a failed Staging run and a narrow retest.
 
-The original runtime job remains failed. Only the fixed installer/chart suffix
-may be replaced. This module never builds, runs applications, or publishes.
+The original runtime job remains failed. Separate, closed request versions cover
+the historical installer/chart suffix and a complete native runtime replacement.
+This module never builds, runs applications, or publishes.
 """
 import argparse
 import base64
@@ -71,6 +72,27 @@ GATES = dict(linux='passed', windows='passed', installer='passed', package='pass
 MAX_ARTIFACT = 8 * 1024**3
 MAX_REPORT = 32 * 1024**2
 FAILURE = "RuntimeError('Native process did not exit within the deadline')"
+# Request v2 is the SCRUM-22 modal-completion repair, not an arbitrary gate
+# substitution facility. Its qualifier/driver/workflow recipe is reviewed here.
+ALL_RECIPE = {
+    BASELINE: '3f9f9bdedb974ec3facee660e9417a1580fac87ca32b10627908fdcc8d803e93',
+    RETEST: '72612efbf7c0945fc58763bc6da7dac35c8764a084917df8c713ba4c5d625934',
+    'opennav-x/tools/retest-staging-windows.py': 'fd4264d7980e8d2d04131b8976e3a0f450bf8d39da5033cd14bc51f5e7c19fa2',
+    'opennav-x/tools/qualify-staging-windows.ps1': 'b9b5705d4f269f14a8bf76142b2089b5e1541ca641038f86e4f2913bb7beabbe',
+}
+ALL_EDITS = frozenset({'opennav-x/tools/smoke-navigation.py', 'opennav-x/tools/windows-ui.py',
+                       'opennav-x/tests/smoke_navigation_surface_tests.py'})
+ALL_ORIGINAL = frozenset({'staging-inputs.json', 'objects-input-results.json'})
+ALL_LOGS = frozenset('signed-update-custody/' + arch + suffix
+                     for arch in ('x64', 'x86') for suffix in ('.log', '-previous-restore.log'))
+ALL_REPORTS = PREFIX_REPORTS | RETEST_REPORTS | ALL_LOGS | {'peer-two-instances-results.json'}
+ALL_JOBS = (*REQUIRED_JOBS, 'pilot-serial-contracts / serial')
+CUSTODY_SOURCES = ('test-signed-update-previous-restore-windows.ps1', 'SignedUpdatePreviousRestore.ps1',
+                  'SignedUpdateSessionStore.ps1', 'SignedUpdateOperations.ps1', 'SignedUpdateSession.ps1',
+                  'commission-read-only.ps1', 'prepare-session-preservation.ps1', 'Commissioning.ps1',
+                  'CommissioningBaseline.ps1', 'CommissioningProfileLock.cs', 'Preparation.ps1', 'Common.ps1',
+                  'ColdBaseline.ps1', 'InstalledResourceReview.ps1', 'RestartCommissioningPolicy.ps1',
+                  'RestartAuiPersistence.ps1', 'RestartDashboardPersistence.ps1')
 require = manifest.require
 
 
@@ -105,9 +127,12 @@ def _pins(items, required):
 
 
 def validate_request(request):
-    _fields(request, ('schema', 'repository', 'producer', 'build', 'original', 'retest'))
-    require(type(request['schema']) is int and request['schema'] == 1 and
-            request['repository'] == REPOSITORY, 'Unsupported composition request')
+    require(isinstance(request, dict) and type(request.get('schema')) is int and
+            request['schema'] in (1, 2), 'Unsupported composition request')
+    full = request['schema'] == 2
+    _fields(request, {'schema', 'repository', 'producer', 'build', 'original', 'retest'} |
+            ({'helperClosure', 'restart'} if full else set()))
+    require(request['repository'] == REPOSITORY, 'Unsupported composition request')
     p = request['producer']; _identity(p)
     artifact_keys = {'artifactId', 'artifactName', 'artifactDigest'}
     _fields(request['build'], artifact_keys | {'archiveSha256'})
@@ -126,13 +151,34 @@ def validate_request(request):
             request['original']['artifactName'] == f"windows-qualification-{p['commit']}-attempt{p['runAttempt']}" and
             r['artifactName'] == f"staging-retest-evidence-{p['runId']}-attempt{p['runAttempt']}-harness{r['commit']}-run{r['runId']}-attempt{r['runAttempt']}",
             'Artifact name does not bind exact producer/retest identity')
-    _pins(request['original']['prefixReports'], PREFIX_REPORTS)
-    _pins(r['reports'], RETEST_REPORTS)
+    _pins(request['original']['prefixReports'], ALL_ORIGINAL if full else PREFIX_REPORTS)
+    _pins(r['reports'], ALL_REPORTS if full else RETEST_REPORTS)
+    if full:
+        closure = request['helperClosure']
+        _fields(closure, ('producerTree', 'harnessTree', 'edits'))
+        for name in ('producerTree', 'harnessTree'):
+            _match('[a-f0-9]{40}', closure[name])
+        edits = closure['edits']
+        require(isinstance(edits, list) and len(edits) == len(ALL_EDITS), 'Incomplete reviewed helper changes')
+        for edit in edits:
+            _fields(edit, ('path', 'before', 'after'))
+            for key in ('before', 'after'):
+                _match('[a-f0-9]{40}', edit[key])
+            require(edit['before'] != edit['after'], 'Helper change must be explicit')
+        require({e['path'] for e in edits} == ALL_EDITS, 'Only the reviewed modal repair may differ')
+        restart = request['restart']
+        _fields(restart, artifact_keys | {'reports'})
+        _match('[1-9][0-9]{0,19}', restart['artifactId'])
+        _match('sha256:[a-f0-9]{64}', restart['artifactDigest'])
+        require(restart['artifactName'] == f"commissioning-restart-qualified-{p['commit']}-attempt{p['runAttempt']}",
+                'Restart receipt must belong to the original producer')
+        _pins(restart['reports'], {'qualified.json'})
 
 
 def request_from_qualification(q):
     c = q['composition']
-    return {key: c[key] for key in ('schema', 'repository', 'producer', 'build', 'original', 'retest')}
+    keys = ('schema', 'repository', 'producer', 'build', 'original', 'retest')
+    return {key: c[key] for key in (*keys, *(('helperClosure', 'restart') if c['schema'] == 2 else ()))}
 
 
 def qualification(request, request_sha, execution):
@@ -150,7 +196,8 @@ def validate_qualification(q, record, support):
             q['channel'] == 'staging' and q['gates'] == GATES and q['publicAccess'] is False and
             q['designReview'] == 'not-requested' and q['endurance'] == 'skipped', 'Invalid composed qualification policy')
     _fields(q['composition'], {'schema', 'repository', 'producer', 'build', 'original', 'retest',
-                              'requestPath', 'requestSha256', 'execution'})
+                              'requestPath', 'requestSha256', 'execution'} |
+            ({'helperClosure', 'restart'} if q['composition'].get('schema') == 2 else set()))
     c = q['composition']; request = request_from_qualification(q); validate_request(request)
     _identity(c['execution']); _match('[a-f0-9]{64}', c['requestSha256'])
     require(c['requestPath'] == REQUEST_PATH, 'Only the committed composition request is supported')
@@ -203,12 +250,60 @@ def _artifact(gh, pin, identity, *, downloadable=False):
     return a
 
 
+def _git_tree(gh, commit, expected):
+    record = gh.api(f'{gh.base}/git/commits/{commit}')
+    require(record.get('sha') == commit and record.get('tree', {}).get('sha') == expected,
+            'Reviewed Git tree does not belong to the immutable commit')
+    tree = gh.api(f'{gh.base}/git/trees/{expected}?recursive=1')
+    require(tree.get('sha') == expected and tree.get('truncated') is False and
+            isinstance(tree.get('tree'), list) and 0 < len(tree['tree']) <= inputs.MAX_FILES,
+            'Incomplete helper input tree')
+    result = {}
+    for entry in tree['tree']:
+        name = entry.get('path'); inputs.safe_name(name)
+        if entry.get('type') == 'tree':
+            continue
+        require(name not in result and entry.get('mode') in ('100644', '100755', '120000', '160000') and
+                entry.get('type') == ('commit' if entry['mode'] == '160000' else 'blob'), 'Invalid Git input entry')
+        _match('[a-f0-9]{40}', entry.get('sha'))
+        result[name] = (entry['mode'], entry['sha'])
+    return result
+
+
+def verify_helper_closure(gh, request):
+    """Bind every tracked input, not just a list of direct Python imports.
+
+    Only evidence/status documents are excluded from equality. They are still
+    bound by both complete tree IDs; packaged docs, fixtures, locks, scripts,
+    submodules and adjacent import candidates all remain in the comparison.
+    """
+    closure = request['helperClosure']
+    before = _git_tree(gh, request['producer']['commit'], closure['producerTree'])
+    after = _git_tree(gh, request['retest']['commit'], closure['harnessTree'])
+    def consumed(path):
+        return not (path.startswith('opennav-x/docs/evidence/') or path == 'opennav-x/docs/status.md')
+    changed = {p for p in before.keys() | after.keys() if consumed(p) and before.get(p) != after.get(p)}
+    require(changed == ALL_EDITS, 'Unreviewed added, removed or changed retained-check input')
+    for edit in closure['edits']:
+        require(before.get(edit['path']) == ('100644', edit['before']) and
+                after.get(edit['path']) == ('100644', edit['after']), 'Reviewed helper blob or file mode differs')
+    for name, expected in ALL_RECIPE.items():
+        require(name in after and after[name][0] == '100644', 'Required native recipe is not a regular file')
+        blob = gh.api(f'{gh.base}/git/blobs/{after[name][1]}')
+        require(blob.get('sha') == after[name][1] and blob.get('encoding') == 'base64' and
+                type(blob.get('size')) is int and 0 < blob['size'] <= MAX_REPORT and
+                isinstance(blob.get('content'), str) and len(blob['content']) <= 2 * MAX_REPORT,
+                'Native recipe Git blob unavailable')
+        raw = base64.b64decode(''.join(blob['content'].split()), validate=True)
+        require(len(raw) == blob['size'] and digest(raw) == expected, 'Native all recipe differs from reviewed commands')
+
+
 def _verify_inputs(gh, q):
     c = q['composition']; p = c['producer']; r = c['retest']
     require(gh.repo == REPOSITORY, 'Composition repository differs')
     _run(gh, p, BASELINE, conclusion='failure')
     jobs = gh.pages(f"{gh.base}/actions/runs/{p['runId']}/attempts/{p['runAttempt']}/jobs")
-    for name in REQUIRED_JOBS:
+    for name in ALL_JOBS if c['schema'] == 2 else REQUIRED_JOBS:
         _job(jobs, p, name, 'success')
     _job(jobs, p, RUNTIME_JOB, 'failure', c['original']['jobId'])
     _run(gh, r, RETEST, conclusion='success')
@@ -216,6 +311,9 @@ def _verify_inputs(gh, q):
     _job(jobs, r, 'retest', 'success', r['jobId'])
     for pin, identity in ((c['build'], p), (c['original'], p), (r, r)):
         _artifact(gh, pin, identity)
+    if c['schema'] == 2:
+        _artifact(gh, c['restart'], p)
+        verify_helper_closure(gh, c)
 
 
 def _verify_request(gh, q):
@@ -389,7 +487,8 @@ def _reports(archive, pins):
     raw = selected_zip(archive, [p['path'] for p in pins])
     for pin in pins:
         require(digest(raw[pin['path']]) == pin['sha256'], 'Reviewed report hash differs: ' + pin['path'])
-    return raw, {name: inputs.strict_json(data.decode('utf-8-sig')) for name, data in raw.items()}
+    return raw, {name: (data.decode('utf-8-sig') if name in ALL_LOGS else
+                       inputs.strict_json(data.decode('utf-8-sig'))) for name, data in raw.items()}
 
 
 def _eq(value, expected, message):
@@ -398,6 +497,8 @@ def _eq(value, expected, message):
 
 def validate_reports(original, retest, q, frozen):
     """Fixed semantic checks in addition to the request's exact reviewed hashes."""
+    if q['composition']['schema'] == 2:
+        return validate_all_reports(original, retest, q, frozen)
     require(set(original) == PREFIX_REPORTS and set(retest) == RETEST_REPORTS, 'Incomplete report coverage')
     p = q['composition']['producer']; commit = p['commit']; c = q['composition']
     for reports, harness in ((original, commit), (retest, c['retest']['commit'])):
@@ -499,6 +600,189 @@ def validate_reports(original, retest, q, frozen):
             updater['faultInjection']['restored'] is True, 'Fresh packaged updater did not complete all four mechanics')
 
 
+def runtime_binding(tree):
+    """Facts derived from the authenticated sealed inputs, never report claims."""
+    source = inputs.plain_file(tree, 'build/developer-preview/SKAGER-Beta2-source.zip')
+    raw = selected_source_zip(source, ['SOURCE_REFERENCE.json'])['SOURCE_REFERENCE.json']
+    reference = inputs.strict_json(raw)
+    package = inputs.plain_file(tree, 'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip')
+    name = 'SKAGER-Beta2-Portable-Recovery/FILE_SHA256.json'
+    inventory = inputs.strict_json(selected_zip(package, [name])[name])
+    require(isinstance(inventory, dict) and inventory, 'Empty frozen recovery inventory')
+    for path, sha in inventory.items():
+        inputs.safe_name(path); _match('[a-f0-9]{64}', sha)
+    product = inputs.strict_json(inputs.plain_file(tree, inputs.PACKAGE_ROOT + '/docs/PRODUCT_BUILD.json').read_bytes())
+    return dict(product=product, recoveryFiles=len(inventory), sourceHashes={
+                    path: record['sha256'] for path, record in reference['files'].items()},
+                hashes={key: inputs.sha(inputs.plain_file(tree, path)) for key, path in {
+                    'fixture': 'build/xnav-install/opencpn.exe', 'product': 'build/production-install/opencpn.exe',
+                    'setup': 'build/beta-installer/SKAGER-Beta2-Setup.exe',
+                    'recovery': 'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip'}.items()})
+
+
+def validate_restart_receipt(qualified, producer):
+    require(type(qualified['schema']) is int and qualified['schema'] == 1 and
+            qualified['owner'] == 'OpenNavX.CI.RestartGates.1' and
+            all(qualified[key] == producer[key] for key in ('commit', 'runId', 'runAttempt')) and
+            all(qualified[key] == 'success' for key in ('transport', 'maintenance', 'broker', 'prepareArm')) and
+            qualified['actualBoat'] is False, 'Original restart receipt differs')
+
+
+def validate_all_reports(original, reports, q, frozen):
+    """Complete current native runtime acceptance; no prefix pass is borrowed."""
+    require(set(original) == ALL_ORIGINAL and set(reports) == ALL_REPORTS, 'Incomplete native all report coverage')
+    c = q['composition']; p = c['producer']; commit = p['commit']; harness = c['retest']['commit']
+    facts = frozen['runtime']; product = facts['product']; hashes = facts['hashes']
+    for group, revision in ((original, commit), (reports, harness)):
+        r = group['staging-inputs.json']
+        require(r['status'] == 'restored' and r['qualification'] == 'not-run' and
+                r['producer'] == inputs.producer(commit, p['runId'], p['runAttempt']) and
+                r['harnessCommit'] == revision and r['archiveSha256'] == c['build']['archiveSha256'] and
+                r['sourceArchiveSha256'] == frozen['sourceArchiveSha256'] and
+                r['manifestSha256'] == frozen['manifestSha256'], 'Restored input identity differs')
+    failed = original['objects-input-results.json']
+    require('result' not in failed and 'native_edit_confirmation' not in failed and
+            failed['object_contract']['result'] == 'passed', 'Original incomplete objects boundary differs')
+    result = reports['staging-retest.json']
+    require(result['status'] == 'passed' and result['scope'] == 'all' and
+            result['productCommit'] == commit and result['producer'] == reports['staging-inputs.json']['producer'] and
+            result['harnessCommit'] == harness and result['archiveSha256'] == c['build']['archiveSha256'] and
+            result['publicAccess'] is False and result['releaseQualification'] is False and
+            result['checks'] == [dict(name='all', status='passed')], 'Complete native retest did not pass')
+    feedback = reports['boat-feedback-windows/result.json']
+    require(feedback['passed'] is True and feedback['platform'] == 'win32' and
+            feedback['source_commit'] == commit and feedback['harness_commit'] == harness and
+            feedback['source_dirty'] is None and type(feedback['harness_dirty']) is bool and
+            feedback['restore_receipt_sha256'] == next(x['sha256'] for x in c['retest']['reports']
+                                                      if x['path'] == 'staging-inputs.json'),
+            'Component gate producer/harness/restore differs')
+    tests = feedback['tests']; binaries = {b['name']: b['sha256'] for b in frozen['boatFeedback']['binaries']}
+    require(len(tests) == len(inputs.FEEDBACK_TESTS) and {t['name'] for t in tests} == inputs.FEEDBACK_TESTS and
+            feedback['manifest_sha256'] == frozen['boatFeedback']['manifestSha256'] and
+            all(t['passed'] is True and type(t['exit_code']) is int and t['exit_code'] == 0 and
+                t['timed_out'] is False and t['binary_sha256'] == binaries[t['name']] for t in tests),
+            'Complete original component bytes were not tested')
+    loader = reports['installer-loader-selftest.json']; _eq(loader['checks'], 5, 'Loader checks incomplete')
+    require(loader['status'] == 'passed' and loader['app_sha256'] == hashes['fixture'] and
+            loader['loader']['passed'] is True and loader['loader']['profile_initialized'] is False and
+            loader['loader']['plugins_loaded'] is False and loader['loader']['commit'] == commit and
+            loader['loader']['test_fixtures'] is True and loader['loader']['build_purpose'] == 'DEVELOPER TEST BUILD' and
+            loader['loader']['upstream'] == manifest.UPSTREAM and
+            loader['loader']['xnav_hardware_output_policy'] == 'test-loopback-only', 'Loader gate differs')
+    mode = reports['mode-cycle-results.json']
+    require(mode['result'] == 'interaction and fixture persistence passed; visual review required' and
+            len(mode['steps']) == 6 and len(mode['peer_boundary']) == 5 and
+            all(s.get('interaction', s.get('persistence')) == 'pass' for s in mode['steps']) and
+            all(peer_boundary_preserved(s) for s in mode['peer_boundary']) and
+            len(mode['chart_rendering']) == 6 and all(s['coastline_visible'] is True for s in mode['chart_rendering']),
+            'Mode gate incomplete')
+    peer = reports['peer-two-instances-results.json']
+    require(peer['result'] == 'PASS' and peer['authority'] == 'native Windows CI' and
+            peer['product_commit'] == commit and peer['test_source_commit'] == harness and
+            peer['executable_sha256'] == hashes['fixture'] and
+            peer['restore_receipt_sha256'] == feedback['restore_receipt_sha256'] and
+            peer['test_script_sha256'] == facts['sourceHashes']['opennav-x/tools/smoke-peer-two-instances.py'] and
+            not peer.get('finalization_errors') and len(peer['profiles']) == len(peer['observations']) == 2 and
+            {x['launch_mode'] for x in peer['profiles']} == {'ordinary', 'portable'} and
+            len({x['profile'].casefold() for x in peer['profiles']}) == 2 and
+            all(x['build_commit'] == commit and x['profile'] and x['cert_preserved_at_exit'] is True and
+                x['key_preserved_at_exit'] is True for x in peer['profiles']) and
+            len({x['pid'] for x in peer['observations']}) == 2 and
+            {x['pid'] for x in peer['profiles']} == {x['pid'] for x in peer['observations']} and
+            all(x['pid'] == x['startup_pid'] and peer_boundary_preserved(x) for x in peer['observations']),
+            'Peer containment gate differs')
+    for name in NAV_REPORTS:
+        r = reports[name + '-input-results.json']
+        require(r['result'] == 'loopback transport and lifecycle passed; numeric and stale screenshot review required' and
+                r['transport_errors'] == [] and r['visual_review'] == 'not requested', 'Navigation gate differs')
+    for name in ('route', 'route-standard'):
+        r = reports[name + '-input-results.json']['route_contract']
+        require(r['result'] == 'passed' and r['phase'] == 'done' and len(r['checks']) == 26, 'Route contract incomplete')
+    objects = reports['objects-input-results.json']; r = objects['object_contract']
+    require(r['result'] == 'passed' and r['phase'] == 'done' and len(r['checks']) == 28 and
+            r['late_connection_added_after_deferred'] is True and objects['native_edit_confirmation'] ==
+            'Themed property sheet saves and refreshes; delete cancellation preserves mark', 'Native object interaction incomplete')
+    for name, status, count in (
+            ('recording-results.json', 'passed; screenshot review required', 6),
+            ('pilot-results.json', 'passed; screenshot review required', 7),
+            ('recovery-results.json', 'passed; native screenshot review required', 5),
+            ('user-flows-results.json', 'passed; native screenshots require review', 8),
+            ('pilot-status-only/pilot-results.json', 'passed; screenshot review required', 5)):
+        require(reports[name]['result'] == status and len(reports[name]['checks']) == count, 'Current runtime gate incomplete')
+    signal = reports['signalk-results.json']
+    require(signal['status'] == 'passed' and signal['build_commit'] == commit and
+            signal['transport_errors'] == [] and len(signal['checks']) == 5 and
+            reports['pilot-results.json']['transport_failures'] == [] and
+            reports['user-flows-results.json']['transport_errors'] == [], 'Native transport gate differs')
+    pilot = reports['pilot-status-only/pilot-results.json']
+    require(pilot['sent'] == pilot['wire_output'] == pilot['transport_failures'] == [] and
+            pilot['received_bytes'] == 0, 'Product TCP peer emitted bytes')
+    diag = reports['pilot-status-only/pilot-opennav-diagnostics.json']
+    require(product['xnav_hardware_output_policy'] == 'manual-commissioning' and
+            type(product['xnav_manual_control_contract']) is int and product['xnav_manual_control_contract'] == 1 and
+            diag['xnav_hardware_output_policy'] == product['xnav_hardware_output_policy'] and
+            type(diag['xnav_manual_control_contract']) is int and diag['xnav_manual_control_contract'] == 1 and
+            diag['build_commit'] == commit and diag['test_fixtures'] is False and
+            diag['build_purpose'] == 'INSTALLED PRODUCT' and diag['runtime']['test_fixtures'] is False,
+            'Product versioned manual policy differs')
+    passive = diag['runtime']['pilot']
+    require(passive['configured_permission'] is True and passive['output_unavailable'] is False and
+            all(passive[f] is False for f in ('enabled', 'serial_session_enabled', 'control_capability',
+                                            'simulated', 'track_capability', 'wind_capability')) and
+            passive['command_id'] == '0' and passive['command_state'] == 'None' and
+            passive['fresh'] is True and passive['mode'] == 'STANDBY', 'Product TCP refusal was not passive/fresh')
+    recovery = reports['production-recovery-results.json']
+    require(recovery['status'] == 'passed' and len(recovery['checks']) == 7 and recovery['build'] == product and
+            recovery['harness_commit'] == harness and recovery['package_sha256'] == hashes['recovery'] and
+            recovery['design_validation'] == 'not requested' and
+            type(recovery['files_verified']) is int and recovery['files_verified'] == facts['recoveryFiles'] and
+            len(recovery['chart_rendering']) == 10 and
+            all(s['coastline_visible'] is True for s in recovery['chart_rendering']), 'Frozen recovery gate differs')
+    installer = reports['installer-staging.json']; updater = reports['packaged-updater.json']
+    require(installer['status'] == 'passed' and installer['mode'] == 'staging' and
+            installer['product_commit'] == commit and installer['harness_commit'] == harness and
+            installer['setup_sha256'] == hashes['setup'] and
+            installer['source_archive_sha256'] == frozen['sourceArchiveSha256'] and
+            installer['compiled_input_receipt_sha256'] == feedback['restore_receipt_sha256'] and
+            installer['compiled_input_producer'] == reports['staging-inputs.json']['producer'] and
+            installer['installer_source_sha256'] == facts['sourceHashes']['opennav-x/installer/windows/Lifecycle.ps1'] and
+            installer['installer_helper_sha256'] == facts['sourceHashes']['opennav-x/tools/test-installer-missing-dll-selftest.ps1'],
+            'Installer did not test the frozen package/engine and reviewed helper')
+    require(updater['status'] == 'passed' and updater['commit'] == commit and updater['checks'] == UPDATER_CHECKS and
+            updater['setupSha256'] == hashes['setup'] and updater['executableSha256'] == hashes['product'] and
+            updater['faultInjection']['restored'] is True, 'Packaged updater did not complete all four mechanics')
+    require(reports['charts-results.json']['result'] ==
+            'passed; native screenshot review and physical GPU gate remain separate', 'Chart gate incomplete')
+    validate_custody_logs(reports, facts['sourceHashes'])
+
+
+def peer_boundary_preserved(record):
+    ports = record['owned_tcp_listener_ports']
+    return record['profile_preserved'] is True and isinstance(ports, list) and all(
+        type(p) is int and 0 < p < 65536 and p not in (8443, 8444) for p in ports)
+
+
+def validate_custody_logs(reports, sources):
+    for arch, bits in (('x64', 64), ('x86', 32)):
+        log = reports[f'signed-update-custody/{arch}.log'].splitlines()
+        require(log[:3] == [
+            'Signed update session: 61 pure contract checks passed; no launch permission or native qualification claimed.',
+            'Signed update operations: 129 pure checks passed; no broker, mutation or launch authority.',
+            'Signed update store: 245 inert checks passed; nativeWindows=True. No launch authority or resumable recovery claimed.'] and
+            len(log) == 4, 'Native custody command closure differs')
+        require(inputs.strict_json(log[3]) == dict(status='passed', count=42, native=True,
+                    scope='inert installed barrier and private store only', applicationLaunched=False, profileAccess=False),
+                'Native custody installed barrier gate differs')
+        previous = inputs.strict_json(reports[f'signed-update-custody/{arch}-previous-restore.log'])
+        require(previous['status'] == 'passed' and type(previous['count']) is int and
+                previous['count'] == len(previous['checks']) == 106 and previous['processBits'] == bits and
+                previous['powerShellVersion'].startswith('5.1.') and
+                previous['sourceSha256'] == {n: sources['opennav-x/tools/boat/' + n] for n in CUSTODY_SOURCES} and
+                all(previous[k] is False for k in ('continuousNamespaceCustodyAccepted', 'installedProductAccepted',
+                                                   'productWired', 'applicationLaunched', 'boatAccess')),
+                'Native previous-restoration source, host or result differs')
+
+
 def assemble_frozen_payloads(tree, old_raw, new_raw, product_commit):
     """Run only the fixed assembler from the authenticated original source ZIP."""
     source_names = ['tools/alpha-artifacts.py', 'tools/hardware_output_policy.py', 'release/qualification.json',
@@ -545,7 +829,11 @@ def assemble(gh, request_path, output):
     output.mkdir(parents=True); evidence = output / 'evidence'; evidence.mkdir()
     downloads = output / 'inputs'; downloads.mkdir()
     p = request['producer']; r = request['retest']
-    for key, identity in (('build', p), ('original', p), ('retest', r)):
+    full = request['schema'] == 2
+    selections = [('build', p), ('original', p), ('retest', r)]
+    if full:
+        selections.append(('restart', p))
+    for key, identity in selections:
         _download(gh, request[key], identity, downloads / (key + '.zip'))
     from fetch_ci_inputs import unpack
     unpack(downloads / 'build.zip', downloads / 'build', 'staging')
@@ -555,23 +843,32 @@ def assemble(gh, request_path, output):
                              evidence / 'restored.json')
     old_raw, original = _reports(downloads / 'original.zip', request['original']['prefixReports'])
     new_raw, retest = _reports(downloads / 'retest.zip', r['reports'])
-    for group, reports in (('original', old_raw), ('retest', new_raw)):
+    retained = [('original', old_raw), ('retest', new_raw)]
+    if full:
+        restart_raw, restart = _reports(downloads / 'restart.zip', request['restart']['reports'])
+        validate_restart_receipt(restart['qualified.json'], p)
+        retained.append(('restart', restart_raw))
+        receipt['runtime'] = runtime_binding(tree)
+    for group, reports in retained:
         for name, data in reports.items():
             target = evidence / group / name; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(data)
     validate_reports(original, retest, q, receipt)
-    require(digest(old_raw['staging-inputs.json']) == original['boat-feedback-windows/result.json']['restore_receipt_sha256'],
+    # Full replacement takes every runtime result from the retest, including
+    # recovery/installer assembly inputs. The original negative is never edited.
+    accepted, accepted_raw = (retest, new_raw) if full else (original, old_raw)
+    require(digest(accepted_raw['staging-inputs.json']) == accepted['boat-feedback-windows/result.json']['restore_receipt_sha256'],
             'Original component receipt does not bind original restoration')
-    require(original['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and
-            original['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
-            original['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
-            original['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+    require(accepted['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and
+            accepted['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
+            accepted['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
+            accepted['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
             'Original runtime report tested different retained executable/Setup bytes')
-    for reports, name, filename in ((original, 'production-recovery-results.json',
+    for reports, name, filename in ((accepted, 'production-recovery-results.json',
                                      'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip'),
                                     (retest, 'installer-staging.json', 'build/beta-installer/SKAGER-Beta2-Setup.exe')):
         key = 'package_sha256' if name.startswith('production') else 'setup_sha256'
         require(reports[name][key] == inputs.sha(tree / filename), 'Native gate tested another payload')
-    assemble_frozen_payloads(tree, old_raw, new_raw, p['commit'])
+    assemble_frozen_payloads(tree, accepted_raw, new_raw, p['commit'])
     spec = importlib.util.spec_from_file_location('composition_support', root / 'tools/retain-release-inputs.py')
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     support = module.retain(tree, p['commit'], execution['runId'], execution['runAttempt'])

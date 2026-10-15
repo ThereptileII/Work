@@ -23,6 +23,7 @@ def load(name):
 
 
 legacy = load('test-github-release-delivery')
+composition_tests = load('test-staging-composition')
 
 
 class ComposedGitHub(legacy.FakeGitHub):
@@ -43,8 +44,9 @@ class ComposedGitHub(legacy.FakeGitHub):
             return dict(id=ident,name=name,status='completed',conclusion=conclusion,
                         run_id=int(identity['runId']),run_attempt=int(identity['runAttempt']),head_sha=identity['commit'])
         producer=request['producer'];retest=request['retest']
+        required=composition.ALL_JOBS if request['schema']==2 else composition.REQUIRED_JOBS
         self.run_jobs[producer['runId']]=[job(producer,name,'success',1000+i)
-                                           for i,name in enumerate(composition.REQUIRED_JOBS)]
+                                           for i,name in enumerate(required)]
         self.run_jobs[producer['runId']].append(job(producer,composition.RUNTIME_JOB,'failure',int(request['original']['jobId'])))
         self.run_jobs[retest['runId']]=[job(retest,'retest','success',int(retest['jobId']))]
         self.run_jobs[execution['runId']]=[job(execution,composition.ASSEMBLE_JOB,'success',999)]
@@ -52,8 +54,19 @@ class ComposedGitHub(legacy.FakeGitHub):
             self.artifacts[pin['artifactId']]=dict(id=int(pin['artifactId']),name=pin['artifactName'],
                 digest=pin['artifactDigest'],size_in_bytes=123,expired=False,
                 workflow_run=dict(id=int(identity['runId']),head_sha=identity['commit']))
+        self.git_data={}
+        if request['schema']==2:
+            pin=request['restart']
+            self.artifacts[pin['artifactId']]=dict(id=int(pin['artifactId']),name=pin['artifactName'],
+                digest=pin['artifactDigest'],size_in_bytes=123,expired=False,
+                workflow_run=dict(id=int(producer['runId']),head_sha=producer['commit']))
+            q=composition.qualification(request,composition.digest(raw),execution)
+            fake=composition_tests.FakeGitHub(request,raw,q)
+            self.git_data={key:value for key,value in fake.data.items() if '/git/' in key}
 
     def api(self,endpoint):
+        if endpoint in self.git_data:
+            self.calls.append(('api',endpoint));return self.git_data[endpoint]
         if '/contents/' in endpoint:
             self.calls.append(('api',endpoint))
             return dict(type='file',encoding='base64',size=len(self.raw),content=base64.b64encode(self.raw).decode())
@@ -78,7 +91,7 @@ class DeliveryIntegration(unittest.TestCase):
         self.base.setUp()
         self.addCleanup(self.base.doCleanups)
 
-    def composed(self):
+    def composed(self,full=False):
         base=self.base;product=legacy.COMMIT;retest='2'*40
         execution=dict(commit='3'*40,runId='44',runAttempt='1')
         def pin(ident,name):return dict(artifactId=str(ident),artifactName=name,artifactDigest='sha256:'+'a'*64)
@@ -90,6 +103,12 @@ class DeliveryIntegration(unittest.TestCase):
                           prefixReports=reports(composition.PREFIX_REPORTS)),
             retest=dict(pin(13,f'staging-retest-evidence-42-attempt1-harness{retest}-run43-attempt1'),
                         commit=retest,runId='43',runAttempt='1',jobId='901',reports=reports(composition.RETEST_REPORTS)))
+        if full:
+            request.update(schema=2,helperClosure=composition_tests.full_fixture()[0]['helperClosure'],
+                restart=dict(pin(14,f'commissioning-restart-qualified-{product}-attempt1'),
+                             reports=reports({'qualified.json'})))
+            request['original']['prefixReports']=reports(composition.ALL_ORIGINAL)
+            request['retest']['reports']=reports(composition.ALL_REPORTS)
         raw=json.dumps(request,sort_keys=True).encode()
         self.q=composition.qualification(request,composition.digest(raw),execution)
         base.qualification=self.q;base.support.update(runId='44')
@@ -261,6 +280,34 @@ class DeliveryIntegration(unittest.TestCase):
         self.assertTrue(release['draft']);self.assertTrue(release['prerelease'])
         self.assertEqual(release['target_commitish'],legacy.COMMIT)
         self.assertEqual(base.gh.runs['42']['conclusion'],'failure')
+
+    def test_full_native_replacement_publishes_same_product_and_fetches_exact_bytes(self):
+        base=self.composed(full=True)
+        frozen={p.name:p.read_bytes() for p in base.root.iterdir()}
+        delivery.publish_staging(base.gh,base.root)
+        create=next(i for i,item in enumerate(base.gh.calls) if item[0]=='create')
+        self.assertLess(base.gh.calls.index(('api',base.gh.base+'/actions/artifacts/14')),create)
+        self.assertTrue(any('/git/blobs/' in str(call) for call in base.gh.calls[:create]))
+        self.assertEqual(base.gh.releases[base.tag]['target_commitish'],legacy.COMMIT)
+        self.assertTrue(base.gh.releases[base.tag]['draft'])
+        self.assertEqual(base.gh.runs['42']['conclusion'],'failure')
+        base.gh.runs['44'].update(status='completed',conclusion='success')
+        target=base.work/'full-native-download'
+        record=delivery.fetch_staging(base.gh,base.tag,target)
+        self.assertEqual(record['commit'],legacy.COMMIT)
+        self.assertEqual({p.name:p.read_bytes() for p in target.iterdir()},frozen)
+
+    def test_full_native_helper_or_prerequisite_tamper_precedes_any_release_write(self):
+        base=self.composed(full=True)
+        endpoint=next(k for k in base.gh.git_data if '/git/blobs/' in k)
+        saved=copy.deepcopy(base.gh.git_data[endpoint])
+        base.gh.git_data[endpoint]['content']=base64.b64encode(b'weakened').decode()
+        with self.assertRaises(ValueError):delivery.publish_staging(base.gh,base.root)
+        self.assertFalse(any(call[0] in ('create','upload') for call in base.gh.calls))
+        base.gh.git_data[endpoint]=saved
+        base.gh.run_jobs['42']=[j for j in base.gh.run_jobs['42'] if j['name']!='pilot-serial-contracts / serial']
+        with self.assertRaises(ValueError):delivery.publish_staging(base.gh,base.root)
+        self.assertFalse(any(call[0] in ('create','upload') for call in base.gh.calls))
 
     def test_v2_rejects_current_identity_and_invalid_provenance_before_writes(self):
         base=self.composed()
