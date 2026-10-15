@@ -78,6 +78,16 @@ try {
    if(-not $refused){throw 'Missing cold-baseline dependency did not refuse the composed commissioning reader'}
  } finally {Move-Item -LiteralPath $coldSaved -Destination $cold}
  $checks.Add('Missing cold-baseline module refuses composed audit import before any launch or pipe')
+ if(@($script:RestartDependencies|Where-Object {$_ -ceq 'CommissioningReconciliation.ps1'}).Count -ne 1){throw 'Transitive reconciliation reader must be pinned exactly once in every fresh restart session'}
+ $reconciliation=Join-Path $temporary 'CommissioningReconciliation.ps1';$reconciliationSaved=$reconciliation+'.saved'
+ if((Get-FileHash -LiteralPath $reconciliation -Algorithm SHA256).Hash -cne (Get-FileHash -LiteralPath (Join-Path $PSScriptRoot 'CommissioningReconciliation.ps1') -Algorithm SHA256).Hash){throw 'Reconciliation copy differs from session dependency source'}
+ $checks.Add('Fresh restart dependency closure pins exactly one byte-identical reconciliation reader')
+ Move-Item -LiteralPath $reconciliation -Destination $reconciliationSaved
+ try {
+   $refused=$false;try{. (Join-Path $temporary 'Commissioning.ps1')}catch{$refused=$true}
+   if(-not $refused){throw 'Missing reconciliation dependency did not refuse the copied commissioning reader'}
+ } finally {Move-Item -LiteralPath $reconciliationSaved -Destination $reconciliation}
+ $checks.Add('Missing reconciliation module refuses copied audit import before any launch or pipe')
  $resource=Join-Path $temporary 'InstalledResourceReview.ps1';$saved=$resource+'.saved'
  Move-Item -LiteralPath $resource -Destination $saved
  try {

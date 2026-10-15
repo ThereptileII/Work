@@ -152,9 +152,12 @@ function Get-CommissioningPluginReviewHash($Decisions) {
   # Hash only the existing source decisions, avoiding a cycle through the
   # plan's passive-evidence reference. Exclude workstation evidence paths:
   # preparation replaces those with immutable local copies of the same hashes.
-  $records=@($Decisions|Sort-Object path|ForEach-Object {[pscustomobject][ordered]@{
+  # Windows PowerShell 5.1 does not sort raw Hashtable keys the same way as
+  # JSON-decoded properties. Project first so both representations sort the
+  # same scalar path, regardless of the original collection's order.
+  $records=@($Decisions|ForEach-Object {[pscustomobject][ordered]@{
     path=$_.path;sha256=$_.sha256;decision=$_.decision;sourceRevision=$_.sourceRevision;
-    sourceBoundary=$_.sourceBoundary;startupAndIdleReadOnly=$_.startupAndIdleReadOnly;evidenceSha256=$_.evidenceSha256}})
+    sourceBoundary=$_.sourceBoundary;startupAndIdleReadOnly=$_.startupAndIdleReadOnly;evidenceSha256=$_.evidenceSha256}}|Sort-Object path)
   return Get-CommissioningHash ((New-Object Text.UTF8Encoding($false)).GetBytes((ConvertTo-Json -InputObject $records -Depth 8 -Compress)))
 }
 function Assert-CommissioningPassiveReview([string]$Path,[string]$Hash,$Context,[string]$BaselineHash,[string]$InputHash,[string]$InventoryHash,$Decisions,[switch]$Fresh) {
@@ -164,16 +167,23 @@ function Assert-CommissioningPassiveReview([string]$Path,[string]$Hash,$Context,
   $review=Read-Record $Path
   $fields=@('schema','owner','scope','reviewedUtc','sourceRevision','executableSha256','baselineSha256','inputSha256','inventorySha256','pluginReviewSha256','transport','boundaries')
   if((@($review.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne (@($fields|Sort-Object)|ConvertTo-Json -Compress)){throw 'Exact passive source-review fields required; no additional authority claims.'}
-  if($review.schema -ne 1 -or $review.owner -cne 'OpenNavX.ReadOnlyCommissioning.PassiveReview.1' -or
-     $review.scope -cne 'passive-startup-idle-shutdown-no-commands' -or -not $Context.installation -or
-     $review.sourceRevision -cne $Context.installation.commit -or
-     $review.executableSha256 -cne $Context.installation.executableSha256 -or
-     $review.baselineSha256 -cne $BaselineHash -or $review.inputSha256 -cne $InputHash -or
-     $review.inventorySha256 -cne $InventoryHash -or
-     $review.pluginReviewSha256 -cne (Get-CommissioningPluginReviewHash $Decisions) -or
-     $review.transport -cne 'COM8-serial-NMEA2000-input-only;gateway-management-traffic-allowed'){
-    throw 'Passive source evidence must bind this exact build, profile, inventory and transport scope.'
+  # Keep every exact comparison, but report only fixed field names. Never put
+  # expected/actual hashes, source values or private paths in diagnostics.
+  $mismatches=New-Object 'Collections.Generic.List[string]'
+  if($review.schema -ne 1){$mismatches.Add('schema')}
+  if($review.owner -cne 'OpenNavX.ReadOnlyCommissioning.PassiveReview.1'){$mismatches.Add('owner')}
+  if($review.scope -cne 'passive-startup-idle-shutdown-no-commands'){$mismatches.Add('scope')}
+  if(-not $Context.installation){$mismatches.Add('installation')}
+  else{
+    if($review.sourceRevision -cne $Context.installation.commit){$mismatches.Add('sourceRevision')}
+    if($review.executableSha256 -cne $Context.installation.executableSha256){$mismatches.Add('executableSha256')}
   }
+  if($review.baselineSha256 -cne $BaselineHash){$mismatches.Add('baselineSha256')}
+  if($review.inputSha256 -cne $InputHash){$mismatches.Add('inputSha256')}
+  if($review.inventorySha256 -cne $InventoryHash){$mismatches.Add('inventorySha256')}
+  if($review.pluginReviewSha256 -cne (Get-CommissioningPluginReviewHash $Decisions)){$mismatches.Add('pluginReviewSha256')}
+  if($review.transport -cne 'COM8-serial-NMEA2000-input-only;gateway-management-traffic-allowed'){$mismatches.Add('transport')}
+  if($mismatches.Count){throw ('Passive source evidence must bind this exact build, profile, inventory and transport scope. Mismatched fields: '+($mismatches.ToArray() -join ', '))}
   # PowerShell 7 may decode JSON ISO timestamps as DateTime. Parsing that
   # object's culture-formatted string again loses Kind and shifts it by the
   # local timezone, potentially admitting a future review as already elapsed.

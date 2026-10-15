@@ -156,6 +156,17 @@ function Test-FreshPassiveCommissioning($F,$Done) {
   $prepare=@{Action='Prepare';Plan=$planPath;ExpectedPlanSha256=(Get-Digest $planPath)}
   $backup=[IO.File]::ReadAllBytes($passivePath)
   try {
+    $bad=Clone $passive;$bad.sourceRevision='f'*40;$bad.inputSha256='e'*64
+    [IO.File]::WriteAllText($passivePath,($bad|ConvertTo-Json -Depth 16),$encoding)
+    $message=$null
+    try{Assert-CommissioningPassiveReview $passivePath (Get-Digest $passivePath) $inventory.context $F.originalCurrentHash $inputHash $inventoryResult.recordSha256 $decisions -Fresh}
+    catch{$message=$_.Exception.Message}
+    if($message -cne 'Passive source evidence must bind this exact build, profile, inventory and transport scope. Mismatched fields: sourceRevision, inputSha256'){
+      throw 'Passive mismatch diagnostics must expose only the fixed mismatched field names.'
+    }
+    $checks.Add('Passive mismatch diagnostics retain all comparisons without exposing hashes, values or paths')
+  }finally{[IO.File]::WriteAllBytes($passivePath,$backup)}
+  try {
     foreach($kind in @('source','executable','baseline','input','inventory','plugin-decisions','transport','scope','expired','future','boundary','claim-only','extra-authority')){
       $changed=Clone $passive
       switch($kind){
@@ -229,6 +240,22 @@ function Test-FreshPassiveCommissioning($F,$Done) {
   $checks.Add('Later ordinary v1 reconciliation retains ancestor pilot restriction without relabelling its review as v2')
 }
 try {
+  Pass 'Plugin review digest is stable across raw/JSON records and permutations, with every reviewed field protected' {
+    $raw=@(@{path='C:\Synthetic\one_pi.dll';sha256=('a'*64);decision='quarantine';sourceRevision=$null;sourceBoundary='Synthetic source boundary';startupAndIdleReadOnly=$false;evidenceSha256=('b'*64)},
+      @{path='C:\Synthetic\two_pi.dll';sha256=('c'*64);decision='quarantine';sourceRevision=$null;sourceBoundary='Synthetic source boundary';startupAndIdleReadOnly=$false;evidenceSha256=('d'*64)})
+    $reference=Get-CommissioningPluginReviewHash $raw
+    $parsed=Clone ([pscustomobject]@{plugins=$raw})
+    foreach($value in @($raw,$parsed.plugins,@($raw[1],$raw[0]),@($parsed.plugins[1],$parsed.plugins[0]))){
+      if((Get-CommissioningPluginReviewHash $value) -cne $reference){throw 'Plugin review digest depends on source representation or array order.'}
+    }
+    foreach($field in @('path','sha256','decision','sourceRevision','sourceBoundary','startupAndIdleReadOnly','evidenceSha256')){
+      $changed=Clone ([pscustomobject]@{plugins=$raw})
+      if($field -ceq 'startupAndIdleReadOnly'){$changed.plugins[0].$field=$true}
+      elseif($field -ceq 'sourceRevision'){$changed.plugins[0].$field='1'*40}
+      else{$changed.plugins[0].$field=[string]$changed.plugins[0].$field+'changed'}
+      if((Get-CommissioningPluginReviewHash $changed.plugins) -ceq $reference){throw ('Reviewed field omitted from canonical digest: '+$field)}
+    }
+  }
   Pass 'Entrypoint and helper parse before any mutation' {
     foreach($file in @($entry,(Join-Path $PSScriptRoot 'CommissioningReconciliation.ps1'))) {$errors=$null;$tokens=$null;$null=[Management.Automation.Language.Parser]::ParseFile($file,[ref]$tokens,[ref]$errors);if($errors.Count){throw ($errors|Out-String)}}
   }
