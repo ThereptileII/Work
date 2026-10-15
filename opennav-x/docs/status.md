@@ -74,8 +74,19 @@ closed staged includes, exact private inventories and owned-header identities.
 The previous host-selection failure is retained; the corrected lane selects a
 single Python/Perl executable. Only consumed locked wx inputs are prepared,
 with all 1,612 extracted files verified unchanged. No application or private DLL
-was built. Geographic-query, private-DLL/real-chart and boat acceptance remain
-open. [Authenticated native receipt](evidence/scrum283-exposure-parity-20261015/native/native-receipt.json).
+was built. [Authenticated native receipt](evidence/scrum283-exposure-parity-20261015/native/native-receipt.json).
+
+The separate actual associated-area query fixture (`d625c6b6`, reviewed original
+`f70c0eb8`) now also passes Linux and native x86 MSVC. Native
+[38740153247](https://github.com/ThereptileII/Work/actions/runs/38740153247)
+at `2f9c41cb` executes 29 original/repaired query cases with 113/125 checks;
+both original missing-callback and polygon-bypass negatives fail as required.
+Actual pinned query, polygon and coordinate bodies retain original semantics
+and connect through the repaired callback to isolated-danger/DisplayBase output.
+All 1,612 wx files remain unchanged. Test geometry is pre-tessellated fixture
+data: chart ingestion, tessellation generation, whole private DLL ABI/lifecycle,
+software/OpenGL drawing and real-chart/boat acceptance remain open.
+[Authenticated actual-query evidence](evidence/scrum283-actual-area-query-20261015/native/README.md).
 
 Fresh native jobs again allocate image `20261004.326.1`, while the existing
 qualified dependency bundle is bound to `20261012.333.1`. One explicitly guarded
