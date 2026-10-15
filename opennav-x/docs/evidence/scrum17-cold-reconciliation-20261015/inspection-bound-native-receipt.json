@@ -1,0 +1,293 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.ColdReconciliation.NativeReceipt.1",
+  "issue": "SCRUM-17",
+  "status": "partial-native-proof-overall-gate-cancelled",
+  "sourceCommit": "1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+  "implementationCommit": "9eddbfea5fbf646e887f21122abd709b8d4732d1",
+  "integratedImplementationCommit": "f26e112322146c599ec60974b6cdf3de15bfc633",
+  "workflow": ".github/workflows/skager-profile-preservation.yml",
+  "workflowSha256": "8c542d39975ebeb8a3e29496822a246a8d8869e6a70d0f207cb765553f562fbe",
+  "runId": 38709570067,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38709570067",
+  "runConclusion": "cancelled",
+  "jobs": [
+    {
+      "id": 116337329177,
+      "name": "preservation (windows-2022)",
+      "conclusion": "cancelled",
+      "startedAt": "2026-10-15T08:59:02Z",
+      "completedAt": "2026-10-15T09:09:09Z",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38709570067/job/116337329177",
+      "steps": [
+        {
+          "number": 3,
+          "name": "Focused preservation and existing adoption contracts",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T08:59:16Z",
+          "completedAt": "2026-10-15T09:07:48Z"
+        },
+        {
+          "number": 4,
+          "name": "Actual disposable closed-session transaction and interruptions",
+          "conclusion": "cancelled",
+          "startedAt": "2026-10-15T09:07:48Z",
+          "completedAt": "2026-10-15T09:09:03Z"
+        },
+        {
+          "number": 5,
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T09:09:03Z",
+          "completedAt": "2026-10-15T09:09:05Z"
+        }
+      ]
+    },
+    {
+      "id": 116337329430,
+      "name": "preservation (ubuntu-24.04)",
+      "conclusion": "success",
+      "startedAt": "2026-10-15T08:59:01Z",
+      "completedAt": "2026-10-15T08:59:40Z",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38709570067/job/116337329430",
+      "steps": [
+        {
+          "number": 3,
+          "name": "Focused preservation and existing adoption contracts",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T08:59:08Z",
+          "completedAt": "2026-10-15T08:59:38Z"
+        },
+        {
+          "number": 4,
+          "name": "Actual disposable closed-session transaction and interruptions",
+          "conclusion": "skipped",
+          "startedAt": "2026-10-15T08:59:38Z",
+          "completedAt": "2026-10-15T08:59:38Z"
+        },
+        {
+          "number": 5,
+          "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+          "conclusion": "success",
+          "startedAt": "2026-10-15T08:59:38Z",
+          "completedAt": "2026-10-15T08:59:38Z"
+        }
+      ]
+    }
+  ],
+  "firstCausalApiAnnotation": {
+    "annotationLevel": "failure",
+    "message": "The job has exceeded the maximum execution time of 10m0s",
+    "path": ".github",
+    "startLine": 1
+  },
+  "followingApiAnnotation": {
+    "annotationLevel": "failure",
+    "message": "The operation was canceled.",
+    "path": ".github",
+    "startLine": 6
+  },
+  "originalArtifacts": [
+    {
+      "id": 11960970261,
+      "name": "session-preservation-windows-2022-1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+      "bytes": 8174,
+      "sha256": "d2c3f74aaf6ae06a292f5931d91504771b5cdacf91af5148d638c26bcd613bd3",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "bytes": 28966,
+          "crc32": "40de2620",
+          "sha256": "fa9791be15aa4e93b707159394442e2eee063c2a6ab12a9c04d16559fc362083"
+        },
+        {
+          "name": "session-preservation.log",
+          "bytes": 26216,
+          "crc32": "834c8747",
+          "sha256": "86ee6e06374bb20727d761589e75eaa8e9c7b708116d11d568dc4166262d3866"
+        }
+      ]
+    },
+    {
+      "id": 11959388856,
+      "name": "session-preservation-ubuntu-24.04-1f17fc802313404e7efbbdc29abb0fb345a29c1a",
+      "bytes": 5988,
+      "sha256": "7eb4ae2e531de9b63961a6dc32a102d137f691aa517b1e900955a19205fbbc17",
+      "apiDigestMatched": true,
+      "apiSizeMatched": true,
+      "crcPassed": true,
+      "members": [
+        {
+          "name": "baseline-adoption.log",
+          "bytes": 8730,
+          "crc32": "266e32c4",
+          "sha256": "1f97fc0a2794fac72e95805e1c307ddc9c6651a08d1ecd32fe3938e8ab6cc14c"
+        },
+        {
+          "name": "session-preservation.log",
+          "bytes": 18129,
+          "crc32": "ab0cb1ad",
+          "sha256": "bfff9f6fc63d5ef3181d8cbf96f9c24a1a97dc92d03e4f7c796ca0a1c8fcc95d"
+        }
+      ]
+    }
+  ],
+  "authentication": {
+    "originalRunJobsAnnotationsAndArtifactApiMetadataPreserved": true,
+    "artifactApiDigestsAndSizesMatched": true,
+    "allZipMemberCrcChecksPassed": true,
+    "apiPayloadSha256": {
+      "run": "16957f91f801ff87e8d8b253fa095ff78fa42eb89d6e65f7b6d7fa516e89dd9f",
+      "jobs": "e1a00789fd2ebf87aa71952692c8d121b8b494381feb3652259302c202132600",
+      "artifacts": "88b8a1b760acca3b19c08b362f9a2bad07c321699cd0d904e6cad4ba1eece6b0",
+      "windows-annotations": "f04ae7b005692421b070418f836d7fceccd2f5f59f7e03ca1cd0029fc1c0e3a2"
+    },
+    "originalJobLogs": [
+      {
+        "jobId": 116337329177,
+        "bytes": 90324,
+        "sha256": "777b6873fc4ebefbc0742e384755190f2fdba78621637344887224644a59983f"
+      },
+      {
+        "jobId": 116337329430,
+        "bytes": 52423,
+        "sha256": "6078a9dfb1e746c4dade19a7c35b4c35434b1c07c61862b70d5e6b03d76a8fca"
+      }
+    ]
+  },
+  "reports": {
+    "windows": {
+      "sessionPreservation": {
+        "count": 86,
+        "checkLabels": 86,
+        "status": "passed",
+        "nativeAclOrProcessAcceptance": false
+      },
+      "reconciliation": {
+        "count": 168,
+        "checkLabels": 168,
+        "status": "passed",
+        "nativeProfileLockAndAcl": true
+      },
+      "baselineAdoption": {
+        "count": 131,
+        "ownCheckLabels": 127,
+        "status": "passed",
+        "nativeTransactionAcceptance": true,
+        "nativeResultObjectCount": 4,
+        "nativeResults": [
+          {
+            "group": "stock",
+            "index": 0,
+            "status": "passed",
+            "checkLabels": 23,
+            "reportedCount": null,
+            "native": true,
+            "environment": null
+          },
+          {
+            "group": "stock",
+            "index": 1,
+            "status": "passed",
+            "checkLabels": 25,
+            "reportedCount": 25,
+            "native": null,
+            "environment": "native-windows-disposable-filesystem"
+          },
+          {
+            "group": "installedResources",
+            "index": 0,
+            "status": "passed",
+            "checkLabels": 23,
+            "reportedCount": null,
+            "native": true,
+            "environment": null
+          },
+          {
+            "group": "installedResources",
+            "index": 1,
+            "status": "passed",
+            "checkLabels": 26,
+            "reportedCount": 26,
+            "native": null,
+            "environment": "native-windows-disposable-filesystem"
+          }
+        ]
+      }
+    },
+    "linux": {
+      "sessionPreservation": {
+        "count": 86,
+        "checkLabels": 86,
+        "status": "passed",
+        "nativeAclOrProcessAcceptance": false
+      },
+      "reconciliation": {
+        "count": 165,
+        "checkLabels": 165,
+        "status": "passed",
+        "nativeProfileLockAndAcl": false
+      },
+      "baselineAdoption": {
+        "count": 127,
+        "ownCheckLabels": 127,
+        "status": "passed",
+        "nativeTransactionAcceptance": false
+      }
+    }
+  },
+  "largeInspectionNativeProof": {
+    "status": "passed",
+    "engineEvidence": "Exact successful Windows step 3 invokes WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe -NoProfile; no separate PSVersion field is emitted by these reports.",
+    "genericReadRecordLimitBytes": 4194304,
+    "ownedInspectionLimitBytes": 16777216,
+    "requiredExecutedCheckLabels": [
+      "Full owned inspection above 4 MiB roundtrips every tree and ACL record without changing the generic limit",
+      "Generic Read-Record still refuses the same inspection above 4 MiB",
+      "Inspection reader accepts a complete hash-bound record at the exact 16 MiB ceiling",
+      "Inspection reader refuses valid JSON one byte above the shared 16 MiB bound",
+      "Larger reader cannot consume a differently named record",
+      "Larger reader cannot consume an inspection outside an owned cold run"
+    ],
+    "sourceFiles": [
+      {
+        "path": "opennav-x/tools/boat/CommissioningReconciliation.ps1",
+        "sha256": "c0fccdc3c58cc9539a1c2cc4db57fe5e7a73d2d345a0ea74715471f0ecfdcb46"
+      },
+      {
+        "path": "opennav-x/tools/boat/reconcile-commissioning.ps1",
+        "sha256": "5edb1457597758a4afe5076d9ea985b6b2e099aca0b7d1a5910fd5d0a62d104e"
+      },
+      {
+        "path": "opennav-x/tools/boat/test-commissioning-reconciliation.ps1",
+        "sha256": "ee41753cd542922ccd657166ca60f248c074c3e0adfada6fad7946d8a6de6057"
+      }
+    ],
+    "implementationIntegratedAndGateSourceBytesEqual": true
+  },
+  "transactionGate": {
+    "status": "unfinished",
+    "stepConclusion": "cancelled",
+    "completedResultAvailable": false,
+    "transactionLogArtifactPresent": false,
+    "noAssertionFailureInCompletedStep3": true,
+    "timeoutIsNotAnAssertionFailureDiagnosis": true
+  },
+  "limitations": [
+    "Overall run 38709570067 remains cancelled; the completed native prerequisite step is preserved as scoped proof only.",
+    "Actual disposable closed-session transaction and interruptions did not complete on this run; no transaction gate pass is claimed.",
+    "Baseline adoption count 131 comprises 127 own labels plus 4 native result objects; nested labels are recorded separately and must not be interpreted as 131 native assertions.",
+    "Session preservation outer report retains nativeAclOrProcessAcceptance=false; native reconciliation evidence is its distinct nested nativeProfileLockAndAcl=true result.",
+    "Identity/process discovery uses inert fixture adapters; no installed application, boat profile, package, navigation behavior or physical pilot qualification follows.",
+    "No tests were rerun, workflow dispatched, boat operation performed or private inspection content copied during this evidence task."
+  ],
+  "applicationLaunched": false,
+  "boatAccess": false,
+  "physicalOutput": false,
+  "wholeProductAccepted": false,
+  "actualBoatReconciled": false
+}
