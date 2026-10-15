@@ -25,8 +25,15 @@ evidence, a selected Windows-only attempt 3 is requested: job `116350139778`
 passes SDK authentication, image/Python/source preflight and native AIS/TLS,
 both application builds, installed security checks, recovery packaging and
 installer compilation. Its two CTest executions each pass the same 146 distinct
-test names. Exact retained-input qualification now runs in job `116364569049`;
-installer compilation alone does not qualify installed behavior. No SDK, source
+test names. Exact retained-input qualification job `116364569049` fails the
+foreign Start Menu group refusal case: Install returns the expected failure
+code, but its operation report is missing. Source inspection identifies the
+failure-report writer requiring an installation root which the refusal correctly
+never created. The native exception itself was not retained, so that mechanism
+is a source diagnosis pending a focused regression. A bounded installer fix and
+independent review are underway under SCRUM-22; no replacement application build
+has been requested. Installer compilation alone does not qualify installed
+behavior. No SDK, source
 or environment check is relaxed. The proposed multi-image selector is retained on
 its separate branch, unused without a second qualified SDK.
 [Dependency allocation and unchanged SDK binding](evidence/scrum209-candidate-977d37c7-20261015/dependency-old-image-preflight-receipt.json).
@@ -42,11 +49,19 @@ reviewed from `87949177`. It retains the prepared-parent and current generation
 identities and derives a separate third-generation proof only from the original
 profile bytes. Its 226 portable checks pass. Native-only
 [38717837403](https://github.com/ThereptileII/Work/actions/runs/38717837403),
-exact helper/workflow `ab722554`, is pending; it runs the changed reconciliation
-contract without repeating unchanged transaction/adoption suites or compiling
-the application. A read-only boat checkpoint still confirms the original profile
-hash, no running OpenCPN process and SSH/Tailscale/RustDesk available. No actual
-reconciliation Plan/Commit or application launch has yet occurred.
+exact helper/workflow `ab722554`, passes **229 native checks** with native
+profile-lock/ACL coverage. It tests the changed reconciliation contract without
+repeating unchanged transaction/adoption suites or compiling the application.
+[Authenticated native result](evidence/scrum17-cold-reconciliation-20261015/historical-wmm-native-receipt.json).
+The same 161 tool files are staged and hash-verified on the boat. A fresh
+observation matches the independently reviewed 18 changes and three WMM
+generations, with the original profile unchanged and no application running.
+An initial private-review staging attempt refused an unprotected new child
+directory before Plan; read-only inspection confirms the original inspection
+directory remains protected and unchanged. The review now uses a fresh sibling
+created by the maintained private-directory helper, without changing the
+original ACL. Actual reconciliation is in progress; no application launch or
+physical output is authorized by this preservation work.
 
 Installed-updater helper `14ff2896` (reviewed original `02a943f6`) adds explicitly
 bound interactive self-hosted admission for a disposable Windows target.
@@ -60,6 +75,10 @@ human UAC execution remain required. `a66826ea` explicitly classifies only five
 reviewed qualification helpers; 20 classifier checks pass, with runtime and
 unknown paths retaining conservative build selection. These helper commits do
 not change or relabel the frozen `b4c40e6e` application.
+Follow-up `9b3c4a32` requires actual `RUNNER_ARCH=X64` for the explicit
+interactive self-hosted path; 70 affected checks pass, including early refusal
+for missing/ARM64 architecture. Hosted behavior is unchanged. Native interactive
+target and human UAC acceptance remain outstanding.
 
 ## Replacement candidate after native updater job timeout
 
