@@ -52,6 +52,12 @@ and `opennav-x/tests/ais_connection_collector_tests.py` when this behavior appli
 
 ## Retest and report exact bytes
 
+In native PowerShell setup, `Get-Command ... -CommandType Application` can
+return several installed executable paths. Select one explicitly with
+`Select-Object -First 1` before reading `.Source`, as the maintained native
+setup does. Do not pass an array into a scalar executable-path parameter.
+Such an early host-selection failure is separate from compiler/product failure.
+
 Use authenticated retained application/package/component outputs when only the
 test helper changed. Follow the build contract's retained-check scope and record
 original producer commit/run/attempt/hashes alongside the new harness commit.
