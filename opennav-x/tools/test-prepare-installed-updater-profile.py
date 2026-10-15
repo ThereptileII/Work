@@ -301,6 +301,24 @@ class Tests(unittest.TestCase):
                 helper.prepare(helper.OPT_IN,**changed)
             native.assert_not_called()
 
+    def test_expiry_during_host_admission_refuses_before_fixture_or_native_effects(self):
+        cli,h,options = self.external_context()
+        request = cli.binding._request((self.root / 'request.json').read_bytes())
+        clock = [cli.datetime.now(cli.timezone.utc)]
+        def capability():
+            clock[0] = request.expires_at  # Both API reads succeeded; native observation used the remaining lifetime.
+            return h.capability
+        with patch.object(cli,'datetime',SimpleNamespace(now=lambda *_:clock[0])), \
+                patch.object(cli.host_admission.customer,'inspect_customer_capability',side_effect=capability) as observer, \
+                patch.object(helper,'contents') as contents,patch.object(helper,'Native') as native, \
+                self.assertRaises(ValueError):
+            helper.prepare(helper.OPT_IN,**options)
+        self.assertEqual(len(h.calls),2)
+        observer.assert_called_once()
+        contents.assert_not_called()
+        native.assert_not_called()
+        self.assertFalse(self.native.profile_root.exists())
+
     def test_cli_has_no_path_override_duplicate_or_failure_details(self):
         for args in (['--profile', str(self.root), '--disposable-opt-in', helper.OPT_IN],
                      ['--disposable-opt-in', helper.OPT_IN, '--disposable-opt-in', helper.OPT_IN],

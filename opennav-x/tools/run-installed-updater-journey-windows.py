@@ -65,6 +65,9 @@ def validate_profile_host(config, environment):
     reads = coordinator.http.GitHubReads(environment['SKAGER_APPROVAL_READ_TOKEN'])
     host_admission.validate_live(admitted, config['runner'], config['pendingWorkflow'], environment,
                                  sys.platform, reads.read_api)
+    # Host API/native observations may exhaust the original request lifetime.
+    # Refuse before returning to any fixture or native filesystem preparation.
+    require(request.created_at <= binding._clock(datetime.now(timezone.utc)) < request.expires_at)
 
 
 class Reads:
