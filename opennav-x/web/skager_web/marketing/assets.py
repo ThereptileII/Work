@@ -7,7 +7,8 @@ from pathlib import Path
 @lru_cache(maxsize=1)
 def _versions():
     static = Path(__file__).parent / "static" / "marketing"
-    names = {"css": "site.css", "js": "site.js", "home_css": "home.css", "home_js": "home.js"}
+    names = {"css": "site.css", "js": "site.js", "home_css": "home.css", "home_js": "home.js",
+             "screen_css": "skager-screen.css"}
     return {f"marketing_{kind}_version": sha256((static / name).read_bytes()).hexdigest()[:16]
             for kind, name in names.items()}
 

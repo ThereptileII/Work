@@ -2,6 +2,7 @@
 {% load static %}
 {% block page %}home{% endblock %}
 {% block extra_head %}<link rel="preload" href="{% static 'marketing/fonts/InterVariable-latin.woff2' %}" as="font" type="font/woff2" crossorigin>
+  <link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
   <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
   <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
 {% block footer_status %}{% endblock %}
@@ -44,43 +45,12 @@
       </div>
       <div class="tour-stage" data-tour-stage>
         <div class="device">
-          <div class="screen" data-tour-screen aria-hidden="true">
-            <div class="ui-top">
-              <span class="ui-brand">SKAGER</span>
-              <span class="ui-divider"></span>
-              <span class="ui-route"><small>Active route</small><b>Sandhamn</b><span>18.2 NM · ETA 14:42</span></span>
-              <span class="ui-status"><i></i>GPS<i></i>AIS<i></i>N2K<i></i>AP</span>
-              <span class="ui-modes"><span data-mode="day" class="is-active">Day</span><span data-mode="dusk">Dusk</span><span data-mode="night">Night</span></span>
-            </div>
-            <div class="ui-chart">
-              <canvas data-tour-canvas></canvas>
-              <div class="ui-nav">
-                <span class="is-active"><svg viewBox="0 0 24 24"><path d="M4 11l16-7-7 16-2-7z"/></svg></span>
-                <span><svg viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></svg></span>
-                <span><svg viewBox="0 0 24 24"><path d="M5 12h14"/></svg></span>
-                <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="6"/><circle cx="12" cy="12" r="1.5"/></svg></span>
-                <i></i>
-                <span><svg viewBox="0 0 24 24"><circle cx="6" cy="17" r="2"/><circle cx="18" cy="7" r="2"/><path d="M7.5 15.5C11 13 9 9 16.5 8"/></svg></span>
-                <span><svg viewBox="0 0 24 24"><path d="M12 3v18M7 20l5-17 5 17M8 14h8"/></svg></span>
-                <span><svg viewBox="0 0 24 24"><circle cx="12" cy="5" r="2"/><path d="M12 7v13M5 13c0 4 3 7 7 7s7-3 7-7M8 11h8"/></svg></span>
-              </div>
-              <div class="ui-rail">
-                <div class="ui-tile"><small>SOG</small><b><span data-value="sog">6.3</span><em>kn</em></b><span class="ui-live">Live · GPS</span></div>
-                <div class="ui-tile"><small>Depth</small><b><span data-value="depth">8.4</span><em>m</em></b><span class="ui-live">Live · N2K</span></div>
-                <div class="ui-tile"><small>Wind</small><b><span data-value="wind">14.3</span><em>kt</em></b><span class="ui-live">TWA 72° · Port</span></div>
-                <div class="ui-tile"><small>Battery</small><b><span data-value="battery">68</span><em>%</em></b><span class="ui-live">Arrival 43%</span></div>
-              </div>
-              <div class="ui-card ui-turn" data-card="turn"><small>Next turn</small><b><span data-value="side">Starboard</span> in <span data-value="next">0.8</span> NM</b><span>Then steer <span data-value="course">072°</span></span></div>
-              <div class="ui-card ui-ais" data-card="ais"><small>AIS · <span data-value="aisType">Cargo</span></small><b data-value="aisName">BALTIC TERN</b><span><span data-value="aisRange">0.9</span> NM away</span><span data-value="aisPass">Passing astern</span></div>
-              <div class="ui-card ui-weather" data-card="weather"><small>Forecast wind · 15:00</small><b>14 kt from SW</b><span class="ui-timeline"><i></i></span></div>
-            </div>
-            <div class="ui-bottom">
-              <span class="ui-button is-active">Follow</span><span class="ui-button">Course ↑</span><span class="ui-button">Route</span>
-              <span class="ui-nav-values"><small>BTW</small><b data-value="btw">072°</b><small>DTW</small><b><span data-value="dtw">0.8</span> NM</b><small>XTE</small><b>0.02</b></span>
-              <span class="ui-pilot"><small>Autopilot</small><b>Auto</b><strong data-value="heading">072°</strong></span>
-            </div>
+          <div class="screen proto-screen" data-theme="day" data-tour-screen inert aria-hidden="true">
+{% include 'marketing/includes/skager_screen.html' %}
+{% include 'marketing/includes/skager_ais.html' %}
           </div>
         </div>
+{% include 'marketing/includes/skager_theme_icons.html' %}
       </div>
     </div>
   </div>
@@ -105,44 +75,26 @@
     <div class="chapter-copy" data-reveal>
       <p class="kicker">01 · Navigation</p>
       <h2 id="chart-title">More chart.<br><span>Less searching.</span></h2>
-      <p>SKAGER clears the clutter and keeps what matters on screen. Big touch targets, a clear hierarchy and nothing in your way.</p>
+      <p>SKAGER keeps what matters on screen and lets you switch off the rest. Choose your layers, and nothing else gets in your way.</p>
     </div>
-    <div class="chapter-visual visual-declutter" data-reveal aria-hidden="true">
-      <svg viewBox="0 0 560 380">
-        <rect width="560" height="380" class="dc-water"/>
-        <path class="dc-band" d="M-20 300C60 260 120 300 170 250S220 120 300 110 380 40 420-20H-20Z"/>
-        <path class="dc-land" d="M-20 250C50 220 100 250 140 210S190 90 260 80 330 20 360-20H-20Z"/>
-        <path class="dc-band" d="M600 260C520 250 470 290 450 340S470 400 600 400Z"/>
-        <path class="dc-land" d="M600 290C540 285 500 315 490 350S510 400 600 400Z"/>
-        <path class="dc-land" d="M330 250c14-18 44-14 52 4s-12 34-32 30-30-18-20-34z"/>
-        <g class="dc-clutter">
-          <text x="200" y="160">12.4</text><text x="250" y="190">9.8</text><text x="300" y="150">14.1</text><text x="420" y="120">21.0</text><text x="460" y="200">18.6</text><text x="380" y="300">7.2</text><text x="250" y="330">6.1</text><text x="120" y="320">5.4</text><text x="470" y="60">25.3</text><text x="320" y="210">11.2</text>
-          <text x="60" y="140" class="dc-name">FL(2) 6s 12m 8M</text><text x="390" y="340" class="dc-name">Q(6)+LFl 15s</text><text x="300" y="90" class="dc-name">Rk · Wk · Obstn</text><text x="440" y="250" class="dc-name">Cable area</text>
-          <circle cx="230" cy="230" r="5"/><circle cx="405" cy="180" r="5"/><circle cx="350" cy="120" r="4"/><circle cx="500" cy="300" r="5"/>
-          <path d="M150 360l12-20 12 20zM470 150l10-16 10 16zM270 270l9-14 9 14z"/>
-          <path class="dc-hatch" d="M380 60l140 0M380 76l140 0M380 92l140 0M380 108l140 0"/>
-        </g>
-        <path class="dc-route" d="M90 350L230 260 360 190 520 120"/>
-        <circle class="dc-wp" cx="230" cy="260" r="7"/><circle class="dc-wp" cx="360" cy="190" r="7"/><circle class="dc-wp" cx="520" cy="120" r="7"/>
-        <g transform="translate(160 305) rotate(56)"><path class="dc-boat" d="M0-14L9 10 0 5-9 10Z"/></g>
-      </svg>
-      <span class="dc-toggle"><i></i>Declutter</span>
+    <div class="chapter-visual visual-chart" data-declutter data-reveal aria-hidden="true">
+      <div class="proto-screen proto-fragment fragment-chart" data-theme="day" inert>
+        <div class="fragment-map" data-chart-clone="layers"></div>
+        <div class="fragment-drawer" data-fit="398x640">{% include 'marketing/includes/skager_layers.html' %}</div>
+      </div>
     </div>
   </div>
 </section>
 
 <section class="chapter" aria-labelledby="boat-title">
-  <div class="container chapter-grid reverse">
+  <div class="container chapter-grid wide reverse">
     <div class="chapter-copy" data-reveal>
       <p class="kicker">02 · Instruments</p>
       <h2 id="boat-title">Know your boat.<br><span>At a glance.</span></h2>
-      <p>Speed, depth, wind and battery, live beside the chart. One look tells you everything, in letters you can read across the cockpit.</p>
+      <p>Wind, speed, depth and heel, together on one calm screen. One look tells you everything, in figures you can read across the cockpit.</p>
     </div>
-    <div class="chapter-visual visual-rail" data-rail data-reveal aria-hidden="true">
-      <div class="tile"><small>SOG</small><b><span data-rail-value="sog">6.3</span><em>kn</em></b><svg viewBox="0 0 120 34" preserveAspectRatio="none"><polyline data-spark points="0,17 120,17"/></svg></div>
-      <div class="tile"><small>Depth</small><b><span data-rail-value="depth">8.4</span><em>m</em></b><span class="meter" data-depth-meter><i></i></span></div>
-      <div class="tile"><small>Wind</small><b><span data-rail-value="wind">14.3</span><em>kt</em></b><span class="dial"><i data-wind-needle></i><em data-rail-value="dir">225°</em></span></div>
-      <div class="tile"><small>Battery</small><b><span data-rail-value="battery">68</span><em>%</em></b><span class="battery" data-battery-bar><i></i></span></div>
+    <div class="chapter-visual visual-view" data-instruments data-reveal aria-hidden="true">
+      <div class="fit" data-fit="1014x698"><div class="proto-screen proto-fragment fragment-view" data-theme="day" inert>{% include 'marketing/includes/skager_instruments.html' %}</div></div>
     </div>
   </div>
 </section>
@@ -155,36 +107,20 @@
       <p>Engage, adjust and hand back the helm from the screen you already navigate on. One degree or ten, one tap.</p>
     </div>
     <div class="chapter-visual visual-pilot" data-pilot data-reveal aria-hidden="true">
-      <div class="rose"><svg viewBox="0 0 240 240" data-pilot-rose><circle cx="120" cy="120" r="108"/><g class="ticks"><path d="M120 12v16M120 212v16M12 120h16M212 120h16"/></g><text x="120" y="46">N</text><text x="198" y="125">E</text><text x="120" y="204">S</text><text x="42" y="125">W</text></svg><span class="rose-boat"></span></div>
-      <div class="pilot-readout"><small>Autopilot · Auto</small><b data-pilot-heading>143°</b><span>Heading hold</span></div>
-      <div class="pilot-keys"><span data-key="-10">−10</span><span data-key="-1">−1</span><span data-key="auto" class="wide">Auto</span><span data-key="+1">+1</span><span data-key="+10">+10</span></div>
+      <div class="fit" data-fit="398x520"><div class="proto-screen proto-fragment fragment-drawer-only" data-theme="day" inert>{% include 'marketing/includes/skager_autopilot.html' %}</div></div>
     </div>
   </div>
 </section>
 
 <section class="chapter" id="energy" aria-labelledby="energy-title">
-  <div class="container chapter-grid reverse">
+  <div class="container chapter-grid wide reverse">
     <div class="chapter-copy" data-reveal>
       <p class="kicker">04 · Energy</p>
       <h2 id="energy-title">Arrive with<br><span>energy to spare.</span></h2>
       <p>Know how much charge you’ll have when you get there, before you leave the dock. Range, reserve and arrival, worked out for your route.</p>
     </div>
-    <div class="chapter-visual visual-energy" data-energy data-reveal aria-hidden="true">
-      <svg viewBox="0 0 520 300">
-        <defs><linearGradient id="energy-gradient" x1="0" x2="1"><stop offset="0" class="stop-a"/><stop offset="1" class="stop-b"/></linearGradient></defs>
-        <path class="en-land" d="M-10 70C60 40 120 90 170 60S260-10 300-10H-10Z"/><path class="en-land" d="M530 230C470 220 430 260 420 310H530Z"/>
-        <path class="en-route-bg" d="M60 240C140 230 170 160 250 150S380 120 460 60"/>
-        <path class="en-route" data-energy-path pathLength="1" d="M60 240C140 230 170 160 250 150S380 120 460 60"/>
-        <circle class="en-end" cx="460" cy="60" r="8"/><text class="en-label" x="470" y="40">Möja</text>
-        <circle class="en-start" cx="60" cy="240" r="6"/><text class="en-label" x="40" y="270">Sandhamn</text>
-        <g data-energy-boat><circle class="en-boat-ring" r="16"/><circle class="en-boat" r="6"/></g>
-      </svg>
-      <div class="energy-readout">
-        <div><small>Now</small><b><span data-energy-now>92</span><em>%</em></b></div>
-        <div><small>On arrival</small><b>43<em>%</em></b></div>
-        <div><small>Reserve</small><b>20<em>%</em></b></div>
-      </div>
-      <span class="energy-bar" data-energy-bar><i></i><span class="reserve"></span></span>
+    <div class="chapter-visual visual-view" data-energy data-reveal aria-hidden="true">
+      <div class="fit" data-fit="1014x698"><div class="proto-screen proto-fragment fragment-view energy-focus" data-theme="day" inert>{% include 'marketing/includes/skager_energy.html' %}</div></div>
     </div>
   </div>
 </section>
@@ -196,13 +132,11 @@
       <h2 id="weather-title">The forecast.<br><span>On your chart.</span></h2>
       <p>Wind across your route, hour by hour. Pick the perfect window and sail it with the breeze on your side.</p>
     </div>
-    <div class="chapter-visual visual-weather" data-weather data-reveal aria-hidden="true">
-      <div class="chevrons">
-        {% for y in "012345" %}{% for x in "012345678" %}<span data-chevron data-x="{{ x }}" data-y="{{ y }}"><svg viewBox="0 0 20 20"><path d="M10 17V3M5.5 7.5L10 3l4.5 4.5"/></svg></span>{% endfor %}{% endfor %}
+    <div class="chapter-visual visual-chart" data-weather data-reveal aria-hidden="true">
+      <div class="proto-screen proto-fragment fragment-chart" data-theme="day" inert>
+        <div class="fragment-map" data-chart-clone="wind"></div>
+        <div class="chart-advisory forecast-advisory"><svg class="icon" viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7h12a3 3 0 1 0-3-3M3 12h16a3 3 0 1 1-3 3M3 17h9"></path></svg><span><b>Forecast wind · <span data-forecast-hour>15:00</span></b><span data-forecast-speed>14</span> kn from SW · along your route</span><button aria-label="Forecast details">↗</button></div>
       </div>
-      <svg class="weather-route" viewBox="0 0 540 320" preserveAspectRatio="none"><path d="M40 280C150 260 190 170 290 150S430 90 510 40"/></svg>
-      <div class="forecast-chip"><small>Forecast wind</small><b><span data-forecast-speed>14</span> kt · <span data-forecast-hour>15:00</span></b></div>
-      <div class="forecast-timeline" data-forecast-handle><span>12</span><span>13</span><span>14</span><span>15</span><span>16</span><span>17</span><span>18</span><i></i></div>
     </div>
   </div>
 </section>

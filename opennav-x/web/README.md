@@ -33,6 +33,11 @@ not a replacement for the selected Django/PostgreSQL/Render production backend.
 Its account/download pages explain that access is closed. The homepage scene
 (`static/marketing/home.js`) is a code-drawn, invented archipelago in the SKAGER
 palettes; it is not a navigable chart and carries no real geography or data.
+Wherever the homepage shows the SKAGER interface, it uses markup and CSS derived
+from the unchanged v8 prototype by `tools/prototype_screen/extract.cjs`
+(`templates/marketing/includes/skager_*.html`, `static/marketing/skager-screen.css`).
+Re-run that tool rather than editing its outputs; it verifies the prototype hash
+against `docs/design/prototype-original.json` first.
 Provenance records the exact website source revision and asset hashes.
 
 Dependencies are pinned to Django 5.2.17 LTS and psycopg 3.3.6. The versions

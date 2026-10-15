@@ -17,25 +17,8 @@
   const PALETTES = {
     hero: palette({ water: '#06171c', shallow: '#0d2d35', land: '#14352f', shore: '#3f7d74', contour: '#1d5059',
       route: '#6fe0ea', chartText: '#3c6d6e', ais: '#f0a6c8', own: '#ffffff', wind: '#8fdde8' }),
-    day: palette({ water: '#e2eeee', shallow: '#b7d5d9', land: '#eeeee2', shore: '#a3b8a5', contour: '#9fc3c7',
-      route: '#267c76', chartText: '#687b7a', ais: '#b9578a', own: '#16262a', wind: '#2f8a84' }),
-    dusk: palette({ water: '#304a54', shallow: '#3f606b', land: '#4e615d', shore: '#748779', contour: '#5a7e86',
-      route: '#b0dfc8', chartText: '#adbbb1', ais: '#d9a0bb', own: '#f3f5ee', wind: '#b0dfc8' }),
-    night: palette({ water: '#101b21', shallow: '#17272e', land: '#25342f', shore: '#46574a', contour: '#2c444c',
-      route: '#91bca2', chartText: '#758579', ais: '#a77f8a', own: '#b8b5a7', wind: '#7f9f9a' }),
-  };
-  // Interface chrome colours from the SKAGER design tokens (day / dusk / night).
-  const CHROME = {
-    day: palette({ bg: '#152326', surface: '#1d2d31', raised: '#26393d', border: '#35464a', text: '#f3f5ee',
-      secondary: '#aabdbd', muted: '#7e9699', active: '#b6efce', instrument: '#7bc8d7' }),
-    dusk: palette({ bg: '#1d282e', surface: '#25343b', raised: '#30444b', border: '#405059', text: '#e2e5db',
-      secondary: '#acb9b7', muted: '#819394', active: '#9bc5b1', instrument: '#82b0c1' }),
-    night: palette({ bg: '#0c1115', surface: '#141c21', raised: '#1d282f', border: '#29353b', text: '#b8b5a7',
-      secondary: '#91988e', muted: '#747d77', active: '#85a995', instrument: '#78989c' }),
   };
   const mixRGB = (a, b, t) => [0, 1, 2].map((i) => a[i] + (b[i] - a[i]) * t);
-  const mixPalette = (a, b, t) => Object.fromEntries(Object.keys(a).map((k) => [k, mixRGB(a[k], b[k], t)]));
-  const threeWay = (set, t) => (t < 0.5 ? mixPalette(set.day, set.dusk, t * 2) : mixPalette(set.dusk, set.night, (t - 0.5) * 2));
   const rgba = (c, a = 1) => `rgba(${c[0] | 0},${c[1] | 0},${c[2] | 0},${a})`;
 
   /* ---------- maths ---------- */
@@ -172,7 +155,7 @@
       this.ctx = canvas.getContext('2d', { alpha: false });
       this.options = options;
       this.time = options.startTime || 0;
-      this.params = { contour: 1, route: 1, ais: 1, wind: 1, select: 0, scale: options.scale || 1 };
+      this.params = { contour: 1, route: 1, ais: 1, wind: 1, scale: options.scale || 1 };
       this.palette = options.palette;
       this.wake = [];
       this.particles = [];
@@ -214,30 +197,12 @@
 
     state() {
       const boat = this.boat();
-      const s = WORLD.wrap(boat.s);
-      let next = WORLD.waypointArc.findIndex((arc) => arc > s + 1);
-      if (next < 0) next = 0;
-      const count = WORLD.waypoints.length;
-      const wp = WORLD.waypoints[next];
-      const before = WORLD.waypoints[(next - 1 + count) % count];
-      const after = WORLD.waypoints[(next + 1) % count];
-      const turn = (wp[0] - before[0]) * (after[1] - wp[1]) - (wp[1] - before[1]) * (after[0] - wp[0]);
-      const outgoing = (Math.atan2(after[1] - wp[1], after[0] - wp[0]) * 180) / Math.PI + 90;
-      const distance = Math.hypot(wp[0] - boat.x, wp[1] - boat.y);
-      const bearing = (Math.atan2(wp[1] - boat.y, wp[0] - boat.x) * 180) / Math.PI + 90;
       const t = this.time;
       return {
         sog: 6.3 + noise(t * 0.4, 1) * 0.35,
         cog: ((boat.heading * 180) / Math.PI + 90 + 360) % 360,
         depth: WORLD.depthAt(boat.x, boat.y) + noise(t, 4) * 0.15,
         wind: 14.2 + noise(t * 0.5, 7) * 1.6,
-        windDir: 225 + noise(t * 0.2, 9) * 12,
-        battery: 68 - ((t / 60) % 25),
-        nextDistance: distance / 240,
-        nextBearing: (bearing + 360) % 360,
-        turnSide: turn > 0 ? 'Starboard' : 'Port',
-        nextCourse: (outgoing + 360) % 360,
-        traffic: this.nearestTraffic(),
       };
     }
 
@@ -349,21 +314,6 @@
 
       // AIS traffic.
       if (params.ais > 0.01) {
-        const selected = params.select > 0.01 ? this.nearestTraffic() : null;
-        if (selected) {
-          ctx.save();
-          ctx.translate(selected.x, selected.y);
-          ctx.scale(1 / scale, 1 / scale);
-          ctx.strokeStyle = rgba(pal.ais, params.select);
-          ctx.lineWidth = 2;
-          const r = 24 + (1 - params.select) * 16;
-          [0, 1, 2, 3].forEach((q) => {
-            ctx.beginPath();
-            ctx.arc(0, 0, r, q * Math.PI / 2 + 0.25, q * Math.PI / 2 + Math.PI / 2 - 0.25);
-            ctx.stroke();
-          });
-          ctx.restore();
-        }
         WORLD.TRAFFIC.forEach((ship) => {
           const s = ship.offset * WORLD.length + this.time * ship.speed;
           const p = WORLD.at(s);
@@ -502,21 +452,6 @@
       this.time -= seconds;
     }
 
-    nearestTraffic() {
-      const boat = this.boat();
-      let best = null;
-      WORLD.TRAFFIC.forEach((ship) => {
-        const p = WORLD.at(ship.offset * WORLD.length + this.time * ship.speed);
-        const x = p.x - p.ny * ship.lane;
-        const y = p.y + p.nx * ship.lane;
-        const d = Math.hypot(x - boat.x, y - boat.y);
-        if (!best || d < best.distance) {
-          const ahead = (x - boat.x) * Math.cos(boat.heading) + (y - boat.y) * Math.sin(boat.heading) > 0;
-          best = { ship, x, y, distance: d, ahead };
-        }
-      });
-      return best;
-    }
   }
 
   /* ---------- visibility helper ---------- */
@@ -583,112 +518,227 @@
     bindRunState(hero, heroCanvas);
   }
 
-  /* ---------- the tour: scroll drives the product story ---------- */
+  /* ---------- interface fragments are laid out at their real size, then scaled ---------- */
+  const setLead = (node, value) => {
+    if (!node) return;
+    const first = node.firstChild;
+    if (first && first.nodeType === 3) { if (first.nodeValue !== value) first.nodeValue = value; } else node.prepend(value);
+  };
+  // Chromium keeps SVG text laid out at the scale it first saw. After a scale change, nudge the
+  // text so it is laid out again at the new size (otherwise labels drift away from their islands).
+  const relayoutText = (root) => {
+    const texts = [...root.querySelectorAll('svg text')];
+    texts.forEach((node) => { const x = node.getAttribute('x'); if (x !== null) node.setAttribute('x', String(Number(x) + 0.01)); });
+    requestAnimationFrame(() => texts.forEach((node) => {
+      const x = node.getAttribute('x');
+      if (x !== null) node.setAttribute('x', String(Math.round((Number(x) - 0.01) * 10) / 10));
+    }));
+  };
+  const fit = (box) => {
+    const [w, h] = (box.dataset.fit || '1014x630').split('x').map(Number);
+    const k = box.clientWidth / w;
+    const value = k.toFixed(4);
+    if (box.style.getPropertyValue('--k') === value) return;
+    box.style.setProperty('--k', value);
+    if (box.classList.contains('fit')) box.style.height = `${Math.round(h * k)}px`;
+    relayoutText(box);
+  };
+  const fitted = [...document.querySelectorAll('[data-fit], .fragment-chart')];
+  fitted.forEach(fit);
+  if ('ResizeObserver' in window) { const ro = new ResizeObserver((entries) => entries.forEach((e) => fit(e.target))); fitted.forEach((b) => ro.observe(b)); }
+  window.addEventListener('resize', () => fitted.forEach(fit));
+
+  // The feature charts reuse the tour's real chart artwork rather than shipping a second copy.
+  const chartSource = document.querySelector('[data-tour-screen] #ps-chartSvg');
+  // Chromium misplaces scaled, centre-anchored SVG text, so give it an explicit left edge measured
+  // in the visitor's own font. The chart looks exactly as before.
+  if (chartSource && chartSource.getBBox) {
+    chartSource.querySelectorAll('text').forEach((node) => {
+      const anchor = getComputedStyle(node).textAnchor;
+      if (anchor === 'start' || node.querySelector('tspan')) return;
+      try {
+        const box = node.getBBox();
+        if (!box.width) return;
+        node.setAttribute('x', box.x.toFixed(1));
+        node.setAttribute('text-anchor', 'start');
+        node.style.textAnchor = 'start';
+      } catch (error) { /* unrendered text keeps its anchor */ }
+    });
+  }
+  const clones = {};
+  document.querySelectorAll('[data-chart-clone]').forEach((host) => {
+    if (!chartSource) return;
+    const svg = chartSource.cloneNode(true);
+    svg.removeAttribute('id');
+    const defs = svg.querySelector('defs');
+    if (defs) defs.remove();
+    svg.querySelectorAll('[id]').forEach((n) => { n.dataset.layer = n.id.replace(/^ps-/, ''); n.removeAttribute('id'); });
+    host.append(svg);
+    clones[host.dataset.chartClone] = svg;
+  });
+
+  /* ---------- the tour: scroll drives the real SKAGER screen ---------- */
   const tour = document.querySelector('[data-tour]');
   if (tour) {
     const stage = tour.querySelector('[data-tour-stage]');
     const screen = tour.querySelector('[data-tour-screen]');
-    const canvas = tour.querySelector('[data-tour-canvas]');
     const beats = [...tour.querySelectorAll('[data-beat]')];
     const steps = [...tour.querySelectorAll('[data-step]')];
-    const cards = Object.fromEntries([...tour.querySelectorAll('[data-card]')].map((n) => [n.dataset.card, n]));
-    const values = Object.fromEntries([...tour.querySelectorAll('[data-value]')].map((n) => [n.dataset.value, n]));
-    const modes = [...tour.querySelectorAll('[data-mode]')];
-    const DESIGN = { width: 1280, height: 800, chart: 800 - 52 - 64 };
+    const q = (selector) => screen.querySelector(selector);
+    const map = q('#ps-mapTransform');
+    const ship = q('#ps-ownShip');
+    const shipHeading = q('#ps-ownShipHeading');
+    const routeLines = [...screen.querySelectorAll('#ps-routeLayer .chart-route, #ps-routeLayer .chart-route-under, #ps-routeLayer .chart-route-corridor')];
+    const track = q('#ps-routeLayer .chart-track');
+    const routeMarks = [...screen.querySelectorAll('#ps-routeLayer .map-waypoint, #ps-routeLayer .route-point-label')];
+    const aisLayer = q('#ps-aisLayer');
+    const wind = q('#ps-windLayer');
+    const turnCard = q('.next-turn');
+    const turnSub = q('.next-turn .turn-sub');
+    const drawer = screen.querySelector(':scope > .drawer');
+    const freja = q('#ps-ais-0');
+    const metrics = [...screen.querySelectorAll('.data-rail .metric-value')];
+    const spark = q('.data-rail .sparkline path');
+    const nowLine = q('.timeline-event.now small');
+    const footerCog = q('.statusbar .footer-middle b');
+    const position = q('#ps-positionLabel');
+    const themeButton = q('#ps-themeButton');
+    const icons = Object.fromEntries([...document.querySelectorAll('template[data-theme-icon]')].map((t) => [t.dataset.themeIcon, t.innerHTML]));
+
+    // The prototype's passage: own vessel at the start of the Långholmen leg.
+    const ROUTE = [[500, 420], [596, 330], [795, 278], [820, 134], [884, 149]];
+    const LEG = Math.hypot(ROUTE[1][0] - ROUTE[0][0], ROUTE[1][1] - ROUTE[0][1]);
+    const KNOT = 0.12; // chart units per second per knot (time-lapse)
+    const CYCLE = 150;
+    const TRAFFIC = { 'ps-ais-0': 11.2, 'ps-ais-1': 5.1, 'ps-ais-2': 8.6, 'ps-ais-3': 6.8 };
+    const ships = [...screen.querySelectorAll('.ais-ship')].map((node) => {
+      const at = (node.getAttribute('transform') || '').match(/translate\(([-\d.]+)[ ,]+([-\d.]+)\)/);
+      const rot = (node.querySelector('g') && node.querySelector('g').getAttribute('transform') || '').match(/rotate\(([-\d.]+)/);
+      return { node, x: at ? +at[1] : 0, y: at ? +at[2] : 0, heading: rot ? +rot[1] : 0, knots: TRAFFIC[node.id] || 6 };
+    });
+    if (wind) wind.classList.add('wind-live');
+
     let progress = 0;
     let auto = smallScreen.matches;
+    let clock = 0;
     let autoClock = 0;
     let readout = 0;
-    let lastChrome = '';
-    const current = { pull: still() ? 1 : 0, route: 0, ais: 0, wind: 0, light: 0, select: 0 };
-
-    const targetsFor = (p) => ({
-      pull: smooth(0, 0.12, p),
-      route: smooth(0.13, 0.26, p),
-      ais: smooth(0.35, 0.45, p),
-      wind: smooth(0.57, 0.67, p),
-      light: smooth(0.8, 0.97, p),
-      select: p > 0.39 && p < 0.58 ? 1 : 0,
-    });
+    let theme = 'day';
+    let geometryClock = 1;
+    let theming = 0;
+    const lastStyle = new WeakMap();
+    const setStyle = (node, prop, value) => {
+      if (!node) return;
+      const key = lastStyle.get(node) || {};
+      if (key[prop] === value) return;
+      key[prop] = value;
+      lastStyle.set(node, key);
+      node.style[prop] = value;
+    };
+    const current = { pull: still() ? 1 : 0, route: 0, ais: 0, wind: 0, light: 0 };
+    const targetsFor = (p) => ({ pull: smooth(0, 0.12, p), route: smooth(0.13, 0.26, p), ais: smooth(0.35, 0.45, p),
+      wind: smooth(0.57, 0.67, p), light: smooth(0.8, 0.97, p) });
     const beatFor = (p) => (p < 0.12 ? 0 : p < 0.34 ? 1 : p < 0.56 ? 2 : p < 0.78 ? 3 : 4);
     const autoProgress = () => {
-      // Phones: cycle the beats on a clock instead of pinning the scroll.
-      const cycle = autoClock % 30;
-      return cycle < 2 ? 0.1 : cycle < 8 ? 0.28 : cycle < 14 ? 0.5 : cycle < 20 ? 0.72 : 0.78 + ((cycle - 20) / 10) * 0.22;
+      const c = autoClock % 30;
+      return c < 2 ? 0.1 : c < 8 ? 0.28 : c < 14 ? 0.5 : c < 20 ? 0.72 : 0.78 + ((c - 20) / 10) * 0.22;
     };
+    const fmt = (v, n = 1) => v.toFixed(n);
 
-    const scene = new Scene(canvas, {
-      palette: PALETTES.day,
-      startTime: 12,
-      maxDpr: 2,
-      maxParticles: 160,
-      aisLabels: true,
-      arcOffset: 2100,
-      scale: 1,
-      anchor: () => [0.45, 0.55],
-      update(sc, dt) {
-        if (auto) autoClock += dt;
-        const p = auto ? autoProgress() : progress;
-        const target = targetsFor(p);
-        Object.keys(current).forEach((k) => { current[k] = approach(current[k], target[k], dt, 6); });
-        sc.params.contour = 1;
-        sc.params.route = current.route;
-        sc.params.ais = current.ais;
-        sc.params.wind = current.wind;
-        sc.params.select = current.select;
-        sc.params.scale = 1.55 - current.pull * 0.6;
-        sc.palette = threeWay(PALETTES, current.light);
-        applyStage(p);
-      },
-      onFrame(sc, dt) {
-        readout += dt;
-        if (readout < 0.25) return;
-        readout = 0;
-        const s = sc.state();
-        text(values.sog, s.sog.toFixed(1));
-        text(values.depth, s.depth.toFixed(1));
-        text(values.wind, s.wind.toFixed(1));
-        text(values.battery, Math.round(s.battery).toString());
-        text(values.heading, `${Math.round(s.cog).toString().padStart(3, '0')}°`);
-        text(values.dtw, s.nextDistance.toFixed(1));
-        text(values.btw, `${Math.round(s.nextBearing).toString().padStart(3, '0')}°`);
-        text(values.next, s.nextDistance.toFixed(1));
-        text(values.side, s.turnSide);
-        text(values.course, `${Math.round(s.nextCourse).toString().padStart(3, '0')}°`);
-        if (s.traffic) {
-          text(values.aisName, s.traffic.ship.name);
-          text(values.aisType, s.traffic.ship.type);
-          text(values.aisRange, (s.traffic.distance / 240).toFixed(1));
-          text(values.aisPass, s.traffic.ahead ? 'Crossing ahead' : 'Passing astern');
-        }
-      },
-    });
+    const render = (dt) => {
+      clock += dt;
+      if (auto) autoClock += dt;
+      const p = auto ? autoProgress() : progress;
+      const target = targetsFor(p);
+      Object.keys(current).forEach((k) => { current[k] = dt ? approach(current[k], target[k], dt, 6) : target[k]; });
 
-    const applyStage = (p) => {
+      // Own vessel advances along the leg; the chart follows it, as in "Following Reptil".
+      // It moves under a pixel a second, so ten geometry updates a second are plenty.
+      const t = clock % CYCLE;
+      geometryClock += dt;
+      const moveNow = geometryClock >= 0.1 || !dt;
+      if (moveNow) geometryClock = 0;
+      const d = Math.min(LEG * 0.85, t * 6.3 * KNOT);
+      const bx = ROUTE[0][0] + (ROUTE[1][0] - ROUTE[0][0]) * (d / LEG);
+      const by = ROUTE[0][1] + (ROUTE[1][1] - ROUTE[0][1]) * (d / LEG);
+      const dx = bx - ROUTE[0][0];
+      const dy = by - ROUTE[0][1];
+      if (moveNow) {
+      if (map) map.setAttribute('transform', `translate(${fmt(-dx, 2)} ${fmt(-dy, 2)}) translate(500 315) scale(1) rotate(0) translate(-500 -315)`);
+      if (ship) ship.setAttribute('transform', `translate(${fmt(bx, 2)} ${fmt(by, 2)})`);
+      if (shipHeading) shipHeading.setAttribute('transform', `rotate(${fmt(41 + noise(clock * 0.3, 2) * 1.6)})`);
+      const tail = ROUTE.slice(1).map((pt) => pt.join(' ')).join(' ');
+      routeLines.forEach((n) => n.setAttribute('d', `M${fmt(bx, 2)} ${fmt(by, 2)} ${tail}`));
+      if (track) track.setAttribute('d', `M373 673 405 552Q430 495 500 420L${fmt(bx, 2)} ${fmt(by, 2)}`);
+      ships.forEach((s) => {
+        const a = (s.heading * Math.PI) / 180;
+        const run = t * s.knots * KNOT;
+        s.node.setAttribute('transform', `translate(${fmt(s.x + Math.sin(a) * run, 2)} ${fmt(s.y - Math.cos(a) * run, 2)})`);
+      });
+      }
+      const fade = t > CYCLE - 0.8 ? (CYCLE - t) / 0.8 : t < 0.8 && clock > 1 ? t / 0.8 : 1;
+      setStyle(map, 'opacity', fade.toFixed(2));
+
+      // Story layers. The route draws by stroke length so each line keeps its own styling.
+      routeLines.forEach((n) => {
+        if (current.route > 0.995) { setStyle(n, 'strokeDasharray', ''); return; }
+        const length = n.getTotalLength();
+        setStyle(n, 'strokeDasharray', `${fmt(current.route * length)} ${fmt(length + 1)}`);
+      });
+      routeMarks.forEach((n) => setStyle(n, 'opacity', fmt(smooth(0.6, 1, current.route), 2)));
+      setStyle(aisLayer, 'opacity', fmt(current.ais, 2));
+      setStyle(wind, 'opacity', fmt(current.wind, 2));
+      if (turnCard) turnCard.classList.toggle('is-shown', p > 0.14);
+      if (drawer) drawer.classList.toggle('is-shown', p > 0.39 && p < 0.58);
+      if (freja) freja.classList.toggle('is-selected', p > 0.39 && p < 0.58);
+      const next = current.light < 0.34 ? 'day' : current.light < 0.67 ? 'dusk' : 'night';
+      if (theming > 0) { theming -= dt; if (theming <= 0) screen.classList.remove('is-theming'); }
+      if (next !== theme) {
+        theme = next;
+        screen.classList.add('is-theming');
+        theming = 1.1;
+        screen.dataset.theme = theme;
+        if (themeButton && icons[theme]) themeButton.innerHTML = icons[theme];
+      }
+      if (lastStyle.get(stage) !== fmt(current.pull, 3)) { lastStyle.set(stage, fmt(current.pull, 3)); stage.style.setProperty('--pull', fmt(current.pull, 3)); }
       const beat = beatFor(p);
       beats.forEach((node) => node.classList.toggle('is-active', Number(node.dataset.beat) === beat));
       steps.forEach((node) => node.classList.toggle('is-active', Number(node.dataset.step) <= beat && beat > 0));
-      if (cards.turn) cards.turn.classList.toggle('is-shown', p > 0.16 && p < 0.36);
-      if (cards.ais) cards.ais.classList.toggle('is-shown', p > 0.39 && p < 0.58);
-      if (cards.weather) cards.weather.classList.toggle('is-shown', p > 0.6 && p < 0.8);
-      const lightName = current.light < 0.25 ? 'day' : current.light < 0.75 ? 'dusk' : 'night';
-      modes.forEach((node) => node.classList.toggle('is-active', node.dataset.mode === lightName));
-      stage.style.setProperty('--pull', current.pull.toFixed(4));
-      const chrome = threeWay(CHROME, current.light);
-      const key = Object.values(chrome).map((c) => c.map(Math.round).join(',')).join(';');
-      if (key !== lastChrome) {
-        lastChrome = key;
-        Object.entries(chrome).forEach(([name, colour]) => screen.style.setProperty(`--ui-${name}`, rgba(colour)));
+
+      // Live readouts, a few times a second.
+      readout += dt;
+      if (readout < 0.3 && dt) return;
+      readout = 0;
+      const sog = 6.3 + noise(clock * 0.4, 1) * 0.25;
+      const cog = Math.round(43 + noise(clock * 0.3, 2) * 1.4);
+      if (metrics[0]) setLead(metrics[0], fmt(sog));
+      if (metrics[1]) setLead(metrics[1], fmt(8.4 + noise(clock * 0.2, 4) * 1.1));
+      if (metrics[2]) setLead(metrics[2], fmt(14.3 + noise(clock * 0.5, 7) * 1.2));
+      if (spark) {
+        const pts = Array.from({ length: 16 }, (_, i) => `${i * 10} ${fmt(14 - noise((clock + i * 1.3) * 0.35, 1) * 9)}`);
+        spark.setAttribute('d', `M${pts.join(' ')}`);
       }
+      const left = Math.hypot(ROUTE[1][0] - bx, ROUTE[1][1] - by) / 190;
+      if (turnSub) turnSub.textContent = `${fmt(left)} nm · in ${Math.max(1, Math.round((left / sog) * 60))} min · new course 075°`;
+      if (nowLine) nowLine.textContent = `${String(cog).padStart(3, '0')}° COG · ${fmt(sog)} kn`;
+      if (footerCog) footerCog.textContent = `${String(cog).padStart(3, '0')}°`;
+      if (position) position.textContent = `58° ${(20.462 - dy * 0.0045).toFixed(3)}′ N   016° ${(48.218 + dx * 0.0085).toFixed(3)}′ E`;
     };
 
-    const fit = () => {
-      const k = stage.clientWidth / DESIGN.width;
-      screen.style.setProperty('--k', k.toFixed(5));
-      stage.style.setProperty('--stage-height', `${Math.round(DESIGN.height * k)}px`);
-      scene.options.pixelScale = Math.max(0.5, k);
-      scene.resize(DESIGN.width, DESIGN.chart);
-      if (!scene.running) scene.render(0);
+    let running = false;
+    let raf = 0;
+    let last = 0;
+    const tick = (now) => {
+      const dt = Math.min(0.05, (now - last) / 1000);
+      last = now;
+      render(dt);
+      if (running) raf = requestAnimationFrame(tick);
+    };
+    let visible = true;
+    const update = () => {
+      const on = visible && !document.hidden && !still();
+      if (on && !running) { running = true; last = performance.now(); raf = requestAnimationFrame(tick); }
+      if (!on && running) { running = false; cancelAnimationFrame(raf); }
     };
     const measure = () => {
       auto = smallScreen.matches || still();
@@ -697,19 +747,32 @@
       const span = rect.height - window.innerHeight;
       progress = span > 0 ? clamp(-rect.top / span) : 0;
     };
+    const fitStage = () => {
+      const value = (stage.clientWidth / 1280).toFixed(4);
+      if (screen.style.getPropertyValue('--k') === value) return;
+      screen.style.setProperty('--k', value);
+      relayoutText(screen);
+    };
+    if (document.fonts && document.fonts.ready) document.fonts.ready.then(() => relayoutText(screen));
     window.addEventListener('scroll', measure, { passive: true });
-    window.addEventListener('resize', () => { measure(); fit(); });
-    smallScreen.addEventListener('change', () => { measure(); fit(); });
-    if ('ResizeObserver' in window) new ResizeObserver(fit).observe(stage);
+    window.addEventListener('resize', () => { measure(); fitStage(); });
+    smallScreen.addEventListener('change', measure);
+    if ('ResizeObserver' in window) new ResizeObserver(fitStage).observe(stage);
     measure();
-    fit();
+    fitStage();
     if (still()) {
-      Object.assign(current, { pull: 1, route: 1, ais: 1, wind: 1, light: 0 });
-      scene.params = { contour: 1, route: 1, ais: 1, wind: 1, scale: 0.95 };
-      applyStage(0.5);
       tour.classList.add('is-still');
+      progress = 0.3;
+      auto = false;
+      clock = 20;
+      render(0);
+    } else {
+      render(0);
     }
-    bindRunState(scene, stage);
+    whenVisible(stage, (v) => { visible = v; update(); });
+    document.addEventListener('visibilitychange', update);
+    reducedMotion.addEventListener('change', update);
+    update();
   }
 
   /* ---------- reveal on scroll ---------- */
@@ -750,115 +813,118 @@
     step(still() ? 6 : 0, 0);
   };
 
-  // Instruments: live tiles with a speed sparkline.
-  const rail = document.querySelector('[data-rail]');
-  if (rail) {
-    const v = Object.fromEntries([...rail.querySelectorAll('[data-rail-value]')].map((n) => [n.dataset.railValue, n]));
-    const spark = rail.querySelector('[data-spark]');
-    const meter = rail.querySelector('[data-depth-meter]');
-    const needle = rail.querySelector('[data-wind-needle]');
-    const battery = rail.querySelector('[data-battery-bar]');
-    const history = Array.from({ length: 40 }, (_, i) => 6.3 + noise(i * 0.3, 1) * 0.4);
-    let clock = 0;
-    loop(rail, (t, dt) => {
-      clock += dt;
-      if (clock < 0.12 && dt) return;
-      clock = 0;
-      const sog = 6.3 + noise(t * 0.5, 1) * 0.45;
-      const depth = 8.4 + noise(t * 0.25, 3) * 2.6;
-      const wind = 14 + noise(t * 0.6, 5) * 2.2;
-      const dir = 225 + noise(t * 0.3, 8) * 14;
-      const soc = 68 - (t % 40) * 0.05;
-      history.push(sog);
-      history.shift();
-      text(v.sog, sog.toFixed(1));
-      text(v.depth, depth.toFixed(1));
-      text(v.wind, wind.toFixed(1));
-      text(v.dir, `${Math.round(dir)}°`);
-      text(v.battery, soc.toFixed(0));
-      if (spark) spark.setAttribute('points', history.map((y, i) => `${(i / 39) * 120},${30 - (y - 5.6) * 18}`).join(' '));
-      if (meter) meter.style.setProperty('--level', clamp(depth / 20).toFixed(3));
-      if (needle) needle.style.setProperty('--angle', `${dir + 180}deg`);
-      if (battery) battery.style.setProperty('--level', (soc / 100).toFixed(3));
+  // Navigation: the real Chart presentation panel switches layers off, one by one.
+  const declutter = document.querySelector('[data-declutter]');
+  if (declutter && clones.layers) {
+    const svg = clones.layers;
+    const layer = (name) => [...svg.querySelectorAll(`[data-layer="${name}"]`)];
+    const cls = (name) => [...svg.querySelectorAll(name)];
+    const TARGETS = {
+      'Depth soundings': () => layer('depthLayer'),
+      'Chart symbols': () => [...layer('chartSymbolLayer'), ...layer('chartLightSectorLayer')],
+      'Symbol labels': () => cls('.chart-symbol-label'),
+      'Depth contours': () => layer('contourLayer'),
+      'Route corridor': () => cls('.chart-route-corridor'),
+      'AIS vessels': () => layer('aisLayer'),
+      'Wind vectors': () => layer('windLayer'),
+    };
+    const switches = Object.fromEntries([...declutter.querySelectorAll('.toggle[role=switch]')]
+      .map((n) => [n.getAttribute('aria-label'), n]).filter(([name]) => TARGETS[name]));
+    Object.entries(switches).forEach(([name, node]) => {
+      const off = node.getAttribute('aria-checked') !== 'true';
+      TARGETS[name]().forEach((el) => { el.dataset.layer = el.dataset.layer || name; el.classList.toggle('is-off', off); });
+    });
+    const ORDER = ['Depth soundings', 'Symbol labels', 'Chart symbols', 'Depth contours'].filter((n) => switches[n]);
+    const set = (name, on) => {
+      switches[name].setAttribute('aria-checked', String(on));
+      TARGETS[name]().forEach((el) => { el.dataset.layer = el.dataset.layer || name; el.classList.toggle('is-off', !on); });
+    };
+    let stepIndex = -1;
+    let wait = 1.2;
+    loop(declutter, (time, dt) => {
+      if (!dt) { if (still()) ORDER.forEach((n) => set(n, false)); return; }
+      wait -= dt;
+      if (wait > 0) return;
+      stepIndex = (stepIndex + 1) % (ORDER.length * 2 + 2);
+      if (stepIndex < ORDER.length) { set(ORDER[stepIndex], false); wait = 1.3; }
+      else if (stepIndex === ORDER.length) { wait = 2.6; }
+      else if (stepIndex < ORDER.length * 2 + 1) { set(ORDER[stepIndex - ORDER.length - 1], true); wait = 0.5; }
+      else { wait = 2.2; }
     });
   }
 
-  // Autopilot: a short loop of adjustments.
+  // Instruments: the real Instruments view, live.
+  const instruments = document.querySelector('[data-instruments]');
+  if (instruments) {
+    const tiles = [...instruments.querySelectorAll('.instrument-tile b')];
+    const stats = [...instruments.querySelectorAll('.stats-grid strong')];
+    const arrows = [...instruments.querySelectorAll('.wind-rose path[transform*="-72"]')];
+    const BASE = [6.3, 43, 6.1, 8.4, 17.1, 54, 8.2, 16.8];
+    const SWING = [0.25, 1.5, 0.2, 0.9, 1.4, 3, 1.2, 0.05];
+    const DIGITS = [1, 0, 1, 1, 1, 0, 1, 1];
+    let clock = 0;
+    loop(instruments, (time, dt) => {
+      clock += dt;
+      if (clock < 0.35 && dt) return;
+      clock = 0;
+      tiles.forEach((b, i) => {
+        const v = BASE[i] + noise(time * 0.4, i * 1.7) * SWING[i];
+        setLead(b, i === 1 ? String(Math.round(v)).padStart(3, '0') : v.toFixed(DIGITS[i]));
+      });
+      if (stats[0]) setLead(stats[0], (14.3 + noise(time * 0.5, 7) * 1.2).toFixed(1));
+      const twa = Math.round(72 + noise(time * 0.3, 9) * 4);
+      if (stats[1]) setLead(stats[1], String(twa));
+      arrows.forEach((n) => n.setAttribute('transform', `rotate(${-twa} 140 140)`));
+    });
+  }
+
+  // Autopilot: the real helm-control panel, adjusting the commanded heading.
   const pilot = document.querySelector('[data-pilot]');
   if (pilot) {
-    const headingNode = pilot.querySelector('[data-pilot-heading]');
-    const rose = pilot.querySelector('[data-pilot-rose]');
-    const keys = Object.fromEntries([...pilot.querySelectorAll('[data-key]')].map((n) => [n.dataset.key, n]));
-    const SCRIPT = [['auto', 0], ['+10', 10], ['+1', 1], ['+1', 1], ['-10', -10], ['-1', -1]];
-    let heading = 143;
-    let shown = 143;
+    const value = pilot.querySelector('.dial-value span');
+    const pointer = pilot.querySelector('.heading-dial path[fill]');
+    const keys = Object.fromEntries([...pilot.querySelectorAll('[data-heading]')].map((n) => [n.dataset.heading, n]));
+    const SCRIPT = ['10', '1', '1', '-10', '-1', '-1'];
+    let heading = 41;
+    let shown = 41;
     let index = -1;
-    let wait = 0;
-    loop(pilot, (t, dt) => {
-      if (!dt) { text(headingNode, '143°'); return; }
+    let wait = 1.4;
+    loop(pilot, (time, dt) => {
+      if (!dt) return;
       wait -= dt;
       if (wait <= 0) {
         index = (index + 1) % SCRIPT.length;
-        const [key, delta] = SCRIPT[index];
-        heading = (heading + delta + 360) % 360;
-        Object.values(keys).forEach((k) => k.classList.remove('is-pressed'));
-        if (keys[key]) {
-          keys[key].classList.add('is-pressed');
-          setTimeout(() => keys[key].classList.remove('is-pressed'), 420);
-        }
-        wait = key === 'auto' ? 2.2 : 1.8;
+        const key = keys[SCRIPT[index]];
+        heading = (heading + Number(SCRIPT[index]) + 360) % 360;
+        if (key) { key.classList.add('is-pressed'); setTimeout(() => key.classList.remove('is-pressed'), 380); }
+        wait = 1.8;
       }
       let diff = heading - shown;
       if (diff > 180) diff -= 360;
       if (diff < -180) diff += 360;
       shown = (shown + diff * (1 - Math.exp(-dt * 3)) + 360) % 360;
-      text(headingNode, `${Math.round(shown).toString().padStart(3, '0')}°`);
-      if (rose) rose.style.setProperty('--angle', `${-shown}deg`);
+      text(value, `${String(Math.round(shown) % 360).padStart(3, '0')}°`);
+      if (pointer) pointer.setAttribute('transform', `rotate(${shown.toFixed(1)} 100 100)`);
     });
   }
 
-  // Energy: charge drains as the boat crosses the passage.
-  const energy = document.querySelector('[data-energy]');
-  if (energy) {
-    const dot = energy.querySelector('[data-energy-boat]');
-    const path = energy.querySelector('[data-energy-path]');
-    const now = energy.querySelector('[data-energy-now]');
-    const bar = energy.querySelector('[data-energy-bar]');
-    const total = path ? path.getTotalLength() : 0;
-    loop(energy, (t) => {
-      const cycle = (t % 9) / 7.5;
-      const k = clamp(cycle);
-      if (path && dot) {
-        const p = path.getPointAtLength(total * k);
-        dot.setAttribute('transform', `translate(${p.x.toFixed(1)} ${p.y.toFixed(1)})`);
-        energy.style.setProperty('--travelled', k.toFixed(3));
-      }
-      const soc = 92 - k * 49;
-      text(now, soc.toFixed(0));
-      if (bar) bar.style.setProperty('--level', (soc / 100).toFixed(3));
-    });
-  }
-
-  // Weather: wind chevrons swing as the forecast hour advances.
+  // Weather: the chart's wind vectors veer as the forecast hour advances.
   const weather = document.querySelector('[data-weather]');
-  if (weather) {
-    const arrows = [...weather.querySelectorAll('[data-chevron]')];
+  if (weather && clones.wind) {
+    const vectors = [...clones.wind.querySelectorAll('[data-layer="windLayer"] path')].map((node) => {
+      const m = (node.getAttribute('d') || '').match(/^m([-\d.]+) ([-\d.]+)/);
+      return { node, x: m ? +m[1] + 9 : 0, y: m ? +m[2] - 4 : 0, i: Math.random() * 10 };
+    });
+    vectors.forEach((v) => { v.node.setAttribute('opacity', '.75'); v.node.setAttribute('stroke-width', '1.6'); });
     const hourNode = weather.querySelector('[data-forecast-hour]');
     const speedNode = weather.querySelector('[data-forecast-speed]');
-    const handle = weather.querySelector('[data-forecast-handle]');
-    loop(weather, (t) => {
-      const k = (t % 12) / 12;
-      const hour = 12 + k * 6;
-      text(hourNode, `${Math.floor(hour)}:00`);
-      text(speedNode, (11 + Math.sin(k * Math.PI) * 7).toFixed(0));
-      if (handle) handle.style.setProperty('--at', k.toFixed(3));
-      arrows.forEach((node) => {
-        const x = Number(node.dataset.x);
-        const y = Number(node.dataset.y);
-        const veer = 200 + k * 60 + Math.sin(x * 0.9 + k * 4) * 10 + Math.cos(y * 0.8) * 8;
-        const strength = 0.75 + Math.sin(k * Math.PI + x * 0.3) * 0.25;
-        node.style.setProperty('--angle', `${veer + 180}deg`);
-        node.style.setProperty('--strength', strength.toFixed(3));
+    loop(weather, (time) => {
+      const k = (time % 12) / 12;
+      text(hourNode, `${12 + Math.floor(k * 6)}:00`);
+      text(speedNode, String(Math.round(11 + Math.sin(k * Math.PI) * 6)));
+      vectors.forEach((v) => {
+        const veer = -12 + k * 30 + Math.sin(time * 0.8 + v.i) * 4;
+        v.node.setAttribute('transform', `rotate(${veer.toFixed(1)} ${v.x} ${v.y})`);
       });
     });
   }
