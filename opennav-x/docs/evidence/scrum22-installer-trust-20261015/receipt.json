@@ -1,0 +1,461 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-22",
+  "testedCommit": "b375e6bd3d743993a1415729becdc73ee3e47575",
+  "repository": "ThereptileII/Work",
+  "workflow": ".github/workflows/skager-native-python-contracts.yml",
+  "selection": {
+    "installer_trust_only": true
+  },
+  "run": {
+    "id": "38764328627",
+    "attempt": "1",
+    "conclusion": "success",
+    "jobId": "116523477327",
+    "jobName": "installer-trust",
+    "jobConclusion": "success",
+    "startedAt": "2026-10-15T15:53:50Z",
+    "completedAt": "2026-10-15T15:56:36Z",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38764328627"
+  },
+  "runner": {
+    "image": "windows-2022",
+    "imageVersion": "20261012.333.1"
+  },
+  "artifact": {
+    "id": "11987078203",
+    "name": "installer-trust-b375e6bd3d743993a1415729becdc73ee3e47575-run38764328627-attempt1",
+    "bytes": 9138815,
+    "sha256": "654c57d3233e007583837e2959123160d0bd949740b852a06af2acfe3f5e3b3b",
+    "expiredAtDownload": false,
+    "verifiedMemberCrcs": 9,
+    "downloadedOnce": true
+  },
+  "originalEvidenceFiles": {
+    "run-original.json": {
+      "bytes": 12108,
+      "sha256": "3aabf78c923122d4392f3f4763d111f0e10f4e09325d6c4fbaa7055b78920153"
+    },
+    "job-original.json": {
+      "bytes": 2843,
+      "sha256": "72194ac4aa512f3a1650551b9cc33953de4b0adb6f828459a358b89f1ab3cb44"
+    },
+    "artifacts-original.json": {
+      "bytes": 807,
+      "sha256": "b50c3c9d04eb01402db3907cd08b3dd2eff402e49bfadbd7373dc8252f4fee22"
+    },
+    "artifact-original.json": {
+      "bytes": 858,
+      "sha256": "adccb70ba9c794105d7488fa12b84fad67e07e5094db99804036d1e94b407476"
+    },
+    "job-original.log": {
+      "bytes": 71794,
+      "sha256": "674ffff927ad6ff872ec15b4784406487730b28af05a2100d594215038633548"
+    }
+  },
+  "members": [
+    {
+      "name": "go-tests.jsonl",
+      "bytes": 34681,
+      "compressedBytes": 1747,
+      "crc32": "1e93c45c",
+      "sha256": "7e96f18c1babf71f2eedc42f17b80a255910f2ad01d840b92abd067c9c443380"
+    },
+    {
+      "name": "launcher-build-info.txt",
+      "bytes": 1590,
+      "compressedBytes": 968,
+      "crc32": "0e63750d",
+      "sha256": "773696450a402d578d0ae63ee828358681e33ec54e9bdcfbd89518ece2238c7c"
+    },
+    {
+      "name": "public-trust-fixture.json",
+      "bytes": 1537,
+      "compressedBytes": 647,
+      "crc32": "3c9ee05b",
+      "sha256": "d0cf01564ac8a4e5a74ba1e8d07d7212ec4628a9f260458c5018d8d8c82cb37d"
+    },
+    {
+      "name": "result.json",
+      "bytes": 849,
+      "compressedBytes": 391,
+      "crc32": "d9ca3384",
+      "sha256": "df82c07fb0c5885fb0b39254652181bdc337f3d4e7e15d9b3daffc355977726d"
+    },
+    {
+      "name": "skager-start.exe",
+      "bytes": 16964096,
+      "compressedBytes": 9132439,
+      "crc32": "c8407a76",
+      "sha256": "3d4a0ef108897f1d0c0cebd366563c1b9b37b16cbecaba40e7b582d9172e635b"
+    },
+    {
+      "name": "x64/results.json",
+      "bytes": 4112,
+      "compressedBytes": 750,
+      "crc32": "088f0976",
+      "sha256": "5a582c1906ee73acefa48122373e90de9231440299528097eb7c1de312fe997d"
+    },
+    {
+      "name": "x64.log",
+      "bytes": 0,
+      "compressedBytes": 2,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "x86/results.json",
+      "bytes": 4112,
+      "compressedBytes": 749,
+      "crc32": "f7b36960",
+      "sha256": "625984d5804f84c5a5b38148c4242b9bc88533db986b63e3b1a6e97811d3e853"
+    },
+    {
+      "name": "x86.log",
+      "bytes": 0,
+      "compressedBytes": 2,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    }
+  ],
+  "launcher": {
+    "bytes": 16964096,
+    "sha256": "3d4a0ef108897f1d0c0cebd366563c1b9b37b16cbecaba40e7b582d9172e635b",
+    "machine": "I386",
+    "optionalHeader": "PE32",
+    "subsystem": "Windows GUI",
+    "goVersion": "1.27.1",
+    "GOARCH": "386",
+    "GOOS": "windows",
+    "CGO_ENABLED": "0",
+    "GO386": "sse2",
+    "vcsRevision": "b375e6bd3d743993a1415729becdc73ee3e47575",
+    "vcsModified": false,
+    "unchangedAcrossBothHosts": true
+  },
+  "goTests": {
+    "topLevelPassed": 6,
+    "subtestsPassed": 28,
+    "packagesPassed": 2,
+    "failed": 0,
+    "skipped": 0,
+    "topLevelTests": [
+      "TestStartupFailureReporting",
+      "TestProvisioningOnceMarkerSurvivesFailureAndNeverResets",
+      "TestExplicitProvisioningWithoutInstalledConfigIsInert",
+      "TestInitializeTrustRevalidatesSelectionUnderLock",
+      "TestInitializeTrustNoConfigRechecksStateUnderLock",
+      "TestInstallerTrustFixture"
+    ]
+  },
+  "nativeHosts": {
+    "x86": {
+      "status": "passed",
+      "scope": "Actual installer trust handoff on inert owned generations",
+      "powershellVersion": "5.1.20348.5622",
+      "powershellEdition": "Desktop",
+      "processBits": 32,
+      "launcherSha256": "3d4a0ef108897f1d0c0cebd366563c1b9b37b16cbecaba40e7b582d9172e635b",
+      "lifecycleSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+      "transactionSha256": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+      "fixtureSha256": "d0cf01564ac8a4e5a74ba1e8d07d7212ec4628a9f260458c5018d8d8c82cb37d",
+      "cases": [
+        {
+          "disposedWaitRefused": true,
+          "name": "native-owner-wait-lifecycle",
+          "noChildWaitInert": true,
+          "passed": true
+        },
+        {
+          "passed": true,
+          "name": "actual-first-and-repeat",
+          "stateUnchanged": true,
+          "firstMs": 854,
+          "onceUnchanged": true,
+          "repeatMs": 272
+        },
+        {
+          "name": "actual-missing-config",
+          "passed": true
+        },
+        {
+          "exitCode": 1,
+          "name": "actual-held-lock-noninteractive",
+          "passed": true
+        },
+        {
+          "name": "actual-malformed-trust-noninteractive",
+          "elapsedMs": 422,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-custody",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 166,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-state",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 115,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-owner",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 126,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-ownership",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 126,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-stock",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 132,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-journal",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 142,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-armed",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 104,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-timeout",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 15112,
+          "passed": true
+        }
+      ],
+      "productAcceptance": false,
+      "boatAcceptance": false
+    },
+    "x64": {
+      "status": "passed",
+      "scope": "Actual installer trust handoff on inert owned generations",
+      "powershellVersion": "5.1.20348.5622",
+      "powershellEdition": "Desktop",
+      "processBits": 64,
+      "launcherSha256": "3d4a0ef108897f1d0c0cebd366563c1b9b37b16cbecaba40e7b582d9172e635b",
+      "lifecycleSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+      "transactionSha256": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+      "fixtureSha256": "d0cf01564ac8a4e5a74ba1e8d07d7212ec4628a9f260458c5018d8d8c82cb37d",
+      "cases": [
+        {
+          "disposedWaitRefused": true,
+          "name": "native-owner-wait-lifecycle",
+          "noChildWaitInert": true,
+          "passed": true
+        },
+        {
+          "passed": true,
+          "name": "actual-first-and-repeat",
+          "stateUnchanged": true,
+          "firstMs": 889,
+          "onceUnchanged": true,
+          "repeatMs": 225
+        },
+        {
+          "name": "actual-missing-config",
+          "passed": true
+        },
+        {
+          "exitCode": 1,
+          "name": "actual-held-lock-noninteractive",
+          "passed": true
+        },
+        {
+          "name": "actual-malformed-trust-noninteractive",
+          "elapsedMs": 374,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-custody",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 151,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-state",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 111,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-owner",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 125,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-ownership",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 119,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-stock",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 126,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-journal",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 164,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-armed",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 100,
+          "passed": true
+        },
+        {
+          "ownedChildExitObserved": true,
+          "name": "inert-parent-timeout",
+          "imageAndAncestorCustody": true,
+          "elapsedMs": 15105,
+          "passed": true
+        }
+      ],
+      "productAcceptance": false,
+      "boatAcceptance": false
+    }
+  },
+  "sourceIdentity": [
+    {
+      "path": ".github/workflows/skager-native-python-contracts.yml",
+      "mode": "100644",
+      "gitBlob": "eeb8e7985b2dd97b72584153ec5cf13722091d90",
+      "gitSha256": "1a38bfd10eb974c84fc7407e28a7c5ab26ae3d189a982518bcd8223b6892a9cd",
+      "windowsCrLfSha256": "4ee46d45c632e0fb1766194380f6c409aac626ffcb7df408b17e48bf280c32bc"
+    },
+    {
+      "path": "opennav-x/tools/test-installer-trust.ps1",
+      "mode": "100644",
+      "gitBlob": "8627b5c9908d3bd2f2bef2cf855f3b2fa18a4ccc",
+      "gitSha256": "2f3b02f011e472361b51031ec07d12850204e79eebbfd9672355d264f3c2c2ce",
+      "windowsCrLfSha256": "35d3b02f9e12a1215c421c75cd726457d583beb5553a8e1588828b8379d50516"
+    },
+    {
+      "path": "opennav-x/installer/windows/Lifecycle.ps1",
+      "mode": "100644",
+      "gitBlob": "6d1d924661529c007650a916c3625c2c420ecea4",
+      "gitSha256": "e84f054ff5bc106318f676e3975d27465e9efffd3140347167ef794e441ad26b",
+      "windowsCrLfSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+      "bothNativeReportsMatchWindowsCheckout": true
+    },
+    {
+      "path": "opennav-x/installer/windows/UpdateTransaction.ps1",
+      "mode": "100644",
+      "gitBlob": "1d6d3a9e44fcc3f8dd75d84ebafb53b3fed8a5bc",
+      "gitSha256": "bdd5622272472e0cd1450b83f2a78700ae17018ad52927cfe2785d423b58247a",
+      "windowsCrLfSha256": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+      "bothNativeReportsMatchWindowsCheckout": true
+    },
+    {
+      "path": "opennav-x/installer/windows/UpdateSupervisor.ps1",
+      "mode": "100644",
+      "gitBlob": "99b11bcf87466a36cdaceb510259b432fd1ec039",
+      "gitSha256": "605426dbdfb91279086f630f84bdae22c3c6faf6d8f23ecdeafbbb15afe3413a",
+      "windowsCrLfSha256": "2c2e23cd53d37c1d0da26110bfd4a7fab3017b9904c9036a69198c9cd03af7ac"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/cmd/skager-start/main.go",
+      "mode": "100644",
+      "gitBlob": "52ffb5fd08d25037f33fb9e97222423935c1133a",
+      "gitSha256": "72d8afc2818b6835c20ccb3b92c795b3f9a15c1c51b24baf7008e7a7d11adf1d",
+      "windowsCrLfSha256": "73cad4fe2a86138c9ae2d6b645fcb1b6103183c5c60ce50359250cfa5c054284"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/cmd/skager-start/main_test.go",
+      "mode": "100644",
+      "gitBlob": "b249a47d5019a32b128960a45040be5b73f7f699",
+      "gitSha256": "69009d3032aa5b0cf004c0b3717fbfbb2262aebcc3f0a878d1fda4d0308a738d",
+      "windowsCrLfSha256": "955d5029503ab967356811f10801cbe74d1a1437110bad43d11a15ea315f7b39"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/launcher/provision.go",
+      "mode": "100644",
+      "gitBlob": "6944198fd9b567af37192c21b85e873465ede77f",
+      "gitSha256": "dcd63da781891923392e669d488a8bf6f116ea15213712c563d053d0cda7b496",
+      "windowsCrLfSha256": "8e44167258ad92665de37f02795a7dffa9315302a9338cc08452dfdef15e6ff3"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/launcher/provision_test.go",
+      "mode": "100644",
+      "gitBlob": "9a1469eacea8717ff2f10fcd3245287417e16697",
+      "gitSha256": "052107ceadd2774baae2719f320a2176086b98d5831e5c2f341733cfbef44d49",
+      "windowsCrLfSha256": "cfb103a9840bdf680c44fbf92ca0d6d707a85cca1acd26abc3a6dae1a3f01e4d"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/launcher/launcher.go",
+      "mode": "100644",
+      "gitBlob": "3a5249b11136f7556fb6afcbc191181b9d4c1dc7",
+      "gitSha256": "e2235408ea0384c1d6430c7c17f966cf8eca12a38e8e5cf516579c6bdc2958eb",
+      "windowsCrLfSha256": "43d3881af800a66e6ac3c9e2bc36c7a9efcd9ac0e6ff94bae946528d86228edb"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/go.mod",
+      "mode": "100644",
+      "gitBlob": "975be88f21e7e0a1a7c13735d6eaa14d526dd23f",
+      "gitSha256": "fd81c9c980c701e666c3a59c25f1e0b2a458d672b86b106240bd842574e96d31",
+      "windowsCrLfSha256": "0f97673933407a09643b29c513c7ddfcb5da6b0623a0978091fbda8c74d37a09"
+    },
+    {
+      "path": "opennav-x/tools/update-verifier/go.sum",
+      "mode": "100644",
+      "gitBlob": "749935b4052d4240c3bae457a3cc8d2536e99251",
+      "gitSha256": "66bc1ae7fcb8f87edc8ce36dc1b73406da1e869c4d061203e1992ffaa38ea603",
+      "windowsCrLfSha256": "e7b1fa60d3ecfa20231a9be5779ae758377640e8fc761a85df86ea2235c2fba3"
+    }
+  ],
+  "generatedFixture": {
+    "sha256": "d0cf01564ac8a4e5a74ba1e8d07d7212ec4628a9f260458c5018d8d8c82cb37d",
+    "containsOnlyPublicSignedRootAndInertStock": true,
+    "privateKeyPublished": false,
+    "networkContactedByInitialization": false
+  },
+  "nextCandidateSdkSourcePreflight": {
+    "comparedCommit": "b375e6bd3d743993a1415729becdc73ee3e47575",
+    "allActualBoundInputsIdenticalToBothSdkProducers": true,
+    "boundInputCount": 30,
+    "privateReceiptSha256": "c984414ac57b03cf5d68d40bfeca24097ef0171bc0f3dc7f255fd41cb405f478",
+    "nativeSdkAuthenticationStillRequired": true
+  },
+  "acceptance": {
+    "actualLauncherTrustHandoffComponentPassed": true,
+    "applicationBuilt": false,
+    "finalInstallerPackageAccepted": false,
+    "frozenE80InstallerFailureSuperseded": false,
+    "boatAcceptance": false,
+    "publicAccess": false,
+    "noBroadRetestOrRetry": true
+  }
+}
