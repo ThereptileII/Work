@@ -11,7 +11,7 @@ import uuid
 from diagnostic_snapshot import read_json_snapshot
 from smoke_startup import defer_boat_setup, native_setup_window
 from peer_boundary import PeerBoundary
-from bundled_plugins import require_bundled_windows_plugins
+from bundled_plugins import require_fresh_bundled_windows_plugins
 
 def module(name):
     spec = importlib.util.spec_from_file_location(name, Path(__file__).with_name(name + '.py'))
@@ -71,10 +71,12 @@ def saved(step):
 try:
     handle, pid = ui.wait_window('SKAGER / OpenCPN', pid)
     ready(1)
+    startup_publication = data()
     report.setdefault('first_start_setup',[]).append(defer_boat_setup(
         data,lambda target:ui.pointer_text(pid,'Later'),
         native_window=lambda:native_setup_window(ui,pid)))
-    require_bundled_windows_plugins(data())
+    require_fresh_bundled_windows_plugins(
+        lambda:read_json_snapshot(profile/'opennav-diagnostics.json'), startup_publication)
     data(lambda d:d['runtime']['display']['light']=='Day')
     capture_chart('01-xnav-unavailable.png')
     # Exercise the visible palette control through actual foreground pointer

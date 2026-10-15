@@ -22,7 +22,7 @@ import urllib.request
 import zipfile
 from diagnostic_snapshot import read_json_snapshot
 from smoke_startup import defer_boat_setup, native_setup_window
-from bundled_plugins import require_bundled_windows_plugins
+from bundled_plugins import require_fresh_bundled_windows_plugins
 root=Path(__file__).resolve().parents[1];windows=sys.platform=='win32'
 evidence=root/'evidence/local';evidence.mkdir(parents=True,exist_ok=True)
 url='https://www.charts.noaa.gov/ENCs/US5SEAFL.zip'
@@ -236,6 +236,7 @@ try:
   with (evidence/'charts-launch.log').open('a') as out:
    app=subprocess.Popen([str(exe),'--configdir',str(profile),'--xnav','--rebuild_chart_db']+(['--no_opengl'] if rendering=='software' else []),env=env,stdout=out,stderr=out)
   owned.add(app.pid);count+=1;handle,pid=window('SKAGER / OpenCPN');ready()
+  if windows:startup_publication=data()
   if windows:ui.size_window(handle)
   else:xdo('windowsize',handle,1280,800,'windowmove',handle,0,0)
   # Seeded plugin/navigation fixtures still have no prior OpenNav settings.
@@ -244,12 +245,13 @@ try:
   data(lambda d:int(d['runtime']['ui_update']['ticks'])>=setup_tick+3)
   setup=defer_boat_setup(data,defer_setup_click,
     native_window=(lambda:native_setup_window(ui,pid)) if windows else None)
+  if windows:require_fresh_bundled_windows_plugins(
+    lambda:read_json_snapshot(profile/'opennav-diagnostics.json'),startup_publication)
   d=data(enc);entry={'requested_rendering':rendering,'runtime':d['runtime'],'startup_to_enc_seconds':round(time.monotonic()-start,3),'captures':[],'first_start_setup':setup}
   entry['workspace_startup']=workspace.assert_restored(d['runtime']['test_workspace_perspective'],suppressed=True)
   assert all(row['visible'] for row in d['runtime']['display']['rail_regions']), 'Restoring plugin workspace hid XNav rail'
   if rendering=='software':assert not chart(d)['opengl_enabled']
   else:entry['gl_status']='enabled; inspect renderer log' if chart(d)['opengl_enabled'] else 'host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open'
-  if windows:require_bundled_windows_plugins(d)
   for name in ['Dashboard','WMM','GRIB']:
    assert any(p['name'].lower()==name.lower() and p['enabled'] and p['initialized'] for p in d['runtime']['plugins']),(name,d['runtime']['plugins'])
   entry['captures'].append(capture('chart-'+rendering+'-01-loaded'))
