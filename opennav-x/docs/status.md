@@ -73,6 +73,39 @@ and five palette helper cases pass. Integrated compilation, runtime, package and
 installed acceptance are pending for this exact candidate; no boat install is
 performed by the dispatch.
 
+Attempt 1's Windows integration job `116266638089` is allocated older image
+`20261004.326.1` and refuses the selected SDK before native setup or compilation.
+The original failure remains recorded. Its Windows updater job succeeds with
+1,060 top-level Go tests, 14 skipped tests and 133 Python checks. Linux integration
+is still running; these component results do not qualify the application. Once
+the producer is terminal, only the failed Windows job and its dependent jobs are
+selected for one retry, preserving the frozen commit and successful results.
+
+## Bounded AIS helper and boat recovery preparation
+
+Separate helper `f1b6fc18` adds three fixed Online AIS settings actions with owned
+window/control checks and fresh post-click observations. Independent review and
+364 portable policy checks pass. Native helper run
+[38687593659](https://github.com/ThereptileII/Work/actions/runs/38687593659)
+fails before the first new click because its inert heading panel lacks the
+accessible name already supplied by the existing AIS-list fixture. The original
+artifact's SHA-256/size/CRC verify; no application was launched and cleanup reports
+no errors. A fixture-only correction supplies the same heading name and checks
+the direct-child accessibility shape. Runtime guards remain unchanged. Native
+actions, actual product accessibility and boat AIS responsiveness remain pending;
+neither enabling a preference nor disabling it proves a network-outage test.
+
+Read-only boat observations on 2026-10-15 confirm the selected application is
+`f1a1e68c`, while the still-active commissioning record identifies older
+`c0d8d85f`. The old generation and all four quarantined DLLs/backups remain intact;
+their original paths are empty and their parent directories exist. Current
+connection configuration exactly matches the recorded original baseline, including
+COM8 input/output. Existing restoration correctly refuses the changed installation
+context. A bounded reconciliation path is being prepared to preserve current
+settings and authenticated original-path backups; the old record will not be
+rewritten or blindly discarded. No boat profile, file or physical output has been
+changed by these inspections.
+
 ## Disposable desktop provisioning remains insufficient
 
 Helper `81cd0821` uses documented Windows-managed desktop access only for the
