@@ -391,6 +391,19 @@ namespace Skager {
       WaitForSingleObject(child,0)==258 && Created(child)==CreationFileTime && Created(process.Handle)==CreationFileTime && EqualNative(NativeProcess(child),NativeImage) && EqualNative(NativeProcess(process.Handle),NativeImage);
    } catch { return false; }
   }
+  public void WaitForOwnedExit() {
+   if(disposed) throw new ObjectDisposedException("UpdateImageOwner");
+   if(child==IntPtr.Zero) return; // Acquisition or failed creation produced no child handle.
+   // A Start exception after a possible resume does not establish child exit.
+   // Retain the original kernel handle and image/ancestor custody until that
+   // child exits; never signal or rediscover it by PID. This guardian lifetime
+   // is intentionally unbounded, independent of a caller's operation timeout.
+   // A wait failure is not exit: the caller must retain custody and fail closed.
+   uint result=WaitForSingleObject(child,0xffffffff);
+   if(result==0) return;
+   if(result==0xffffffff) throw Failure("Owned child exit wait");
+   throw new IOException("Owned child exit was not established; retain custody.");
+  }
   public void AssertOwnedImage(string original,string expectedHash) {
    Validate();
    if(!StartSucceeded || child==IntPtr.Zero || !Equal(Path.GetFullPath(original),OriginalImage) || expectedHash!=Hash ||
