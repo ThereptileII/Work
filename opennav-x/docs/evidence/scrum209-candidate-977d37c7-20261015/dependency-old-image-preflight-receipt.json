@@ -1,0 +1,207 @@
+{
+  "schema": 1,
+  "owner": "OpenNavX.DependencyImagePreflightReceipt.1",
+  "issue": "SCRUM-209",
+  "status": "failed-before-dependency-build",
+  "sourceCommit": "6edfdcfb60ebc0d5b69e79e561d8c17f3687c207",
+  "workflow": ".github/workflows/skager-windows-dependencies.yml",
+  "runId": 38712074433,
+  "runAttempt": 1,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38712074433",
+  "runConclusion": "failure",
+  "job": {
+    "id": 116345642755,
+    "name": "windows-dependencies",
+    "conclusion": "failure",
+    "startedAt": "2026-10-15T09:19:24Z",
+    "completedAt": "2026-10-15T09:19:44Z",
+    "steps": [
+      {
+        "number": 1,
+        "name": "Set up job",
+        "conclusion": "success"
+      },
+      {
+        "number": 2,
+        "name": "Run actions/checkout@11d5960a326750d5838078e36cf38b85af677262",
+        "conclusion": "success"
+      },
+      {
+        "number": 3,
+        "name": "Check the explicitly selected Windows image before setup",
+        "conclusion": "failure"
+      },
+      {
+        "number": 4,
+        "name": "Preserve native Perl for OpenSSL and install curl's POSIX test host",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 5,
+        "name": "Run msys2/setup-msys2@66cd2cce69caa17b53920067426061ca1de3a884",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 6,
+        "name": "Select explicit curl test Perl",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 7,
+        "name": "Verify native curl test-host binding before dependency compilation",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 8,
+        "name": "Fetch pinned source",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 9,
+        "name": "Build and test immutable native producer inputs only",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 10,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 11,
+        "name": "Preserve producer outputs if final verification or sealing fails",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 12,
+        "name": "Authenticate the exact selected earlier producer",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 13,
+        "name": "Reuse verified producer bytes with fresh native tool and source checks",
+        "conclusion": "skipped"
+      },
+      {
+        "number": 14,
+        "name": "Run actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02",
+        "conclusion": "success"
+      }
+    ]
+  },
+  "firstCause": {
+    "step": 3,
+    "sourcePath": ".github/workflows/skager-windows-dependencies.yml",
+    "sourceLine": 52,
+    "message": "Selected Windows dependency image unavailable; no dependency build started",
+    "expectedImage": "20261004.326.1",
+    "actualImage": "20261012.333.1",
+    "nativeWindowsX64": true,
+    "imageAccepted": false,
+    "apiFailureAnnotation": "Process completed with exit code 1."
+  },
+  "dependencyCompilationStarted": false,
+  "applicationCompilationStarted": false,
+  "sourceFetchStarted": false,
+  "msysSetupStarted": false,
+  "eligibleSdkProduced": false,
+  "originalArtifact": {
+    "id": 11961181804,
+    "name": "windows-dependency-evidence-6edfdcfb60ebc0d5b69e79e561d8c17f3687c207-run38712074433-attempt1",
+    "bytes": 285,
+    "sha256": "f220e4d3da539bd816c22d419e2799dd3f292b462d8943ea0f673b4c7efbecf9",
+    "apiDigestMatched": true,
+    "apiSizeMatched": true,
+    "crcPassed": true,
+    "member": {
+      "name": "dependency-image-selection.json",
+      "bytes": 128,
+      "crc32": "a811b4f5",
+      "sha256": "3ff17c2bb0a40e60c20c3bebe2bd6c8d76ddabc5b00ac56cf164b01e828dd454"
+    }
+  },
+  "authentication": {
+    "originalRunJobsAnnotationsAndArtifactMetadataPreserved": true,
+    "apiPayloadSha256": {
+      "run": "6e826182982dd39ede79e516cdcdddecc6927e5444ad0b3541200ae111939bd7",
+      "jobs": "52cd0ed8146e5f6a8a495e888d6f53cdfc8f0210f0d6d9a3d1eef9e46272265b",
+      "annotations": "f814c3e8cb2711d02cfb0914f6df0dded1c64651e4455e28a4fc806a649565ad",
+      "artifacts": "117ff7f2041f7b7c65417caa38aab4c3905654fa5e8800c25929018d02bb8194",
+      "artifact11961181804": "62e4f4de69288259027b837408de62dc91ef1926f0d7b720bf5396483abc61da"
+    },
+    "originalJobLog": {
+      "bytes": 19606,
+      "sha256": "0a1ad275d8b286a5d1ce76952b115cf285c342fc78f61a56f131cea96a4ca824"
+    }
+  },
+  "oldImageSelectionReview": {
+    "existingWorkflowRunsOn": "windows-2022",
+    "expectedImageSelectsAllocation": false,
+    "deterministicSupportedRouteWithinExistingWorkflow": false,
+    "oldImageRelease": {
+      "tag": "win22/20261004.326",
+      "gitCommit": "0244f69125833bd64b8693b385b80b2ca026a862",
+      "url": "https://github.com/actions/runner-images/releases/tag/win22/20261004.326",
+      "publishedAt": "2026-10-05T15:55:20Z",
+      "assetNames": [
+        "internal.win22.json",
+        "sbom.windows-2022.json.zip"
+      ],
+      "publishedVmDiskFound": false
+    },
+    "supportedControlledRunnerRoute": {
+      "route": "A retained exact old-image snapshot on a version-pinned custom Windows x64 runner, or a controlled retained VM, can make allocation deterministic after explicit runner/trust review.",
+      "availableOldSnapshotAuthenticated": false,
+      "historicalRecipeRebuildGuaranteesExactOldImage": false,
+      "existingSourceImageAndToolchainChecksMustRemain": true,
+      "existingWorkflowEditRequired": true,
+      "implemented": false
+    },
+    "sources": [
+      {
+        "url": "https://github.com/actions/runner-images/blob/main/README.md",
+        "retrievedBytesSha256": "7691efc4ce2d8a54055e2a504ce5b168413158c0c6169005f59ece6acf9ee2f2",
+        "supports": "Hosted images update weekly; actual allocation identity is in Set up job."
+      },
+      {
+        "url": "https://github.com/actions/runner-images/blob/main/docs/create-image-and-azure-resources.md",
+        "retrievedBytesSha256": "9ef914bcae8303de01ec25e0c6982f9038347dbcbc60caf8554bf25490bf2d00",
+        "supports": "Packer builds a new Azure managed image from installation steps; rebuilding a historical recipe alone does not authenticate identical old tool bytes."
+      },
+      {
+        "url": "https://github.com/github/docs/blob/main/content/actions/how-tos/manage-runners/larger-runners/use-custom-images.md",
+        "retrievedBytesSha256": "fdb8d3dccc45c4963eb5547113062b3441cf762e324da3efa43e8479d0aed10a",
+        "supports": "Windows x64 custom image generation and specific image-version pinning on a named larger runner are supported."
+      }
+    ]
+  },
+  "frozenCandidateRetryReview": {
+    "candidateCommit": "b4c40e6e9166d7e8340dec2879d2a8ad510b7458",
+    "selectedSdkProducer": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+    "fingerprint": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+    "runner": {
+      "ImageOS": "win22",
+      "ImageVersion": "20261012.333.1",
+      "RUNNER_ARCH": "X64",
+      "RUNNER_OS": "Windows"
+    },
+    "sourceRecipeAbiInputCountIncludingWorkflow": 30,
+    "allGitSourceBytesEqual": true,
+    "manifestSha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5",
+    "artifactId": 11924018896,
+    "artifactDigestMatchesFrozenLock": true,
+    "artifactUnexpired": true,
+    "attempt2FirstFailure": "current Windows runner image differs; fresh producer required",
+    "attempt2AllocatedImage": "20261004.326.1",
+    "newObservedAllocation": "20261012.333.1",
+    "newAllocationMatchesSdkImage": true,
+    "remainingFreshNativeChecksRequired": true
+  },
+  "limits": [
+    "This failed run produced only an image-selection diagnostic; it cannot be selected as an SDK producer.",
+    "The newly observed current image makes one unchanged frozen-candidate Windows-job retry reasonable; allocation remains uncontrolled and all fresh image/Python/source/toolchain checks remain required.",
+    "No SDK selector, recipe, workflow, product or runner routing changes were made.",
+    "No CI retry/dispatch, application/dependency build, boat action, release or physical output was performed by this evidence task."
+  ],
+  "wholeProductAccepted": false,
+  "boatAccepted": false
+}
