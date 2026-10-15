@@ -3,6 +3,13 @@
 Set-StrictMode -Version Latest
 $ErrorActionPreference = 'Stop'
 if ($env:GITHUB_ACTIONS -ne 'true' -or $env:OS -ne 'Windows_NT') { throw 'Disposable Windows CI only.' }
+# Each existing x86/x64 suite invocation starts cold child hosts before any
+# AtomicJson/SelfTest call can cache the protected-observation type.
+$HostExecutable = [Diagnostics.Process]::GetCurrentProcess().MainModule.FileName
+foreach ($CompilerTemp in @('available','unavailable')) {
+  & $HostExecutable -NoProfile -NonInteractive -File (Join-Path $PSScriptRoot 'test-installer-cold-observer.ps1') -CompilerTemp $CompilerTemp
+  if ($LASTEXITCODE -ne 0) { throw "Cold protected-observer contract failed: $CompilerTemp compiler temp" }
+}
 $Source = Join-Path $PSScriptRoot '../installer/windows/Lifecycle.ps1'
 $ParseErrors = $null
 $Ast = [System.Management.Automation.Language.Parser]::ParseFile($Source, [ref]$null, [ref]$ParseErrors)

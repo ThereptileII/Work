@@ -123,7 +123,14 @@ function Get-ProtectedBrokerObservation {
   # machine objects count; a missing service alone does not clear partial files.
   # Any inaccessible/ambiguous observation throws and therefore refuses writes.
   if (-not ('SkagerLegacyBrokerObservation' -as [type])) {
-    Add-Type -TypeDefinition @'
+    # Preflight reaches this type before SelfTest. NSIS's native System.dll in
+    # the caller directory must not become the compiler's .NET reference.
+    $framework = [Runtime.InteropServices.RuntimeEnvironment]::GetRuntimeDirectory()
+    $previousDirectory = [Environment]::CurrentDirectory
+    Push-Location -LiteralPath $framework
+    try {
+      [Environment]::CurrentDirectory = $framework
+      Add-Type -TypeDefinition @'
 using System;
 using System.ComponentModel;
 using System.IO;
@@ -196,6 +203,10 @@ public static class SkagerLegacyBrokerObservation {
   }
 }
 '@ -ErrorAction Stop
+    } finally {
+      [Environment]::CurrentDirectory = $previousDirectory
+      Pop-Location
+    }
   }
   return [SkagerLegacyBrokerObservation]::Present()
 }
