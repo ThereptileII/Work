@@ -258,7 +258,7 @@ func run(ctx context.Context, args []string, s services) (resultErr error) {
 	}
 	defer func() { g.close() }()
 	if mode == "--initialize-trust" {
-		return initializeTrust(s.platform, g)
+		return initializeTrust(s.platform, g, state.Stock)
 	}
 	if mode != "--xnav" || g.owned.Health != 1 {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)

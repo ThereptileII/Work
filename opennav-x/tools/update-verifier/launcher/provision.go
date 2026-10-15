@@ -20,12 +20,18 @@ type provisioner interface {
 // startup. The once marker is outside the TUF state directory and precedes every
 // first initialization attempt. Interrupted/removed state requires independent
 // recovery; rerunning this command cannot establish a new rollback floor.
-func initializeTrust(p platform, g *generation) error {
+func initializeTrust(p platform, g *generation, stock stockRecord) error {
 	lock, err := p.lockStartup(g.layout.root + "/transaction.lock")
 	if err != nil {
 		return err
 	}
 	defer lock.Close()
+	// Selection was read before acquiring this lock. Maintenance may have
+	// committed another generation or stock identity in between. This check
+	// also precedes the no-configuration return; no stale entry is successful.
+	if err := assertCurrent(p, g, stock); err != nil {
+		return err
+	}
 	if err := requireUnarmed(p, g.layout.root); err != nil {
 		return err
 	}

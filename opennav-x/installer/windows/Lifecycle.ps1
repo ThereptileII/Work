@@ -273,6 +273,87 @@ function ReadState {
   $null = PlainPath $state.stock.path
   return $state
 }
+function InitializeCommittedTrust($Expected, [ref]$Lock) {
+  Assert-UpdateTransactionLock $Root $Lock.Value
+  Assert-LifecycleMutation
+  $generation = Generation $Expected.current
+  $journal = Join-Path $Root 'transaction.json'
+  $state = ReadState
+  if (-not $state -or $state.current -cne $Expected.current -or $state.previous -cne $Expected.previous -or
+      $state.stock.path -ine $Expected.stock.path -or $state.stock.sha256 -cne $Expected.stock.sha256 -or
+      $state.stock.version -cne $Expected.stock.version -or $state.stock.arch -cne $Expected.stock.arch -or
+      (Test-Path -LiteralPath $journal)) { throw 'Trust initialization requires a coherent committed generation.' }
+  $records = @{}
+  foreach ($path in @((Join-Path $Root 'owner.json'), (Join-Path $Root 'state.json'), (Join-Path $generation 'ownership.json'))) {
+    $records[(PlainPath $path)] = Hash $path
+  }
+  $owned = ReadGeneration $Expected.current
+  if ((Hash $Expected.stock.path) -cne $Expected.stock.sha256) { throw 'Original OpenCPN changed before trust initialization.' }
+  $launcher = @($owned.managedFiles | Where-Object { $_.path -ceq 'app/skager-start.exe' })
+  $declared = @($owned.files | Where-Object { $_.path -ceq 'app/skager-start.exe' })
+  if ($launcher.Count -ne 1 -or $declared.Count -ne 1 -or $launcher[0].sha256 -cnotmatch '^[a-f0-9]{64}$' -or
+      $launcher[0].sha256 -cne $declared[0].sha256) { throw 'Trust launcher lacks a unique managed identity.' }
+  $provision = New-Object Diagnostics.ProcessStartInfo
+  $provision.FileName = PlainPath (Join-Path $generation 'app\skager-start.exe')
+  $provision.WorkingDirectory = [IO.Path]::GetDirectoryName($provision.FileName)
+  $provision.Arguments = '--initialize-trust'
+  $provision.UseShellExecute = $false; $provision.CreateNoWindow = $true
+  $init = $null; $image = $null; $handedOff = $false; $failure = $null; $cleanupFailure = $null
+  try {
+    Initialize-UpdatePipeType
+    # Pin the managed executable and its physical ancestors before releasing
+    # transaction ownership. Native suspended creation corroborates the image
+    # before resume; a path replacement cannot select another executable.
+    $image = [Skager.UpdateImageOwner]::Acquire($provision.FileName, $provision.WorkingDirectory, $launcher[0].sha256)
+    # State, shell and journal removal are committed. The child must acquire the
+    # same exclusive lock and revalidate its selected generation before writing.
+    Assert-LifecycleMutation
+    $Lock.Value.Dispose(); $Lock.Value = $null; $handedOff = $true
+    Assert-LifecycleMutation
+    $init = $image.Start($provision)
+    if (-not $init.WaitForExit(15000)) { throw 'Update trust provisioning did not finish; current installed app remains recoverable.' }
+    if ($init.ExitCode -ne 0) { throw 'Update trust requires explicit recovery; no network update is permitted.' }
+  } catch { $failure = $_ }
+  finally {
+    $exited = $false
+    try {
+      if ($init -and -not $init.HasExited) {
+        try { $init.Kill() } catch { $cleanupFailure = $_ }
+      }
+      # This also owns an ambiguous Start failure with no returned Process.
+      # The operational budget is bounded, but custody lasts until exact exit.
+      if ($image) { $image.WaitForOwnedExit() }
+      $exited = $true
+      if ($init) { $init.Dispose() }
+      if ($handedOff) {
+        Assert-LifecycleMutation
+        $Lock.Value = [IO.File]::Open((Join-Path $Root 'transaction.lock'), [IO.FileMode]::OpenOrCreate, [IO.FileAccess]::ReadWrite, [IO.FileShare]::None)
+        Assert-LifecycleMutation
+        foreach ($path in $records.Keys) {
+          $null = PlainPath $path
+          if ((Hash $path) -cne $records[$path]) { throw 'Committed installation identity changed during trust initialization.' }
+        }
+        $null = PlainPath $Expected.stock.path
+        if ((Test-Path -LiteralPath $journal) -or (Hash $Expected.stock.path) -cne $Expected.stock.sha256) {
+          throw 'Installation transaction or original OpenCPN changed during trust initialization.'
+        }
+      }
+    } catch {
+      if ($cleanupFailure) { $cleanupFailure = [Exception]::new($cleanupFailure.Exception.Message + '; ' + $_.Exception.Message) }
+      else { $cleanupFailure = $_ }
+    } finally {
+      # A failed owned-handle wait is not evidence of exit. Do not dispose its
+      # custody owner or proceed with revalidation as if the child had stopped.
+      if ($image -and $exited) { $image.Dispose() }
+    }
+  }
+  if ($failure) {
+    if ($cleanupFailure) { throw ($failure.Exception.Message + '; trust cleanup/revalidation failed: ' + $cleanupFailure.ToString()) }
+    throw $failure
+  }
+  if ($cleanupFailure) { throw $cleanupFailure }
+}
+
 function PeArchitecture([string]$Path) {
   $f = [IO.File]::OpenRead($Path)
   $r = New-Object IO.BinaryReader($f)
@@ -1242,18 +1323,7 @@ try {
       PublishShell $next
       Assert-LifecycleMutation
       Remove-Item -LiteralPath (Join-Path $Root 'transaction.json')
-      if ($startupHealth -eq 1) {
-        $provision = New-Object Diagnostics.ProcessStartInfo
-        $provision.FileName = Join-Path $stage 'app\skager-start.exe'
-        $provision.Arguments = '--initialize-trust'
-        $provision.UseShellExecute = $false; $provision.CreateNoWindow = $true
-        Assert-LifecycleMutation
-        $init = [Diagnostics.Process]::Start($provision)
-        try {
-          if (-not $init.WaitForExit(15000)) { throw 'Update trust provisioning did not finish; current installed app remains recoverable.' }
-          if ($init.ExitCode -ne 0) { throw 'Update trust requires explicit recovery; no network update is permitted.' }
-        } finally { $init.Dispose() }
-      }
+      if ($startupHealth -eq 1) { InitializeCommittedTrust $next ([ref]$TransactionLock) }
       Log "$Action committed generation $id; original OpenCPN and shared profile untouched."
     } elseif ($Action -eq 'Rollback' -and $state.previous) {
       $old = ReadGeneration $state.previous
