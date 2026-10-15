@@ -132,6 +132,70 @@ function Assert-CommissioningMigrationReview([string]$Before,[string]$After,$Rev
   }
   return $changes
 }
+function Test-CommissioningUnqualifiedPilot($Baseline) {
+  if(-not $Baseline.PSObject.Properties['pilotBindingQualified']){return $false}
+  if($Baseline.pilotBindingQualified -isnot [bool] -or $Baseline.pilotBindingQualified){throw 'Preserved baseline cannot establish pilot qualification.'}
+  return $true
+}
+function Copy-CommissioningBaselineRestrictions($Result,$Prior) {
+  if(Test-CommissioningUnqualifiedPilot $Prior){
+    $Result|Add-Member -NotePropertyName pilotBindingQualified -NotePropertyValue $false -Force
+  }
+  return $Result
+}
+function Assert-CommissioningUnqualifiedClaims($Value) {
+  foreach($name in @('pilotBindingQualified','commandsAuthorized')){
+    if(-not $Value.PSObject.Properties[$name] -or $Value.$name -isnot [bool] -or $Value.$name){throw 'Unqualified baseline requires durable false pilot qualification and command authority.'}
+  }
+}
+function Get-CommissioningPluginReviewHash($Decisions) {
+  # Hash only the existing source decisions, avoiding a cycle through the
+  # plan's passive-evidence reference. Exclude workstation evidence paths:
+  # preparation replaces those with immutable local copies of the same hashes.
+  $records=@($Decisions|Sort-Object path|ForEach-Object {[pscustomobject][ordered]@{
+    path=$_.path;sha256=$_.sha256;decision=$_.decision;sourceRevision=$_.sourceRevision;
+    sourceBoundary=$_.sourceBoundary;startupAndIdleReadOnly=$_.startupAndIdleReadOnly;evidenceSha256=$_.evidenceSha256}})
+  return Get-CommissioningHash ((New-Object Text.UTF8Encoding($false)).GetBytes((ConvertTo-Json -InputObject $records -Depth 8 -Compress)))
+}
+function Assert-CommissioningPassiveReview([string]$Path,[string]$Hash,$Context,[string]$BaselineHash,[string]$InputHash,[string]$InventoryHash,$Decisions,[switch]$Fresh) {
+  # Reuse the private source-review mechanism. This is an exact reviewed scope,
+  # not a universal transport TX barrier or a physical-pilot qualification.
+  if($Hash -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $Path) -cne $Hash){throw 'Exact passive core/transport source evidence is required.'}
+  $review=Read-Record $Path
+  $fields=@('schema','owner','scope','reviewedUtc','sourceRevision','executableSha256','baselineSha256','inputSha256','inventorySha256','pluginReviewSha256','transport','boundaries')
+  if((@($review.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne (@($fields|Sort-Object)|ConvertTo-Json -Compress)){throw 'Exact passive source-review fields required; no additional authority claims.'}
+  if($review.schema -ne 1 -or $review.owner -cne 'OpenNavX.ReadOnlyCommissioning.PassiveReview.1' -or
+     $review.scope -cne 'passive-startup-idle-shutdown-no-commands' -or -not $Context.installation -or
+     $review.sourceRevision -cne $Context.installation.commit -or
+     $review.executableSha256 -cne $Context.installation.executableSha256 -or
+     $review.baselineSha256 -cne $BaselineHash -or $review.inputSha256 -cne $InputHash -or
+     $review.inventorySha256 -cne $InventoryHash -or
+     $review.pluginReviewSha256 -cne (Get-CommissioningPluginReviewHash $Decisions) -or
+     $review.transport -cne 'COM8-serial-NMEA2000-input-only;gateway-management-traffic-allowed'){
+    throw 'Passive source evidence must bind this exact build, profile, inventory and transport scope.'
+  }
+  # PowerShell 7 may decode JSON ISO timestamps as DateTime. Parsing that
+  # object's culture-formatted string again loses Kind and shifts it by the
+  # local timezone, potentially admitting a future review as already elapsed.
+  if($review.reviewedUtc -is [datetime]){
+    if($review.reviewedUtc.Kind -ne [DateTimeKind]::Utc){throw 'Passive source review requires an explicit UTC timestamp.'}
+    $at=$review.reviewedUtc
+  }else{
+    if($review.reviewedUtc -isnot [string] -or $review.reviewedUtc -cnotmatch '^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}(?:\.\d{1,7})?Z$'){throw 'Passive source review requires an explicit UTC timestamp.'}
+    $at=[datetime]::Parse($review.reviewedUtc,[Globalization.CultureInfo]::InvariantCulture,[Globalization.DateTimeStyles]::RoundtripKind)
+  }
+  if($Fresh -and ($at -gt [datetime]::UtcNow -or ([datetime]::UtcNow-$at).TotalHours -gt 24)){throw 'Passive source review expired or future-dated.'}
+  $names=@('core-generic-send-call-sites','retained-plugins-helpers-adjacent-libraries','skager-pilot-sink','gateway-initialization','startup-idle-shutdown-route-state')
+  if(@($review.boundaries).Count -ne $names.Count){throw 'Complete passive source boundary review required.'}
+  foreach($name in $names){
+    $entry=@($review.boundaries|Where-Object {$_.name -ceq $name})
+    if($entry.Count -ne 1 -or @($entry[0].PSObject.Properties).Count -ne 4 -or $entry[0].conclusion -cne 'no-actuator-command-reachable-in-passive-scope' -or
+       $entry[0].sourceReferences -isnot [string] -or [string]::IsNullOrWhiteSpace($entry[0].sourceReferences) -or $entry[0].sourceReferences.Length -gt 8192 -or
+       $entry[0].reason -isnot [string] -or [string]::IsNullOrWhiteSpace($entry[0].reason) -or $entry[0].reason.Length -gt 8192){
+      throw 'Each core/plugin/transport boundary requires concrete source references and an explicit passive conclusion.'
+    }
+  }
+}
 function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$Sha256,[int]$Depth=0) {
   if(-not $Record -and -not $Sha256){return [pscustomobject]@{sha256=$script:CommissioningBaseline;bytes=21380;record=$null;recordSha256=$null}}
   if($Depth -ge 8 -or $Sha256 -cnotmatch '^[a-f0-9]{64}$'){throw 'Malformed or excessive baseline lineage.'}
@@ -188,8 +252,8 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
        @((Assert-ColdBaselineDelta $old $saved $review ([datetime]::Parse($value.createdUtc).ToUniversalTime()))).Count -ne $value.changedKeys){
       throw 'Cold key review no longer matches copied bytes.'
     }
-    return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;
-      sid=$capture.context.sid;profile=$capture.context.profile}
+    return Copy-CommissioningBaselineRestrictions ([pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;
+      sid=$capture.context.sid;profile=$capture.context.profile}) $prior
   }
   if([IO.Path]::GetFileName($record) -ceq 'preserved-baseline.json'){return Read-CompletedSessionPreservation $Workspace $record $Sha256 $Depth}
   if([IO.Path]::GetFileName($record) -cne 'adopted-baseline.json' -or [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs') -or
@@ -211,7 +275,7 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
      $complete.profileSha256 -cne $value.baselineSha256 -or $complete.adoptionProposalSha256 -cne $value.proposalSha256 -or
      $complete.pluginInventoryRestored -isnot [bool] -or -not $complete.pluginInventoryRestored -or
      $complete.originalOutputConfigurationRestored -isnot [bool] -or -not $complete.originalOutputConfigurationRestored){throw 'Complete original plugin/profile restoration is required for baseline adoption.'}
-  return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;sid=$parent.context.sid;profile=$parent.context.profile}
+  return Copy-CommissioningBaselineRestrictions ([pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;sid=$parent.context.sid;profile=$parent.context.profile}) $baseline
 }
 function Get-PreparedCommissioningBaseline($Prepared,[string]$Directory,[string]$Workspace,[int]$Depth=0) {
   if($Prepared.owner -cne $script:CommissioningOwner -or $Prepared.status -cne 'prepared'){throw 'Unrecognized parent commissioning transaction.'}
@@ -222,6 +286,14 @@ function Get-PreparedCommissioningBaseline($Prepared,[string]$Directory,[string]
   if((Get-Digest (Join-Path $Directory 'input-only.ini')) -cne $Prepared.inputSha256 -or
      (Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes((Join-Path $Directory 'baseline.ini'))))) -cne $Prepared.inputSha256){throw 'Prepared baseline lineage must retain the exact forward one-byte transform.'}
   if($reference -and ($Prepared.context.sid -cne $baseline.sid -or $Prepared.context.profile -ine $baseline.profile)){throw 'Baseline adoption belongs to another user/profile.'}
+  if(Test-CommissioningUnqualifiedPilot $baseline){
+    Assert-CommissioningUnqualifiedClaims $Prepared
+    $planPath=Join-Path $Directory 'review-plan.json'
+    if((Get-Digest $planPath) -cne $Prepared.planSha256){throw 'Prepared passive plugin/source decisions changed.'}
+    $plan=Read-Record $planPath
+    if($plan.passiveLaunchReview.evidenceSha256 -cne $Prepared.passiveReviewSha256){throw 'Passive source evidence differs from the exact reviewed plan.'}
+    Assert-CommissioningPassiveReview (Join-Path $Directory 'passive-review.json') $Prepared.passiveReviewSha256 $Prepared.context $baseline.sha256 $Prepared.inputSha256 $Prepared.inventorySha256 $plan.plugins
+  }
   return $baseline
 }
 function Read-CommissioningAdoptionProposal([string]$Workspace,[string]$Path,[string]$Hash,[string]$ParentRecord,[string]$ParentHash) {
@@ -597,7 +669,7 @@ function Read-CompletedSessionPreservation([string]$Workspace,[string]$Record,[s
   $parentPath=Assert-LocalPath $value.parentPrepared;$parentDir=[IO.Path]::GetDirectoryName($parentPath)
   if([IO.Path]::GetDirectoryName($parentDir) -ine (Join-Path $Workspace 'runs') -or [IO.Path]::GetFileName($parentPath) -cne 'prepared.json' -or
       $value.parentPreparedSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $parentPath) -cne $value.parentPreparedSha256){throw 'Preserved parent lineage changed.'}
-  $parent=Read-Record $parentPath;$null=Get-PreparedCommissioningBaseline $parent $parentDir $Workspace ($Depth+1)
+  $parent=Read-Record $parentPath;$prior=Get-PreparedCommissioningBaseline $parent $parentDir $Workspace ($Depth+1)
   $proof=Read-SessionPreservationProposal $Workspace (Join-Path $directory 'proposal.json') $value.proposalSha256 $parentPath $value.parentPreparedSha256
   $completePath=Assert-LocalPath $value.restoreCompletion;$complete=Read-Record $completePath
   if([IO.Path]::GetDirectoryName($completePath) -ine $parentDir -or (Get-Digest $completePath) -cne $value.restoreCompletionSha256 -or
@@ -607,7 +679,7 @@ function Read-CompletedSessionPreservation([string]$Workspace,[string]$Record,[s
   foreach($flag in @('pluginInventoryRestored','otherProfileFilesPreserved','originalOutputConfigurationRestored','doNotAutoLaunch')){Assert-TrueBoolean $complete.$flag ('Preservation completion '+$flag)}
   if($complete.applicationLaunched -isnot [bool] -or $complete.applicationLaunched){throw 'Unexpected launch claim.'}
   # Historical proof deliberately does not require its old generation current.
-  return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$Record;recordSha256=$Hash;sid=$parent.context.sid;profile=$parent.context.profile}
+  return Copy-CommissioningBaselineRestrictions ([pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$Record;recordSha256=$Hash;sid=$parent.context.sid;profile=$parent.context.profile}) $prior
 }
 function Get-SessionPreservationAcls($Trees,$Quarantine) {
   $result=New-Object 'Collections.Generic.List[object]'

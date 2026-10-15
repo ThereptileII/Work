@@ -57,15 +57,19 @@ try {
     $review=Read-Record $PreservationReview
     if($review.inspectionSha256 -cne $ExpectedInspectionSha256){throw 'Review belongs to another inspection.'}
     $saved=Join-Path $directory 'profile-backup/opencpn.ini';$at=[datetime]::UtcNow
-    $changes=@(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $review $at)
+    $changes=@(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $review $at $observed)
+    $retention=Test-ReconciliationRetentionReview $review
+    if($retention -and $review.wmmRetention){Assert-ReconciliationWmmRetention $proof $observed.currentContext $review.wmmRetention -Live}
     $baseline=Join-Path $directory 'baseline.ini';$bytes=(Get-ReconciliationProfileBytes $proof $saved).baseline
     $stream=New-Object IO.FileStream($baseline,[IO.FileMode]::CreateNew,[IO.FileAccess]::Write,[IO.FileShare]::None)
     try{$stream.Write($bytes,0,$bytes.Length);$stream.Flush($true)}finally{$stream.Dispose()}
     Copy-PreparationFile $PreservationReview (Join-Path $directory 'preservation-review.json') $ExpectedReviewSha256 (Get-Item -LiteralPath $PreservationReview).Length
     $output=Join-Path $directory 'plan.json'
-    Write-Record $output @{schema=1;owner=$script:ReconciliationOwner;status='planned';createdUtc=$at.ToString('o');parentPrepared=$proof.record;parentPreparedSha256=$proof.sha256;
+    $planRecord=@{schema=1;owner=$script:ReconciliationOwner;status='planned';createdUtc=$at.ToString('o');parentPrepared=$proof.record;parentPreparedSha256=$proof.sha256;
       inspectionSha256=$ExpectedInspectionSha256;reviewSha256=$ExpectedReviewSha256;baselineSha256=(Get-Digest $baseline);baselineBytes=$bytes.Length;changedKeys=$changes.Count;
       provenance='explicit-cross-generation-reconciliation;current-user-state-origin-unverified';launchPermission=$false}
+    if($retention){$planRecord.retentionMode=$review.mode;$planRecord.pilotBindingQualified=$false;$planRecord.commandsAuthorized=$false;$planRecord.profilePublished=$false}
+    Write-Record $output $planRecord
     $selected=Read-ReconciliationPlan $context.workspace $output (Get-Digest $output)
     Assert-ReconciliationPlanLive $selected $context
     [pscustomobject]@{status='planned-only';plan=$output;planSha256=$selected.sha256;profileChanged=$false;applicationLaunched=$false}|ConvertTo-Json
@@ -93,6 +97,7 @@ try {
   if(-not $resume){Write-Record $intentPath @{owner=$script:ReconciliationOwner;plan=$selected.path;planSha256=$selected.sha256;parentPreparedSha256=$proof.sha256;applicationLaunched=$false}}
   Assert-ReconciliationPlanLive $selected (Get-CommissioningContext $Workspace) -Resume
   if((Get-Digest $ini) -cne $selected.value.baselineSha256) {
+    if($selected.retention){throw 'Current-state retention cannot publish a profile or change settings.'}
     Publish-ReconciliationProfile $selected $context
   }
   $index=0
@@ -107,11 +112,19 @@ try {
   Assert-ReconciliationPlanLive $selected (Get-CommissioningContext $Workspace) -Resume
   Assert-CommissioningTrees $proof.inventory.trees $proof.parent.quarantine
   $completion=Join-Path $selected.directory 'completion.json'
-  if(-not(Test-Path -LiteralPath $completion)){Write-Record $completion @{schema=1;owner=$script:ReconciliationOwner;status='reconciled';planSha256=$selected.sha256;parentPreparedSha256=$proof.sha256;
-    currentContext=$context;profileSha256=$selected.value.baselineSha256;originalPathsRestored=$true;otherProfileFilesPreserved=$true;noPluginTransplant=$true;doNotAutoLaunch=$true;applicationLaunched=$false}}
+  if(-not(Test-Path -LiteralPath $completion)){
+    $completeRecord=@{schema=1;owner=$script:ReconciliationOwner;status='reconciled';planSha256=$selected.sha256;parentPreparedSha256=$proof.sha256;
+      currentContext=$context;profileSha256=$selected.value.baselineSha256;originalPathsRestored=$true;otherProfileFilesPreserved=$true;noPluginTransplant=$true;doNotAutoLaunch=$true;applicationLaunched=$false}
+    if($selected.retention){$completeRecord.retentionMode=$selected.review.mode;$completeRecord.pilotBindingQualified=$false;$completeRecord.commandsAuthorized=$false;$completeRecord.profilePublished=$false}
+    Write-Record $completion $completeRecord
+  }
   $baselineRecord=Join-Path $selected.directory 'reconciled-baseline.json'
-  if(-not(Test-Path -LiteralPath $baselineRecord)){Write-Record $baselineRecord @{schema=1;owner=$script:ReconciliationOwner;status='reconciled';planSha256=$selected.sha256;completionSha256=(Get-Digest $completion);
-    baselineSha256=$selected.value.baselineSha256;baselineBytes=$selected.value.baselineBytes;provenance=$selected.value.provenance;launchPermission=$false}}
+  if(-not(Test-Path -LiteralPath $baselineRecord)){
+    $baselineValue=@{schema=1;owner=$script:ReconciliationOwner;status='reconciled';planSha256=$selected.sha256;completionSha256=(Get-Digest $completion);
+      baselineSha256=$selected.value.baselineSha256;baselineBytes=$selected.value.baselineBytes;provenance=$selected.value.provenance;launchPermission=$false}
+    if($selected.retention){$baselineValue.retentionMode=$selected.review.mode;$baselineValue.pilotBindingQualified=$false;$baselineValue.commandsAuthorized=$false;$baselineValue.profilePublished=$false}
+    Write-Record $baselineRecord $baselineValue
+  }
   $null=Read-CommissioningBaseline $context.workspace $baselineRecord (Get-Digest $baselineRecord)
   Assert-ReconciliationPlanLive $selected (Get-CommissioningContext $Workspace) -Resume
   # Remove only the still-identical active marker after verified durable effects.

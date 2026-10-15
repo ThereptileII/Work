@@ -49,6 +49,11 @@ $applied=Read-LaunchRecord (Join-Path $directory 'applied.json') $binding.applie
 if ($applied.status -cne 'input-only-prepared' -or $applied.recordSha256 -cne $binding.recordSha256 -or
     $applied.profileSha256 -cne $prepared.inputSha256) { throw 'Complete applied commissioning evidence required; partial Apply cannot launch.' }
 $plan=Read-LaunchRecord (Join-Path $directory 'review-plan.json') $prepared.planSha256 'OpenNavX.ReadOnlyCommissioning.Plan.1'
+if(Test-CommissioningUnqualifiedPilot $baselineInfo){
+  Assert-CommissioningUnqualifiedClaims $applied
+  if($Audit.passiveReviewSha256 -cne $prepared.passiveReviewSha256){throw 'Independent launch audit must bind the exact current passive source review.'}
+  Assert-CommissioningPassiveReview (Join-Path $directory 'passive-review.json') $prepared.passiveReviewSha256 $context $baselineInfo.sha256 $prepared.inputSha256 $prepared.inventorySha256 $plan.plugins -Fresh
+}
 Assert-LaunchFreshReview $plan.reviewedUtc
 $inventory=Read-LaunchRecord (Join-Path $directory 'inventory.json') $prepared.inventorySha256 'OpenNavX.ReadOnlyCommissioning.Inventory.1'
 if ($plan.inventorySha256 -cne $prepared.inventorySha256 -or $inventory.profileSha256 -cne $baselineInfo.sha256) { throw 'Source plan and cold inventory disagree.' }

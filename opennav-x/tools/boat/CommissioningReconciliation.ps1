@@ -21,7 +21,7 @@ function Read-ReconciliationParent([string]$Workspace,[string]$Record,[string]$H
   if([IO.Path]::GetFileName($record) -cne 'prepared.json' -or [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $Workspace 'runs')){throw 'Original workspace prepared record required.'}
   $parent=Read-SessionPreservationParent $record $Hash
   if($parent.context.workspace -ine $Workspace){throw 'Original transaction belongs to another workspace.'}
-  $null=Get-PreparedCommissioningBaseline $parent $directory $Workspace $Depth
+  $baseline=Get-PreparedCommissioningBaseline $parent $directory $Workspace $Depth
   $inventoryPath=Join-Path $directory 'inventory.json'
   if((Get-Digest $inventoryPath) -cne $parent.inventorySha256){throw 'Original inventory changed.'}
   $inventory=Read-Record $inventoryPath;Assert-CommissioningInventory $inventory $parent.context
@@ -39,7 +39,7 @@ function Read-ReconciliationParent([string]$Workspace,[string]$Record,[string]$H
        [IO.Path]::GetDirectoryName($destination) -ine (Join-Path $directory 'quarantine') -or [IO.Path]::GetDirectoryName($backup) -ine $directory){throw 'Each original quarantine path must have independent, exact ownership.'}
     $seen[$path]=$true;$destinations[$destination]=$true;$backups[$backup]=$true
   }
-  return [pscustomobject]@{parent=$parent;inventory=$inventory;directory=$directory;record=$record;sha256=$Hash}
+  return [pscustomobject]@{parent=$parent;inventory=$inventory;directory=$directory;record=$record;sha256=$Hash;baseline=$baseline}
 }
 function Restore-ReconciliationPlugin($Item) {
   # Caller already owns the plan/profile/transaction locks and exact original
@@ -100,11 +100,169 @@ function Get-ReconciliationProfileBytes($Proof,[string]$Saved) {
   }
   throw 'Connection values differ from both exact original and temporary forms; no schema guessing or network/output changes.'
 }
-function Assert-ReconciliationReview($Proof,[string]$Saved,[string]$Normalized,$Review,[datetime]$At) {
+function Test-ReconciliationRetentionReview($Review) {
+  if($Review.schema -eq 2 -and $Review.owner -ceq 'OpenNavX.ColdReconciliationRetentionReview.2'){
+    if($Review.mode -cne 'retain-existing-original-direction-no-grants'){throw 'Exact cold-retention review mode required.'}
+    $fields=@('schema','owner','mode','beforeSha256','afterSha256','parentPreparedSha256','inspectionSha256','connectionDisposition','provenance','preservationOnly','launchPermission','reviewedUtc','changes','retentionAcknowledgments','wmmRetention')
+    if((@($Review.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne (@($fields|Sort-Object)|ConvertTo-Json -Compress)){throw 'Exact cold-retention review fields required.'}
+    return $true
+  }
+  if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.SessionPreservationReview.1' -or
+     $Review.PSObject.Properties['mode'] -or $Review.PSObject.Properties['retentionAcknowledgments'] -or
+     $Review.PSObject.Properties['wmmRetention']){throw 'Unsupported reconciliation review; ordinary v1 preservation remains strict.'}
+  return $false
+}
+function Assert-ReconciliationRetentionClaims($Value) {
+  if($Value.retentionMode -cne 'retain-existing-original-direction-no-grants'){throw 'Exact retained-current-state lineage mode required.'}
+  foreach($name in @('pilotBindingQualified','commandsAuthorized','profilePublished')){
+    if($Value.$name -isnot [bool] -or $Value.$name){throw 'Retained state cannot claim pilot qualification, commands or profile publication.'}
+  }
+}
+function Read-ReconciliationPilotSettings([string]$Value) {
+  # Settings.cpp EncodeSettings/DecodeSettings and St4000Pilot.cpp: a bounded
+  # base record plus these four exact pilot scalars. Never decode mappings,
+  # calibration, an unknown field, or an escaped/multiline identity as a scalar.
+  if($Value.Length -gt 65536 -or -not $Value.StartsWith('OpenNavXSettings 1\n') -or $Value -match '[\x00-\x1f\x7f]'){throw 'Unsupported retained settings encoding.'}
+  $base=$Value;$pilot=@{}
+  foreach($field in @('address','interface','name','permission')){
+    $pattern='(?<=\\n)"pilot\.'+$field+'" "([^"\\\x00-\x1f]*)"\\n'
+    $matches=[regex]::Matches($Value,$pattern)
+    if($matches.Count -gt 1 -or $matches.Count -ne [regex]::Matches($Value,'(?<=\\n)"pilot\.'+$field+'" ').Count){throw 'Duplicate or malformed retained pilot scalar.'}
+    if($matches.Count){$pilot[$field]=$matches[0].Groups[1].Value}
+    $base=[regex]::Replace($base,$pattern,'')
+  }
+  Assert-PreservedAlphaSettings $base
+  if($pilot.Count){
+    if(-not $pilot.ContainsKey('interface') -or -not $pilot.ContainsKey('name') -or -not $pilot.ContainsKey('permission') -or
+       $pilot.interface -cne 'COM8' -or $pilot.permission -cnotin @('display-only','manual') -or $pilot.name -cnotmatch '^(?:|[a-f0-9]{16})$'){throw 'Supported retained COM8 pilot encoding required.'}
+    if($pilot.name){
+      $name=[Convert]::ToUInt64($pilot.name,16)
+      if((($name -shr 21) -band 0x7ff) -ne 1851 -or (($name -shr 40) -band 0xff) -ne 135 -or
+         (($name -shr 49) -band 0x7f) -ne 40 -or (($name -shr 60) -band 7) -ne 4){throw 'Unsupported retained pilot NAME class.'}
+    }
+    if($pilot.ContainsKey('address') -and ($pilot.address -cnotmatch '^(?:0|[1-9][0-9]{0,2})$' -or [int]$pilot.address -gt 253)){throw 'Unsupported retained pilot source address.'}
+    if($pilot.permission -ceq 'manual' -and -not $pilot.name -and -not $pilot.ContainsKey('address')){throw 'Saved manual permission lacks an explicit stored identity.'}
+  }
+  return [pscustomobject]@{base=$base;pilot=$pilot}
+}
+function Assert-ReconciliationAlphaRetention([string]$Before,[string]$After) {
+  $old=Read-ReconciliationPilotSettings $Before;$current=Read-ReconciliationPilotSettings $After
+  $remaining=@()
+  foreach($record in @($old.base,$current.base)){
+    $copy=$record
+    foreach($key in @('capacity','reserve','draft','model_source','display.rail')){
+      $copy=[regex]::Replace($copy,'(?<=\\n)"'+[regex]::Escape($key)+'" "[^"\\]*"(?=\\n)',('"'+$key+'" "<retained-known-field>"'))
+    }
+    $remaining+=,$copy
+  }
+  if($remaining[0] -cne $remaining[1]){throw 'Cold retention cannot admit changed mappings, calibration or other vessel settings.'}
+}
+function Assert-ReconciliationGenerationWmmProof($Context,$Value) {
+  $i=$Context.installation
+  if(@($Value.PSObject.Properties).Count -ne 7 -or $Value.schema -ne 1 -or $Value.generation -cne $i.generation -or $Value.commit -cne $i.commit -or
+     $Value.ownershipSha256 -cne $i.ownershipSha256 -or $Value.location -cne (Get-CommissioningWmmLocation (Join-Path $i.generation 'app')) -or
+     $Value.ownershipBase64 -isnot [string] -or $Value.ownershipBase64.Length -gt 1398104){throw 'Exact retained-generation WMM identity required.'}
+  $raw=[Convert]::FromBase64String($Value.ownershipBase64)
+  if($raw.Length -le 0 -or $raw.Length -gt 1048576 -or (Get-CommissioningHash $raw) -cne $i.ownershipSha256){throw 'Retained WMM ownership bytes changed.'}
+  $owner=(New-Object Text.UTF8Encoding($false,$true)).GetString($raw)|ConvertFrom-Json
+  if($owner.owner -cne 'OpenNavX.Alpha1.SideBySide.1' -or $owner.commit -cne $i.commit){throw 'Unowned retained WMM generation.'}
+  $pins=Get-CommissioningWmmResourcePins
+  if(@($Value.resources).Count -ne $pins.Count){throw 'Complete pinned WMM resource inventory required.'}
+  foreach($name in $pins.Keys){
+    $file=@($Value.resources|Where-Object {$_.name -ceq $name});$path='app/plugins/wmm_pi/data/'+$name
+    $owned=@($owner.managedFiles|Where-Object {$_.path -ieq $path})
+    if($file.Count -ne 1 -or @($file[0].PSObject.Properties).Count -ne 3 -or $file[0].sha256 -cne $pins[$name] -or $file[0].bytes -le 0 -or $file[0].bytes -gt 1048576 -or
+       $owned.Count -ne 1 -or $owned[0].path -cne $path -or $owned[0].sha256 -cne $pins[$name]){throw 'WMM resources lack exact source pins and unique generation ownership.'}
+  }
+}
+function Get-ReconciliationGenerationWmmProof($Context) {
+  $i=$Context.installation;$owner=Assert-LocalPath (Join-Path $i.generation 'ownership.json')
+  if((Get-Item -LiteralPath $owner).Length -gt 1048576 -or (Get-Digest $owner) -cne $i.ownershipSha256){throw 'Live retained WMM generation ownership changed.'}
+  $directory=Assert-LocalPath (Join-Path $i.generation 'app/plugins/wmm_pi/data');$items=@(Get-ChildItem -LiteralPath $directory -Force)
+  $pins=Get-CommissioningWmmResourcePins;$resources=@()
+  if($items.Count -ne $pins.Count){throw 'Unexpected retained WMM directory entries.'}
+  foreach($name in $pins.Keys){
+    $file=@($items|Where-Object {$_.Name -ceq $name})
+    if($file.Count -ne 1 -or $file[0].PSIsContainer){throw 'Pinned retained WMM file required.'}
+    $path=Assert-LocalPath $file[0].FullName
+    $resources+=[pscustomobject]@{name=$name;bytes=$file[0].Length;sha256=(Get-Digest $path)}
+  }
+  $value=[pscustomobject]@{schema=1;generation=$i.generation;commit=$i.commit;ownershipSha256=$i.ownershipSha256;
+    location=(Get-CommissioningWmmLocation (Join-Path $i.generation 'app'));ownershipBase64=[Convert]::ToBase64String([IO.File]::ReadAllBytes($owner));resources=$resources}
+  Assert-ReconciliationGenerationWmmProof $Context $value
+  return $value
+}
+function Get-ReconciliationWmmRetention($Proof,$Current) {
+  return [pscustomobject]@{schema=1;old=(Get-ReconciliationGenerationWmmProof $Proof.parent.context);current=(Get-ReconciliationGenerationWmmProof $Current)}
+}
+function Assert-ReconciliationWmmRetention($Proof,$Current,$Value,[switch]$Live) {
+  if(@($Value.PSObject.Properties).Count -ne 3 -or $Value.schema -ne 1){throw 'Explicit two-generation WMM retention proof required.'}
+  Assert-ReconciliationGenerationWmmProof $Proof.parent.context $Value.old
+  Assert-ReconciliationGenerationWmmProof $Current $Value.current
+  if(($Value.old.resources|ConvertTo-Json -Depth 8 -Compress) -cne ($Value.current.resources|ConvertTo-Json -Depth 8 -Compress)){throw 'Old and current WMM source bytes differ.'}
+  if($Live){
+    $actual=Get-ReconciliationWmmRetention $Proof $Current
+    if(($actual|ConvertTo-Json -Depth 12 -Compress) -cne ($Value|ConvertTo-Json -Depth 12 -Compress)){throw 'Live two-generation WMM retention proof changed.'}
+  }
+}
+function Assert-ReconciliationCurrentRetention($Proof,[string]$Saved,[string]$Normalized,$Review,$Inspection,[datetime]$At) {
+  if(-not $Inspection -or $Review.connectionDisposition -cne 'preserve-current-original-direction' -or
+     $Inspection.connectionDisposition -cne $Review.connectionDisposition -or $Inspection.currentIniSha256 -cne (Get-Digest $Saved)){
+    throw 'Current-state retention requires original-direction bytes; no profile publication or permission changes.'
+  }
+  $required=@('retainExistingBytes','originUnverified','pilotIdentityUnverified','savedPermissionIsNotAuthorization','noProfilePublication','noApplicationLaunch','noCommands','freshCommissioningRequired')
+  if(@($Review.retentionAcknowledgments.PSObject.Properties).Count -ne $required.Count){throw 'Every explicit retention risk acknowledgment is required.'}
+  foreach($name in $required){Assert-TrueBoolean $Review.retentionAcknowledgments.$name ('Cold retention '+$name)}
+  $old=Read-ProfileForAudit (Join-Path $Proof.directory 'input-only.ini');$new=Read-ProfileForAudit $Normalized
+  Assert-InputOnlyProfile $new
+  if($old['Settings/PersistActiveRoute'] -cne '0' -or $new['Settings/PersistActiveRoute'] -cne '0'){throw 'Retained route persistence must remain OFF.'}
+  $display=Get-RestartDisplayKeys;$wmm=$false
+  foreach($change in @(Get-CommissioningIniDiff (Join-Path $Proof.directory 'input-only.ini') $Normalized)){
+    $key=$change.key
+    if($display.ContainsKey($key)){
+      Assert-RestartScalar $display[$key] $change.after
+      if($null -ne $change.before){Assert-RestartScalar $display[$key] $change.before}
+    }elseif($key -ceq 'OpenNav/AlphaSettings'){
+      if($null -eq $change.before -or $null -eq $change.after){throw 'Retained AlphaSettings must have both original and current records.'}
+      Assert-ReconciliationAlphaRetention $change.before $change.after
+    }elseif($key -ceq 'Directories/WMMDataLocation'){
+      $wmm=$true;Assert-ReconciliationWmmRetention $Proof $Inspection.currentContext $Review.wmmRetention
+      if($change.before -cne $Review.wmmRetention.old.location -or $change.after -cne $Review.wmmRetention.current.location){throw 'Only exact old-to-current owned WMM locations can be retained.'}
+    }elseif($key -ceq 'OpenNav/OnlineAIS/v1/RadiusNm'){
+      foreach($value in @($change.before,$change.after)){
+        if($null -ne $value -and ($value -cnotmatch '^[1-9][0-9]{0,2}$' -or [int]$value -gt 200)){throw 'Retained AIS radius outside product bounds.'}
+      }
+      if($null -eq $change.after){throw 'Retained AIS radius deletion is unsupported.'}
+    }elseif($key -ceq 'OpenNav/Weather/v1/Enabled'){
+      if($change.after -cnotin @('0','1') -or ($null -ne $change.before -and $change.before -cnotin @('0','1'))){throw 'Retained weather enable flag must be an exact boolean.'}
+    }elseif($key -ceq 'PlugIns/Dashboard/SumLogNM'){
+      if($null -eq $change.before -or $null -eq $change.after){throw 'Both retained Dashboard counters are required.'}
+      Assert-RestartDashboardDelta $key $change.before $change.after
+    }elseif($key -ceq 'OpenNav/VesselName'){
+      if($null -eq $change.after){throw 'Retained vessel-name deletion is unsupported.'}
+      Assert-PreservedVesselName $change.after
+      if($null -ne $change.before){Assert-PreservedVesselName $change.before}
+    }elseif($key -ceq 'Settings/ActiveRoute'){
+      foreach($value in @($change.before,$change.after)){
+        if($null -ne $value -and $value -cne '' -and $value -cnotmatch '^[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$'){throw 'Malformed retained inert route GUID.'}
+      }
+    }elseif($key -ceq 'Settings/ConfigVersionString'){
+      foreach($value in @($change.before,$change.after)){
+        if($value -cnotmatch '^Version 5\.12\.4(?:-0)?\+37fd0cd Build 20[0-9]{2}-[0-9]{2}-[0-9]{2}$' -or
+           [datetime]::ParseExact($value.Substring($value.Length-10),'yyyy-MM-dd',[Globalization.CultureInfo]::InvariantCulture) -gt $At.Date){throw 'Unknown retained build marker.'}
+      }
+    }else{throw ('Cold retention has no source-backed key policy: '+$key)}
+  }
+  if(-not $wmm -and $null -ne $Review.wmmRetention){throw 'WMM proof supplied for a nonexistent resource-path change.'}
+  # Validate unchanged pilot records too; a no-op or unrelated display edit
+  # must not hide an unknown stored pilot field behind the changed-key loop.
+  if($new.ContainsKey('OpenNav/AlphaSettings')){$null=Read-ReconciliationPilotSettings $new['OpenNav/AlphaSettings']}
+}
+function Assert-ReconciliationReview($Proof,[string]$Saved,[string]$Normalized,$Review,[datetime]$At,$Inspection=$null) {
   $before=Join-Path $Proof.directory 'input-only.ini'
   $bytes=Get-ReconciliationProfileBytes $Proof $Saved
-  if($Review.schema -ne 1 -or $Review.owner -cne 'OpenNavX.SessionPreservationReview.1' -or
-     $Review.beforeSha256 -cne (Get-Digest $before) -or $Review.afterSha256 -cne (Get-Digest $Saved) -or
+  $retention=Test-ReconciliationRetentionReview $Review
+  if($Review.beforeSha256 -cne (Get-Digest $before) -or $Review.afterSha256 -cne (Get-Digest $Saved) -or
      $Review.parentPreparedSha256 -cne $Proof.sha256 -or $Review.connectionDisposition -cne $bytes.disposition -or
      $Review.provenance -cne 'current-user-state;origin-unverified' -or $Review.preservationOnly -isnot [bool] -or -not $Review.preservationOnly -or
      $Review.launchPermission -isnot [bool] -or $Review.launchPermission -or
@@ -118,6 +276,10 @@ function Assert-ReconciliationReview($Proof,[string]$Saved,[string]$Normalized,$
     if($match.Count -ne 1 -or $match[0].before -cne $change.before -or $match[0].after -cne $change.after -or
        $match[0].origin -cne 'unverified' -or $match[0].decision -cne 'preserve-current' -or
        [string]::IsNullOrWhiteSpace($match[0].reason) -or $match[0].reason.Length -gt 1024){throw 'Missing, duplicate or changed explicit preservation decision.'}
+  }
+  if($retention){
+    Assert-ReconciliationCurrentRetention $Proof $Saved $Normalized $Review $Inspection $At
+    return $changes
   }
   # Only the separately identified original direction byte is normalized for
   # existing policy checks. All other keys retain the bounded preservation policy.
@@ -158,9 +320,12 @@ function Read-ReconciliationPlan([string]$Workspace,[string]$Plan,[string]$Hash,
   $review=Join-Path $directory 'preservation-review.json'
   if((Get-Digest $review) -cne $value.reviewSha256){throw 'Independent reconciliation review changed.'}
   $approval=Read-Record $review
+  $retention=Test-ReconciliationRetentionReview $approval
+  if($retention){Assert-ReconciliationRetentionClaims $value}
+  elseif($value.PSObject.Properties['retentionMode']){throw 'Ordinary v1 plan cannot be relabelled as retained-current-state review.'}
   if($approval.inspectionSha256 -cne $value.inspectionSha256 -or
-     @(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime())).Count -ne $value.changedKeys){throw 'Exact review/inspection lineage differs.'}
-  return [pscustomobject]@{proof=$proof;value=$value;inspection=$observed;directory=$directory;path=$plan;sha256=$Hash;baseline=$baseline}
+     @(Assert-ReconciliationReview $proof $saved (Join-Path $directory 'normalized-input.ini') $approval ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $observed).Count -ne $value.changedKeys){throw 'Exact review/inspection lineage differs.'}
+  return [pscustomobject]@{proof=$proof;value=$value;inspection=$observed;directory=$directory;path=$plan;sha256=$Hash;baseline=$baseline;retention=$retention;review=$approval}
 }
 function ConvertTo-ReconciliationMetadata($Metadata) {
   # Windows PowerShell 5.1 JSON dates retain only milliseconds. Persist exact
@@ -249,6 +414,12 @@ function Assert-ReconciliationPlanLive($Plan,$Current,[switch]$Resume,[switch]$C
   if(-not $Resume -and ($created -gt $now -or ($now-$created).TotalHours -gt 24)){throw 'Unstarted reconciliation plan expired or future-dated.'}
   Assert-CommissioningContext $Plan.inspection.currentContext $Current
   Assert-ReconciliationLiveIdentity $Plan.proof $Current
+  if($Plan.retention){
+    if($Plan.value.baselineSha256 -cne $Plan.inspection.currentIniSha256 -or
+       (Get-Digest (Join-Path $Current.profile 'opencpn.ini')) -cne $Plan.inspection.currentIniSha256 -or
+       (Test-Path -LiteralPath (Join-Path $Plan.directory 'profile-stage.json'))){throw 'Retained current-state reconciliation never publishes or changes profile bytes.'}
+    if($Plan.review.wmmRetention){Assert-ReconciliationWmmRetention $Plan.proof $Current $Plan.review.wmmRetention -Live}
+  }
   if($Completed){
     if(-not $Resume -or (Test-Path -LiteralPath (Join-Path $Current.workspace 'commissioning-active.json'))){throw 'Completed reconciliation requires an absent active marker.'}
   }else{Assert-ReconciliationActive $Plan.proof $Plan.inspection.activeMarkerSha256}
@@ -279,10 +450,14 @@ function Read-ReconciledBaseline([string]$Workspace,[string]$Record,[string]$Has
      $value.provenance -cne 'explicit-cross-generation-reconciliation;current-user-state-origin-unverified' -or
      $value.launchPermission -isnot [bool] -or $value.launchPermission){throw 'Incomplete or authority-claiming reconciled baseline.'}
   $plan=Read-ReconciliationPlan $Workspace (Join-Path $directory 'plan.json') $value.planSha256 $Depth
+  if($plan.retention){Assert-ReconciliationRetentionClaims $value}
+  elseif($value.PSObject.Properties['retentionMode']){throw 'Ordinary baseline cannot claim another retention mode.'}
   $parent=$plan.proof.parent
   $completion=Join-Path $directory 'completion.json'
   if((Get-Digest $completion) -cne $value.completionSha256){throw 'Reconciliation completion changed.'}
   $done=Read-Record $completion
+  if($plan.retention){Assert-ReconciliationRetentionClaims $done}
+  elseif($done.PSObject.Properties['retentionMode']){throw 'Ordinary completion cannot claim another retention mode.'}
   if($done.schema -ne 1 -or $done.owner -cne $script:ReconciliationOwner -or $done.status -cne 'reconciled' -or $done.planSha256 -cne $plan.sha256 -or
      $done.parentPreparedSha256 -cne $plan.proof.sha256 -or $done.profileSha256 -cne $plan.value.baselineSha256 -or
      $value.baselineSha256 -cne $plan.value.baselineSha256 -or $value.baselineBytes -ne $plan.value.baselineBytes -or
@@ -297,5 +472,10 @@ function Read-ReconciledBaseline([string]$Workspace,[string]$Record,[string]$Has
        $move.source -ine $item.destination -or $move.destination -ine $item.path -or $move.sha256 -cne $item.sha256){throw 'Original-path restoration provenance is incomplete.'}
   }
   # Historical lineage remains readable after a later legitimate installation.
-  return [pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Hash;sid=$parent.context.sid;profile=$parent.context.profile}
+  $result=[pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Hash;sid=$parent.context.sid;profile=$parent.context.profile}
+  if($plan.retention){
+    $result|Add-Member -NotePropertyName pilotBindingQualified -NotePropertyValue $false
+    $result|Add-Member -NotePropertyName retentionMode -NotePropertyValue $value.retentionMode
+  }
+  return Copy-CommissioningBaselineRestrictions $result $plan.proof.baseline
 }

@@ -80,6 +80,10 @@ if ($Action -ceq 'Prepare') {
   Assert-CommissioningReview $candidates $planData.plugins
   $before=Get-PreparationTree $context.profile
   $inputBytes=Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($ini))
+  if(Test-CommissioningUnqualifiedPilot $baselineInfo){
+    $passive=$planData.passiveLaunchReview
+    Assert-CommissioningPassiveReview $passive.evidencePath $passive.evidenceSha256 $context $baselineInfo.sha256 (Get-CommissioningHash $inputBytes) $planData.inventorySha256 $planData.plugins -Fresh
+  }
   $directory=New-PreparationDirectory $context 'read-only-commissioning'
   $quarantineDirectory=Join-Path $directory 'quarantine'
   Assert-CommissioningQuarantine $quarantineDirectory $context.pluginRoots $context.launchEnvironment.path
@@ -90,6 +94,7 @@ if ($Action -ceq 'Prepare') {
   Assert-InputOnlyProfile (Read-ProfileForAudit $inputProfile)
   Copy-PreparationFile $Plan (Join-Path $directory 'review-plan.json') $ExpectedPlanSha256 (Get-Item -LiteralPath $Plan).Length
   Copy-PreparationFile $planData.inventoryPath (Join-Path $directory 'inventory.json') $planData.inventorySha256 (Get-Item -LiteralPath $planData.inventoryPath).Length
+  if(Test-CommissioningUnqualifiedPilot $baselineInfo){Copy-PreparationFile $passive.evidencePath (Join-Path $directory 'passive-review.json') $passive.evidenceSha256 (Get-Item -LiteralPath $passive.evidencePath).Length}
   $moves=New-Object 'Collections.Generic.List[object]';$evidence=New-Object 'Collections.Generic.List[object]';$index=0
   foreach ($decision in @($planData.plugins)) {
     $index++;$savedEvidence=Join-Path $directory ('review-'+$index+'.txt')
@@ -107,7 +112,9 @@ if ($Action -ceq 'Prepare') {
   foreach ($tree in $inventory.trees) { Assert-PreparationTree $tree }
   Assert-CommissioningContext $context (Get-CommissioningContext $Workspace)
   $prepared=Join-Path $directory 'prepared.json'
-  Write-Record $prepared @{schema=1;owner=$script:CommissioningOwner;status='prepared';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;planSha256=$ExpectedPlanSha256;inventorySha256=$planData.inventorySha256;evidence=$evidence.ToArray();baselineSha256=$baselineInfo.sha256;baselineReference=$inventoryReference;inputSha256=(Get-Digest $inputProfile);profileBefore=$before;originalAcl=(Get-Acl -LiteralPath $ini).Sddl;quarantine=$moves.ToArray();gatewayManagementTraffic='OpenCPN serial driver management writes still occur; no actuator data commands authorized.';applicationLaunched=$false}
+  $preparedValue=@{schema=1;owner=$script:CommissioningOwner;status='prepared';createdUtc=[DateTime]::UtcNow.ToString('o');context=$context;planSha256=$ExpectedPlanSha256;inventorySha256=$planData.inventorySha256;evidence=$evidence.ToArray();baselineSha256=$baselineInfo.sha256;baselineReference=$inventoryReference;inputSha256=(Get-Digest $inputProfile);profileBefore=$before;originalAcl=(Get-Acl -LiteralPath $ini).Sddl;quarantine=$moves.ToArray();gatewayManagementTraffic='OpenCPN serial driver management writes still occur; no actuator data commands authorized.';applicationLaunched=$false}
+  if(Test-CommissioningUnqualifiedPilot $baselineInfo){$preparedValue.pilotBindingQualified=$false;$preparedValue.commandsAuthorized=$false;$preparedValue.passiveReviewSha256=$passive.evidenceSha256}
+  Write-Record $prepared $preparedValue
   [pscustomobject]@{status='prepared';record=$prepared;recordSha256=(Get-Digest $prepared);quarantineCount=$moves.Count;profileModified=$false;applicationLaunched=$false} | ConvertTo-Json
   return
 }
@@ -140,6 +147,7 @@ if ($Action -ceq 'Apply') {
   if (Test-Path -LiteralPath $active) { throw 'Commissioning already active; inspect or restore, never replay Apply.' }
   $reviewed=[DateTime]::Parse($planData.reviewedUtc).ToUniversalTime()
   if ($reviewed -gt [DateTime]::UtcNow -or ([DateTime]::UtcNow-$reviewed).TotalHours -gt 24) { throw 'Operator source review expired before Apply.' }
+  if(Test-CommissioningUnqualifiedPilot $baselineInfo){Assert-CommissioningPassiveReview (Join-Path $directory 'passive-review.json') $prepared.passiveReviewSha256 $context $baselineInfo.sha256 $prepared.inputSha256 $prepared.inventorySha256 $planData.plugins -Fresh}
   Assert-PreparationTree $prepared.profileBefore
   Assert-PreparationAcl $prepared.originalAcl (Get-Acl -LiteralPath $ini).Sddl
   Assert-CommissioningTrees $inventory.trees $prepared.quarantine
@@ -166,7 +174,9 @@ if ($Action -ceq 'Apply') {
   $retained=@($planData.plugins | Where-Object {$_.decision -ceq 'retain'})
   Assert-PluginAudit $remaining $retained
   $applied=Join-Path $directory 'applied.json'
-  Write-Record $applied @{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=$ExpectedRecordSha256;profileSha256=(Get-Digest $ini);remainingPluginCount=$remaining.Count;applicationLaunched=$false;launchAuditStillRequired=$true}
+  $appliedValue=@{schema=1;owner=$script:CommissioningOwner;status='input-only-prepared';recordSha256=$ExpectedRecordSha256;profileSha256=(Get-Digest $ini);remainingPluginCount=$remaining.Count;applicationLaunched=$false;launchAuditStillRequired=$true}
+  if(Test-CommissioningUnqualifiedPilot $baselineInfo){$appliedValue.pilotBindingQualified=$false;$appliedValue.commandsAuthorized=$false}
+  Write-Record $applied $appliedValue
   [pscustomobject]@{status='input-only-prepared';verification=$applied;verificationSha256=(Get-Digest $applied);profileSha256=(Get-Digest $ini);applicationLaunched=$false;launchAuditStillRequired=$true} | ConvertTo-Json
   return
 }
