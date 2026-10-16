@@ -17,6 +17,7 @@ struct PilotPresentation {
   // drawer: "Wind not confirmed by the pilot". Empty when there is nothing
   // the helmsman must know (no request, or it was confirmed).
   std::string outcome;
+  std::string track_hint;
 };
 PilotPresentation PresentPilot(const adapters::PilotView &, vessel::Time now,
                                bool permit_control, bool replayed);

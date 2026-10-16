@@ -48,6 +48,10 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   p.track = p.enabled && authorized && fresh && !p.pending && caps.track &&
             (p.mode == adapters::PilotMode::Auto ||
              p.mode == adapters::PilotMode::Track);
+  p.track_hint = p.mode != adapters::PilotMode::Auto &&
+                         p.mode != adapters::PilotMode::Track
+                     ? "Select AUTO and wait for pilot confirmation before TRACK"
+                     : pilot.track_blocker;
   p.wind = p.enabled && authorized && fresh && !p.pending && caps.wind;
   p.alter_course = p.enabled && authorized && fresh && !p.pending &&
                    caps.alter_course && p.mode == adapters::PilotMode::Auto &&

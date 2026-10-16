@@ -144,6 +144,8 @@ void XNavPilotDrawer::RefreshControls() {
     course_[i]->Enable(Allowed(adapters::PilotAction::AlterCourse));
     course_[i]->SetLightMode(light_);
     modes_[i]->Enable(Allowed(actions[i]));
+    if (actions[i] == adapters::PilotAction::Track)
+      modes_[i]->SetHint(view_.track_hint.empty() ? "Track" : W(view_.track_hint));
     modes_[i]->SetLightMode(light_);
     const auto mode = std::array<adapters::PilotMode, 4>{
         adapters::PilotMode::Standby, adapters::PilotMode::Auto,
@@ -175,10 +177,16 @@ void XNavPilotDrawer::Request(adapters::PilotAction action, double delta) {
                                   : action == adapters::PilotAction::Track
                                       ? adapters::PilotMode::Track
                                       : adapters::PilotMode::Wind));
-    if (!ConfirmSheet(
-            *this, light_, title,
-            "The mode changes only after fresh pilot feedback confirms it.",
-            title)) {
+    wxString note = "The mode changes only after fresh pilot feedback confirms it.";
+    if (action == adapters::PilotAction::Track)
+      note = "The pilot needs fresh route data and magnetic variation. "
+             "It may ask you to confirm a turn. Check the physical helm; "
+             "SKAGER never automatically confirms a waypoint turn.";
+    else if (action == adapters::PilotAction::Wind)
+      note = "The pilot needs fresh apparent wind. It will hold the current "
+             "apparent wind angle if it accepts WIND. Wait for measured "
+             "pilot feedback; keep the physical helm within reach.";
+    if (!ConfirmSheet(*this, light_, title, note, title)) {
       queued_ = false;
       return;
     }
@@ -204,7 +212,7 @@ void XNavPilotDrawer::Toggle() {
   const bool enable = !view_.enabled;
   wxString title = "Enable physical pilot control?",
            accept = "Enable manual control";
-  wxString note = "Standby, Auto and course buttons will steer through the "
+  wxString note = "Mode and course buttons will steer through the "
                   "autopilot. Keep the physical helm and STANDBY within reach. "
                   "Control switches off if pilot feedback stops, and at restart.";
 #if XNAV_ENABLE_TEST_FIXTURES

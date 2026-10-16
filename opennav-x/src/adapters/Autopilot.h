@@ -69,6 +69,9 @@ struct PilotView {
   bool output_unavailable = false;
   // Operator-fixable reason commands cannot be sent; empty when none known.
   std::string control_blocker;
+  // Local route-feed eligibility only, never a claim that the physical bridge
+  // has received navigation or has the magnetic variation required for TRACK.
+  std::string track_blocker;
 };
 class ManualAutopilot {
 public:
