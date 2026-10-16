@@ -114,9 +114,18 @@ The narrow hold/restoration helper now passes **49 native checks** in
 [38891027391](https://github.com/ThereptileII/Work/actions/runs/38891027391),
 including the boat's native scheduled-task action shapes. Its earlier malformed
 INI fixture failure and separate 38-check pass remain preserved. No application
-rebuild was required. Actual boat Inspect/Hold/Update/Restore receipts and fresh
-read-only commissioning remain separate acceptance evidence.
+rebuild was required.
 [Versioned native helper evidence](evidence/scrum22-rtlsdr-hold-20261016/README.md).
+
+The subsequent actual boat Inspect/Hold/Update/Restore sequence **passed**.
+At 11:16:41 UTC the selected installation is frozen product `854078a5`, and the
+exact stock RTL-SDR DLL is restored. The original profile, stock installation,
+managed plugin tree and previous rollback generation are preserved. The installer
+mandatory loader/resource self-test passed; no ordinary navigation launch is
+included in this result. Fresh inventory confirms unchanged stock/managed trees
+and only the four expected owned plugin DLL changes in the new generation.
+Independent source/identity review passes; guarded passive commissioning remains
+in progress. [Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
 
 SCRUM-211's certificate-verification software criteria were independently
 reviewed and accepted on 16 October; Jira is **Done**. This closes that defect,
