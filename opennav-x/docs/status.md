@@ -105,13 +105,27 @@ result. SCRUM-17/22 track a narrow reversible hold/restoration of this exact old
 plugin and review of the remaining imported PE closure. The existing
 commissioning quarantine cannot be used during maintenance.
 
+The bounded read-only scan of that failed generation completed over **103 PE
+files**: both missing imports belong to the same RTL-SDR entry DLL; no other
+missing PE import was reported. Original source and PE inventories remained
+unchanged. This is dependency diagnosis, not a successful load or launch.
+[Exact scan and preserved failed diagnostics](evidence/scrum17-rtlsdr-854-20261016/README.md).
+The narrow hold/restoration helper now passes **49 native checks** in
+[38891027391](https://github.com/ThereptileII/Work/actions/runs/38891027391),
+including the boat's native scheduled-task action shapes. Its earlier malformed
+INI fixture failure and separate 38-check pass remain preserved. No application
+rebuild was required. Actual boat Inspect/Hold/Update/Restore receipts and fresh
+read-only commissioning remain separate acceptance evidence.
+[Versioned native helper evidence](evidence/scrum22-rtlsdr-hold-20261016/README.md).
+
 SCRUM-211's certificate-verification software criteria were independently
 reviewed and accepted on 16 October; Jira is **Done**. This closes that defect,
 not the separate installer, protected-updater or boat gates. SCRUM-209 still
 needs the retained package's full Repair/Uninstall and retained-addition
 lifecycle checks; the shorter Staging result must not be described as those
-checks. A focused retained installer-lifecycle scope is being added without a
-product rebuild or Production promotion.
+checks. The focused full retained installer-lifecycle scope is running in
+[38889555934](https://github.com/ThereptileII/Work/actions/runs/38889555934),
+against the original package, without a product rebuild or Production promotion.
 
 
 ## Installer trust correction — native boundary and replacement installation pass
