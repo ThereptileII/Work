@@ -1,0 +1,105 @@
+{
+  "schema": 1,
+  "status": "actual-startup-observed-builtin-plugin-refusal",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "version": "0.4.0-beta2.4",
+  "applicationProcess": {
+    "pid": 11052,
+    "startedUtc": "2026-10-16T11:47:20.3603526Z",
+    "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511"
+  },
+  "productRebuilt": false,
+  "secondLaunch": false,
+  "coordinatorWarningAcknowledgement": false,
+  "physicalCommandsSent": 0,
+  "chartContentObserved": true,
+  "privateChartInitialized": true,
+  "nativeOpenGLObserved": true,
+  "onlineAisConnected": true,
+  "onlineAisTargetCount": 766,
+  "ordinaryBuiltinPluginsAccepted": false,
+  "candidateAccepted": false,
+  "normalCloseExitCode": 0,
+  "applicationAndChartHelpersAbsentAfterClose": true,
+  "sourceTreeRestorationPending": true,
+  "privateEvidence": {
+    "observe-passive-854-v2.ps1": {
+      "bytes": 8627,
+      "sha256": "60526536d67ed96496714dcb9683fe5c2560da3eca5819aafa41c3f562a0bddb"
+    },
+    "observation-131646/observation.json": {
+      "bytes": 2714,
+      "sha256": "11d68350d30532f5b7a4d3f09b6a273d6c5e7200cf3390935490de9ea385d934"
+    },
+    "observation-131646/diagnostics.json": {
+      "bytes": 49958,
+      "sha256": "c3a0674e71f8ba39fbfc7740732fa24238844ce8800422f70d8a4a2a44a9fc94"
+    },
+    "observation-131646/opencpn-tail.log": {
+      "bytes": 262144,
+      "sha256": "c5359c74e204d11ded13e98cf15a76ae8ab71f617abf211b74804c539d6f0926"
+    },
+    "observe-854-modules.ps1": {
+      "bytes": 3750,
+      "sha256": "ec6de82f8a3cc8341f11be5d2a42a86529b003b9156f80cff3f05e270f90a331"
+    },
+    "module-observation-854-x86.json": {
+      "bytes": 3364,
+      "sha256": "6a0f7c1067f7500911dd5b768b6c740f174fe13a0fae8390aa9c441ca8c5a518"
+    },
+    "capture-post-desktop-open.stdout": {
+      "bytes": 496,
+      "sha256": "4c415c87647b15cc5454f35fd5c1f0d918d7285a93cac6c909c2e465b5b32ed8"
+    },
+    "post-desktop-open.png": {
+      "bytes": 90786,
+      "sha256": "5f946401cbbf02360544c9eee21322db456f3668bac0ebdbdf3ec0df02f721bc"
+    },
+    "plugin-tree-difference-original.json": {
+      "bytes": 2969,
+      "sha256": "3de172f36cafdfbe40fc996962d34381fde767bc7deab14bb48c492132e647bd"
+    },
+    "close-observed-854.stdout": {
+      "bytes": 508,
+      "sha256": "b45625290e0d8c347a461e3ecfa74f1913bfc17202d5a6a02e48cea43f08bb88"
+    },
+    "post-normal-close-health.json": {
+      "bytes": 574,
+      "sha256": "a5a040dd0ad58117087ae8648fe3f805faf9ad34c824f76e367b12be49af0907"
+    },
+    "post-close-current.ini": {
+      "bytes": 21528,
+      "sha256": "494fc03d3f94d7fc15781446220df8ab208368380ac1cf8f4f9fe9330b0bfad8"
+    },
+    "cold-recovery-sources/source-custody.json": {
+      "bytes": 1071,
+      "sha256": "a915fdd0f5ed58d68820dc773a8eb2caeb350f1481ec8e8fff41e69d34e8064c"
+    },
+    "cold-recover-builtins-854.ps1": {
+      "bytes": 20540,
+      "sha256": "cdde460fd676f650a2c5464d22b77357d3bbd1b812b1dee70f8beda52658fd2b"
+    },
+    "cold-recover-builtins-854-v2.ps1": {
+      "bytes": 21076,
+      "sha256": "acd65b0f623082817de901fb5dcda6357c21cd15b3ec5c3081fb33564751b9e7"
+    },
+    "ordinary-restore-inspection.json": {
+      "bytes": 2799089,
+      "sha256": "c154b20f8bc442201d9b12ed9a391a02031243abfda6cc83fd14adc680113108"
+    },
+    "cold-restoration-records/20261016-133713-cold-recover-builtins-854-ef212433/completed.json": {
+      "bytes": 1871,
+      "sha256": "316bbdbde1cea2b38eb1494391f081f8765fb883e6f8f85373ca3a1e2df08a22"
+    }
+  },
+  "limits": [
+    "Functional capture only; no design, touch or resolution-sweep acceptance.",
+    "Explicit x86 module enumeration binds paths/on-disk hashes, not loaded-memory bytes.",
+    "Empty x64 module collection cannot prove absence.",
+    "Private chart, navigation, profile and credential contents are not committed.",
+    "No actor/modal-result attribution for missing builtin DLLs.",
+    "Protected customer-UAC/B0/B1 and complete boat qualification remain separate."
+  ],
+  "missingOwnedBuiltinsRecreated": true,
+  "ordinaryCommissioningRestoreStatus": "in-progress"
+}

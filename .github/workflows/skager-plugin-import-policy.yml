@@ -1,0 +1,74 @@
+name: SKAGER focused native plugin import policy
+on:
+  push:
+    branches: [skager-plugin-import-policy]
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  native-policy:
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Compile and run the existing policy test with native Win32 MSVC
+        shell: python
+        run: |
+          import hashlib, json, os, struct, subprocess, sys
+          from pathlib import Path
+          assert sys.platform == 'win32', 'Native Windows required'
+          root = Path.cwd()
+          out = root / 'native-plugin-policy'
+          out.mkdir()
+          files = ['opennav-x/src/integration/Win32PeImports.h',
+                   'opennav-x/src/integration/Win32PluginTlsImports.h',
+                   'opennav-x/tests/win32_pe_imports_test.cpp',
+                   '.github/workflows/skager-plugin-import-policy.yml']
+          report = {'schema': 1, 'status': 'failed', 'commit': os.environ['GITHUB_SHA'],
+                    'run': os.environ['GITHUB_RUN_ID'], 'attempt': os.environ['GITHUB_RUN_ATTEMPT'],
+                    'imageVersion': os.environ.get('ImageVersion'),
+                    'scope': 'native Win32 declarative plugin-import policy test only',
+                    'productAcceptance': False,
+                    'sources': {p: hashlib.sha256((root / p).read_bytes()).hexdigest() for p in files}}
+          try:
+              for key in ('CL', '_CL_', 'CXXFLAGS', 'CFLAGS'):
+                  assert not os.environ.get(key), 'Inherited compiler override refused: ' + key
+              source = out / 'source'
+              source.mkdir()
+              (source / 'CMakeLists.txt').write_text('''cmake_minimum_required(VERSION 3.24)
+          project(SKAGERPluginPolicy LANGUAGES CXX)
+          if(NOT MSVC OR NOT CMAKE_SIZEOF_VOID_P EQUAL 4)
+            message(FATAL_ERROR "Native Win32 MSVC required")
+          endif()
+          add_executable(policy "${SKAGER_ROOT}/opennav-x/tests/win32_pe_imports_test.cpp")
+          target_include_directories(policy PRIVATE "${SKAGER_ROOT}/opennav-x/src")
+          target_compile_features(policy PRIVATE cxx_std_17)
+          target_compile_options(policy PRIVATE /utf-8 /W4)
+          ''')
+              def run(command, name, timeout=120):
+                  with (out / name).open('wb') as log:
+                      subprocess.run([str(v) for v in command], stdout=log,
+                                     stderr=subprocess.STDOUT, timeout=timeout, check=True)
+              build = out / 'build'
+              run(['cmake', '-S', source, '-B', build, '-G', 'Visual Studio 17 2022',
+                   '-A', 'Win32', '-DSKAGER_ROOT=' + root.as_posix()], 'configure.log')
+              run(['cmake', '--build', build, '--config', 'Release', '--parallel', '2'], 'build.log')
+              exe = build / 'Release/policy.exe'
+              raw = exe.read_bytes()
+              pe = struct.unpack_from('<I', raw, 0x3c)[0]
+              assert raw[pe:pe+4] == b'PE\0\0' and struct.unpack_from('<H', raw, pe+4)[0] == 0x14c
+              report['executableSha256'] = hashlib.sha256(raw).hexdigest()
+              run([exe], 'result.log', 60)
+              report['result'] = (out / 'result.log').read_text().strip()
+              report['status'] = 'passed'
+          finally:
+              (out / 'report.json').write_text(json.dumps(report, indent=2) + '\n')
+              print(json.dumps(report, indent=2))
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: native-plugin-policy-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: |
+            native-plugin-policy/*.log
+            native-plugin-policy/report.json
+          if-no-files-found: error

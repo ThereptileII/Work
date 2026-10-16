@@ -1,6 +1,32 @@
 # SKAGER status — 2026-10-16
 
-## Replacement candidate — private composed Staging delivered
+## Current boat result — builtin-plugin correction awaiting native qualification
+
+The user made the desktop available on 16 October. The same installed `854078a5`
+process then provided fresh real chart content, initialized o-charts, native Intel
+OpenGL, measured vessel data and connected Online AIS. No second launch or
+physical command was sent. However, all four rebuilt builtin plugins were
+refused: the dependency guard counted missing lookup candidates against its
+256-node limit. **The installed candidate is not accepted.**
+
+The exact three-root graph needs 270 probes for 62 found dependencies. Correction
+`896ad520` separates 1,024 bounded lookups from 256 admitted dependency PEs and
+the unchanged 256 MiB aggregate limit. All 9,930 portable checks and two
+independent reviews pass; obsolete-TLS refusal and native custody are retained.
+The replacement version is `0.4.0-beta2.5`. A focused native Win32 check precedes
+one required Staging application build; native product and boat results remain
+pending. Dependency inputs are unchanged. No design or endurance sweep is selected.
+[Correction, exact inputs and limits](evidence/scrum209-plugin-probe-budget-20261016/README.md).
+
+The observed application closed normally with exit 0. Four missing owned builtin
+DLLs were recreated cold from the authenticated original 854 recovery archive,
+with exact hashes and unchanged profile bytes. The ordinary hash-bound
+commissioning restore is in progress; no automatic relaunch is selected.
+Original failed evidence remains preserved. The new source does not change the
+installed executable or qualify it.
+[Actual startup, failure and recovery evidence](evidence/scrum17-854-ordinary-startup-20261016/README.md).
+
+## Previous candidate — private composed Staging delivered, boat refusal retained
 
 Frozen product `854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc`, version
 `0.4.0-beta2.4`, was built once in
