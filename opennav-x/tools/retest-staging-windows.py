@@ -80,7 +80,7 @@ def main():
     parser.add_argument('--producer-run-id')
     parser.add_argument('--producer-run-attempt')
     parser.add_argument('--selection', type=Path)
-    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'all'), default='all')
+    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'all', 'installer-startup-diagnostic'), default='all')
     args = parser.parse_args()
     require(sys.platform == 'win32' and os.environ.get('GITHUB_ACTIONS') == 'true' and
             os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted', 'Disposable native CI required')
@@ -108,7 +108,11 @@ def main():
 def run_checks(scope, report, save):
     installer = [sys.executable, str(ROOT / 'tools/smoke-installer-windows.py'), '--mode', 'staging',
                  '--compiled-input-receipt', str(ROOT / 'evidence/local/staging-inputs.json')]
-    if scope in ('installer', 'installer-charts'):
+    diagnostic = scope == 'installer-startup-diagnostic'
+    if diagnostic:
+        report.update(diagnosticOnly=True, releaseQualification=False)
+        commands = [('installer-startup-diagnostic', installer + ['--startup-supervisor-diagnostic'])]
+    elif scope in ('installer', 'installer-charts'):
         commands = [('installer', installer)]
         if scope == 'installer-charts':
             # Exactly the existing next qualifier command, using restored
@@ -124,6 +128,9 @@ def run_checks(scope, report, save):
             check['status'] = 'running'; save()
             try:
                 subprocess.run(command, check=True)
+                # Even an accidental zero from the diagnostic helper must not
+                # convert the original failed qualifier into an accepted retest.
+                require(not diagnostic, 'Startup diagnostic cannot grant qualification')
             except BaseException:
                 check['status'] = 'failed'
                 raise

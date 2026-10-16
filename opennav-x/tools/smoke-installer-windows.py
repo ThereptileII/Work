@@ -35,6 +35,8 @@ def arguments(argv=None):
     parser.add_argument('--prepare-only',action='store_true',
                         help='Verify and restore retained inputs, emit a preparation receipt, and run no lifecycle tests')
     parser.add_argument('--expected-commit',help='Frozen product revision, required with --retained-package')
+    parser.add_argument('--startup-supervisor-diagnostic',action='store_true',
+                        help='Retained 854 failure diagnosis only: original installed supervisor once; always fails qualification')
     args=parser.parse_args(argv)
     if bool(args.retained_package)!=bool(args.expected_commit):
         parser.error('--retained-package and --expected-commit are required together')
@@ -42,6 +44,8 @@ def arguments(argv=None):
         parser.error('--prepare-only requires --retained-package')
     if args.expected_commit and not re.fullmatch('[0-9a-f]{40}',args.expected_commit):
         parser.error('--expected-commit must be a complete lowercase commit SHA')
+    if args.startup_supervisor_diagnostic and (not args.compiled_input_receipt or args.mode!='staging' or args.prepare_only):
+        parser.error('--startup-supervisor-diagnostic requires retained compiled inputs and Staging mode')
     return args
 
 
@@ -559,6 +563,12 @@ try:
         report.update(prepare_retained(args.retained_package,ROOT,args.expected_commit))
     elif args.compiled_input_receipt:
         report.update(prepare_compiled(args.compiled_input_receipt,ROOT,report['harness_commit']))
+    if args.startup_supervisor_diagnostic:
+        assert os.environ.get('RUNNER_ENVIRONMENT')=='github-hosted','Disposable hosted runner required'
+        assert not any(os.environ.get(name) for name in ('GH_TOKEN','GITHUB_TOKEN','OPENNAV_ARTIFACT_TOKEN')),'Remove credentials before diagnosis'
+        producer=report['compiled_input_producer']
+        assert producer==staging_inputs.producer('854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc','38765418126','1'),'Diagnostic is restricted to the original failed candidate'
+        report.update(diagnosticOnly=True,releaseQualification=False)
     product=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
     require_product_output_policy(product)
     report['product_commit']=product['commit']
@@ -693,8 +703,11 @@ try:
                 install=INSTALL,setup=SETUP,stock=original,profile=profile,evidence=EVIDENCE,
                 powershell=PS,commit=product['commit'],executable_sha256=sha(ROOT/'build/production-install/opencpn.exe'),
                 ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected,
-                product=product,source_app=ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/app')
+                product=product,source_app=ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/app',
+                startup_diagnostic=args.startup_supervisor_diagnostic)
+            assert not args.startup_supervisor_diagnostic,'Diagnostic must stop before any subsequent lifecycle checks'
         else:
+            assert not args.startup_supervisor_diagnostic,'Diagnostic requires authenticated startup health support'
             assert args.retained_package or args.compiled_input_receipt,'Current build must support authenticated startup health'
             report['packaged_updater']={'status':'not-applicable','reason':'Retained package has no authenticated startup health support',
                                        'updateStartupHealth':0,'commit':product['commit']}

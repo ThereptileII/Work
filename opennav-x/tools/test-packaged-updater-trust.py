@@ -3,9 +3,14 @@ import copy
 import hashlib
 import importlib.util
 import json
+import io
+import os
 from pathlib import Path
+import subprocess
 import tempfile
+import types
 import unittest
+from unittest import mock
 
 spec = importlib.util.spec_from_file_location('packaged_trust_fixture', Path(__file__).with_name('test-packaged-updater-windows.py'))
 helper = importlib.util.module_from_spec(spec)
@@ -165,6 +170,84 @@ class TrustTests(unittest.TestCase):
         marker.write_bytes(marker.read_bytes() + b'\n')
         with self.assertRaises(AssertionError):
             helper.legacy_trust_observation(self.root, identity)
+
+
+class StartupDiagnosticTests(unittest.TestCase):
+    def test_bounded_capture_retains_original_error_and_never_exports_challenge(self):
+        for code, raw in ((0, b'current-qualified\n'), (1, b'Receiver: connect-timeout\n'),
+                          (None, b'CloseOwned failed\n'), (1, b'x' * 65537)):
+            process = mock.Mock(pid=123, stdout=io.BytesIO(b'original output\n'), stderr=io.BytesIO(raw))
+            process.wait.side_effect = subprocess.TimeoutExpired(['original'], 240) if code is None else None
+            process.wait.return_value = code; process.poll.return_value = code
+            owned = set()
+            with mock.patch.object(helper.subprocess, 'Popen', return_value=process) as popen, \
+                 mock.patch.object(helper.subprocess, 'STARTUPINFO', create=True, return_value=types.SimpleNamespace(dwFlags=0)), \
+                 mock.patch.object(helper.subprocess, 'STARTF_USESHOWWINDOW', 1, create=True), \
+                 mock.patch.dict(os.environ, {'Skager_Update_Challenge': 'a'*64, 'KEEP': 'ordinary'}, clear=True):
+                result = helper.capture_supervisor_diagnostic(['original'], Path('app'), owned)
+            self.assertEqual(popen.call_count, 1); process.wait.assert_called_once_with(timeout=240)
+            self.assertEqual(popen.call_args.kwargs['env'], {'KEEP': 'ordinary'})
+            self.assertEqual(popen.call_args.kwargs['cwd'], Path('app'))
+            self.assertEqual(result['exitCode'], code); self.assertEqual(result['timedOut'], code is None)
+            self.assertEqual(owned, {123} if code is None else set())
+            self.assertTrue(result['stderr']['complete'])
+            self.assertEqual(result['stderr']['truncated'], len(raw) > 65536)
+            self.assertIn('withheld' if len(raw) > 65536 else raw.decode().strip(), result['stderr']['text'])
+        raw = b'SKAGER_UPDATE_CHALLENGE=' + b'a'*64 + b'\nSKAGER-UPDATE-READY/1 secret-frame\nother ' + b'b'*64
+        clean = helper.diagnostic_text(raw)
+        self.assertNotIn('a'*64, clean); self.assertNotIn('b'*64, clean); self.assertNotIn('secret-frame', clean)
+
+    def test_wow64_host_and_both_pe32_images_are_required(self):
+        with tempfile.TemporaryDirectory() as temporary:
+            root = Path(temporary); launcher = root/'skager-start.exe'
+            host = root/'SysWOW64/WindowsPowerShell/v1.0/powershell.exe'; host.parent.mkdir(parents=True)
+            data = bytearray(90); data[:2] = b'MZ'; data[60:64] = (64).to_bytes(4, 'little')
+            data[64:70] = b'PE\0\0\x4c\x01'; data[88:90] = b'\x0b\x01'
+            launcher.write_bytes(data); host.write_bytes(data)
+            query = mock.Mock(side_effect=lambda buffer, size: (setattr(buffer, 'value', str(root/'SysWOW64')) or len(buffer.value)))
+            with mock.patch.object(helper.ctypes, 'WinDLL', create=True, return_value=types.SimpleNamespace(GetSystemWow64DirectoryW=query)):
+                self.assertEqual(helper.diagnostic_host(launcher), host)
+                data[68:70] = b'\x64\x86'; host.write_bytes(data)
+                with self.assertRaisesRegex(AssertionError, 'I386/PE32'): helper.diagnostic_host(launcher)
+
+    def test_original_supervisor_once_and_diagnostic_always_refuses_qualification(self):
+        for code in (0, 1, None):
+            with self.subTest(exit_code=code), tempfile.TemporaryDirectory() as temporary:
+                root = Path(temporary); install = root/'OpenNavXAlpha1'; initial = 'a'*32
+                first = install/'generations'/initial; (first/'app').mkdir(parents=True)
+                profile=root/'profile'; profile.mkdir(); evidence=root/'evidence'; evidence.mkdir()
+                source=root/'source'; source.mkdir(); stock=root/'stock/opencpn.exe'; stock.parent.mkdir(); stock.write_bytes(b'stock')
+                setup=root/'Setup.exe'; setup.write_bytes(b'original setup')
+                paths=('app/opencpn.exe','app/skager-start.exe','UpdateSupervisor.ps1','UpdateTransaction.ps1','Lifecycle.ps1')
+                for path in paths: (first/path).write_bytes(('original '+path).encode())
+                commit=helper.STARTUP_FAILURE['productCommit']; exe_hash=helper.digest(first/'app/opencpn.exe')
+                owner='OpenNavX.Alpha1.SideBySide.1'
+                (first/'ownership.json').write_text(json.dumps(dict(owner=owner,commit=commit,updateStartupHealth=1,
+                    xnavHardwareOutputPolicy='status-only',managedFiles=[dict(path=p,sha256=helper.digest(first/p)) for p in paths])))
+                (install/'state.json').write_text(json.dumps(dict(owner=owner,schema=1,current=initial)))
+                host=root/'powershell.exe'; host.write_bytes(b'original host')
+                ui=mock.Mock(); ui.windows.return_value=[]
+                result=dict(exitCode=code,timedOut=code is None,stdout=dict(text=''),stderr=dict(text='original receiver or cleanup error'))
+                with mock.patch.dict(os.environ, dict(LOCALAPPDATA=str(root),GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='github-hosted'), clear=True), \
+                     mock.patch.object(helper.sys,'platform','win32'), \
+                     mock.patch.object(helper,'diagnostic_host',return_value=host), \
+                     mock.patch.object(helper,'capture_supervisor_diagnostic',return_value=result) as capture, \
+                     mock.patch.object(helper.subprocess,'Popen') as forbidden_later_launch:
+                    with self.assertRaisesRegex(RuntimeError,'original launcher failure remains unresolved'):
+                        helper.qualify(install=install,setup=setup,stock=stock,profile=profile,evidence=evidence,
+                            powershell=Path('wrong-64-bit-host'),commit=commit,executable_sha256=exe_hash,
+                            ui=ui,owned=set(),inventory=lambda path:{},navigation_matches=lambda:True,
+                            product=dict(commit=commit,executable_sha256=exe_hash),source_app=source,startup_diagnostic=True)
+                capture.assert_called_once()
+                self.assertEqual(capture.call_args.args[:2], ([str(host),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+                    '-File',str(first/'UpdateSupervisor.ps1'),'-InstallationRoot',str(install),'-Action','QualifyCurrent'], first/'app'))
+                forbidden_later_launch.assert_not_called()
+                report=json.loads((evidence/'packaged-updater.json').read_text())
+                self.assertEqual(report['status'],'failed'); self.assertFalse(report['releaseQualification'])
+                self.assertTrue(report['diagnosticOnly']); self.assertEqual(report['originalFailure'],helper.STARTUP_FAILURE)
+                self.assertEqual(report['supervisorDiagnostic']['exitCode'],code)
+                self.assertTrue(report['supervisorDiagnostic']['inputsUnchanged'])
+                self.assertFalse(report['supervisorDiagnostic']['acceptance'])
 
 
 if __name__ == '__main__':
