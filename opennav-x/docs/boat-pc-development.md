@@ -301,6 +301,26 @@ the source checkout, application, profile or active transaction. Existing and
 incomplete destinations are preserved for inspection. The caller must first
 verify the intended tool commit's native CI and downloaded evidence.
 
+For helper-only installed-warning changes, the `installed-warning` scope of
+`opennav-boat-tools.yml` runs just the version/identity and dispatcher contracts
+in native Windows PowerShell 5.1. Its artifact retains the tested raw tool bytes,
+including Windows line endings, with a complete source-commit/size/hash inventory.
+Authenticate those original results and bytes before creating the separate flat
+tool archive. This focused scope neither launches the application nor qualifies
+an actual modal, chart, hardware interface or complete boat-tool matrix.
+
+Ordinary guarded Launch, startup-launcher Launch and installed-warning actions
+now allow twelve minutes for their interactive proof and fifteen minutes for the
+scheduled task. Explicit caller deadlines remain explicit. The application still
+has its separate 45-second window deadline and warning acknowledgement its
+20-second display deadline; identity, profile and source hashes are not skipped.
+A pending outer timeout retains the same task and prints its exact request and
+result paths. Observe that original task before doing anything else; do not
+relaunch or repeat an acknowledgement. Collect its terminal result before
+removing its task registration. Four-hour launch, 30-minute warning-inspection
+and 24-hour source-review freshness limits remain unchanged. Longer proof budgets
+do not establish success or guarantee that a slow verification will finish.
+
 Only the explicitly reviewed display action then uses this separate script
 directory; restart Arm/Request/Collect continues through the session's original
 qualified dependency paths. The application build/launch provenance still has
