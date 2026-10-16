@@ -254,13 +254,17 @@ async function portalBrowser(path: string, respond: (path: string, init: Request
       attributes: {} as Record<string, string>,
       setAttribute(name: string, value: string) { this.attributes[name] = value; },
       addEventListener(name: string, handler: (event: any) => Promise<void>) { handlers.set(name, handler); },
-      async dispatch(name: string) {
+      async dispatch(name: string, event: Record<string, unknown> = {}) {
         const handler = handlers.get(name); assert.ok(handler, `Missing ${name} handler`);
-        await handler({ target: this, currentTarget: this, preventDefault() {} });
+        await handler({ target: this, currentTarget: this, preventDefault() {}, ...event });
       },
     };
   }
   const content = element(), message = element(), logout = element(), heading = element();
+  const links = ['dashboard', 'downloads', 'shop', 'cloud', 'orders', 'account'].map(page => ({ ...element(),
+    dataset: { page }, getAttribute: () => page === 'dashboard' ? '/portal/' : `/portal/${page}/`,
+    removeAttribute(name: string) { delete this.attributes[name]; }, closest() { return this; } }));
+  const nav = { ...element(), hidden: true, querySelectorAll: () => links, links };
   logout.hidden = true;
   const boatForm = { ...element(), querySelector: () => boatButton };
   const boatButton = element(), boatName = { ...element(), value: 'S/Y Aurora' };
@@ -277,6 +281,7 @@ async function portalBrowser(path: string, respond: (path: string, init: Request
       if (id === 'portal-content') return content;
       if (id === 'portal-message') return message;
       if (id === 'logout') return logout;
+      if (id === 'portal-nav') return nav;
       const controls: Record<string, any> = { 'boat-form': boatForm, 'boat-name': boatName, checkout, 'discount-code': discount };
       return content.innerHTML.includes(`id="${id}"`) ? controls[id] : null;
     },
@@ -288,11 +293,16 @@ async function portalBrowser(path: string, respond: (path: string, init: Request
     },
   };
   const url = new URL(path, 'https://beta.skager.app');
-  await new Script(source).runInNewContext({ document, URL, URLSearchParams,
-    location: { pathname: url.pathname, search: url.search, assign: (value: string) => navigations.push(value) },
+  const location = { pathname: url.pathname, search: url.search, assign: (value: string) => navigations.push(value) };
+  const pushed: string[] = [], windowHandlers = new Map<string, () => void>();
+  const history = { pushState(_state: unknown, _title: string, value: string) {
+    pushed.push(value); const next = new URL(value, 'https://beta.skager.app'); location.pathname = next.pathname; location.search = next.search;
+  } };
+  await new Script(source).runInNewContext({ document, URL, URLSearchParams, location, history,
+    addEventListener: (name: string, handler: () => void) => windowHandlers.set(name, handler),
     fetch: async (path: string, init: RequestInit) => { calls.push({ path, init }); return respond(path, init); },
   });
-  return { content, message, logout, boatForm, checkout, download, buy, calls, navigations, anchors };
+  return { content, message, logout, boatForm, checkout, download, buy, calls, navigations, anchors, nav, pushed, windowHandlers, location };
 }
 const browserAccount = { betaAccess: 'active', account: { email: 'friend@example.test' }, boats: [], orders: [], subscription: null };
 const browserSession = { account: { id: MINE }, csrfToken: 'c'.repeat(64) };
@@ -364,10 +374,74 @@ test('checkout return reads actual server order state and never trusts success q
     items: [{ name: 'SKAGER Public Beta Access', quantity: 1, unitMinor: 2000 }], subtotalMinor: 2000, shippingMinor: 0, discountMinor: 0, totalMinor: 2000 }] };
   const browser = await portalBrowser('/portal/orders/?success=true&betaAccess=active&paid=true', async path => browserJSON(
     path === '/api/auth/session' ? browserSession : account));
-  assert.deepEqual(browser.calls.map(call => call.path), ['/api/auth/session', '/api/portal/dashboard']);
+  // The public catalog is prefetched for the shop tabs; private downloads are not, without access.
+  assert.deepEqual(browser.calls.map(call => call.path), ['/api/auth/session', '/api/portal/dashboard', '/api/store/catalog']);
   assert.match(browser.content.innerHTML, /Awaiting payment/);
   assert.doesNotMatch(browser.content.innerHTML, /Paid|portal-download/);
   assert.deepEqual(browser.navigations, []);
+});
+
+test('portal tabs render from memory at once, revalidate in the background and keep no browser storage', async () => {
+  const { release } = browserDownload();
+  const catalog = { shippingMinor: 1500, shippingCountries: ['SE'], checkoutOpen: true, products: [
+    { id: BOAT, kind: 'hardware', name: 'SKAGER GPS module', summary: 'Position.', description: '', priceMinor: 4900, currency: 'usd', shippable: true, imageUrl: null }] };
+  let dashboard: Record<string, unknown> = browserAccount;
+  let gate: Promise<void> | null = null, open!: () => void;
+  const browser = await portalBrowser('/portal/', async path => {
+    if (path === '/api/auth/session') return browserJSON(browserSession);
+    if (path === '/api/store/catalog') return browserJSON(catalog);
+    if (path === '/api/portal/downloads') return browserJSON({ available: true, releases: [release] });
+    assert.equal(path, '/api/portal/dashboard');
+    if (gate) await gate;
+    return browserJSON(dashboard);
+  });
+  const settle = () => new Promise(resolve => setImmediate(resolve));
+  await settle();
+  assert.deepEqual(browser.calls.map(call => call.path),
+    ['/api/auth/session', '/api/portal/dashboard', '/api/store/catalog', '/api/portal/downloads'], 'other tabs are prefetched once');
+  assert.equal(browser.nav.hidden, false);
+  const [, downloads, shop] = browser.nav.links;
+  // Modified clicks keep the browser's own behaviour (new tab, new window).
+  let prevented = false;
+  await browser.nav.dispatch('click', { target: shop, button: 0, ctrlKey: true, preventDefault() { prevented = true; } });
+  assert.equal(prevented, false);
+  assert.deepEqual(browser.pushed, []);
+  // A plain click shows the shop from memory while the revalidation is still open.
+  gate = new Promise(resolve => { open = resolve; });
+  void browser.nav.dispatch('click', { target: shop, button: 0, preventDefault() { prevented = true; } });
+  assert.equal(prevented, true);
+  assert.deepEqual(browser.pushed, ['/portal/shop/']);
+  assert.equal(shop.attributes['aria-current'], 'page');
+  assert.match(browser.content.innerHTML, /SKAGER GPS module/);
+  await settle();
+  assert.deepEqual(browser.calls.slice(4).map(call => call.path), ['/api/portal/dashboard', '/api/store/catalog']);
+  // Back to downloads through history, also from memory; the newer answer then re-renders it.
+  browser.location.pathname = '/portal/downloads/';
+  browser.windowHandlers.get('popstate')!();
+  assert.equal(downloads.attributes['aria-current'], 'page');
+  assert.equal(shop.attributes['aria-current'], undefined);
+  assert.match(browser.content.innerHTML, /portal-download/);
+  dashboard = { ...browserAccount, betaAccess: 'inactive' };
+  gate = null; open();
+  await settle(); await settle();
+  assert.doesNotMatch(browser.content.innerHTML, /portal-download/);
+  assert.match(browser.content.innerHTML, /Downloads unlock with an active SKAGER purchase/);
+  const source = await readFile(new URL('./static/portal.js', import.meta.url), 'utf8');
+  assert.doesNotMatch(source, /localStorage|sessionStorage|indexedDB/);
+});
+
+test('after logout portal tabs are ordinary links and nothing private is rendered again', async () => {
+  const browser = await portalBrowser('/portal/', async path => browserJSON(
+    path === '/api/auth/session' ? browserSession : path === '/api/auth/logout' ? { ok: true } : path === '/api/store/catalog' ? { products: [] } : browserAccount));
+  await new Promise(resolve => setImmediate(resolve));
+  await browser.logout.dispatch('click');
+  assert.deepEqual(browser.navigations, ['/auth/login/']);
+  let prevented = false;
+  await browser.nav.dispatch('click', { target: browser.nav.links[4], button: 0, preventDefault() { prevented = true; } });
+  browser.windowHandlers.get('popstate')!();
+  assert.equal(prevented, false);
+  assert.deepEqual(browser.pushed, []);
+  assert.equal(browser.content.innerHTML, '');
 });
 
 test('anonymous checkout return goes to fixed login without querying private orders', async () => {

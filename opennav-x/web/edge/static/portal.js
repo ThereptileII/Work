@@ -11,6 +11,13 @@ const date = value => {
   return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" });
 };
 export const PAGES = { dashboard: "/portal/", downloads: "/portal/downloads/", shop: "/portal/shop/", cloud: "/portal/cloud/", orders: "/portal/orders/", account: "/portal/account/" };
+/** Placeholder cards shown while a tab's data is on its way (same markup as portal.html). */
+export const SKELETON = '<div class="skeleton-grid" aria-hidden="true"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card wide"></div></div>';
+/** Portal page for a path; /portal/boats/ is kept as an alias for the account page. */
+export function pageForPath(pathname) {
+  const path = pathname.replace(/\/?$/, "/");
+  return path === "/portal/boats/" ? "boats" : Object.keys(PAGES).find(key => PAGES[key] === path) || "dashboard";
+}
 const STATUS = { pending: ["Awaiting payment", "wait"], paid: ["Paid", "ok"], refund_requested: ["Refund in progress", "wait"], refunded: ["Refunded", "off"], expired: ["Not completed", "off"] };
 const SUB_STATUS = { active: ["Active", "ok"], trialing: ["Active", "ok"], past_due: ["Payment due", "wait"], canceled: ["Ended", "off"], unpaid: ["Unpaid", "bad"], incomplete: ["Starting", "wait"], incomplete_expired: ["Not started", "off"], paused: ["Paused", "off"] };
 const badge = ([label, kind]) => `<span class="badge ${kind}">${esc(label)}</span>`;
@@ -216,17 +223,22 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
     content.innerHTML = "";
     content.setAttribute("aria-busy", "false");
     $("logout").hidden = true;
+    if ($("portal-nav")) $("portal-nav").hidden = true;
     tell(sessionMessage);
     location.assign("/auth/login/");
   }
-  const params = new URLSearchParams(location.search);
-  const path = location.pathname.replace(/\/?$/, "/");
-  // /portal/boats/ is kept as an alias for the account page.
-  const page = path === "/portal/boats/" ? "boats" : Object.keys(PAGES).find(key => PAGES[key] === path) || "dashboard";
-  document.querySelector("h1").textContent = TITLES[page];
-  for (const link of $("portal-nav")?.querySelectorAll("a") || []) {
-    if (link.dataset.page === (page === "boats" ? "account" : page)) link.setAttribute("aria-current", "page");
+  let page = pageForPath(location.pathname);
+  // Portal data lives in this page's memory only (never in browser storage), so
+  // switching tabs renders at once and refreshes in the background.
+  const cache = {};
+  function mark() {
+    document.querySelector("h1").textContent = TITLES[page];
+    for (const link of $("portal-nav")?.querySelectorAll("a") || []) {
+      if (link.dataset.page === (page === "boats" ? "account" : page)) link.setAttribute("aria-current", "page");
+      else link.removeAttribute("aria-current");
+    }
   }
+  mark();
   async function api(url, body) {
     checkSession();
     const response = await fetch(url, { credentials: "same-origin", cache: "no-store", ...(body === undefined ? {} : { method: "POST", headers: { "Content-Type": "application/json", "X-CSRF-Token": csrfToken }, body: JSON.stringify(body) }) });
@@ -319,6 +331,67 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
       });
     }
   }
+  const shopPage = p => p === "shop" || p === "cloud";
+  async function downloadsCatalog() {
+    try { return validateDownloads(await api("/api/portal/downloads")); }
+    catch (error) {
+      if (error.status === 401) throw error;
+      return { available: false, reason: error.status === 404 ? downloadUnavailable
+        : error.status === 403 ? "Your SKAGER access could not be confirmed. Refresh this page before downloading."
+        : "Release information is temporarily unavailable. Please try again later." };
+    }
+  }
+  function extraFor(p) {
+    if (p === "downloads") return cache.dashboard.betaAccess === "active" ? cache.downloads : { available: false, reason: "Downloads unlock with an active SKAGER purchase." };
+    return shopPage(p) ? cache.catalog : null;
+  }
+  const cached = p => cache.dashboard !== undefined && extraFor(p) !== undefined;
+  // What the visible tab was last rendered from, so a refresh re-renders only on change.
+  let rendered = null;
+  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page)]);
+  /** Fetch what page p shows into the cache. */
+  async function refresh(p) {
+    const [dashboard, catalog] = await Promise.all([api("/api/portal/dashboard"), shopPage(p) ? api("/api/store/catalog") : cache.catalog]);
+    const downloads = p === "downloads" && dashboard.betaAccess === "active" ? await downloadsCatalog() : cache.downloads;
+    // A second request can end the session after api resolves but before
+    // this caller resumes. Guard each private effect at its await boundary.
+    checkSession();
+    Object.assign(cache, { dashboard, catalog, downloads });
+  }
+  function render() {
+    rendered = shownFrom();
+    content.innerHTML = renderDashboard(cache.dashboard, page === "boats" ? "account" : page, extraFor(page));
+    content.setAttribute("aria-busy", "false");
+    $("logout").hidden = false;
+    if ($("portal-nav")) $("portal-nav").hidden = false;
+    const params = new URLSearchParams(location.search);
+    tell(page === "orders" && params.has("paid") ? "Thank you. New orders appear here as soon as Stripe confirms the payment."
+      : page === "cloud" && params.has("activated") ? "Thank you. SKAGER Cloud switches on as soon as Stripe confirms the payment." : "", "ok");
+    bind(cache.dashboard, extraFor(page));
+  }
+  /** Show page p from memory when possible, then revalidate and re-render only on change. */
+  async function show(p) {
+    page = p;
+    mark();
+    if (cached(p)) render();
+    else { rendered = null; content.innerHTML = SKELETON; content.setAttribute("aria-busy", "true"); tell(""); }
+    try {
+      await refresh(p);
+      if (page !== p) return false;
+      if (shownFrom() !== rendered) render();
+      return true;
+    } catch (error) {
+      if (page === p) { if (rendered === null) content.innerHTML = ""; content.setAttribute("aria-busy", "false"); tell(error.message, "error"); }
+      return false;
+    }
+  }
+  /** Load the other tabs' data once in the background so the first visit is instant too. */
+  function prefetch() {
+    const jobs = [];
+    if (cache.catalog === undefined) jobs.push(api("/api/store/catalog").then(value => { cache.catalog ??= value; }));
+    if (cache.downloads === undefined && cache.dashboard?.betaAccess === "active") jobs.push(downloadsCatalog().then(value => { cache.downloads ??= value; }));
+    Promise.all(jobs).catch(() => {});
+  }
   async function load() {
     try {
       const session = await api("/api/auth/session");
@@ -329,6 +402,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
       if (session.account.admin === true && $("admin-link")) $("admin-link").hidden = false;
       if (session.account.passwordSet === false) {
         if (page !== "account") { location.assign("/portal/account/?setup=1"); return false; }
+        if ($("portal-nav")) $("portal-nav").hidden = true;
         content.innerHTML = renderAccount({}, true);
         content.setAttribute("aria-busy", "false");
         $("logout").hidden = false;
@@ -336,31 +410,21 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
         bindPassword(true);
         return true;
       }
-      const data = await api("/api/portal/dashboard");
-      let extra = null;
-      if (page === "downloads" && data.betaAccess === "active") {
-        try { extra = validateDownloads(await api("/api/portal/downloads")); }
-        catch (error) {
-          if (error.status === 401) throw error;
-          extra = { available: false, reason: error.status === 404 ? downloadUnavailable
-            : error.status === 403 ? "Your SKAGER access could not be confirmed. Refresh this page before downloading."
-            : "Release information is temporarily unavailable. Please try again later." };
-        }
-      } else if (page === "downloads") extra = { available: false, reason: "Downloads unlock with an active SKAGER purchase." };
-      if (page === "shop" || page === "cloud") extra = await api("/api/store/catalog");
-      // A second request can end the session after api resolves but before
-      // this caller resumes. Guard each private effect at its await boundary.
-      checkSession();
-      content.innerHTML = renderDashboard(data, page === "boats" ? "account" : page, extra);
-      content.setAttribute("aria-busy", "false");
-      $("logout").hidden = false;
-      if ($("portal-nav")) $("portal-nav").hidden = false;
-      tell(page === "orders" && params.has("paid") ? "Thank you. New orders appear here as soon as Stripe confirms the payment."
-        : page === "cloud" && params.has("activated") ? "Thank you. SKAGER Cloud switches on as soon as Stripe confirms the payment." : "", "ok");
-      bind(data, extra);
-      return true;
-    } catch (error) { content.setAttribute("aria-busy", "false"); tell(error.message, "error"); return false; }
+    } catch (error) { content.innerHTML = ""; content.setAttribute("aria-busy", "false"); tell(error.message, "error"); return false; }
+    const shown = await show(page);
+    if (shown) prefetch();
+    return shown;
   }
+  $("portal-nav")?.addEventListener("click", event => {
+    const link = event.target.closest("a[data-page]");
+    if (!link || cache.dashboard === undefined || sessionEnded || event.button !== 0
+      || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+    event.preventDefault();
+    if (link.dataset.page === page) return;
+    history.pushState(null, "", link.getAttribute("href"));
+    show(link.dataset.page);
+  });
+  addEventListener("popstate", () => { if (cache.dashboard !== undefined && !sessionEnded) show(pageForPath(location.pathname)); });
   $("logout").addEventListener("click", async event => {
     event.target.disabled = true;
     try { await api("/api/auth/logout", {}); endSession(); }

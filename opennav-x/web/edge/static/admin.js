@@ -4,8 +4,10 @@ const $ = id => document.getElementById(id);
 const content = $("admin-content"), message = $("admin-message");
 const say = (text, kind = "") => { message.textContent = text; message.className = `message ${kind}`.trim(); };
 const PAGES = { products: "/admin/", orders: "/admin/orders/", customers: "/admin/customers/", settings: "/admin/settings/" };
-const page = Object.keys(PAGES).find(key => PAGES[key] === location.pathname.replace(/\/?$/, "/")) || "products";
-let csrf = "", data = null;
+const pageFor = pathname => Object.keys(PAGES).find(key => PAGES[key] === pathname.replace(/\/?$/, "/")) || "products";
+let page = pageFor(location.pathname);
+// The overview lives in this page's memory only, so switching tabs renders at once.
+let csrf = "", data = null, rendered = null;
 
 export function productForm(product = {}) {
   const locked = product.kind === "access";
@@ -67,10 +69,31 @@ async function request(url, payload) {
   if (!response.ok) throw new Error(body.error || "That did not work.");
   return body;
 }
-async function load() {
-  data = await request("/api/admin/overview");
+function render() {
+  rendered = JSON.stringify([page, data]);
   content.innerHTML = { products: renderProducts, orders: renderOrders, customers: renderCustomers, settings: renderSettings }[page]();
   bind();
+}
+async function load() {
+  data = await request("/api/admin/overview");
+  render();
+}
+function mark() {
+  for (const link of document.querySelectorAll("#admin-nav a")) {
+    if (link.dataset.page === page) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
+  }
+  $("admin-title").textContent = { products: "Products", orders: "Orders", customers: "Customers", settings: "Shipping" }[page];
+}
+/** Show tab p from memory, then refresh; re-render only when the data changed, so open forms stay open. */
+async function show(p) {
+  page = p; mark(); say("");
+  render();
+  try {
+    const fresh = await request("/api/admin/overview");
+    if (page !== p) return;
+    data = fresh;
+    if (JSON.stringify([page, data]) !== rendered) render();
+  } catch (error) { if (page === p) say(error.message, "error"); }
 }
 const readFile = file => new Promise((resolve, reject) => {
   const reader = new FileReader();
@@ -141,12 +164,20 @@ async function main() {
   try {
     const session = await request("/api/auth/session");
     if (!session.account) { location.assign("/auth/login/"); return; }
-    if (!session.account.admin) { say("This area is for SKAGER administrators.", "error"); return; }
+    if (!session.account.admin) { content.innerHTML = ""; say("This area is for SKAGER administrators.", "error"); return; }
     csrf = session.csrfToken;
     $("admin-nav").hidden = false;
-    for (const link of document.querySelectorAll("#admin-nav a")) if (link.dataset.page === page) link.setAttribute("aria-current", "page");
-    $("admin-title").textContent = { products: "Products", orders: "Orders", customers: "Customers", settings: "Shipping" }[page];
+    mark();
     await load(); say("");
-  } catch (error) { say(error.message, "error"); }
+    $("admin-nav").addEventListener("click", event => {
+      const link = event.target.closest("a[data-page]");
+      if (!link || data === null || event.button !== 0 || event.metaKey || event.ctrlKey || event.shiftKey || event.altKey) return;
+      event.preventDefault();
+      if (link.dataset.page === page) return;
+      history.pushState(null, "", link.getAttribute("href"));
+      show(link.dataset.page);
+    });
+    addEventListener("popstate", () => { if (data !== null) show(pageFor(location.pathname)); });
+  } catch (error) { if (data === null) content.innerHTML = ""; say(error.message, "error"); }
 }
 if (typeof document !== "undefined" && document.getElementById("admin-content")) main();
