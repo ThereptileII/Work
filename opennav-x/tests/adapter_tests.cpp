@@ -74,6 +74,26 @@ void Manual() {
             pilot.Log().back().state == CommandState::Confirmed,
         "Command log");
 }
+void TrackTurnConfirmation() {
+  SimulatedAutopilot simulator(epoch);
+  ManualAutopilot pilot(simulator);
+  pilot.Enable(true, epoch);
+  pilot.Request(PilotAction::Auto, 0, epoch);
+  pilot.Tick(epoch + 500ms);
+  pilot.Request(PilotAction::Track, 0, epoch + 600ms);
+  pilot.Tick(epoch + 1100ms);
+  Check(pilot.GetState(epoch + 1100ms).command.state == CommandState::Confirmed,
+        "Measured AUTO to TRACK transition can confirm mode engagement");
+  Check(pilot.Request(PilotAction::Track, 0, epoch + 1200ms).state == CommandState::Pending,
+        "A waypoint TRACK press requires another explicit operator request");
+  pilot.Tick(epoch + 1700ms);
+  Check(pilot.GetState(epoch + 1700ms).feedback.mode == PilotMode::Track &&
+            pilot.GetState(epoch + 1700ms).command.state == CommandState::Pending,
+        "Unchanged TRACK mode is not waypoint-turn acknowledgement");
+  pilot.Tick(epoch + 4200ms);
+  Check(pilot.GetState(epoch + 4200ms).command.state == CommandState::TimedOut,
+        "Unobservable turn acceptance stays unknown without automatic retry");
+}
 void Failure() {
   SimulatedAutopilot simulator(epoch);
   ManualAutopilot pilot(simulator);
@@ -273,9 +293,10 @@ void Radar() {
 int main(int argc, char **argv) {
   try {
     std::string group = argc > 1 ? argv[1] : "";
-    if (group == "manual")
+    if (group == "manual") {
       Manual();
-    else if (group == "failure")
+      TrackTurnConfirmation();
+    } else if (group == "failure")
       Failure();
     else if (group == "evidence")
       Evidence();

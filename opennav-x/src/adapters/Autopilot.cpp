@@ -110,6 +110,7 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
            "Superseded by manual STANDBY; earlier outcome is unknown", now);
   command_ = {{next_id_, action, delta, now}, CommandState::None, {}, now};
   confirmation_revoked_ = false;
+  track_turn_request_ = action == PilotAction::Track && feedback.mode == PilotMode::Track;
   expected_heading_.reset();
   if (next_id_ == std::numeric_limits<std::uint64_t>::max()) {
     Record(CommandState::Disabled,
@@ -179,7 +180,9 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
     Record(CommandState::Rejected, "Adapter rejected transmission", now);
   else
     Record(CommandState::Pending,
-           "Accepted by transport; awaiting new matching pilot feedback", now);
+           track_turn_request_
+               ? "TRACK requested. Check the physical turn prompt; unchanged TRACK mode cannot confirm a waypoint turn"
+               : "Accepted by transport; awaiting new matching pilot feedback", now);
   return command_;
 }
 void ManualAutopilot::Tick(vessel::Time now) {
@@ -202,7 +205,9 @@ void ManualAutopilot::Tick(vessel::Time now) {
   if (now < command_.request.issued_at ||
       now - command_.request.issued_at >= std::chrono::seconds(3)) {
     Record(CommandState::TimedOut,
-           "No timely acknowledgement; outcome unknown, no automatic retry",
+           track_turn_request_
+               ? "Waypoint turn acceptance is not exposed by pilot mode feedback; check the physical helm. No automatic retry"
+               : "No timely acknowledgement; outcome unknown, no automatic retry",
            now);
     return;
   }
@@ -215,7 +220,10 @@ void ManualAutopilot::Tick(vessel::Time now) {
   }
   if (confirmation_revoked_)
     return;
-  bool matches = feedback.command_confirmation_allowed && Fresh(feedback, now) &&
+  // Repeating TRACK can acknowledge a physical waypoint-turn prompt. A pilot
+  // already reporting TRACK continues to do so even before that prompt is
+  // accepted; this status alone cannot prove that a turn was acknowledged.
+  bool matches = !track_turn_request_ && feedback.command_confirmation_allowed && Fresh(feedback, now) &&
                  feedback.sequence > feedback_sequence_ &&
                  feedback.observed_at > command_.request.issued_at &&
                  feedback.observed_at > feedback.command_written_at &&
