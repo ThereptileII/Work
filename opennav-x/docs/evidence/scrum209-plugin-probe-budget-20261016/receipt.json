@@ -1,0 +1,123 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-209",
+  "evidenceDate": "2026-10-16",
+  "candidateSource": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "candidateProducer": {
+    "repository": "ThereptileII/Work",
+    "runId": 38765418126,
+    "runAttempt": 1
+  },
+  "fixCommit": "0648d4ed43bdbc7f8f002fcf434d9a2b0dcc6bf4",
+  "integratedFixCommit": "896ad5202c574fb47ff2f1dfeff33236febf2408",
+  "sourceSha256": {
+    "opennav-x/src/integration/Win32PluginTlsImports.h": "51a5aafc7b2676303ebe3970c1eafcad06f888ca10da913c670477c9707152ec",
+    "opennav-x/tests/win32_pe_imports_test.cpp": "a22e0351444945833a22193b45fe5daba79869cbb3c5a5e48632fc4977208120"
+  },
+  "originalFailure": {
+    "message": "Plugin import closure node budget exceeded",
+    "affectedBuiltinCount": 4,
+    "boundedLogBytes": 262144,
+    "boundedLogSha256": "c5359c74e204d11ded13e98cf15a76ae8ab71f617abf211b74804c539d6f0926"
+  },
+  "limits": {
+    "candidateProbesIncludingMissing": 1024,
+    "admittedDependencyNodes": 256,
+    "aggregateAcceptedBytesIncludingRoot": 268435456,
+    "nativeIndividualFileReadBytes": 134217728,
+    "rootCountPreflightUnchanged": true,
+    "nodeLimitPrecision": "Dependency nodes admitted to the queue; callback may read/retain the next candidate before overflow is known. Root is additional to the dependency-node count and included in bytes."
+  },
+  "inputAuthority": {
+    "recoveryArchiveSha256": "3b53efc875b99e4f10a8c0ded5ca7f08d8572e11b4bfe0c6daa9929891704947",
+    "postupdateInventorySha256": "11ece25e46c03c81295c6d93f55cf736657695627c175fa1c6761fe2626ce208",
+    "inertFiles": 90,
+    "allInertFilesHashUnchangedAfter": true,
+    "managedMsvcpSha256": "fa21058e50d0d6860da87d784f573670bf5d3efd65158145954ef96d0cd403cf",
+    "managedVcruntimeSha256": "1b372f064eacb455a0351863706e6326ca31b08e779a70de5de986b5be8069a1",
+    "picoshaOriginalCrlfSha256": "16e1dc447f8968d6c1c1695a61f3c09365bbc2bb52eb000c933851306859cecd",
+    "picoshaDerivedLfSha256": "9df7a5696f37981f75ad1b7854cc833176ae48debf3ee4bfc024fe9dfc8b8624",
+    "picoshaNote": "Initial direct LF-pin comparison refused original source-package CRLF header before compilation; only CRLF-to-LF normalization yielded the existing exact pinned header. Both versions retained; executable PE inputs unchanged."
+  },
+  "graph": {
+    "roots": [
+      "plugin",
+      "host",
+      "managed",
+      "plugin"
+    ],
+    "uniqueRootCount": 3,
+    "identityLimit": "Recorded separate plain directories mapped to synthetic stable identities; original native directory IDs were not recorded.",
+    "original": {
+      "probes": 256,
+      "foundDependencyFiles": 58,
+      "missingProbes": 198,
+      "inspectedIncludingRoot": 38,
+      "outcome": "REFUSED_ALL_FOUR",
+      "firstRefusedProbe": {
+        "ordinal": 257,
+        "root": "host",
+        "basename": "api-ms-win-core-memory-l1-1-0.dll",
+        "declaredBy": "ucrtbase.dll"
+      }
+    },
+    "corrected": {
+      "probes": 270,
+      "uniqueBasenames": 90,
+      "foundDependencyFiles": 62,
+      "missingProbes": 208,
+      "inspectedIncludingRoot": 63,
+      "outcome": "ADMITTED_ALL_FOUR",
+      "aggregateBytesIncludingRoot": {
+        "chartdldr_pi.dll": 40724816,
+        "dashboard_pi.dll": 40971600,
+        "grib_pi.dll": 41448272,
+        "wmm_pi.dll": 44680016
+      }
+    },
+    "structuralControls": {
+      "twoRoots": {
+        "probes": 178,
+        "foundDependencyFiles": 59,
+        "missingProbes": 119,
+        "outcome": "COMPLETE"
+      },
+      "thirdEmptyExistingRoot": {
+        "fullProbes": 267,
+        "foundDependencyFiles": 59,
+        "missingProbes": 208,
+        "originalPolicyOutcome": "REFUSED_AT_PROBE_257"
+      }
+    }
+  },
+  "portableChecks": {
+    "result": "PASS",
+    "checks": 9930,
+    "command": "g++ -std=c++17 -Wall -Wextra -Werror -pedantic -I opennav-x/src opennav-x/tests/win32_pe_imports_test.cpp -o <output>/win32_pe_imports_test; <output>/win32_pe_imports_test",
+    "stdout": "PASS: 9930 deterministic Win32 import-reader checks",
+    "executableSha256": "7fade6d535bd503b1f1fbd665c86f6458f38b2fd25a47b07aba5d52e8d592657",
+    "diffCheck": "PASS",
+    "independentReadOnlyReviews": 2,
+    "rerunForDocumentation": false
+  },
+  "privateEvidenceSha256": {
+    "summary.json": "fa6a10c276d66ce48086880ff674dfb6f6cfdf2ffb18ea52e155a64bfb560358",
+    "analyze.py": "b938c969f675ca9844c5ac67e13081939c8a22ee39fb47c3ea1ec2a19c4313ac",
+    "graph-analysis.json": "b566cf491ac88661f91b4dfa326ca93a6b6214b589a738265da5934ec625ce8c",
+    "closure_probe.cpp": "3189b3b3ec937d5fc0820c9f19721ad6807e23633d5c9c0b1cdd273729a71084",
+    "original-policy.log": "5178abd39aa298aed2332b7ab8c9333e82862afdec7e61a4f0d4c41f02666c23",
+    "corrected-policy.log": "8be8c73fb09e5d5ae70167778c92a1c8bfd0c58b2c7b7d4e167d3f7c93064069",
+    "inert-inputs.json": "e6a174c11e6e877cf9f4039c1660ba654cf26e39216591e679d3eae777711b78",
+    "closure-probe-original": "29702eab613b494737db6d1f0cbf798d3e3814cb73cecf571b8c5f44398a1a65",
+    "closure-probe-corrected": "d499ff5cb4e4c63c66ceeb9013ac70faf87b8b75dc88df677cea14ff5435e881"
+  },
+  "acceptance": {
+    "peModulesLoadedOrExecuted": false,
+    "applicationExecutedByThisProof": false,
+    "nativeWindows": "PENDING",
+    "rebuiltCandidate": "PENDING",
+    "installedBoatCorrection": "PENDING",
+    "completeWindowsLoaderClosure": false,
+    "originalFailuresReclassified": false
+  }
+}

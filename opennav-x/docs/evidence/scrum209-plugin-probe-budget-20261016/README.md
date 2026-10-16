@@ -1,0 +1,70 @@
+# SCRUM-209: plugin import probe budget
+
+Frozen candidate `854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc` refused all four
+rebuilt builtin plugins with `Plugin import closure node budget exceeded` during
+ordinary installed startup. The counter charged every unique directory/basename
+candidate, including missing files. Repeated imports and directory aliases were
+already deduplicated; this was not an unbounded cycle.
+
+Fix `0648d4ed43bdbc7f8f002fcf434d9a2b0dcc6bf4` (integrated as `896ad520`)
+separates **1,024 candidate probes**, including misses, from **256 admitted
+dependency PE nodes** and the unchanged **256 MiB aggregate byte limit**.
+The root-count preflight, inspection of every supplied root, name/path rules,
+normal/delay/forwarder parsing, known-obsolete-byte checks, read failures and
+native file custody remain unchanged.
+
+## Retained-byte measurement
+
+The authenticated recovery archive and two previously retained CRT files,
+whose hashes match the recorded managed-plugin inventory, supplied inert input
+bytes. No DLL was loaded or executed. The compiled C++ graph and SHA-256 byte
+policy reproduced the original refusal and admitted all four graphs after the
+correction. All 90 staged input-file hashes remained unchanged.
+
+The modeled roots are plugin directory, host directory and managed-plugin
+directory, plus the repeated plugin directory supplied by upstream `Libdirs`.
+The recorded separate plain directories use synthetic stable identities here;
+the original application log does not record their native volume/file IDs.
+
+| Policy / topology | Probes | Found dependency files | Missing candidates | Outcome |
+| --- | ---: | ---: | ---: | --- |
+| Original, package-only two roots | 178 | 59 | 119 | Structural walk completes |
+| Original, three roots including managed CRTs | 256 | 58 | 198 | All four refused before probe 257 |
+| Corrected, same three-root bytes | 270 | 62 | 208 | All four graphs admitted |
+
+The completed three-root graph has 90 unique module basenames. The trace places
+probe 257 at the host candidate `api-ms-win-core-memory-l1-1-0.dll`, declared by
+packaged `ucrtbase.dll`. Even an empty third existing directory requires 267
+probes, so removing the managed CRTs would not fix the budget defect.
+
+| Root plugin | Completed aggregate bytes, including root |
+| --- | ---: |
+| `chartdldr_pi.dll` | 40,724,816 |
+| `dashboard_pi.dll` | 40,971,600 |
+| `grib_pi.dll` | 41,448,272 |
+| `wmm_pi.dll` | 44,680,016 |
+
+## Focused checks and limits
+
+`win32_pe_imports_test.cpp` passed **9,930 portable C++ checks**, compiled with
+`g++ -std=c++17 -Wall -Wextra -Werror -pedantic`. Coverage includes the
+270-probe/62-file topology; exact 270 versus 269 probe limits; the default
+1,024-probe refusal; exact 256-found admission and 257-found refusal; shared
+byte bounds; duplicate roots/cycles; and normal-import, delay-import and
+byte-policy refusals after probe 256. Two independent read-only reviews found
+no blocker. No tests were repeated to create this documentation.
+
+The 256-node limit bounds admitted/queued dependency PEs, not every transient
+read or held handle. The callback must read a found candidate before the walker
+can detect a node/byte overflow; the native per-file read remains bounded at
+128 MiB. The root PE is additional to the dependency-node count and included in
+the aggregate byte count.
+
+Native Windows custody/topology validation, a rebuilt candidate, and installed
+boat acceptance of the correction remain **pending**. These results do not
+qualify DLL execution, builtin `Init`, the complete Windows loader search or
+the unchanged installed 854 binaries. Original failures remain failures.
+
+[receipt.json](receipt.json) records exact source/input/result hashes. Large
+original logs, graph traces and executable inputs remain private; this directory
+contains no vendor binaries, personal paths, configuration or credentials.
