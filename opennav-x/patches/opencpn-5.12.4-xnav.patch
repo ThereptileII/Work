@@ -122,7 +122,19 @@ index 258ae04bc..98938dfee 100644
    m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                         m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                         m_pIDXCandidate, m_nmea_log);
-@@ -10824,6 +10862,9 @@ void ChartCanvas::StartRoute(void) {
+@@ -10804,6 +10842,11 @@
+ void ChartCanvas::StartRoute(void) {
+   // Do not allow more than one canvas to create a route at one time.
+   if (g_brouteCreating) return;
++#ifdef OPENNAV_X
++  // Every new XNav route uses explicit Finish/Cancel, including native starts.
++  // Set this before a toolbar control or naming dialog can take canvas focus.
++  if (opennav::IsXNav()) m_FinishRouteOnKillFocus = false;
++#endif
+ 
+   if (g_MainToolbar) g_MainToolbar->DisableTooltips();
+ 
+@@ -10824,6 +10867,9 @@ void ChartCanvas::StartRoute(void) {
  void ChartCanvas::FinishRoute(void) {
 +#ifdef OPENNAV_X
 +  if (!opennav::PrepareRouteFinish(*this)) return;

@@ -365,6 +365,17 @@ MakeNavigationActions(MyFrame &frame,
     cc->FinishRoute();
     if (!cc->m_routeState) cc->m_FinishRouteOnKillFocus = true;
   };
+  a.can_finish_route = [&frame] {
+    if (!wxIsMainThread()) return false;
+    auto *cc = frame.GetPrimaryCanvas();
+    if (!cc || !OwnsCanvas(frame, *cc) || !cc->m_routeState ||
+        cc->m_bAppendingRoute || !RegisteredDraft(cc->m_pMouseRoute))
+      return false;
+    auto *route = cc->m_pMouseRoute;
+    // Match SaveNewRouteDraft's route checks without changing navigation,
+    // names, persistence or focus. The save operation checks again on dispatch.
+    return route->GetnPoints() >= 2 && !route->IsActive() && !route->m_bIsInLayer;
+  };
   a.finish_route_named = [&frame, result](const std::string &name,
                                           const std::string &description) {
     if (!wxIsMainThread())

@@ -148,6 +148,8 @@ struct NavigationActions {
   std::function<CommandResult()> undo_route_point, cancel_route;
   // Inspect the native draft/undo stack without modifying either.
   std::function<bool()> can_undo_route_point;
+  // Readiness for naming/saving the current new route; never finishes it.
+  std::function<bool()> can_finish_route;
   std::function<CommandResult(const std::string &, const std::string &)>
       finish_route_named;
   std::function<void(Coordinate)> object_info_at;
