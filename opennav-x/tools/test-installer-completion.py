@@ -357,10 +357,12 @@ class InstallerFinishLaunch(unittest.TestCase):
         self.visible=[(self.frame,self.pid,'SKAGER Beta 2 Setup')]
         self.kind='Button';self.style=3;self.enabled=True;self.checked=1
         self.ignore_uncheck=False;self.recheck_during_capture=False
+        self.replace_during_capture=False;self.detached=False
         self.sets=[];self.finish=[]
         def class_name(handle,buffer,length): buffer.value=self.kind
         def message(handle,message,wparam,lparam):
             self.assertEqual(handle,self.child)
+            if self.detached:return 0  # Destroyed HWND must not prove unchecked.
             if message==0x00F0:return self.checked
             self.assertEqual((message,wparam,lparam),(0x00F1,0,0))
             self.sets.append(handle)
@@ -368,16 +370,24 @@ class InstallerFinishLaunch(unittest.TestCase):
             return 0
         def capture(*args,**kwargs):
             if self.recheck_during_capture:self.checked=1
+            if self.replace_during_capture:
+                self.controls=[(102,'Open SKAGER')];self.detached=True;self.checked=1
+        def owner(handle,output):
+            ctypes.cast(output,ctypes.POINTER(ctypes.c_ulong)).contents.value=self.pid
         self.environment=dict(ctypes=ctypes,h=self.frame,p=SimpleNamespace(pid=self.pid),
             EVIDENCE=Path('inert-evidence'),report={'screenshots':[]},
             time=SimpleNamespace(sleep=lambda seconds:None),
             press=lambda identifier:self.finish.append((identifier,self.checked)),
-            ui=SimpleNamespace(user=None,windows=lambda pid:self.visible,
+            ui=SimpleNamespace(user=None,W=SimpleNamespace(DWORD=ctypes.c_ulong),
+                GetWindowThreadProcessId=owner,IsChild=lambda frame,child:child in [h for h,_ in self.controls],
+                windows=lambda pid:self.visible,
                 IsWindowEnabled=lambda handle:self.enabled,children=lambda frame:self.controls,
                 GetClassNameW=class_name,declare=lambda *args:lambda handle,index:self.style,
                 SendMessageW=message,capture=capture))
-        helper=next(n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name=='disable_installer_finish_launch')
-        exec(compile(ast.Module(body=[helper],type_ignores=[]),str(SOURCE),'exec'),self.environment)
+        helpers=[n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name in
+                 ('installer_finish_launch_checkbox','disable_installer_finish_launch')]
+        self.assertEqual(len(helpers),2)
+        exec(compile(ast.Module(body=helpers,type_ignores=[]),str(SOURCE),'exec'),self.environment)
         wizard=next(n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name=='wizard')
         install=next(n for n in wizard.body if isinstance(n,ast.If) and isinstance(n.test,ast.Name) and n.test.id=='install')
         start=next(i for i,n in enumerate(install.body) if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id=='launch_choice')
@@ -428,6 +438,13 @@ class InstallerFinishLaunch(unittest.TestCase):
              "        ui.SendMessageW(child,0x00F1,0,0)\n"
              "press(1)\n",self.environment)
         self.assertEqual(self.sets,[]);self.assertEqual(self.finish,[(1,1)])
+
+    def test_replaced_control_with_zero_reply_from_old_handle_refuses_before_finish(self):
+        self.replace_during_capture=True
+        with self.assertRaisesRegex(AssertionError,'replaced before Finish'):self.run_finish()
+        self.assertEqual(self.sets,[self.child]);self.assertEqual(self.finish,[])
+        self.assertEqual(self.environment['ui'].SendMessageW(self.child,0x00F0,0,0),0)
+        self.assertEqual(self.checked,1)
 
 
 if __name__ == '__main__':
