@@ -29,8 +29,13 @@ configuration; the focused workflow now runs it before any compilation too.
 This packaging-only correction does not change the already-tested policy sources.
 Corrected candidate `9feae59ce0ef1f54107c3c51f920085297ea7bc8` is now selected in
 [38911440527](https://github.com/ThereptileII/Work/actions/runs/38911440527).
-The distribution preflight passes on both Windows and Linux; integrated checks
-are running. This evidence-only status update does not move the frozen candidate.
+The distribution preflight and native contract/commissioning checks pass. The
+Windows updater prerequisite stopped at the unchanged 60-second cap for an inert
+package test; no assertion failure was reported. The identical predecessor suite
+passed in 56.119 seconds, and comparable suites now run 6.5–7.4% slower. A single
+failed-job retry is selected after the current Linux integration completes;
+the original timeout remains recorded. No Windows application package has yet
+been produced by this run. This evidence-only update does not move the frozen candidate.
 Native product and corrected-boat results remain pending. All 30 SDK-bound inputs
 match the two locked producers; fresh
 native environment verification still applies. No design or endurance sweep is selected.

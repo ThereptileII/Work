@@ -85,3 +85,32 @@ failures. This record makes no assertion about a full Staging run's status.
 [receipt.json](receipt.json) records exact source/input/result hashes. Large
 original logs, graph traces and executable inputs remain private; this directory
 contains no vendor binaries, personal paths, configuration or credentials.
+
+## Replacement candidate prerequisite timeout
+
+Candidate `9feae59ce0ef1f54107c3c51f920085297ea7bc8` in
+[run 38911440527, attempt 1](https://github.com/ThereptileII/Work/actions/runs/38911440527)
+passes both platform contract builds and native boat commissioning/recovery.
+Updater job `117008198606` fails before application compilation: the existing
+wrapper kills `test-provisioner-package.py` at its 60-second whole-suite limit.
+Thirteen successful test dots precede the timeout; there is no final summary,
+assertion failure or recorded child stack. Original log SHA-256:
+`6190ad0c7d975f5061444a8539b75bb924f7d658f104458bc28ba052556d03f2`.
+
+The same 14-test suite passed in 56.119 seconds in predecessor job
+`116527478215`, run `38765418126/1`, with the same Windows image
+`20261012.333.1` and Python `3.12.10`. Eleven relevant workflow, test, fixture,
+producer and verifier files have identical Git blobs/modes. Three substantial
+preceding suites now take 6.5–7.4% longer; a 7% increase puts 56.119 seconds at
+60.047 seconds. Static inspection finds 1,078 archive rewrites across the
+source-omission and registration-tamper cases, plus fresh per-test fixtures.
+No real compiler, application or network is invoked by that suite.
+
+This supports a tight whole-suite deadline explanation, without establishing
+a specific host I/O, antivirus or process cause. The coordinator selects at
+most one retry of the failed job and downstream dependencies after the current
+run completes, retaining the candidate, assertions and time limit unchanged.
+A repeated failure requires a focused harness correction, not further retries.
+The original failure remains evidence; neither this analysis nor a prior pass
+qualifies the new product. Private comparison receipt SHA-256:
+`43b46a14cc82a549d24241117a81eca0ae3cf501cf8dd7840d8bf6980b28dcc0`.
