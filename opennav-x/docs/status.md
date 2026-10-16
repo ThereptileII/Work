@@ -1,7 +1,43 @@
-# SKAGER status — 2026-10-15
+# SKAGER status — 2026-10-16
+
+## Replacement candidate — installation passes, authenticated startup blocked
+
+Frozen product `854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc`, version
+`0.4.0-beta2.4`, was built once in
+[38765418126](https://github.com/ThereptileII/Work/actions/runs/38765418126),
+attempt 1. Linux passes both 154-case CTest executions and its chart, lifecycle,
+synthetic-input and fixture-free checks.
+[Original Linux results](evidence/scrum22-linux-854078a5-20261015/README.md).
+Windows producer `116536443214` passes both 146-case CTest executions, native
+AIS/TLS checks and packaging. All five original Windows artifacts and the
+Setup/recovery/source inventories are authenticated.
+[Exact package custody and limitations](evidence/candidate-854078a5-custody-20261016/README.md).
+
+The original Windows qualifier `116562831922` fails later. The corrected
+installer commits its generation and completes the wizard; first updater
+bootstrap then fails while waiting for authenticated startup. The application
+logs thirty seconds of normal processing, but that local recovery checkpoint
+does not prove delivery, receiver acceptance or persistence of the startup
+receipt. The launcher reports a generic supervision failure and keeps its
+error dialog open; the helper subsequently reaches its unchanged 240-second
+limit. The child PowerShell error was not retained, so its exact cause remains
+unestablished. Moving the wait after application closure or raising the timeout
+would not repair this contract.
+
+Helper-only revision `2ff32b3439365b86a67b66a54c7baf95cd4cdb21` adds a bounded
+diagnostic in the existing retained workflow; 19 focused checks pass. Native
+[38878511171](https://github.com/ThereptileII/Work/actions/runs/38878511171)
+uses the original 854 package and original installed supervisor under x86
+Windows PowerShell, retaining redacted child output without modifying installed
+code. It is diagnostic-only and cannot grant qualification even if that direct
+invocation succeeds. The original failed attempt remains failed. No replacement
+application build or boat deployment follows from this diagnostic. Installed
+bootstrap/lifecycle, new-capture PluginHandler qualification, protected B0/B1
+customer acceptance and fresh boat validation remain open; design/endurance
+runs remain off and public access remains closed.
 
 
-## Installer trust correction — native boundary passes, replacement package required
+## Installer trust correction — native boundary and replacement installation pass
 
 Product correction `890ca0ab`, with owned-child lifetime support `b7f0329e`,
 removes the installer/launcher transaction-lock collision. Trust initialization
@@ -21,9 +57,10 @@ missing configuration and nonmodal refusal use the freshly built GUI launcher;
 separate inert children test custody, intervening mutations and timeout cleanup.
 The original artifact, launcher identity and both native receipts authenticate.
 [Exact focused evidence and limitations](evidence/scrum22-installer-trust-20261015/README.md).
-This is not installed-package or boat acceptance. The new launcher and lifecycle
-engine require one replacement candidate with the existing package/lifecycle
-gates. All 30 SDK source inputs remain unchanged, allowing the existing strictly
+The focused check alone is not installed-package or boat acceptance. The new
+launcher and lifecycle engine were then included in replacement candidate 854
+above, whose initial installation passes while later startup remains blocked.
+All 30 SDK source inputs remain unchanged, allowing the existing strictly
 verified two-image dependency selection. Design and endurance runs remain off.
 
 ## Previous Staging candidate — retained failures, not deployable
