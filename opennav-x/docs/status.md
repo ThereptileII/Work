@@ -124,8 +124,15 @@ managed plugin tree and previous rollback generation are preserved. The installe
 mandatory loader/resource self-test passed; no ordinary navigation launch is
 included in this result. Fresh inventory confirms unchanged stock/managed trees
 and only the four expected owned plugin DLL changes in the new generation.
-Independent source/identity review passes; guarded passive commissioning remains
-in progress. [Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
+Independent source/identity review passes. The guarded passive cold launch
+started exact 854 at 11:47:20 UTC. The parent dispatch timed out during
+prelaunch recovery verification; the same child later returned an authenticated
+pass, without a second launch. Native logs confirm Intel UHD / OpenGL 4.6
+initialization. Read-only window inspection confirms the existing Swedish
+OpenCPN welcome dialog; no new-version diagnostics or chart-content acceptance
+is claimed yet. The helper's stale exact `0.4.0-beta2` version restriction is being
+corrected for the owned `0.4.0-beta2.4` build before continuing.
+[Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
 
 SCRUM-211's certificate-verification software criteria were independently
 reviewed and accepted on 16 October; Jira is **Done**. SCRUM-212's explicit
@@ -142,8 +149,15 @@ passes 35 grouped lifecycle checks and all four updater checks, then stops in a
 qualification helper: its extracted SelfTest definition calls the omitted
 `Assert-LifecycleMutation` dependency. Repair, both historical migrations and
 retained obsolete-TLS refusals pass; the final current-product uninstall/recovery
-suffix is not reached. A bounded helper correction is in progress with the real
-production guard intact. No product rebuild or Production promotion occurred.
+suffix is not reached. Helper `d742a20c` includes the real production
+mutation/protected-enrollment/armed-update guard dependencies and a distinct
+retained `installer-lifecycle-tail` scope. Independent review confirms the
+original suffix assertions are preserved. Native
+[38896539839](https://github.com/ThereptileII/Work/actions/runs/38896539839)
+is running the import prerequisite and unfinished suffix over fresh real
+installed state using original 854 bytes. Its result remains pending; it cannot
+relabel the original failed full run or claim the historical prefix was replayed.
+No product rebuild or Production promotion occurred.
 [Original failed run, passing prefix and exact cause](evidence/scrum22-full-lifecycle-854-20261016/README.md).
 
 
