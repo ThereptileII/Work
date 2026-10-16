@@ -36,12 +36,22 @@ behavior has not been established. Corrected helper
 `293eae1213e44adc6eed5728ee6f62a438760b94` validates a bounded host query before
 restoring inputs; all 21 focused checks pass. Its single corrected native run,
 [38880343949](https://github.com/ThereptileII/Work/actions/runs/38880343949),
-passes that early I386-host preflight and is running the original installed
-supervisor under x86 Windows PowerShell. It retains redacted child output without
-modifying installed code. The scope is diagnostic-only and cannot grant
-qualification even if direct invocation succeeds. Both original failed attempts
-remain failed. No replacement
-application build or boat deployment follows from this diagnostic. Installed
+passes that early I386-host preflight, then the original supervisor exits 1:
+opening `transaction.lock` fails because another process holds it. No timeout
+or receipt is recorded; all observed installed inputs are unchanged.
+
+Both the original qualifier and corrected diagnostic retain a Finish screenshot
+with **Open SKAGER checked**. The helper tries to clear only the obsolete caption
+`Launch SKAGER Beta 2` and does not assert discovery or state. The frozen installer
+wires this checked option to the installed launcher, allowing an additional
+untracked start before the helper's explicit launches. The checkbox mismatch is
+confirmed; the exact lock holder and attribution of the original healthy
+checkpoint to a launch are not established.
+[Original diagnostics, checked-control evidence and limits](evidence/scrum22-wizard-launch-20261016/README.md).
+The helper correction must verify the current owned checkbox is unchecked before
+Finish, then retest the unchanged package. Diagnostic results cannot grant
+qualification. All original failed attempts remain failed. No replacement
+application build or boat deployment follows from this investigation. Installed
 bootstrap/lifecycle, new-capture PluginHandler qualification, protected B0/B1
 customer acceptance and fresh boat validation remain open; design/endurance
 runs remain off and public access remains closed.
