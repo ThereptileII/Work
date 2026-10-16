@@ -48,13 +48,23 @@ untracked start before the helper's explicit launches. The checkbox mismatch is
 confirmed; the exact lock holder and attribution of the original healthy
 checkpoint to a launch are not established.
 [Original diagnostics, checked-control evidence and limits](evidence/scrum22-wizard-launch-20261016/README.md).
-The helper correction must verify the current owned checkbox is unchecked before
-Finish, then retest the unchanged package. Diagnostic results cannot grant
-qualification. All original failed attempts remain failed. No replacement
-application build or boat deployment follows from this investigation. Installed
-bootstrap/lifecycle, new-capture PluginHandler qualification, protected B0/B1
-customer acceptance and fresh boat validation remain open; design/endurance
-runs remain off and public access remains closed.
+Helper `3fe8866fa191a72eb47290368311cbed11463664` now requires the unique
+owned native launch checkbox, clears it, and revalidates the same handle and
+unchecked state immediately before Finish. All 34 focused checks and independent
+review pass. The actual retained installer/charts run
+[38882281891](https://github.com/ThereptileII/Work/actions/runs/38882281891)
+uses the original package and is pending. Diagnostic results cannot grant
+qualification. All original failed attempts remain failed; no application
+rebuild or boat deployment follows from this investigation.
+
+The exact new-capture PluginHandler gate
+[38881652663](https://github.com/ThereptileII/Work/actions/runs/38881652663)
+passes all 13 cases and rejects the ignored-failure mutant. Trust removal and
+cleanup pass with zero forbidden HTTP requests. Its authenticated capture and
+same-image host do not qualify other runtime combinations: the final package's
+three replaced MSVC DLLs remain a separate boundary. Installed bootstrap/lifecycle,
+protected B0/B1 customer acceptance and fresh boat validation remain open;
+design/endurance runs remain off and public access remains closed.
 
 
 ## Installer trust correction — native boundary and replacement installation pass
