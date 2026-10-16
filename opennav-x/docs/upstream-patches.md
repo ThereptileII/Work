@@ -1,5 +1,22 @@
 # Direct OpenCPN Upstream Modifications
 
+## Explicit route arrival and passage overlay — SCRUM-373
+
+The source-only 2026-10-16 extension adds a narrow optional policy in the existing
+`opencpn-5.12.4-xnav.patch` at normal `RoutemanGui::UpdateProgress` arrival
+processing. A configured route uses upstream's already-computed radial waypoint
+range and its normal advancement; absent settings retain the original
+perpendicular-line/moving-away rules. Shared waypoint data and negative/MOB
+sentinels are preserved. It does not add an independent navigation calculation.
+
+The existing chart presentation patch supplies pre-route software/GL hooks for
+the XNav active passage overlay. Geographic width is distinct from the existing
+screen-pixel route understroke and chart hazard-query settings. No chart object,
+depth classification or route geometry is altered. Preferences live in the
+existing profile, not new DB/GPX fields. See
+[route passage contract](route-passage-settings.md). All build, runtime and
+native/boat verification is deliberately pending under the source-only request.
+
 ## Actual light raster observation — SCRUM-308
 
 The existing core/private presentation patches now record bounded, copied

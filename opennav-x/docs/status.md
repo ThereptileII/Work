@@ -1,5 +1,16 @@
 # SKAGER status — 2026-10-16
 
+## Route passage settings — local source changes only
+
+SCRUM-373 adds an optional per-route radial arrival distance and a separate
+geographic passage width. Active-passage display defaults on, with a chart-layer
+toggle. Existing routes retain stock waypoint rules until explicitly configured;
+shared waypoint radii are not rewritten. The configured strict policy is shared
+by the integrated XNav/Legacy/Safe modes. See
+[route passage settings and unperformed qualification](route-passage-settings.md).
+The user's no-build/no-test instruction remains in effect. These local source
+changes do not replace or qualify the installed candidate.
+
 ## Track/Wind follow-up — local source changes only
 
 The user requested native Track/Wind controls and controller Wind corrections
