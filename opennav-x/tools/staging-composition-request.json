@@ -2,136 +2,136 @@
   "schema": 1,
   "repository": "ThereptileII/Work",
   "producer": {
-    "commit": "c0d8d85fb602e86d40e2f3f1be32307919702408",
-    "runId": "37330218586",
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "runId": "38765418126",
     "runAttempt": "1"
   },
   "build": {
-    "artifactId": "11357053892",
-    "artifactName": "staging-build-c0d8d85fb602e86d40e2f3f1be32307919702408-run37330218586-attempt1",
-    "artifactDigest": "sha256:2dd4f62ef8c03dad4bf0aac54813f773b919aeed07008489c377cafd7b890a6b",
-    "archiveSha256": "b3a7492d6998291428a635b0d615c2de1da62627ed440bfc46c4b2fb5b5fcfb9"
+    "artifactId": "11992474900",
+    "artifactName": "staging-build-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-run38765418126-attempt1",
+    "artifactDigest": "sha256:16851d4b876caa1dde98de503d478bd1041f91183afb10379fe79f989f7be3ba",
+    "archiveSha256": "301c9490606ae8aef201f064de0d424dc9c9dbf6540ef63478c50115be0d1f7e"
   },
   "original": {
-    "jobId": "111861197301",
-    "artifactId": "11358637734",
-    "artifactName": "windows-qualification-c0d8d85fb602e86d40e2f3f1be32307919702408-attempt1",
-    "artifactDigest": "sha256:34477111a5671b850cca213603a2865e0647befadf59804e2c0fc64ba1f1d207",
+    "jobId": "116562831922",
+    "artifactId": "11994723756",
+    "artifactName": "windows-qualification-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-attempt1",
+    "artifactDigest": "sha256:9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
     "prefixReports": [
       {
         "path": "boat-feedback-windows/result.json",
-        "sha256": "ad6a62ab5fe432af24ed17a2d7510001c5439cc81bf253704b5a127054fa846e"
+        "sha256": "4de5646a3d103ecdcf3bd31841b3e56a5f08e6b6408b6a2e925de21e1fda3109"
       },
       {
         "path": "boat-input-results.json",
-        "sha256": "fc15f2db372eca4b6d76c862ef9a347efe385ee0fc74be09e926e3bb0cba5ea0"
+        "sha256": "abd931fcb596e433d2d289aaca2767db25e30030c4aa86118fe59c72bb478d23"
       },
       {
         "path": "installer-loader-selftest.json",
-        "sha256": "d1f75e2aa26489f9370fa3a2613bb9c0b6ba2042f1d18c115006de4b68faee1c"
+        "sha256": "8de3773b9637ea2bd595c01f5725c9e1f2c844b22a26116047ea84cfdd3d8b78"
       },
       {
         "path": "installer-staging.json",
-        "sha256": "6db01f703f150b79109201448a4f66bf6c3f9a8af2c40e100b8eb3f51216d294"
+        "sha256": "f83420d29443a52aa6d9733d6bb47283bb54f793e6e4903b7ceee3a14924dfba"
       },
       {
         "path": "instruments-input-results.json",
-        "sha256": "c5babad4acc80d655c0fc5a68f28b79e55b2ccba1988df58a825e025d624885b"
+        "sha256": "cdd805c4ebbf61f9304da3826e58decef033260c15fc80cc01b87a069061905e"
       },
       {
         "path": "mode-cycle-results.json",
-        "sha256": "476366e8fc9094f166ddf718cbf583ea3eb93a38afab2bdf688bce64e309e288"
+        "sha256": "e20b77df4db831d6005e63deaf73113c8acf0af72d90f37231db6d58a6d51251"
       },
       {
         "path": "n2k-input-results.json",
-        "sha256": "99ffb3b324480b6db93314fb4ab8b00306579172f3beadb0013305cf8769d273"
+        "sha256": "9ea51cd29a69282d117737fbeb36ec57290a131daef5652c710fad865d3cb259"
       },
       {
         "path": "navigation-input-results.json",
-        "sha256": "d5069f3cddd608b705f48e57ee8e36efc0afd6b7b2c0d1982a09423ed33dad2d"
+        "sha256": "7bd13ebb45c7280b6ad3e5009130f1afcb2572ad32d2fb2524e54f8decc60bf3"
       },
       {
         "path": "objects-input-results.json",
-        "sha256": "c0e36bcb91fba69737694b313c40ea9fc183af08bc09ed526412abcfc744baca"
+        "sha256": "76745dabcb1cff291a5cf49cd6552cdea6193856855c184df8ff45dee90aef4d"
       },
       {
         "path": "packaged-updater.json",
-        "sha256": "56f17cf332f65bbef9765ca28035d75772f5a370179f11ae770c5397715566a7"
+        "sha256": "ae7e45a6296c7a98c2553e7ef2e3f1ba8205754a31b43fa95ca4ebdf7ec136b4"
       },
       {
         "path": "pilot-results.json",
-        "sha256": "14feb9e8d6fff9af6eb1a876070cb8a1ebd37ca8d6fadc99fd4bb78f1da42ac8"
+        "sha256": "6c3e242a1e15e1c365f1a29ecd0e90d60d0e5dbb837f1f47a4586fbc1f9e3d87"
       },
       {
         "path": "pilot-status-only/pilot-opennav-diagnostics.json",
-        "sha256": "4dbbcfa71026941eccf3542e1cfdf4facaaf5209cb0c188bce98672ae956c579"
+        "sha256": "8861dcec5d0a663fccefe70d56c0a7d9b0db5e552e9bfa5a4226980ba54649fb"
       },
       {
         "path": "pilot-status-only/pilot-results.json",
-        "sha256": "7b662d30e8c8638550d183798a4e9c650a8ae2ae8032a07743312109fe0caa84"
+        "sha256": "f9876bd0f4b42f264933ba0384d953a7d8a94879ecd3e76c46cdbd51b18e951c"
       },
       {
         "path": "production-recovery-results.json",
-        "sha256": "dcb103978b4c0c6d396788332ac95b6578205ba77f5ba214a694bcdcd7afae92"
+        "sha256": "84a9238b3b1fdc67cc76b90894db6da14db25c1751ec9841b237d8b687e05912"
       },
       {
         "path": "recording-results.json",
-        "sha256": "e9a3c8a5fdb5da2bb886c26de35ab7ed92c6281d0ce8dbfbefce0789da0d7b05"
+        "sha256": "41abdb9d62802dcd8642aa75fad9b7afa0f59b0e0d091092ad524fba369896ce"
       },
       {
         "path": "recovery-results.json",
-        "sha256": "dcf349345dda417fa5e03f0198ba3a161b52282b319f0db2c57b376b9237fe86"
+        "sha256": "e018596d901af632be9373b76dc790cb9bcd7f707e60803f08a34e4cf7d491b9"
       },
       {
         "path": "route-input-results.json",
-        "sha256": "370ce8f90ab7563b470dd005ef8b378e20891a248a53b5cf12cc81ec2ff79603"
+        "sha256": "6300789122b1fef894f4c5e1f54f69a5f5231b68853afab45af46862eca0db43"
       },
       {
         "path": "route-standard-input-results.json",
-        "sha256": "20960f8fdafaad14d24d106bdf5c9f5079e5c967ce2af52220bc9f79bdc85fca"
+        "sha256": "76dbca06e947f78c0b83a0d595d7fdef8836d583b08cdaf333383f0d98f16c43"
       },
       {
         "path": "signalk-results.json",
-        "sha256": "ad3e67a2620af945937117577f8ea1f741eb152ecee129ed3171bcdeeea25781"
+        "sha256": "0cb24907f0a98630a26805bb4cb4699150194490d321a611e110745671dfb814"
       },
       {
         "path": "staging-inputs.json",
-        "sha256": "2aa1e2a12236bccd0bf0243795d83c1cc180cdc0fd4e8e1e2c89ab961815a1a8"
+        "sha256": "43543b51bd870f9c0270e58ed04489e162176bd5a1c011a0fd2eee49dc3de6f3"
       },
       {
         "path": "user-flows-results.json",
-        "sha256": "25a937b056981b68c076c63eb0dc7c80e7e1469f4572a987d2c9f0908abc57f4"
+        "sha256": "ffc1c078f877d018bbc5018e64dc621a53e00327fdf8c255e2b4378a06d9b3c3"
       }
     ]
   },
   "retest": {
-    "commit": "1bd62fd727dfe712889aed3910befb75179f7314",
-    "runId": "37344321589",
+    "commit": "3fe8866fa191a72eb47290368311cbed11463664",
+    "runId": "38882281891",
     "runAttempt": "1",
-    "jobId": "111878966644",
-    "artifactId": "11360663392",
-    "artifactName": "staging-retest-evidence-37330218586-attempt1-harness1bd62fd727dfe712889aed3910befb75179f7314-run37344321589-attempt1",
-    "artifactDigest": "sha256:10a5cbdbc98a19b5fe46853e350a3e806bfa417d5315c237caf462f12769613b",
+    "jobId": "116911623959",
+    "artifactId": "12039410527",
+    "artifactName": "staging-retest-evidence-38765418126-attempt1-harness3fe8866fa191a72eb47290368311cbed11463664-run38882281891-attempt1",
+    "artifactDigest": "sha256:24453d32db0c72f1d6c18c9c7e0e27d964faebb626f2aed591d1b719c6c1b824",
     "reports": [
       {
         "path": "charts-results.json",
-        "sha256": "ee70033007f9311fceeaf58e9e86d8d48ac1c35639a86c1f35a78c909a1e31c4"
+        "sha256": "3983e0b8388d28f230ebd3d55d5214382fd631f3e800164d2bc77b2d22066b2c"
       },
       {
         "path": "installer-staging.json",
-        "sha256": "0b6dacbdd4c6385fd22c6c2634ab1c8969085b4052a768efff3c5d6ffbef5b6f"
+        "sha256": "95b387d2786646f14b7c11cf04663954cce1a767ecc2e75f46124e1d9f56bbef"
       },
       {
         "path": "packaged-updater.json",
-        "sha256": "af53e1143aa9b9c5a2ad5561952f3b8c16291a34f78a6644fde4b577d007817f"
+        "sha256": "13899b875866f69c02c55449074f95b9b977318d9625daa78988bc2ab63dcc15"
       },
       {
         "path": "staging-inputs.json",
-        "sha256": "07f7faaca54031685643faf9651370bb96f183f239c7b7cc3af7119174cb1465"
+        "sha256": "6c39f69a9098873a75b2a7da514ccea434b7231b32cf591aea06666991ef1412"
       },
       {
         "path": "staging-retest.json",
-        "sha256": "548a2409a6266ef0b105070ca69e3df0c64a9115d664e72a27dc39e85c096e4c"
+        "sha256": "37f291559f8dbdf990fa959add43a9edadcd923cb1721016cd7bf6a29b9305ae"
       }
     ]
   }

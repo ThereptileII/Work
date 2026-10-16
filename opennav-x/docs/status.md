@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-16
 
-## Replacement candidate — installation passes, authenticated startup blocked
+## Replacement candidate — retained installer/startup/charts pass; Staging composition next
 
 Frozen product `854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc`, version
 `0.4.0-beta2.4`, was built once in
@@ -53,7 +53,14 @@ owned native launch checkbox, clears it, and revalidates the same handle and
 unchecked state immediately before Finish. All 34 focused checks and independent
 review pass. The actual retained installer/charts run
 [38882281891](https://github.com/ThereptileII/Work/actions/runs/38882281891)
-uses the original package and is pending. Diagnostic results cannot grant
+passes using the original package: all nine installer checks and four real
+updater mechanics, including authenticated startup, same-version pending update,
+pre-launch corruption refusal, guarded rollback and restored clean startup.
+The Finish checkbox is recorded checked before and unchecked after. The separate
+charts fixture passes; requested OpenGL falls back to software on the hosted
+runner, so physical GPU acceptance remains open.
+[Authenticated replacement suffix](evidence/scrum22-installer-charts-854-20261016/README.md).
+Diagnostic results cannot grant
 qualification. All original failed attempts remain failed; no application
 rebuild or boat deployment follows from this investigation.
 
@@ -68,8 +75,12 @@ launches over the verified 1,046-file package; no extra CRT-specific run is
 selected. This is not a per-DLL loaded-hash census or a transfer of all 13
 PluginHandler cases to the final DLL combination.
 [Exact component acceptance and package distinction](evidence/scrum211-retained-854-20261016/README.md).
-Installed bootstrap/lifecycle,
-protected B0/B1 customer acceptance and fresh boat validation remain open;
+The reviewed composition helper binds the original 21 reports and replacement
+five reports to this exact package, preserving the original failed qualifier.
+All 17 focused composition, 15 composed-delivery and 20 release-delivery checks
+pass. The original and replacement reports also pass offline semantic validation;
+this is not completed CI assembly/publication. Protected signed B0/B1 customer
+acceptance and fresh boat validation remain open;
 design/endurance runs remain off and public access remains closed.
 
 
