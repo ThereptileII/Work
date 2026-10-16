@@ -1,0 +1,232 @@
+{
+  "schema": 1,
+  "runId": 38889555934,
+  "attempt": 1,
+  "harnessCommit": "3bec26c322ef017aed6e6890b5cbba07989ebebd",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "jobId": 116935466059,
+  "jobConclusion": "failure",
+  "runConclusion": "failure",
+  "jobStartedUtc": "2026-10-16T10:47:42Z",
+  "jobCompletedUtc": "2026-10-16T11:37:08Z",
+  "runnerLabel": "windows-2022",
+  "runnerImage": "20261012.333.1",
+  "artifact": {
+    "id": 12042839712,
+    "name": "staging-retest-evidence-38765418126-attempt1-harness3bec26c322ef017aed6e6890b5cbba07989ebebd-run38889555934-attempt1",
+    "size_in_bytes": 12383751,
+    "digest": "sha256:59ab4a28df037718b4d2e50ab41d2f8dbf4c6036f25fdb9781384bf4ecf992be",
+    "workflow_run": {
+      "id": 38889555934,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "codex/software-qualification-20261016",
+      "head_sha": "3bec26c322ef017aed6e6890b5cbba07989ebebd"
+    }
+  },
+  "memberCount": 1668,
+  "allMemberCrcsVerified": true,
+  "jobLog": {
+    "bytes": 96271,
+    "sha256": "1214489c98227f0618913df93692b80cef70c293110cd06a7ddfe44e9a9c46db"
+  },
+  "selectedReports": [
+    {
+      "name": "installer-lifecycle.json",
+      "bytes": 24932,
+      "crc32": "865c48a3",
+      "sha256": "d754ffc9f3cb89747d57ff61447669e4062c4e16e0fcc25353030cdde1a9a829"
+    },
+    {
+      "name": "installer-missing-dll-selftest.json",
+      "bytes": 836,
+      "crc32": "d4f8ff01",
+      "sha256": "7687d250cf97b21c4b276eb00a862bff7b2a2e96ce942b4be47f90ca2fb7b047"
+    },
+    {
+      "name": "installer-missing-dll-selftest.log",
+      "bytes": 518,
+      "crc32": "36180b0c",
+      "sha256": "b9f8ac4382db103aab748f8fcae49412e3cc3efff3c360df0224121d6f1aa171"
+    },
+    {
+      "name": "packaged-updater.json",
+      "bytes": 6996,
+      "crc32": "67263ed1",
+      "sha256": "838328f4ca590f7c81728bc1a5d6174d9843aebc451b039fbdf016c6798d2aaf"
+    },
+    {
+      "name": "staging-retest.json",
+      "bytes": 710,
+      "crc32": "0dd00a42",
+      "sha256": "2efcbf45ccad03065fa8e7f87aed037b6d9418801b48ccdc82af57e257968baa"
+    }
+  ],
+  "passedLifecycleChecks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+    "Unknown installation ownership refused without adding logs or changing files",
+    "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+    "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication",
+    "Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options",
+    "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified",
+    "Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group",
+    "Expected candidate-to-beta1 safety notice captured and acknowledged through its visible Agree button",
+    "Accepted Beta 1 release installs and opens real coastline with shared fixtures",
+    "Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged",
+    "Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update",
+    "Genuine Beta 1 rollback restores its historical group and unchanged original maintainer; native diagnostics work",
+    "Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links",
+    "Owned maintenance wizard has version-neutral title, Repair default and non-mutating Cancel",
+    "Expected beta1-to-candidate safety notice captured and acknowledged through its visible Agree button",
+    "Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved",
+    "Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences",
+    "Installed XNav to Legacy to XNav controlled restart retains real coastline",
+    "Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained",
+    "Optional shortcuts respect explicit choices; retained-package repair preserves preferences",
+    "Legacy and Safe shortcuts can be restored without altering shared navigation data",
+    "Update preserves shared profile and user plugin additions; prior generation backed up",
+    "Unknown explicit rollback layout refuses before state/journal publication; owned generations, shortcuts and user data remain unchanged",
+    "Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data",
+    "Rollback restores exact prior generation with an unmanaged legacy TLS addition and leaves navigation data unchanged",
+    "Update/repair refuse each stock or active unmanaged legacy TLS DLL; current installation and source bytes survive",
+    "Update/repair reject inherited portable marker, Demo launcher and route fixture before publication; prior generation/state/stock/profile unchanged",
+    "Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact",
+    "Actual NTFS permission denial during staging preserves active installation; ACL restored",
+    "Corrupt payload fails SHA-256 preflight without changing active installation",
+    "Interrupted extraction never publishes incomplete generation or changes active state",
+    "Exact missing wx base import rejected before loader or commit, without OS modal residue"
+  ],
+  "packagedUpdater": {
+    "status": "passed",
+    "checks": [
+      "Actual installed launcher bootstraps real application and exact authenticated health receipt",
+      "Exact Setup supervised update publishes pending candidate; real startup authenticates and finalizes one attempt",
+      "Fault-injected candidate is refused before launch; actual guarded rollback restores verified previous without profile changes",
+      "Restored actual generation launches and closes cleanly with retained authenticated receipt"
+    ],
+    "faultRestored": true
+  },
+  "firstCausalFailure": {
+    "helper": "opennav-x/tools/test-installer-missing-dll-selftest.ps1",
+    "function": "SelfTest",
+    "missingFunction": "Assert-LifecycleMutation",
+    "category": "CommandNotFoundException",
+    "sourceSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+    "initialErrorMode": 0,
+    "restoredErrorMode": null,
+    "scope": "Fixture extraction closure failed before intended native missing-DLL/error-mode proof."
+  },
+  "frozenSourceFiles": {
+    "opennav-x/installer/windows/Lifecycle.ps1": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "opennav-x/installer/windows/UpdateSupervisor.ps1": "2c2e23cd53d37c1d0da26110bfd4a7fab3017b9904c9036a69198c9cd03af7ac",
+    "opennav-x/installer/windows/UpdateTransaction.ps1": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2"
+  },
+  "frozenHelperSha256": "9c4eec10599a7e75407c9e70c992c212cbc162ba1d30975891f616afb74be36b",
+  "smokeHelperSha256": "90aa508877c075ba55413b42134456c3bc45b4fc58ceaa9c832110793f7dcbc8",
+  "sourceArchiveSha256": "cc5042b371f8f664222cec9c0aa1af7b36c98d57d2b45d54a50e2685b0a67142",
+  "historicalFixtures": [
+    {
+      "source": {
+        "version": "0.3.0-beta1",
+        "commit": "a3e6e0812e01d2aee8f0b83807527b9a0c0fc79a",
+        "runId": 36137990012,
+        "artifactId": 10876531379,
+        "archiveSha256": "d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343",
+        "maximumArchiveBytes": 180000000,
+        "setupName": "OpenNavX-Beta1-Setup.exe",
+        "setupBytes": 43967980,
+        "setupSha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128"
+      },
+      "lock_sha256": "a3fc226dec650f327e602c273ed8a05ba12e531ed8c0ddedfbf99e8fb120a25b",
+      "receipt_sha256": "820b54ef26c71958c9eff17033875cc97c449f134d0299b57e5c64f08b1b92cd",
+      "archive_sha256": "d69b6e9ac108168494300ad734ad7e40835967c06519e849012ef5947ad9a343",
+      "setup_sha256": "8e1b3432a5a44499ffb41b125f62df07e846b2cfe1ca0936409ed021d413e128",
+      "setup_bytes": 43967980
+    },
+    {
+      "source": {
+        "commit": "8e780edc34f68abd693a5d5f6aecdb3ba05a75c4",
+        "runId": 36287991989,
+        "artifactId": 10922441496,
+        "archiveSha256": "172fe7f9b9556374a448f33d78ef9760e9838e1b4b3a291de3dcb2feea3899a5",
+        "maximumArchiveBytes": 180000000,
+        "setupName": "OpenNavX-Beta2-Setup.exe",
+        "setupBytes": 44088071,
+        "setupSha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+        "purpose": "Exact early Beta 2 with historical Start-menu layout; lifecycle regression fixture only, not accepted release"
+      },
+      "lock_sha256": "495e068fcbfe43ec7218b3792ab487f2689c1c946a7863955b349d379a8bab0b",
+      "receipt_sha256": "9bdbf1ffff5c3639d922e8a5fabeb2735bac0a784ca5c6a90607255762cf1c5d",
+      "archive_sha256": "172fe7f9b9556374a448f33d78ef9760e9838e1b4b3a291de3dcb2feea3899a5",
+      "setup_sha256": "0235a099e56a265a3dfe3f17de1f8dea1e66de2aa7a8c311bce0fd7a83d761ad",
+      "setup_bytes": 44088071
+    }
+  ],
+  "finishLaunchChoice": {
+    "label": "Open SKAGER",
+    "checkedBefore": true,
+    "checkedAfter": false
+  },
+  "publicAccess": false,
+  "wholeLifecycleAcceptance": false,
+  "kind": "sanitized-failed-retained-installer-lifecycle-prefix",
+  "workItems": [
+    "SCRUM-22",
+    "SCRUM-209",
+    "SCRUM-290"
+  ],
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38889555934",
+  "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38889555934/job/116935466059",
+  "passedLifecycleCheckCount": 35,
+  "operationRecordCount": 42,
+  "operationOutcomes": {
+    "statusPassed": 15,
+    "expectedNegativeStatusFailed": 25,
+    "diagnosticsWithoutStatus": 2
+  },
+  "operationOutcomeScope": "42 operation records are not 42 successful positive installs. The 35 completed checks verify expected refusals/faults as well as positive behavior.",
+  "privateCustody": {
+    "basename": "lifecycle-custody.json",
+    "bytes": 23243,
+    "sha256": "a58821ae3f069b75f461dc337f8eaf9f39ae41281ed0450cc9dd1b1eb987c307"
+  },
+  "unexecutedCheckLabels": [
+    "Actual production SelfTest suppresses missing-DLL OS dialog and restores error mode in separate failed-stage process",
+    "Correctly hashed native fixture-enabled executable is refused before product publication",
+    "Locked atomic state file preserves previous generation and durable recovery journal without temporary residue",
+    "Rerun after file-lock failure repairs and recovers normally",
+    "Interrupted update before atomic commit retains active app and recovers on rerun",
+    "Interrupted post-commit shortcut publication recovers from durable journal",
+    "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+    "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained",
+    "Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved",
+    "Original official OpenCPN still loads charts and shared navigation data after uninstall",
+    "Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions",
+    "Beta 2 same-version rebuild/update creates a rollback generation without changing user data"
+  ],
+  "additionalUnexecuted": [
+    "Candidate-to-stock safety notice during final conventional uninstall flow",
+    "Final direct Uninstall and its preservation/shortcut assertions"
+  ],
+  "fixtureDiagnosis": "The frozen helper extracts only Hash, PlainPath, PeArchitecture and SelfTest. Frozen SelfTest calls Assert-LifecycleMutation first, but that dependency was not loaded. Do not remove or stub the production mutation guard.",
+  "limits": [
+    "Original run and lifecycle job remain failed; passing prefix is not whole lifecycle acceptance.",
+    "Expected strict missing-import PE rejection passed; separate missing-DLL SelfTest/error-mode proof did not execute successfully.",
+    "Historical early-Beta2 conventional uninstall passed; final current-product conventional uninstall/reinstall suffix was not reached.",
+    "No application rebuild, Production promotion, retry, boat action, public access or protected-host/UAC acceptance follows from this receipt.",
+    "Raw logs, machine/user/profile paths and private source records remain outside the repository."
+  ]
+}
