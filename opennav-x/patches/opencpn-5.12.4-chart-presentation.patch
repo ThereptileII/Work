@@ -4870,3 +4870,41 @@ diff --git a/model/src/plugin_loader.cpp b/model/src/plugin_loader.cpp
        pic->m_pplugin = nullptr;
        pic->m_init_state = false;
        pic->m_has_setup_options = false;
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -74,3 +74,4 @@
+ #include "chcanv.h"
+ #ifdef OPENNAV_X
++#include "integration/ActiveRoutePassageOverlay.h"
+ #include "integration/ChartPresentation.h"
+@@ -12435,6 +12436,10 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
+     wxDCClipper(*pdc, ru);
+   }
+ 
++#ifdef OPENNAV_X
++  opennav::integration::DrawActiveRoutePassage(dc, *this, GetVP());
++#endif
++
+   if (m_bShowNavobjects) {
+     DrawAllTracksInBBox(dc, GetVP().GetBBox());
+     DrawAllRoutesInBBox(dc, GetVP().GetBBox());
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -71,3 +71,4 @@
+ #include "chcanv.h"
+ #ifdef OPENNAV_X
++#include "integration/ActiveRoutePassageOverlay.h"
+ #include "integration/ChartPresentation.h"
+@@ -1637,6 +1638,10 @@
+ void glChartCanvas::DrawDynamicRoutesTracksAndWaypoints(ViewPort &vp) {
+   ocpnDC dc(*this);
+ 
++#ifdef OPENNAV_X
++  opennav::integration::DrawActiveRoutePassage(dc, *m_pParentCanvas, vp);
++#endif
++
+   for (Track *pTrackDraw : g_TrackList) {
+     ActiveTrack *pActiveTrack = dynamic_cast<ActiveTrack *>(pTrackDraw);
+     if (pActiveTrack && pActiveTrack->IsRunning())
