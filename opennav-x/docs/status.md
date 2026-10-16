@@ -61,8 +61,14 @@ The exact new-capture PluginHandler gate
 [38881652663](https://github.com/ThereptileII/Work/actions/runs/38881652663)
 passes all 13 cases and rejects the ignored-failure mutant. Trust removal and
 cleanup pass with zero forbidden HTTP requests. Its authenticated capture and
-same-image host do not qualify other runtime combinations: the final package's
-three replaced MSVC DLLs remain a separate boundary. Installed bootstrap/lifecycle,
+same-image host do not qualify other runtime combinations. The final package's
+three replaced MSVC DLLs have separate post-copy selftest/restart and seven
+production-recovery checks, including actual fixture-free XNav/Legacy/Safe
+launches over the verified 1,046-file package; no extra CRT-specific run is
+selected. This is not a per-DLL loaded-hash census or a transfer of all 13
+PluginHandler cases to the final DLL combination.
+[Exact component acceptance and package distinction](evidence/scrum211-retained-854-20261016/README.md).
+Installed bootstrap/lifecycle,
 protected B0/B1 customer acceptance and fresh boat validation remain open;
 design/endurance runs remain off and public access remains closed.
 
