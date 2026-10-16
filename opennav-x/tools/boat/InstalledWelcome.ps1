@@ -13,10 +13,11 @@ function Assert-InstalledWelcomePolicy($Job,$Launch,$Request,$Installed,$Build,[
       $Request.workspace -ine $Job.workspace -or $Launch.executableSha256 -cne $Job.executableSha256 -or
       $Launch.generation -cne $Job.generation -or $Launch.buildCommit -cne $Job.buildCommit -or
       $Launch.targetSha256 -cnotmatch '^[a-f0-9]{64}$' -or $Launch.sid -cnotmatch '^S-1-5-[0-9-]+$' -or $Launch.sessionId -le 0) { throw 'Recent exact normal installed launch receipt required; older or other launch kinds cannot substitute.' }
+  Assert-BoatDeploymentVersion $Installed.ownership.version
   if ($Installed.state.current -cne $Job.generation -or $Installed.ownership.commit -cne $Job.buildCommit -or
-      $Installed.ownership.version -cne '0.4.0-beta2' -or $Installed.executable -ine $Job.executable -or
+      $Installed.executable -ine $Job.executable -or
       $Build.test_fixtures -isnot [bool] -or $Build.test_fixtures -ne $false -or $Build.build_purpose -cne 'INSTALLED PRODUCT' -or
-      $Build.version -cne '0.4.0-beta2' -or $Build.commit -cne $Job.buildCommit -or $Build.executable_sha256 -cne $Job.executableSha256) { throw 'Exact owned fixture-free Beta 2 product build required.' }
+      $Build.version -cne $Installed.ownership.version -or $Build.commit -cne $Job.buildCommit -or $Build.executable_sha256 -cne $Job.executableSha256) { throw 'Exact owned fixture-free Beta 2 product build required.' }
   $at=[datetime]::Parse($Launch.utc).ToUniversalTime();$started=[datetime]::Parse($Launch.processStartedUtc).ToUniversalTime()
   if ($at -gt $Now -or ($Now-$at).TotalHours -gt 4 -or $started -lt $at -or $started -gt $Now) { throw 'Installed startup receipt expired or has inconsistent process creation.' }
 }
