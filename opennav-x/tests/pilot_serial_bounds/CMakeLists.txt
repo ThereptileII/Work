@@ -6,7 +6,8 @@ if(NOT EXISTS "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
 endif()
 set(serial_source "${OPENCPN_SOURCE_DIR}/model/src/comm_drv_n2k_serial.cpp")
 set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS "${serial_source}"
-  "${CMAKE_CURRENT_SOURCE_DIR}/../../src/integration/OpenCPNPilot.cpp")
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../src/integration/OpenCPNPilot.cpp"
+  "${CMAKE_CURRENT_SOURCE_DIR}/../../src/integration/OpenCPNPilot.h")
 execute_process(COMMAND "${Python3_EXECUTABLE}" "${CMAKE_CURRENT_SOURCE_DIR}/extract.py"
   "${serial_source}" "${CMAKE_CURRENT_BINARY_DIR}/actual_writer.inc"
   COMMAND_ERROR_IS_FATAL ANY)

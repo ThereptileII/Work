@@ -98,6 +98,8 @@ struct CommDriverN2KSerial {
   void ProcessManagementPacket(std::vector<unsigned char>*) {}
   void handle_N2K_SERIAL_RAW(CommDriverN2KSerialEvent&);
   bool SendPilotMessage(std::shared_ptr<const NavMsg>, std::shared_ptr<const NavAddr>, uint64_t, uint64_t* = nullptr);
+  bool SendNavigationBatch(const std::vector<std::shared_ptr<const Nmea2000Msg>>&, uint64_t, uint16_t, N2kSerialState::Clock::time_point);
+  void ClearNavigationOutput() { m_serial_state.ClearNavigation(); }
   FakeQueue queue;
   FakeQueue* worker = &queue;
   FakeListener m_listener;
@@ -188,9 +190,11 @@ void Rejected(std::shared_ptr<const NavMsg> msg,
         "invalid input has no queue/listener effects");
 }
 void LifecycleTests();
+void NavigationTests();
 int main() {
   try {
     LifecycleTests();
+    NavigationTests();
     const std::vector<unsigned char> request{0, 0xee, 0};
     {
       CommDriverN2KSerial driver;
@@ -328,6 +332,29 @@ void LifecycleTests() {
   Check(driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch,&command_ticket) && command_ticket != 0, "actual sink returns this addressed command ticket");
   Check(!driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch), "actual sink pending limit");
   Check(driver.m_serial_state.WriteOne([&](auto& b) { Wire(b,126208,3,42,cmd); return b.size(); }) == 1 && driver.m_serial_state.Get().pilot_written_ticket == command_ticket, "actual serial command encoding and exact completed ticket");
+  for (const auto key : {0x80, 0x01}) {
+    auto mode = cmd; mode.back() = static_cast<unsigned char>(key);
+    driver.m_serial_state.EnablePilot(false);
+    command_ticket = 99;
+    Check(!driver.SendPilotMessage(Message(mode,126208,3),dest,epoch,&command_ticket) && command_ticket == 0, "TRACK/WIND cannot bypass session OFF");
+    driver.m_serial_state.EnablePilot(true);
+    driver.m_params.IOSelect = DS_TYPE_INPUT;
+    Check(!driver.SendPilotMessage(Message(mode,126208,3),dest,epoch), "TRACK/WIND cannot bypass input-only endpoint");
+    driver.m_params.IOSelect = DS_TYPE_INPUT_OUTPUT;
+    Check(!driver.SendPilotMessage(Message(mode,126208,3),dest,epoch+1), "TRACK/WIND cannot bypass connection epoch");
+    Check(!driver.SendPilotMessage(Message(mode,126208,6),dest,epoch), "TRACK/WIND require exact priority");
+    auto malformed = mode; malformed[4] = 0;
+    Check(!driver.SendPilotMessage(Message(malformed,126208,3),dest,epoch), "TRACK/WIND require the full fixed payload prefix");
+    if (key == 0x80) {
+      Check(!driver.SendPilotMessage(Message(mode,126208,3),dest,epoch), "TRACK requires navigation written before command enqueue");
+      Check(driver.m_serial_state.EnqueueNavigation(bytes,epoch,7,Clock::now()), "seed navigation independently of pilot ticket");
+      Check(driver.m_serial_state.WriteOne([](auto& b) { return b.size(); }) == 1, "navigation seed must actually reach writer");
+    }
+    Check(driver.SendPilotMessage(Message(mode,126208,3),dest,epoch,&command_ticket) && command_ticket != 0, "actual serial sink accepts exact guarded TRACK/WIND mode packet");
+    Check(driver.m_serial_state.WriteOne([&](auto& b) { Wire(b,126208,3,42,mode); return b.size(); }) == 1 && driver.m_serial_state.Get().pilot_written_ticket == command_ticket, "TRACK/WIND still require their exact physical-write ticket");
+  }
+  auto unsupported = cmd; unsupported.back() = 0x02;
+  Check(!driver.SendPilotMessage(Message(unsupported,126208,3),dest,epoch), "unsupported mode key remains refused");
   Check(driver.SendPilotMessage(Message(cmd,126208,3),dest,epoch), "queue AUTO before STANDBY preemption");
   auto standby = cmd; standby.back() = 0;
   Check(driver.SendPilotMessage(Message(standby,126208,3),dest,epoch), "STANDBY replaces unsent AUTO atomically");
@@ -375,4 +402,126 @@ void LifecycleTests() {
   Check(worker.WriteComPortPhysical(bytes)==3 && worker.m_serial.purges==0,"actual write never discards output using flushOutput");
   worker.m_serial.count=1;Check(worker.WriteComPortPhysical(bytes)==1,"actual short write preserved for fail-closed queue");
   worker.m_serial.throws=true;Check(worker.WriteComPortPhysical(bytes)==0,"write exception is failure");
+}
+
+void NavigationTests() {
+  using Clock = N2kSerialState::Clock;
+  using namespace std::chrono_literals;
+  const std::vector<unsigned char> first{1,2}, latest{3,4}, track{5}, standby{6};
+  N2kSerialState state;
+  state.Connection(true);
+  auto epoch = state.Get().epoch;
+  auto now = Clock::now();
+  Check(!state.EnqueueNavigation(first,epoch,7,now), "navigation session starts OFF");
+  state.EnablePilot(true);
+  Check(!state.EnqueueNavigation(first,epoch+1,7,now), "navigation epoch mismatch");
+  Check(!state.EnqueueNavigation(first,epoch,0,now) && !state.EnqueueNavigation(first,epoch,65533,now), "navigation token bounds");
+  Check(!state.EnqueueNavigation(first,epoch,7,now+1ms,now) && !state.EnqueueNavigation(first,epoch,7,now-3s,now), "future and stale navigation source refused");
+  Check(state.EnqueueNavigation(first,epoch,7,now) && state.EnqueueNavigation(latest,epoch,8,now), "latest navigation replaces its separate slot");
+  Check(state.Get().navigation_written_token == 0 && state.Get().pilot_written_ticket == 0, "queued navigation is neither receipt nor pilot acknowledgement");
+  Check(state.Enqueue(first),"ordinary data can precede the new route batch");
+  Check(state.WriteOne([&](auto& b) { Check(b == first,"ordinary queue drains before route receipt"); return b.size(); }) == 1 && state.Get().navigation_written_token == 0,"old queued data cannot follow the first fresh route receipt");
+  Check(state.WriteOne([&](auto& b) { Check(b == latest,"only latest navigation bytes written"); return b.size(); }) == 1, "navigation slot written once");
+  Check(state.Get().navigation_written_token == 8 && state.Get().pilot_written_ticket == 0 && state.Get().pilot_writes == 0, "navigation receipt remains independent of pilot tickets");
+  Check(state.Enqueue(track,true,epoch,Clock::now(),true,false,nullptr,true), "TRACK can bind current written navigation token");
+  Check(state.EnqueueNavigation(first,epoch,9,Clock::now()), "new waypoint token replaces route slot");
+  Check(state.WriteOne([&](auto& b) { Check(b == first,"changed token discards queued TRACK"); return b.size(); }) == 1, "replacement route writes without old TRACK");
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("old TRACK replayed"); }) == 0, "old token command is not replayed");
+  Check(state.Enqueue(standby,true,epoch), "STANDBY queued before route loss");
+  state.ClearNavigation();
+  Check(state.WriteOne([&](auto& b) { Check(b == standby,"route loss preserves STANDBY"); return b.size(); }) == 1, "STANDBY remains available after route loss");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,10,now,now), "queue navigation deadline case");
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("expired navigation written"); },now+500ms) == 0, "navigation queue expires at 500ms");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,10,now-2750ms,now), "queue near source expiry");
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("stale source written"); },now+250ms) == 0, "original source age bounds the navigation slot");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,11,now-2750ms,now), "fresh route receipt before TRACK expiry");
+  Check(state.WriteOne([](auto& b) { return b.size(); }) == 1, "write route before TRACK");
+  Check(state.Enqueue(track,true,epoch,Clock::now(),true,false,nullptr,true), "queue TRACK while route receipt fresh");
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("TRACK outlived navigation"); },state.Get().navigation_valid_until) == 0, "final TRACK write rechecks route expiry");
+  Check(!state.Enqueue(track,true,epoch,state.Get().navigation_valid_until,true,false,nullptr,true), "expired navigation cannot admit a new TRACK");
+  Check(state.EnqueueNavigation(first,epoch,12,Clock::now()), "queue before explicit session disable");
+  state.EnablePilot(false);
+  Check(state.Get().navigation_written_token == 0 && state.WriteOne([](auto&) -> size_t { throw std::runtime_error("disabled navigation written"); }) == 0, "disable clears navigation slot and receipt");
+  state.EnablePilot(true);
+  Check(state.EnqueueNavigation(first,epoch,12,Clock::now()), "queue navigation short-write case");
+  Check(state.WriteOne([](auto&) { return size_t(1); }) == -1 && !state.Get().connected && state.Get().navigation_written_token == 0, "uncertain navigation write disconnects and never supplies receipt");
+  state.Connection(true); state.EnablePilot(true);
+  Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("navigation replayed after reopen"); }) == 0, "reconnect cannot replay navigation");
+
+  CommDriverN2KSerial driver;
+  driver.m_serial_state.Connection(true);
+  epoch = driver.m_serial_state.Get().epoch;
+  // Synthetic two-point records use IDs 6/7 and zero-valued coordinates,
+  // distance and XTE. They exercise the actual boundary/encoder without
+  // simulating a real route or establishing physical bridge readiness.
+  std::vector<unsigned char> route(36,0), navigation(34,0), xte(8,0);
+  route[2]=2;route[9]=2;route[10]=1;
+  route[12]=6;route[14]=2;route[15]=1;
+  route[24]=7;route[26]=2;route[27]=1;
+  navigation[5]=0x40;
+  for(size_t i=6;i<12;++i)navigation[i]=0xff;
+  navigation[16]=6;navigation[20]=7;navigation[32]=0xff;navigation[33]=0x7f;
+  const auto nav_message=[](const std::vector<unsigned char>& data,uint32_t pgn,int priority=6) {
+    return std::make_shared<const Nmea2000Msg>(pgn,data,Destination(),priority);
+  };
+  std::vector<std::shared_ptr<const Nmea2000Msg>> frames{
+      nav_message(route,129285),nav_message(navigation,129284),nav_message(xte,129283)};
+  Check(!driver.SendNavigationBatch(frames,epoch,7,Clock::now()), "actual navigation sink cannot bypass session OFF");
+  driver.m_serial_state.EnablePilot(true);
+  auto wrong = frames; std::swap(wrong[0],wrong[1]);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()), "actual navigation sink requires exact PGN order");
+  wrong = frames; wrong[1] = nav_message(std::vector<unsigned char>(33,0),129284);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()), "actual navigation sink rejects malformed navigation length");
+  wrong = frames; wrong[2] = nav_message(xte,129283,3);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()), "actual navigation sink requires priority six");
+  wrong=frames;wrong[0]=Message(route,129285,6);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"navigation refuses missing address identity");
+  for(const auto& address:std::vector<std::shared_ptr<NavAddr2000>>{
+      Destination(42),std::make_shared<NavAddr2000>("wrong",255),
+      std::make_shared<NavAddr2000>(driver.iface,N2kName(123))}) {
+    wrong=frames;wrong[0]=std::make_shared<const Nmea2000Msg>(129285,route,address,6);
+    Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"navigation requires selected interface, broadcast address and no NAME addressing");
+  }
+  Check(!driver.SendNavigationBatch(frames,epoch,1,Clock::now()) && !driver.SendNavigationBatch(frames,epoch,65533,Clock::now()),"actual navigation token leaves two valid waypoint IDs");
+  auto bad_route=route;bad_route[14]=255;
+  wrong=frames;wrong[0]=nav_message(bad_route,129285);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"waypoint string cannot escape payload bounds");
+  bad_route=route;bad_route[24]=8;
+  wrong=frames;wrong[0]=nav_message(bad_route,129285);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"route waypoint ID must match current token");
+  for(size_t offset:{size_t(5),size_t(6),size_t(16),size_t(20),size_t(32)}) {
+    auto bad_navigation=navigation;bad_navigation[offset]^=1;
+    wrong=frames;wrong[1]=nav_message(bad_navigation,129284);
+    Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"navigation reference, unavailable fields and waypoint identity remain exact");
+  }
+  auto bad_xte=xte;bad_xte[1]=1;
+  wrong=frames;wrong[2]=nav_message(bad_xte,129283);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"XTE mode field cannot change");
+  bad_xte=xte;bad_xte[2]=bad_xte[3]=bad_xte[4]=0xff;bad_xte[5]=0x7f;
+  wrong=frames;wrong[2]=nav_message(bad_xte,129283);
+  Check(!driver.SendNavigationBatch(wrong,epoch,7,Clock::now()),"out-of-range XTE refused");
+  driver.m_params.IOSelect = DS_TYPE_INPUT;
+  Check(!driver.SendNavigationBatch(frames,epoch,7,Clock::now()), "actual navigation sink requires bidirectional endpoint");
+  driver.m_params.IOSelect = DS_TYPE_INPUT_OUTPUT;
+  Check(!driver.SendNavigationBatch(frames,epoch+1,7,Clock::now()) && !driver.SendNavigationBatch(frames,epoch,7,Clock::now()-3s), "actual navigation sink keeps epoch and source-age guards");
+  Check(driver.SendNavigationBatch(frames,epoch,7,Clock::now()), "actual navigation sink queues one exact ordered batch");
+  Check(driver.m_serial_state.Get().navigation_written_token == 0, "actual batch acceptance is not write receipt");
+  Check(driver.m_serial_state.WriteOne([&](auto& wire) {
+    size_t begin = 0;
+    for (const auto& frame : frames) {
+      size_t end = begin + 2;
+      while (end+1 < wire.size()) {
+        if (wire[end] != 0x10) { ++end; continue; }
+        if (wire[end+1] == 3) { end += 2; break; }
+        Check(wire[end+1] == 0x10,"batch DLE escaping"); end += 2;
+      }
+      Check(end <= wire.size(),"complete batch packet");
+      Wire(std::vector<unsigned char>(wire.begin()+begin,wire.begin()+end),frame->PGN.pgn,6,255,frame->payload);
+      begin = end;
+    }
+    Check(begin == wire.size(),"exactly three broadcast packets"); return wire.size();
+  }) == 1 && driver.m_serial_state.Get().navigation_written_token == 7 && driver.m_serial_state.Get().pilot_written_ticket == 0, "actual batch wire and separate route receipt");
 }

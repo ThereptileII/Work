@@ -25,13 +25,18 @@ receive handler, physical-write wrapper, production connection/queue state and
 framer. Tests include queue capacity, default/session OFF, pending limit, disable
 cancellation, reconnect purge/epoch, expiry, partial/throwing writes, no output
 purge after write, bounded DLE framing and original worker timestamp preservation.
+The navigation cases cover a separate latest-batch slot, exact ordered serial
+frames, source/queue expiry, token invalidation and a write receipt that cannot
+stand in for a pilot command ticket. TRACK rechecks this receipt before writing.
 The second target extracts the actual `OpenCPNPilot` final sink/session methods
 and exercises the real ST4000 adapter with a fake registry/serial endpoint. It
-checks observed exact identity, session enablement, six commands, unsupported
-modes, heading requirements, endpoint isolation and disable cancellation.
+checks observed exact identity, session enablement, exact mode/course payloads,
+AUTO and locked-heading requirements, TRACK route custody, endpoint isolation
+and disable cancellation. Its navigation value types come from the actual
+`OpenCPNPilot.h`; framework doubles do not replace the real queue/receipt state.
 
 The helper copies the pinned driver and message headers as well as N2kMsg.
-CMake builds two offline tests on Linux or native MSVC. It does not qualify a
+CMake builds three offline tests on Linux or native MSVC. It does not qualify a
 real port, actual gateway acceptance, physical pilot response or the full
 application event loop. Full translation-unit compilation and physical tests
 are separate evidence. The original short-payload ASan regression is retained

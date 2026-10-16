@@ -27,6 +27,15 @@ output.write_text("// SHA256 of complete source: " +
                           "bool CommDriverN2KSerialThread::SetOutMsg("))
 
 gate = (Path(__file__).resolve().parents[2] / "src/integration/OpenCPNPilot.cpp").read_text()
+gate_header = Path(__file__).resolve().parents[2] / "src/integration/OpenCPNPilot.h"
+gate_types = gate_header.read_text()
+types_start = "struct NavigationOutputSession {"
+types_end = "// Main-thread transport boundary."
+if gate_types.count(types_start) != 1 or gate_types.count(types_end) != 1:
+    raise SystemExit("Pilot navigation type boundaries changed")
+(output.parent / "actual_gate_types.inc").write_text(
+    "// SHA256 of complete header: " + hashlib.sha256(gate_header.read_bytes()).hexdigest() + "\n" +
+    gate_types[gate_types.index(types_start):gate_types.index(types_end)])
 start = "bool OpenCPNPilot::Send(const adapters::PilotRequest &r)"
 if gate.count(start) != 1:
     raise SystemExit("Pilot gate source boundary changed")

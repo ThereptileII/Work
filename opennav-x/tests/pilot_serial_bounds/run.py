@@ -45,6 +45,7 @@ run("ctest", "--test-dir", build / "build", "-C", "Debug", "--output-on-failure"
     "patched_serial_sha256": hashlib.sha256((source / files[0]).read_bytes()).hexdigest(),
     "sanitizers": args.sanitize,
     "pilot_gate_sha256": hashlib.sha256((HERE.parents[1] / "src/integration/OpenCPNPilot.cpp").read_bytes()).hexdigest(),
+    "pilot_gate_header_sha256": hashlib.sha256((HERE.parents[1] / "src/integration/OpenCPNPilot.h").read_bytes()).hexdigest(),
     "serial_state_sha256": hashlib.sha256((source / "model/include/model/comm_drv_n2k_serial_state.h").read_bytes()).hexdigest(),
     "serial_framer_sha256": hashlib.sha256((source / "model/include/model/comm_drv_n2k_serial_framer.h").read_bytes()).hexdigest(),
     "scope": "Actual writer, pilot sink, receive handler, serial write function, queue/session/epoch state and framer; real N2kMsg. Fake port/listener, no hardware."
