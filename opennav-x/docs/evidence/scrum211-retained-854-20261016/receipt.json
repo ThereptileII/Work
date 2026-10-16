@@ -1,0 +1,553 @@
+{
+  "schema": 1,
+  "scope": "Native source-slice PluginHandler/Downloader probe only",
+  "frozenProduct": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "helperCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "runId": "38881652663",
+  "runAttempt": "1",
+  "jobId": "116909569359",
+  "runConclusion": "success",
+  "jobConclusion": "success",
+  "startedAt": "2026-10-16T09:36:54Z",
+  "completedAt": "2026-10-16T09:41:22Z",
+  "runnerImage": "windows-2022",
+  "imageVersion": "20261012.333.1",
+  "originalArtifact": {
+    "artifactId": "12037219056",
+    "artifactName": "retained-plugin-qualification-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-producer38765418126-attempt1-run38881652663-attempt1",
+    "artifactBytes": 12754281,
+    "artifactSha256": "87b980faf8eb52dc07449f73f25dee75b6b8b94bc57edfcef6bde4338a9ae0ac",
+    "crcVerifiedMembers": 5284
+  },
+  "originalFiles": {
+    "run-original.json": {
+      "sha256": "44347f4bb1d001391f985432c752c03b113b10667ea700e29e89a78af78a68df"
+    },
+    "job-original.json": {
+      "sha256": "e7e0b5a9f19ef318b3fec374dc5af33291a7166912abf231363dc0bc151daeb5"
+    },
+    "artifact-original.json": {
+      "sha256": "bbc0f8e3e9f59e9943fd46d24a3e8085929cc64d6eee380032e183cfd92eb659"
+    },
+    "job-original.log": {
+      "sha256": "3879835da4f289428fe79a76caa9aae5b1ac0e70ce437cddde1b94c38b1fc8ba"
+    }
+  },
+  "originalMembers": {
+    "results": {
+      "member": "opennav-x/evidence/local/retained-plugin-download/results.json",
+      "bytes": 320704,
+      "sha256": "70218ac5c50fae2118f962163bfe76526cc27cde02f543d25834edb53389b39a"
+    },
+    "authority": {
+      "member": "opennav-x/evidence/local/retained-plugin-auth/authority.json",
+      "bytes": 48799,
+      "sha256": "30e06a72ea28dc415c9308d7748290c154e97417b84f98bec5c8228972aee4ce"
+    },
+    "loader": {
+      "member": "opennav-x/evidence/local/retained-ocharts-loader/summary.json",
+      "bytes": 27007,
+      "sha256": "34ecd169cd37280252927d8d01511879d2ead0b8eb60af5f5b5d82ad5bc00e64"
+    },
+    "hostProvenance": {
+      "member": "dependency-provenance.json",
+      "bytes": 654,
+      "sha256": "1dcb9a226f5f83757b5f6d180466af1409bf2fc4bb7be4a3a15238ba97739cbc"
+    },
+    "subjectProvenance": {
+      "member": "subject-dependency-provenance.json",
+      "bytes": 654,
+      "sha256": "1dcb9a226f5f83757b5f6d180466af1409bf2fc4bb7be4a3a15238ba97739cbc"
+    },
+    "subjectBundle": {
+      "member": "subject-dependency-bundle/bundle.json",
+      "bytes": 51426,
+      "sha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5"
+    },
+    "native-pe-forwarders.log": {
+      "member": "opennav-x/evidence/local/retained-ocharts-loader/native-pe-forwarders.log",
+      "bytes": 57,
+      "sha256": "ab98e1755f71b3f2ab1f6e32b16019eaa83825df500b8d04e64f3b98e1417b9d"
+    },
+    "native-plugin-tls-byte-policy.log": {
+      "member": "opennav-x/evidence/local/retained-ocharts-loader/native-plugin-tls-byte-policy.log",
+      "bytes": 41,
+      "sha256": "2bd6e3df7463c61c67bd80ac807ad921c416394f4c9582fd0a70d7974ffbe8df"
+    }
+  },
+  "producer": {
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "source": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "jobId": "116536443214",
+    "jobConclusion": "success",
+    "runConclusion": "failure",
+    "captureArtifactId": "11993865595",
+    "captureArtifactSha256": "6dc6c98c3782a7b3dc7a2eb364cce53a168bef22c1f91ec0a69530efb9d41a8a",
+    "captureSha256": "367a06bf31cad3d135c27c2c7226846864c81c76f999518bda547a6378f8f5b4",
+    "inventorySha256": "2a1e50a2ba046d337b50075dfc83e86e323f89495a0019b4a78dccf10cdcff10",
+    "inventoryFilesCompared": 1585,
+    "inventoryAndInputMappingsExactlyMatchOriginal": true
+  },
+  "sourceBinding": {
+    "consumedInputCount": 99,
+    "unchangedCommonInputs": 99,
+    "exactConsumerChanges": {},
+    "allowedProbeChanges": [],
+    "helperOnlyInputs": {
+      "opennav-x/tools/plugin_subject_sdk.py": {
+        "mode": "100644",
+        "gitBlob": "1316d7de6922ffd42924bfdc54bc2f4184f57103",
+        "checkoutSha256": "7d394851ae857d9807cb5b381b30dfdaf21888facba3980324b22d5685335ccd"
+      }
+    },
+    "gitBlobsModesAndCheckoutHashesVerified": true,
+    "workflowSource": {
+      "helperCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "gitSha256": "0a6ecb1c730752f8cc5129fd1cd0de442849b9c2b4317be1b80f97b90d9a5097",
+      "checkoutSha256": "ea966716d413a5184249eab154d8fc5f41b7c1967c0649ff683ca03b82e7c139"
+    },
+    "localInputCount": 17,
+    "localInputs": {
+      "tools/test-plugin-download-guard-windows.py": "84d19dfa4ef362c149cc606b81a9982013a7516f6bf74fb91ca1b46e483df614",
+      "tools/plugin-guard-owned-trust.ps1": "74a8dfbf7732883bb255a430fafd03f33fc090625c23b39e3717d665e0b80bfa",
+      "tools/test-plugin-download-guard.py": "d09f643164d07897e6d72e5c00c940027d6d1b85e1d73c4f52eef705ff214f76",
+      "tools/test-downloader-trust.py": "2721c2656c0a00549985a3d8996fe0da5243ed2069611e6bbbf09c954da7bd9a",
+      "tools/test-ais-runtime-windows.py": "391b3b5dd4e7bc273993703cde26f6993c8c679b70553b45780f109f251bddde",
+      "tools/windows_dependency_receipt.py": "7755c98d421a860331a73b43929d5c3d0677a797d68dfab4b0187d0e2462a3c4",
+      "tools/windows_dependency_stage.py": "c50166c999ccb81241fd53d83f60523b55e01ca82ff23562b9d52195821c0546",
+      "tools/windows_dependency_bundle.py": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+      "tools/windows_dependency_reuse.py": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+      "tools/plugin_subject_sdk.py": "7d394851ae857d9807cb5b381b30dfdaf21888facba3980324b22d5685335ccd",
+      "tools/verify-openssl-runtime.py": "0554eb218e6621c3d3b22bd7db8d487d6ce51100b2578147d89409b23289e727",
+      "tools/plugin-download-guard-server.py": "800631c9b7f7b8af3b50d807e2dda89c6502c35950a9d365516d70bc2dfda92a",
+      "tools/plugin-download-guard-probe.cpp": "c2f579ec7d9b6f1e24576cf3c8ee067c378fa6db7bce603942d6f6f7b3b633df",
+      "tools/TrustProbeConsole.h": "ef44869941f4550341e502533c2c78aec0265cd04016ab08cd20918761639a36",
+      "patches/opencpn-5.12.4-download-trust.patch": "04763cb038ad088a722e76d4f85bde7e356489b697a373458195336d4278412b",
+      "tests/plugin_download_guard/CMakeLists.txt": "e2b5c45cbfb9ccf0d64024cdd1cfda524f457c8c7370c16e90e9a13fd5344f12",
+      "tests/plugin_download_guard/InputPaths.cmake": "e6144fac8cffb17e97723b65e375299ec31019544ec428c06f66318ca1d74c30"
+    },
+    "productionSource": {
+      "model/src/plugin_handler.cpp": {
+        "testedLfSha256": "912c756ea9d1b17eb8411132feae7c0136345e327f79d522bae478a36a218471",
+        "packagedSha256": "21bd88cfd19dc3aed701fbc876417974d25fe96e14b787cf50237f3c1f315799",
+        "exactAfterExplicitCrLfToLf": true
+      },
+      "model/src/downloader.cpp": {
+        "testedLfSha256": "6163ffeab05b71573e56c568e89616237817226ad2a65558e1f32ea2b7ad81ab",
+        "packagedSha256": "e1e44c9b1779c015980dbe920b1d8dccf5836f82b9b4141fdcdf16360d9357f6",
+        "exactAfterExplicitCrLfToLf": true
+      },
+      "model/include/model/downloader.h": {
+        "testedLfSha256": "147a517339966a59375ba5af0ce4fec052b9fd3c35bdc05e54d2453d27682346",
+        "packagedSha256": "678bcf95d3548f5401b211c2b657311c5631dd9f81517ea89f6f97f20ef0d509",
+        "exactAfterExplicitCrLfToLf": true
+      }
+    }
+  },
+  "nativeOutcomes": {
+    "status": "passed",
+    "cases": [
+      {
+        "case": "valid",
+        "accepted": true,
+        "passed": true,
+        "archiveOpens": 1,
+        "archiveEntries": 2,
+        "installedFilesAndRecordsUnchanged": false,
+        "error": ""
+      },
+      {
+        "case": "https_redirect",
+        "accepted": true,
+        "passed": true,
+        "archiveOpens": 1,
+        "archiveEntries": 2,
+        "installedFilesAndRecordsUnchanged": false,
+        "error": ""
+      },
+      {
+        "case": "http_downgrade",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [Protocol \"http\" is disabled (in redirect)]"
+      },
+      {
+        "case": "local_file_redirect",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [Protocol \"file\" is disabled (in redirect)]"
+      },
+      {
+        "case": "initial_http",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [Public download URL must use HTTPS]"
+      },
+      {
+        "case": "interrupted_extractable_archive",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [OpenSSL SSL_read: OpenSSL/3.5.9: error:0A000126:SSL routines::unexpected eof while reading, errno 0]"
+      },
+      {
+        "case": "untrusted",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+      },
+      {
+        "case": "redirect_untrusted",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+      },
+      {
+        "case": "expired",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]"
+      },
+      {
+        "case": "redirect_expired",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: certificate has expired (10)]"
+      },
+      {
+        "case": "wrong_host",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']"
+      },
+      {
+        "case": "redirect_wrong_host",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL: no alternative certificate subject name matches target hostname 'localhost']"
+      },
+      {
+        "case": "trust_removed",
+        "accepted": false,
+        "passed": true,
+        "archiveOpens": 0,
+        "archiveEntries": 0,
+        "installedFilesAndRecordsUnchanged": true,
+        "error": "Cannot download plugin: Fixture [SSL certificate OpenSSL verify result: unable to get local issuer certificate (20)]"
+      }
+    ],
+    "ignoredFailureMutation": "rejected: failed download entered archive installation",
+    "httpTargetReachable": true,
+    "forbiddenHttpRequests": 0,
+    "cleanup": "verified",
+    "cleanupErrors": [],
+    "loaderChecks": 58,
+    "exportForwarderChecks": 17625,
+    "pluginTlsBytePolicyChecks": 282,
+    "loaderScope": "actual native loader/lock/hash/bind/status/fallback mechanics",
+    "vendorExecuted": false,
+    "pluginFactoryExecuted": false
+  },
+  "probeBinarySha256": {
+    "normal": "c1abacb57a21191631b54a1db1e21373ff1214af48d18781f212795d24d48e9a",
+    "mutant": "4c646ef96e6c022752b6107ac12d96be01e1fe9ee3f071d8c9d4515a71b640ec"
+  },
+  "nativeToolsSha256": {
+    "cl.exe": "303bfbe5523af2e925871a1bc7fd2ec5f199a69208a3b6716724c3e6d6b6962d",
+    "dumpbin.exe": "364840933ceaf8e5d9b62c3a2b1fb66aef2f59fba854146e816751bc2f622ee5",
+    "cmake.EXE": "3fe22eb02e1c6184ec207366ed21a6f2f9c3828c1e9f3324546befadfb362be3",
+    "python.exe": "4d6f5f81a4bca11191c4c7c6b43632694d0a4ce74e068619d8fdc161d469859a",
+    "pwsh.EXE": "bfb46af89433268872ddb43d1ca7a3f433452ee91ed356a9786940f90118e285"
+  },
+  "runtimeComparisonToFinalPackage": [
+    {
+      "name": "archive.dll",
+      "capture": {
+        "bytes": 524288,
+        "sha256": "a56ca71de9e99273f871eff0dd10de97bff7c94fa75d173f86269c9e8faa8cff"
+      },
+      "finalPackage": {
+        "bytes": 524288,
+        "sha256": "a56ca71de9e99273f871eff0dd10de97bff7c94fa75d173f86269c9e8faa8cff"
+      },
+      "identical": true
+    },
+    {
+      "name": "concrt140.dll",
+      "capture": {
+        "bytes": 248616,
+        "sha256": "2423a2a62fe0369c610837e240d691da727d95a9c1d5add512d0d0c32e328836"
+      },
+      "finalPackage": {
+        "bytes": 259688,
+        "sha256": "a2b04c69868b08a600518ebbad1661d38de4dd0e0a8e638c22d4641d410e50b1"
+      },
+      "identical": false
+    },
+    {
+      "name": "libcrypto-3.dll",
+      "capture": {
+        "bytes": 4491776,
+        "sha256": "1c6eaa9614cc64920f4f9e4121aabb042d59b2e056306fad6b756a850d9302ce"
+      },
+      "finalPackage": {
+        "bytes": 4491776,
+        "sha256": "1c6eaa9614cc64920f4f9e4121aabb042d59b2e056306fad6b756a850d9302ce"
+      },
+      "identical": true
+    },
+    {
+      "name": "libcurl.dll",
+      "capture": {
+        "bytes": 638464,
+        "sha256": "0a39fc592e20366dd2dfcda0d47841bce909e27da21af7a12cafa19bde9e9ef2"
+      },
+      "finalPackage": {
+        "bytes": 638464,
+        "sha256": "0a39fc592e20366dd2dfcda0d47841bce909e27da21af7a12cafa19bde9e9ef2"
+      },
+      "identical": true
+    },
+    {
+      "name": "liblzma.dll",
+      "capture": {
+        "bytes": 129024,
+        "sha256": "824072585babd3043b921b52ddad771ae3002f13d219e9cd4838b124c8d14fc8"
+      },
+      "finalPackage": {
+        "bytes": 129024,
+        "sha256": "824072585babd3043b921b52ddad771ae3002f13d219e9cd4838b124c8d14fc8"
+      },
+      "identical": true
+    },
+    {
+      "name": "libssl-3.dll",
+      "capture": {
+        "bytes": 1067520,
+        "sha256": "292674cce1433331ed278837d5328d291b28e4a51f78ea550f82f9b82e3f49e9"
+      },
+      "finalPackage": {
+        "bytes": 1067520,
+        "sha256": "292674cce1433331ed278837d5328d291b28e4a51f78ea550f82f9b82e3f49e9"
+      },
+      "identical": true
+    },
+    {
+      "name": "msvcp140.dll",
+      "capture": {
+        "bytes": 457000,
+        "sha256": "fa21058e50d0d6860da87d784f573670bf5d3efd65158145954ef96d0cd403cf"
+      },
+      "finalPackage": {
+        "bytes": 447616,
+        "sha256": "97e71a3c697fb1ab3af777db39009e4602525e8c3aff0837ecc7031cba188165"
+      },
+      "identical": false
+    },
+    {
+      "name": "vcruntime140.dll",
+      "capture": {
+        "bytes": 86840,
+        "sha256": "1b372f064eacb455a0351863706e6326ca31b08e779a70de5de986b5be8069a1"
+      },
+      "finalPackage": {
+        "bytes": 91216,
+        "sha256": "a9d7732a3c3de09f0601a7fa2555093dcb49f08e2fc62a86091461f0f38393ed"
+      },
+      "identical": false
+    },
+    {
+      "name": "wxbase32u_vc14x.dll",
+      "capture": {
+        "bytes": 2523136,
+        "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+      },
+      "finalPackage": {
+        "bytes": 2523136,
+        "sha256": "0aa3800ac7981091f46a45342620e169d158790a6f55e96ca86e772ef567f338"
+      },
+      "identical": true
+    },
+    {
+      "name": "wxmsw32u_core_vc14x.dll",
+      "capture": {
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      "finalPackage": {
+        "bytes": 7467008,
+        "sha256": "beadbd9824a90d54e25f899afb9cf45611e7f74c9e0a0ceb6531e0bf6d21bdc3"
+      },
+      "identical": true
+    },
+    {
+      "name": "zlib1.dll",
+      "capture": {
+        "bytes": 73216,
+        "sha256": "7fc22be237fe99e26f1948afa2cd795903f7b98bd8b68bd99bd21242d061f65d"
+      },
+      "finalPackage": {
+        "bytes": 73216,
+        "sha256": "7fc22be237fe99e26f1948afa2cd795903f7b98bd8b68bd99bd21242d061f65d"
+      },
+      "identical": true
+    }
+  ],
+  "runtimeComparisonAuthoritySha256": "39b59c942269c0ebb8335acdd4ad44f2610fc38f1e8a67db13547be82b76c591",
+  "allElevenNormalAndMutantRuntimeHashesMatchOriginalCapture": true,
+  "finalPackageExactRuntimeMatches": 8,
+  "allFourMaintainedTlsDllsExact": true,
+  "threeMsvcDllsDifferNoEquivalenceClaim": true,
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38881652663/attempts/1",
+  "privateReviewSha256": "a2c21cfe35674a6b87b937fca05a240a5705ff08b705abfb9404e6d2b51fc45d",
+  "sdkRoles": {
+    "hostArtifact": {
+      "schemaVersion": 1,
+      "repository": "ThereptileII/Work",
+      "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+      "runId": "38618335277",
+      "runAttempt": "1",
+      "headSha": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+      "job": "windows-dependencies",
+      "conclusion": "success",
+      "artifactId": "11924018896",
+      "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38618335277-attempt1",
+      "artifactDigest": "sha256:08f4fa9ca058564822ba9b69ef19aca0cbf3ea84953657d838e054709ab83ca9",
+      "bundleSha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5"
+    },
+    "subjectArtifact": {
+      "schemaVersion": 1,
+      "repository": "ThereptileII/Work",
+      "workflowPath": ".github/workflows/skager-windows-dependencies.yml",
+      "runId": "38618335277",
+      "runAttempt": "1",
+      "headSha": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+      "job": "windows-dependencies",
+      "conclusion": "success",
+      "artifactId": "11924018896",
+      "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38618335277-attempt1",
+      "artifactDigest": "sha256:08f4fa9ca058564822ba9b69ef19aca0cbf3ea84953657d838e054709ab83ca9",
+      "bundleSha256": "61dc448fda5d494edd8a356cbf3bcc425ddf8e447f3d6622b2a2f2f33cdb94e5"
+    },
+    "independentlyAuthenticatedRolesEqual": true,
+    "originalCaptureAuthorityExact": true,
+    "actualCombination": "20261012.333.1 host / 20261012.333.1 captured subject",
+    "otherHostSubjectCombinationsAccepted": false,
+    "fingerprintSha256": "bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048",
+    "workflowSha256": "fae71dff3d7f26b67a01e6f7791e173d79506620695e2e038f0c5c96e0eecd9a",
+    "toolchainSha256": "978e7a154c8e8d6dc388af73c247ecb6f32636c389f02e80f2d0f29a12018bfb",
+    "abi": {
+      "abi": "x86",
+      "architecture": "Win32",
+      "curl": "8.22.0",
+      "openssl": "3.5.9",
+      "runtime": "MultiThreadedDLL (/MD)",
+      "zlib": "1.3.2"
+    },
+    "subjectOpenSslRuntimeStatus": "passed",
+    "subjectOpenSslExecutableSha256": "49c6ee5f442af314061bd6442ef2a8522406fd4ba0c1e51cb88a2684491dfbca",
+    "observedCpuChanged": false
+  },
+  "finalPackageIdentities": {
+    "SKAGER-Beta2-Setup.exe": {
+      "member": "build/beta-installer/SKAGER-Beta2-Setup.exe",
+      "bytes": 187484268,
+      "sha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d"
+    },
+    "SKAGER-Beta2-Portable-Recovery.zip": {
+      "member": "build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip",
+      "bytes": 193913665,
+      "sha256": "3b53efc875b99e4f10a8c0ded5ca7f08d8572e11b4bfe0c6daa9929891704947"
+    },
+    "SKAGER-Beta2-source.zip": {
+      "member": "build/developer-preview/SKAGER-Beta2-source.zip",
+      "bytes": 453609938,
+      "sha256": "cc5042b371f8f664222cec9c0aa1af7b36c98d57d2b45d54a50e2685b0a67142"
+    }
+  },
+  "limits": {
+    "scope": "Native source-slice PluginHandler/Downloader and maintained loader checks against exact captured runtime; final package runtime coverage is separate.",
+    "runtimeEvidence": "The native result archive contains reported normal/mutant DLL hashes, not copies of those DLLs; those reports match the independently authenticated original capture.",
+    "sourceNormalization": "Explicit CRLF-to-LF comparison applies only to source; no runtime normalization or metadata-equivalence acceptance.",
+    "sameImageOnly": true,
+    "finalThreeMsvcPluginHandlerTested": false,
+    "perDllLoadedHashCensus": false,
+    "originalProducerRunConclusionPreserved": "failure",
+    "installerChartsRun": "38882281891/1",
+    "installerChartsStatusAtReceipt": "pending",
+    "productAcceptance": false,
+    "boatAcceptance": false,
+    "releaseAcceptance": false,
+    "newAppBuild": false,
+    "workerRetry": false,
+    "originalDownloadsRepeated": false
+  },
+  "separateFinalPackageCoverage": {
+    "scope": "Original fixture-free final-package selftest and production-recovery; not the captured-runtime PluginHandler matrix.",
+    "originalQualificationArtifactId": "11994723756",
+    "originalQualificationArtifactSha256": "9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
+    "productionRecoveryReport": {
+      "member": "production-recovery-results.json",
+      "bytes": 7004,
+      "sha256": "84a9238b3b1fdc67cc76b90894db6da14db25c1751ec9841b237d8b687e05912",
+      "status": "passed",
+      "checks": [
+        "Exact extracted package inventory/hash and actual fixture-free executable identity verified",
+        "Extracted app/helper execute matching guarded-restart capability probes without profile initialization",
+        "Out-of-box product shows real unavailable state, no Demo controls and Day/Dusk/Night chart content",
+        "Legacy launcher and Legacy-to-XNav retain real coastline and isolated profile",
+        "Product XNav-to-Legacy-to-XNav controlled restart preserves coastline",
+        "Safe launcher and return to XNav render real chart content with clean process exits",
+        "External-profile override refused; normal installed files and profile canary unchanged"
+      ],
+      "filesVerified": 1046,
+      "packageSha256": "3b53efc875b99e4f10a8c0ded5ca7f08d8572e11b4bfe0c6daa9929891704947",
+      "testFixtures": false,
+      "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511"
+    },
+    "productionPackageSelftest": {
+      "sha256": "4970a2dd722b4e192b8a1893f8a0f167654dd856c2b487fd3e6e41525ba3289c",
+      "passed": true,
+      "testFixtures": false,
+      "pluginsLoaded": false
+    },
+    "independentReview": "Coordinator and hazard reviewer checked post-CRT-copy selftest and restart with System32-only PATH; original report identities read here without new execution.",
+    "normalAndDelayImportReview": {
+      "concrt140.dll": 0,
+      "msvcp140.dll": "direct application import",
+      "vcruntime140.dll": "direct application import"
+    },
+    "perDllLoadedHashCensus": false,
+    "extraCrtGateSelectedByCoordinator": false
+  }
+}
