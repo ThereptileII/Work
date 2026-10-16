@@ -65,8 +65,10 @@ A mutex protects connection generation, output queue, pilot permission and the
 final serial write. Disconnect/read error, partial/zero/exception write, and
 close purge the queue. Reconnect advances the epoch and clears pilot permission.
 No failed write is retried. Management enqueue attempts are bounded even when
-an active worker rejects output because its port is disconnected/full. The separate pilot API accepts only the exact six
-known manual command encodings or the non-steering ISO60928 request. Pilot
+an active worker rejects output because its port is disconnected/full. The separate pilot API accepts only the exact eight
+known manual command encodings (the original six plus native TRACK and WIND)
+or the non-steering ISO60928 request. The two additional modes are source-only,
+unbuilt and unqualified as of 2026-10-16. Pilot
 commands require an explicit session; discovery does not enable one. At most
 one pilot/discovery item is pending, with a 500ms residence limit. Exact STANDBY
 atomically replaces an unsent pilot item; it never leaves an older AUTO queued. Ordinary
@@ -103,6 +105,24 @@ sink/session functions and uses the real ST4000 adapter. Framework, registry,
 port and listener collaborators are fake; no hardware is opened. Native and
 physical acceptance remain distinct gates. See [the integration contract](pilot-boat-integration.md)
 and [2026-10-06 software evidence](evidence/2026-10-06-pilot-serial/README.md).
+
+The source-only TRACK extension adds a separate bounded, expiring navigation
+batch slot and receipt; it is not a generic pilot output path. Only an explicitly
+enabled selected serial session with current physical AUTO/TRACK can send the
+coherent OpenCPN navigation batch. Original position time, connection epoch and
+waypoint identity bound queued TRACK eligibility, including at final write.
+Manual STANDBY remains independent of route validity.
+
+The same patch now also adds narrow `autopilot_output.h/.cpp` serializer
+overloads and an optional application-thread interface reservation. Existing
+two-argument serializer symbols retain stock behavior. XNav serializes normal
+completed route progress into owned frames with persistent matching waypoint
+IDs; it does not run route processing or introduce a guidance calculation.
+Reservation is applied after stock driver selection so it cannot reroute output
+to another connection. Legacy/Safe retain stock selection. This does not block
+arbitrary third-party plugin transmissions. See
+[Track/Wind scope and unperformed qualification](pilot-track-wind.md); no new
+patch file, patch registry or dependency-reuse helper was introduced.
 
 ## Boat feedback integration — SCRUM-291 / 294–300 / 303–309
 

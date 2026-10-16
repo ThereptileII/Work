@@ -49,6 +49,15 @@ available when configured control permits it, including after feedback loss.
 No UI success is inferred from transport acceptance. Timeouts explicitly direct
 the user to the physical helm without automatically retrying a command.
 
+The source-only SCRUM-313 extension requires measured AUTO or TRACK before a
+native TRACK request. Its button also reflects local route-feed eligibility;
+the disabled-button hint explains the known prerequisite. Local route output is
+not proof that the bridge has received it or has fresh magnetic variation.
+TRACK/WIND confirmations describe their separate route/apparent-wind inputs.
+A rejected request is not attributed to the physical pilot when it was actually
+blocked locally. The owned command detail preserves uncertainty when an earlier
+transmission may have occurred. See [the unqualified Track/Wind change](pilot-track-wind.md).
+
 The drawer uses the same guarded callbacks as the former page. Replay cannot
 enable or command equipment. A read-only commissioning session is independently
 blocked by both Shell and integration. Only the fixture build includes the

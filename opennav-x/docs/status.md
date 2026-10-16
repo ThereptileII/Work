@@ -1,5 +1,17 @@
 # SKAGER status — 2026-10-16
 
+## Track/Wind follow-up — local source changes only
+
+The user requested native Track/Wind controls and controller Wind corrections
+under SCRUM-313 while retaining the instruction to make code changes without
+building or testing. The changes are separate from the installed candidate below.
+Both final mode-command allowlists, Track's explicit measured-AUTO prerequisite,
+guarded native route-data delivery and firmware apparent-wind handling are the
+scope; AutoTrack's automatic heading loop is not copied. See
+[the source-only contract and outstanding qualification](pilot-track-wind.md).
+There is no new build, execution result, firmware upload or boat acceptance for
+this work. Original release/boat evidence below remains unchanged.
+
 ## Replacement candidate — native Staging passed; installed, boat startup pending
 
 The user made the desktop available on 16 October. The same installed `854078a5`

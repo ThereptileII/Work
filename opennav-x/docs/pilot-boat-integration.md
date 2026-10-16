@@ -4,6 +4,12 @@ Jira: SCRUM-295 (detection), SCRUM-307 (shared AutoTrack setup), SCRUM-313
 (actual serial manual-control qualification), SCRUM-19 (safety boundary).
 This is a contract/evidence explanation, not a separate backlog.
 
+**2026-10-16 source-only extension:** native TRACK/WIND mode plumbing and the
+controller's wind-input/forwarding guards have local source corrections under SCRUM-313.
+See [Track/Wind boundaries and unperformed qualification](pilot-track-wind.md).
+The six-command evidence below is historical and does not accept these additions.
+No new build, test, deployment or physical command has been performed.
+
 ## What was observed on the boat
 
 Read-only inspection on 2026-10-05 found the existing OpenCPN Actisense serial
