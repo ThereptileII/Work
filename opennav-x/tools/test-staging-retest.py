@@ -78,7 +78,8 @@ class PinnedRetest(unittest.TestCase):
     def test_push_cli_refuses_unpinned_prepare_and_broader_scope_before_effects(self):
         environment=dict(self.environment,GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='github-hosted')
         for arguments in (['prepare','--producer-run-id','37330218586','--producer-run-attempt','1'],
-                          ['test','--scope','all'],['test','--scope','installer']):
+                          ['test','--scope','all'],['test','--scope','installer'],
+                          ['test','--scope','installer-startup-diagnostic']):
             with mock.patch.dict(os.environ,environment,clear=True), \
                  mock.patch.object(retest.sys,'platform','win32'), \
                  mock.patch.object(retest.sys,'argv',['retest']+arguments), \
@@ -137,6 +138,7 @@ class PinnedRetest(unittest.TestCase):
         self.assertEqual(set(workflow['on']),{'push','workflow_dispatch'})
         self.assertEqual(workflow['on']['push']['branches'],['skager-staging-retest'])
         self.assertIn('installer-charts',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
+        self.assertIn('installer-startup-diagnostic',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
         steps=workflow['jobs']['retest']['steps']
         test=next(x for x in steps if 'RETEST_SCOPE' in x.get('env',{}))
@@ -144,6 +146,18 @@ class PinnedRetest(unittest.TestCase):
         self.assertNotIn('GH_TOKEN',test['env'])
         for step in steps:
             self.assertNotRegex(step.get('run',''),r'(?i)(build-pristine|cmake|msbuild|makensis|gh release|package-preview|package-alpha)')
+
+    def test_diagnostic_never_accepts_or_continues_even_if_child_returns_zero(self):
+        for failure in (None, subprocess.CalledProcessError(1, ['diagnostic'])):
+            report=dict(status='running', productCommit=COMMIT)
+            with mock.patch.object(retest.subprocess, 'run', side_effect=failure) as run:
+                with self.assertRaises((ValueError, subprocess.CalledProcessError)):
+                    retest.run_checks('installer-startup-diagnostic', report, lambda: None)
+            self.assertEqual(run.call_count, 1)
+            self.assertEqual(run.call_args.args[0][-1], '--startup-supervisor-diagnostic')
+            self.assertEqual(report['status'], 'failed')
+            self.assertEqual(report['checks'], [dict(name='installer-startup-diagnostic', status='failed')])
+            self.assertTrue(report['diagnosticOnly']); self.assertFalse(report['releaseQualification'])
 
 
 if __name__ == '__main__':

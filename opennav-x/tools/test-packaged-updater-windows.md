@@ -60,3 +60,23 @@ python tools/test-installer-completion.py
 
 Native same-run installer execution against these exact bytes remains required.
 Portable tests neither execute Setup nor claim the mechanics passed on Windows.
+# Retained startup failure diagnosis
+
+The existing retained Staging workflow has an explicit
+`installer-startup-diagnostic` scope for failed candidate
+`854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc`, producer run `38765418126`, attempt `1`.
+It reuses authenticated retained inputs and the unchanged disposable fresh-install
+fixture. At bootstrap it calls the original installed `UpdateSupervisor.ps1`
+`QualifyCurrent` once, using the WOW64 I386 Windows PowerShell host selected for
+the x86 launcher's contract, exact application working directory and unchanged
+security checks. It does not repeat the original launcher or later lifecycle
+phases. The original failed qualifier remains authoritative.
+
+`packaged-updater.json` retains the original failure reference, installed input
+hashes, host identity, exit/timeout observation and bounded, redacted stdout and
+stderr. No startup challenge or environment dump is exported. A surviving app
+can keep a pipe open; complete lines already received remain available and the
+report marks incomplete output. The supervisor's own cleanup can mask an earlier
+receiver failure; this observation does not reconstruct the masked cause.
+Even zero exit or a newly created receipt remains diagnostic-only: this scope
+intentionally fails qualification and uses the existing disposable cleanup.

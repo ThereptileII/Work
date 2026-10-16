@@ -16,6 +16,7 @@ import re
 import stat
 import subprocess
 import sys
+import threading
 import time
 
 
@@ -23,6 +24,96 @@ _startup_spec = importlib.util.spec_from_file_location(
     'packaged_updater_startup_log', Path(__file__).with_name('startup-log.py'))
 _startup = importlib.util.module_from_spec(_startup_spec)
 _startup_spec.loader.exec_module(_startup)
+
+
+STARTUP_FAILURE = dict(productCommit='854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc',
+                       runId='38765418126', runAttempt='1', status='failed',
+                       artifactSha256='9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353',
+                       stage='packaged-updater-bootstrap/launcher-completion')
+
+
+def diagnostic_text(raw):
+    # Never persist environment dumps, wire frames or the 64-hex challenge.
+    # Exact binary/source hashes are recorded separately from trusted files.
+    text = raw.decode('utf-8', errors='replace').replace('\x00', '')
+    text = re.sub(r'(?im)^.*(?:SKAGER_UPDATE_|SKAGER-UPDATE-(?:READY|WAIT|CONTINUE|CANCEL)/1).*$', '[redacted startup protocol/environment]', text)
+    return re.sub(r'(?i)[a-f0-9]{64}', '[redacted 64-hex value]', text)
+
+
+def diagnostic_host(launcher):
+    # The packaged GOARCH=386 launcher calls GetSystemDirectory and leaves WOW64
+    # redirection enabled. Explicitly select that x86 host from this x64 harness.
+    system = ctypes.create_unicode_buffer(32768)
+    query = ctypes.WinDLL('kernel32', use_last_error=True).GetSystemWow64DirectoryW
+    query.argtypes = (ctypes.c_wchar_p, ctypes.c_uint); query.restype = ctypes.c_uint
+    length = query(system, len(system))
+    assert 0 < length < len(system), 'The original x86 launcher requires the Windows WOW64 system directory'
+    host = Path(system.value) / 'WindowsPowerShell/v1.0/powershell.exe'
+    bounded_plain(launcher, 64 * 1024 * 1024)
+    for path in (launcher, host):
+        # Serviced OS files may legitimately have WinSxS hard links.
+        for ancestor in (path, *path.parents):
+            assert not ancestor.is_symlink() and not (getattr(ancestor.lstat(), 'st_file_attributes', 0) & 0x400), 'Redirected diagnostic host refuses'
+        assert path.is_file() and 64 <= path.stat().st_size <= 64 * 1024 * 1024
+        with path.open('rb') as stream:
+            header = stream.read(64)
+            assert len(header) == 64 and header[:2] == b'MZ', 'Expected native x86 image'
+            offset = int.from_bytes(header[60:64], 'little')
+            assert 64 <= offset <= path.stat().st_size - 26, 'Invalid native PE header offset'
+            stream.seek(offset); pe = stream.read(26)
+            assert pe[:6] == b'PE\0\0\x4c\x01' and pe[24:26] == b'\x0b\x01', 'Diagnostic must use the original I386/PE32 host contract'
+    return host
+
+
+def capture_supervisor_diagnostic(arguments, directory, owned):
+    """One original supervisor invocation; bounded memory, no raw output file."""
+    environment = {key: value for key, value in os.environ.items() if not key.upper().startswith('SKAGER_UPDATE_')}
+    startup = subprocess.STARTUPINFO()
+    startup.dwFlags |= subprocess.STARTF_USESHOWWINDOW
+    startup.wShowWindow = 0
+    process = subprocess.Popen(arguments, cwd=directory, stdin=subprocess.DEVNULL,
+                               stdout=subprocess.PIPE, stderr=subprocess.PIPE,
+                               env=environment, startupinfo=startup)
+    owned.add(process.pid)
+    captures = {}
+    lock = threading.Lock()
+    def drain(name, stream):
+        try:
+            while chunk := stream.read1(4096):
+                with lock:
+                    record = captures[name]
+                    record['bytes'] += len(chunk)
+                    record['raw'].extend(chunk[:max(0, 65536 - len(record['raw']))])
+        except OSError:
+            with lock: captures[name]['readError'] = True
+        finally:
+            stream.close()
+            with lock: captures[name]['complete'] = True
+    readers = []
+    for name, stream in (('stdout', process.stdout), ('stderr', process.stderr)):
+        captures[name] = dict(raw=bytearray(), bytes=0, complete=False)
+        reader = threading.Thread(target=drain, args=(name, stream), daemon=True)
+        reader.start(); readers.append(reader)
+    result = dict(exitCode=None, timedOut=False, timeoutSeconds=240)
+    try:
+        result['exitCode'] = process.wait(timeout=240)
+    except subprocess.TimeoutExpired:
+        result['timedOut'] = True  # Existing outer owned-process cleanup remains authoritative.
+    finally:
+        for reader in readers: reader.join(.25)
+        if process.poll() is not None: owned.discard(process.pid)
+    with lock:
+        for name, record in captures.items():
+            complete = record['complete'] and not record.get('readError', False)
+            truncated = record['bytes'] > 65536
+            raw = bytes(record['raw'])
+            # A surviving app may inherit an output handle. Keep complete lines
+            # already received without waiting for its exit or exporting a
+            # partial final line/challenge. Oversized output is withheld.
+            if not complete: raw = raw[:raw.rfind(b'\n') + 1]
+            text = diagnostic_text(raw) if not truncated else '[output exceeds 65536-byte bound; withheld]'
+            result[name] = dict(text=text, bytes=record['bytes'], complete=complete, truncated=truncated)
+    return result
 
 
 def startup_log(profile):
@@ -185,7 +276,8 @@ def legacy_trust_preserved(before, after):
 
 
 def qualify(*, install, setup, stock, profile, evidence, powershell, commit,
-            executable_sha256, ui, owned, inventory, navigation_matches, product, source_app):
+            executable_sha256, ui, owned, inventory, navigation_matches, product, source_app,
+            startup_diagnostic=False):
     if sys.platform != 'win32' or os.environ.get('GITHUB_ACTIONS') != 'true':
         raise RuntimeError('Real package qualification requires disposable Windows CI')
     assert install == Path(os.environ['LOCALAPPDATA']) / 'OpenNavXAlpha1'
@@ -400,6 +492,38 @@ Write-Output 'Exact-generation DPAPI startup receipt authenticated.'
         first = generation(initial)
         assert not (install / 'known-good' / (initial+'.receipt')).exists(), 'Bootstrap must establish new actual proof'
         assert inventory(profile) == initial_profile
+        if startup_diagnostic:
+            assert commit == STARTUP_FAILURE['productCommit'] and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted'
+            assert not any(os.environ.get(key) for key in ('GH_TOKEN', 'GITHUB_TOKEN', 'OPENNAV_ARTIFACT_TOKEN'))
+            assert not any(title == 'SKAGER / OpenCPN' for _, _, title in ui.windows())
+            report.update(diagnosticOnly=True, releaseQualification=False, originalFailure=STARTUP_FAILURE,
+                          scope='Original installed QualifyCurrent stderr diagnosis only; no launcher, installer or updater acceptance')
+            host = diagnostic_host(first / 'app/skager-start.exe')
+            paths = ('ownership.json', 'app/opencpn.exe', 'app/skager-start.exe', 'UpdateSupervisor.ps1', 'UpdateTransaction.ps1', 'Lifecycle.ps1')
+            before = {path: digest(first / path) for path in paths}
+            # The authenticated installer payload supplies these exact original scripts.
+            # Do not dot-source, instrument, rewrite or substitute harness copies.
+            arguments = [str(host), '-NoProfile', '-NonInteractive', '-ExecutionPolicy', 'Bypass',
+                         '-File', str(first / 'UpdateSupervisor.ps1'), '-InstallationRoot', str(install),
+                         '-Action', 'QualifyCurrent']
+            observation = dict(generation=initial, hostPath=str(host), hostSha256=digest(host),
+                               hostMachine='I386', workingDirectory=str(first / 'app'), inputs=before,
+                               cleanupMayMaskReceiverReason=True, acceptance=False)
+            report['supervisorDiagnostic'] = observation
+            observation.update(capture_supervisor_diagnostic(arguments, first / 'app', owned))
+            # Register any surviving visible exact app for the existing failure
+            # screenshots and disposable runner cleanup; perform no UI action.
+            for _, pid, _ in ui.windows():
+                try:
+                    if process_image(pid).samefile(first / 'app/opencpn.exe'): owned.add(pid)
+                except OSError: pass
+            observation['receiptPresent'] = (install / 'known-good' / (initial+'.receipt')).exists()
+            observation['inputsUnchanged'] = before == {path: digest(first / path) for path in paths}
+            assert observation['inputsUnchanged'], 'Original installed diagnostic inputs changed'
+            assert generation(initial) == first and state()['current'] == initial and not pending_path.exists()
+            assert digest(setup) == report['setupSha256'] and inventory(stock.parent) == stock_before
+            assert navigation_matches(), 'Shared navigation fixtures changed during diagnosis'
+            raise RuntimeError('Diagnostic completed without qualification; original launcher failure remains unresolved')
         launch_and_close([str(first / 'app/skager-start.exe'), '--xnav'], initial, 'bootstrap', True)
         check('Actual installed launcher bootstraps real application and exact authenticated health receipt')
 
