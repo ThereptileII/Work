@@ -168,8 +168,11 @@ class PinnedRetest(unittest.TestCase):
         workflow=yaml.load((checkout/'.github/workflows/skager-staging-retest.yml').read_text(),Loader=yaml.BaseLoader)
         self.assertEqual(set(workflow['on']),{'push','workflow_dispatch'})
         self.assertEqual(workflow['on']['push']['branches'],['skager-staging-retest'])
+        self.assertEqual(workflow['concurrency']['group'],"skager-staging-retest-${{ inputs.build_run || github.ref }}-${{ inputs.build_attempt || 'pinned' }}${{ inputs.scope == 'cold-hold-only' && '-cold-hold' || '' }}")
+        self.assertEqual(workflow['concurrency']['cancel-in-progress'],'false')
         self.assertIn('installer-charts',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertIn('installer-lifecycle',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
+        self.assertIn('cold-hold-only',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertIn('installer-startup-diagnostic',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
         steps=workflow['jobs']['retest']['steps']
@@ -195,7 +198,8 @@ class PinnedRetest(unittest.TestCase):
         self.assertLess(next(i for i,x in enumerate(steps) if x.get('id')=='prepare'),steps.index(prefetch))
         self.assertLess(steps.index(prefetch),steps.index(test))
         cold=workflow['jobs']['installer-cold-hold']
-        self.assertEqual(cold['if'],prefetch['if'])
+        self.assertEqual(cold['if'],"${{ github.event_name == 'workflow_dispatch' && (inputs.scope == 'installer-lifecycle' || inputs.scope == 'cold-hold-only') }}")
+        self.assertEqual(workflow['jobs']['retest']['if'],"${{ (github.event_name == 'workflow_dispatch' && inputs.scope != 'cold-hold-only') || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-retest') }}")
         self.assertNotIn('needs',cold)
         self.assertEqual(cold['runs-on'],'windows-2022')
         self.assertEqual(cold['steps'][0]['with']['persist-credentials'],'false')

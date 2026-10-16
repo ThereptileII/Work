@@ -15,7 +15,7 @@ on:
       scope:
         description: Relevant checks to repeat; never rebuild or publish
         type: choice
-        options: [installer, installer-charts, installer-lifecycle, all, installer-startup-diagnostic]
+        options: [installer, installer-charts, installer-lifecycle, cold-hold-only, all, installer-startup-diagnostic]
         default: installer
 permissions:
   contents: read
@@ -24,11 +24,11 @@ env:
   SKAGER_DESIGN_VALIDATION: 'false'
   PYTHONUTF8: '1'
 concurrency:
-  group: skager-staging-retest-${{ inputs.build_run || github.ref }}-${{ inputs.build_attempt || 'pinned' }}
+  group: skager-staging-retest-${{ inputs.build_run || github.ref }}-${{ inputs.build_attempt || 'pinned' }}${{ inputs.scope == 'cold-hold-only' && '-cold-hold' || '' }}
   cancel-in-progress: false
 jobs:
   installer-cold-hold:
-    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-lifecycle' }}
+    if: ${{ github.event_name == 'workflow_dispatch' && (inputs.scope == 'installer-lifecycle' || inputs.scope == 'cold-hold-only') }}
     runs-on: windows-2022
     timeout-minutes: 10
     steps:
@@ -61,7 +61,7 @@ jobs:
           path: ${{ runner.temp }}/installer-cold-hold-evidence
           if-no-files-found: error
   retest:
-    if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-retest') }}
+    if: ${{ (github.event_name == 'workflow_dispatch' && inputs.scope != 'cold-hold-only') || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-retest') }}
     runs-on: windows-2022
     timeout-minutes: 120
     steps:
