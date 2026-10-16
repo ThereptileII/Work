@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-16
 
-## Current boat result — builtin-plugin correction awaiting native qualification
+## Replacement candidate — native Staging passed; boat acceptance pending
 
 The user made the desktop available on 16 October. The same installed `854078a5`
 process then provided fresh real chart content, initialized o-charts, native Intel
@@ -14,10 +14,11 @@ The exact three-root graph needs 270 probes for 62 found dependencies. Correctio
 the unchanged 256 MiB aggregate limit. All 9,930 portable checks and two
 independent reviews pass; obsolete-TLS refusal and native custody are retained.
 The replacement version is `0.4.0-beta2.5`. Its policy sources at
-`0615e79ba122a32d5adb6193ab5c5b9bfad30ce9` pass focused native Win32/MSVC
-[38910455080](https://github.com/ThereptileII/Work/actions/runs/38910455080)
-passes the same 9,930 checks. Authenticated artifact `12049428405` and its actual
-compiled source hashes match that revision's Windows checkout. This is a policy
+`0615e79ba122a32d5adb6193ab5c5b9bfad30ce9` pass the same 9,930 checks in
+focused native Win32/MSVC
+[38910455080](https://github.com/ThereptileII/Work/actions/runs/38910455080).
+Authenticated artifact `12049428405` and its actual compiled source hashes match
+that revision's Windows checkout. This is a policy
 fixture pass, not application/plugin-load acceptance. The first integrated run
 [38910703440](https://github.com/ThereptileII/Work/actions/runs/38910703440)
 failed the distribution preflight because the coordinator bumped `Version.h`
@@ -38,15 +39,29 @@ without changing code, assertions or deadlines. The original timeout remains
 recorded. Native updater job `117028247900` passes in attempt 2. Windows producer
 `117036304896` passes at 15:49:44 UTC with authenticated dependency reuse:
 146 CTest cases pass in each native variant, and native loader/TLS checks,
-recovery/Setup packaging and immutable input retention pass. Downstream job
-`117061245460` is qualifying those retained bytes without recompilation.
-No package has yet passed the full delivery gate. Original Linux job `117008195582`
-passes all 154 CTest cases in both fixture-enabled and fixture-free builds,
-actual chart/data/lifecycle checks and both loader checks. Design and endurance
-sweeps remain skipped. This evidence-only update does not move the frozen candidate.
-Native product and corrected-boat results remain pending. All 30 SDK-bound inputs
-match the two locked producers; fresh
-native environment verification still applies. No design or endurance sweep is selected.
+recovery/Setup packaging and immutable input retention pass. Qualifier
+`117061245460` passes at **16:18:43 UTC**, using those retained bytes without
+recompilation: actual wizard completion, all **four packaged-updater checks**
+(bootstrap, supervised update, fault rollback and restored startup), clean
+installation/first-install rollback and functional charts pass. The complete
+Staging run succeeds on attempt 2; successful independent prerequisites remain
+original attempt-1 evidence. Original Linux job `117008195582` passes all
+154 CTest cases in each build variant, actual chart/data/lifecycle checks and
+both loader checks. No design or endurance sweep was selected.
+
+The coordinator authenticated actual Setup, recovery and source downloads from
+draft release `415154258`, tag
+`skager-staging-0.4.0-beta2.5-run38911440527-attempt2-9feae59ce0ef`.
+Setup is 187,490,120 bytes, SHA-256
+`662821c1e3ceb87a915129c03b684bb33dd6486e8fdbee464c31766b1840dfb9`.
+**Replacement boat installation and ordinary builtin-plugin startup remain
+pending.** Native CI success does not establish that installed result,
+protected-host B0/B1 or physical GPU acceptance. Public access remains closed;
+this is a private draft Staging delivery, not Production promotion.
+The original timeout and earlier failed candidate evidence remain preserved.
+This docs-only update from `95f503ed` does not change frozen product `9feae59c`.
+All 30 SDK-bound inputs match the locked producers, and this run passed its
+fresh native environment verification.
 [Correction, exact inputs and limits](evidence/scrum209-plugin-probe-budget-20261016/README.md).
 
 The observed application closed normally with exit 0. Four missing owned builtin
@@ -58,8 +73,8 @@ the exact stock executable and original INI hashes, no active commissioning
 marker, no application/helper processes or running SKAGER tasks, and running
 SSH/Tailscale/RustDesk services. The application remains closed; restoring the
 original output configuration is not authorization to launch or send commands.
-Original failed evidence remains preserved. The new source does not change the
-installed executable or qualify it.
+Original failed evidence remains preserved. That recovery does not establish
+installation or ordinary startup acceptance of the replacement candidate.
 [Actual startup, failure and recovery evidence](evidence/scrum17-854-ordinary-startup-20261016/README.md).
 
 ## Previous candidate — private composed Staging delivered, boat refusal retained

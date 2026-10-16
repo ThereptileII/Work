@@ -80,7 +80,8 @@ application. No check was rerun for this documentation.
 Application build, native product qualification, native file custody/topology
 and installed boat acceptance are **not established** by this focused fixture.
 Full candidate acceptance remains separate; original 854 failures remain
-failures. This record makes no assertion about a full Staging run's status.
+failures. The replacement candidate results below are separate from this
+focused fixture.
 
 [receipt.json](receipt.json) records exact source/input/result hashes. Large
 original logs, graph traces and executable inputs remain private; this directory
@@ -90,7 +91,7 @@ contains no vendor binaries, personal paths, configuration or credentials.
 
 Candidate `9feae59ce0ef1f54107c3c51f920085297ea7bc8` in
 [run 38911440527, attempt 1](https://github.com/ThereptileII/Work/actions/runs/38911440527)
-passes both platform contract builds and native boat commissioning/recovery.
+passes both platform contract builds and native commissioning/recovery fixtures.
 Updater job `117008198606` fails before application compilation: the existing
 wrapper kills `test-provisioner-package.py` at its 60-second whole-suite limit.
 Thirteen successful test dots precede the timeout; there is no final summary,
@@ -150,7 +151,62 @@ the original upload log. This is metadata/log verification, not a local
 authentication of the archive payload. Separate unqualified compiled recovery,
 plugin SDK capture and build evidence are also retained.
 
-Downstream job `117061245460` started at 15:49:47 UTC and runs native desktop and
-installer qualification against those retained bytes. It does not recompile the
-application. Its outcome, draft-release custody and actual boat installation
-remain pending; this producer pass does not establish those results.
+## Replacement native qualification and private draft
+
+[Qualifier job 117061245460](https://github.com/ThereptileII/Work/actions/runs/38911440527/job/117061245460)
+passed at **16:18:43 UTC**, consuming the retained producer bytes without
+recompilation. Its native behavior step passed from 15:50:48 to 16:17:59 UTC.
+The entire Staging run completed successfully on attempt 2, still at exact
+product `9feae59ce0ef1f54107c3c51f920085297ea7bc8`. This evidence update is based
+on documentation head `95f503ed`; it is not a new product revision.
+
+The conventional wizard opens without options, accepts its default Install and
+path controls, and cancels without changing the installation. The actual
+candidate wizard passes detection, recovery, shortcuts, validation and Finish.
+All **four packaged-updater checks** pass:
+
+1. The installed launcher starts the real application and receives its exact
+   authenticated health receipt.
+2. The exact Setup publishes a pending candidate; real startup authenticates
+   and finalizes one update attempt.
+3. A fault-injected candidate is refused before launch; guarded rollback restores
+   the verified previous generation without profile changes.
+4. The restored generation launches and closes cleanly with its authenticated
+   receipt retained.
+
+Clean installation and first-install rollback preserve stock/profile inputs;
+real coastline and candidate hashes are verified. Functional chart checks pass.
+The restart prerequisite is the authenticated successful job from **attempt 1**
+of this same run; it is not relabeled as an attempt-2 execution. Original
+qualifier log: 153,600 bytes, SHA-256
+`3bbb79602aef91f2c361e530d67762907c99c30a1d95454351d714fa31456f0d`.
+Qualification artifact `12059210570` is 27,994,084 bytes, API/upload-log SHA-256
+`023bc9cd7360e5ef816b977fd33610327b0cc67e366c97a8b7dc35e9e810b904`;
+that artifact entry is metadata verification, not a local payload download.
+
+The coordinator fetched and authenticated the completed **draft** release
+`415154258`, tag
+`skager-staging-0.4.0-beta2.5-run38911440527-attempt2-9feae59ce0ef`, using the
+maintained release-fetch helper. Its retained fetch receipt SHA-256 is
+`6246f9f092e9b3e43450b7ce6e71b08e36c59f07d82452b5da79caca4700c668`.
+The release manifest SHA-256 is
+`56752567fb3bc5b76f3ee7d53eb4be60a059159db77343b975adc13de0f94ad6`;
+`QUALIFICATION.json` SHA-256 is
+`27ee4d714d354183b6ae5404ee431306fbc08aabedb29cc34c5d4519e0b0bf53`,
+with channel `staging` and `publicAccess=false`. These are actual downloaded
+release payloads:
+
+| Asset | Bytes | SHA-256 |
+| --- | ---: | --- |
+| Setup | 187,490,120 | `662821c1e3ceb87a915129c03b684bb33dd6486e8fdbee464c31766b1840dfb9` |
+| Recovery ZIP | 193,915,917 | `a20bfb2e92680a7fea9294141085d2c2145893f874d71ebb4a7ff0dffcc7b3a3` |
+| Source ZIP | 453,772,518 | `7c00afa3bf792a3e1c57e2ebcd72cf7d1a456bb7f47eec490370f9908c3dbe45` |
+
+The original attempt-1 timeout, cancelled earlier version-manifest run and
+854 boat failure remain failed evidence. The future test-harness correction was
+not consumed by this replay. **Replacement boat installation and ordinary
+builtin-plugin startup remain pending.** CI module import/unload does not prove
+private-plugin factory/Init or boat operation. Protected-host B0/B1, physical
+GPU and separate native screenshot review are not accepted here. No design or
+endurance sweep, Production promotion or public release is claimed. No tests,
+application rebuilds or payload downloads were repeated for this documentation.
