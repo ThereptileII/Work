@@ -1,0 +1,69 @@
+{
+  "schema": 1,
+  "status": "waiting-for-ordinary-interactive-desktop",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "helperCommit": "bc2d1d5a36ce8b55a91ea6f5e4f3e3c443eff996",
+  "toolCount": 164,
+  "stagingCompletionSha256": "cfd6f39e6309c223fa97a095c89d9cbfb25527825a1c5171193ce930e480de33",
+  "sameApplicationProcess": {
+    "pid": 11052,
+    "startedUtc": "2026-10-16T11:47:20.3603526Z",
+    "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511"
+  },
+  "focusOutcome": "refused-before-SendInput-covered-by-WebExperienceHostApp",
+  "inspectionOutcome": "activation-refused-input-desktop-unavailable-no-capture",
+  "warningAcknowledgementSent": false,
+  "chartContentAccepted": false,
+  "ordinaryPluginInitializationAccepted": false,
+  "diagnosticCleanup": {
+    "pid": 5848,
+    "decodedCommandSha256": "0a9bc61ce113196e00e99b7d058079bd38bca38e80743f51777ad3b75d1c7b62",
+    "privateBytesBeforeStop": 26107596800,
+    "stoppedUtc": "2026-10-16T12:13:42.1054351Z",
+    "exactIdentityBound": true,
+    "exitObserved": true,
+    "applicationTouched": false,
+    "profileTouched": false,
+    "servicesTouched": false
+  },
+  "privateEvidence": {
+    "stage-warning-tools-bc2d1d5a.stdout": {
+      "bytes": 299,
+      "sha256": "5cb3b47262c9d4824374f07ce33deca84bb216dd4c4e1445361c7a894574388e"
+    },
+    "focus-result-original.json": {
+      "bytes": 363,
+      "sha256": "c1cae7e69aa41fa3a14f3c4bc4b432e736e3b2814086a2f2e71d37287cf056f9"
+    },
+    "focus-intent-original.json": {
+      "bytes": 288,
+      "sha256": "63fdce268a4a3716aea120bfb650161dd932bf25941fa17acc1b71d8265cebf5"
+    },
+    "inspect-result-original.json": {
+      "bytes": 957,
+      "sha256": "59ce53574cf8f6f2ae316a52ad3ea230891682896a41dbd3e0bd4818fa317b0a"
+    },
+    "preexisting-powershell-5848-binding.json": {
+      "bytes": 346,
+      "sha256": "2fe8135e88fd876f1b59b3ab102f233cf43427738205bd78710ec1c13c6348d2"
+    },
+    "stop-owned-log-serializer-5848.stdout": {
+      "bytes": 442,
+      "sha256": "f5345aeaff64c03eade67e66cc66e05927b5c5c0883e2521493fb81d2e614229"
+    },
+    "focus-progress-3.json": {
+      "bytes": 2227,
+      "sha256": "7e0a708fd20e35d7c9422452da7efde993fcb3967abbb167e489f69af51a6293"
+    },
+    "owned-diagnostic-cleanup-receipt.json": {
+      "bytes": 1506,
+      "sha256": "acd832441f209c0dfc701b57766a9c16eeb9fad8d4731977b96a1cf181244957"
+    }
+  },
+  "limitations": [
+    "Input desktop access denial alone does not prove the screen is locked.",
+    "Private allocation is not resident RAM or proof of an application leak.",
+    "Failed result UTC is set before the interactive operation and is not its failure-completion time.",
+    "No ordinary installed chart/plugin or hardware acceptance."
+  ]
+}

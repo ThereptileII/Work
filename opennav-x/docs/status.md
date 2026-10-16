@@ -136,8 +136,16 @@ matching the embedded build, including `0.4.0-beta2.4`. Native
 passes 127 warning and 33 dispatcher-budget contract checks at `bc2d1d5a`;
 the other eight jobs are skipped. Its 164 exact Windows tool files are staged in
 a separate immutable directory, preserving the active restart tools. The same
-application remains the subject of guarded Focus, separate inspection and
-acknowledgement; native fixtures alone do not prove these actual UI operations.
+application remains the subject of guarded warning review. Actual Focus refused
+before mouse input because Windows Widgets covered the caption. Separate normal
+activation/inspection then refused an unavailable input desktop, with no capture
+or acknowledgement. The user has been asked to make the ordinary desktop
+available; no repeated UI attempt or generic input is selected. An older owned
+read-only whole-log diagnostic was conclusively identified and stopped after it
+reached 26.1 GB private allocation; the application/profile/services were untouched.
+This is not evidence of a product memory leak. The commissioning remains input-only
+and its recovery records are intact.
+[Actual refusals and diagnostic cleanup](evidence/scrum17-warning-desktop-20261016/README.md).
 [Native evidence and limits](evidence/scrum17-installed-warning-20261016/README.md).
 [Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
 
@@ -171,6 +179,9 @@ failed full run or claim the historical prefix was replayed.
 [Authenticated suffix and exact limits](evidence/scrum22-lifecycle-tail-854-20261016/README.md).
 No product rebuild or Production promotion occurred.
 [Original failed run, passing prefix and exact cause](evidence/scrum22-full-lifecycle-854-20261016/README.md).
+SCRUM-22 is **Done** for supported installation and unsupported-build preservation,
+with the additionally selected lifecycle evidence above. Ordinary boat acceptance
+and the protected customer-UAC/B0/B1 path remain separate open gates.
 
 
 ## Installer trust correction — native boundary and replacement installation pass
