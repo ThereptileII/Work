@@ -14,12 +14,15 @@ class XNavNameEditor final : public wxPanel {
                  std::function<void(application::CommandResult)> result);
   bool DraftChanged() const { return draft_.Changed(); }
   void Present(LightMode light, bool live);
-  // Preserve a dirty field across background object/theme refresh. Commands
-  // still validate the captured revision; replay disables editing immediately.
+  // Preserve unfinished drafts and focused clean fields across background
+  // refresh. Commands still validate the captured revision; replay disables
+  // editing immediately.
   static bool PreserveDrafts(wxWindow &owner, LightMode light, bool live);
  private:
   void SaveDraft();
   void CancelDraft();
+  bool HasEditingFocus() const;
+  void EndEditing();
   void Buttons();
   void PaintFrame();
   application::NavigationNameDraft draft_;

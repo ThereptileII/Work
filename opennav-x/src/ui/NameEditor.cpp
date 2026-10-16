@@ -42,30 +42,62 @@ XNavNameEditor::XNavNameEditor(
   save_button_->SetRole(ButtonRole::Primary);
   cancel_button_->SetRole(ButtonRole::Quiet);
   SetSizer(row);
+  // Showing the actions must not move the rows below a focused field.
+  SetMinSize(wxSize(-1, FromDIP(std::max(DisplayFieldHeight(scale),
+                                       DisplayActionHeight(scale, 48)))));
   input_->Bind(wxEVT_TEXT, [this](wxCommandEvent &) {
     draft_.Set(input_->GetValue().ToStdString(wxConvUTF8)); Buttons();
   });
   input_->Bind(wxEVT_TEXT_ENTER, [this](wxCommandEvent &) { SaveDraft(); });
-  input_->Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
-    if (event.GetKeyCode() == WXK_ESCAPE) CancelDraft(); else event.Skip();
-  });
-  // Focus lives on the inner control, so the frame has to be told when to
-  // draw the ring; wxWidgets gives the panel no focus event of its own.
-  input_->Bind(wxEVT_SET_FOCUS, [this](wxFocusEvent &event) {
-    focused_ = true; if (frame_) frame_->Refresh(false); event.Skip();
-  });
-  input_->Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent &event) {
-    focused_ = false; if (frame_) frame_->Refresh(false); event.Skip();
-  });
+  for (wxWindow *control : {static_cast<wxWindow *>(input_),
+                           static_cast<wxWindow *>(save_button_),
+                           static_cast<wxWindow *>(cancel_button_)}) {
+    control->Bind(wxEVT_CHAR_HOOK, [this](wxKeyEvent &event) {
+      if (event.GetKeyCode() == WXK_ESCAPE) CancelDraft(); else event.Skip();
+    });
+    control->Bind(wxEVT_SET_FOCUS, [this, control](wxFocusEvent &event) {
+      focused_ = control == input_;
+      Buttons();
+      event.Skip();
+    });
+    control->Bind(wxEVT_KILL_FOCUS, [this](wxFocusEvent &event) {
+      focused_ = false;
+      if (frame_) frame_->Refresh(false);
+      // The destination may be our Save/Cancel button. Wait for focus to
+      // settle before hiding actions, so the initiating click can complete.
+      CallAfter([editor = wxWeakRef<XNavNameEditor>(this)] {
+        if (editor) editor->Buttons();
+      });
+      event.Skip();
+    });
+  }
   save_button_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) { SaveDraft(); });
   cancel_button_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) { CancelDraft(); });
   Present(light, true);
 }
+bool XNavNameEditor::HasEditingFocus() const {
+  const auto *focus = wxWindow::FindFocus();
+  return focus == input_ || focus == save_button_ || focus == cancel_button_;
+}
+void XNavNameEditor::EndEditing() {
+  // Focus the panel itself before hiding an action. Normal panel focus can
+  // redirect to the input, reopening the edit and retaining a stale revision.
+  if (HasEditingFocus()) SetFocusIgnoringChildren();
+  focused_ = false;
+  Buttons();
+}
 void XNavNameEditor::Buttons() {
   input_->Enable(editable_ && live_);
+  // A dirty draft is still an editing session after focus leaves. In replay,
+  // retain its Cancel action even though the field and Save are disabled.
+  const bool editing = HasEditingFocus() || draft_.Changed();
+  const bool visibility_changed = save_button_->IsShown() != editing;
+  save_button_->Show(editing);
+  cancel_button_->Show(editing);
   save_button_->Enable(editable_ && live_ && draft_.Changed() &&
                        application::ValidNavigationName(draft_.Value()) && bool(save_));
-  cancel_button_->Enable(draft_.Changed());
+  cancel_button_->Enable(editing);
+  if (visibility_changed) Layout();
   if (frame_) frame_->Refresh(false);
 }
 void XNavNameEditor::PaintFrame() {
@@ -107,12 +139,14 @@ void XNavNameEditor::Present(LightMode light, bool live) {
   Buttons();
 }
 void XNavNameEditor::CancelDraft() {
-  draft_.Cancel(); input_->ChangeValue(wxString::FromUTF8(draft_.Value())); Buttons();
+  draft_.Cancel();
+  input_->ChangeValue(wxString::FromUTF8(draft_.Value()));
+  EndEditing();
 }
 void XNavNameEditor::SaveDraft() {
   if (!save_button_->IsEnabled()) return;
   const auto result = draft_.Save(save_);
-  Buttons();
+  if (result.ok) EndEditing(); else Buttons();
   // A successful callback can rebuild its owning product page. Dispatch only
   // after this field's event handler has returned, never destroy it mid-save.
   if (result_) {
@@ -121,14 +155,14 @@ void XNavNameEditor::SaveDraft() {
   }
 }
 bool XNavNameEditor::PreserveDrafts(wxWindow &owner, LightMode light, bool live) {
-  bool changed = false;
+  bool editing = false;
   for (auto *child : owner.GetChildren()) {
     if (auto *editor = dynamic_cast<XNavNameEditor *>(child)) {
       editor->Present(light, live);
-      changed |= editor->DraftChanged();
-    } else if (!child->IsTopLevel()) changed |= PreserveDrafts(*child, light, live);
+      editing |= editor->DraftChanged() || editor->HasEditingFocus();
+    } else if (!child->IsTopLevel()) editing |= PreserveDrafts(*child, light, live);
   }
-  return changed;
+  return editing;
 }
 std::optional<std::vector<std::string>> EditNavigationNameSheet(
     wxWindow &parent, LightMode light, const wxString &title,

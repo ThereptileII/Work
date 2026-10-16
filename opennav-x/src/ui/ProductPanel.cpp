@@ -490,9 +490,9 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   if (page_ == ProductPage::WaypointDetail && IsShownOnScreen() &&
       std::chrono::steady_clock::now() - point_refreshed_at_ >= std::chrono::seconds(1))
     rebuild_pending_ |= RefreshWaypoint();
-  const bool name_draft = XNavNameEditor::PreserveDrafts(
+  const bool name_editing = XNavNameEditor::PreserveDrafts(
       *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed);
-  if (rebuild_pending_ && !name_draft) {
+  if (rebuild_pending_ && !name_editing) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
     const auto scroll = GetViewStart();
@@ -561,7 +561,7 @@ void ProductPanel::RouteActions() {
     Result(result);
     Scroll(scroll);
   };
-  Heading(Name(route_.name, route_.id),
+  Heading("Route details",
           route_.active
               ? "Active passage"
               : "Saved route");
@@ -650,7 +650,7 @@ void ProductPanel::RouteActions() {
   if (route_.points.empty()) Text("No waypoints in this route.");
   for (std::size_t i = 0; i < route_.points.size(); ++i) {
     const auto point = route_.points[i];
-    Visual("Planned leg " + wxString::Format("%u", static_cast<unsigned>(i + 1)), 80,
+    Visual("Planned leg " + wxString::Format("%u", static_cast<unsigned>(i + 1)), 48,
         [this, point, i](XNavPainter &p, wxDC &, int width) {
       const auto progress = state_.vessel.navigation.route;
       const bool next = route_.active && progress && progress->route_id == route_.id &&
@@ -658,7 +658,6 @@ void ProductPanel::RouteActions() {
           progress->active_waypoint_id == point.id;
       p.Text(wxString::Format("%02u", static_cast<unsigned>(i + 1)), 8, 8, 20,
              next ? p.c.accent : p.c.secondary);
-      p.Text(Name(point.name, ""), 60, 8, 21, p.c.primary, false, width - 170);
       if (next) p.Text("NEXT", width - 72, 12, 12, p.c.accent);
       wxString detail = "Departure";
       if (i > 0) {
@@ -667,8 +666,8 @@ void ProductPanel::RouteActions() {
         if (point.incoming_course_true_deg && std::isfinite(*point.incoming_course_true_deg))
           detail += wxString::Format(W("  /  %.0f° true"), *point.incoming_course_true_deg);
       }
-      p.Text(detail, 60, 40, 14, p.c.secondary, false, width - 84);
-      p.Rule(60, 72, width - 84);
+      p.Text(detail, 60, 12, 14, p.c.secondary, false, width - 144);
+      p.Rule(60, 40, width - 84);
     });
     auto *point_name_editor = new XNavNameEditor(*this,
         wxString::Format("Waypoint %u name", static_cast<unsigned>(i + 1)), point.name,
@@ -748,7 +747,7 @@ void ProductPanel::PointActions() {
     Action("Back to waypoints", [this] { ShowPage(ProductPage::Waypoints, mode_); });
     return;
   }
-  Heading(Name(point_.name, point_.id),
+  Heading("Waypoint details",
           point_position_valid_ ? wxString::Format("%.5f, %.5f", point_.latitude_deg,
                            point_.longitude_deg) : wxString("Position unavailable"));
   Text(W(point_.description));
