@@ -141,6 +141,11 @@ class PinnedRetest(unittest.TestCase):
         self.assertIn('installer-startup-diagnostic',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
         steps=workflow['jobs']['retest']['steps']
+        preflight=next(x for x in steps if 'host-preflight' in x.get('run',''))
+        self.assertEqual(preflight['if'], "${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-startup-diagnostic' }}")
+        self.assertLess(steps.index(preflight), next(i for i, x in enumerate(steps) if x.get('id') == 'prepare'))
+        self.assertNotIn('GH_TOKEN', preflight.get('env', {}))
+        self.assertIn('if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }', preflight['run'])
         test=next(x for x in steps if 'RETEST_SCOPE' in x.get('env',{}))
         self.assertEqual(test['env']['RETEST_SCOPE'],"${{ github.event_name == 'push' && 'installer-charts' || inputs.scope }}")
         self.assertNotIn('GH_TOKEN',test['env'])
