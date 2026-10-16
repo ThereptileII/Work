@@ -490,6 +490,19 @@ def wait_installer_selection(process,frame,title):
         if installer_selection_ready(frame,process.pid,title):return
         time.sleep(.1)
     raise RuntimeError('Installer selection page did not open')
+def disable_installer_finish_launch(frame,pid):
+    assert any(handle==frame and owner==pid for handle,owner,_ in ui.windows(pid)) and ui.IsWindowEnabled(frame),'Finish page is not the owned enabled installer'
+    matches=[child for child,caption in ui.children(frame) if caption.replace('&','')=='Open SKAGER']
+    assert len(matches)==1,'Expected one exact Open SKAGER launch checkbox before Finish'
+    child=matches[0]
+    kind=ctypes.create_unicode_buffer(128);ui.GetClassNameW(child,kind,len(kind))
+    style=ui.declare(ui.user,'GetWindowLongW',ctypes.c_long,ctypes.c_void_p,ctypes.c_int)(child,-16)
+    assert kind.value=='Button' and (style & 0xf) in (2,3) and ui.IsWindowEnabled(child),'Open SKAGER is not an enabled native checkbox'
+    before=ui.SendMessageW(child,0x00F0,0,0)  # BM_GETCHECK
+    assert before in (0,1),'Unknown launch checkbox state'
+    ui.SendMessageW(child,0x00F1,0,0)  # BM_SETCHECK / BST_UNCHECKED, exactly once.
+    assert ui.SendMessageW(child,0x00F0,0,0)==0,'Installer launch checkbox did not become unchecked'
+    return {'label':'Open SKAGER','control':child,'checked_before':bool(before),'checked_after':False}
 def wizard(stock,install=False):
     p=subprocess.Popen([str(SETUP)]);owned.add(p.pid)
     title='SKAGER Beta 2 Setup'
@@ -533,12 +546,12 @@ def wizard(stock,install=False):
                 break
             time.sleep(.2)
         else:raise RuntimeError('Beta 2 wizard did not reach Finish')
-        for child,caption in ui.children(h):
-            if caption.replace('&','')=='Launch SKAGER Beta 2':
-                ui.SendMessageW(child,0x00F1,0,0)
+        launch_choice=disable_installer_finish_launch(h,p.pid)
+        report.setdefault('finish_launch',[]).append(launch_choice)
         time.sleep(.5)
         ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
         report['screenshots'].append('installer-wizard-installed.png')
+        assert ui.SendMessageW(launch_choice['control'],0x00F0,0,0)==0,'Installer launch checkbox changed before Finish'
         press(1)
         assert p.wait(timeout=30)==0
         check('Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options')

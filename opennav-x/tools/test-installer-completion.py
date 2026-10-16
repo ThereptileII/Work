@@ -349,5 +349,86 @@ class PackagedStartupCompletion(unittest.TestCase):
         self.assertEqual(record['startupLog']['sha256'], hashlib.sha256(self.log.read_bytes()).hexdigest())
 
 
+class InstallerFinishLaunch(unittest.TestCase):
+    """Execute the real Finish call site against the retained checked control."""
+    def setUp(self):
+        self.frame,self.pid,self.child=100,42,101
+        self.controls=[(self.child,'Open SKAGER')]
+        self.visible=[(self.frame,self.pid,'SKAGER Beta 2 Setup')]
+        self.kind='Button';self.style=3;self.enabled=True;self.checked=1
+        self.ignore_uncheck=False;self.recheck_during_capture=False
+        self.sets=[];self.finish=[]
+        def class_name(handle,buffer,length): buffer.value=self.kind
+        def message(handle,message,wparam,lparam):
+            self.assertEqual(handle,self.child)
+            if message==0x00F0:return self.checked
+            self.assertEqual((message,wparam,lparam),(0x00F1,0,0))
+            self.sets.append(handle)
+            if not self.ignore_uncheck:self.checked=0
+            return 0
+        def capture(*args,**kwargs):
+            if self.recheck_during_capture:self.checked=1
+        self.environment=dict(ctypes=ctypes,h=self.frame,p=SimpleNamespace(pid=self.pid),
+            EVIDENCE=Path('inert-evidence'),report={'screenshots':[]},
+            time=SimpleNamespace(sleep=lambda seconds:None),
+            press=lambda identifier:self.finish.append((identifier,self.checked)),
+            ui=SimpleNamespace(user=None,windows=lambda pid:self.visible,
+                IsWindowEnabled=lambda handle:self.enabled,children=lambda frame:self.controls,
+                GetClassNameW=class_name,declare=lambda *args:lambda handle,index:self.style,
+                SendMessageW=message,capture=capture))
+        helper=next(n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name=='disable_installer_finish_launch')
+        exec(compile(ast.Module(body=[helper],type_ignores=[]),str(SOURCE),'exec'),self.environment)
+        wizard=next(n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name=='wizard')
+        install=next(n for n in wizard.body if isinstance(n,ast.If) and isinstance(n.test,ast.Name) and n.test.id=='install')
+        start=next(i for i,n in enumerate(install.body) if isinstance(n,ast.Assign) and isinstance(n.targets[0],ast.Name) and n.targets[0].id=='launch_choice')
+        end=next(i for i in range(start,len(install.body)) if isinstance(install.body[i],ast.Expr) and isinstance(install.body[i].value,ast.Call) and isinstance(install.body[i].value.func,ast.Name) and install.body[i].value.func.id=='press')
+        self.sequence=compile(ast.Module(body=install.body[start:end+1],type_ignores=[]),str(SOURCE),'exec')
+
+    def run_finish(self): exec(self.sequence,self.environment)
+
+    def test_retained_checked_open_skager_is_unchecked_once_before_finish(self):
+        self.run_finish()
+        self.assertEqual(self.sets,[self.child]);self.assertEqual(self.finish,[(1,0)])
+        self.assertEqual(self.environment['report']['finish_launch'],[
+            dict(label='Open SKAGER',control=self.child,checked_before=True,checked_after=False)])
+
+    def test_already_unchecked_stays_unchecked(self):
+        self.checked=0;self.run_finish()
+        self.assertEqual(self.sets,[self.child]);self.assertEqual(self.finish,[(1,0)])
+
+    def test_unknown_missing_or_ambiguous_caption_refuses_before_finish(self):
+        for controls in ([],[(self.child,'Launch SKAGER Beta 2')],[(self.child,'Open SKAGER'),(102,'Open SKAGER')]):
+            with self.subTest(controls=controls):
+                self.controls=controls
+                with self.assertRaisesRegex(AssertionError,'one exact Open SKAGER'):self.run_finish()
+                self.assertEqual(self.sets,[]);self.assertEqual(self.finish,[])
+
+    def test_wrong_owner_disabled_noncheckbox_and_unknown_state_refuse(self):
+        for field,value in (('visible',[(self.frame,99,'SKAGER Beta 2 Setup')]),
+                            ('enabled',False),('kind','Static'),('style',0),('checked',2)):
+            with self.subTest(field=field):
+                original=getattr(self,field);setattr(self,field,value)
+                with self.assertRaises(AssertionError):self.run_finish()
+                self.assertEqual(self.sets,[]);self.assertEqual(self.finish,[])
+                setattr(self,field,original)
+
+    def test_failed_or_later_reversed_uncheck_never_presses_finish(self):
+        for field in ('ignore_uncheck','recheck_during_capture'):
+            with self.subTest(field=field):
+                self.checked=1;self.sets=[];setattr(self,field,True)
+                with self.assertRaisesRegex(AssertionError,'checkbox'):self.run_finish()
+                self.assertEqual(self.sets,[self.child]);self.assertEqual(self.finish,[])
+                setattr(self,field,False)
+
+    def test_original_obsolete_caption_silently_leaves_launch_enabled(self):
+        # Original failure sequence: the retained current caption does not
+        # match, no assertion fires, and Finish sees the checked launch option.
+        exec("for child,caption in ui.children(h):\n"
+             "    if caption.replace('&','')=='Launch SKAGER Beta 2':\n"
+             "        ui.SendMessageW(child,0x00F1,0,0)\n"
+             "press(1)\n",self.environment)
+        self.assertEqual(self.sets,[]);self.assertEqual(self.finish,[(1,1)])
+
+
 if __name__ == '__main__':
     unittest.main()
