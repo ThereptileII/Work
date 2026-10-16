@@ -25,8 +25,8 @@ import staging_build_inputs as staging_inputs
 
 def arguments(argv=None):
     parser=argparse.ArgumentParser(description=__doc__)
-    parser.add_argument('--mode',choices=('staging','production'),default='staging',
-                        help='Staging checks clean installation/startup/profile/rollback; production retains the full lifecycle matrix')
+    parser.add_argument('--mode',choices=('staging','production','lifecycle-tail'),default='staging',
+                        help='Staging checks clean installation; production runs the full matrix; lifecycle-tail runs the frozen 854 unfinished suffix on fresh state')
     inputs=parser.add_mutually_exclusive_group()
     inputs.add_argument('--compiled-input-receipt',type=Path,
                         help='Validated compiled-input restore receipt; use frozen installer source and current test helpers')
@@ -48,6 +48,8 @@ def arguments(argv=None):
         parser.error('--expected-commit must be a complete lowercase commit SHA')
     if args.startup_supervisor_diagnostic and (not args.compiled_input_receipt or args.mode!='staging' or args.prepare_only):
         parser.error('--startup-supervisor-diagnostic requires retained compiled inputs and Staging mode')
+    if args.mode=='lifecycle-tail' and (not args.compiled_input_receipt or args.prepare_only):
+        parser.error('Lifecycle tail requires authenticated compiled inputs')
     if args.prepared_prior_fixtures and (not args.compiled_input_receipt or args.mode!='production' or args.prepare_only):
         parser.error('--prepared-prior-fixtures requires retained compiled inputs and production lifecycle mode')
     return args
@@ -610,6 +612,217 @@ def wizard(stock,install=False):
         assert not INSTALL.exists()
         check('Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation')
     owned.discard(p.pid)
+def verify_missing_dll_imports():
+    """Native guard/import proof before any expensive installer scenario."""
+    target=EVIDENCE/'installer-missing-dll-imports.json'
+    assert not target.exists(),'Native import prerequisite requires a fresh receipt'
+    helper=PRODUCT_SOURCE/'tools/test-installer-missing-dll-selftest.ps1'
+    test=ROOT/'tools/test-installer-missing-dll-imports.ps1'
+    with (EVIDENCE/'installer-missing-dll-imports.log').open('wb') as output:
+        subprocess.run([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+            '-File',str(test),'-Helper',str(helper),'-NativeWindows','-Report',str(target)],
+            check=True,timeout=120,stdout=output,stderr=subprocess.STDOUT)
+    result=json.loads(target.read_text(encoding='utf-8-sig'))
+    assert result['status']=='passed' and result['checks']==16 and result['nativeGuards'] is True,result
+    assert result['missingDllLoaderExecuted'] is False and result['productAcceptance'] is False,result
+    assert result['powershellVersion'].startswith('5.1.') and result['processBits']==64,result
+    assert result['helperSha256']==sha(helper),result
+    assert result['lifecycleSha256']==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1'),result
+    assert result['transactionSha256']==sha(PRODUCT_SOURCE/'installer/windows/UpdateTransaction.ps1'),result
+    report['missing_dll_imports']=dict(result,testSourceSha256=sha(test),reportSha256=sha(target))
+
+def prepare_installer_profile(temporary):
+    # Obtain wx standard profile path without initializing it; never guess it.
+    loader=temporary/'locations.json'
+    r=subprocess.run([str(ROOT/'build/production-install/opencpn.exe'),'--opennav-self-test',str(loader)],timeout=30)
+    assert r.returncode==0
+    profile=Path(json.loads(loader.read_text())['normal_config_directory'])
+    assert str(profile).lower().startswith(os.environ['PROGRAMDATA'].lower()),profile
+    if profile.exists():shutil.move(profile,temporary/'stock-created-profile')
+    subprocess.run([sys.executable,str(ROOT/'tools/prepare-test-profile.py'),'--build',str(ROOT/'build/production-windows'),'--profile',str(profile)],check=True)
+    fixtures.seed(profile)
+    with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
+    shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
+    expected=fixtures.snapshot(profile);before=inventory(profile)
+    return profile,expected,before
+
+def prepare_custom_tide(profile,stock):
+    # A real user-selected harmonic source must remain selected; defaults
+    # must never replace or append to this list during any installed mode.
+    custom_tide=profile/'custom Åland harmonic fixture.tcd'
+    shutil.copy2(stock/'tcdata/harmonics-dwf-20210110-free.tcd',custom_tide)
+    config=configparser.RawConfigParser(strict=False)
+    config.optionxform=str
+    config.read(profile/'opencpn.ini',encoding='utf-8-sig')
+    config['TideCurrentDataSources']={'tcds0':custom_tide.as_posix()}
+    with (profile/'opencpn.ini').open('w',encoding='utf-8') as f:config.write(f)
+    return custom_tide
+
+def run_lifecycle_tail(original,stock,stock_before,profile,before,expected,custom_tide,product,damaged_package,unchanged):
+    # Valid ZIP/manifest hashes are insufficient: dependency closure must
+    # reject this unpublished stage before invoking the application loader.
+    manifest=json.loads((PACKAGE/'package.json').read_text())
+    # Use the base library, not whichever optional wx library sorts first,
+    # so the separate real-loader check below also has a required import.
+    dependencies=[f['path'] for f in manifest['files'] if f['path'].lower()=='app/wxbase32u_vc14x.dll']
+    assert len(dependencies)==1,dependencies
+    dependency=dependencies[0]
+    with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
+        for entry in source.infolist():
+            if entry.filename!=dependency:target.writestr(entry,source.read(entry.filename))
+    manifest['files']=[f for f in manifest['files'] if f['path']!=dependency]
+    manifest['payloadSha256']=sha(damaged_package/'payload.zip')
+    (damaged_package/'package.json').write_text(json.dumps(manifest))
+    stages_before=set((INSTALL/'generations').iterdir())
+    failure=package_engine(damaged_package,original)
+    stages_after=set((INSTALL/'generations').iterdir())-stages_before
+    assert len(stages_after)==1,stages_after
+    stage=stages_after.pop().resolve()
+    assert stage.is_dir() and len(stage.name)==32 and all(c in '0123456789abcdef' for c in stage.name)
+    assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
+    prefix='Missing app-local PE import '+Path(dependency).name.lower()+' in '
+    assert failure['status']=='failed' and failure['action']=='Update' and failure['error'].startswith(prefix),failure
+    importer=Path(failure['error'][len(prefix):]).resolve()
+    assert importer.is_file() and importer.is_relative_to(stage/'app'),failure
+    assert not (stage/dependency).exists()
+    for _ in range(10):
+        assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'Loader failure left an operating-system modal dialog'
+        time.sleep(.1)
+    unchanged();check('Exact missing wx base import rejected before loader or commit, without OS modal residue')
+    # Exercise the unchanged production SelfTest separately on this private
+    # failed stage. Never bypass dependency closure in the installer path.
+    loader_report=EVIDENCE/'installer-missing-dll-selftest.json'
+    helper=PRODUCT_SOURCE/'tools/test-installer-missing-dll-selftest.ps1'
+    with (EVIDENCE/'installer-missing-dll-selftest.log').open('wb') as output:
+        child=subprocess.Popen([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
+            '-File',str(helper),'-Stage',str(stage),'-ExpectedExecutableSha256',sha(ROOT/'build/production-install/opencpn.exe'),
+            '-MissingDependency',Path(dependency).name,'-Commit',manifest['commit'],'-Version',manifest['version'],
+            '-Report',str(loader_report)],stdout=output,stderr=subprocess.STDOUT)
+        try:code=child.wait(timeout=90)
+        except subprocess.TimeoutExpired:
+            subprocess.run(['taskkill','/PID',str(child.pid),'/T','/F'],capture_output=True,timeout=15)
+            child.wait(timeout=10)
+            raise
+    assert code==0,'Missing-DLL SelfTest proof failed; inspect retained log/receipt'
+    loader=json.loads(loader_report.read_text(encoding='utf-8-sig'))
+    assert loader['status']=='passed' and loader['error']=='Staged executable self-test failed: -1073741515',loader
+    assert loader['sourceSha256']==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1') and loader['executableSha256']==sha(ROOT/'build/production-install/opencpn.exe'),loader
+    assert loader['transactionSourceSha256']==sha(PRODUCT_SOURCE/'installer/windows/UpdateTransaction.ps1'),loader
+    assert loader['initialErrorMode']==0 and loader['restoredErrorMode']==0,loader
+    for _ in range(10):
+        assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'SelfTest left an operating-system modal dialog'
+        time.sleep(.1)
+    unchanged();assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
+    check('Actual production SelfTest suppresses missing-DLL OS dialog and restores error mode in separate failed-stage process')
+    # A correctly hashed fixture-enabled executable is still forbidden in
+    # the installed product. Exercise the actual native loader identity,
+    # not merely a package label or cache option.
+    fixture_exe=ROOT/'build/xnav-install/opencpn.exe'
+    assert fixture_exe.is_file() and sha(fixture_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
+    fixture_bytes=fixture_exe.read_bytes()
+    manifest=json.loads((PACKAGE/'package.json').read_text())
+    with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
+        for entry in source.infolist():
+            target.writestr(entry,fixture_bytes if entry.filename=='app/opencpn.exe' else source.read(entry.filename))
+    for entry in manifest['files']:
+        if entry['path']=='app/opencpn.exe':entry['sha256']=sha(fixture_exe)
+    manifest['payloadSha256']=sha(damaged_package/'payload.zip')
+    (damaged_package/'package.json').write_text(json.dumps(manifest))
+    failure=package_engine(damaged_package,original)
+    assert 'Developer/test-fixture executable refused' in failure['error'],failure
+    unchanged();check('Correctly hashed native fixture-enabled executable is refused before product publication')
+    with file_lock(INSTALL/'state.json'):
+        setup('Update',original,expected=1)
+    unchanged();assert (INSTALL/'transaction.json').exists()
+    assert not list(INSTALL.glob('state.json.*.tmp'))
+    check('Locked atomic state file preserves previous generation and durable recovery journal without temporary residue')
+    setup('Repair',original);assert not (INSTALL/'transaction.json').exists()
+    repaired=state()['current']
+    check('Rerun after file-lock failure repairs and recovers normally')
+    setup('Update',original,expected=1,failure='before-commit')
+    assert state()['current']==repaired and (INSTALL/'transaction.json').exists()
+    setup('Update',original);assert not (INSTALL/'transaction.json').exists()
+    check('Interrupted update before atomic commit retains active app and recovers on rerun')
+    setup('Update',original,expected=1,failure='after-commit')
+    committed=state()['current'];assert (INSTALL/'transaction.json').exists()
+    setup('Repair',original);assert state()['previous']==committed and not (INSTALL/'transaction.json').exists()
+    check('Interrupted post-commit shortcut publication recovers from durable journal')
+    diagnostics=engine('Diagnostics');assert diagnostics['stockVerified']
+    assert all(f['expected']==f['actual'] for f in diagnostics['files'])
+    check('Diagnostics verifies installed hashes without collecting navigation or raw sensor data')
+    # Exercise the conventional uninstall executable as well as the engine.
+    maintenance('Uninstall')
+    assert not (INSTALL/'state.json').exists()
+    assert inventory(profile)==before and inventory(stock)==stock_before
+    for record in (INSTALL/'generations').glob('*/ownership.json'):
+        assert not (record.parent/'app/opencpn.exe').exists(), 'Unmodified committed OpenNav binary remains'
+    # Failed, unpublished stages deliberately remain diagnostic evidence;
+    # the engine never recursively deletes a tree without ownership.json.
+    report['unpublished_stages_retained']=sum(1 for d in (INSTALL/'generations').iterdir() if d.is_dir() and not (d/'ownership.json').exists())
+    assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
+    check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
+    p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',welcome_transition='candidate-to-stock')
+    chart_check(rgb,'Standard','Untouched stock after uninstall');close(p,h)
+    assert fixture_snapshot(profile)==expected
+    stable_resources(profile,stock,[custom_tide])
+    check('Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved')
+    check('Original official OpenCPN still loads charts and shared navigation data after uninstall')
+    before=inventory(profile)
+    setup('Install',original)
+    assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
+    assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+    assert inventory(profile)==before and inventory(stock)==stock_before
+    check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')
+    setup('Update',original)
+    assert state()['previous'] and inventory(profile)==before
+    check('Beta 2 same-version rebuild/update creates a rollback generation without changing user data')
+    engine('Uninstall')
+    assert inventory(profile)==before and inventory(stock)==stock_before
+    assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+
+def run_fresh_lifecycle_tail(temporary,stock,original,stock_before,product):
+    """Fresh real installed state, not a resume of the failed historical matrix."""
+    profile,expected,before=prepare_installer_profile(temporary)
+    custom_tide=prepare_custom_tide(profile,stock)
+    before=inventory(profile)
+    setup('Install',original)
+    assert inventory(profile)==before and inventory(stock)==stock_before
+    assert not state()['previous'] and not (INSTALL/'transaction.json').exists()
+    ownership=json.loads((generation()/'ownership.json').read_text(encoding='utf-8-sig'))
+    assert ownership['commit']==product['commit'] and ownership['version']==product['version']
+    assert ownership['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+    assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
+    assert sha(generation()/'Lifecycle.ps1')==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1')
+    assert (SHORTCUTS/'Skager.lnk').is_file() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+    p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'SKAGER / OpenCPN',profile,'installer-tail-fresh-candidate')
+    chart_check(rgb,'XNav','Fresh installed state for lifecycle tail');close(p,h)
+    assert fixture_snapshot(profile)==expected
+    stable_resources(profile,stock,[custom_tide])
+    before=inventory(profile)
+    first=state()['current']
+    custom=generation()/'app/plugins/alpha-user-preserved.txt'
+    custom.write_text('user extension must persist')
+    setup('Update',original)
+    assert state()['previous']==first and state()['current']!=first
+    assert (generation()/'app/plugins/alpha-user-preserved.txt').read_bytes()==custom.read_bytes()
+    assert inventory(profile)==before and inventory(stock)==stock_before
+    assert not (INSTALL/'transaction.json').exists()
+    repaired=state()['current'];active_hash=sha(generation()/'app/opencpn.exe');state_hash=sha(INSTALL/'state.json')
+    def unchanged():
+        assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
+        assert sha(generation()/'app/opencpn.exe')==active_hash
+        assert inventory(profile)==before and inventory(stock)==stock_before
+    report['tail_preconditions']={'freshInstallation':True,'realSameVersionUpdate':True,
+        'customAdditionPreserved':True,'profileAndStockUnchanged':True,
+        'activeExecutableSha256':active_hash,'stateSha256':state_hash}
+    check('Fresh exact candidate, shared profile, custom tide and retained addition establish lifecycle-tail preconditions')
+    damaged_package=temporary/'damaged integration';damaged_package.mkdir()
+    for name in ('package.json','payload.zip'):
+        shutil.copy2(PACKAGE/name,damaged_package/name)
+    shutil.copy2(generation()/'Maintain.exe',damaged_package/'Maintain.exe')
+    run_lifecycle_tail(original,stock,stock_before,profile,before,expected,custom_tide,product,damaged_package,unchanged)
+    report['final_direct_uninstall_passed']=True
+
 if args.prepare_only:
     prepared=prepare_retained(args.retained_package,ROOT,args.expected_commit)
     prepared.update(status='prepared',scope='Inputs verified and restored only; no native lifecycle acceptance',
@@ -625,6 +838,14 @@ try:
         report.update(prepare_retained(args.retained_package,ROOT,args.expected_commit))
     elif args.compiled_input_receipt:
         report.update(prepare_compiled(args.compiled_input_receipt,ROOT,report['harness_commit']))
+    if args.mode=='lifecycle-tail':
+        assert os.environ.get('RUNNER_ENVIRONMENT')=='github-hosted','Disposable hosted runner required'
+        assert not any(os.environ.get(name) for name in ('GH_TOKEN','GITHUB_TOKEN','OPENNAV_ARTIFACT_TOKEN')),'Remove credentials before lifecycle tail'
+        assert report['compiled_input_producer']==staging_inputs.producer('854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc','38765418126','1'),'Lifecycle tail is restricted to the retained 854 candidate'
+        report.update(scope='installer-lifecycle-tail',whole_lifecycle_acceptance=False,
+                      prior_failed_run='38889555934',prior_failed_attempt=1,
+                      scope_limit='Fresh-state suffix only; historical matrix prefix is not replayed or accepted by this result')
+        verify_missing_dll_imports()
     if args.startup_supervisor_diagnostic:
         assert os.environ.get('RUNNER_ENVIRONMENT')=='github-hosted','Disposable hosted runner required'
         assert not any(os.environ.get(name) for name in ('GH_TOKEN','GITHUB_TOKEN','OPENNAV_ARTIFACT_TOKEN')),'Remove credentials before diagnosis'
@@ -662,511 +883,377 @@ try:
         original=stock/'opencpn.exe';assert sha(original)==STOCK_HASH
         stock_before=inventory(stock)
         check('Official supported OpenCPN installed and exact PE executable SHA-256 verified')
-        setup('Preflight','')
-        assert not INSTALL.exists() and inventory(stock)==stock_before
-        check('Registry discovery handles the official build-suffixed key and verifies its exact hash without modification')
-        wizard(original)
-        assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'Skager.lnk'
-        foreign_link.write_bytes(b'foreign shortcut content must not be claimed')
-        foreign_before=inventory(SHORTCUTS)
-        try:
-            failure=setup('Install',original,expected=1)
-            assert 'no verified SKAGER owner' in failure['error'],failure
-            assert inventory(SHORTCUTS)==foreign_before and not INSTALL.exists()
-            assert inventory(stock)==stock_before
-        finally:
-            foreign_link.unlink();SHORTCUTS.rmdir()
-        check('A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged')
-        INSTALL.mkdir();(INSTALL/'owner.json').write_text('{"owner":"foreign fixture"}')
-        (INSTALL/'keep.txt').write_text('Do not claim or change this directory')
-        unowned=inventory(INSTALL)
-        setup('Install',original,expected=1)
-        assert inventory(INSTALL)==unowned and inventory(stock)==stock_before
-        shutil.rmtree(INSTALL) # Only the explicitly created disposable fixture.
-        check('Unknown installation ownership refused without adding logs or changing files')
-        # Obtain wx standard profile path without initializing it; never guess it.
-        loader=temporary/'locations.json'
-        r=subprocess.run([str(ROOT/'build/production-install/opencpn.exe'),'--opennav-self-test',str(loader)],timeout=30)
-        assert r.returncode==0
-        profile=Path(json.loads(loader.read_text())['normal_config_directory'])
-        assert str(profile).lower().startswith(os.environ['PROGRAMDATA'].lower()),profile
-        if profile.exists():shutil.move(profile,temporary/'stock-created-profile')
-        subprocess.run([sys.executable,str(ROOT/'tools/prepare-test-profile.py'),'--build',str(ROOT/'build/production-windows'),'--profile',str(profile)],check=True)
-        fixtures.seed(profile)
-        with (profile/'opencpn.conf').open('a') as f:f.write('\n[Settings/GlobalState]\nVPLatLon=59.0800,18.5000\nVPScale=0.003\n')
-        shutil.copy2(profile/'opencpn.conf',profile/'opencpn.ini')
-        expected=fixtures.snapshot(profile);before=inventory(profile)
-        # Reject against an existing seeded profile, and inspect the actual
-        # unsupported tree passed to Setup rather than only its supported sibling.
-        bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
-        with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')
-        (bad/'user-owned').mkdir();(bad/'user-owned/keep.txt').write_bytes(b'Preserve unsupported installation contents.\n')
-        rejected_before=inventory(bad)
-        assert before and rejected_before and sha(bad/'opencpn.exe')!=STOCK_HASH
-        assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        failure=setup('Install',bad/'opencpn.exe',expected=1)
-        assert failure['status']=='failed' and 'Unsupported OpenCPN executable.' in failure['error'],failure
-        rejected_after=inventory(bad);profile_after=inventory(profile)
-        assert rejected_after==rejected_before,'Unsupported installation tree changed during rejection'
-        assert profile_after==before,'Existing shared profile changed during unsupported-build rejection'
-        assert inventory(stock)==stock_before
-        assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        report['unsupported_build_preservation']={
-            'status':'passed','setup_sha256':sha(SETUP),'test_source_sha256':sha(Path(__file__)),
-            'package_manifest_sha256':sha(PACKAGE/'package.json'),
-            'rejected_tree_files':len(rejected_before),'profile_files':len(before),
-            'rejected_tree_before_sha256':hashlib.sha256(json.dumps(rejected_before,sort_keys=True).encode()).hexdigest(),
-            'rejected_tree_after_sha256':hashlib.sha256(json.dumps(rejected_after,sort_keys=True).encode()).hexdigest(),
-            'profile_before_sha256':hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest(),
-            'profile_after_sha256':hashlib.sha256(json.dumps(profile_after,sort_keys=True).encode()).hexdigest(),
-            'install_root_absent':True,'all_shortcut_groups_absent':True}
-        check('Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent')
-        # Stock plugins are user-owned inputs. A legacy TLS DLL copied from
-        # there must refuse a fresh candidate without deleting the source.
-        stock_plugins=stock/'plugins';created_stock_plugins=not stock_plugins.exists()
-        stock_plugins.mkdir(exist_ok=True)
-        for name in ('libeay32.dll','ssleay32.dll'):
-            legacy=stock_plugins/name
-            assert not legacy.exists()
-            legacy.write_bytes(('unmanaged stock plugin '+name).encode())
-            stock_with_legacy=inventory(stock)
-            refused_cleanly=False
+        if args.mode=='lifecycle-tail':
+            run_fresh_lifecycle_tail(temporary,stock,original,stock_before,product)
+        else:
+            setup('Preflight','')
+            assert not INSTALL.exists() and inventory(stock)==stock_before
+            check('Registry discovery handles the official build-suffixed key and verifies its exact hash without modification')
+            wizard(original)
+            assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+            SHORTCUTS.mkdir();foreign_link=SHORTCUTS/'Skager.lnk'
+            foreign_link.write_bytes(b'foreign shortcut content must not be claimed')
+            foreign_before=inventory(SHORTCUTS)
             try:
                 failure=setup('Install',original,expected=1)
-                assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
-                assert inventory(stock)==stock_with_legacy and legacy.is_file()
-                assert inventory(profile)==before and not (INSTALL/'state.json').exists()
-                assert not (INSTALL/'transaction.json').exists()
-                assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-                refused_cleanly=True
+                assert 'no verified SKAGER owner' in failure['error'],failure
+                assert inventory(SHORTCUTS)==foreign_before and not INSTALL.exists()
+                assert inventory(stock)==stock_before
             finally:
-                legacy.unlink()
-                # A rejected first install may leave only its disposable,
-                # unpublished owner/recovery/staging files behind.
-                if refused_cleanly and INSTALL.exists():
-                    shutil.rmtree(INSTALL)
-        if created_stock_plugins:stock_plugins.rmdir()
-        assert inventory(stock)==stock_before and not INSTALL.exists()
-        check('Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication')
-        wizard(original,install=True)
-        assert inventory(profile)==before and inventory(stock)==stock_before
-        assert not state()['previous']
-        assert (SHORTCUTS/'Skager.lnk').is_file() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
-        assert sha(generation()/'Lifecycle.ps1')==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1')
-        p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'SKAGER / OpenCPN',profile,'installer-00-clean-candidate')
-        chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
-        stable_resources(profile,stock)
-        # Reuse this exact disposable package, supported stock and shared profile.
-        # Same-version transitions qualify updater mechanics, not release selection.
-        startup_health=json.loads((generation()/'ownership.json').read_text(encoding='utf-8-sig')).get('updateStartupHealth',0)
-        assert type(startup_health) is int and startup_health in (0,1),'Unknown startup health contract'
-        if startup_health==1:
-            packaged_updater=module('test-packaged-updater-windows')
-            report['packaged_updater']=packaged_updater.qualify(
-                install=INSTALL,setup=SETUP,stock=original,profile=profile,evidence=EVIDENCE,
-                powershell=PS,commit=product['commit'],executable_sha256=sha(ROOT/'build/production-install/opencpn.exe'),
-                ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected,
-                product=product,source_app=ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/app',
-                startup_diagnostic=args.startup_supervisor_diagnostic)
-            assert not args.startup_supervisor_diagnostic,'Diagnostic must stop before any subsequent lifecycle checks'
-        else:
-            assert not args.startup_supervisor_diagnostic,'Diagnostic requires authenticated startup health support'
-            assert args.retained_package or args.compiled_input_receipt,'Current build must support authenticated startup health'
-            report['packaged_updater']={'status':'not-applicable','reason':'Retained package has no authenticated startup health support',
-                                       'updateStartupHealth':0,'commit':product['commit']}
-        assert fixture_snapshot(profile)==expected and inventory(stock)==stock_before
-        stable_resources(profile,stock)
-        before=inventory(profile)
-        engine('Rollback')
-        assert not (INSTALL/'state.json').exists()
-        assert not list((INSTALL/'generations').glob('*/app/opencpn.exe'))
-        assert not (INSTALL/'transaction.json').exists()
-        assert inventory(profile)==before and inventory(stock)==stock_before
-        check('Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified')
-        stable_resources(profile,stock)
-        assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-        if args.mode=='production':
-            # Early Beta 2 had the same 0.4 version but its immutable maintainer
-            # only knew the historical Alpha 1 folder. Test the exact published
-            # bytes; neither relabel a current package nor patch retained engines.
-            early_lock=json.loads((ROOT/'tools/early-beta2-layout.lock.json').read_text())
-            early_setup=ROOT/'build/prior-beta2-layout-fixture/setup'/early_lock['setupName']
-            before=inventory(profile)
-            setup('Install',original,executable=early_setup)
-            early_generation=state()['current'];early_owned=inventory(generation())
-            early_record=json.loads((generation()/'ownership.json').read_text())
-            assert early_record['version']=='0.4.0-beta2' and early_record['commit']==early_lock['commit']
-            assert 'shellLayout' not in early_record
-            assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            setup('Update',original)
-            assert state()['previous']==early_generation
-            assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
-            assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            engine('Rollback',expected=1,failure='after-commit')
-            assert state()['current']==early_generation and inventory(generation())==early_owned
-            assert (INSTALL/'transaction.json').is_file()
-            assert not OLD_SHORTCUTS.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            early_diagnostics=maintenance('Diagnostics')
-            assert (INSTALL/'transaction.json').is_file() and not OLD_SHORTCUTS.exists()
-            assert early_diagnostics['stockVerified'] and early_diagnostics['state']['current']==early_generation
-            assert all(f['expected']==f['actual'] for f in early_diagnostics['files'])
-            maintenance('Uninstall')
-            assert not (INSTALL/'transaction.json').exists()
-            assert not (INSTALL/'state.json').exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            check('Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group')
-            # A real user-selected harmonic source must remain selected; defaults
-            # must never replace or append to this list during any installed mode.
-            custom_tide=profile/'custom Åland harmonic fixture.tcd'
-            shutil.copy2(stock/'tcdata/harmonics-dwf-20210110-free.tcd',custom_tide)
-            config=configparser.RawConfigParser(strict=False)
-            config.optionxform=str
-            config.read(profile/'opencpn.ini',encoding='utf-8-sig')
-            config['TideCurrentDataSources']={'tcds0':custom_tide.as_posix()}
-            with (profile/'opencpn.ini').open('w',encoding='utf-8') as f:config.write(f)
-            before=inventory(profile)
-            prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Beta1-Setup.exe'
-            setup('Install',original,executable=prior)
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
-            assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            old_exe=generation()/'app/opencpn.exe'
-            assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
-            p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version',welcome_transition='candidate-to-beta1')
-            charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
-            stable_resources(profile,stock,[custom_tide])
-            prior_generation=state()['current'];prior_owned=inventory(generation());before=inventory(profile)
-            check('Accepted Beta 1 release installs and opens real coastline with shared fixtures')
-            setup('Update',original)
-            assert state()['previous']==prior_generation
-            assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
-            assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
-            assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            assert (SHORTCUTS/'Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            check('Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged')
-            recoveries=list((INSTALL/'recovery').glob('*.json'))
-            assert recoveries,'Missing durable before-state recovery set'
-            latest=max(recoveries,key=lambda p:p.stat().st_mtime_ns)
-            recovery=json.loads(latest.read_text(encoding='utf-8-sig'))
-            assert recovery['before']['current']==prior_generation
-            assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']==product['version']
-            check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
-            # Exercise the genuine older immutable engine after rollback, not a
-            # same-version mock. Its original group must remain usable and its
-            # files byte-identical; then migrate forward again using current Setup.
-            engine('Rollback')
-            assert state()['current']==prior_generation and inventory(generation())==prior_owned
-            assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            prior_diagnostics=maintenance('Diagnostics')
-            assert prior_diagnostics['stockVerified'] and prior_diagnostics['state']['current']==prior_generation
-            assert all(f['expected']==f['actual'] for f in prior_diagnostics['files'])
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            check('Genuine Beta 1 rollback restores its historical group and unchanged original maintainer; native diagnostics work')
-            # Interrupt after publishing usable neutral links, before old cleanup.
-            setup('Update',original,expected=1,failure='after-shortcuts')
-            committed_migration=state()['current']
-            assert committed_migration!=prior_generation and (INSTALL/'transaction.json').exists()
-            assert (SHORTCUTS/'Skager.lnk').is_file() and (OLD_SHORTCUTS/'OpenNav X.lnk').is_file()
-            setup('Repair',original)
-            assert state()['previous']==committed_migration and not (INSTALL/'transaction.json').exists()
-            assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
-            maintenance_wizard()
-            assert inventory(profile)==before and inventory(stock)==stock_before
-            first=state()['current'];exe=generation()/'app/opencpn.exe'
-            assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
-            p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
-            chart_check(rgb,'XNav','Installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
-            check('Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved')
-            for mode,title,name in [('--legacy','SKAGER Legacy / OpenCPN','legacy'),('--safe-mode','SKAGER Safe Mode / OpenCPN','safe')]:
-                p,h,rgb=launch(exe,[mode],title,profile,'installer-02-'+name)
-                chart_check(rgb,'Standard','Installed '+name);close(p,h);assert fixture_snapshot(profile)==expected
-            check('Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences')
-            # Controlled return through both product interfaces, not only separate launches.
-            p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-03-before-switch')
-            chart_check(rgb,'XNav','Installed XNav before mode switch')
-            before=startup_baseline(profile);ui.open_system(p.pid);ui.click_text(p.pid,'Open Legacy OpenCPN')
-            assert p.wait(timeout=35)==0;owned.discard(p.pid)
-            h,pid=ui.wait_window('SKAGER Legacy / OpenCPN');owned.add(pid);wait_ready(profile,before)
-            rgb=ui.capture(h,EVIDENCE/'installer-03-switched-legacy.png');report['screenshots'].append('installer-03-switched-legacy.png')
-            chart_check(rgb,'Standard','Installed XNav to Legacy')
-            before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
-            h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
-            report.setdefault('first_start_setup',[]).append(defer_boat_setup(
-                lambda:read_json_snapshot(diagnostics_path(profile)),
-                lambda target:ui.pointer_text(pid,'Later'),
-                native_window=lambda:native_setup_window(ui,pid)))
-            rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
-            chart_check(rgb,'XNav','Installed XNav Legacy XNav')
-            monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)
-            assert fixture_snapshot(profile)==expected
-            stable_resources(profile,stock,[custom_tide])
-            check('Installed XNav to Legacy to XNav controlled restart retains real coastline')
-            before=inventory(profile)
-            damaged=generation()/'app/uidata/styles.xml';damaged.write_bytes(b'corrupt owned resource')
-            custom=generation()/'app/plugins/alpha-user-preserved.txt';custom.write_text('user extension must persist')
-            engine('Repair');assert state()['current']!=first and damaged.read_bytes()==b'corrupt owned resource'
-            assert (generation()/'app/uidata/styles.xml').read_bytes()!=b'corrupt owned resource'
-            assert (generation()/'app/plugins/alpha-user-preserved.txt').read_text()==custom.read_text()
-            assert inventory(profile)==before
-            check('Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained')
-            engine('Repair',shortcut_modes='xnav')
-            shortcut_root=SHORTCUTS
-            assert not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
-            assert (shortcut_root/'Skager.lnk').exists() and (shortcut_root/'Maintain Skager.lnk').exists()
-            assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'Skager Safe Mode.lnk').exists()
-            assert state()['shortcutModes']==['xnav']
-            engine('Repair')
-            assert state()['shortcutModes']==['xnav'] and not (shortcut_root/'OpenCPN Legacy.lnk').exists()
-            check('Optional shortcuts respect explicit choices; retained-package repair preserves preferences')
-            engine('Repair',shortcut_modes='xnav,legacy,safe')
-            assert (shortcut_root/'OpenCPN Legacy.lnk').exists() and (shortcut_root/'Skager Safe Mode.lnk').exists()
-            assert inventory(profile)==before
-            check('Legacy and Safe shortcuts can be restored without altering shared navigation data')
-            repaired=state()['current'];setup('Update',original)
-            assert state()['previous']==repaired
-            assert (generation()/'app/plugins/alpha-user-preserved.txt').exists()
-            check('Update preserves shared profile and user plugin additions; prior generation backed up')
-            previous=INSTALL/'generations'/repaired
-            previous_ownership=previous/'ownership.json'
-            saved_ownership=previous_ownership.read_bytes()
-            rollback_state=sha(INSTALL/'state.json');shortcut_before=inventory(SHORTCUTS)
-            malformed=json.loads(saved_ownership);malformed['shellLayout']=None
-            previous_ownership.write_text(json.dumps(malformed),encoding='utf-8')
-            previous_files=inventory(previous);current_files=inventory(generation())
-            try:
-                failure=engine('Rollback',expected=1)
-                assert 'Unknown generation Start-menu layout' in failure['error'],failure
-                assert sha(INSTALL/'state.json')==rollback_state and inventory(SHORTCUTS)==shortcut_before
-                assert inventory(previous)==previous_files and inventory(generation())==current_files
-                assert inventory(profile)==before and inventory(stock)==stock_before
-                assert not (INSTALL/'transaction.json').exists()
-            finally:
-                previous_ownership.write_bytes(saved_ownership)
-            check('Unknown explicit rollback layout refuses before state/journal publication; owned generations, shortcuts and user data remain unchanged')
-            rollback_marker=previous/'app/OPENNAV_PORTABLE_PREVIEW'
-            assert not rollback_marker.exists()
-            rollback_marker.write_text('unowned inherited rollback sentinel')
-            previous_files=inventory(previous); current_files=inventory(generation())
-            rollback_state=sha(INSTALL/'state.json')
-            try:
-                failure=engine('Rollback',expected=1)
-                assert 'portable profile marker' in failure['error'],failure
-                assert sha(INSTALL/'state.json')==rollback_state
-                assert inventory(previous)==previous_files and inventory(generation())==current_files
-                assert inventory(profile)==before and inventory(stock)==stock_before
-                assert not (INSTALL/'transaction.json').exists()
-            finally:
-                rollback_marker.unlink()
-            check('Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data')
-            # Rollback is recovery of an existing generation, not acceptance of a
-            # newly staged candidate. An unowned DLL there must not block recovery.
-            rollback_legacy=previous/'app/plugins/ssleay32.dll'
-            assert not rollback_legacy.exists()
-            shutil.copy2(previous/'app/zlib1.dll',rollback_legacy)
-            rollback_legacy_hash=sha(rollback_legacy)
-            previous_files=inventory(previous)
-            try:
-                engine('Rollback')
-                assert state()['current']==repaired and inventory(generation())==previous_files
-                assert sha(rollback_legacy)==rollback_legacy_hash
-                assert inventory(profile)==before and inventory(stock)==stock_before
-            finally:
-                rollback_legacy.unlink()
-            check('Rollback restores exact prior generation with an unmanaged legacy TLS addition and leaves navigation data unchanged')
-            active_hash=sha(generation()/'app/opencpn.exe'); state_hash=sha(INSTALL/'state.json')
-            shortcut_before=inventory(SHORTCUTS)
-            def unchanged():
-                assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
-                assert sha(generation()/'app/opencpn.exe')==active_hash
-                assert inventory(profile)==before and inventory(stock)==stock_before
-            for source in ('stock','active'):
-                for name in ('libeay32.dll','ssleay32.dll'):
-                    legacy=(stock/'plugins'/name) if source=='stock' else (generation()/'app/plugins'/name)
-                    assert not legacy.exists()
-                    legacy.parent.mkdir(parents=True,exist_ok=True)
-                    legacy.write_bytes(('unmanaged '+source+' '+name).encode())
-                    stock_with_legacy=inventory(stock);active_with_legacy=inventory(generation())
-                    try:
-                        for action in ('Update','Repair'):
-                            failure=setup(action,original,expected=1)
-                            assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
-                            assert name in failure['error'],failure
-                            assert inventory(profile)==before
-                            assert inventory(stock)==stock_with_legacy
-                            assert inventory(generation())==active_with_legacy
-                            assert legacy.is_file(), 'Refusal silently removed unmanaged TLS file'
-                            assert sha(INSTALL/'state.json')==state_hash
-                            assert inventory(SHORTCUTS)==shortcut_before
-                            assert not (INSTALL/'transaction.json').exists()
-                    finally:
-                        legacy.unlink()
+                foreign_link.unlink();SHORTCUTS.rmdir()
+            check('A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged')
+            INSTALL.mkdir();(INSTALL/'owner.json').write_text('{"owner":"foreign fixture"}')
+            (INSTALL/'keep.txt').write_text('Do not claim or change this directory')
+            unowned=inventory(INSTALL)
+            setup('Install',original,expected=1)
+            assert inventory(INSTALL)==unowned and inventory(stock)==stock_before
+            shutil.rmtree(INSTALL) # Only the explicitly created disposable fixture.
+            check('Unknown installation ownership refused without adding logs or changing files')
+            profile,expected,before=prepare_installer_profile(temporary)
+            # Reject against an existing seeded profile, and inspect the actual
+            # unsupported tree passed to Setup rather than only its supported sibling.
+            bad=temporary/'unknown';bad.mkdir();shutil.copy2(original,bad/'opencpn.exe')
+            with (bad/'opencpn.exe').open('ab') as f:f.write(b'unsupported build')
+            (bad/'user-owned').mkdir();(bad/'user-owned/keep.txt').write_bytes(b'Preserve unsupported installation contents.\n')
+            rejected_before=inventory(bad)
+            assert before and rejected_before and sha(bad/'opencpn.exe')!=STOCK_HASH
+            assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+            failure=setup('Install',bad/'opencpn.exe',expected=1)
+            assert failure['status']=='failed' and 'Unsupported OpenCPN executable.' in failure['error'],failure
+            rejected_after=inventory(bad);profile_after=inventory(profile)
+            assert rejected_after==rejected_before,'Unsupported installation tree changed during rejection'
+            assert profile_after==before,'Existing shared profile changed during unsupported-build rejection'
             assert inventory(stock)==stock_before
-            unchanged()
-            check('Update/repair refuse each stock or active unmanaged legacy TLS DLL; current installation and source bytes survive')
-            # Unknown user additions are normally preserved, but cannot turn an
-            # installed generation back into a portable or developer distribution.
-            for relative, action, error in (
-                    ('app/OPENNAV_PORTABLE_PREVIEW','Update','portable profile marker'),
-                    ('Run-XNav-Demo.cmd','Repair','Developer/demo content refused'),
-                    ('app/OPENNAV_ROUTE_FIXTURE','Update','Developer/demo content refused')):
-                addition=generation()/relative
-                assert not addition.exists()
-                addition.write_text('unowned inherited sentinel; must never reach a committed product')
-                previous_files=inventory(generation())
+            assert not INSTALL.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+            report['unsupported_build_preservation']={
+                'status':'passed','setup_sha256':sha(SETUP),'test_source_sha256':sha(Path(__file__)),
+                'package_manifest_sha256':sha(PACKAGE/'package.json'),
+                'rejected_tree_files':len(rejected_before),'profile_files':len(before),
+                'rejected_tree_before_sha256':hashlib.sha256(json.dumps(rejected_before,sort_keys=True).encode()).hexdigest(),
+                'rejected_tree_after_sha256':hashlib.sha256(json.dumps(rejected_after,sort_keys=True).encode()).hexdigest(),
+                'profile_before_sha256':hashlib.sha256(json.dumps(before,sort_keys=True).encode()).hexdigest(),
+                'profile_after_sha256':hashlib.sha256(json.dumps(profile_after,sort_keys=True).encode()).hexdigest(),
+                'install_root_absent':True,'all_shortcut_groups_absent':True}
+            check('Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent')
+            # Stock plugins are user-owned inputs. A legacy TLS DLL copied from
+            # there must refuse a fresh candidate without deleting the source.
+            stock_plugins=stock/'plugins';created_stock_plugins=not stock_plugins.exists()
+            stock_plugins.mkdir(exist_ok=True)
+            for name in ('libeay32.dll','ssleay32.dll'):
+                legacy=stock_plugins/name
+                assert not legacy.exists()
+                legacy.write_bytes(('unmanaged stock plugin '+name).encode())
+                stock_with_legacy=inventory(stock)
+                refused_cleanly=False
                 try:
-                    failure=setup(action,original,expected=1)
-                    assert error in failure['error'],failure
-                    unchanged()
-                    assert inventory(generation())==previous_files,'Rejected inheritance changed old generation'
-                    assert not (INSTALL/'transaction.json').exists(),'Rejected content reached publication journal'
+                    failure=setup('Install',original,expected=1)
+                    assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
+                    assert inventory(stock)==stock_with_legacy and legacy.is_file()
+                    assert inventory(profile)==before and not (INSTALL/'state.json').exists()
+                    assert not (INSTALL/'transaction.json').exists()
+                    assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+                    refused_cleanly=True
                 finally:
-                    # Remove only the disposable sentinel inserted by this case.
-                    addition.unlink()
-            unchanged();check('Update/repair reject inherited portable marker, Demo launcher and route fixture before publication; prior generation/state/stock/profile unchanged')
-            with file_lock(INSTALL/'transaction.lock',0):
-                failure=setup('Update',original,expected=1)
-                assert 'being used' in failure['error'].lower() or 'another process' in failure['error'].lower(),failure
-            unchanged();check('Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact')
-            with deny_generation_creation():
-                failure=setup('Update',original,expected=1)
-                assert 'denied' in failure['error'].lower(),failure
-            unchanged();check('Actual NTFS permission denial during staging preserves active installation; ACL restored')
-            damaged_package=temporary/'damaged integration';damaged_package.mkdir()
-            for name in ('package.json','payload.zip'):
-                shutil.copy2(PACKAGE/name,damaged_package/name)
-            shutil.copy2(generation()/'Maintain.exe',damaged_package/'Maintain.exe')
-            with (damaged_package/'payload.zip').open('ab') as stream:stream.write(b'corrupt payload fixture')
-            failure=package_engine(damaged_package,original)
-            assert 'Payload ZIP integrity' in failure['error'],failure
-            unchanged();check('Corrupt payload fails SHA-256 preflight without changing active installation')
-            setup('Update',original,expected=1,failure='during-extraction')
-            unchanged();assert not (INSTALL/'transaction.json').exists()
-            check('Interrupted extraction never publishes incomplete generation or changes active state')
-            # Valid ZIP/manifest hashes are insufficient: dependency closure must
-            # reject this unpublished stage before invoking the application loader.
-            manifest=json.loads((PACKAGE/'package.json').read_text())
-            # Use the base library, not whichever optional wx library sorts first,
-            # so the separate real-loader check below also has a required import.
-            dependencies=[f['path'] for f in manifest['files'] if f['path'].lower()=='app/wxbase32u_vc14x.dll']
-            assert len(dependencies)==1,dependencies
-            dependency=dependencies[0]
-            with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
-                for entry in source.infolist():
-                    if entry.filename!=dependency:target.writestr(entry,source.read(entry.filename))
-            manifest['files']=[f for f in manifest['files'] if f['path']!=dependency]
-            manifest['payloadSha256']=sha(damaged_package/'payload.zip')
-            (damaged_package/'package.json').write_text(json.dumps(manifest))
-            stages_before=set((INSTALL/'generations').iterdir())
-            failure=package_engine(damaged_package,original)
-            stages_after=set((INSTALL/'generations').iterdir())-stages_before
-            assert len(stages_after)==1,stages_after
-            stage=stages_after.pop().resolve()
-            assert stage.is_dir() and len(stage.name)==32 and all(c in '0123456789abcdef' for c in stage.name)
-            assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
-            prefix='Missing app-local PE import '+Path(dependency).name.lower()+' in '
-            assert failure['status']=='failed' and failure['action']=='Update' and failure['error'].startswith(prefix),failure
-            importer=Path(failure['error'][len(prefix):]).resolve()
-            assert importer.is_file() and importer.is_relative_to(stage/'app'),failure
-            assert not (stage/dependency).exists()
-            for _ in range(10):
-                assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'Loader failure left an operating-system modal dialog'
-                time.sleep(.1)
-            unchanged();check('Exact missing wx base import rejected before loader or commit, without OS modal residue')
-            # Exercise the unchanged production SelfTest separately on this private
-            # failed stage. Never bypass dependency closure in the installer path.
-            loader_report=EVIDENCE/'installer-missing-dll-selftest.json'
-            helper=PRODUCT_SOURCE/'tools/test-installer-missing-dll-selftest.ps1'
-            with (EVIDENCE/'installer-missing-dll-selftest.log').open('wb') as output:
-                child=subprocess.Popen([str(PS),'-NoProfile','-NonInteractive','-ExecutionPolicy','Bypass',
-                    '-File',str(helper),'-Stage',str(stage),'-ExpectedExecutableSha256',sha(ROOT/'build/production-install/opencpn.exe'),
-                    '-MissingDependency',Path(dependency).name,'-Commit',manifest['commit'],'-Version',manifest['version'],
-                    '-Report',str(loader_report)],stdout=output,stderr=subprocess.STDOUT)
-                try:code=child.wait(timeout=90)
-                except subprocess.TimeoutExpired:
-                    subprocess.run(['taskkill','/PID',str(child.pid),'/T','/F'],capture_output=True,timeout=15)
-                    child.wait(timeout=10)
-                    raise
-            assert code==0,'Missing-DLL SelfTest proof failed; inspect retained log/receipt'
-            loader=json.loads(loader_report.read_text(encoding='utf-8-sig'))
-            assert loader['status']=='passed' and loader['error']=='Staged executable self-test failed: -1073741515',loader
-            assert loader['sourceSha256']==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1') and loader['executableSha256']==sha(ROOT/'build/production-install/opencpn.exe'),loader
-            assert loader['initialErrorMode']==0 and loader['restoredErrorMode']==0,loader
-            for _ in range(10):
-                assert not any(title=='opencpn.exe - System Error' for _,_,title in ui.windows()),'SelfTest left an operating-system modal dialog'
-                time.sleep(.1)
-            unchanged();assert not (stage/'ownership.json').exists() and not (INSTALL/'transaction.json').exists()
-            check('Actual production SelfTest suppresses missing-DLL OS dialog and restores error mode in separate failed-stage process')
-            # A correctly hashed fixture-enabled executable is still forbidden in
-            # the installed product. Exercise the actual native loader identity,
-            # not merely a package label or cache option.
-            fixture_exe=ROOT/'build/xnav-install/opencpn.exe'
-            assert fixture_exe.is_file() and sha(fixture_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
-            fixture_bytes=fixture_exe.read_bytes()
-            manifest=json.loads((PACKAGE/'package.json').read_text())
-            with zipfile.ZipFile(PACKAGE/'payload.zip') as source, zipfile.ZipFile(damaged_package/'payload.zip','w',zipfile.ZIP_DEFLATED) as target:
-                for entry in source.infolist():
-                    target.writestr(entry,fixture_bytes if entry.filename=='app/opencpn.exe' else source.read(entry.filename))
-            for entry in manifest['files']:
-                if entry['path']=='app/opencpn.exe':entry['sha256']=sha(fixture_exe)
-            manifest['payloadSha256']=sha(damaged_package/'payload.zip')
-            (damaged_package/'package.json').write_text(json.dumps(manifest))
-            failure=package_engine(damaged_package,original)
-            assert 'Developer/test-fixture executable refused' in failure['error'],failure
-            unchanged();check('Correctly hashed native fixture-enabled executable is refused before product publication')
-            with file_lock(INSTALL/'state.json'):
-                setup('Update',original,expected=1)
-            unchanged();assert (INSTALL/'transaction.json').exists()
-            assert not list(INSTALL.glob('state.json.*.tmp'))
-            check('Locked atomic state file preserves previous generation and durable recovery journal without temporary residue')
-            setup('Repair',original);assert not (INSTALL/'transaction.json').exists()
-            repaired=state()['current']
-            check('Rerun after file-lock failure repairs and recovers normally')
-            setup('Update',original,expected=1,failure='before-commit')
-            assert state()['current']==repaired and (INSTALL/'transaction.json').exists()
-            setup('Update',original);assert not (INSTALL/'transaction.json').exists()
-            check('Interrupted update before atomic commit retains active app and recovers on rerun')
-            setup('Update',original,expected=1,failure='after-commit')
-            committed=state()['current'];assert (INSTALL/'transaction.json').exists()
-            setup('Repair',original);assert state()['previous']==committed and not (INSTALL/'transaction.json').exists()
-            check('Interrupted post-commit shortcut publication recovers from durable journal')
-            diagnostics=engine('Diagnostics');assert diagnostics['stockVerified']
-            assert all(f['expected']==f['actual'] for f in diagnostics['files'])
-            check('Diagnostics verifies installed hashes without collecting navigation or raw sensor data')
-            # Exercise the conventional uninstall executable as well as the engine.
-            maintenance('Uninstall')
-            assert not (INSTALL/'state.json').exists()
+                    legacy.unlink()
+                    # A rejected first install may leave only its disposable,
+                    # unpublished owner/recovery/staging files behind.
+                    if refused_cleanly and INSTALL.exists():
+                        shutil.rmtree(INSTALL)
+            if created_stock_plugins:stock_plugins.rmdir()
+            assert inventory(stock)==stock_before and not INSTALL.exists()
+            check('Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication')
+            wizard(original,install=True)
             assert inventory(profile)==before and inventory(stock)==stock_before
-            for record in (INSTALL/'generations').glob('*/ownership.json'):
-                assert not (record.parent/'app/opencpn.exe').exists(), 'Unmodified committed OpenNav binary remains'
-            # Failed, unpublished stages deliberately remain diagnostic evidence;
-            # the engine never recursively deletes a tree without ownership.json.
-            report['unpublished_stages_retained']=sum(1 for d in (INSTALL/'generations').iterdir() if d.is_dir() and not (d/'ownership.json').exists())
-            assert list((INSTALL/'generations').glob('*/app/plugins/alpha-user-preserved.txt')), 'Custom additions were removed'
-            check('Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained')
-            p,h,rgb=launch(original,[],'OpenCPN 5.12.4-0',profile,'installer-05-restored-stock',welcome_transition='candidate-to-stock')
-            chart_check(rgb,'Standard','Untouched stock after uninstall');close(p,h)
-            assert fixture_snapshot(profile)==expected
-            stable_resources(profile,stock,[custom_tide])
-            check('Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved')
-            check('Original official OpenCPN still loads charts and shared navigation data after uninstall')
+            assert not state()['previous']
+            assert (SHORTCUTS/'Skager.lnk').is_file() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+            assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
+            assert sha(generation()/'Lifecycle.ps1')==sha(PRODUCT_SOURCE/'installer/windows/Lifecycle.ps1')
+            p,h,rgb=launch(generation()/'app/opencpn.exe',['--xnav'],'SKAGER / OpenCPN',profile,'installer-00-clean-candidate')
+            chart_check(rgb,'XNav','Clean installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
+            stable_resources(profile,stock)
+            # Reuse this exact disposable package, supported stock and shared profile.
+            # Same-version transitions qualify updater mechanics, not release selection.
+            startup_health=json.loads((generation()/'ownership.json').read_text(encoding='utf-8-sig')).get('updateStartupHealth',0)
+            assert type(startup_health) is int and startup_health in (0,1),'Unknown startup health contract'
+            if startup_health==1:
+                packaged_updater=module('test-packaged-updater-windows')
+                report['packaged_updater']=packaged_updater.qualify(
+                    install=INSTALL,setup=SETUP,stock=original,profile=profile,evidence=EVIDENCE,
+                    powershell=PS,commit=product['commit'],executable_sha256=sha(ROOT/'build/production-install/opencpn.exe'),
+                    ui=ui,owned=owned,inventory=inventory,navigation_matches=lambda: fixture_snapshot(profile)==expected,
+                    product=product,source_app=ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/app',
+                    startup_diagnostic=args.startup_supervisor_diagnostic)
+                assert not args.startup_supervisor_diagnostic,'Diagnostic must stop before any subsequent lifecycle checks'
+            else:
+                assert not args.startup_supervisor_diagnostic,'Diagnostic requires authenticated startup health support'
+                assert args.retained_package or args.compiled_input_receipt,'Current build must support authenticated startup health'
+                report['packaged_updater']={'status':'not-applicable','reason':'Retained package has no authenticated startup health support',
+                                           'updateStartupHealth':0,'commit':product['commit']}
+            assert fixture_snapshot(profile)==expected and inventory(stock)==stock_before
+            stable_resources(profile,stock)
             before=inventory(profile)
-            setup('Install',original)
-            assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
-            assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+            engine('Rollback')
+            assert not (INSTALL/'state.json').exists()
+            assert not list((INSTALL/'generations').glob('*/app/opencpn.exe'))
+            assert not (INSTALL/'transaction.json').exists()
             assert inventory(profile)==before and inventory(stock)==stock_before
-            check('Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions')
-            setup('Update',original)
-            assert state()['previous'] and inventory(profile)==before
-            check('Beta 2 same-version rebuild/update creates a rollback generation without changing user data')
-            engine('Uninstall')
-            assert inventory(profile)==before and inventory(stock)==stock_before
+            check('Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified')
+            stable_resources(profile,stock)
             assert not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+            if args.mode=='production':
+                # Early Beta 2 had the same 0.4 version but its immutable maintainer
+                # only knew the historical Alpha 1 folder. Test the exact published
+                # bytes; neither relabel a current package nor patch retained engines.
+                early_lock=json.loads((ROOT/'tools/early-beta2-layout.lock.json').read_text())
+                early_setup=ROOT/'build/prior-beta2-layout-fixture/setup'/early_lock['setupName']
+                before=inventory(profile)
+                setup('Install',original,executable=early_setup)
+                early_generation=state()['current'];early_owned=inventory(generation())
+                early_record=json.loads((generation()/'ownership.json').read_text())
+                assert early_record['version']=='0.4.0-beta2' and early_record['commit']==early_lock['commit']
+                assert 'shellLayout' not in early_record
+                assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                setup('Update',original)
+                assert state()['previous']==early_generation
+                assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+                assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                engine('Rollback',expected=1,failure='after-commit')
+                assert state()['current']==early_generation and inventory(generation())==early_owned
+                assert (INSTALL/'transaction.json').is_file()
+                assert not OLD_SHORTCUTS.exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                early_diagnostics=maintenance('Diagnostics')
+                assert (INSTALL/'transaction.json').is_file() and not OLD_SHORTCUTS.exists()
+                assert early_diagnostics['stockVerified'] and early_diagnostics['state']['current']==early_generation
+                assert all(f['expected']==f['actual'] for f in early_diagnostics['files'])
+                maintenance('Uninstall')
+                assert not (INSTALL/'transaction.json').exists()
+                assert not (INSTALL/'state.json').exists() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists() and not OLD_SHORTCUTS.exists()
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                check('Exact historical-layout Beta 2 updates and rolls back with byte-identical old engine; original Maintain diagnostics and uninstall leave neither group')
+                custom_tide=prepare_custom_tide(profile,stock)
+                before=inventory(profile)
+                prior=ROOT/'build/prior-alpha-fixture/setup/OpenNavX-Beta1-Setup.exe'
+                setup('Install',original,executable=prior)
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                assert json.loads((generation()/'ownership.json').read_text())['version']=='0.3.0-beta1'
+                assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                old_exe=generation()/'app/opencpn.exe'
+                assert sha(old_exe)!=sha(ROOT/'build/production-install/opencpn.exe')
+                p,h,rgb=launch(old_exe,['--xnav'],'OpenNav X / OpenCPN',profile,'installer-00-prior-test-version',welcome_transition='candidate-to-beta1')
+                charts.reference(rgb);close(p,h);assert fixture_snapshot(profile)==expected
+                stable_resources(profile,stock,[custom_tide])
+                prior_generation=state()['current'];prior_owned=inventory(generation());before=inventory(profile)
+                check('Accepted Beta 1 release installs and opens real coastline with shared fixtures')
+                setup('Update',original)
+                assert state()['previous']==prior_generation
+                assert json.loads((generation()/'ownership.json').read_text())['version']==product['version']
+                assert json.loads((generation()/'ownership.json').read_text())['shellLayout']=='OpenNavX.SkagerStartMenu.1'
+                assert sha(generation()/'app/opencpn.exe')==sha(ROOT/'build/production-install/opencpn.exe')
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                assert (SHORTCUTS/'Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                check('Accepted Beta 1 updates to the exact Beta 2 candidate executable; stock/profile unchanged')
+                recoveries=list((INSTALL/'recovery').glob('*.json'))
+                assert recoveries,'Missing durable before-state recovery set'
+                latest=max(recoveries,key=lambda p:p.stat().st_mtime_ns)
+                recovery=json.loads(latest.read_text(encoding='utf-8-sig'))
+                assert recovery['before']['current']==prior_generation
+                assert recovery['stock']['sha256']==STOCK_HASH and recovery['nextVersion']==product['version']
+                check('Versioned recovery record identifies exact Beta 1 generation, stock hash and Beta 2 target before update')
+                # Exercise the genuine older immutable engine after rollback, not a
+                # same-version mock. Its original group must remain usable and its
+                # files byte-identical; then migrate forward again using current Setup.
+                engine('Rollback')
+                assert state()['current']==prior_generation and inventory(generation())==prior_owned
+                assert (OLD_SHORTCUTS/'Maintain OpenNav.lnk').is_file() and not SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                prior_diagnostics=maintenance('Diagnostics')
+                assert prior_diagnostics['stockVerified'] and prior_diagnostics['state']['current']==prior_generation
+                assert all(f['expected']==f['actual'] for f in prior_diagnostics['files'])
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                check('Genuine Beta 1 rollback restores its historical group and unchanged original maintainer; native diagnostics work')
+                # Interrupt after publishing usable neutral links, before old cleanup.
+                setup('Update',original,expected=1,failure='after-shortcuts')
+                committed_migration=state()['current']
+                assert committed_migration!=prior_generation and (INSTALL/'transaction.json').exists()
+                assert (SHORTCUTS/'Skager.lnk').is_file() and (OLD_SHORTCUTS/'OpenNav X.lnk').is_file()
+                setup('Repair',original)
+                assert state()['previous']==committed_migration and not (INSTALL/'transaction.json').exists()
+                assert (SHORTCUTS/'Maintain Skager.lnk').is_file() and not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                check('Genuine Beta 1 to Beta 2 interrupted group migration recovers from committed state and removes only old owned links')
+                maintenance_wizard()
+                assert inventory(profile)==before and inventory(stock)==stock_before
+                first=state()['current'];exe=generation()/'app/opencpn.exe'
+                assert not (exe.parent/'OPENNAV_PORTABLE_PREVIEW').exists()
+                p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-01-xnav',welcome_transition='beta1-to-candidate')
+                chart_check(rgb,'XNav','Installed XNav');close(p,h);assert fixture_snapshot(profile)==expected
+                check('Installed XNav starts against normal wx profile; coastline and navigation fixtures preserved')
+                for mode,title,name in [('--legacy','SKAGER Legacy / OpenCPN','legacy'),('--safe-mode','SKAGER Safe Mode / OpenCPN','safe')]:
+                    p,h,rgb=launch(exe,[mode],title,profile,'installer-02-'+name)
+                    chart_check(rgb,'Standard','Installed '+name);close(p,h);assert fixture_snapshot(profile)==expected
+                check('Installed Legacy and Safe start with charts and shared navigation/config/plugin preferences')
+                # Controlled return through both product interfaces, not only separate launches.
+                p,h,rgb=launch(exe,['--xnav'],'SKAGER / OpenCPN',profile,'installer-03-before-switch')
+                chart_check(rgb,'XNav','Installed XNav before mode switch')
+                before=startup_baseline(profile);ui.open_system(p.pid);ui.click_text(p.pid,'Open Legacy OpenCPN')
+                assert p.wait(timeout=35)==0;owned.discard(p.pid)
+                h,pid=ui.wait_window('SKAGER Legacy / OpenCPN');owned.add(pid);wait_ready(profile,before)
+                rgb=ui.capture(h,EVIDENCE/'installer-03-switched-legacy.png');report['screenshots'].append('installer-03-switched-legacy.png')
+                chart_check(rgb,'Standard','Installed XNav to Legacy')
+                before=startup_baseline(profile);monitor=ui.monitor_process(pid);ui.click_menu(h,'Switch to SKAGER');ui.wait_clean_exit(monitor);owned.discard(pid)
+                h,pid=ui.wait_window('SKAGER / OpenCPN');owned.add(pid);wait_ready(profile,before)
+                report.setdefault('first_start_setup',[]).append(defer_boat_setup(
+                    lambda:read_json_snapshot(diagnostics_path(profile)),
+                    lambda target:ui.pointer_text(pid,'Later'),
+                    native_window=lambda:native_setup_window(ui,pid)))
+                rgb=ui.capture(h,EVIDENCE/'installer-04-returned-xnav.png');report['screenshots'].append('installer-04-returned-xnav.png')
+                chart_check(rgb,'XNav','Installed XNav Legacy XNav')
+                monitor=ui.monitor_process(pid);ui.close(h);ui.wait_clean_exit(monitor);owned.discard(pid)
+                assert fixture_snapshot(profile)==expected
+                stable_resources(profile,stock,[custom_tide])
+                check('Installed XNav to Legacy to XNav controlled restart retains real coastline')
+                before=inventory(profile)
+                damaged=generation()/'app/uidata/styles.xml';damaged.write_bytes(b'corrupt owned resource')
+                custom=generation()/'app/plugins/alpha-user-preserved.txt';custom.write_text('user extension must persist')
+                engine('Repair');assert state()['current']!=first and damaged.read_bytes()==b'corrupt owned resource'
+                assert (generation()/'app/uidata/styles.xml').read_bytes()!=b'corrupt owned resource'
+                assert (generation()/'app/plugins/alpha-user-preserved.txt').read_text()==custom.read_text()
+                assert inventory(profile)==before
+                check('Repair replaces corrupt owned resources in a new generation; original damaged backup and custom additions retained')
+                engine('Repair',shortcut_modes='xnav')
+                shortcut_root=SHORTCUTS
+                assert not OLD_SHORTCUTS.exists() and not NEUTRAL_SHORTCUTS.exists()
+                assert (shortcut_root/'Skager.lnk').exists() and (shortcut_root/'Maintain Skager.lnk').exists()
+                assert not (shortcut_root/'OpenCPN Legacy.lnk').exists() and not (shortcut_root/'Skager Safe Mode.lnk').exists()
+                assert state()['shortcutModes']==['xnav']
+                engine('Repair')
+                assert state()['shortcutModes']==['xnav'] and not (shortcut_root/'OpenCPN Legacy.lnk').exists()
+                check('Optional shortcuts respect explicit choices; retained-package repair preserves preferences')
+                engine('Repair',shortcut_modes='xnav,legacy,safe')
+                assert (shortcut_root/'OpenCPN Legacy.lnk').exists() and (shortcut_root/'Skager Safe Mode.lnk').exists()
+                assert inventory(profile)==before
+                check('Legacy and Safe shortcuts can be restored without altering shared navigation data')
+                repaired=state()['current'];setup('Update',original)
+                assert state()['previous']==repaired
+                assert (generation()/'app/plugins/alpha-user-preserved.txt').exists()
+                check('Update preserves shared profile and user plugin additions; prior generation backed up')
+                previous=INSTALL/'generations'/repaired
+                previous_ownership=previous/'ownership.json'
+                saved_ownership=previous_ownership.read_bytes()
+                rollback_state=sha(INSTALL/'state.json');shortcut_before=inventory(SHORTCUTS)
+                malformed=json.loads(saved_ownership);malformed['shellLayout']=None
+                previous_ownership.write_text(json.dumps(malformed),encoding='utf-8')
+                previous_files=inventory(previous);current_files=inventory(generation())
+                try:
+                    failure=engine('Rollback',expected=1)
+                    assert 'Unknown generation Start-menu layout' in failure['error'],failure
+                    assert sha(INSTALL/'state.json')==rollback_state and inventory(SHORTCUTS)==shortcut_before
+                    assert inventory(previous)==previous_files and inventory(generation())==current_files
+                    assert inventory(profile)==before and inventory(stock)==stock_before
+                    assert not (INSTALL/'transaction.json').exists()
+                finally:
+                    previous_ownership.write_bytes(saved_ownership)
+                check('Unknown explicit rollback layout refuses before state/journal publication; owned generations, shortcuts and user data remain unchanged')
+                rollback_marker=previous/'app/OPENNAV_PORTABLE_PREVIEW'
+                assert not rollback_marker.exists()
+                rollback_marker.write_text('unowned inherited rollback sentinel')
+                previous_files=inventory(previous); current_files=inventory(generation())
+                rollback_state=sha(INSTALL/'state.json')
+                try:
+                    failure=engine('Rollback',expected=1)
+                    assert 'portable profile marker' in failure['error'],failure
+                    assert sha(INSTALL/'state.json')==rollback_state
+                    assert inventory(previous)==previous_files and inventory(generation())==current_files
+                    assert inventory(profile)==before and inventory(stock)==stock_before
+                    assert not (INSTALL/'transaction.json').exists()
+                finally:
+                    rollback_marker.unlink()
+                check('Rollback refuses an unowned portable marker in the previous generation without altering either generation, state or user data')
+                # Rollback is recovery of an existing generation, not acceptance of a
+                # newly staged candidate. An unowned DLL there must not block recovery.
+                rollback_legacy=previous/'app/plugins/ssleay32.dll'
+                assert not rollback_legacy.exists()
+                shutil.copy2(previous/'app/zlib1.dll',rollback_legacy)
+                rollback_legacy_hash=sha(rollback_legacy)
+                previous_files=inventory(previous)
+                try:
+                    engine('Rollback')
+                    assert state()['current']==repaired and inventory(generation())==previous_files
+                    assert sha(rollback_legacy)==rollback_legacy_hash
+                    assert inventory(profile)==before and inventory(stock)==stock_before
+                finally:
+                    rollback_legacy.unlink()
+                check('Rollback restores exact prior generation with an unmanaged legacy TLS addition and leaves navigation data unchanged')
+                active_hash=sha(generation()/'app/opencpn.exe'); state_hash=sha(INSTALL/'state.json')
+                shortcut_before=inventory(SHORTCUTS)
+                def unchanged():
+                    assert state()['current']==repaired and sha(INSTALL/'state.json')==state_hash
+                    assert sha(generation()/'app/opencpn.exe')==active_hash
+                    assert inventory(profile)==before and inventory(stock)==stock_before
+                for source in ('stock','active'):
+                    for name in ('libeay32.dll','ssleay32.dll'):
+                        legacy=(stock/'plugins'/name) if source=='stock' else (generation()/'app/plugins'/name)
+                        assert not legacy.exists()
+                        legacy.parent.mkdir(parents=True,exist_ok=True)
+                        legacy.write_bytes(('unmanaged '+source+' '+name).encode())
+                        stock_with_legacy=inventory(stock);active_with_legacy=inventory(generation())
+                        try:
+                            for action in ('Update','Repair'):
+                                failure=setup(action,original,expected=1)
+                                assert 'Unsupported legacy TLS runtime dependency in candidate' in failure['error'],failure
+                                assert name in failure['error'],failure
+                                assert inventory(profile)==before
+                                assert inventory(stock)==stock_with_legacy
+                                assert inventory(generation())==active_with_legacy
+                                assert legacy.is_file(), 'Refusal silently removed unmanaged TLS file'
+                                assert sha(INSTALL/'state.json')==state_hash
+                                assert inventory(SHORTCUTS)==shortcut_before
+                                assert not (INSTALL/'transaction.json').exists()
+                        finally:
+                            legacy.unlink()
+                assert inventory(stock)==stock_before
+                unchanged()
+                check('Update/repair refuse each stock or active unmanaged legacy TLS DLL; current installation and source bytes survive')
+                # Unknown user additions are normally preserved, but cannot turn an
+                # installed generation back into a portable or developer distribution.
+                for relative, action, error in (
+                        ('app/OPENNAV_PORTABLE_PREVIEW','Update','portable profile marker'),
+                        ('Run-XNav-Demo.cmd','Repair','Developer/demo content refused'),
+                        ('app/OPENNAV_ROUTE_FIXTURE','Update','Developer/demo content refused')):
+                    addition=generation()/relative
+                    assert not addition.exists()
+                    addition.write_text('unowned inherited sentinel; must never reach a committed product')
+                    previous_files=inventory(generation())
+                    try:
+                        failure=setup(action,original,expected=1)
+                        assert error in failure['error'],failure
+                        unchanged()
+                        assert inventory(generation())==previous_files,'Rejected inheritance changed old generation'
+                        assert not (INSTALL/'transaction.json').exists(),'Rejected content reached publication journal'
+                    finally:
+                        # Remove only the disposable sentinel inserted by this case.
+                        addition.unlink()
+                unchanged();check('Update/repair reject inherited portable marker, Demo launcher and route fixture before publication; prior generation/state/stock/profile unchanged')
+                with file_lock(INSTALL/'transaction.lock',0):
+                    failure=setup('Update',original,expected=1)
+                    assert 'being used' in failure['error'].lower() or 'another process' in failure['error'].lower(),failure
+                unchanged();check('Concurrent transaction lock refuses update; active executable/state/profile/stock remain exact')
+                with deny_generation_creation():
+                    failure=setup('Update',original,expected=1)
+                    assert 'denied' in failure['error'].lower(),failure
+                unchanged();check('Actual NTFS permission denial during staging preserves active installation; ACL restored')
+                damaged_package=temporary/'damaged integration';damaged_package.mkdir()
+                for name in ('package.json','payload.zip'):
+                    shutil.copy2(PACKAGE/name,damaged_package/name)
+                shutil.copy2(generation()/'Maintain.exe',damaged_package/'Maintain.exe')
+                with (damaged_package/'payload.zip').open('ab') as stream:stream.write(b'corrupt payload fixture')
+                failure=package_engine(damaged_package,original)
+                assert 'Payload ZIP integrity' in failure['error'],failure
+                unchanged();check('Corrupt payload fails SHA-256 preflight without changing active installation')
+                setup('Update',original,expected=1,failure='during-extraction')
+                unchanged();assert not (INSTALL/'transaction.json').exists()
+                check('Interrupted extraction never publishes incomplete generation or changes active state')
+                run_lifecycle_tail(original,stock,stock_before,profile,before,expected,custom_tide,product,damaged_package,unchanged)
         report['stock_sha256']=sha(original);report['setup_sha256']=sha(SETUP)
         report['status']='passed'
 except Exception as e:
@@ -1192,4 +1279,5 @@ except Exception as e:
 finally:
     for pid in owned:
         subprocess.run(['taskkill','/PID',str(pid),'/T','/F'],capture_output=True)
-    (EVIDENCE/('installer-staging.json' if args.mode=='staging' else 'installer-lifecycle.json')).write_text(json.dumps(report,indent=2)+'\n')
+    (EVIDENCE/('installer-lifecycle-tail.json' if args.mode=='lifecycle-tail' else
+               'installer-staging.json' if args.mode=='staging' else 'installer-lifecycle.json')).write_text(json.dumps(report,indent=2)+'\n')

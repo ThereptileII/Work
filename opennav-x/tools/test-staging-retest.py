@@ -80,6 +80,7 @@ class PinnedRetest(unittest.TestCase):
         for arguments in (['prepare','--producer-run-id','37330218586','--producer-run-attempt','1'],
                           ['test','--scope','all'],['test','--scope','installer'],
                           ['test','--scope','installer-lifecycle'],
+                          ['test','--scope','installer-lifecycle-tail'],
                           ['test','--scope','installer-startup-diagnostic']):
             with mock.patch.dict(os.environ,environment,clear=True), \
                  mock.patch.object(retest.sys,'platform','win32'), \
@@ -161,6 +162,21 @@ class PinnedRetest(unittest.TestCase):
                     retest.main()
                 checks.assert_not_called()
 
+    def test_tail_runs_only_distinct_fresh_suffix_and_retains_failure(self):
+        for failure in (None,subprocess.CalledProcessError(1,['tail'])):
+            report=dict(status='running',productCommit=COMMIT,releaseQualification=False)
+            with mock.patch.object(retest.subprocess,'run',side_effect=failure) as run:
+                if failure is None:retest.run_checks('installer-lifecycle-tail',report,lambda:None)
+                else:
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        retest.run_checks('installer-lifecycle-tail',report,lambda:None)
+            run.assert_called_once_with([retest.sys.executable,str(retest.ROOT/'tools/smoke-installer-windows.py'),
+                '--mode','lifecycle-tail','--compiled-input-receipt',str(retest.ROOT/'evidence/local/staging-inputs.json')],check=True)
+            self.assertEqual(report['checks'],[dict(name='installer-lifecycle-tail',status='passed' if failure is None else 'failed')])
+            self.assertEqual(report['status'],'passed' if failure is None else 'failed')
+            self.assertFalse(report['wholeLifecycleAcceptance'])
+            self.assertFalse(report['releaseQualification'])
+
     def test_workflow_keeps_dispatch_and_exact_push_without_build_or_promotion(self):
         import yaml
         checkout=Path(subprocess.check_output(['git','-C',str(retest.ROOT),'rev-parse','--show-toplevel'],text=True).strip())
@@ -174,6 +190,7 @@ class PinnedRetest(unittest.TestCase):
         self.assertIn('installer-lifecycle',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertIn('cold-hold-only',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertIn('installer-startup-diagnostic',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
+        self.assertIn('installer-lifecycle-tail',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
         steps=workflow['jobs']['retest']['steps']
         self.assertEqual(steps[0]['with']['persist-credentials'],'false')

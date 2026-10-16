@@ -129,6 +129,20 @@ documentation into the product. The newly retained test-support archive belongs
 to the composition run. Draft publication requires its assembly job to pass;
 later fetching/promotion also requires completed delivery evidence.
 
+The explicit retained `installer-lifecycle-tail` scope is limited to frozen
+`854078a5` from `38765418126/1`. It restores the same authenticated package and
+three original installer sources, runs the native missing-DLL import/guard
+prerequisite, then establishes a fresh supported stock installation, disposable
+profile, current/previous candidate generations and retained custom addition.
+It reuses the full matrix's missing-import/SelfTest and remaining fault-recovery,
+current uninstall, stock-startup, reinstall and direct-uninstall assertions.
+Historical installer downloads and the previously passed prefix are not repeated.
+`installer-lifecycle-tail.json` reports this fresh-state suffix separately; it
+must not overwrite the failed original or claim the accumulated historical
+matrix was executed successfully. The original full `installer-lifecycle` scope
+and its requirements remain unchanged. No product rebuild or release promotion
+is performed by either scope.
+
 If assembly succeeds but uploading the draft fails, use the separate retained
 publication workflow. Its committed request pins the original assembly, candidate
 artifact digest, qualification and manifest hashes, and existing draft identity.

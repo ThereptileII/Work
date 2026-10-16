@@ -80,7 +80,7 @@ def main():
     parser.add_argument('--producer-run-id')
     parser.add_argument('--producer-run-attempt')
     parser.add_argument('--selection', type=Path)
-    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'installer-lifecycle', 'all', 'installer-startup-diagnostic'), default='all')
+    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'installer-lifecycle', 'installer-lifecycle-tail', 'all', 'installer-startup-diagnostic'), default='all')
     args = parser.parse_args()
     require(sys.platform == 'win32' and os.environ.get('GITHUB_ACTIONS') == 'true' and
             os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted', 'Disposable native CI required')
@@ -112,6 +112,11 @@ def run_checks(scope, report, save):
     if diagnostic:
         report.update(diagnosticOnly=True, releaseQualification=False)
         commands = [('installer-startup-diagnostic', installer + ['--startup-supervisor-diagnostic'])]
+    elif scope == 'installer-lifecycle-tail':
+        report['wholeLifecycleAcceptance'] = False
+        commands = [('installer-lifecycle-tail', [sys.executable, str(ROOT / 'tools/smoke-installer-windows.py'),
+                    '--mode', 'lifecycle-tail', '--compiled-input-receipt',
+                    str(ROOT / 'evidence/local/staging-inputs.json')])]
     elif scope == 'installer-lifecycle':
         # The helper's production mode selects its installer lifecycle matrix;
         # it neither promotes a release nor invokes the full product suite.

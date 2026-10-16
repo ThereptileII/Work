@@ -447,5 +447,59 @@ class InstallerFinishLaunch(unittest.TestCase):
         self.assertEqual(self.checked,1)
 
 
+class MissingDllImportPrerequisite(unittest.TestCase):
+    def setUp(self):
+        self.temp=tempfile.TemporaryDirectory();self.root=Path(self.temp.name)
+        self.evidence=self.root/'evidence';self.evidence.mkdir()
+        self.source=self.root/'frozen';self.calls=[]
+        for name in ('tools/test-installer-missing-dll-selftest.ps1','installer/windows/Lifecycle.ps1',
+                     'installer/windows/UpdateTransaction.ps1'):
+            target=self.source/name;target.parent.mkdir(parents=True,exist_ok=True);target.write_text(name)
+        target=self.root/'tools/test-installer-missing-dll-imports.ps1'
+        target.parent.mkdir();target.write_text('separate current test source')
+        digest=lambda p:hashlib.sha256(p.read_bytes()).hexdigest()
+        self.result=dict(status='passed',checks=16,nativeGuards=True,missingDllLoaderExecuted=False,
+            productAcceptance=False,powershellVersion='5.1.20348.5622',processBits=64,
+            helperSha256=digest(self.source/'tools/test-installer-missing-dll-selftest.ps1'),
+            lifecycleSha256=digest(self.source/'installer/windows/Lifecycle.ps1'),
+            transactionSha256=digest(self.source/'installer/windows/UpdateTransaction.ps1'))
+        def run(command,**kwargs):
+            self.calls.append((command,kwargs))
+            Path(command[command.index('-Report')+1]).write_text(json.dumps(self.result))
+        self.environment=dict(EVIDENCE=self.evidence,PRODUCT_SOURCE=self.source,ROOT=self.root,
+            PS=self.root/'powershell.exe',subprocess=SimpleNamespace(run=run,STDOUT=subprocess.STDOUT),
+            json=json,sha=digest,report={})
+        function=next(n for n in TREE.body if isinstance(n,ast.FunctionDef) and n.name=='verify_missing_dll_imports')
+        exec(compile(ast.Module(body=[function],type_ignores=[]),str(SOURCE),'exec'),self.environment)
+    def tearDown(self):self.temp.cleanup()
+    def invoke(self):return self.environment['verify_missing_dll_imports']()
+    def test_exact_frozen_helper_receipt_is_required_before_scenario(self):
+        self.invoke()
+        command,options=self.calls[0]
+        self.assertIn('-NativeWindows',command)
+        self.assertEqual(command[command.index('-Helper')+1],str(self.source/'tools/test-installer-missing-dll-selftest.ps1'))
+        self.assertEqual(options['timeout'],120);self.assertTrue(options['check'])
+        self.assertEqual(self.environment['report']['missing_dll_imports']['checks'],16)
+    def test_stale_receipt_refused_without_process(self):
+        (self.evidence/'installer-missing-dll-imports.json').write_text('old proof')
+        with self.assertRaisesRegex(AssertionError,'fresh receipt'):self.invoke()
+        self.assertEqual(self.calls,[])
+    def test_failed_guard_or_changed_source_is_not_accepted(self):
+        for change in (dict(status='failed'),dict(checks=13),dict(nativeGuards=False),
+                       dict(missingDllLoaderExecuted=True),dict(productAcceptance=True),
+                       dict(powershellVersion='7.6.7'),dict(processBits=32),
+                       dict(helperSha256='0'*64),dict(lifecycleSha256='0'*64),dict(transactionSha256='0'*64)):
+            with self.subTest(change=change):
+                old=dict(self.result);self.result.update(change)
+                (self.evidence/'installer-missing-dll-imports.json').unlink(missing_ok=True)
+                with self.assertRaises(AssertionError):self.invoke()
+                self.assertNotIn('missing_dll_imports',self.environment['report'])
+                self.result=old
+    def test_native_command_failure_cannot_publish_pass(self):
+        self.environment['subprocess'].run=mock.Mock(side_effect=subprocess.CalledProcessError(1,['native']))
+        with self.assertRaises(subprocess.CalledProcessError):self.invoke()
+        self.assertNotIn('missing_dll_imports',self.environment['report'])
+
+
 if __name__ == '__main__':
     unittest.main()

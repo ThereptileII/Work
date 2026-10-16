@@ -15,7 +15,7 @@ on:
       scope:
         description: Relevant checks to repeat; never rebuild or publish
         type: choice
-        options: [installer, installer-charts, installer-lifecycle, cold-hold-only, all, installer-startup-diagnostic]
+        options: [installer, installer-charts, installer-lifecycle, installer-lifecycle-tail, cold-hold-only, all, installer-startup-diagnostic]
         default: installer
 permissions:
   contents: read

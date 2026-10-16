@@ -77,6 +77,16 @@ class Promotion(unittest.TestCase):
     def test_staging_is_default_and_production_is_explicit(self):
         self.assertEqual(ENV['arguments']([]).mode,'staging')
         self.assertEqual(ENV['arguments'](['--mode','production']).mode,'production')
+    def test_tail_requires_authenticated_inputs_and_cannot_fetch_historical_fixtures(self):
+        from contextlib import redirect_stderr
+        for args in (['--mode','lifecycle-tail'],
+                     ['--mode','lifecycle-tail','--retained-package','x','--expected-commit',COMMIT],
+                     ['--mode','lifecycle-tail','--compiled-input-receipt','x','--prepared-prior-fixtures']):
+            with redirect_stderr(io.StringIO()),self.assertRaises(SystemExit):ENV['arguments'](args)
+        args=ENV['arguments'](['--mode','lifecycle-tail','--compiled-input-receipt','x'])
+        self.assertEqual(args.mode,'lifecycle-tail')
+        self.assertFalse(args.prepared_prior_fixtures)
+
     def test_retained_inputs_require_complete_paired_identity(self):
         from contextlib import redirect_stderr
         for args in (['--prepare-only'],['--retained-package','x'],['--expected-commit',COMMIT],
