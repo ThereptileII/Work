@@ -128,7 +128,11 @@ Independent source/identity review passes; guarded passive commissioning remains
 in progress. [Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
 
 SCRUM-211's certificate-verification software criteria were independently
-reviewed and accepted on 16 October; Jira is **Done**. This closes that defect,
+reviewed and accepted on 16 October; Jira is **Done**. SCRUM-212's explicit
+unavailable-peer containment alternative is also **Done**, supported by exact
+854 model, CLI, concurrent-instance and mode-preservation evidence on both
+platforms. This does not qualify an authenticated sharing protocol.
+[Containment evidence and precise limits](evidence/scrum212-containment-854-20261016/README.md). This closes that defect,
 not the separate installer, protected-updater or boat gates. SCRUM-209 still
 needs the retained package's full Repair/Uninstall and retained-addition
 lifecycle checks; the shorter Staging result must not be described as those
