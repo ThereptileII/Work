@@ -34,6 +34,12 @@ bool badge_collapsed = false;
 // Weak: the filter outlives any one canvas (mode restart, shutdown).
 wxWeakRef<ChartCanvas> badge_canvas;
 wxRect badge_hit;  // Canvas client coordinates of the toggle target.
+// Shared by painting and the pre-arrow provenance fit gate. Helm readability
+// must not leave the gate measuring an older, smaller font or hit target.
+constexpr int kBadgeTextSize = 14;
+constexpr int kBadgePadding = 12;
+constexpr int kBadgeLineGap = 4;
+constexpr int kBadgeCloseTarget = 48;
 
 // Painted on the canvas, so the badge has no window of its own to click. A
 // process-wide filter sees the press first, toggles only when it lands on the
@@ -105,11 +111,11 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   EnsureBadgeFilter();
   badge_canvas = &canvas;
   const auto floating = ui::FloatingTheme(mode);
-  const auto font = ui::UiFontWeight(canvas, 10, 600);
+  const auto font = ui::UiFontWeight(canvas, kBadgeTextSize, 600);
   dc.SetFont(font);
-  const int pad = canvas.FromDIP(8), gap = canvas.FromDIP(2);
+  const int pad = canvas.FromDIP(kBadgePadding), gap = canvas.FromDIP(kBadgeLineGap);
   // Touch-sized target even though the glyph itself is small.
-  const int target = canvas.FromDIP(28), glyph = canvas.FromDIP(5);
+  const int target = canvas.FromDIP(kBadgeCloseTarget), glyph = canvas.FromDIP(6);
   const int available = vp.pix_width - 2 * pad;
   if (available <= 2 * pad + target) { badge_hit = wxRect(); return; }
   // Keep the provenance/value/time rows within the chart at scaled DPI.
@@ -131,14 +137,15 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   if (badge_collapsed) {
     const auto label = fit(chip, available - 2 * pad);
     wxCoord w = 0, h = 0; dc.GetTextExtent(label, &w, &h);
-    const int box_w = w + 2 * pad, box_h = h + 2 * pad;
+    const int box_w = std::max(w + 2 * pad, target),
+              box_h = std::max(h + 2 * pad, target);
     const int x = std::max(pad, (vp.pix_width - box_w) / 2), y = canvas.FromDIP(12);
     dc.SetPen(border);
     dc.SetBrush(wxBrush(ui::Colour(floating.surface)));
     dc.DrawRoundedRectangle(x, y, box_w, box_h, canvas.FromDIP(8));
     dc.SetTextForeground(ui::Colour(floating.primary));
-    dc.DrawText(label, x + pad, y + pad);
-    badge_hit = wxRect(x, y, box_w, std::max(box_h, target));  // Tap to expand.
+    dc.DrawText(label, x + pad, y + (box_h - h) / 2);
+    badge_hit = wxRect(x, y, box_w, box_h);  // Tap to expand.
     return;
   }
   wxCoord width = 0, line_height = 0;
@@ -217,12 +224,13 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   const wxString mandatory = display == weather::ForecastDisplay::Unavailable
       ? "FORECAST WIND UNAVAILABLE"
       : display == weather::ForecastDisplay::Stale ? "STALE FORECAST" : "FORECAST";
-  dc.SetFont(ui::UiFontWeight(canvas, 10, 600));
+  dc.SetFont(ui::UiFontWeight(canvas, kBadgeTextSize, 600));
   wxCoord marker_width = 0, marker_height = 0;
   dc.GetTextExtent(mandatory + wxString::FromUTF8("\xE2\x80\xA6"),
                    &marker_width, &marker_height);
   dc.SetFont(old_font);
-  if (vp.pix_width < marker_width + 4 * canvas.FromDIP(8) + canvas.FromDIP(28)) {
+  if (vp.pix_width < marker_width + 4 * canvas.FromDIP(kBadgePadding) +
+                         canvas.FromDIP(kBadgeCloseTarget)) {
     restore();
     return;
   }
