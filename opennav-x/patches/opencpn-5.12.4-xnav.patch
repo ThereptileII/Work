@@ -122,7 +122,17 @@ index 258ae04bc..98938dfee 100644
    m_canvasMenu = new CanvasMenuHandler(this, m_pSelectedRoute, m_pSelectedTrack,
                                         m_pFoundRoutePoint, m_FoundAIS_MMSI,
                                         m_pIDXCandidate, m_nmea_log);
-@@ -11813,13 +11851,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
+@@ -10824,6 +10862,9 @@ void ChartCanvas::StartRoute(void) {
+ void ChartCanvas::FinishRoute(void) {
++#ifdef OPENNAV_X
++  if (!opennav::PrepareRouteFinish(*this)) return;
++#endif
+   m_routeState = 0;
+   m_prev_pMousePoint = NULL;
+   m_bDrawingRoute = false;
+ 
+   // SetCanvasToolbarItemState(ID_ROUTE, false);
+@@ -11813,13 +11854,14 @@ void ChartCanvas::OnPaint(wxPaintEvent &event) {
        delete clip_region;
  
        ocpnDC bgdc(temp_dc);
@@ -144,7 +154,7 @@ index 258ae04bc..98938dfee 100644
      }
    }  // temp_dc.IsOk();
  
-@@ -13448,6 +13487,9 @@ wxString ChartCanvas::FindValidUploadPort() {
+@@ -13448,6 +13490,9 @@ wxString ChartCanvas::FindValidUploadPort() {
  
  void ShowAISTargetQueryDialog(wxWindow *win, int mmsi) {
    if (!win) return;

@@ -3,6 +3,7 @@
 #include "vessel/RouteProgress.h"
 
 class MyFrame;
+class ChartCanvas;
 namespace opennav::integration {
 application::ChartPresentationState CopyChartPresentation(MyFrame &frame);
 application::ChartPresentationResult SetChartAis(MyFrame &frame, bool show);
@@ -13,6 +14,8 @@ application::ChartPresentationResult SetChartOrientation(
 application::Catalog CopyNavigationCatalog();
 application::NavigationNameSuggestion CopyNavigationNameSuggestion(
     MyFrame &frame, application::Coordinate position, bool route);
+application::NavigationNameSuggestion CopyNavigationNameSuggestion(
+    ChartCanvas &canvas, application::Coordinate position, bool route);
 std::optional<application::Route> CopyNavigationRoute(const std::string &id);
 application::WaypointContext CopyWaypointContext(
     const std::string &id, const vessel::Navigation &position, vessel::Time now);

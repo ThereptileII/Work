@@ -23,6 +23,8 @@ bool IsAisSelected(int mmsi);
 void DrawOnlineAis(ocpnDC &dc, ViewPort &vp, ChartCanvas *canvas);
 bool ShowOnlineAisAt(ChartCanvas &canvas, int x, int y);
 bool ShowNavigationObjectCard(const std::string& id,bool route);
+// False keeps a new XNav route draft editable when naming/persistence fails.
+bool PrepareRouteFinish(ChartCanvas &canvas);
 bool ShowRouteContext(const std::string &id, bool hover = false);
 bool ShowChartContext(double latitude, double longitude);
 // Owned native presentation of the upstream's complete chart query result.

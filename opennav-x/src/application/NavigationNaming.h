@@ -155,14 +155,16 @@ inline NavigationNameSuggestion SuggestNavigationName(
 }
 // A route is named by where it goes, not by what is nearest one end of it.
 inline NavigationNameSuggestion SuggestRouteName(const std::string &first,
-                                                 const std::string &last) {
+                                                 const std::string &last,
+                                                 bool first_from_chart = true,
+                                                 bool last_from_chart = true) {
   if (ValidNavigationName(first) && ValidNavigationName(last)) {
     const auto name = "From " + first + " to " + last;
-    if (ValidNavigationName(name)) return {name, true};
+    if (ValidNavigationName(name)) return {name, first_from_chart || last_from_chart};
   }
   if (ValidNavigationName(last)) {
     const auto name = "To " + last;
-    if (ValidNavigationName(name)) return {name, true};
+    if (ValidNavigationName(name)) return {name, last_from_chart};
   }
   return {"Route", false};
 }

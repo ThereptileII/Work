@@ -14,6 +14,7 @@
 #include "vessel/AisSelection.h"
 #include "undo.h"
 #include <cmath>
+#include <set>
 #include <utility>
 #include <vector>
 #include <wx/log.h>
@@ -21,6 +22,147 @@
 extern RouteManagerDialog *pRouteManagerDialog;
 extern int options_lastPage, options_subpage;
 namespace opennav::integration {
+namespace {
+bool OwnsCanvas(MyFrame &frame, ChartCanvas &canvas) {
+  for (auto *child : frame.GetChildren())
+    if (child == &canvas) return true;
+  return false;
+}
+bool RegisteredDraft(::Route *route) {
+  if (!route || !pRouteList) return false;
+  bool registered = false;
+  for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext())
+    registered |= node->GetData() == route;
+  if (!registered || route->GetGUID().empty()) return false;
+  int identities = 0;
+  for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
+    const auto *candidate = node->GetData();
+    if (candidate && candidate->GetGUID() == route->GetGUID()) ++identities;
+  }
+  return identities == 1;
+}
+bool InOtherRoute(::Route &route, RoutePoint *point) {
+  for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
+    auto *other = node->GetData();
+    if (other && other != &route && other->pRoutePointList->Find(point))
+      return true;
+  }
+  return false;
+}
+application::NavigationNameSuggestion SuggestDraftRouteName(ChartCanvas &canvas) {
+  auto *route = canvas.m_pMouseRoute;
+  if (!canvas.m_routeState || !RegisteredDraft(route) || route->GetnPoints() < 1)
+    return {"Route", false};
+  if (!route->m_RouteNameString.empty())
+    return {route->m_RouteNameString.ToStdString(wxConvUTF8), false};
+  const auto endpoint = [&canvas, route](RoutePoint *point)
+      -> application::NavigationNameSuggestion {
+    if (!point) return {};
+    const auto own = point->GetName().Trim(true).Trim(false).ToStdString(wxConvUTF8);
+    // A reused mark's numeric name can be intentional. Only the new route's
+    // generated defaults need a fresh chart lookup.
+    if (application::ValidNavigationName(own) &&
+        (point->IsShared() || InOtherRoute(*route, point) ||
+         !application::GeneratedNavigationName(own)))
+      return {own, false};
+    return CopyNavigationNameSuggestion(canvas, {point->m_lat, point->m_lon}, false);
+  };
+  const auto first = endpoint(route->GetPoint(1));
+  const auto last = endpoint(route->GetPoint(route->GetnPoints()));
+  // Coordinates are useful defaults too, but never claim chart provenance.
+  return application::SuggestRouteName(first.name, last.name,
+                                       first.from_chart, last.from_chart);
+}
+application::CommandResult SaveNewRouteDraft(MyFrame &frame, ChartCanvas &canvas,
+                                             const std::string &name,
+                                             const std::string &description) {
+  if (!wxIsMainThread() || !OwnsCanvas(frame, canvas))
+    return {false, "Route saving requires its application canvas"};
+  if (!canvas.m_routeState || canvas.m_bAppendingRoute || !canvas.m_pMouseRoute)
+    return {false, "No new route to save"};
+  auto *route = canvas.m_pMouseRoute;
+  if (!RegisteredDraft(route))
+    return {false, "Route changed; review before saving"};
+  if (route->GetnPoints() < 2 || route->IsActive() || route->m_bIsInLayer)
+    return {false, "Add at least two route points before saving"};
+  const auto identity = route->GetGUID();
+  const auto title = wxString::FromUTF8(name), detail = wxString::FromUTF8(description);
+  if (!application::ValidNavigationName(name) || description.size() > 2048 ||
+      description.find('\0') != std::string::npos ||
+      title.empty() || (!description.empty() && detail.empty()))
+    return {false, "Enter a route name of 1–128 bytes"};
+  const auto old_name = route->m_RouteNameString, old_description = route->m_RouteDescription;
+  struct PointName {
+    RoutePoint *point;
+    wxString name;
+    bool shown;
+  };
+  std::vector<PointName> renamed_points;
+  std::set<RoutePoint *> seen;
+  for (int i = 1; i <= route->GetnPoints(); ++i) {
+    auto *point = route->GetPoint(i);
+    if (!point || !seen.insert(point).second || point->m_bIsInLayer ||
+        point->m_bIsolatedMark || point->m_bRPIsBeingEdited ||
+        !application::ShouldNameNewRoutePoint(
+            point->GetName().ToStdString(wxConvUTF8), point->IsShared(),
+            InOtherRoute(*route, point))) continue;
+    const auto suggested = CopyNavigationNameSuggestion(
+        canvas, {point->m_lat, point->m_lon}, false);
+    if (!application::ValidNavigationName(suggested.name)) continue;
+    renamed_points.push_back({point, point->GetName(), point->IsNameShown()});
+    point->SetName(wxString::FromUTF8(suggested.name));
+    // Both pinned mouse/touch creation paths hide new numbered names.
+    // SetName changes only text/extents, so show the assigned place name too.
+    point->SetNameShown(true);
+  }
+  route->m_RouteNameString = title;
+  route->m_RouteDescription = detail;
+  // The native operation persists the route and each point's name/visibility.
+  // Check its result before FinishRoute destroys the editable creation state.
+  if (!NavObj_dB::GetInstance().UpdateRoute(route)) {
+    for (const auto &previous : renamed_points) {
+      previous.point->SetName(previous.name);
+      previous.point->SetNameShown(previous.shown);
+    }
+    route->m_RouteNameString = old_name;
+    route->m_RouteDescription = old_description;
+    return {false, "Route could not be saved; draft retained"};
+  }
+  return {true, "Route saved", identity.ToStdString(wxConvUTF8)};
+}
+// A named save has already prepared this exact draft. This synchronous scope
+// lets the central native gate avoid a second lookup/rename. No object pointer
+// escapes integration or survives the immediate FinishRoute call.
+struct PreparedRouteFinish;
+const PreparedRouteFinish *prepared_finish = nullptr;
+struct PreparedRouteFinish {
+  ChartCanvas &canvas;
+  wxString identity;
+  const PreparedRouteFinish *previous;
+  PreparedRouteFinish(ChartCanvas &source, const wxString &id)
+      : canvas(source), identity(id), previous(prepared_finish) {
+    prepared_finish = this;
+  }
+  ~PreparedRouteFinish() { prepared_finish = previous; }
+};
+} // namespace
+application::CommandResult PrepareNativeRouteFinish(MyFrame &frame,
+                                                    ChartCanvas &canvas) {
+  if (!wxIsMainThread() || !OwnsCanvas(frame, canvas))
+    return {false, "Route saving requires its application canvas"};
+  auto *route = canvas.m_pMouseRoute;
+  // Null drafts are the explicit cancellation path. Native append and short
+  // draft cleanup retain their existing behavior.
+  if (!canvas.m_routeState || canvas.m_bAppendingRoute || !route)
+    return {true, {}};
+  if (!RegisteredDraft(route))
+    return {false, "Route changed; review before saving"};
+  if (route->GetnPoints() < 2) return {true, {}};
+  if (prepared_finish && &prepared_finish->canvas == &canvas &&
+      prepared_finish->identity == route->GetGUID()) return {true, {}};
+  return SaveNewRouteDraft(frame, canvas, SuggestDraftRouteName(canvas).name,
+                           route->m_RouteDescription.ToStdString(wxConvUTF8));
+}
 application::NavigationActions
 MakeNavigationActions(MyFrame &frame,
                       std::function<vessel::Navigation()> position,
@@ -96,31 +238,10 @@ MakeNavigationActions(MyFrame &frame,
     return CopyNavigationNameSuggestion(frame, position, false);
   };
   a.suggest_route_name = [&frame] {
+    if (!wxIsMainThread()) return application::NavigationNameSuggestion{"Route", false};
     auto *canvas = frame.GetPrimaryCanvas();
-    auto *route = canvas ? canvas->m_pMouseRoute : nullptr;
-    if (!canvas || !canvas->m_routeState || !route || !pRouteList)
-      return application::NavigationNameSuggestion{"Route", false};
-    bool registered = false;
-    for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext())
-      registered |= node->GetData() == route;
-    if (!registered || route->GetnPoints() < 1)
-      return application::NavigationNameSuggestion{"Route", false};
-    // Never replace a user-provided name, even when chart context changes.
-    if (!route->m_RouteNameString.empty())
-      return application::NavigationNameSuggestion{route->m_RouteNameString.ToStdString(wxConvUTF8), false};
-    // A route is named by where it runs from and to, not by whatever happens
-    // to lie near its last point (SCRUM-350).
-    const auto endpoint = [&frame](RoutePoint *point) {
-      if (!point) return std::string{};
-      const auto own = point->GetName().Trim(true).Trim(false).ToStdString(wxConvUTF8);
-      if (application::ValidNavigationName(own) && !application::GeneratedNavigationName(own))
-        return own;
-      const auto suggested = CopyNavigationNameSuggestion(
-          frame, {point->m_lat, point->m_lon}, false);
-      return suggested.from_chart ? suggested.name : std::string{};
-    };
-    return application::SuggestRouteName(endpoint(route->GetPoint(1)),
-                                         endpoint(route->GetPoint(route->GetnPoints())));
+    return canvas ? SuggestDraftRouteName(*canvas)
+                  : application::NavigationNameSuggestion{"Route", false};
   };
   a.view_ais = [&frame, position](int mmsi) {
     const auto now = vessel::Clock::now();
@@ -224,68 +345,23 @@ MakeNavigationActions(MyFrame &frame,
   a.finish_route = [&frame] {
     auto *cc = frame.GetPrimaryCanvas();
     cc->FinishRoute();
-    cc->m_FinishRouteOnKillFocus = true;
+    if (!cc->m_routeState) cc->m_FinishRouteOnKillFocus = true;
   };
   a.finish_route_named = [&frame, result](const std::string &name,
                                           const std::string &description) {
+    if (!wxIsMainThread())
+      return application::CommandResult{false, "Route saving requires the application thread"};
     auto *cc = frame.GetPrimaryCanvas();
-    if (!cc || cc->m_routeState == 0 || cc->m_bAppendingRoute ||
-        !cc->m_pMouseRoute || !pRouteList)
-      return application::CommandResult{false, "No new route to save"};
-    auto *route = cc->m_pMouseRoute;
-    if (route->GetnPoints() < 2 || route->IsActive() || route->m_bIsInLayer)
-      return application::CommandResult{false, "Add at least two route points before saving"};
-    const auto identity = route->GetGUID();
-    int identities = 0;
-    bool registered = false;
-    for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
-      const auto *candidate = node->GetData();
-      registered |= candidate == route;
-      if (candidate && candidate->GetGUID() == identity) ++identities;
-    }
-    if (!registered || identity.empty() || identities != 1)
-      return application::CommandResult{false, "Route changed; review before saving"};
-    const auto title = wxString::FromUTF8(name), detail = wxString::FromUTF8(description);
-    if (!application::ValidNavigationName(name) || description.size() > 2048 ||
-        description.find('\0') != std::string::npos ||
-        title.empty() || (!description.empty() && detail.empty()))
-      return application::CommandResult{false, "Enter a route name of 1–128 bytes"};
-    const auto old_name = route->m_RouteNameString, old_description = route->m_RouteDescription;
-    std::vector<std::pair<RoutePoint *, wxString>> renamed_points;
-    for (int i = 1; i <= route->GetnPoints(); ++i) {
-      auto *point = route->GetPoint(i);
-      if (!point) continue;
-      bool in_other_route = false;
-      for (auto *node = pRouteList->GetFirst(); node; node = node->GetNext()) {
-        auto *other = node->GetData();
-        if (other && other != route && other->pRoutePointList->Find(point)) {
-          in_other_route = true;
-          break;
-        }
-      }
-      if (!application::ShouldNameNewRoutePoint(
-              point->GetName().ToStdString(wxConvUTF8), point->IsShared(),
-              in_other_route)) continue;
-      const auto suggested = CopyNavigationNameSuggestion(
-          frame, {point->m_lat, point->m_lon}, false);
-      if (!application::ValidNavigationName(suggested.name)) continue;
-      renamed_points.emplace_back(point, point->GetName());
-      point->SetName(wxString::FromUTF8(suggested.name));
-    }
-    route->m_RouteNameString = title;
-    route->m_RouteDescription = detail;
-    // FinishRoute uses this same native database operation but discards its
-    // result. Check persistence first, retaining the editable draft on failure.
-    if (!NavObj_dB::GetInstance().UpdateRoute(route)) {
-      for (const auto &[point, previous] : renamed_points)
-        point->SetName(previous);
-      route->m_RouteNameString = old_name;
-      route->m_RouteDescription = old_description;
-      return application::CommandResult{false, "Route could not be saved; draft retained"};
-    }
+    if (!cc) return application::CommandResult{false, "Chart canvas unavailable"};
+    const auto saved = SaveNewRouteDraft(frame, *cc, name, description);
+    if (!saved.ok) return saved;
+    const PreparedRouteFinish prepared(*cc, wxString::FromUTF8(saved.identity));
     cc->FinishRoute();
+    if (cc->m_routeState || cc->m_pMouseRoute)
+      return application::CommandResult{false,
+          "Route saved, but completion was withheld; review the current draft", saved.identity};
     cc->m_FinishRouteOnKillFocus = true;
-    return result({true, "Route saved", identity.ToStdString(wxConvUTF8)});
+    return result(saved);
   };
   a.can_undo_route_point = [&frame] {
     auto *cc = frame.GetPrimaryCanvas();

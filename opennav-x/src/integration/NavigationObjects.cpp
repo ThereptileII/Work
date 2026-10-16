@@ -297,9 +297,16 @@ bool VisitNamedChartObjects(ChartBase *base, ChartCanvas &canvas, double lat,
 application::NavigationNameSuggestion CopyNavigationNameSuggestion(
     MyFrame &frame, application::Coordinate position, bool route) {
   Thread();
-  const auto fallback = [&] { return application::SuggestNavigationName(position, route, {}); };
   auto *canvas = frame.GetPrimaryCanvas();
-  if (!canvas || !ps52plib || !ChartData || !ChartData->IsValid() || ChartData->IsBusy() ||
+  return canvas ? CopyNavigationNameSuggestion(*canvas, position, route)
+                : application::SuggestNavigationName(position, route, {});
+}
+application::NavigationNameSuggestion CopyNavigationNameSuggestion(
+    ChartCanvas &source, application::Coordinate position, bool route) {
+  Thread();
+  const auto fallback = [&] { return application::SuggestNavigationName(position, route, {}); };
+  auto *canvas = &source;
+  if (!ps52plib || !ChartData || !ChartData->IsValid() || ChartData->IsBusy() ||
       !std::isfinite(position.latitude_deg) || std::abs(position.latitude_deg) > 85 ||
       !std::isfinite(position.longitude_deg) || std::abs(position.longitude_deg) > 180)
     return fallback();

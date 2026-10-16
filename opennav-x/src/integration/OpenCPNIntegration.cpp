@@ -69,6 +69,8 @@ extern s52plib *ps52plib;
 #include <wx/log.h>
 #include <wx/menu.h>
 #include <wx/msgdlg.h>
+#include <wx/thread.h>
+#include <wx/weakref.h>
 #include <wx/stdpaths.h>
 #include <wx/filefn.h>
 #include <wx/filename.h>
@@ -1331,6 +1333,37 @@ void AfterAnchorWatch(){
   anchor_state=std::move(current);
 }
 bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}
+bool PrepareRouteFinish(ChartCanvas &canvas) {
+  if (!IsXNav()) return true;
+  if (!wxIsMainThread()) return false;
+  // Explicit cancellation detaches the draft before native cleanup. Existing
+  // route appends keep their native behavior and do not acquire new names.
+  if (!canvas.m_pMouseRoute || !canvas.m_routeState || canvas.m_bAppendingRoute)
+    return true;
+  if (!host || !shell || restart) return false;
+  const wxWeakRef<ChartCanvas> source(&canvas);
+  const auto result = commissioning && commissioning->Replaying()
+      ? application::CommandResult{false, "Stop replay before saving a real route"}
+      : integration::PrepareNativeRouteFinish(*host, canvas);
+  if (!result.ok) {
+    // A native-started draft may still finish on focus loss. Keep it under
+    // explicit Finish/Cancel after failure, including while showing the error.
+    if (source) source->m_FinishRouteOnKillFocus = false;
+    wxLogWarning("SKAGER route not saved: %s", wxString::FromUTF8(result.message));
+    static bool warning_pending = false;
+    if (warning_pending) return false;
+    warning_pending = true;
+    const wxWeakRef<wxWindow> owner(host);
+    host->CallAfter([owner, source, message = result.message] {
+      if (owner && owner.get() == host && source && source->m_routeState &&
+          shell && IsXNav() && !restart)
+        wxMessageBox(wxString::FromUTF8(message), "Route not saved",
+                     wxOK | wxICON_WARNING, owner.get());
+      warning_pending = false;
+    });
+  }
+  return result.ok;
+}
 bool ShowChartContext(double latitude, double longitude) {
   if (!IsXNav() || !shell || !host || !std::isfinite(latitude) ||
       !std::isfinite(longitude) || std::abs(latitude) > 90) return false;
