@@ -87,8 +87,11 @@ inline std::string RefuseKnownObsoletePluginTlsSha256(const std::string& digest)
 }
 
 struct PluginTlsClosureLimits {
+  // Found dependency PEs and bytes bound parsing/retention. Candidate probes
+  // also include missing basenames in every root, so they need a separate cap.
   std::size_t max_nodes = 256;
   std::size_t max_bytes = 256u * 1024u * 1024u;
+  std::size_t max_probes = 1024;
 };
 
 // Inspect one bounded declarative import/forwarder graph over all supplied
@@ -115,6 +118,7 @@ std::string RefuseLegacyPluginTlsClosure(
   std::deque<std::vector<unsigned char>> pending;
   pending.push_back(root);
   std::set<std::pair<std::string, std::string>> seen;
+  std::size_t found_nodes = 0;
   std::size_t total = root.size();
   while (!pending.empty()) {
     auto bytes = std::move(pending.front());
@@ -162,14 +166,17 @@ std::string RefuseLegacyPluginTlsClosure(
       for (std::size_t index = 0; index < root_identities.size(); ++index) {
         const auto candidate = std::make_pair(root_identities[index], key);
         if (seen.find(candidate) != seen.end()) continue;
-        // Missing candidates consume the same node budget: absent imports must
-        // not amplify filesystem probes beyond the shared bound.
-        if (seen.size() >= limits.max_nodes)
-          return "Plugin import closure node budget exceeded";
+        // Missing candidates still consume bounded filesystem work, but do not
+        // consume a found-PE slot merely because another import root exists.
+        if (seen.size() >= limits.max_probes)
+          return "Plugin import closure probe budget exceeded";
         seen.insert(candidate);
         auto local = read_candidate(index, sibling);
         if (!local.error.empty()) return local.error;
         if (!local.found) continue;
+        if (found_nodes >= limits.max_nodes)
+          return "Plugin import closure node budget exceeded";
+        ++found_nodes;
         if (local.bytes.empty() || local.bytes.size() > limits.max_bytes - total)
           return "Plugin import closure byte budget exceeded";
         total += local.bytes.size();

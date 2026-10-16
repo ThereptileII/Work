@@ -1,5 +1,6 @@
 #include "integration/Win32PeImports.h"
 #include "integration/Win32PluginTlsImports.h"
+#include <algorithm>
 #include <fstream>
 #include <iostream>
 #include <iterator>
@@ -141,9 +142,9 @@ void MultiRootTests() {
         "Repeated upstream directory identity repeated missing-candidate probes");
   // Small injected budgets prove shared accounting without allocating 256 MiB.
   reads.clear();
-  Check(walk(Image({"one.dll", "two.dll"}), {}, {3, 256u * 1024u * 1024u}, &reads)
-            .find("node budget") != std::string::npos && reads.size() == 3,
-        "Missing multi-root candidates escaped shared node bound");
+  Check(walk(Image({"one.dll", "two.dll"}), {}, {256, 256u * 1024u * 1024u, 3}, &reads)
+            .find("probe budget") != std::string::npos && reads.size() == 3,
+        "Missing multi-root candidates escaped shared probe bound");
   reads.clear();
   Check(walk(Image({"helper.dll"}), {{{0, "helper.dll"}, Image()},
                                      {{1, "helper.dll"}, Image()}},
@@ -159,6 +160,89 @@ void MultiRootTests() {
   Check(!walk(Image(), {}, {}, nullptr, {}).empty() &&
         !walk(Image(), {}, {}, nullptr, {"plugin", ""}).empty(),
         "Missing root identity admitted");
+  reads.clear();
+  Check(walk(Image(), {}, {}, &reads, std::vector<std::string>(257, "root"))
+            .find("node budget") != std::string::npos && reads.empty(),
+        "Unbounded root list reached candidate inspection");
+
+  // The frozen 854 package has 90 declared basenames across three existing
+  // roots: 270 probes, 62 found files and 208 misses. A duplicate app-plugin
+  // root from upstream Libdirs must not add probes. Model that topology without
+  // vendor bytes; actual file custody remains the native guard's responsibility.
+  const std::vector<std::string> installed_roots{"plugin", "host", "managed", "plugin"};
+  Files installed;
+  for (unsigned i = 0; i < 60; ++i) {
+    std::vector<std::string> imports;
+    if (i < 59) imports.push_back("node" + std::to_string(i + 1) + ".dll");
+    if (i < 30) imports.push_back("absent" + std::to_string(i) + ".dll");
+    installed.emplace(Key{1, "node" + std::to_string(i) + ".dll"}, Image(imports));
+  }
+  installed.emplace(Key{2, "node0.dll"}, Image({"node1.dll"}));
+  installed.emplace(Key{2, "node1.dll"}, Image());
+  reads.clear();
+  Check(walk(Image({"node0.dll"}), installed, {}, &reads, installed_roots).empty() &&
+            reads.size() == 270 &&
+            std::count_if(reads.begin(), reads.end(), [&](const Key& key) {
+              return installed.find(key) != installed.end();
+            }) == 62,
+        "Benign installed three-root topology exhausted found-file budget on misses");
+  reads.clear();
+  Check(walk(Image({"node0.dll"}), installed, {256, 256u * 1024u * 1024u, 270},
+             &reads, installed_roots).empty() && reads.size() == 270,
+        "Exact shared probe bound refused benign topology");
+  reads.clear();
+  Check(walk(Image({"node0.dll"}), installed, {256, 256u * 1024u * 1024u, 269},
+             &reads, installed_roots).find("probe budget") != std::string::npos &&
+            reads.size() == 269,
+        "Probe bound allowed an extra filesystem lookup");
+  for (const bool delayed : {false, true}) {
+    auto unsafe = installed;
+    unsafe.at({1, "node59.dll"}) = delayed ? Image({}, {"ssleay32.dll"}) :
+                                            Image({"libeay32.dll"});
+    reads.clear();
+    Check(walk(Image({"node0.dll"}), unsafe, {}, &reads, installed_roots)
+              .find(delayed ? "delay import" : "TLS import") != std::string::npos &&
+              reads.size() > 256 && reads.at(268) == Key{1, "node59.dll"},
+          "Legacy TLS beyond the old probe limit escaped inspection");
+  }
+  // The independent byte-policy callback must also inspect late found files.
+  // This synthetic identity seam does not claim to contain real OpenSSL bytes.
+  const auto obsolete_control = Image({"byte-policy-control.dll"});
+  auto obsolete = installed;
+  obsolete.at({1, "node59.dll"}) = obsolete_control;
+  reads.clear();
+  Check(RefuseLegacyPluginTlsClosure(Image({"node0.dll"}), installed_roots,
+      [&](std::size_t index, const std::string& name) {
+        reads.emplace_back(index, name);
+        const auto found = obsolete.find({index, name});
+        return found == obsolete.end() ? PluginTlsLocalModule{} :
+            PluginTlsLocalModule{true, found->second, {}};
+      }, [&](const Bytes& bytes) {
+        return bytes == obsolete_control ? RefuseKnownObsoletePluginTlsSha256(
+            "2bede6f2840cfe0a4e88d5c3fa648c170509c9ceed438c7e8440340541ca0446") :
+            std::string{};
+      }).find("Known obsolete TLS runtime") != std::string::npos && reads.size() > 256,
+        "Late found file bypassed the retained-byte policy callback");
+
+  // Missing-only fanout must still stop at the default probe cap even though
+  // fewer than 256 dependency files exist. Keep declaration arrays small.
+  Files fanout;
+  for (unsigned i = 0; i < 80; ++i) {
+    std::vector<std::string> imports;
+    if (i < 79) imports.push_back("fan" + std::to_string(i + 1) + ".dll");
+    for (unsigned j = 0; j < 4; ++j)
+      imports.push_back("missing" + std::to_string(i * 4 + j) + ".dll");
+    fanout.emplace(Key{1, "fan" + std::to_string(i) + ".dll"}, Image(imports));
+  }
+  reads.clear();
+  Check(walk(Image({"fan0.dll"}), fanout, {}, &reads, installed_roots)
+            .find("probe budget") != std::string::npos && reads.size() == 1024,
+        "Missing candidates escaped the default 1024-probe bound");
+
+  reads.clear();
+  Check(walk(Image({"node0.dll"}), installed, {61, 256u * 1024u * 1024u},
+             &reads, installed_roots).find("node budget") != std::string::npos,
+        "Found candidates across roots escaped the independent file bound");
 }
 void Tests() {
   // Exercise the production refusal policy with actual normal/delay PE bytes.
@@ -303,6 +387,11 @@ void Tests() {
                         std::vector<std::string>{"node" + std::to_string(i + 1) + ".dll"}));
   Check(closure(Image({"node0.dll"}), chain).find("node budget") != std::string::npos,
         "Unbounded local dependency walk admitted");
+  chain.erase("node256.dll");
+  chain.at("node255.dll") = Image();
+  reads = 0;
+  Check(closure(Image({"node0.dll"}), chain, &reads).empty() && reads == 256,
+        "Exact 256-found-file bound refused a benign chain");
   auto b = Image(); Put(b, 0xf4, 0);
   Check(ReadWin32PeImports(b).parsed, "Absent directory entries refused");
   b = Image({"libeay32.dll", "libeay32.dll"}, {"ssleay32.dll"});
