@@ -15,7 +15,7 @@ on:
       scope:
         description: Relevant checks to repeat; never rebuild or publish
         type: choice
-        options: [installer, installer-charts, all, installer-startup-diagnostic]
+        options: [installer, installer-charts, installer-lifecycle, all, installer-startup-diagnostic]
         default: installer
 permissions:
   contents: read
@@ -27,12 +27,41 @@ concurrency:
   group: skager-staging-retest-${{ inputs.build_run || github.ref }}-${{ inputs.build_attempt || 'pinned' }}
   cancel-in-progress: false
 jobs:
+  installer-cold-hold:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-lifecycle' }}
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Qualify cold-hold maintenance helper with inert native fixtures
+        shell: powershell
+        run: |
+          $EvidenceDirectory = Join-Path $env:RUNNER_TEMP 'installer-cold-hold-evidence'
+          New-Item -ItemType Directory -Path $EvidenceDirectory -ErrorAction Stop | Out-Null
+          @{
+            schema = 1
+            harnessCommit = $env:GITHUB_SHA
+            helperSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1).Hash.ToLowerInvariant()
+            testSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1).Hash.ToLowerInvariant()
+          } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $EvidenceDirectory 'source-identity.json') -Encoding UTF8
+          powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1 -Evidence (Join-Path $EvidenceDirectory 'native-results.json')
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: installer-cold-hold-harness${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/installer-cold-hold-evidence
+          if-no-files-found: error
   retest:
     if: ${{ github.event_name == 'workflow_dispatch' || (github.event_name == 'push' && github.ref == 'refs/heads/skager-staging-retest') }}
     runs-on: windows-2022
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
       - name: Validate diagnostic WOW64 host before restoring retained inputs
         if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-startup-diagnostic' }}
         run: |
@@ -54,6 +83,15 @@ jobs:
             $Arguments += @('--producer-run-id', $env:BUILD_RUN, '--producer-run-attempt', $env:BUILD_ATTEMPT)
           }
           python opennav-x/tools/retest-staging-windows.py @Arguments
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Authenticate pinned historical installers for retained lifecycle
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-lifecycle' }}
+        env:
+          OPENNAV_ARTIFACT_TOKEN: ${{ github.token }}
+        run: |
+          python opennav-x/tools/build-installer-prior-fixture.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/build-installer-prior-fixture.py --early-beta2-layout
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Run selected checks without compiler or download credentials
         env:

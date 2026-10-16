@@ -80,7 +80,7 @@ def main():
     parser.add_argument('--producer-run-id')
     parser.add_argument('--producer-run-attempt')
     parser.add_argument('--selection', type=Path)
-    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'all', 'installer-startup-diagnostic'), default='all')
+    parser.add_argument('--scope', choices=('installer', 'installer-charts', 'installer-lifecycle', 'all', 'installer-startup-diagnostic'), default='all')
     args = parser.parse_args()
     require(sys.platform == 'win32' and os.environ.get('GITHUB_ACTIONS') == 'true' and
             os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted', 'Disposable native CI required')
@@ -93,7 +93,7 @@ def main():
     if args.phase == 'prepare':
         print('Restored original product commit: ' + prepare(args.producer_run_id, args.producer_run_attempt, args.selection))
         return
-    require(not os.environ.get('GH_TOKEN') and not os.environ.get('GITHUB_TOKEN'),
+    require(not any(os.environ.get(name) for name in ('GH_TOKEN', 'GITHUB_TOKEN', 'OPENNAV_ARTIFACT_TOKEN')),
             'Remove Actions credentials before launching retained applications')
     record = json.loads((ROOT / 'evidence/local/staging-inputs.json').read_text())
     report = dict(status='running', scope=args.scope, productCommit=record['producer']['commit'],
@@ -112,6 +112,12 @@ def run_checks(scope, report, save):
     if diagnostic:
         report.update(diagnosticOnly=True, releaseQualification=False)
         commands = [('installer-startup-diagnostic', installer + ['--startup-supervisor-diagnostic'])]
+    elif scope == 'installer-lifecycle':
+        # The helper's production mode selects its installer lifecycle matrix;
+        # it neither promotes a release nor invokes the full product suite.
+        commands = [('installer-lifecycle', [sys.executable, str(ROOT / 'tools/smoke-installer-windows.py'),
+                    '--mode', 'production', '--compiled-input-receipt',
+                    str(ROOT / 'evidence/local/staging-inputs.json'), '--prepared-prior-fixtures'])]
     elif scope in ('installer', 'installer-charts'):
         commands = [('installer', installer)]
         if scope == 'installer-charts':

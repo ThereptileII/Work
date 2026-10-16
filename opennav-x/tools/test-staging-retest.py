@@ -79,6 +79,7 @@ class PinnedRetest(unittest.TestCase):
         environment=dict(self.environment,GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='github-hosted')
         for arguments in (['prepare','--producer-run-id','37330218586','--producer-run-attempt','1'],
                           ['test','--scope','all'],['test','--scope','installer'],
+                          ['test','--scope','installer-lifecycle'],
                           ['test','--scope','installer-startup-diagnostic']):
             with mock.patch.dict(os.environ,environment,clear=True), \
                  mock.patch.object(retest.sys,'platform','win32'), \
@@ -130,6 +131,36 @@ class PinnedRetest(unittest.TestCase):
             self.assertEqual(report['status'],'passed' if failure is None else 'failed')
             self.assertFalse(report['releaseQualification'])
 
+    def test_lifecycle_runs_only_existing_installer_matrix_with_prepared_inputs(self):
+        for failure in (None, subprocess.CalledProcessError(1, ['installer'])):
+            report=dict(status='running',productCommit=COMMIT,releaseQualification=False)
+            with mock.patch.object(retest.subprocess,'run',side_effect=failure) as run:
+                if failure is None:
+                    retest.run_checks('installer-lifecycle',report,lambda:None)
+                else:
+                    with self.assertRaises(subprocess.CalledProcessError):
+                        retest.run_checks('installer-lifecycle',report,lambda:None)
+            run.assert_called_once_with([retest.sys.executable,
+                str(retest.ROOT/'tools/smoke-installer-windows.py'),'--mode','production',
+                '--compiled-input-receipt',str(retest.ROOT/'evidence/local/staging-inputs.json'),
+                '--prepared-prior-fixtures'],check=True)
+            status='failed' if failure else 'passed'
+            self.assertEqual(report['checks'],[dict(name='installer-lifecycle',status=status)])
+            self.assertEqual(report['status'],status)
+            self.assertFalse(report['releaseQualification'])
+
+    def test_lifecycle_cli_refuses_each_download_credential_before_test_effects(self):
+        for name in ('GH_TOKEN','GITHUB_TOKEN','OPENNAV_ARTIFACT_TOKEN'):
+            environment=dict(GITHUB_ACTIONS='true',RUNNER_ENVIRONMENT='github-hosted',
+                             GITHUB_EVENT_NAME='workflow_dispatch',**{name:'inert test sentinel'})
+            with mock.patch.dict(os.environ,environment,clear=True), \
+                 mock.patch.object(retest.sys,'platform','win32'), \
+                 mock.patch.object(retest.sys,'argv',['retest','test','--scope','installer-lifecycle']), \
+                 mock.patch.object(retest,'run_checks') as checks:
+                with self.assertRaisesRegex(ValueError,'Remove Actions credentials'):
+                    retest.main()
+                checks.assert_not_called()
+
     def test_workflow_keeps_dispatch_and_exact_push_without_build_or_promotion(self):
         import yaml
         checkout=Path(subprocess.check_output(['git','-C',str(retest.ROOT),'rev-parse','--show-toplevel'],text=True).strip())
@@ -138,9 +169,11 @@ class PinnedRetest(unittest.TestCase):
         self.assertEqual(set(workflow['on']),{'push','workflow_dispatch'})
         self.assertEqual(workflow['on']['push']['branches'],['skager-staging-retest'])
         self.assertIn('installer-charts',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
+        self.assertIn('installer-lifecycle',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertIn('installer-startup-diagnostic',workflow['on']['workflow_dispatch']['inputs']['scope']['options'])
         self.assertEqual(workflow['env']['SKAGER_DESIGN_VALIDATION'],'false')
         steps=workflow['jobs']['retest']['steps']
+        self.assertEqual(steps[0]['with']['persist-credentials'],'false')
         preflight=next(x for x in steps if 'host-preflight' in x.get('run',''))
         self.assertEqual(preflight['if'], "${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-startup-diagnostic' }}")
         self.assertLess(steps.index(preflight), next(i for i, x in enumerate(steps) if x.get('id') == 'prepare'))
@@ -149,6 +182,33 @@ class PinnedRetest(unittest.TestCase):
         test=next(x for x in steps if 'RETEST_SCOPE' in x.get('env',{}))
         self.assertEqual(test['env']['RETEST_SCOPE'],"${{ github.event_name == 'push' && 'installer-charts' || inputs.scope }}")
         self.assertNotIn('GH_TOKEN',test['env'])
+        self.assertNotIn('GITHUB_TOKEN',test['env'])
+        self.assertNotIn('OPENNAV_ARTIFACT_TOKEN',test['env'])
+        prefetch=next(x for x in steps if 'OPENNAV_ARTIFACT_TOKEN' in x.get('env',{}))
+        self.assertEqual(prefetch['if'],"${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-lifecycle' }}")
+        self.assertEqual(prefetch['env'],dict(OPENNAV_ARTIFACT_TOKEN='${{ github.token }}'))
+        self.assertEqual(prefetch['run'].splitlines(),[
+            'python opennav-x/tools/build-installer-prior-fixture.py',
+            'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }',
+            'python opennav-x/tools/build-installer-prior-fixture.py --early-beta2-layout',
+            'if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }'])
+        self.assertLess(next(i for i,x in enumerate(steps) if x.get('id')=='prepare'),steps.index(prefetch))
+        self.assertLess(steps.index(prefetch),steps.index(test))
+        cold=workflow['jobs']['installer-cold-hold']
+        self.assertEqual(cold['if'],prefetch['if'])
+        self.assertNotIn('needs',cold)
+        self.assertEqual(cold['runs-on'],'windows-2022')
+        self.assertEqual(cold['steps'][0]['with']['persist-credentials'],'false')
+        native=next(step for step in cold['steps'] if 'run' in step)
+        self.assertEqual(native['shell'],'powershell')
+        self.assertNotIn('env',native)
+        self.assertIn('powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1 -Evidence ',native['run'])
+        self.assertNotIn('-PortableContracts',native['run'])
+        self.assertIn('if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }',native['run'])
+        self.assertIn('helperSha256 = (Get-FileHash -Algorithm SHA256',native['run'])
+        self.assertIn('testSha256 = (Get-FileHash -Algorithm SHA256',native['run'])
+        self.assertEqual(cold['steps'][-1]['if'],'always()')
+        self.assertIn('run${{ github.run_id }}-attempt${{ github.run_attempt }}',cold['steps'][-1]['with']['name'])
         for step in steps:
             self.assertNotRegex(step.get('run',''),r'(?i)(build-pristine|cmake|msbuild|makensis|gh release|package-preview|package-alpha)')
 

@@ -37,6 +37,8 @@ def arguments(argv=None):
     parser.add_argument('--expected-commit',help='Frozen product revision, required with --retained-package')
     parser.add_argument('--startup-supervisor-diagnostic',action='store_true',
                         help='Retained 854 failure diagnosis only: original installed supervisor once; always fails qualification')
+    parser.add_argument('--prepared-prior-fixtures',action='store_true',
+                        help='Verify historical installers fetched in the authenticated preparation phase; never download them here')
     args=parser.parse_args(argv)
     if bool(args.retained_package)!=bool(args.expected_commit):
         parser.error('--retained-package and --expected-commit are required together')
@@ -46,7 +48,39 @@ def arguments(argv=None):
         parser.error('--expected-commit must be a complete lowercase commit SHA')
     if args.startup_supervisor_diagnostic and (not args.compiled_input_receipt or args.mode!='staging' or args.prepare_only):
         parser.error('--startup-supervisor-diagnostic requires retained compiled inputs and Staging mode')
+    if args.prepared_prior_fixtures and (not args.compiled_input_receipt or args.mode!='production' or args.prepare_only):
+        parser.error('--prepared-prior-fixtures requires retained compiled inputs and production lifecycle mode')
     return args
+
+
+def verify_prior_fixtures(root):
+    """Recheck immutable preparation bytes before any historical installer runs."""
+    if any(os.environ.get(name) for name in ('GH_TOKEN','GITHUB_TOKEN','OPENNAV_ARTIFACT_TOKEN')):
+        raise ValueError('Remove download credentials before retained lifecycle checks')
+    verified=[]
+    for lock_name, directory, receipt_name, setup_name in (
+            ('accepted-beta1.lock.json','prior-alpha-fixture','installer-prior-release.json','OpenNavX-Beta1-Setup.exe'),
+            ('early-beta2-layout.lock.json','prior-beta2-layout-fixture','installer-prior-beta2-layout.json','OpenNavX-Beta2-Setup.exe')):
+        lock_path=staging_inputs.plain_file(root,'tools/'+lock_name)
+        lock=staging_inputs.strict_json(lock_path.read_bytes())
+        receipt_path=staging_inputs.plain_file(root,'evidence/local/'+receipt_name)
+        receipt=staging_inputs.strict_json(receipt_path.read_bytes())
+        if receipt.get('verified') is not True or receipt.get('source')!=lock:
+            raise ValueError('Historical installer preparation receipt differs from committed lock')
+        if lock.get('setupName')!=setup_name:
+            raise ValueError('Historical installer filename differs from fixed fixture')
+        archive=staging_inputs.plain_file(root,'build/'+directory+'/verified-prior-installer.zip')
+        setup=staging_inputs.plain_file(root,'build/'+directory+'/setup/'+setup_name)
+        if (not 0 < archive.stat().st_size <= lock['maximumArchiveBytes'] or
+                staging_inputs.sha(archive)!=lock['archiveSha256']):
+            raise ValueError('Historical installer archive checksum or size differs')
+        if setup.stat().st_size!=lock['setupBytes'] or staging_inputs.sha(setup)!=lock['setupSha256']:
+            raise ValueError('Historical installer executable checksum or size differs')
+        verified.append(dict(source=lock,lock_sha256=staging_inputs.sha(lock_path),
+                             receipt_sha256=staging_inputs.sha(receipt_path),
+                             archive_sha256=lock['archiveSha256'],setup_sha256=lock['setupSha256'],
+                             setup_bytes=lock['setupBytes']))
+    return verified
 
 
 def archive_members(archive):
@@ -143,10 +177,13 @@ def prepare_source_engine(source_archive,root,expected_commit):
     if target.exists() or target.is_symlink() or (root/'build').is_symlink():
         raise ValueError('Retained source requires a fresh, unlinked directory')
     engine_name='opennav-x/installer/windows/Lifecycle.ps1'
+    engine_names=(engine_name,'opennav-x/installer/windows/UpdateSupervisor.ps1',
+                  'opennav-x/installer/windows/UpdateTransaction.ps1')
+    engine_files={}
     with zipfile.ZipFile(source_archive) as source:
         # The source ZIP may contain legitimate repository symlinks elsewhere.
-        # These two identities must each be one exact regular-file entry.
-        for name in ('SOURCE_REFERENCE.json',engine_name):
+        # The engine and both dot-sourced dependencies must be exact regular files.
+        for name in ('SOURCE_REFERENCE.json',*engine_names):
             selected=[entry for entry in source.infolist() if entry.filename.casefold()==name.casefold()]
             if (len(selected)!=1 or selected[0].orig_filename!=name or selected[0].is_dir() or
                     (selected[0].external_attr>>16)&0o170000 not in (0,0o100000)):
@@ -154,15 +191,21 @@ def prepare_source_engine(source_archive,root,expected_commit):
         reference=staging_inputs.strict_json(source.read('SOURCE_REFERENCE.json'))
         if reference['productCommit']!=expected_commit:
             raise ValueError('Corresponding source revision differs from frozen product')
-        engine_bytes=source.read(engine_name)
-        if hashlib.sha256(engine_bytes).hexdigest()!=reference['files'][engine_name]['sha256']:
-            raise ValueError('Corresponding installer source checksum differs')
+        for name in engine_names:
+            data=source.read(name)
+            if hashlib.sha256(data).hexdigest()!=reference['files'].get(name,{}).get('sha256'):
+                raise ValueError('Corresponding installer source checksum differs')
+            engine_files[name]=data
     current_helper=staging_inputs.plain_file(root,'tools/test-installer-missing-dll-selftest.ps1')
     engine=target/'installer/windows/Lifecycle.ps1'
-    engine.parent.mkdir(parents=True);engine.write_bytes(engine_bytes)
+    engine.parent.mkdir(parents=True)
+    for name,data in engine_files.items():
+        (engine.parent/PurePosixPath(name).name).write_bytes(data)
     helper=target/'tools'/current_helper.name
     helper.parent.mkdir();shutil.copy2(current_helper,helper)
-    return {'installer_source_sha256':sha(engine),'installer_helper_sha256':sha(helper)}
+    return {'installer_source_sha256':sha(engine),'installer_helper_sha256':sha(helper),
+            'installer_source_files_sha256':{name:hashlib.sha256(data).hexdigest()
+                                             for name,data in engine_files.items()}}
 
 
 def prepare_compiled(receipt_path,root,harness_commit):
@@ -595,11 +638,14 @@ try:
     report['display']=ui.ensure_desktop()
     try:
         if args.mode=='production':
-            subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
-            # Fetch both immutable historical packages before deleting the Actions
-            # credential. No tested installer/application may inherit that token.
-            subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py'),
-                            '--early-beta2-layout'],check=True)
+            if args.prepared_prior_fixtures:
+                report['prepared_prior_fixtures']=verify_prior_fixtures(ROOT)
+            else:
+                subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py')],check=True)
+                # Fetch both immutable historical packages before deleting the Actions
+                # credential. No tested installer/application may inherit that token.
+                subprocess.run([sys.executable,str(ROOT/'tools/build-installer-prior-fixture.py'),
+                                '--early-beta2-layout'],check=True)
     finally:
         os.environ.pop('OPENNAV_ARTIFACT_TOKEN',None)  # Do not pass it to any tested application.
     # On failure a live executable can still lock the disposable stock tree.
