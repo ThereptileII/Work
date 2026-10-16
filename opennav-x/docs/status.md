@@ -130,8 +130,15 @@ prelaunch recovery verification; the same child later returned an authenticated
 pass, without a second launch. Native logs confirm Intel UHD / OpenGL 4.6
 initialization. Read-only window inspection confirms the existing Swedish
 OpenCPN welcome dialog; no new-version diagnostics or chart-content acceptance
-is claimed yet. The helper's stale exact `0.4.0-beta2` version restriction is being
-corrected for the owned `0.4.0-beta2.4` build before continuing.
+is claimed yet. The corrected helper accepts only the supported owned version
+matching the embedded build, including `0.4.0-beta2.4`. Native
+[38897699400](https://github.com/ThereptileII/Work/actions/runs/38897699400)
+passes 127 warning and 33 dispatcher-budget contract checks at `bc2d1d5a`;
+the other eight jobs are skipped. Its 164 exact Windows tool files are staged in
+a separate immutable directory, preserving the active restart tools. The same
+application remains the subject of guarded Focus, separate inspection and
+acknowledgement; native fixtures alone do not prove these actual UI operations.
+[Native evidence and limits](evidence/scrum17-installed-warning-20261016/README.md).
 [Actual Update and restoration evidence](evidence/scrum17-854-install-20261016/README.md).
 
 SCRUM-211's certificate-verification software criteria were independently
