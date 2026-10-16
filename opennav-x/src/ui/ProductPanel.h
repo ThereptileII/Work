@@ -136,6 +136,7 @@ private:
              int decimals = 1);
   void Result(application::CommandResult result);
   void RouteActions();
+  void EditRoutePassage(const application::Route &selected);
   void PointActions();
   void CreateMark();
   void EnergySettings();

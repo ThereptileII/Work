@@ -5,6 +5,7 @@
 #include "ui/ContextCard.h"
 #include "ui/PrototypeGeometry.h"
 #include "application/AnchorRouteTransition.h"
+#include "application/RoutePassage.h"
 #include "integration/BuildFeatures.h"
 #include <wx/dcbuffer.h>
 #include <wx/dialog.h>
@@ -536,6 +537,83 @@ void ProductPanel::CreateMark() {
     Result(actions_.navigation.create_waypoint(*location, (*fields)[0],
                                                (*fields)[1]));
 }
+void ProductPanel::EditRoutePassage(const application::Route &selected) {
+  // Keep the exact displayed selection across the modal event loop. Fresh
+  // readback may refuse it, but must never retarget a saved draft.
+  const auto blocker = [this, selected]() -> std::string {
+    if (state_.vessel.simulated || state_.vessel.replayed)
+      return "Passage settings cannot be changed in simulation or replay.";
+    if (!actions_.navigation.set_route_passage)
+      return "Passage settings are unavailable.";
+    if (selected.active)
+      return "Stop navigation before changing passage settings.";
+    if (!selected.editable)
+      return "This route cannot be edited.";
+    const auto current = actions_.navigation.route
+        ? actions_.navigation.route(selected.id) : std::nullopt;
+    if (!current || current->id != selected.id)
+      return "The route changed. Reopen its passage settings.";
+    if (current->active)
+      return "Stop navigation before changing passage settings.";
+    if (!current->editable)
+      return "This route can no longer be edited.";
+    if (current->revision != selected.revision)
+      return "The route changed. Reopen its passage settings.";
+    return {};
+  };
+  const auto number = [](double value) {
+    return std::isfinite(value) ? W(application::SettingNumber(value)) : wxString{};
+  };
+  const auto saved_error = application::ValidateRoutePassage(selected.passage);
+  std::vector<SheetField> fields{
+      {"Arrival radius / m (blank: OpenCPN waypoint rules)",
+       saved_error.empty() && selected.passage.arrival_radius_m
+           ? number(*selected.passage.arrival_radius_m) : wxString{}, 64},
+      {"Corridor total width / m",
+       saved_error.empty() ? number(selected.passage.corridor_width_m) : wxString{}, 64}};
+  const wxString detail =
+      "Arrival radius: 2 to 1852 metres, based on actual distance to the waypoint. "
+      "A configured radius does not skip a waypoint when moving away. "
+      "Blank keeps OpenCPN waypoint rules. Corridor total width: 2 to 20000 metres; "
+      "a visual aid, not charted safe water.";
+  wxString message = saved_error.empty() ? detail
+      : "Saved settings need repair: " + W(saved_error) + "\n\n" + detail;
+  for (;;) {
+    const auto before = blocker();
+    if (!before.empty()) { Result({false, before, {}}); return; }
+    auto edited = EditSheet(*this, mode_, "Passage settings", message, fields,
+                            "Save", interface_scale_);
+    if (!edited) return;
+    const auto after = blocker();
+    if (!after.empty()) { Result({false, after, {}}); return; }
+    fields[0].value = W((*edited)[0]);
+    fields[1].value = W((*edited)[1]);
+    application::RoutePassageSettings candidate; // Fresh valid record can repair invalid storage.
+    std::string error;
+    try {
+      if ((*edited)[0].find_first_not_of(" \t\r\n") != std::string::npos)
+        candidate.arrival_radius_m = application::ParseSettingNumber((*edited)[0]);
+      candidate.corridor_width_m = application::ParseSettingNumber((*edited)[1]);
+      error = application::ValidateRoutePassage(candidate);
+    } catch (const std::exception &) {
+      error = "Enter finite decimal metres using a dot. Only the arrival radius may be blank.";
+    }
+    if (!error.empty()) {
+      message = W(error) + " Your draft has been kept.\n\n" + detail;
+      continue;
+    }
+    auto result = actions_.navigation.set_route_passage(selected, candidate);
+    if (result.ok && page_ == ProductPage::RouteDetail && route_.id == selected.id &&
+        XNavNameEditor::PreserveDrafts(
+            *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed)) {
+      result.identity.clear();
+      RefreshRoute();
+      rebuild_pending_ = true;
+    }
+    Result(result);
+    return;
+  }
+}
 void ProductPanel::RouteActions() {
   if (!route_available_) {
     Heading("Route unavailable", "The selected route was removed or cannot be identified.");
@@ -646,6 +724,25 @@ void ProductPanel::RouteActions() {
                          : route_.editable && static_cast<bool>(actions_.navigation.activate)));
   navigate->SetRole(route_.active ? ButtonRole::Critical : ButtonRole::Primary);
   EndActions();
+  const auto passage_number = [](double value) {
+    return std::isfinite(value) ? W(application::SettingNumber(value)) + " m"
+                                : wxString("Invalid saved value");
+  };
+  const auto passage_error = application::ValidateRoutePassage(selected.passage);
+  if (!passage_error.empty()) {
+    Text("Saved passage settings need repair: " + W(passage_error));
+    Text("Arrival and corridor settings are unavailable until repaired.");
+  } else {
+    Text("Arrival: " + (selected.passage.arrival_radius_m
+        ? passage_number(*selected.passage.arrival_radius_m)
+        : wxString("OpenCPN waypoint rules")));
+    Text("Corridor total width: " + passage_number(selected.passage.corridor_width_m));
+  }
+  if (selected.active) Text("Stop navigation to change passage settings.");
+  Action("Passage settings", [this, selected] { EditRoutePassage(selected); },
+      selected.editable && !selected.active && !state_.vessel.simulated &&
+      !state_.vessel.replayed && bool(actions_.navigation.set_route_passage) &&
+      bool(actions_.navigation.route))->SetRole(ButtonRole::Quiet);
   Text("Planned legs", 20);
   if (route_.points.empty()) Text("No waypoints in this route.");
   for (std::size_t i = 0; i < route_.points.size(); ++i) {
