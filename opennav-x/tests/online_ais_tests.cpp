@@ -76,6 +76,64 @@ int main() {
   Check(!cache.Observe(info,t+63s),"Invalid dimensions rejected");
   Check(retained.targets[0].name=="SANITIZED TEST VESSEL"&&retained.targets[0].sog_kn.value==6.3,"Retained snapshot survives cache edits");
 
+  ais::TargetCache partial;
+  Check(partial.Observe(Position(t),t),"Position before static fields accepted");
+  ais::StaticReport newest;
+  newest.mmsi=265000001;newest.observed_at=t+30s;
+  newest.callsign="NEW CALL";newest.ship_type=70;newest.length_m=40;
+  Check(partial.Observe(newest,t+30s),"Newer part B fields arrive before name");
+  ais::StaticReport older;
+  older.mmsi=newest.mmsi;older.observed_at=t+5s;older.name="DELAYED NAME";
+  older.callsign="OLD CALL";older.ship_type=36;older.length_m=20;
+  older.destination="PORT";older.beam_m=8;
+  Check(partial.Observe(older,t+31s),"Older report fills missing fields independently");
+  auto merged_static=partial.Read(t+31s);
+  const auto &named=merged_static.targets[0];
+  Check(partial.Size()==1&&merged_static.targets.size()==1,"Same MMSI remains one target");
+  Check(named.name=="DELAYED NAME"&&named.callsign.value=="NEW CALL"&&
+        named.callsign.observed_at==t+30s,"Delayed name does not regress newer callsign");
+  Check(named.ship_type.value==70&&named.length_m.value==40&&named.beam_m.value==8&&
+        named.beam_m.observed_at==t+5s,"Each numeric static field retains its own observation");
+  Check(named.destination.value=="PORT"&&named.destination.observed_at==t+5s,
+        "Oldest partial report can fill destination without rejuvenating it");
+  Check(named.observed_at==t&&named.latitude_deg.observed_at==t&&
+        merged_static.observed_at==t,"Static merges never renew position clocks");
+  Check(!partial.Observe(older,t+32s),"Duplicate static fields do not refresh receipt age");
+  older.observed_at=t+4s;older.name="OLDER NAME";older.destination="OLDER PORT";
+  Check(!partial.Observe(older,t+32s),"Older same-field values cannot regress accepted static data");
+  older.observed_at=t+6s;older.name="NEWER NAME";
+  Check(partial.Observe(older,t+32s),"Newer name may merge despite newer unrelated fields");
+  Check(partial.Read(t+32s).targets[0].name=="NEWER NAME","Latest typed name retained");
+  ais::StaticReport blank;
+  blank.mmsi=newest.mmsi;blank.observed_at=t+40s;
+  blank.name=" @@ @ ";blank.callsign=" ";blank.destination="";
+  Check(!partial.Observe(blank,t+40s),"Empty and AIS-padded fields cannot erase known text");
+  Check(partial.Read(t+40s).targets[0].name=="NEWER NAME"&&
+        partial.Read(t+40s).targets[0].callsign.value=="NEW CALL","Known text survives empty reports");
+  ais::StaticReport metadata;
+  metadata.mmsi=newest.mmsi;metadata.observed_at=t+41s;metadata.name="CACHED NAME";
+  metadata.name_origin=ais::NameOrigin::MetadataFallback;
+  Check(!partial.Observe(metadata,t+41s),"Newer metadata cannot replace a typed name");
+
+  ais::TargetCache fallback;
+  Check(fallback.Observe(metadata,t+41s),"Metadata supplies an otherwise missing name");
+  Check(fallback.Read(t+41s).targets.empty(),"Metadata name alone cannot create chart position");
+  Check(fallback.Observe(Position(t),t+41s),"Later receipt attaches actual position to metadata MMSI");
+  Check(fallback.Read(t+41s).targets[0].name=="CACHED NAME","Metadata fallback displayed by MMSI");
+  auto previous_metadata=metadata;previous_metadata.observed_at=t+40s;
+  previous_metadata.name="OLD CACHED NAME";
+  Check(!fallback.Observe(previous_metadata,t+42s),"Older metadata cannot regress metadata name");
+  Check(!fallback.Observe(metadata,t+42s),"Duplicate metadata does not refresh static age");
+  ais::StaticReport typed;
+  typed.mmsi=metadata.mmsi;typed.observed_at=t+10s;typed.name="  ACTUAL NAME@@ ";
+  Check(fallback.Observe(typed,t+42s),"Typed name supersedes newer cached metadata");
+  Check(fallback.Read(t+42s).targets[0].name=="ACTUAL NAME","Typed name normalized without synthesis");
+  Check(!fallback.Observe(metadata,t+43s),"Metadata cannot take back typed name authority");
+  typed.observed_at=t+9s;typed.name="OLD TYPED";
+  Check(!fallback.Observe(typed,t+43s),"Older typed name cannot regress accepted typed name");
+  Check(fallback.Read(t+43s).targets[0].latitude_deg.observed_at==t,
+        "Name-source changes preserve original position time");
+
   vessel::AisState onboard=retained;onboard.source="OpenCPN";
   auto &local=onboard.targets[0];local.origin=vessel::AisOrigin::LocalOpenCPN;
   local.source="OpenCPN";local.latitude_deg.value=59;local.upstream_alarm=true;

@@ -16,11 +16,14 @@ struct PositionReport {
   vessel::Time observed_at{}; // receipt projected to monotonic observation clock
   bool receipt_time_only = false;
 };
+enum class NameOrigin { TypedReport, MetadataFallback };
 struct StaticReport {
   int mmsi = 0;
   std::optional<std::string> name, callsign, destination;
   std::optional<double> ship_type, length_m, beam_m;
   vessel::Time observed_at{};
+  // Cached service metadata can fill a name, but never replace a typed name.
+  NameOrigin name_origin = NameOrigin::TypedReport;
 };
 class TargetCache {
  public:
@@ -32,8 +35,9 @@ class TargetCache {
  private:
   struct Entry {
     vessel::AisTarget target;
-    vessel::Time position_time{}, static_time{};
-    bool has_position = false, has_static = false;
+    vessel::Time position_time{}, static_time{}, name_time{};
+    NameOrigin name_origin = NameOrigin::TypedReport;
+    bool has_position = false;
   };
   Entry *FindOrInsert(int mmsi, vessel::Time received_at);
   std::map<int, Entry> targets_;

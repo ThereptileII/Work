@@ -1,4 +1,5 @@
 #include "ais/AisStreamCodec.h"
+#include "ais/OnlineAisAge.h"
 #include "integration/ExternalJson.h"
 #include <cmath>
 #include <ctime>
@@ -131,11 +132,16 @@ std::optional<Wall::time_point> Utc(const Value &v) {
          std::chrono::duration_cast<Wall::duration>(
              std::chrono::nanoseconds(ns));
 }
-bool StaticFields(const Value &v, StaticReport &r, const char *type = "Type") {
-  if (!Text(v, "Name", 128, r.name) || !Text(v, "CallSign", 32, r.callsign) ||
+bool StaticFields(const Value &v, StaticReport &r, const char *type = "Type",
+                  bool vessel_name = true) {
+  std::optional<std::string> name;
+  if (!Text(v, "Name", 128, name) || !Text(v, "CallSign", 32, r.callsign) ||
       !Text(v, "Destination", 128, r.destination) ||
       !OptionalNumber(v, type, 1, 99, 0, r.ship_type))
     return false;
+  // Report B has manufacturer identifiers, not a vessel-name field. Preserve
+  // validation of an unexpected Name without treating it as a vessel name.
+  if (vessel_name) r.name = std::move(name);
   const auto &d = Member(v, "Dimension");
   if (d.IsNull())
     return true;
@@ -204,7 +210,8 @@ DecodedMessage DecodeAisStream(const std::string &json, vessel::Time received,
     // Validate wall clock range before any potentially overflowing subtraction.
     if (!stamp || wall_now < Wall::time_point{} ||
         wall_now > Wall::from_time_t(4102444800LL) || *stamp > wall_now ||
-        *stamp < wall_now - 10min || received < vessel::Time::min() + 10min)
+        *stamp <= wall_now - OnlineExpireAfter ||
+        received < vessel::Time::min() + OnlineExpireAfter)
       return result;
     observed -=
         std::chrono::duration_cast<vessel::Clock::duration>(wall_now - *stamp);
@@ -232,7 +239,6 @@ DecodedMessage DecodeAisStream(const std::string &json, vessel::Time received,
   if (name == "ExtendedClassBPositionReport" || name == "ShipStaticData") {
     if (!StaticFields(v, s))
       return {};
-    result.static_data = s;
   } else if (name == "StaticDataReport") {
     const auto &part = Member(v, "PartNumber");
     if (!part.IsBool())
@@ -241,10 +247,19 @@ DecodedMessage DecodeAisStream(const std::string &json, vessel::Time received,
     const auto &good = Member(report, "Valid");
     if (!good.IsBool() || !good.GetBool())
       return {};
-    if (!StaticFields(report, s, "ShipType"))
+    if (!StaticFields(report, s, "ShipType", !part.GetBool()))
       return {};
-    result.static_data = s;
   }
+  // Only the documented envelope field is a fallback. Do not recursively
+  // collect arbitrary Name fields (for example ReportB.VendorIDName).
+  std::optional<std::string> metadata_name;
+  if (!Text(meta, "ShipName", 128, metadata_name)) return {};
+  if (!s.name && metadata_name) {
+    s.name = std::move(metadata_name);
+    s.name_origin = NameOrigin::MetadataFallback;
+  }
+  if (s.name || s.callsign || s.destination || s.ship_type || s.length_m || s.beam_m)
+    result.static_data = std::move(s);
   result.kind = DecodeKind::Reports;
   return result;
 }

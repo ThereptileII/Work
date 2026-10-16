@@ -55,12 +55,14 @@ int main() {
           vessel::AisTimeBasis::OnlineReceipt);
     CHECK(copy.targets[0].latitude_deg.observed_at == now - 1500ms);
     for (const char *timestamp :
-         {"2026-09-28T12:00:00Z", "2026-09-28T11:59:59.123456789Z"})
+         {"2026-09-28T12:00:00Z", "2026-09-28T11:59:59.123456789Z",
+          "2026-09-28T11:49:59Z", "2026-09-28T11:30:00.001Z"})
       CHECK(Decode(Envelope("PositionReport", identity + motion,
                             ",\"time_utc\":\"" + std::string(timestamp) + "\""))
                 .position);
     for (const char *timestamp :
-         {"2026-09-28T12:00:01Z", "2026-09-28T11:49:59Z",
+         {"2026-09-28T12:00:01Z", "2026-09-28T11:30:00Z",
+          "2026-09-28T11:29:59Z",
           "2026-02-30T12:00:00Z", "2026-09-28T12:00:00.1234567890Z",
           "2026-09-28T12:00:00+02:00", "2026-09-28T12:00:60Z",
           "2026-09-28T12:00:00.Z", "invalid"})
@@ -77,9 +79,9 @@ int main() {
     CHECK(d.static_data->callsign == "TEST");
     CHECK(d.static_data->length_m == 20 && d.static_data->beam_m == 7);
     CHECK(cache.Observe(*d.static_data, now));
-    CHECK(cache.Read(now + 16s).targets[0].latitude_deg.observed_at == now);
+    CHECK(cache.Read(now + 3min + 1s).targets[0].latitude_deg.observed_at == now);
     CHECK(
-        vessel::Assess(cache.Read(now + 16s).targets[0].latitude_deg, now + 16s)
+        vessel::Assess(cache.Read(now + 3min + 1s).targets[0].latitude_deg, now + 3min + 1s)
             .quality == vessel::Quality::Aging);
     auto a = Decode(Envelope(
         "StaticDataReport",
@@ -95,6 +97,60 @@ int main() {
     CHECK(cache.Observe(*b.static_data, now));
     CHECK(cache.Read(now).targets[0].name == "CLASS B");
     CHECK(cache.Read(now).targets[0].callsign.value == "CLASSB");
+    for (const char *type : {"PositionReport", "StandardClassBPositionReport",
+                             "ExtendedClassBPositionReport"}) {
+      const auto metadata = Decode(Envelope(type, identity + motion,
+          ",\"ShipName\":\"  METADATA VESSEL@@ \""));
+      CHECK(metadata.position && metadata.static_data);
+      CHECK(metadata.static_data->name == "METADATA VESSEL");
+      CHECK(metadata.static_data->name_origin == ais::NameOrigin::MetadataFallback);
+      CHECK(metadata.static_data->mmsi == metadata.position->mmsi);
+      CHECK(metadata.static_data->observed_at == metadata.position->observed_at);
+    }
+    for (const char *type : {"ShipStaticData", "ExtendedClassBPositionReport"}) {
+      const std::string body = identity +
+          (std::string(type) == "ShipStaticData" ? "" : motion + ",") +
+          "\"Name\":\"TYPED VESSEL\"";
+      const auto named = Decode(Envelope(type, body, ",\"ShipName\":\"FALLBACK\""));
+      CHECK(named.static_data && named.static_data->name == "TYPED VESSEL");
+      CHECK(named.static_data->name_origin == ais::NameOrigin::TypedReport);
+    }
+    d = Decode(Envelope("StaticDataReport", identity +
+        "\"PartNumber\":false,\"ReportA\":{\"Valid\":true,\"Name\":\"PART A\"},"
+        "\"ReportB\":{\"Valid\":false,\"Name\":\"NOT SELECTED\"}",
+        ",\"ShipName\":\"FALLBACK\""));
+    CHECK(d.static_data && d.static_data->name == "PART A");
+    CHECK(d.static_data->name_origin == ais::NameOrigin::TypedReport);
+    d = Decode(Envelope("StaticDataReport", identity +
+        "\"PartNumber\":true,\"ReportB\":{\"Valid\":true,\"CallSign\":\"CALL\","
+        "\"VendorIDName\":\"MAKER\",\"Name\":\"NOT A VESSEL FIELD\"}",
+        ",\"ShipName\":\"FALLBACK\""));
+    CHECK(d.static_data && d.static_data->name == "FALLBACK");
+    CHECK(d.static_data->name_origin == ais::NameOrigin::MetadataFallback);
+    CHECK(d.static_data->callsign == "CALL");
+    d = Decode(Envelope("PositionReport", identity + motion +
+        ",\"Name\":\"UNSUPPORTED\",\"Nested\":{\"Name\":\"UNSUPPORTED\"}"));
+    CHECK(d.position && !d.static_data);
+    for (const char *empty : {"", "   ", "@@ @ "}) {
+      d = Decode(Envelope("ShipStaticData", identity + "\"Name\":\"" + empty + "\"",
+                          ",\"ShipName\":\"FALLBACK\""));
+      CHECK(d.static_data && d.static_data->name == "FALLBACK");
+      CHECK(d.static_data->name_origin == ais::NameOrigin::MetadataFallback);
+      d = Decode(Envelope("PositionReport", identity + motion,
+                          ",\"ShipName\":\"" + std::string(empty) + "\""));
+      CHECK(d.position && !d.static_data);
+    }
+    for (const std::string bad_name : {std::string("42"), std::string("{}"),
+           std::string("\"bad\\u0000name\""), std::string("\"bad\\ud800name\""),
+           "\"" + std::string(129, 'A') + "\""}) {
+      d = Decode(Envelope("PositionReport", identity + motion,
+                          ",\"ShipName\":" + bad_name));
+      CHECK(d.kind == ais::DecodeKind::Invalid && !d.position && !d.static_data);
+    }
+    // An invalid typed report cannot be rescued by otherwise usable metadata.
+    CHECK(Decode(Envelope("ShipStaticData", identity + "\"Name\":42",
+                          ",\"ShipName\":\"FALLBACK\""))
+              .kind == ais::DecodeKind::Invalid);
     CHECK(Decode(Envelope("StaticDataReport",
                           identity + "\"PartNumber\":false,\"ReportA\":{"
                                      "\"Valid\":false,\"Name\":\"REJECT\"}"))

@@ -13,6 +13,13 @@ bool Text(const std::optional<std::string> &s, std::size_t bound) {
   for (unsigned char c : *s) if (c < 32 || c == 127) return false;
   return true; // UTF-8 validation is also mandatory at the JSON decoder boundary.
 }
+std::optional<std::string> Unpadded(std::optional<std::string> value) {
+  if (!value) return {};
+  const auto last = value->find_last_not_of(" @");
+  if (last == std::string::npos) return {};
+  const auto first = value->find_first_not_of(' ');
+  return value->substr(first, last - first + 1);
+}
 vessel::Sample Sample(std::optional<double> value, vessel::Time at) {
   return {value, OnlineSource, at, value ? vessel::Validity::Measured : vessel::Validity::Invalid, {15s, 60s}};
 }
@@ -73,19 +80,46 @@ bool TargetCache::Observe(const StaticReport &r, vessel::Time received) {
   if (!Mmsi(r.mmsi) || !Stamp(r.observed_at, received) || !Text(r.name, 128) ||
       !Text(r.callsign, 32) || !Text(r.destination, 128) ||
       !OptionalNumber(r.ship_type, 0, 99) || !OptionalNumber(r.length_m, 0, 1022) ||
-      !OptionalNumber(r.beam_m, 0, 126)) return false;
+      !OptionalNumber(r.beam_m, 0, 126) ||
+      (r.name_origin != NameOrigin::TypedReport &&
+       r.name_origin != NameOrigin::MetadataFallback)) return false;
+  const auto name = Unpadded(r.name), callsign = Unpadded(r.callsign),
+             destination = Unpadded(r.destination);
+  if (!name && !callsign && !destination && !r.ship_type && !r.length_m && !r.beam_m)
+    return false;
   auto *entry = FindOrInsert(r.mmsi, received);
-  if (!entry || (entry->has_static && r.observed_at < entry->static_time)) return false;
+  if (!entry) return false;
   auto &target = entry->target;
-  if (r.name) target.name = *r.name;
-  if (r.callsign) target.callsign = StaticText(r.callsign, r.observed_at);
-  if (r.destination) target.destination = StaticText(r.destination, r.observed_at);
+  bool changed = false;
+  // A delayed field can fill its own gap independently of newer other fields.
+  // Typed AIS names outrank a service's cached metadata, even if that metadata
+  // arrived in a more recent position envelope. Within each origin, keep time.
+  const bool stronger_name = r.name_origin == NameOrigin::TypedReport &&
+                             entry->name_origin == NameOrigin::MetadataFallback;
+  if (name && (target.name.empty() || stronger_name ||
+      (r.name_origin == entry->name_origin && r.observed_at >= entry->name_time)) &&
+      (target.name != *name || r.observed_at != entry->name_time || stronger_name)) {
+    target.name = *name;
+    entry->name_time = r.observed_at;
+    entry->name_origin = r.name_origin;
+    changed = true;
+  }
+  const auto text = [&](vessel::TextSample &out, const std::optional<std::string> &value) {
+    if (value && (!out.value || r.observed_at >= out.observed_at) &&
+        (out.value != value || r.observed_at != out.observed_at)) {
+      out = StaticText(value, r.observed_at); changed = true;
+    }
+  };
+  text(target.callsign, callsign); text(target.destination, destination);
   const auto field = [&](vessel::Sample &out, std::optional<double> value) {
-    if (value) { out = Sample(value, r.observed_at); out.freshness = {1h, 6h}; }
+    if (value && (!out.value || r.observed_at >= out.observed_at) &&
+        (out.value != value || r.observed_at != out.observed_at)) {
+      out = Sample(value, r.observed_at); out.freshness = {1h, 6h}; changed = true;
+    }
   };
   field(target.ship_type, r.ship_type); field(target.length_m, r.length_m); field(target.beam_m, r.beam_m);
-  entry->static_time = r.observed_at; entry->has_static = true;
-  return true;
+  if (changed) entry->static_time = std::max(entry->static_time, r.observed_at);
+  return changed;
 }
 vessel::AisState TargetCache::Read(vessel::Time now) const {
   vessel::AisState state;
