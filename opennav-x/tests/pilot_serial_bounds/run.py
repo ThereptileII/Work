@@ -16,7 +16,8 @@ build = args.build_dir.resolve()
 source = build / "source"
 source.mkdir(parents=True, exist_ok=True)
 files = ["model/src/comm_drv_n2k_serial.cpp", "model/include/model/comm_drv_n2k_serial.h", "model/include/model/comm_navmsg.h", "libs/N2KParser/src/N2kMsg.cpp",
-         "libs/N2KParser/include/N2kMsg.h", "libs/N2KParser/include/N2kDef.h"]
+         "libs/N2KParser/include/N2kMsg.h", "libs/N2KParser/include/N2kDef.h",
+         "model/include/model/autopilot_output.h", "model/src/autopilot_output.cpp"]
 for name in files:
     target = source / name
     target.parent.mkdir(parents=True, exist_ok=True)

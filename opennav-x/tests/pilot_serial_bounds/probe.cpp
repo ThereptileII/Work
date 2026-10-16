@@ -3,6 +3,7 @@
 #include <N2kMsg.h>
 // Simulate Win32 headers without NOMINMAX. Production helpers must coexist
 // with these macros; the portable harness itself otherwise has no SDK headers.
+#include <algorithm>
 #include <chrono>
 #include <cstdint>
 #include <deque>
