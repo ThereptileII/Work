@@ -27,8 +27,12 @@ now matches, with its supported stock hashes unchanged. The existing local
 distribution preflight passes all 16 required inputs and the one stock
 configuration; the focused workflow now runs it before any compilation too.
 This packaging-only correction does not change the already-tested policy sources.
-One corrected integrated run is required. Native product and corrected-boat
-results remain pending. All 30 SDK-bound inputs match the two locked producers; fresh
+Corrected candidate `9feae59ce0ef1f54107c3c51f920085297ea7bc8` is now selected in
+[38911440527](https://github.com/ThereptileII/Work/actions/runs/38911440527).
+The distribution preflight passes on both Windows and Linux; integrated checks
+are running. This evidence-only status update does not move the frozen candidate.
+Native product and corrected-boat results remain pending. All 30 SDK-bound inputs
+match the two locked producers; fresh
 native environment verification still applies. No design or endurance sweep is selected.
 [Correction, exact inputs and limits](evidence/scrum209-plugin-probe-budget-20261016/README.md).
 
