@@ -101,13 +101,30 @@ jobs:
       - name: Verify updater source package rules
         shell: python
         run: |
-          import subprocess, sys
+          import subprocess, sys, time
           for script in ('../test-package-update-launcher.py', '../test-updater-package.py',
                          '../test-package-update-broker.py', '../test-broker-package.py',
                          '../test-package-update-provisioner.py', '../test-provisioner-package.py',
                          '../test_baseline_handoff_package.py',
                          '../test-package-protected-operator-kit.py'):
-              subprocess.run([sys.executable, script], check=True, timeout=60)
+              # This inert ZIP-rewrite suite previously took 56.119s. Allow
+              # runner variance without changing any product/runtime deadline.
+              budget = 180 if script == '../test-provisioner-package.py' else 60
+              print(f'BEGIN {script} timeout_seconds={budget}', flush=True)
+              started = time.monotonic()
+              outcome = 'failed'
+              try:
+                  subprocess.run([sys.executable, '-u', script, '-v'], check=True, timeout=budget)
+              except subprocess.TimeoutExpired:
+                  outcome = 'timeout'
+                  raise
+              except subprocess.CalledProcessError as error:
+                  outcome = f'failed exit_code={error.returncode}'
+                  raise
+              else:
+                  outcome = 'passed exit_code=0'
+              finally:
+                  print(f'END {script} {outcome} elapsed_seconds={time.monotonic() - started:.3f}', flush=True)
       - name: Compile native launcher with exact dependency sources
         if: runner.os == 'Windows'
         shell: powershell
