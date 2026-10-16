@@ -1,0 +1,141 @@
+{
+  "schema": 1,
+  "kind": "sanitized-installed-update-and-stock-restoration-evidence",
+  "workItem": "SCRUM-17",
+  "scope": "Actual boat installation and protected-state preservation; separate commissioning remains in progress.",
+  "observedUtc": "2026-10-16T11:16:41.8200072Z",
+  "product": {
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "version": "0.4.0-beta2.4",
+    "setupSha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d",
+    "installedExecutableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511"
+  },
+  "previousInstallation": {
+    "identityObservedUtc": "2026-10-16T09:43:30.6968279Z",
+    "commit": "f1a1e68c81fb60324f47cc20a7c4479e1c60c0c8",
+    "generation": "6a6bb7454555418aa8dcce31a0a89d12",
+    "executableSha256": "159eafcf71a65608e525c222e1a75901a703be58b5dd540fc1935a51fb24e3e1",
+    "stateSha256": "c1a9c758db4a0f7af9dba8014f58057f98c0b1b968e4a286519ca5ff88aef71a",
+    "retainedAsPrevious": true
+  },
+  "installedState": {
+    "generation": "d597466b96c84153975ad7169c2f3b92",
+    "previousGeneration": "6a6bb7454555418aa8dcce31a0a89d12",
+    "stateSha256": "ee2f9a04ca6c4f8f35465931d582368c6d0a4fdf241c766d543a676f342130c4",
+    "stockExecutableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profileIniSha256": "7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559",
+    "installerReportSha256": "2f52e515c28c25fadb9251ebc934e2957a460f8b4224344217f9f58fe072036d",
+    "deploymentReportSha256": "c5a37037d24e2c06206f75d7118d0098a9f3599dcc9b613046b7754c502195f5",
+    "applicationProcessCount": 0
+  },
+  "historicalInitialUpdate": {
+    "status": "failed-before-commit",
+    "firstMissingImport": "wxbase312u_vc_custom.dll",
+    "retainedPlugin": "plugins/rtlsdr_pi.dll",
+    "followupMetadataScan": {
+      "peFileCount": 103,
+      "onlyMissingImports": [
+        "wxbase312u_vc_custom.dll",
+        "wxmsw312u_core_vc_custom.dll"
+      ],
+      "acceptance": false,
+      "evidence": "../scrum17-rtlsdr-854-20261016/receipt.json"
+    }
+  },
+  "coldHold": {
+    "helperCommit": "654119a759a4f0a229a67549e8b70bb53c72c214",
+    "helperPath": "opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1",
+    "qualifiedWindowsHelperSha256": "9a3ee3714f45145c7d5151254c928e1d1f27c59a55a8b982c197b3b877271ca9",
+    "nativeHelperEvidence": "../scrum22-rtlsdr-hold-20261016/receipt.json",
+    "planSha256": "de0ee95ab4f5458b0393614f1c5d740588ae4a0f600d9f71aaea90ba4e0cefb9",
+    "inspectStatus": "inspected",
+    "holdStatus": "held",
+    "restoreStatus": "restored",
+    "restoreMode": "moved-back",
+    "stockDllRestored": true,
+    "stockDll": {
+      "path": "plugins/rtlsdr_pi.dll",
+      "bytes": 208384,
+      "sha256": "404e69931034140fbda0179964d0a29077a46b78a441c05fc68a4ee0616a64e5",
+      "originalAccessAclRestored": true
+    },
+    "protectedTreeInventoryDigests": {
+      "profile": "46ccd5dfab5b818a23aeaa346ee894e67b79879e7822723340c78a6449f3f1e9",
+      "stock": "386cdc184c9160d42b86e4ccc44ef7c5676d2552df4be842354ff3c0f6a9771d",
+      "managed": "1dd277402b827d72293c49148b9fd9ff93c5a5807e450459d635118e0a14fcbf",
+      "generation": "29760961465e85510246f72fbf3252d7dcb8d291c7fd8b5d6e31b53c170a6f6e"
+    },
+    "protectedTreeScope": "Complete profile, stock tree excluding only the independently pinned RTL-SDR entry DLL, managed tree, and original generation; rechecked by successful Restore after Update. Digests cover the existing helper inventory format, not a filesystem image.",
+    "oldGenerationVerifiedAfterUpdate": "6a6bb7454555418aa8dcce31a0a89d12"
+  },
+  "installation": {
+    "action": "Update",
+    "installerStatus": "passed",
+    "wrapperStatus": "installed",
+    "originalPackageAndInstallerGatesUnchanged": true,
+    "mandatoryInstallerSelfTestExecuted": true,
+    "ordinaryNavigationLaunchPerformed": false,
+    "launchPending": true,
+    "freshCommissioningInventoryRequired": true
+  },
+  "boundaries": {
+    "freshCommissioning": "in-progress-separate-at-this-snapshot",
+    "boatFunctionalAcceptance": false,
+    "hardwareCommandsPerformed": false,
+    "zeroCodeExecutionClaim": false,
+    "notes": [
+      "Mandatory installer loader/resource self-test and maintenance subprocesses ran; zero final application processes does not mean no subprocess executed.",
+      "No ordinary plugin initialization, private-chart rendering, AIS/zoom behavior or physical output acceptance follows from installation.",
+      "Stock restoration does not authorize the incompatible RTL-SDR plugin for the new generation; fresh plugin inventory and the commissioning plan remain separate.",
+      "The deployment report hash is recorded by the final identity; the wrapper stdout has its own distinct hash in privateEvidence.",
+      "Private user paths, account/SID and ACL text, chart/vessel/profile contents and credentials are omitted."
+    ]
+  },
+  "privateEvidence": [
+    {
+      "privateEvidenceBasename": "boat-passive-20261016.json",
+      "bytes": 621,
+      "sha256": "e6bf22287cc9a9bc1454a75c4aa91b9a221922a34648f666c6984e82f65d83b8"
+    },
+    {
+      "privateEvidenceBasename": "installer-failed-original.json",
+      "bytes": 850,
+      "sha256": "cd58d5b19e54dc003868e5338235c59683abea3ded4f0d526a5e4fd96fb2fefa"
+    },
+    {
+      "privateEvidenceBasename": "cold-hold-654-inspect.stdout",
+      "bytes": 207,
+      "sha256": "37992c248b8d2722266f58c952a1b1fae3968e8c9041a6ae43224a8eb868bdcc"
+    },
+    {
+      "privateEvidenceBasename": "cold-hold-654-plan.json",
+      "bytes": 1009,
+      "sha256": "de0ee95ab4f5458b0393614f1c5d740588ae4a0f600d9f71aaea90ba4e0cefb9"
+    },
+    {
+      "privateEvidenceBasename": "cold-hold-654-hold.stdout",
+      "bytes": 150,
+      "sha256": "3d217b29fd5d5c95dea80043727ccb942b9099e3bcc53592b3b0cb5835268226"
+    },
+    {
+      "privateEvidenceBasename": "update-654-hold.stdout",
+      "bytes": 461,
+      "sha256": "b5c3be6e660f56b5d9866c3c1847fe0620ac650a46d10a8d7677e41ae31b1ed1"
+    },
+    {
+      "privateEvidenceBasename": "cold-hold-654-restore.stdout",
+      "bytes": 242,
+      "sha256": "d0b2e4e7228a0c31f300567a9412ac960178d25ceb478f99b93447a551f040c6"
+    },
+    {
+      "privateEvidenceBasename": "actual-854-installer.json",
+      "bytes": 5265,
+      "sha256": "2f52e515c28c25fadb9251ebc934e2957a460f8b4224344217f9f58fe072036d"
+    },
+    {
+      "privateEvidenceBasename": "actual-854-update-identity.json",
+      "bytes": 1560,
+      "sha256": "ab627d0eb4e0778c76c370b3925871fb353f608de9adcc390314858ca6b92bf4"
+    }
+  ]
+}
