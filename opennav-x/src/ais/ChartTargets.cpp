@@ -8,12 +8,15 @@ namespace opennav::ais {
 namespace {
 std::string DisplayName(const std::string &name) {
   if (name.size() > 128) return {};
-  bool visible = false;
   for (unsigned char c : name) {
     if (c < 32 || c == 127) return {};
-    visible = visible || c != ' ';
   }
-  return visible ? name : std::string{};
+  // Match the decoder's AIS padding treatment even for an owned display copy.
+  // Padding alone is unavailable metadata, not a vessel named "@@@@".
+  const auto last = name.find_last_not_of(" @");
+  if (last == std::string::npos) return {};
+  const auto first = name.find_first_not_of(' ');
+  return name.substr(first, last - first + 1);
 }
 bool Measured(const vessel::Sample &s, double low, double high) {
   return s.value && std::isfinite(*s.value) && *s.value >= low &&
@@ -29,9 +32,9 @@ std::optional<double> Current(const vessel::Sample &s, vessel::Time now,
 }
 } // namespace
 bool ChartTarget::operator==(const ChartTarget &o) const {
-  return std::tie(mmsi, latitude, longitude, direction_true, age, selected, observed_at, name) ==
+  return std::tie(mmsi, latitude, longitude, direction_true, age, selected, observed_at, name, label) ==
          std::tie(o.mmsi, o.latitude, o.longitude, o.direction_true, o.age,
-                  o.selected, o.observed_at, o.name);
+                  o.selected, o.observed_at, o.name, o.label);
 }
 std::vector<ChartTarget> OnlineChartTargets(const vessel::AisState &display,
                                           vessel::Time now, int selected) {
@@ -64,9 +67,12 @@ std::vector<ChartTarget> OnlineChartTargets(const vessel::AisState &display,
     }
     // A stale/lost position has no current direction or selection highlight.
     // No direction is rendered as an unoriented mark, never a northbound ship.
+    const auto name = current ? DisplayName(t.name) : std::string{};
+    const auto label = current ? (name.empty() ? std::to_string(t.mmsi) : name)
+                               : std::string{};
     result.push_back({t.mmsi, *t.latitude_deg.value, *t.longitude_deg.value,
                       direction, age, current && t.mmsi == selected, t.observed_at,
-                      current ? DisplayName(t.name) : std::string{}});
+                      name, label});
   }
   return result;
 }
@@ -78,6 +84,7 @@ std::optional<ChartTarget> CurrentChartMark(ChartTarget mark, vessel::Time now) 
   mark.age = age;
   if (age == TargetAge::Stale || age == TargetAge::Lost) {
     mark.direction_true.reset(); mark.selected = false; mark.name.clear();
+    mark.label.clear();
   }
   return mark;
 }

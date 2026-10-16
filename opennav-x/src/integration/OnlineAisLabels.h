@@ -30,12 +30,12 @@ unsigned DrawOnlineAisLabels(DC &dc, wxWindow &window, ui::LightMode mode,
   unsigned labels=0;
   for(const auto index:order) {
     const auto &p=targets[index];
-    if(p.mark.name.empty() || labels==128 ||
+    if(p.mark.label.empty() || labels==128 ||
        (p.mark.age!=ais::TargetAge::Live && p.mark.age!=ais::TargetAge::Aging))continue;
-    const auto name=wxString::FromUTF8(p.mark.name);
-    if(name.empty())continue; // Invalid UTF-8 cannot become a replacement label.
+    const auto label_text=wxString::FromUTF8(p.mark.label);
+    if(label_text.empty())continue; // Invalid UTF-8 cannot become a replacement label.
     int width=0,height=0,descent=0;
-    dc.GetTextExtent(name,&width,&height,&descent);
+    dc.GetTextExtent(label_text,&width,&height,&descent);
     // Pinned ocpnDC clamps either extent to 500 but DrawText paints the full
     // string. Saturated metrics cannot establish its bounds: omit the label.
     if(width>=500 || height>=500)continue;
@@ -47,7 +47,7 @@ unsigned DrawOnlineAisLabels(DC &dc, wxWindow &window, ui::LightMode mode,
     const bool fits=ais::ChartLabelFits(label,{0,0,viewport.x,viewport.y},occupied);
     occupied[index]=own_symbol;
     if(!fits)continue;
-    dc.DrawText(name,label.x,label.y);
+    dc.DrawText(label_text,label.x,label.y);
     const int gap=window.FromDIP(2);
     occupied.push_back({label.x-gap,label.y-gap,width+2*gap,height+2*gap});
     ++labels;

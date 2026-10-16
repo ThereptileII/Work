@@ -10,9 +10,12 @@ struct ChartTarget {
   TargetAge age = TargetAge::Invalid;
   bool selected = false;
   vessel::Time observed_at{};
-  // Optional display identity, copied from validated static metadata. A name
-  // never supplies position, motion, freshness or collision information.
+  // Optional vessel name, copied from validated static metadata. Never replace
+  // this semantic name with an identifier or renew position from static data.
   std::string name;
+  // Chart text only: name when available, otherwise the validated 9-digit MMSI.
+  // Empty for stale/lost marks; it supplies no motion or collision information.
+  std::string label;
   bool operator==(const ChartTarget &other) const;
 };
 // Input is the aggregated display snapshot: onboard identities must suppress

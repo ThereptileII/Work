@@ -50,7 +50,7 @@ int main(int argc,char **argv) {
       dc.DrawText(wxString::FromUTF8(theme==0?"DAY · OFFLINE":theme==1?"DUSK · OFFLINE":"NIGHT · OFFLINE"),16,14);
       std::vector<integration::OnlineAisLabelTarget> targets;
       auto add=[&](int n,const char *name,int x,int y,ais::TargetAge age,bool selected=false){
-        ais::ChartTarget t;t.mmsi=265000000+n;t.name=name;t.age=age;t.selected=selected;
+        ais::ChartTarget t;t.mmsi=265000000+n;t.name=name;t.label=name;t.age=age;t.selected=selected;
         targets.push_back({t,{x,y}});
       };
       // Lower-MMSI collision must not win against the selected target.
@@ -58,20 +58,24 @@ int main(int argc,char **argv) {
       add(2,"FIXTURE ALPHA",30,70,ais::TargetAge::Live,true);
       add(3,"FIXTURE BETA",30,130,ais::TargetAge::Aging);
       add(4,"",30,180,ais::TargetAge::Live);
+      targets.back().mark.label="265000004"; // Display identity, semantic name still absent.
       add(5,"CLIPPED",305,230,ais::TargetAge::Live);
       add(6,"STALE FIXTURE",30,250,ais::TargetAge::Stale);
       add(7,"\xff",30,290,ais::TargetAge::Live);
+      add(8,"",30,270,ais::TargetAge::Lost);
+      targets.back().mark.label="265000008"; // A stale retained label must never paint.
       const auto old_font=dc.GetFont();const auto old_ink=dc.GetTextForeground();
       ObservedDC observed{dc,{}};
-      Check(integration::DrawOnlineAisLabels(observed,*window,mode,{320,320},targets)==2,
-            "Only named live/aging labels that fit without collisions draw");
-      Check(observed.drawn[0].text=="FIXTURE ALPHA"&&observed.drawn[1].text=="FIXTURE BETA",
-            "Selected label wins, missing/stale/invalid/clipped/colliding labels omitted");
+      Check(integration::DrawOnlineAisLabels(observed,*window,mode,{320,320},targets)==3,
+            "Live/aging name or MMSI labels draw only when they fit without collisions");
+      Check(observed.drawn[0].text=="FIXTURE ALPHA"&&observed.drawn[1].text=="FIXTURE BETA"&&
+            observed.drawn[2].text=="265000004"&&targets[3].mark.name.empty(),
+            "Selected label wins, missing name uses MMSI, stale/invalid/clipped/colliding labels omitted");
       Check(dc.GetFont()==old_font&&dc.GetTextForeground()==old_ink,"Drawing state restored");
-      for(int i=0;i<2;++i) {
+      for(int i=0;i<3;++i) {
         const auto &d=observed.drawn[i];int width=0,height=0,descent=0;
         dc.SetFont(d.font);dc.GetTextExtent(d.text,&width,&height,&descent);
-        Check(d.x==44&&d.y+height-descent==(i==0?66:126),"Exact x14/y-4 alphabetic baseline");
+        Check(d.x==44&&d.y+height-descent==(i==0?66:i==1?126:176),"Exact x14/y-4 alphabetic baseline");
         Check(d.font==ui::UiFont(*window,9)&&d.ink==ui::Colour(ui::OnlineChartTheme(mode).label),
               "Production 9px font and effective theme ink used");
       }
@@ -87,6 +91,7 @@ int main(int argc,char **argv) {
     // drawing is permitted when the measurement has saturated.
     ais::ChartTarget long_name;long_name.mmsi=265000008;
     long_name.name=std::string(128,'W');long_name.age=ais::TargetAge::Live;
+    long_name.label=long_name.name;
     canvas.SetFont(ui::UiFont(*window,9));
     int full_width=0,full_height=0;canvas.GetTextExtent(wxString::FromUTF8(long_name.name),&full_width,&full_height);
     Check(full_width>500,"Long-name fixture must actually exceed the pinned 500px clamp");

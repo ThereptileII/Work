@@ -27,14 +27,22 @@ int main() {
     Check(glyphs.size()==1&&glyphs[0].selected&&glyphs[0].direction_true==41,
           "Current measured heading and selected identity retained");
     Check(glyphs[0].longitude==179.99,"No independent geodesic/projection at data boundary");
+    Check(glyphs[0].name.empty()&&glyphs[0].label=="265000001"&&glyphs[0].observed_at==at,
+          "Missing vessel name uses validated MMSI only as chart text, without refreshing position");
     for(const auto &p:std::vector<std::pair<vessel::Duration,ais::TargetAge>>{
-      {15s,ais::TargetAge::Aging},{60s,ais::TargetAge::Stale},{120s,ais::TargetAge::Lost}}) {
+      {3min-1ms,ais::TargetAge::Live},{3min,ais::TargetAge::Aging},
+      {10min-1ms,ais::TargetAge::Aging},{10min,ais::TargetAge::Stale},
+      {20min-1ms,ais::TargetAge::Stale},{20min,ais::TargetAge::Lost},
+      {30min-1ms,ais::TargetAge::Lost}}) {
       glyphs=get(state,at+p.first);
       Check(glyphs.size()==1&&glyphs[0].age==p.second,"Retained position ages without provider/UI renewal");
-      if(p.first>=60s)Check(!glyphs[0].selected&&!glyphs[0].direction_true,
-        "Stale/lost marks cannot imply current heading or current selection");
+      if(p.first>=10min)Check(!glyphs[0].selected&&!glyphs[0].direction_true&&
+                             glyphs[0].name.empty()&&glyphs[0].label.empty(),
+        "Stale/lost marks cannot retain direction, selection, name or MMSI labels");
+      else Check(glyphs[0].label=="265000001"&&glyphs[0].observed_at==at,
+                 "Live/aging MMSI label does not renew the retained position");
     }
-    Check(get(state,at+600s).empty(),"Expired targets disappear");
+    Check(get(state,at+30min).empty(),"Targets disappear exactly at online expiry");
     Check(get(state,at-1ms).empty(),"Future position refused");
     Check(get(state,vessel::Time::max()).empty(),"Extreme clock cannot overflow");
     auto s=state;s.targets[0].heading_true_deg={};
@@ -43,7 +51,7 @@ int main() {
     Check(!get(s,at)[0].direction_true,"Stopped vessel cannot acquire invented orientation");
     s.targets[0].sog_kn={};
     Check(!get(s,at)[0].direction_true,"Unknown motion remains unoriented");
-    for(int invalid=0;invalid<15;++invalid) {
+    for(int invalid=0;invalid<18;++invalid) {
       s=state;auto &t=s.targets[0];
       switch(invalid) {
       case 0:t.latitude_deg.value=91;break;
@@ -61,6 +69,9 @@ int main() {
       case 12:t.origin=vessel::AisOrigin::LocalOpenCPN;break;
       case 13:t.active=false;break;
       case 14:t.lost=true;break;
+      case 15:t.mmsi=99999999;break;
+      case 16:t.mmsi=1000000000;break;
+      case 17:t.mmsi=-265000001;break;
       }
       Check(get(s,at).empty(),"Invalid/untrusted display input cannot create a ship");
     }
@@ -75,32 +86,41 @@ int main() {
     Check(get(s,at)[0].longitude==-179.99,"Antimeridian kept for pinned OpenCPN projection");
     const auto retained=get(state,at);cache=ais::TargetCache{};
     Check(retained.size()==1&&retained[0].mmsi==265000001,"Owned presentation survives source destruction");
-    const auto painted=ais::CurrentChartMark(retained[0],at+61s);
+    const auto painted=ais::CurrentChartMark(retained[0],at+10min);
     Check(painted&&painted->age==ais::TargetAge::Stale&&!painted->selected&&
-          !painted->direction_true&&painted->observed_at==at,
+          !painted->direction_true&&painted->name.empty()&&painted->label.empty()&&painted->observed_at==at,
           "Paint-time read ages a retained symbol without refreshing it");
     Check(!ais::CurrentChartMark(*painted,at),"Clock reversal cannot rejuvenate stale cached marks");
-    Check(!ais::CurrentChartMark(retained[0],at+600s),"Retained render snapshot expires even if producer has stopped");
+    Check(!ais::CurrentChartMark(retained[0],at+30min),"Retained render snapshot expires even if producer has stopped");
     ais::TargetCache named;
     Check(named.Observe({265000002,58.1,16.4,4,90,90,0,at},at),"Named fixture has actual normalized position");
+    const auto unnamed=ais::OnlineChartTargets(named.Read(at),at,265000002);
+    Check(unnamed.size()==1&&unnamed[0].name.empty()&&unnamed[0].label=="265000002",
+          "Position before static metadata has an MMSI label without an invented name");
     ais::StaticReport identity;identity.mmsi=265000002;identity.name="S/Y Liv";identity.observed_at=at;
     Check(named.Observe(identity,at),"Validated static name accepted");
     const auto first=ais::OnlineChartTargets(named.Read(at),at,265000002);
-    Check(first.size()==1&&first[0].name=="S/Y Liv","Available name copied into owned chart mark");
+    Check(first.size()==1&&first[0].name=="S/Y Liv"&&first[0].label=="S/Y Liv"&&
+          !(unnamed==first)&&first[0].observed_at==unnamed[0].observed_at,
+          "Arriving static name replaces MMSI text and invalidates rendering without renewing position");
     identity.name="Skärgård";identity.observed_at=at+1s;
     Check(named.Observe(identity,at+1s),"Static identity update accepted");
     const auto renamed=ais::OnlineChartTargets(named.Read(at+1s),at+1s,265000002);
-    Check(!(first==renamed)&&renamed[0].name=="Skärgård"&&renamed[0].observed_at==at,
+    Check(!(first==renamed)&&renamed[0].name=="Skärgård"&&renamed[0].label=="Skärgård"&&renamed[0].observed_at==at,
           "Name-only update invalidates rendering without renewing position");
     named=ais::TargetCache{};
     Check(first[0].name=="S/Y Liv","Owned name survives cache destruction and later rename");
-    Check(ais::CurrentChartMark(first[0],at+15s)->name=="S/Y Liv","Aging identity remains with existing aging mark");
-    Check(ais::CurrentChartMark(first[0],at+60s)->name.empty(),"Retained stale mark cannot keep live name label");
-    for(const auto &name:std::vector<std::string>{"","   ","bad\nname",std::string(129,'x')}) {
+    Check(ais::CurrentChartMark(first[0],at+3min)->label=="S/Y Liv","Aging identity remains with existing aging mark");
+    Check(ais::CurrentChartMark(first[0],at+10min)->label.empty(),"Retained stale mark cannot keep live name label");
+    for(const auto &name:std::vector<std::string>{"","   ","@@@@"," @ @ ","bad\nname",std::string(129,'x')}) {
       s=state;s.targets[0].name=name;
       const auto marks=get(s,at);
-      Check(marks.size()==1&&marks[0].name.empty(),"Absent or invalid name omits label without losing target");
+      Check(marks.size()==1&&marks[0].name.empty()&&marks[0].label=="265000001"&&marks[0].observed_at==at,
+            "Absent, padded or invalid name falls back to MMSI without inventing a name or fresh position");
     }
+    s=state;s.targets[0].name="  S/Y Liv@@ ";
+    Check(get(s,at)[0].name=="S/Y Liv"&&get(s,at)[0].label=="S/Y Liv",
+          "Valid vessel name keeps decoder-compatible padding sanitation");
     using B=ais::ChartLabelBounds;
     const B viewport{0,0,100,80};
     Check(ais::ChartLabelFits({14,4,30,10},viewport,{}),"Full label fits its fixed anchor");
