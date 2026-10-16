@@ -43,7 +43,13 @@ function fixture(overrides: Record<string, any> = {}) {
     getAccount: async () => state.account ?? null,
     rpc: async (name, args) => {
       calls.push({ name, args });
-      if (name === 'skager_auth_throttle') return state.throttle;
+      if (name === 'skager_auth_throttle') {
+        // Same bounds as public.skager_auth_throttle in auth.sql, which raises outside them.
+        const { p_keys, p_limit, p_seconds } = args as { p_keys: string[]; p_limit: number; p_seconds: number };
+        if (p_keys.length < 1 || p_keys.length > 3 || p_keys.some(key => key.length < 1 || key.length > 100)
+          || p_limit < 1 || p_limit > 100 || p_seconds < 1 || p_seconds > 3600) throw new Error('Invalid throttle configuration');
+        return state.throttle;
+      }
       if (name === 'store_catalog') return { products, shipping_minor: 1500, shipping_countries: ['SE'] };
       if (name === 'store_create_order') return typeof state.order === 'function' ? state.order(args) : state.order;
       if (name === 'store_order_binding') return state.binding;

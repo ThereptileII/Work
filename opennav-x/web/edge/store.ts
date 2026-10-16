@@ -116,7 +116,7 @@ async function guestCheckout(req: Request, ctx: StoreContext, config: Configurat
     requireValue(input.discountCode === undefined || input.discountCode === '' || (typeof input.discountCode === 'string' && CODE.test(input.discountCode)));
   } catch { return reply(400, { error: 'Check your email address and try again.' }); }
   const email = input.email.trim().toLowerCase();
-  const allowed = await ctx.rpc('skager_auth_throttle', { p_keys: ['checkout:global'], p_limit: 300, p_seconds: 3600 }) === true
+  const allowed = await ctx.rpc('skager_auth_throttle', { p_keys: ['checkout:global'], p_limit: 100, p_seconds: 3600 }) === true
     && await ctx.rpc('skager_auth_throttle', { p_keys: ['checkout:email:' + await sha256(email)], p_limit: 10, p_seconds: 3600 }) === true;
   if (!allowed) return reply(429, { error: 'Too many attempts. Please try again later.' });
   const products = (await catalog(ctx)).products;
