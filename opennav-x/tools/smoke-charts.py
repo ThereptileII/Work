@@ -351,7 +351,7 @@ try:
     for x,y in [(430,300),(580,300),(720,360)]:
      ui.user.SetCursorPos(x,y);ui.user.mouse_event(2,0,0,0,0);ui.user.mouse_event(4,0,0,0,0);time.sleep(.4)
     draft=data(lambda d:d['runtime']['display']['route_creation_active'])
-    ui.click_text(pid,'Done')
+    ui.click_text(pid,'Finish route')
     route_name='SIMULATED ENC route gesture'
     ui.set_dialog_fields(pid,'Save route',[route_name,'Disposable native chart editing test'])
     ui.click_text(pid,'Save route')

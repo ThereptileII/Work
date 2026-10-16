@@ -349,6 +349,7 @@ void ControlBoundary() {
       ++count; return application::CommandResult{true, "ok"};
     };
     actions.can_undo_route_point = [] { return true; };
+    actions.can_finish_route = [] { return true; };
     actions.finish_route_named = [&](const auto &, const auto &) {
       ++count; return application::CommandResult{true, "ok"};
     };
@@ -362,13 +363,14 @@ void ControlBoundary() {
     Check(!actions.go_to({}, "destination").ok &&
               !actions.go_to_waypoint({}).ok &&
               !actions.undo_route_point().ok && !actions.can_undo_route_point() && !actions.cancel_route().ok &&
-              !actions.finish_route_named("route", "description").ok,
+              !actions.can_finish_route() && !actions.finish_route_named("route", "description").ok,
           "Replay blocks Go To and draft route mutation");
     actions.start_route();
     actions.legacy_settings();
     Check(count == 0, "Replay blocks advanced mutation entry");
     service.StopReplay();
-    Check(actions.activate({}).ok && count == 1 && actions.can_undo_route_point(),
+    Check(actions.activate({}).ok && count == 1 && actions.can_undo_route_point() &&
+              actions.can_finish_route(),
           "Explicit replay exit restores normal human actions");
     Check(actions.set_route_passage({}, {}).ok && count == 2,
           "Only explicit replay exit restores route-arrival edits");

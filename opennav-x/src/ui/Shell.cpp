@@ -355,21 +355,32 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       [this](const application::HorizonAction &action){ActivateHorizon(action);});
   horizon_layout->Add(horizon_,1,wxEXPAND);
   route_actions_=new wxPanel(horizon_pane,wxID_ANY);route_actions_->Hide();
+  auto *route_layout = new wxBoxSizer(wxVERTICAL);
+  route_hint_ = Text(route_actions_, "Create route: tap the chart to add points", 14);
+  route_hint_->SetWindowStyleFlag(route_hint_->GetWindowStyleFlag() | wxST_ELLIPSIZE_END);
+  route_layout->Add(route_hint_, 0, wxEXPAND | wxLEFT | wxRIGHT | wxTOP,
+                    frame_.FromDIP(8));
   auto *actions_row = new wxBoxSizer(wxHORIZONTAL);
   auto *route_host=route_actions_;
-  finish_route_ = Button(route_host, "Done", "Name and save this route", [this] {
+  finish_route_ = Button(route_host, "Finish route", "Finish drawing and save this route", [this] {
+    if (!NewRouteCreationActive() || state_.simulated || state_.replayed ||
+        !actions_.navigation.can_finish_route || !actions_.navigation.can_finish_route() ||
+        !actions_.navigation.finish_route_named) return;
     const auto suggestion=actions_.navigation.suggest_route_name
         ? actions_.navigation.suggest_route_name() : application::NavigationNameSuggestion{};
     const auto fields=EditNavigationNameSheet(frame_,mode_,"Save route",
       "Name this route. You can activate it after saving.",
       suggestion.name,"","Save route",display_.scale_percent);
-    if(!fields || !actions_.navigation.finish_route_named) return;
+    if(!fields || !NewRouteCreationActive() || state_.simulated || state_.replayed ||
+       !actions_.navigation.can_finish_route()) return;
     const auto result=actions_.navigation.finish_route_named((*fields)[0],(*fields)[1]);
     if(result.ok) { Tick(); ShowObject(result.identity,true); }
     else ConfirmSheet(frame_,mode_,"Route not saved",wxString::FromUTF8(result.message),"Back",display_.scale_percent);
   });
+  finish_route_->Enable(false);
   undo_route_=Button(route_host,"Undo","Undo last route point",[this]{
-    if (!actions_.navigation.undo_route_point) return;
+    if (!NewRouteCreationActive() || state_.simulated || state_.replayed ||
+        !actions_.navigation.undo_route_point) return;
     const auto result = actions_.navigation.undo_route_point();
     if (!result.ok)
       ConfirmSheet(frame_, mode_, "Cannot undo route point", wxString::FromUTF8(result.message), "Back", display_.scale_percent);
@@ -377,15 +388,28 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   });
   undo_route_->Enable(false);
   cancel_route_=Button(route_host,"Cancel","Cancel route creation",[this]{
-    if(actions_.navigation.cancel_route && ConfirmSheet(frame_,mode_,"Cancel route?","Discard this unfinished route? Existing routes are preserved.","Discard route",display_.scale_percent))actions_.navigation.cancel_route();
+    if (!NewRouteCreationActive() || state_.simulated || state_.replayed ||
+        !actions_.navigation.cancel_route) return;
+    if (!ConfirmSheet(frame_,mode_,"Cancel route?",
+        "Discard this unfinished route? Existing routes are preserved.",
+        "Discard route",display_.scale_percent)) return;
+    if (!NewRouteCreationActive() || state_.simulated || state_.replayed) return;
+    const auto result = actions_.navigation.cancel_route();
+    if (!result.ok)
+      ConfirmSheet(frame_,mode_,"Route not cancelled",wxString::FromUTF8(result.message),
+                   "Back",display_.scale_percent);
+    Tick();
   });
-  for (auto *button : {cancel_route_, undo_route_, finish_route_}) {
-    button->SetMinSize(frame_.FromDIP(wxSize(88, 48)));
+  for (auto *button : {finish_route_, undo_route_, cancel_route_}) {
+    button->SetMinSize(frame_.FromDIP(wxSize(button == finish_route_ ? 144 : 88, 48)));
     button->SetRole(button == finish_route_ ? ButtonRole::Primary : ButtonRole::Quiet);
-    actions_row->Add(button, 0, wxALL, frame_.FromDIP(4));
-    button->Hide();
+    actions_row->Add(button, 0, wxALL | wxALIGN_CENTER_VERTICAL, frame_.FromDIP(4));
   }
-  route_actions_->SetSizer(actions_row);horizon_layout->Add(route_actions_,0,wxEXPAND);
+  route_layout->Add(actions_row,1,wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM,frame_.FromDIP(8));
+  route_actions_->SetSizer(route_layout);
+  // Creation owns this fixed-height area; appending controls below the horizon
+  // clips the actions rather than making the dock taller.
+  horizon_layout->Add(route_actions_,1,wxEXPAND);
   horizon_pane->SetSizer(horizon_layout);
   pilot_summary_ = Button(right,"Autopilot","Open autopilot controls",[this]{ShowProduct(ProductPage::Pilot);});
   pilot_summary_->SetMinSize(frame_.FromDIP(wxSize(149,87)));
@@ -968,16 +992,28 @@ void Shell::Tick() {
   if (actions_.commissioning && !replay)
     actions_.commissioning->Capture(state_, wall_now);
   XNAV_TEST_UI_TRACE("tick.energy-recording", metrics_.ticks);
-  const bool creating = actions_.route_creating && actions_.route_creating();
+  const bool creating = NewRouteCreationActive();
+  const bool can_edit_route = creating && !state_.simulated && !state_.replayed;
+  const bool can_finish = can_edit_route && actions_.navigation.finish_route_named &&
+      actions_.navigation.can_finish_route && actions_.navigation.can_finish_route();
+  finish_route_->Enable(can_finish);
+  cancel_route_->Enable(can_edit_route && bool(actions_.navigation.cancel_route));
+  const wxString route_hint = can_finish
+      ? "Create route: add more points or choose Finish route"
+      : can_edit_route ? "Create route: tap the chart to add at least two points"
+                       : "Route editing is unavailable during replay or simulation";
+  if (creating && route_hint_->GetLabel() != route_hint) {
+    route_hint_->SetLabel(route_hint);
+    route_actions_->Layout();
+  }
   undo_route_->Enable(creating && !state_.simulated && !state_.replayed &&
       actions_.navigation.undo_route_point && actions_.navigation.can_undo_route_point &&
       actions_.navigation.can_undo_route_point());
-  if (finish_route_->IsShown() != creating) {
-    finish_route_->Show(creating);
-    undo_route_->Show(creating);cancel_route_->Show(creating);
+  if (route_actions_->IsShown() != creating) {
+    horizon_->Show(!creating);
     route_actions_->Show(creating);
     route_actions_->GetParent()->Layout();
-    finish_route_->GetParent()->Layout();
+    route_actions_->Layout();
   }
   if (product_) {
     ProductState p;

@@ -59,6 +59,8 @@ struct ShellActions {
   application::WeatherActions weather;
   std::function<void(bool)> weather_tick;
   std::function<bool()> route_creating;
+  // The new-route action bar excludes native extension of an existing route.
+  std::function<bool()> new_route_creating;
   std::function<adapters::PilotView(bool, vessel::Time)> pilot_tick;
   std::function<std::vector<adapters::PilotCommand>(bool)> pilot_log;
   std::function<void(bool, adapters::PilotAction, double)> pilot_command;
@@ -156,6 +158,9 @@ public:
   void ShowChartInformation(application::ChartInfo info);
 
 private:
+  bool NewRouteCreationActive() const {
+    return actions_.new_route_creating && actions_.new_route_creating();
+  }
   wxPanel *MakePane(const wxString &name, wxAuiPaneInfo placement);
   XNavButton *Button(wxWindow *parent, const wxString &text,
                      const wxString &name, std::function<void()> callback);
@@ -267,6 +272,7 @@ private:
   XNavHorizon *horizon_ = nullptr;
   XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;
+  wxStaticText *route_hint_ = nullptr;
   XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr,
       *chart_layers_ = nullptr, *chart_follow_ = nullptr, *chart_turn_ = nullptr;
   class XNavNextTurnCard *turn_card_ = nullptr;

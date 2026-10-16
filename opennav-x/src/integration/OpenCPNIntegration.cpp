@@ -825,7 +825,14 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       application::GuardNavigationChanges(std::move(actions.navigation), [] {
         return !commissioning || !commissioning->Replaying();
       });
-  actions.route_creating=[&frame]{return frame.GetPrimaryCanvas()->m_routeState>0;};
+  actions.route_creating=[&frame]{
+    const auto *canvas = frame.GetPrimaryCanvas();
+    return canvas && canvas->m_routeState > 0;
+  };
+  actions.new_route_creating=[&frame]{
+    const auto *canvas = frame.GetPrimaryCanvas();
+    return canvas && canvas->m_routeState > 0 && !canvas->m_bAppendingRoute;
+  };
   pilots = std::make_unique<PilotServices>([] {
     return !integration::QualificationOutputSuppressed() && (integration::PilotLoopbackTestsEnabled() || integration::PilotManualSerialEnabled()) && pilots && !pilots->was_demo && !restart &&
            (!commissioning || commissioning->AllowsHardwareControl());

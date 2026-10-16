@@ -35,6 +35,17 @@ the unresolved northern lighthouse classification.
 
 ## Route completion policy and query DPI — SCRUM-298
 
+The subsequent source-only creation-control follow-up sets XNav's explicit
+Finish/Cancel focus policy in native `ChartCanvas::StartRoute` after the
+single-canvas creation guard. Native-started new routes can then give focus to
+the visible finish controls without prematurely completing. Legacy/Safe and
+the separate existing-route append path retain native behavior. The shell uses
+a read-only readiness query for a registered, editable new draft with at least
+two points; checked naming/persistence is still the only save path. Its creation
+panel temporarily replaces the horizon in the same fixed dock, rather than
+appending controls below it. Native focus, save/cancel and layout validation are
+still unperformed under the user's no-build/no-test instruction.
+
 The 2026-10-16 source-only follow-up adds `PrepareRouteFinish` at the entry to
 native `ChartCanvas::FinishRoute`, before it clears the draft. New XNav routes
 finished through Escape or native menu actions now share the checked naming and
