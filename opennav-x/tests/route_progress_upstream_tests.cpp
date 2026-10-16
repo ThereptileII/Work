@@ -1,5 +1,7 @@
 #include "integration/OpenCPNRouteReader.h"
 #include "integration/RoutePassWatch.h"
+#include "integration/RoutePassageSettings.h"
+#include "application/NavigationObjects.h"
 #include "model/georef.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -9,6 +11,8 @@
 #include <gtest/gtest.h>
 #include <wx/app.h>
 #include <wx/init.h>
+#include <wx/fileconf.h>
+#include <wx/sstream.h>
 #include <memory>
 #include <thread>
 #include <stdexcept>
@@ -42,9 +46,25 @@ using namespace opennav::integration;
 using namespace opennav::vessel;
 using namespace std::chrono_literals;
 namespace {
+// Stream construction never selects the user's local/global profile. Explicit
+// Flush is a fixture boundary, and DisableAutoSave also prevents the base
+// destructor from flushing after virtual dispatch has ended. No disk paths.
+class MemoryPassageProfile final : public wxFileConfig {
+ public:
+  explicit MemoryPassageProfile(wxInputStream& input) : wxFileConfig(input) {
+    DisableAutoSave();
+  }
+  bool Flush(bool = false) override {
+    ++flushes;
+    if (failed_flushes) { --failed_flushes; return false; }
+    return true;
+  }
+  unsigned flushes = 0, failed_flushes = 0;
+};
 class OpenNavRouteGeometry : public ::testing::Test {
  protected:
   std::unique_ptr<wxInitializer> initializer;
+  std::unique_ptr<MemoryPassageProfile> profile;
   WayPointman* previous_waypoints = pWayPointMan;
   RouteList* previous_routes = pRouteList;
   Routeman* previous_manager = g_pRouteMan;
@@ -56,6 +76,9 @@ class OpenNavRouteGeometry : public ::testing::Test {
     wxApp::SetInstance(new wxAppConsole);
     initializer=std::make_unique<wxInitializer>();
     ASSERT_TRUE(initializer->IsOk());
+    wxStringInputStream input("");
+    profile=std::make_unique<MemoryPassageProfile>(input);
+    ConfigureRoutePassage(profile.get());
     waypoints = std::make_unique<WayPointman>([](wxString){return wxColour(0,0,0);});
     WayPointmanGui::InitializeModelFixture(*waypoints);
     pWayPointMan = waypoints.get(); pRouteList = &routes;
@@ -74,6 +97,8 @@ class OpenNavRouteGeometry : public ::testing::Test {
     manager.reset(); route.reset();
     routes.Clear(); waypoints.reset();
     pWayPointMan=previous_waypoints; pRouteList=previous_routes; g_pRouteMan=previous_manager;
+    if (profile) ConfigureRoutePassage(nullptr);
+    profile.reset();
     initializer.reset();
   }
   RouteRead Read(std::size_t index) {
@@ -91,6 +116,104 @@ class OpenNavRouteGeometry : public ::testing::Test {
     return r;
   }
 };
+// Storage/resolution and owned copies only: these cases do not execute the GUI
+// arrival/advance loop or the human-command editability boundary.
+TEST_F(OpenNavRouteGeometry, PassageRadiusIsRouteScopedAndDoesNotChangeSharedPoint) {
+  auto* point=route->GetPoint(2);
+  point->m_WaypointArrivalRadius=.75;
+  const auto id=route->GetGUID().ToStdString(wxConvUTF8);
+  EXPECT_FALSE(ResolveRouteArrivalRadiusNm(*route,*point,.75)); // Exact stock path.
+  application::RoutePassageSettings settings;
+  settings.arrival_radius_m=100;settings.corridor_width_m=120;
+  ASSERT_TRUE(detail::StoreRoutePassage(id,settings).ok);
+  const auto radius=ResolveRouteArrivalRadiusNm(*route,*point,.75);
+  ASSERT_TRUE(radius);EXPECT_DOUBLE_EQ(*radius,100./1852.);
+  EXPECT_DOUBLE_EQ(point->m_WaypointArrivalRadius,.75);
+  // Same model point in another route: metadata follows the route GUID only.
+  Route other;other.m_GUID="another-synthetic-route";
+  other.pRoutePointList->Append(point);
+  EXPECT_FALSE(ResolveRouteArrivalRadiusNm(other,*point,.75));
+  EXPECT_DOUBLE_EQ(point->m_WaypointArrivalRadius,.75);
+  settings.arrival_radius_m.reset();
+  ASSERT_TRUE(detail::StoreRoutePassage(id,settings).ok);
+  EXPECT_FALSE(ResolveRouteArrivalRadiusNm(*route,*point,.75));
+  EXPECT_DOUBLE_EQ(ReadRoutePassage(id).corridor_width_m,120);
+}
+TEST_F(OpenNavRouteGeometry, ExplicitPassageRadiusPreservesEmergencyAndLayerPolicy) {
+  application::RoutePassageSettings settings;settings.arrival_radius_m=1852;
+  ASSERT_TRUE(detail::StoreRoutePassage(route->GetGUID().ToStdString(wxConvUTF8),settings).ok);
+  auto* point=route->GetPoint(2);
+  point->m_WaypointArrivalRadius=.5;
+  EXPECT_EQ(ResolveRouteArrivalRadiusNm(*route,*point,-1.),std::optional<double>{-1.});
+  point->m_WaypointArrivalRadius=-1.;
+  EXPECT_EQ(ResolveRouteArrivalRadiusNm(*route,*point,.5),std::optional<double>{-1.});
+  point->m_WaypointArrivalRadius=.5;
+  route->GetPoint(3)->SetIconName("mob");
+  EXPECT_EQ(ResolveRouteArrivalRadiusNm(*route,*point,.5),std::optional<double>{-1.});
+  route->GetPoint(3)->SetIconName("");
+  route->m_bIsInLayer=true;
+  EXPECT_FALSE(ResolveRouteArrivalRadiusNm(*route,*point,.5));
+  route->m_bIsInLayer=false;point->m_bIsInLayer=true;
+  EXPECT_FALSE(ResolveRouteArrivalRadiusNm(*route,*point,.5));
+  point->m_bIsInLayer=false;
+}
+TEST_F(OpenNavRouteGeometry, PassagePolicyChangeChangesOwnedProgressRevision) {
+  auto before=Read(1);
+  RouteProgressInput input("passage-policy");input.Complete(before,before,Time{100s});
+  const auto retained=input.Current();
+  manager->DeactivateRoute();
+  application::RoutePassageSettings settings;settings.arrival_radius_m=80;
+  ASSERT_TRUE(detail::StoreRoutePassage(route->GetGUID().ToStdString(wxConvUTF8),settings).ok);
+  auto after=Read(1);
+  EXPECT_FALSE(SameRoute(before.route,after.route));
+  input.Complete(before,after,Time{101s});
+  EXPECT_EQ(input.Current()->state,RouteState::RouteChanged);
+  EXPECT_GT(input.Current()->route_revision,retained->route_revision);
+  EXPECT_FALSE(before.route.passage.arrival_radius_m);
+  EXPECT_EQ(after.route.passage.arrival_radius_m,std::optional<double>{80.});
+}
+TEST_F(OpenNavRouteGeometry, CorruptPassageRecordWithholdsAndRetainsDistinctRevision) {
+  route->m_GUID="r";
+  const wxString key="/OpenNav/RoutePassageV1/72"; // UTF-8 byte 0x72 for exact GUID r.
+  ASSERT_TRUE(profile->Write(key,"v1|bad|100"));
+  auto first=Read(1);
+  EXPECT_FALSE(first.route.passage.valid);
+  EXPECT_EQ(ResolveRouteArrivalRadiusNm(*route,*route->GetPoint(2),.5),std::optional<double>{-1.});
+  RouteProgressInput input("corrupt-passage");input.Complete(first,first,Time{100s});
+  EXPECT_EQ(input.Current()->state,RouteState::InvalidRoute);
+  EXPECT_FALSE(input.Current()->remaining_distance_nm);
+  const auto revision=input.Current()->route_revision;
+  ASSERT_TRUE(profile->Write(key,"v1|oops|100"));
+  auto second=Read(1);
+  EXPECT_EQ(first.route.passage.reason,second.route.passage.reason);
+  EXPECT_NE(first.route.passage.storage_revision,second.route.passage.storage_revision);
+  EXPECT_FALSE(SameRoute(first.route,second.route));
+  input.Complete(first,second,Time{101s});
+  EXPECT_EQ(input.Current()->state,RouteState::InvalidRoute);
+  EXPECT_GT(input.Current()->route_revision,revision);
+  EXPECT_EQ(profile->Read(key,""),"v1|oops|100");
+  ASSERT_TRUE(profile->Write(key,wxString('x',97)));
+  const auto oversized=ReadRoutePassage("r");
+  EXPECT_FALSE(oversized.valid);EXPECT_TRUE(oversized.storage_revision.empty());
+}
+TEST_F(OpenNavRouteGeometry, PassageFlushFailureRestoresOrWithholdsInMemory) {
+  const auto id=route->GetGUID().ToStdString(wxConvUTF8);
+  application::RoutePassageSettings settings;settings.arrival_radius_m=80;
+  ASSERT_TRUE(detail::StoreRoutePassage(id,settings).ok);
+  const auto before=ReadRoutePassage(id);
+  settings.arrival_radius_m=120;
+  const auto flushes=profile->flushes;
+  profile->failed_flushes=1;
+  EXPECT_FALSE(detail::StoreRoutePassage(id,settings).ok);
+  EXPECT_EQ(profile->flushes,flushes+2);
+  EXPECT_EQ(ReadRoutePassage(id).storage_revision,before.storage_revision);
+  profile->failed_flushes=2;
+  EXPECT_FALSE(detail::StoreRoutePassage(id,settings).ok);
+  EXPECT_FALSE(ReadRoutePassage(id).valid);
+  EXPECT_EQ(ResolveRouteArrivalRadiusNm(*route,*route->GetPoint(2),.5),std::optional<double>{-1.});
+  EXPECT_FALSE(detail::StoreRoutePassage(id,settings).ok);
+  // The injected Flush results test control flow, not filesystem durability.
+}
 TEST_F(OpenNavRouteGeometry, AntimeridianFirstMiddleFinalMatchUpstream) {
   ASSERT_LT(route->GetPoint(2)->m_seg_len,100); // Crossing 180 is the short leg.
   for(std::size_t index=0;index<3;++index) {
