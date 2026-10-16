@@ -240,8 +240,11 @@ jobs:
           $ErrorActionPreference = 'Stop'
           $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installed-warning-contracts'
           New-Item -ItemType Directory -Path $Evidence -ErrorAction Stop | Out-Null
+          $Tools = Join-Path $Evidence 'tools'
+          New-Item -ItemType Directory -Path $Tools -ErrorAction Stop | Out-Null
           $Files = @(Get-ChildItem -LiteralPath opennav-x/tools/boat -File | Where-Object { $_.Extension -in @('.ps1','.cs','.py','.json') } | Sort-Object Name | ForEach-Object {
-            @{ name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
+            Copy-Item -LiteralPath $_.FullName -Destination (Join-Path $Tools $_.Name) -ErrorAction Stop
+            @{ name=$_.Name; bytes=$_.Length; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
           })
           @{ schema=1; commit=$env:GITHUB_SHA; files=$Files; powershell=$PSVersionTable.PSVersion.ToString(); processBits=[IntPtr]::Size*8 } |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'source-identity.json') -Encoding UTF8
