@@ -1,0 +1,137 @@
+{
+  "schema": 1,
+  "kind": "sanitized-staged-pe-diagnosis",
+  "workItem": "SCRUM-17",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "evidenceTreeBase": "c639a3147cc2ee597d555dbe2e0e094e879c5c7c",
+  "observationUtc": "2026-10-16T10:51:18.3871978Z",
+  "acceptance": false,
+  "originalUpdate": {
+    "result": "failed",
+    "firstMissingImport": "wxbase312u_vc_custom.dll",
+    "module": "plugins/rtlsdr_pi.dll",
+    "evidence": {
+      "privateEvidenceBasename": "installer-failed-original.json",
+      "bytes": 850,
+      "sha256": "cd58d5b19e54dc003868e5338235c59683abea3ded4f0d526a5e4fd96fb2fefa"
+    }
+  },
+  "source": {
+    "repositoryPath": "opennav-x/installer/windows/Lifecycle.ps1",
+    "gitLfSha256": "e84f054ff5bc106318f676e3975d27465e9efffd3140347167ef794e441ad26b",
+    "observedWindowsCrlfSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "resolver": "AssertCandidateTlsRuntime",
+    "originalResolverBodyRecoveredExactlyAfterRemovingDiagnosticInsertions": true,
+    "insertedErrorCollectionAndObservationFragments": 7,
+    "productSourceModified": false
+  },
+  "nativeDiagnostic": {
+    "driver": {
+      "privateEvidenceBasename": "diagnose-staged-pe-854-v3.ps1",
+      "bytes": 9490,
+      "sha256": "6450c45cf2adbeec96bce14bb1fa34f0ff3658aea5fece912a0d0998f53e7b12"
+    },
+    "evidence": {
+      "privateEvidenceBasename": "staged-pe-diagnostic-v3-20261016.json",
+      "bytes": 162913,
+      "sha256": "de069224ed5724b7143a81fdb2cc79bc4a3f1cf05cb102d68630b31064195692"
+    },
+    "hostBits": 32,
+    "hostVersion": "5.1.22621.6133",
+    "scanCompleted": true,
+    "fatal": null,
+    "stagedPeFilesBefore": 103,
+    "stagedPeFilesAfter": 103,
+    "completeStagedPeInventoryEqual": true,
+    "sourceUnchanged": true,
+    "findingsCount": 2,
+    "stageWritesPerformed": false,
+    "applicationLaunched": false,
+    "candidateModuleLoaded": false
+  },
+  "findings": [
+    {
+      "scope": "import",
+      "module": "plugins/rtlsdr_pi.dll",
+      "moduleBytes": 208384,
+      "moduleSha256": "404e69931034140fbda0179964d0a29077a46b78a441c05fc68a4ee0616a64e5",
+      "import": "wxbase312u_vc_custom.dll",
+      "reason": "Missing app-local PE import"
+    },
+    {
+      "scope": "import",
+      "module": "plugins/rtlsdr_pi.dll",
+      "moduleBytes": 208384,
+      "moduleSha256": "404e69931034140fbda0179964d0a29077a46b78a441c05fc68a4ee0616a64e5",
+      "import": "wxmsw312u_core_vc_custom.dll",
+      "reason": "Missing app-local PE import"
+    }
+  ],
+  "preservedDiagnosticFailures": [
+    {
+      "driver": {
+        "privateEvidenceBasename": "diagnose-staged-pe-854.ps1",
+        "bytes": 9286,
+        "sha256": "f7d51e33355bfd45811377af8cb9b3f8fa57d2e670fea5b268c905c7fdedb726"
+      },
+      "stderr": {
+        "privateEvidenceBasename": "staged-pe-diagnostic.stderr",
+        "bytes": 2277,
+        "sha256": "0937a2efc3f3f4738548572e926197b431a045027f373f6ed0c3340fc450fe9a"
+      },
+      "boundary": "Constructed resolver did not parse; resolver not invoked.",
+      "cause": "Windows PowerShell 5.1 Sort-Object at did not numerically order the hashtable insertion offsets."
+    },
+    {
+      "driver": {
+        "privateEvidenceBasename": "inspect-staged-pe-construction-854.ps1",
+        "bytes": 3860,
+        "sha256": "5d391eb82418726bc459dc89699e096930ade63518c783ecd4db4331d8c81c2e"
+      },
+      "stderr": {
+        "privateEvidenceBasename": "staged-pe-parse-observation.stderr",
+        "bytes": 1538,
+        "sha256": "c531b0f448ae4b938ffb8bc52ac545e72f088565363c0423bc9728ec19e15011"
+      },
+      "boundary": "Parse-only companion failed before writing its report; resolver not invoked.",
+      "cause": "Direct array conversion of List[object] failed with Argument types do not match."
+    }
+  ],
+  "helperOnlyCorrections": {
+    "arrayConversion": "Use explicit .ToArray() for generic-list report fields.",
+    "insertionOrder": "Sort-Object {[int]$_.at} -Descending",
+    "failureReporting": "Retain diagnostic reason and ScriptStackTrace.",
+    "nativeParseCompanion": {
+      "privateEvidenceBasename": "inspect-staged-pe-construction-854-v2.ps1",
+      "bytes": 4677,
+      "sha256": "15e4f4dd0bd4e062fa487cffe602656fb56bd0576eb541b721bece407a176f9b"
+    },
+    "nativeParseEvidence": {
+      "privateEvidenceBasename": "staged-pe-parse-observation-v2-20261016.json",
+      "bytes": 13895,
+      "sha256": "ef3cca36a71be5216fe03b7899e9c82c4b857bcd5030536d925e089c2e5ed6d3"
+    },
+    "originalSortParseErrorCount": 3,
+    "numericSortParseErrorCount": 0,
+    "localInverseCheck": {
+      "privateEvidenceBasename": "check-staged-pe-construction-v3.ps1",
+      "bytes": 2249,
+      "sha256": "841384cef2bf2a564c5f84e6a1215736690799eb3e95ff681251420913e18480"
+    },
+    "localConstructionMatchesNativeNumericConstruction": true,
+    "localCheckHostVersion": "7.6.7",
+    "installedGateChanged": false
+  },
+  "recoveryAtObservation": {
+    "holdUpdateRestore": "pending; no recovery outcome established by this receipt",
+    "plannedScope": "Separately qualified cold hold of the exact incompatible stock plugin DLL, unchanged installer Update, then exact stock restoration.",
+    "requiredBoundary": "The real installer must still pass its unmodified gates on a fresh generation; fresh installed identity and passive commissioning remain separate."
+  },
+  "limitations": [
+    "This records metadata closure of the failed stage, not installation or launch acceptance.",
+    "Both original RTL-SDR findings remain present; the diagnostic did not simulate exclusion or a successful recovery.",
+    "No other staged PE blocker was observed by this completed metadata scan; ordinary plugin Init, helper behavior, TLS behavior and chart rendering are not established.",
+    "The diagnostic inspected system metadata through the pinned resolver; candidateModuleLoaded=false is not a claim of zero code execution.",
+    "Private paths, complete file inventories, profile/navigation data and raw native reports remain outside the repository."
+  ]
+}
