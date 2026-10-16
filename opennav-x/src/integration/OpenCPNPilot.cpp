@@ -293,6 +293,8 @@ bool OpenCPNPilot::Send(const std::string &iface, std::uint8_t destination,
       exact = exact || data == adapters::EncodeSt4000Command(candidate);
     }
     exact = exact || data == adapters::EncodeSt4000Command({1, adapters::PilotAction::Auto, 0, now});
+    exact = exact || data == adapters::EncodeSt4000Command({1, adapters::PilotAction::Track, 0, now});
+    exact = exact || data == adapters::EncodeSt4000Command({1, adapters::PilotAction::Wind, 0, now});
     if (!exact) return false;
     const auto valid_heading = [now](const vessel::Sample& sample) {
       return sample.validity == vessel::Validity::Measured && sample.value &&
@@ -301,8 +303,14 @@ bool OpenCPNPilot::Send(const std::string &iface, std::uint8_t destination,
     };
     const auto key = data.back();
     if (key == 0x40 && !valid_heading(feedback.heading_magnetic_deg)) return false;
-    if (key != 0 && key != 0x40 &&
+    const bool alters_course = key == 0x51 || key == 0x7f || key == 0xd1 || key == 0x50;
+    if (alters_course &&
         (feedback.mode != adapters::PilotMode::Auto || !valid_heading(feedback.locked_heading_magnetic_deg))) return false;
+    // The bridge independently requires fresh navigation before native TRACK.
+    if (key == 0x80 && feedback.mode != adapters::PilotMode::Auto &&
+        feedback.mode != adapters::PilotMode::Track) return false;
+    // WIND uses the common fresh physical feedback gate above; the bridge
+    // decides apparent-wind readiness without a SKAGER heading substitute.
   } else if (priority != 6) return false;
   auto destination_address = std::make_shared<NavAddr2000>(iface, destination);
   auto message =

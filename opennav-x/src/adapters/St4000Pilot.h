@@ -43,7 +43,8 @@ struct PilotN2kFrame {
   vessel::Time observed_at{};
 };
 // Pure protocol encoder, validated against the pinned boat firmware parser.
-// Deliberately has no TRACK/WIND command representation in the live contract.
+// TRACK/WIND use fixed bridge mode keys; transport acceptance is not physical
+// mode confirmation or proof of navigation/apparent-wind readiness.
 std::vector<std::uint8_t> EncodeSt4000Command(const PilotRequest &request);
 
 class St4000Pilot final : public IAutopilot {

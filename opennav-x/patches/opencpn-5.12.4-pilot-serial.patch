@@ -415,7 +415,7 @@ index 7687354..9dc00f3 100644
 +    const std::vector<unsigned char> prefix{1, 0x63, 0xff, 0, 0xff, 3, 1, 0x3b, 7, 3, 4, 6};
 +    if (n2k->priority != 3 || !std::equal(prefix.begin(), prefix.end(), n2k->payload.begin())) return false;
 +    const auto key = n2k->payload.back();
-+    if (key != 0 && key != 0x40 && key != 0x51 && key != 0x7f && key != 0xd1 && key != 0x50) return false;
++    if (key != 0 && key != 0x40 && key != 0x80 && key != 0x01 && key != 0x51 && key != 0x7f && key != 0xd1 && key != 0x50) return false;
 +  } else if (n2k->priority != 6) return false;
 +  tN2kMsg encoded;
 +  encoded.SetPGN(n2k->PGN.pgn);
