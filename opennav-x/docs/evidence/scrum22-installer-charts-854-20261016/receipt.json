@@ -1,0 +1,200 @@
+{
+  "schema": 1,
+  "scope": "Exact retained854 installer/charts suffix; no application rebuild",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "helperCommit": "3fe8866fa191a72eb47290368311cbed11463664",
+  "runId": "38882281891",
+  "runAttempt": "1",
+  "jobId": "116911623959",
+  "runConclusion": "success",
+  "jobConclusion": "success",
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38882281891/attempts/1",
+  "originalArtifact": {
+    "artifactId": "12039410527",
+    "artifactName": "staging-retest-evidence-38765418126-attempt1-harness3fe8866fa191a72eb47290368311cbed11463664-run38882281891-attempt1",
+    "artifactBytes": 15078572,
+    "artifactSha256": "24453d32db0c72f1d6c18c9c7e0e27d964faebb626f2aed591d1b719c6c1b824",
+    "crcVerifiedMembers": 1997,
+    "originalJobLogSha256": "a36ac53fa691e5d0566d79391d4580dc0aedc8d9ed66c9a098d4cebf20dae113",
+    "originalArtifactMetadataSha256": "006d729eba662fb36e619db4c811f409858434e6e9f15d3b750616009e4dc9ba"
+  },
+  "reportMembers": {
+    "staging-inputs.json": {
+      "bytes": 3870,
+      "sha256": "6c39f69a9098873a75b2a7da514ccea434b7231b32cf591aea06666991ef1412"
+    },
+    "staging-retest.json": {
+      "bytes": 763,
+      "sha256": "37f291559f8dbdf990fa959add43a9edadcd923cb1721016cd7bf6a29b9305ae"
+    },
+    "installer-staging.json": {
+      "bytes": 12429,
+      "sha256": "95b387d2786646f14b7c11cf04663954cce1a767ecc2e75f46124e1d9f56bbef"
+    },
+    "packaged-updater.json": {
+      "bytes": 6992,
+      "sha256": "13899b875866f69c02c55449074f95b9b977318d9625daa78988bc2ab63dcc15"
+    },
+    "charts-results.json": {
+      "bytes": 62366,
+      "sha256": "3983e0b8388d28f230ebd3d55d5214382fd631f3e800164d2bc77b2d22066b2c"
+    }
+  },
+  "sourceBindings": {
+    "smoke-installer-windows.py": "6820153d2230170662bb6395fd915fecb80cd3447e1f3f4356918110f86ba85d",
+    "test-packaged-updater-windows.py": "f0db04881276ba39d7521e9bcb16ba1d11903f16cbe2529894a48db403f7d7db"
+  },
+  "originalProducer": {
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "windowsProducerJobId": "116536443214",
+    "windowsProducerConclusion": "success",
+    "qualificationJobId": "116562831922",
+    "qualificationConclusion": "failure",
+    "runConclusion": "failure",
+    "qualificationArtifactId": "11994723756",
+    "qualificationArtifactSha256": "9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
+    "qualifierLogSha256": "8a65919799ef26adb9d6a256cd1f711822a335eeb1d091cab4daedcaddaae896",
+    "failurePreserved": "Bootstrap launcher completion timed out; original failed reports remain unchanged."
+  },
+  "originalPackageIdentities": {
+    "SKAGER-Beta2-Setup.exe": {
+      "member": "build/beta-installer/SKAGER-Beta2-Setup.exe",
+      "bytes": 187484268,
+      "sha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d"
+    },
+    "SKAGER-Beta2-Portable-Recovery.zip": {
+      "member": "build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip",
+      "bytes": 193913665,
+      "sha256": "3b53efc875b99e4f10a8c0ded5ca7f08d8572e11b4bfe0c6daa9929891704947"
+    },
+    "SKAGER-Beta2-source.zip": {
+      "member": "build/developer-preview/SKAGER-Beta2-source.zip",
+      "bytes": 453609938,
+      "sha256": "cc5042b371f8f664222cec9c0aa1af7b36c98d57d2b45d54a50e2685b0a67142"
+    }
+  },
+  "finalAppSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+  "installerChecks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Registry discovery handles the official build-suffixed key and verifies its exact hash without modification",
+    "Conventional wizard opens without command-line options; default Install and path input work; Cancel changes no installation",
+    "A foreign SKAGER Start-menu group is refused before root creation; its same-name shortcut and stock remain unchanged",
+    "Unknown installation ownership refused without adding logs or changing files",
+    "Unknown executable hash refused; rejected tree and existing profile unchanged; install root and all shortcut groups absent",
+    "Fresh install refuses each unmanaged stock plugin legacy TLS DLL and preserves stock/profile without publication",
+    "Actual Beta 2 wizard detection, recovery, shortcuts, ready, validation and Finish pass without command-line options",
+    "Exact candidate clean install and first-install rollback preserve stock/profile; real coastline and candidate hash verified"
+  ],
+  "finishChoice": {
+    "label": "Open SKAGER",
+    "checked_before": true,
+    "checked_after": false
+  },
+  "packagedUpdaterChecks": [
+    "Actual installed launcher bootstraps real application and exact authenticated health receipt",
+    "Exact Setup supervised update publishes pending candidate; real startup authenticates and finalizes one attempt",
+    "Fault-injected candidate is refused before launch; actual guarded rollback restores verified previous without profile changes",
+    "Restored actual generation launches and closes cleanly with retained authenticated receipt"
+  ],
+  "updaterStages": [
+    {
+      "phase": "bootstrap",
+      "status": "passed",
+      "lastStage": "complete",
+      "seconds": 73.281
+    },
+    {
+      "phase": "bootstrap-receipt",
+      "seconds": 19.437
+    },
+    {
+      "phase": "bootstrap-receipt-proof"
+    },
+    {
+      "phase": "healthy-setup",
+      "seconds": 104.797
+    },
+    {
+      "phase": "healthy-pending"
+    },
+    {
+      "phase": "healthy-startup",
+      "status": "passed",
+      "lastStage": "complete",
+      "seconds": 79.39
+    },
+    {
+      "phase": "healthy-startup-receipt",
+      "seconds": 13.359
+    },
+    {
+      "phase": "healthy-startup-receipt-proof"
+    },
+    {
+      "phase": "healthy-archive"
+    },
+    {
+      "phase": "broken-setup",
+      "seconds": 104.829
+    },
+    {
+      "phase": "broken-pending"
+    },
+    {
+      "phase": "broken-candidate-recovery",
+      "seconds": 77.187
+    },
+    {
+      "phase": "restored-archive"
+    },
+    {
+      "phase": "restored-startup",
+      "status": "passed",
+      "lastStage": "complete",
+      "seconds": 6.218
+    },
+    {
+      "phase": "restored-receipt",
+      "seconds": 13.157
+    },
+    {
+      "phase": "restored-receipt-proof"
+    }
+  ],
+  "faultInjection": {
+    "kind": "disposable installed candidate invalid PE header",
+    "expectedSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+    "corruptSha256": "457d6a46e85fd9a8c028fce2c8aaae39255948ed1c817ae31fcd59020c990073",
+    "path": "app/opencpn.exe",
+    "restored": true,
+    "recovery": "LaunchPending rejected candidate integrity before process creation; actual guarded Lifecycle restored known-good previous"
+  },
+  "charts": {
+    "result": "passed; native screenshot review and physical GPU gate remain separate",
+    "scope": "Disposable rendering fixture; not redistributed as a navigation product",
+    "requestedPhases": [
+      "software",
+      "opengl"
+    ],
+    "openGlObservation": "host rejected OpenGL; verified upstream software fallback; hardware GL gate remains open",
+    "fixtureBoundary": "Disposable developer rendering fixture; not final fixture-free application evidence."
+  },
+  "privateCustodyReviewSha256": "9d864fa5eb7a37ddbbd6c259dfaa89537550ab7700457c7270dd722e802e03e7",
+  "compositionPinHandoffSha256": "8463b6db966eefb20067ae44917ff87920a1c9e47b2c12439552cbf4b712e886",
+  "original21ReportPinsSha256": "aa120d4b8bc7347823a76a35ce8031bfe959bce8e0e71883d9a23b999df4d2c3",
+  "limits": {
+    "sameVersionSupervisedMechanicsOnly": true,
+    "originalSelectedLegacyTrustIdentityRetained": true,
+    "nativeProtectedUpdaterAcceptance": false,
+    "protectedUpdaterGate": "pending-real-B0-B1",
+    "signedOfferAcceptance": false,
+    "hardwareGpuAcceptance": false,
+    "overallReleaseQualification": false,
+    "boatAcceptance": false,
+    "publicAccess": false,
+    "productRebuilt": false,
+    "workerRetry": false,
+    "originalDownloadsRepeated": false
+  }
+}
