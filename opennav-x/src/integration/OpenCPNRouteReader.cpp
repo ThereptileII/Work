@@ -1,4 +1,5 @@
 #include "integration/OpenCPNRouteReader.h"
+#include "integration/RoutePassageSettings.h"
 #include "model/route.h"
 #include "model/route_point.h"
 #include "model/routeman.h"
@@ -22,6 +23,7 @@ RouteCopy CopyActiveRoute(Routeman* manager) {
   r.registered = pRouteList && manager->IsRouteValid(route);
   if (!r.registered) return r;
   r.id = route->GetGUID().ToStdString(wxConvUTF8);
+  r.passage = ReadRoutePassage(r.id);
   r.name = route->m_RouteNameString.ToStdString(wxConvUTF8);
   r.editing = route->m_bIsBeingEdited || route->m_bIsBeingCreated;
   auto* active = manager->GetpActivePoint();

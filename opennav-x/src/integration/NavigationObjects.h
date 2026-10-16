@@ -1,5 +1,6 @@
 #pragma once
 #include "application/NavigationObjects.h"
+#include "application/RoutePassage.h"
 #include "vessel/RouteProgress.h"
 
 class MyFrame;
@@ -34,6 +35,9 @@ application::CommandResult DeleteRoute(const application::Route &selected);
 application::CommandResult EditRoute(const application::Route &selected,
                                      const std::string &name,
                                      const std::string &description);
+application::CommandResult EditRoutePassage(
+    const application::Route &selected,
+    const application::RoutePassageSettings &settings);
 application::CommandResult EditWaypoint(const application::Waypoint &selected,
                                         const std::string &name,
                                         const std::string &description);

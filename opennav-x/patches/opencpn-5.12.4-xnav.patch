@@ -675,17 +675,19 @@ diff --git a/gui/src/routeman_gui.cpp b/gui/src/routeman_gui.cpp
 index 557627227..8a7a170e8 100644
 --- a/gui/src/routeman_gui.cpp
 +++ b/gui/src/routeman_gui.cpp
-@@ -50,6 +50,9 @@
+@@ -50,6 +50,11 @@
  #include "ocpn_frame.h"
  #include "routemanagerdialog.h"
  #include "routeman_gui.h"
 +#ifdef OPENNAV_X
++#include <cmath>
 +#include "integration/OpenCPNIntegration.h"
++#include "integration/RoutePassageSettings.h"
 +#endif
  #include "TrackPropDlg.h"
  #include "vector2D.h"
  #include "model/navobj_db.h"
-@@ -81,6 +84,11 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
+@@ -81,6 +86,11 @@ RoutemanDlgCtx RoutemanGui::GetDlgCtx() {
    ctx.confirm_delete_ais_mob = []() { return ConfirmDeleteAisMob(); };
    ctx.get_global_colour = [](wxString c) { return GetGlobalColor(c); };
    ctx.show_with_fresh_fonts = [] {
@@ -697,6 +699,51 @@ index 557627227..8a7a170e8 100644
      if (console) console->ShowWithFreshFonts();
    };
    ctx.clear_console_background = []() {
+@@ -217,24 +227,39 @@ bool RoutemanGui::UpdateProgress() {
+           m_routeman.CurrentRngToActivePoint;
+     }
+ 
++    double arrival_radius = m_routeman.pActivePoint->GetWaypointArrivalRadius();
++    double arrival_distance = m_routeman.CurrentRangeToActiveNormalCrossing;
++    bool allow_passed_waypoint = true;
++#ifdef OPENNAV_X
++    // Explicit per-route opt-in: radial proximity from the normal native pass,
++    // with no moving-away fallback. Unconfigured routes keep stock semantics.
++    if (auto radius = opennav::integration::ResolveRouteArrivalRadiusNm(
++            *m_routeman.pActiveRoute, *m_routeman.pActivePoint, arrival_radius)) {
++      arrival_radius = *radius;
++      arrival_distance = m_routeman.CurrentRngToActivePoint;
++      allow_passed_waypoint = false;
++      if (!bGPSValid || !std::isfinite(arrival_distance) || arrival_distance < 0)
++        arrival_radius = -1;
++    }
++#endif
++
+     // Special signal:  if ArrivalRadius < 0, NEVER arrive...
+     //  Used for MOB auto-created routes.
+-    if (m_routeman.pActivePoint->GetWaypointArrivalRadius() > 0) {
+-      if (m_routeman.CurrentRangeToActiveNormalCrossing <=
+-          m_routeman.pActivePoint->GetWaypointArrivalRadius()) {
++    if (arrival_radius > 0) {
++      if (arrival_distance <= arrival_radius) {
+         m_routeman.m_bArrival = true;
+         m_routeman.UpdateAutopilot();
+ 
+         bDidArrival = true;
+         DoAdvance();
+ 
+-      } else {
++      } else if (allow_passed_waypoint) {
+         //      Test to see if we are moving away from the arrival point, and
+         //      have been moving away for 2 seconds.
+         //      If so, we should declare "Arrival"
+         if ((m_routeman.CurrentRangeToActiveNormalCrossing -
+              m_routeman.m_arrival_min) >
+-            m_routeman.pActivePoint->GetWaypointArrivalRadius()) {
++            arrival_radius) {
+           if (++m_routeman.m_arrival_test > 2 &&
+               !g_bAdvanceRouteWaypointOnArrivalOnly) {
+             m_routeman.m_bArrival = true;
 diff --git a/gui/src/toolbar.cpp b/gui/src/toolbar.cpp
 index e71022302..0cdc305e1 100644
 --- a/gui/src/toolbar.cpp

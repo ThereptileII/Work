@@ -1,6 +1,7 @@
 #pragma once
 
 #include "vessel/RouteProgress.h"
+#include "application/RoutePassage.h"
 #include <vector>
 
 namespace opennav::integration {
@@ -19,6 +20,7 @@ struct RouteCopy {
   std::optional<std::size_t> active_index;
   std::vector<RoutePointCopy> points;
   std::string name{};
+  application::RoutePassageSettings passage;
 };
 struct RouteRead {
   bool interrupted = false;
@@ -38,7 +40,7 @@ struct RouteRead {
   std::optional<RoutePointCopy> segment_begin;
 };
 
-bool SameRoute(const RouteCopy& a, const RouteCopy& b);  // geometry, order, IDs
+bool SameRoute(const RouteCopy& a, const RouteCopy& b);  // geometry, order, IDs, policy
 bool SameActivePoint(const RouteCopy& a, const RouteCopy& b);
 
 // GUI-thread writer. A pass supplies copies bracketing normal upstream progress;

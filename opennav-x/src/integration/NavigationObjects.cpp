@@ -3,6 +3,7 @@
 #include "application/NavigationNaming.h"
 #include "integration/AnchorGeometry.h"
 #include "integration/AisObservationTime.h"
+#include "integration/RoutePassageSettings.h"
 #include "MarkInfo.h"
 #include "RoutePropDlgImpl.h"
 #include "chcanv.h"
@@ -104,6 +105,7 @@ application::Waypoint Copy(RoutePoint *point) {
 application::Route Copy(::Route *route) {
   application::Route r;
   r.id = String(route->GetGUID());
+  r.passage = ReadRoutePassage(r.id);
   r.name = String(route->m_RouteNameString);
   r.description = String(route->m_RouteDescription);
   r.active = route->IsActive();
@@ -117,6 +119,13 @@ application::Route Copy(::Route *route) {
   revision.imbue(std::locale::classic());
   revision << std::quoted(r.id) << std::quoted(r.name)
            << std::quoted(r.description) << r.active << r.visible << r.editable;
+  // Profile policy is part of the selected route's immutable revision, even
+  // when invalid: a stale editor must not overwrite a newer saved setting.
+  revision << r.passage.valid << std::quoted(r.passage.reason)
+           << std::quoted(r.passage.storage_revision)
+           << r.passage.arrival_radius_m.has_value() << std::setprecision(17);
+  if (r.passage.arrival_radius_m) revision << *r.passage.arrival_radius_m;
+  revision << ',' << r.passage.corridor_width_m << ';';
   std::set<std::string> ids;
   for (auto *node = route->pRoutePointList->GetFirst(); node;
        node = node->GetNext()) {
@@ -746,6 +755,27 @@ application::CommandResult EditRoute(const application::Route &selected,
     return {false, "Route save failed", {}};
   }
   return {true, "Route saved", selected.id};
+}
+application::CommandResult EditRoutePassage(
+    const application::Route &selected,
+    const application::RoutePassageSettings &settings) {
+  Thread();
+  auto *route = Resolve(selected);
+  if (!route || !Copy(route).editable || route == pAISMOBRoute ||
+      (g_pRouteMan && g_pRouteMan->GetpActiveRoute() == route))
+    return {false, "Stop navigation and refresh the editable route before changing passage settings", {}};
+  if (Copy(route).passage.storage_revision.empty())
+    return {false, "Passage settings cannot be safely read; repair profile storage before editing", {}};
+  for (auto *node = route->pRoutePointList->GetFirst(); node; node = node->GetNext()) {
+    auto *point = node->GetData();
+    if (!point || point->GetIconName() == "mob" || point->m_WaypointArrivalRadius < 0)
+      return {false, "Emergency route passage settings are protected", {}};
+  }
+  // No route/waypoint database write: shared waypoint arrival properties stay
+  // intact. Only this exact, inactive route GUID receives profile metadata.
+  auto result = detail::StoreRoutePassage(selected.id, settings);
+  if (result.ok && gFrame) gFrame->RefreshAllCanvas();
+  return result;
 }
 application::CommandResult EditWaypoint(const application::Waypoint &selected,
                                         const std::string &name,

@@ -33,6 +33,7 @@ RouteState CheckPosition(const RouteRead& r, Time now) {
 RouteState CheckRoute(const RouteCopy& r) {
   if (!r.active) return RouteState::NoActiveRoute;
   if (!r.registered || r.id.empty() || r.points.empty()) return RouteState::InvalidRoute;
+  if (!application::ValidateRoutePassage(r.passage).empty()) return RouteState::InvalidRoute;
   if (r.editing) return RouteState::RouteEditing;
   if (!r.active_point_consistent || !r.active_index || *r.active_index >= r.points.size() ||
       r.active_point_id.empty() || r.points[*r.active_index].id != r.active_point_id)
@@ -53,7 +54,11 @@ RouteState CheckRoute(const RouteCopy& r) {
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b) {
   if (a.active != b.active || a.registered != b.registered || a.editing != b.editing || a.id != b.id ||
-      a.points.size() != b.points.size() || a.name != b.name) return false;
+      a.points.size() != b.points.size() || a.name != b.name ||
+      a.passage.valid != b.passage.valid || a.passage.reason != b.passage.reason ||
+      a.passage.storage_revision != b.passage.storage_revision ||
+      !SameCourse(a.passage.arrival_radius_m, b.passage.arrival_radius_m) ||
+      !SameNumber(a.passage.corridor_width_m, b.passage.corridor_width_m)) return false;
   for (std::size_t i = 0; i < a.points.size(); ++i) {
     const auto& x = a.points[i]; const auto& y = b.points[i];
     if (x.id != y.id || !SameNumber(x.latitude_deg, y.latitude_deg) ||
