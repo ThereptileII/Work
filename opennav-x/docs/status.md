@@ -1,13 +1,13 @@
 # SKAGER status — 2026-10-16
 
-## Replacement candidate — native Staging passed; boat acceptance pending
+## Replacement candidate — native Staging passed; installed, boat startup pending
 
 The user made the desktop available on 16 October. The same installed `854078a5`
 process then provided fresh real chart content, initialized o-charts, native Intel
 OpenGL, measured vessel data and connected Online AIS. No second launch or
 physical command was sent. However, all four rebuilt builtin plugins were
 refused: the dependency guard counted missing lookup candidates against its
-256-node limit. **The installed candidate is not accepted.**
+256-node limit. **That previous candidate was not accepted.**
 
 The exact three-root graph needs 270 probes for 62 found dependencies. Correction
 `896ad520` separates 1,024 bounded lookups from 256 admitted dependency PEs and
@@ -54,8 +54,25 @@ draft release `415154258`, tag
 `skager-staging-0.4.0-beta2.5-run38911440527-attempt2-9feae59ce0ef`.
 Setup is 187,490,120 bytes, SHA-256
 `662821c1e3ceb87a915129c03b684bb33dd6486e8fdbee464c31766b1840dfb9`.
-**Replacement boat installation and ordinary builtin-plugin startup remain
-pending.** Native CI success does not establish that installed result,
+**Replacement boat installation passed; ordinary builtin-plugin startup remains
+pending.** The authorized update installed `9feae59c` / `0.4.0-beta2.5` in
+generation `cd6a841a0a574c9f872457e09e82c51f`. The 16:39:33 UTC cold observation
+verified the executable, adapter, three networking libraries and four builtin
+DLLs against authenticated recovery bytes. Stock OpenCPN and the original INI
+hashes were unchanged, and previous generations remained available.
+
+The boat unexpectedly rebooted at 16:40:25 UTC before any new application launch.
+The exact stock RTL-SDR DLL had already been moved back, but the final restoration
+receipt was interrupted. Reconnected inspection verifies its original bytes and
+the durable restoration intent. Continuation safely refuses until the user logs
+into the Windows desktop again. Kernel-Power 41 / EventLog 6008 establish an
+unexpected shutdown, not its cause; no deployment command requested a reboot.
+Finish that existing journal, bind fresh read-only commissioning to the installed
+generation, then perform the bounded ordinary startup check. Do not reinstall or
+rebuild merely to resume it.
+[Installation and interrupted recovery evidence](evidence/scrum17-9fe-install-20261016/README.md).
+
+Native CI and cold file identities do not establish ordinary boat startup,
 protected-host B0/B1 or physical GPU acceptance. Public access remains closed;
 this is a private draft Staging delivery, not Production promotion.
 The original timeout and earlier failed candidate evidence remain preserved.
