@@ -39,7 +39,7 @@ try {
   $inert=Join-Path $root 'inert.bin';[IO.File]::WriteAllBytes($inert,(New-Object byte[] 208384))
   Refuses { Assert-RtlsdrBytes $inert } '*Only the exact reviewed*' 'Production pin rejects inert same-size DLL'
   $emptyProcess=[pscustomobject]@{Name='unrelated.exe';ExecutablePath='';ProcessId=0;CommandLine=''}
-  $task=[pscustomobject]@{TaskName='unrelated';Actions=@([pscustomobject]@{Execute='unrelated.exe';Arguments=''})}
+  $task=[pscustomobject]@{TaskName='unrelated';Actions=@([pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskExecAction'};Id='';Execute='unrelated.exe';Arguments='';WorkingDirectory=''})}
   Assert-RtlsdrActors @($emptyProcess) @($task) @('C:\protected')
   $checks.Add('Unrelated inert process and task observations are permitted')
   foreach ($name in @('opencpn.exe','rtl_ais.exe','skager-start.exe')) {
@@ -47,9 +47,31 @@ try {
     Refuses { Assert-RtlsdrActors @($process) @() @('C:\protected') } '*Close *' ('Live '+$name+' blocks cold hold')
   }
   Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='SKAGER-resume';Actions=@()}) @('C:\protected') } '*scheduled tasks*' 'Application scheduled task refuses even without actions'
-  Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='other';Actions=@([pscustomobject]@{Execute='powershell.exe';Arguments='C:\protected\run.ps1'})}) @('C:\protected') } '*Scheduled action*' 'Indirect scheduled protected-tree action refuses'
+  Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='other';Actions=@([pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskExecAction'};Id='';Execute='powershell.exe';Arguments='C:\protected\run.ps1';WorkingDirectory=''})}) @('C:\protected') } '*Scheduled action*' 'Indirect scheduled protected-tree action refuses'
   Refuses { Assert-RtlsdrActors @([pscustomobject]@{Name='powershell.exe';ExecutablePath='';ProcessId=0;CommandLine='powershell -File UpdateSupervisor.ps1'}) @() @('C:\protected') } '*Concurrent maintenance*' 'Concurrent supervisor command refuses'
+  $com=[pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskComHandlerAction'};Id='';ClassId='{11111111-2222-3333-4444-555555555555}';Data=$null}
+  Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='unrelated-com';Actions=@($com)}) @('C:\protected')
+  $checks.Add('Known COM action with valid braced identity and null data needs no Execute property')
+  Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='OpenNavX-com';Actions=@($com)}) @('C:\protected') } '*scheduled tasks*' 'Known-name barrier also refuses COM actions'
+  $com.ClassId='11111111-2222-3333-4444-555555555555';$com.Data='C:\protected\data'
+  Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='unrelated-com';Actions=@($com)}) @('C:\protected') } '*Scheduled action*' 'COM data with explicit protected path refuses'
+  $com.Data='';$com.ClassId='invalid'
+  Refuses { Get-RtlsdrTaskCommand $com } '*Malformed scheduled COM*' 'Malformed COM identity refuses'
+  Refuses { Get-RtlsdrTaskCommand ([pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskFutureAction'};Id=''}) } '*Unknown scheduled action class*' 'Unknown native action class refuses'
+  Refuses { Get-RtlsdrTaskCommand ([pscustomobject]@{Execute='unrelated.exe';Arguments=''}) } '*Unknown scheduled action class*' 'Unclassified action cannot silently become Exec'
+  Refuses { Get-RtlsdrTaskCommand ([pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskExecAction'};Id='';Arguments='';WorkingDirectory=''}) } '*Malformed scheduled action shape*' 'Known Exec missing Execute refuses'
+  Refuses { Get-RtlsdrTaskCommand ([pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskComHandlerAction'};Id='';ClassId='11111111-2222-3333-4444-555555555555'}) } '*Malformed scheduled action shape*' 'Known COM missing Data property refuses'
+  $working=[pscustomobject]@{CimClass=[pscustomobject]@{CimClassName='MSFT_TaskExecAction'};Id='';Execute='unrelated.exe';Arguments='';WorkingDirectory='C:\protected'}
+  Refuses { Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='unrelated';Actions=@($working)}) @('C:\protected') } '*Scheduled action*' 'Exec working directory is checked for protected roots'
   if ($native) {
+    # Construct native CIM actions only; never register or run a scheduled task.
+    $nativeExec=New-ScheduledTaskAction -Execute 'unrelated.exe'
+    Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='unrelated';Actions=@($nativeExec)}) @('C:\protected')
+    $checks.Add('Actual native MSFT_TaskExecAction object is recognized')
+    $comClass=Get-CimClass -Namespace 'Root/Microsoft/Windows/TaskScheduler' -ClassName MSFT_TaskComHandlerAction
+    $nativeCom=New-CimInstance -CimClass $comClass -ClientOnly -Property @{Id='';ClassId='{11111111-2222-3333-4444-555555555555}';Data=''}
+    Assert-RtlsdrActors @($emptyProcess) @([pscustomobject]@{TaskName='unrelated';Actions=@($nativeCom)}) @('C:\protected')
+    $checks.Add('Actual client-only native MSFT_TaskComHandlerAction object is recognized')
     # Fixture-only derivation changes exactly one immutable DLL hash. All file,
     # journal, path, ACL, lock, guard and move code remains the actual helper.
     $pin='404e69931034140fbda0179964d0a29077a46b78a441c05fc68a4ee0616a64e5'

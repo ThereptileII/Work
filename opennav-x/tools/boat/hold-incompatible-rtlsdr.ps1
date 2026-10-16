@@ -38,6 +38,30 @@ function Assert-RtlsdrColdRecords($Context,$Installed) {
   $values=Read-ProfileForAudit (Join-Path $Context.profile 'opencpn.ini')
   if ($values['Directories/pluginInstallDir']) { throw 'Custom plugin import roots are outside this hold.' }
 }
+function Get-RtlsdrTaskCommand($Action) {
+  # Task Scheduler exposes different native CIM action subclasses. A COM
+  # handler has no Execute property; missing/unknown shapes are not Exec actions.
+  try { $class=$Action.CimClass.CimClassName } catch { throw 'Unknown scheduled action class.' }
+  if ($class -ceq 'MSFT_TaskExecAction') { $fields=@('Id','Execute','Arguments','WorkingDirectory');$forbidden=@('ClassId','Data') }
+  elseif ($class -ceq 'MSFT_TaskComHandlerAction') { $fields=@('Id','ClassId','Data');$forbidden=@('Execute','Arguments','WorkingDirectory') }
+  else { throw 'Unknown scheduled action class.' }
+  foreach ($field in $forbidden) {
+    if ($null -ne $Action.PSObject.Properties[$field]) { throw 'Malformed scheduled action shape.' }
+  }
+  foreach ($field in $fields) {
+    $property=$Action.PSObject.Properties[$field]
+    if ($null -eq $property -or ($null -ne $property.Value -and $property.Value -isnot [string])) { throw 'Malformed scheduled action shape.' }
+  }
+  if ($class -ceq 'MSFT_TaskExecAction') {
+    if ([string]::IsNullOrWhiteSpace($Action.Execute)) { throw 'Malformed scheduled Exec action.' }
+    return ([string]$Action.Execute+' '+[string]$Action.Arguments+' '+[string]$Action.WorkingDirectory)
+  }
+  $classId=[guid]::Empty
+  if (-not [guid]::TryParse([string]$Action.ClassId,[ref]$classId) -or $classId -eq [guid]::Empty) { throw 'Malformed scheduled COM handler identity.' }
+  # SKAGER registers Exec actions only. Known COM action data can be empty;
+  # inspect any explicit path text, without loading COM or inspecting its registry.
+  return [string]$Action.Data
+}
 function Assert-RtlsdrActors($Processes,$Tasks,[string[]]$Roots) {
   Assert-PreparationProcesses $Processes $Roots
   foreach ($process in @($Processes)) {
@@ -50,7 +74,7 @@ function Assert-RtlsdrActors($Processes,$Tasks,[string[]]$Roots) {
   foreach ($task in @($Tasks)) {
     if ($task.TaskName -match '^(?i:OpenNavX|SKAGER)') { throw 'Remove or resolve application scheduled tasks before this cold hold.' }
     foreach ($action in @($task.Actions)) {
-      $command=[string]$action.Execute+' '+[string]$action.Arguments
+      $command=Get-RtlsdrTaskCommand $action
       if ($command -match '(?i)(opencpn|skager-start|rtl_ais|rtl_fm|aisdecoder|ais-?catcher|oeserver\w*|oexserver\w*)\.exe') { throw 'Scheduled application/helper launch is incompatible with a cold hold.' }
       foreach ($root in $Roots) {
         if ($command.IndexOf($root,[StringComparison]::OrdinalIgnoreCase) -ge 0) { throw 'Scheduled action can access a protected application/profile tree.' }
