@@ -1,0 +1,252 @@
+{
+  "schema": 1,
+  "evidenceDate": "2026-10-16",
+  "baseEvidenceCommit": "0e1898ab53470adc02e12ccdb12ac990f60afdcb",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "originalQualification": {
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "jobId": "116562831922",
+    "conclusion": "failure",
+    "artifact": {
+      "artifactId": "11994723756",
+      "name": "windows-qualification-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-attempt1",
+      "source": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "runId": "38765418126",
+      "runAttempt": "1",
+      "bytes": 25206117,
+      "sha256": "9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
+      "crcVerifiedMembers": 5532,
+      "producerRunStatusAtDownload": "completed",
+      "producerRunConclusionAtDownload": "failure",
+      "custodyOnly": true,
+      "nativeAcceptance": false,
+      "productAcceptance": false
+    },
+    "jobLogSha256": "8a65919799ef26adb9d6a256cd1f711822a335eeb1d091cab4daedcaddaae896",
+    "bootstrapPhase": "launcher-completion",
+    "bootstrapTimeoutSeconds": 240,
+    "bootstrapReportSha256": "ae7e45a6296c7a98c2553e7ef2e3f1ba8205754a31b43fa95ca4ebdf7ec136b4",
+    "startupLogMember": "packaged-updater-bootstrap-startup.log",
+    "startupLogBytes": 29983,
+    "startupLogSha256": "2b3e85c0a294b7c27deedf0a7a20d37f932bfdc50ff45395be81f7f5e20bc65e",
+    "installerReportSha256": "f83420d29443a52aa6d9733d6bb47283bb54f793e6e4903b7ceee3a14924dfba",
+    "applicationLogClockEvents": [
+      {
+        "time": "17:35:07.004",
+        "event": "SKAGER startup xnav"
+      },
+      {
+        "time": "17:35:15.812",
+        "event": "clean close and startup recovery cleared"
+      },
+      {
+        "time": "17:35:32.105",
+        "event": "SKAGER startup xnav"
+      },
+      {
+        "time": "17:36:08.733",
+        "event": "startup healthy after 30 seconds of normal application processing"
+      }
+    ],
+    "wizardFinishCompletedLogUtc": "2026-10-15T17:35:05.8631606Z",
+    "visibleWindowSnapshot": {
+      "applicationPid": 2632,
+      "applicationTitle": "SKAGER / OpenCPN",
+      "startupDialogPid": 7204,
+      "startupDialogTitle": "SKAGER startup"
+    },
+    "launchToPidOrHealthyCheckpointAttributionEstablished": false
+  },
+  "screenshotsReviewed": [
+    {
+      "runId": "38765418126",
+      "runAttempt": "1",
+      "artifactId": "11994723756",
+      "member": "installer-wizard-installed.png",
+      "bytes": 13067,
+      "sha256": "c669430da4f30e4971c00336dbdf28f981befa397a41eb462e6492c82f3d2c98",
+      "observation": "Open SKAGER checkbox visibly checked; Finish enabled",
+      "capturePosition": "After attempted old-caption uncheck and immediately before Finish invocation",
+      "controlApiCheckedStateRecorded": false
+    },
+    {
+      "runId": "38880343949",
+      "runAttempt": "1",
+      "artifactId": "12037059198",
+      "member": "installer-wizard-installed.png",
+      "bytes": 12641,
+      "sha256": "d390c5e00e9eeffda3f3d9f912ec9290125dca8e0fca482ba5637819fc0ef45c",
+      "observation": "Open SKAGER checkbox visibly checked; Finish enabled",
+      "capturePosition": "After attempted old-caption uncheck and immediately before Finish invocation",
+      "controlApiCheckedStateRecorded": false
+    }
+  ],
+  "sourceBindings": {
+    "schema": 1,
+    "wizardFunctionIdenticalAcrossAllThree": true,
+    "helperSources": [
+      {
+        "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+        "path": "opennav-x/tools/smoke-installer-windows.py",
+        "gitBlob": "a8c6b789417e496612ed8d283742e27664e5dfa1",
+        "rawGitSha256": "0fae7d5c33c181c640821082c412f9441e6a6868f210b2f3387a0d6f623af86f",
+        "windowsCheckoutSha256": "15653bc83b4b50b49ea3cf1ec60693da92499195025072457b0ca25c4c91079c",
+        "wizardFunctionSha256": "4437185f624acc5ab49bb1c3e76a70d945bc0c1d024472070925f4b03d7b30c8",
+        "wizardFunctionStartLine": 489,
+        "wizardFunctionEndLine": 546,
+        "nativeInstallerReportSourceHashMatches": true
+      },
+      {
+        "commit": "2ff32b3439365b86a67b66a54c7baf95cd4cdb21",
+        "path": "opennav-x/tools/smoke-installer-windows.py",
+        "gitBlob": "e533c58cd5ca001faa05619a8c5162cfd9cd82f1",
+        "rawGitSha256": "faf7bbc54d204a46b26db207c08e2c7135c810fa4dd31bba5773b63d6bf8e9af",
+        "windowsCheckoutSha256": "a2748da6b4167d26b1964fc9efa44c8081bb89b5f1f2e1c0b83050ce3ee35fac",
+        "wizardFunctionSha256": "4437185f624acc5ab49bb1c3e76a70d945bc0c1d024472070925f4b03d7b30c8",
+        "wizardFunctionStartLine": 493,
+        "wizardFunctionEndLine": 550,
+        "nativeInstallerReportSourceHashMatches": true
+      },
+      {
+        "commit": "293eae1213e44adc6eed5728ee6f62a438760b94",
+        "path": "opennav-x/tools/smoke-installer-windows.py",
+        "gitBlob": "e533c58cd5ca001faa05619a8c5162cfd9cd82f1",
+        "rawGitSha256": "faf7bbc54d204a46b26db207c08e2c7135c810fa4dd31bba5773b63d6bf8e9af",
+        "windowsCheckoutSha256": "a2748da6b4167d26b1964fc9efa44c8081bb89b5f1f2e1c0b83050ce3ee35fac",
+        "wizardFunctionSha256": "4437185f624acc5ab49bb1c3e76a70d945bc0c1d024472070925f4b03d7b30c8",
+        "wizardFunctionStartLine": 493,
+        "wizardFunctionEndLine": 550,
+        "nativeInstallerReportSourceHashMatches": true
+      }
+    ],
+    "frozenSetupSource": {
+      "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "path": "opennav-x/installer/windows/AlphaSetup.nsi",
+      "gitBlob": "a004a8c5c2e3d0f381a79d055af3b7435ed2cd9a",
+      "windowsCheckoutSha256": "3a00a577767bea7f5a77ff713e0972a64dfc250ad56bcd4784d8a83338d62aa0",
+      "packagedSourceHashMatches": true,
+      "caption": "Open SKAGER",
+      "finishFunction": "LaunchXNav",
+      "action": "ExecShell open $SMPROGRAMS\\SKAGER\\Skager.lnk"
+    }
+  },
+  "sourceFinding": {
+    "helperCheckboxCaption": "Launch SKAGER Beta 2",
+    "actualCaption": "Open SKAGER",
+    "mismatchedCaptionUncheck": true,
+    "screenshotAfterUncheckAttempt": true,
+    "screenshotBeforeFinish": true,
+    "finishSourceInvokesInstalledShortcut": true,
+    "helperLaterLaunchesApplicationAndThenSupervisedBootstrap": true,
+    "additionalFinishLaunchPathSupported": true,
+    "retainedProcessCreationTrace": false,
+    "transactionLockHolderIdentified": false
+  },
+  "diagnostics": [
+    {
+      "runId": "38878511171",
+      "runAttempt": "1",
+      "helperCommit": "2ff32b3439365b86a67b66a54c7baf95cd4cdb21",
+      "originalProductCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "jobId": "116899283454",
+      "jobConclusion": "failure",
+      "artifactId": "12036373342",
+      "artifactName": "staging-retest-evidence-38765418126-attempt1-harness2ff32b3439365b86a67b66a54c7baf95cd4cdb21-run38878511171-attempt1",
+      "bytes": 11944841,
+      "sha256": "0c6c26d4fbcbfb5424a6ea5c8089e285eeaf764e5106dfbb8e10d84d3a7eabed",
+      "memberCrcCount": 1558,
+      "originalLogSha256": "51a18c59c925ad7325ae8775c64f98f890ab5b2c1feb1e547cc6ca0d479353fb",
+      "reportMember": "packaged-updater.json",
+      "reportSha256": "836be8351bd50e3119501fa6888d6b85a08bb09896fab994f2ef34094dd09f14",
+      "reportError": "FileNotFoundError(2, 'The system cannot find the path specified')",
+      "diagnosticOnly": true,
+      "releaseQualification": false,
+      "independentReviewSha256": "d6954262e270790bda95d3f915f82ae3e56d658025de765f490676d018c05ef1",
+      "originalSetupSha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d",
+      "originalAppSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+      "exactHelperCheckoutSha256": "c0549901275d85522c1a84f222d763ec6bbb2939d859d5cd8714424aacaf783a",
+      "diagnosticCompleted": false,
+      "supervisorInvoked": false,
+      "failureLocation": "diagnostic_host:56 ancestor.lstat, called from qualify:501",
+      "reportedMissingPath": "WindowsPowerShell\\v1.0\\powershell.exe",
+      "supervisorObservation": null
+    },
+    {
+      "runId": "38880343949",
+      "runAttempt": "1",
+      "helperCommit": "293eae1213e44adc6eed5728ee6f62a438760b94",
+      "originalProductCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "jobId": "116905296386",
+      "jobConclusion": "failure",
+      "artifactId": "12037059198",
+      "artifactName": "staging-retest-evidence-38765418126-attempt1-harness293eae1213e44adc6eed5728ee6f62a438760b94-run38880343949-attempt1",
+      "bytes": 11998571,
+      "sha256": "19ebe68d937d9774ac5816dedd45269dc7e18defe6aad94fe2d1cca1424f2dae",
+      "memberCrcCount": 1561,
+      "originalLogSha256": "ca51d6771ade8493fbf92cc4a7ad3339982c22a7f799b4b6f11421216fde276e",
+      "reportMember": "packaged-updater.json",
+      "reportSha256": "8d3494a7e2b87a55d4b22e13208d7e5fcfeb855dbd43ceff97cb53d963beff2a",
+      "reportError": "RuntimeError('Diagnostic completed without qualification; original launcher failure remains unresolved')",
+      "diagnosticOnly": true,
+      "releaseQualification": false,
+      "independentReviewSha256": "8c29b9dc8d938ce0779c0bb4a7f2211393d77c3600feb616bf8c91efb97c9d20",
+      "originalSetupSha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d",
+      "originalAppSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+      "exactHelperCheckoutSha256": "f0db04881276ba39d7521e9bcb16ba1d11903f16cbe2529894a48db403f7d7db",
+      "supervisorObservation": {
+        "hostPath": "C:\\Windows\\SysWOW64\\WindowsPowerShell\\v1.0\\powershell.exe",
+        "hostSha256": "e093a521b1ce57bcface048f263bc21f93745663cdf0dd1c780c418f3802b7ef",
+        "hostMachine": "I386",
+        "inputs": {
+          "ownership.json": "bcc691afb136cb9107953014364f2407daaf244bc530c97e3a8dd836fe1bdca8",
+          "app/opencpn.exe": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+          "app/skager-start.exe": "0e4a500d807b8bff57c942fbcba6d6995976075e36b95338dab837e644d18943",
+          "UpdateSupervisor.ps1": "2c2e23cd53d37c1d0da26110bfd4a7fab3017b9904c9036a69198c9cd03af7ac",
+          "UpdateTransaction.ps1": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+          "Lifecycle.ps1": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7"
+        },
+        "cleanupMayMaskReceiverReason": true,
+        "acceptance": false,
+        "exitCode": 1,
+        "timedOut": false,
+        "receiptPresent": false,
+        "inputsUnchanged": true,
+        "stdoutBytes": 0,
+        "stderr": {
+          "bytes": 704,
+          "complete": true,
+          "truncated": false,
+          "observedError": "File.Open transaction.lock failed because another process was using it",
+          "surface": "UpdateSupervisor.ps1:328 top-level Write-Error catch",
+          "originatingReceiverOrCleanupPhaseEstablished": false
+        }
+      },
+      "diagnosticCompleted": true,
+      "independentlyBoundOriginalInputs": [
+        "app/opencpn.exe",
+        "app/skager-start.exe",
+        "Lifecycle.ps1",
+        "UpdateSupervisor.ps1",
+        "UpdateTransaction.ps1"
+      ],
+      "startupLogRetained": false
+    }
+  ],
+  "limits": [
+    "Screenshots were reviewed only for functional caption, checked state and Finish identity; no design assessment or new capture.",
+    "Source and visible checked state support an unintended extra launch path; no retained process-creation trace identifies the actual lock holder.",
+    "The original healthy checkpoint does not identify which launch produced it or prove supervisor receipt authentication.",
+    "The observed lock-open failure does not establish a hidden receiver error or cleanup phase.",
+    "All original failed results remain failed; no installer, updater, release or boat acceptance."
+  ],
+  "actions": {
+    "newNativeExecution": false,
+    "newScreenshots": false,
+    "newDownloads": false,
+    "productEdits": false,
+    "ciDispatchOrRetry": false,
+    "boatOrHardwareAction": false,
+    "publicRelease": false
+  }
+}
