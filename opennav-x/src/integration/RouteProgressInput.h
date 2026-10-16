@@ -33,6 +33,9 @@ struct RouteRead {
   std::optional<int> cross_track_direction;
   double distance_units_per_nm = 1.;
   std::string distance_unit = "NM";
+  // Integration-only copy of the current leg origin, including OpenCPN's
+  // virtual activation point. Never retain its upstream pointer.
+  std::optional<RoutePointCopy> segment_begin;
 };
 
 bool SameRoute(const RouteCopy& a, const RouteCopy& b);  // geometry, order, IDs

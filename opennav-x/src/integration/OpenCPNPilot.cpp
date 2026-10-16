@@ -174,6 +174,8 @@ void OpenCPNPilot::Poll(vessel::Time now) {
       !pilot_.Capabilities().manual_control || !feedback.sequence ||
       feedback.mode == adapters::PilotMode::Unavailable || feedback.observed_at > now ||
       now - feedback.observed_at >= std::chrono::seconds(3))) SetControlEnabled(false);
+  if (navigation_token_ && (!NavigationSession() || !navigation_current_ || !navigation_current_()))
+    InvalidateNavigationOutput("Route or measured position changed; waiting for normal route progress");
 }
 adapters::PilotTransportStatus
 OpenCPNPilot::Status(const std::string &iface) const {
@@ -239,11 +241,99 @@ OpenCPNPilot::Status(const std::string &iface) const {
 adapters::PilotCapabilities OpenCPNPilot::Capabilities() const {
   MainThread();
   if (!PilotLoopbackTestsEnabled() && !PilotManualSerialEnabled()) return {};
-  return pilot_.Capabilities();
+  auto capabilities = pilot_.Capabilities();
+  capabilities.track = capabilities.track && NavigationBlocker().empty();
+  return capabilities;
 }
 bool OpenCPNPilot::Send(const adapters::PilotRequest &r) {
   MainThread();
+  if (r.action == adapters::PilotAction::Track && !NavigationBlocker().empty()) {
+    InvalidateNavigationOutput("TRACK needs fresh navigation output from the current active route");
+    return false;
+  }
   return session_enabled_ && output_allowed_ && output_allowed_() && pilot_.Send(r);
+}
+std::optional<NavigationOutputSession> OpenCPNPilot::NavigationSession() const {
+  MainThread();
+  const auto now = vessel::Clock::now();
+  const auto transport = Status(binding_.interface_id);
+  const auto feedback = pilot_.GetState();
+  if (!session_enabled_ || !binding_.permit_control || !transport.writable ||
+      transport.epoch != session_epoch_ || !control_generation_ ||
+      !dynamic_cast<CommDriverN2KSerial *>(Driver(binding_.interface_id)) ||
+      !pilot_.Capabilities().manual_control || !feedback.sequence ||
+      (feedback.mode != adapters::PilotMode::Auto && feedback.mode != adapters::PilotMode::Track) ||
+      feedback.observed_at > now || now - feedback.observed_at >= std::chrono::seconds(3))
+    return std::nullopt;
+  return NavigationOutputSession{binding_.interface_id, session_epoch_, control_generation_};
+}
+bool OpenCPNPilot::OwnsNavigationInterface(const std::string &iface) const {
+  MainThread();
+  // Reserve the explicitly selected pilot connection even while control is OFF:
+  // ordinary route output must not bypass this session's guarded feed.
+  return binding_.permit_control && !iface.empty() && iface == binding_.interface_id;
+}
+void OpenCPNPilot::SetNavigationValidator(std::function<bool()> current) {
+  MainThread();
+  navigation_current_ = std::move(current);
+}
+void OpenCPNPilot::InvalidateNavigationOutput(const std::string &reason) {
+  MainThread();
+  if (auto *serial = dynamic_cast<CommDriverN2KSerial *>(Driver(binding_.interface_id)))
+    serial->ClearNavigationOutput();
+  navigation_token_ = 0;
+  navigation_source_at_ = {};
+  navigation_blocker_ = reason;
+}
+bool OpenCPNPilot::SendNavigationBatch(const NavigationOutputSession &session,
+    const std::vector<NavigationOutputFrame> &frames, std::uint16_t token,
+    vessel::Time source_at) {
+  MainThread();
+  const auto current = NavigationSession();
+  const auto now = vessel::Clock::now();
+  if (!current || current->interface_id != session.interface_id ||
+      current->epoch != session.epoch || current->generation != session.generation ||
+      !navigation_current_ || !navigation_current_() || !token || token > 65532 ||
+      source_at > now || now - source_at >= std::chrono::seconds(3) || frames.size() != 3)
+    return false;
+  auto *serial = dynamic_cast<CommDriverN2KSerial *>(Driver(session.interface_id));
+  if (!serial) return false;
+  const std::uint32_t order[] = {129285, 129284, 129283};
+  std::vector<std::shared_ptr<const Nmea2000Msg>> messages;
+  const auto destination = std::make_shared<const NavAddr2000>(session.interface_id, 255);
+  for (std::size_t i = 0; i < frames.size(); ++i) {
+    if (frames[i].pgn != order[i] || frames[i].data.empty() || frames[i].data.size() > 223)
+      return false;
+    messages.push_back(std::make_shared<const Nmea2000Msg>(order[i], frames[i].data, destination, 6));
+  }
+  // Normal management packets remain in the ordinary queue, which drains
+  // before a route batch can receive its separate local-write receipt.
+  for (auto pgn : order) serial->AddTxPGN(pgn);
+  if (!serial->SendNavigationBatch(messages, session.epoch & UINT32_MAX, token, source_at))
+    return false;
+  navigation_token_ = token;
+  navigation_source_at_ = source_at;
+  navigation_blocker_ = "Waiting for the current route batch to be written locally";
+  return true;
+}
+std::string OpenCPNPilot::NavigationBlocker() const {
+  MainThread();
+  if (!NavigationSession()) return "Enable control with fresh physical AUTO or TRACK feedback";
+  if (!navigation_current_ || !navigation_current_())
+    return "TRACK needs a fresh, stable active route and measured position";
+  if (!navigation_token_) return navigation_blocker_;
+  const auto now = vessel::Clock::now();
+  auto *serial = dynamic_cast<CommDriverN2KSerial *>(Driver(binding_.interface_id));
+  const auto state = serial ? serial->GetSerialState() : N2kSerialState::Snapshot{};
+  if (!state.connected || state.epoch != (session_epoch_ & UINT32_MAX) ||
+      state.navigation_written_token != navigation_token_ ||
+      state.navigation_valid_until != navigation_source_at_ + std::chrono::seconds(3) ||
+      state.navigation_written_at > now || now >= state.navigation_valid_until ||
+      navigation_source_at_ > now || now - navigation_source_at_ >= std::chrono::seconds(3))
+    return "Waiting for fresh route output on the selected pilot connection";
+  // This proves a local write only. The bridge still qualifies true-bearing
+  // variation and navigation; only subsequent physical mode can confirm TRACK.
+  return {};
 }
 void OpenCPNPilot::SetControlEnabled(bool enabled) {
   MainThread();
@@ -253,6 +343,11 @@ void OpenCPNPilot::SetControlEnabled(bool enabled) {
   enabled = enabled && pilot_.Capabilities().manual_control && feedback.sequence &&
             feedback.mode != adapters::PilotMode::Unavailable && feedback.observed_at <= now &&
             now - feedback.observed_at < std::chrono::seconds(3);
+  if (enabled && !session_enabled_) {
+    if (control_generation_ == (std::numeric_limits<std::uint64_t>::max)()) enabled = false;
+    else ++control_generation_;
+  }
+  InvalidateNavigationOutput("Waiting for a coherent active route in this control session");
   if (auto *serial = dynamic_cast<CommDriverN2KSerial *>(Driver(binding_.interface_id)))
     serial->EnablePilotOutput(enabled);
   session_enabled_ = enabled;
@@ -309,6 +404,10 @@ bool OpenCPNPilot::Send(const std::string &iface, std::uint8_t destination,
     // The bridge independently requires fresh navigation before native TRACK.
     if (key == 0x80 && feedback.mode != adapters::PilotMode::Auto &&
         feedback.mode != adapters::PilotMode::Track) return false;
+    if (key == 0x80 && !NavigationBlocker().empty()) {
+      InvalidateNavigationOutput("TRACK withheld because route output is no longer current");
+      return false;
+    }
     // WIND uses the common fresh physical feedback gate above; the bridge
     // decides apparent-wind readiness without a SKAGER heading substitute.
   } else if (priority != 6) return false;

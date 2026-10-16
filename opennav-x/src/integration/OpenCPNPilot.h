@@ -7,6 +7,14 @@
 #include <memory>
 
 namespace opennav::integration {
+struct NavigationOutputSession {
+  std::string interface_id;
+  std::uint64_t epoch = 0, generation = 0;
+};
+struct NavigationOutputFrame {
+  std::uint32_t pgn = 0;
+  std::vector<std::uint8_t> data;
+};
 // Main-thread transport boundary. No driver pointer escapes this class.
 class OpenCPNPilot final : public adapters::IAutopilot,
                            private adapters::IN2kPilotTransport {
@@ -31,6 +39,16 @@ public:
   std::string ControlBlocker() const;
   PilotStatusDiscovery::Diagnostics DiscoveryDiagnostics(vessel::Time now) const;
   PilotTrafficDiagnostics::Snapshot TrafficDiagnostics() const;
+  // Local route-feed custody only. Bridge navigation/variation readiness and
+  // physical TRACK still require subsequent measured pilot feedback.
+  std::optional<NavigationOutputSession> NavigationSession() const;
+  bool OwnsNavigationInterface(const std::string &interface_id) const;
+  void SetNavigationValidator(std::function<bool()> current);
+  bool SendNavigationBatch(const NavigationOutputSession &session,
+                           const std::vector<NavigationOutputFrame> &frames,
+                           std::uint16_t token, vessel::Time source_at);
+  void InvalidateNavigationOutput(const std::string &reason);
+  std::string NavigationBlocker() const;
 
 private:
   adapters::PilotTransportStatus
@@ -45,6 +63,11 @@ private:
   bool session_enabled_ = false;
   std::uint64_t session_epoch_ = 0, awaited_write_ticket_ = 0;
   bool awaiting_serial_write_ = false;
+  std::uint64_t control_generation_ = 0;
+  std::uint16_t navigation_token_ = 0;
+  vessel::Time navigation_source_at_{};
+  std::string navigation_blocker_ = "Waiting for a coherent active route";
+  std::function<bool()> navigation_current_;
   std::optional<vessel::Time> last_discovery_;
   adapters::St4000Pilot pilot_{*this};
   PilotStatusDiscovery status_{*this};

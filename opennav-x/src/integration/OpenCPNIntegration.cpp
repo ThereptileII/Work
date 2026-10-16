@@ -6,6 +6,7 @@
 #include "integration/DashboardPresentationApi.h"
 #include "adapters/Autopilot.h"
 #include "integration/OpenCPNPilot.h"
+#include "integration/NativeRouteOutput.h"
 #include "adapters/Radar.h"
 #include "integration/InstalledResources.h"
 #include "integration/InstallerSelfTest.h"
@@ -41,6 +42,7 @@
 #include "model/base_platform.h"
 #include "model/comm_drv_registry.h"
 #include "model/routeman.h"
+#include "model/autopilot_output.h"
 #include "model/safe_mode.h"
 #include "platform/PlatformIntegration.h"
 #include "platform/PortableProfile.h"
@@ -152,6 +154,7 @@ struct PilotServices {
 std::unique_ptr<PilotServices> pilots;
 vessel::VesselState selected_navigation;
 std::unique_ptr<integration::RouteProgressInput> route_progress;
+std::unique_ptr<integration::NativeRouteOutput> native_route_output;
 MyFrame* host = nullptr;
 std::optional<InterfaceMode> restart;
 std::vector<std::string> profile_arguments;
@@ -825,6 +828,37 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   });
   pilots->was_demo = demo;
   pilots->hardware.Configure(settings->Read().pilot);
+  native_route_output = std::make_unique<integration::NativeRouteOutput>(
+      [&config, failed = false]() mutable -> std::optional<std::uint16_t> {
+        if (failed) return std::nullopt;
+        const wxString key = "/OpenNav/Pilot/NextNavigationWaypointToken";
+        wxString stored;
+        unsigned next = 1;
+        if (config.HasEntry(key)) {
+          if (!config.Read(key, &stored) || stored.empty()) return std::nullopt;
+          next = 0;
+          for (const auto c : stored.ToStdString(wxConvUTF8)) {
+            if (c < '0' || c > '9' || next > 6553) return std::nullopt;
+            next = next * 10 + unsigned(c - '0');
+          }
+        }
+        // Reserve the complete pair durably before it can reach the wire. No
+        // wrap or reuse after restart; exhaustion requires an operator review.
+        if (!next || next > 65531) return std::nullopt;
+        if (!config.Write(key, wxString::Format("%u", next + 2)) || !config.Flush()) {
+          failed = true;
+          return std::nullopt;
+        }
+        return static_cast<std::uint16_t>(next);
+      });
+  pilots->hardware.SetNavigationValidator([] {
+    return IsXNav() && !restart && native_route_output && navigation &&
+        native_route_output->Current(
+            integration::ReadRouteProgress(navigation->PositionState()), vessel::Clock::now());
+  });
+  SetAutopilotN2KInterfaceGuard([](const std::string& iface) {
+    return IsXNav() && pilots && pilots->hardware.OwnsNavigationInterface(iface);
+  });
   actions.pilot_identity = [] {
     const bool sent = pilots && pilots->hardware.RequestIdentity(vessel::Clock::now());
     return application::CommandResult{
@@ -863,6 +897,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     view.adapter_status = simulated ? "DEMO / simulated feedback" : pilots->hardware.Description();
     if (!simulated && !view.output_unavailable)
       view.control_blocker = pilots->hardware.ControlBlocker();
+    if (!simulated) view.track_blocker = pilots->hardware.NavigationBlocker();
     if (before != view.command.state)
       wxLogMessage("SKAGER manual pilot %llu: %s / %s",
                    static_cast<unsigned long long>(view.command.request.id),
@@ -1163,6 +1198,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       pilot["connection_epoch"] = wxString::Format("%llu", static_cast<unsigned long long>(view.feedback.connection_epoch));
       pilot["control_capability"] = view.capabilities.manual_control;
       pilot["track_capability"] = view.capabilities.track;
+      if (!state.simulated)
+        pilot["track_blocker"] = wxString::FromUTF8(pilots->hardware.NavigationBlocker());
       pilot["wind_capability"] = view.capabilities.wind;
       pilot["command_state"] = wxString::FromUTF8(adapters::CommandStateName(view.command.state));
       pilot["command_detail"] = wxString::FromUTF8(view.command.detail);
@@ -1414,15 +1451,29 @@ bool ShowAisCard(int mmsi){if(!IsXNav()||!shell||!host)return false;host->CallAf
 
 RouteObservation BeforeRouteProgress() {
   if (!navigation || !route_progress) return {};
-  return std::make_shared<const integration::ObservedRoutePass>(
-      integration::ReadRouteProgress(navigation->PositionState()));
+  auto read = integration::ReadRouteProgress(navigation->PositionState());
+  if (native_route_output && pilots && !native_route_output->Current(read, vessel::Clock::now()))
+    pilots->hardware.InvalidateNavigationOutput("Route or position changed; waiting for normal route progress");
+  return std::make_shared<const integration::ObservedRoutePass>(std::move(read));
 }
 
 void AfterRouteProgress(const RouteObservation& before) {
   if (!before || !navigation || !route_progress) return;
   auto after = integration::ReadRouteProgress(navigation->PositionState());
   after.interrupted = before->watch.Finish();
-  route_progress->Complete(before->read, after, vessel::Clock::now());
+  const auto now = vessel::Clock::now();
+  route_progress->Complete(before->read, after, now);
+  if (IsXNav() && native_route_output && pilots && g_pRouteMan) {
+    const auto& origin_before = before->read.segment_begin;
+    const auto& origin_after = after.segment_begin;
+    // A reactivation can replace the virtual origin without changing the route
+    // or active waypoint. It must not reuse guidance from an interrupted leg.
+    if (!origin_before || !origin_after || origin_before->id != origin_after->id ||
+        origin_before->latitude_deg != origin_after->latitude_deg ||
+        origin_before->longitude_deg != origin_after->longitude_deg)
+      after.interrupted = true;
+    native_route_output->Update(*g_pRouteMan, after, route_progress->Current(), pilots->hardware, now);
+  }
 #ifdef OPENNAV_ROUTE_TESTS
   test::RouteScenarioStep(route_progress->Current());
   test::ObjectScenarioStep(selected_navigation.navigation);
@@ -1433,6 +1484,8 @@ vessel::RouteProgress CurrentRouteProgress() {
   if (!navigation || !route_progress) return {};
   const auto read = integration::ReadRouteProgress(navigation->PositionState());
   route_progress->CheckCurrent(read.route, vessel::Clock::now());
+  if (native_route_output && pilots && !native_route_output->Current(read, vessel::Clock::now()))
+    pilots->hardware.InvalidateNavigationOutput("Route or position changed; waiting for normal route progress");
   return route_progress->Current();
 }
 
@@ -1472,6 +1525,8 @@ bool PrepareClose(wxFileConfig& config) {
   marine.reset();
   selected_navigation = {};
   route_progress.reset();
+  SetAutopilotN2KInterfaceGuard({});
+  native_route_output.reset();
   integration::FinishDashboardPresentation();
   shell.reset();
   online_chart.Clear();

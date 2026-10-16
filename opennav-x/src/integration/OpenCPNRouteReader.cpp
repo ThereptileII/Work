@@ -6,6 +6,7 @@
 #include "model/navutil_base.h"
 #include <wx/thread.h>
 #include <stdexcept>
+#include <cmath>
 
 extern bool bGPSValid;
 
@@ -53,6 +54,12 @@ RouteRead ReadRouteProgress(const vessel::Navigation& position) {
   r.upstream_latitude_deg = gLat; r.upstream_longitude_deg = gLon;
   if (r.route.active && r.route.registered && r.route.active_point_consistent &&
       g_pRouteMan->m_bDataValid) {
+    if (auto* begin = g_pRouteMan->GetpActiveRouteSegmentBeginPoint())
+      if (!begin->m_bRPIsBeingEdited && std::isfinite(begin->m_lat) &&
+          std::isfinite(begin->m_lon) && std::abs(begin->m_lat) <= 90 &&
+          std::abs(begin->m_lon) <= 180)
+        r.segment_begin = RoutePointCopy{begin->m_GUID.ToStdString(wxConvUTF8),
+                                        begin->m_lat, begin->m_lon};
     r.range_to_active_nm = g_pRouteMan->GetCurrentRngToActivePoint();
     r.bearing_to_active_true_deg = g_pRouteMan->GetCurrentBrgToActivePoint();
     r.cross_track_error_nm = g_pRouteMan->GetCurrentXTEToActivePoint();

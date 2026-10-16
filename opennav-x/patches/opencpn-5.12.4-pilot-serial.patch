@@ -26,7 +26,7 @@ index d5df2d3..00d7a57 100644
  class CommDriverN2KSerialThread;  // fwd
  class CommDriverN2KSerialEvent;
  
-@@ -71,6 +81,12 @@ public:
+@@ -71,6 +81,16 @@ public:
                     std::shared_ptr<const NavAddr> addr) override;
  
    void AddTxPGN(int pgn);
@@ -35,11 +35,15 @@ index d5df2d3..00d7a57 100644
 +  bool SendPilotMessage(std::shared_ptr<const NavMsg> msg,
 +                        std::shared_ptr<const NavAddr> addr, uint64_t epoch,
 +                        uint64_t* ticket = nullptr);
++  bool SendNavigationBatch(const std::vector<std::shared_ptr<const Nmea2000Msg>>& frames,
++                           uint64_t epoch, uint16_t token,
++                           N2kSerialState::Clock::time_point source_at);
++  void ClearNavigationOutput() { m_serial_state.ClearNavigation(); }
 +  N2kSerialState m_serial_state;
  
    int SetTXPGN(int pgn) override;
  
-@@ -114,7 +130,7 @@ private:
+@@ -114,7 +134,7 @@ private:
    int m_handshake;
  
    CommDriverN2KSerialThread* m_pSecondary_Thread;
@@ -93,12 +97,13 @@ new file mode 100644
 index 0000000..57e826e
 --- /dev/null
 +++ w/model/include/model/comm_drv_n2k_serial_state.h
-@@ -0,0 +1,117 @@
+@@ -0,0 +1,176 @@
 +#ifndef COMM_DRV_N2K_SERIAL_STATE_H
 +#define COMM_DRV_N2K_SERIAL_STATE_H
 +#include <chrono>
 +#include <cstdint>
 +#include <deque>
++#include <algorithm>
 +#include <limits>
 +#include <mutex>
 +#include <vector>
@@ -116,6 +121,8 @@ index 0000000..57e826e
 +    uint64_t pilot_writes = 0;
 +    uint64_t pilot_written_ticket = 0;
 +    Clock::time_point pilot_written_at{};
++    uint16_t navigation_written_token = 0;
++    Clock::time_point navigation_written_at{}, navigation_valid_until{};
 +  };
 +  Snapshot Get() const {
 +    std::lock_guard<std::mutex> lock(mutex_);
@@ -128,6 +135,7 @@ index 0000000..57e826e
 +  void EnablePilot(bool enabled) {
 +    std::lock_guard<std::mutex> lock(mutex_);
 +    pilot_enabled_ = enabled && state_.connected;
++    ClearNavigationLocked();
 +    // A disable/enable boundary can never retain an old command.
 +    for (auto it = queue_.begin(); it != queue_.end();)
 +      if (it->pilot) it = queue_.erase(it); else ++it;
@@ -135,7 +143,7 @@ index 0000000..57e826e
 +  bool Enqueue(const std::vector<unsigned char>& bytes, bool pilot = false,
 +               uint64_t expected_epoch = 0, Clock::time_point now = Clock::now(),
 +               bool session_required = true, bool replace_pilot = false,
-+               uint64_t* ticket = nullptr) {
++               uint64_t* ticket = nullptr, bool track = false) {
 +    std::lock_guard<std::mutex> lock(mutex_);
 +    if (ticket) *ticket = 0;
 +    if (pilot && next_ticket_ == (std::numeric_limits<uint64_t>::max)()) {
@@ -143,6 +151,8 @@ index 0000000..57e826e
 +    }
 +    if (!state_.connected || bytes.empty() || bytes.size() > 512 ||
 +        (pilot && ((session_required && !pilot_enabled_) || expected_epoch != state_.epoch))) return false;
++    if (track && (!pilot || !state_.navigation_written_token ||
++        now < state_.navigation_written_at || now >= state_.navigation_valid_until)) return false;
 +    if (pilot) {
 +      for (auto it = queue_.begin(); it != queue_.end();) {
 +        if (it->pilot) {
@@ -153,8 +163,25 @@ index 0000000..57e826e
 +    }
 +    if (queue_.size() >= 20) return false;
 +    const auto assigned_ticket = pilot ? ++next_ticket_ : 0;
-+    queue_.push_back({bytes, pilot, state_.epoch, now, session_required, assigned_ticket});
++    queue_.push_back({bytes, pilot, state_.epoch, now, session_required, assigned_ticket,
++                      static_cast<uint16_t>(track ? state_.navigation_written_token : 0),
++                      track ? state_.navigation_valid_until : Clock::time_point{}});
 +    if (ticket) *ticket = assigned_ticket;
++    return true;
++  }
++  void ClearNavigation() {
++    std::lock_guard<std::mutex> lock(mutex_);
++    ClearNavigationLocked();
++  }
++  bool EnqueueNavigation(const std::vector<unsigned char>& bytes, uint64_t epoch,
++                         uint16_t token, Clock::time_point source_at,
++                         Clock::time_point now = Clock::now()) {
++    std::lock_guard<std::mutex> lock(mutex_);
++    if (!state_.connected || !pilot_enabled_ || epoch != state_.epoch || !token ||
++        token > 65532 || bytes.empty() || bytes.size() > 512 || source_at > now ||
++        now - source_at >= std::chrono::seconds(3)) return false;
++    if (state_.navigation_written_token != token) ClearNavigationLocked();
++    navigation_ = {bytes, epoch, token, now, source_at + std::chrono::seconds(3)};
 +    return true;
 +  }
 +  // 0: nothing eligible; 1: a complete write; -1: failed/partial write.
@@ -164,10 +191,16 @@ index 0000000..57e826e
 +  int WriteOne(Write write, Clock::time_point now = Clock::now()) {
 +    std::lock_guard<std::mutex> lock(mutex_);
 +    while (!queue_.empty()) {
-+      auto item = std::move(queue_.front()); queue_.pop_front();
++      // A manual command takes priority over ordinary data and the route slot.
++      auto selected = std::find_if(queue_.begin(), queue_.end(), [](const Item& item) { return item.pilot; });
++      if (selected == queue_.end()) selected = queue_.begin();
++      auto item = std::move(*selected); queue_.erase(selected);
 +      if (!state_.connected || item.epoch != state_.epoch ||
 +          (item.pilot && ((item.session_required && !pilot_enabled_) || now < item.queued ||
 +                         now - item.queued >= std::chrono::milliseconds(500)))) continue;
++      if (item.navigation_token && (item.navigation_token != state_.navigation_written_token ||
++          item.navigation_valid_until != state_.navigation_valid_until ||
++          now < state_.navigation_written_at || now >= item.navigation_valid_until)) continue;
 +      size_t written = 0;
 +      try { written = write(item.bytes); }
 +      catch (...) { Transition(false); return -1; }
@@ -184,6 +217,20 @@ index 0000000..57e826e
 +      Transition(false);
 +      return -1;
 +    }
++    if (!navigation_.bytes.empty()) {
++      auto item = std::move(navigation_); navigation_ = {};
++      if (!state_.connected || !pilot_enabled_ || item.epoch != state_.epoch ||
++          now < item.queued || now - item.queued >= std::chrono::milliseconds(500) ||
++          now >= item.valid_until) return 0;
++      size_t written = 0;
++      try { written = write(item.bytes); }
++      catch (...) { Transition(false); return -1; }
++      if (written != item.bytes.size()) { Transition(false); return -1; }
++      state_.navigation_written_token = item.token;
++      state_.navigation_written_at = Clock::now();
++      state_.navigation_valid_until = item.valid_until;
++      return 1;
++    }
 +    return 0;
 +  }
 +private:
@@ -194,9 +241,25 @@ index 0000000..57e826e
 +    Clock::time_point queued;
 +    bool session_required;
 +    uint64_t ticket;
++    uint16_t navigation_token;
++    Clock::time_point navigation_valid_until;
 +  };
++  struct NavigationItem {
++    std::vector<unsigned char> bytes;
++    uint64_t epoch = 0;
++    uint16_t token = 0;
++    Clock::time_point queued{}, valid_until{};
++  } navigation_;
++  void ClearNavigationLocked() {
++    navigation_ = {};
++    state_.navigation_written_token = 0;
++    state_.navigation_written_at = state_.navigation_valid_until = {};
++    for (auto it = queue_.begin(); it != queue_.end();)
++      if (it->navigation_token) it = queue_.erase(it); else ++it;
++  }
 +  void Transition(bool connected) {
 +    queue_.clear();
++    ClearNavigationLocked();
 +    pilot_enabled_ = false;
 +    if (state_.connected != connected) {
 +      if (state_.epoch != (std::numeric_limits<uint64_t>::max)()) ++state_.epoch;
@@ -390,7 +453,7 @@ index 7687354..9dc00f3 100644
          if (GetSecondaryThread()->SetOutMsg(acti_pkg))
            return true;
          else
-@@ -416,7 +437,39 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
+@@ -416,7 +437,95 @@ bool CommDriverN2KSerial::SendMessage(std::shared_ptr<const NavMsg> msg,
        return false;
    }
  #endif
@@ -424,14 +487,70 @@ index 7687354..9dc00f3 100644
 +  for (auto byte : n2k->payload) encoded.AddByte(byte);
 +  return m_serial_state.Enqueue(BufferToActisenseFormat(encoded), true, epoch,
 +                               N2kSerialState::Clock::now(), n2k->PGN.pgn != 59904,
-+                               n2k->PGN.pgn == 126208 && n2k->payload.back() == 0, ticket);
++                               n2k->PGN.pgn == 126208 && n2k->payload.back() == 0, ticket,
++                               n2k->PGN.pgn == 126208 && n2k->payload.back() == 0x80);
 +#else
 +  return false;
 +#endif
  }
  
++bool CommDriverN2KSerial::SendNavigationBatch(
++    const std::vector<std::shared_ptr<const Nmea2000Msg>>& frames, uint64_t epoch,
++    uint16_t token, N2kSerialState::Clock::time_point source_at) {
++#ifndef ANDROID
++  if (m_closing || !m_params.bEnabled || m_params.IOSelect != DS_TYPE_INPUT_OUTPUT ||
++      frames.size() != 3 || token < 2 || token > 65532) return false;
++  const uint32_t order[] = {129285, 129284, 129283};
++  std::vector<unsigned char> bytes;
++  for (size_t i = 0; i < frames.size(); ++i) {
++    const auto& frame = frames[i];
++    if (!frame || frame->PGN.pgn != order[i] || frame->priority != 6 ||
++        frame->payload.empty() || frame->payload.size() > 223 ||
++        (i == 1 && frame->payload.size() != 34) || (i == 2 && frame->payload.size() != 8)) return false;
++    const auto address = std::dynamic_pointer_cast<const NavAddr2000>(frame->source);
++    if (!address || address->iface != iface || address->name.value.Name || address->address != 255) return false;
++    const auto& data = frame->payload;
++    const auto u16 = [&data](size_t at) { return unsigned(data[at]) | (unsigned(data[at + 1]) << 8); };
++    const auto u32 = [&data](size_t at) {
++      return uint32_t(data[at]) | (uint32_t(data[at + 1]) << 8) |
++             (uint32_t(data[at + 2]) << 16) | (uint32_t(data[at + 3]) << 24);
++    };
++    if (i == 0) {
++      // Exactly two bounded waypoint records; both IDs match navigation data.
++      if (data.size() < 12 || u16(2) != 2 || data[9] < 2 || data[10] != 1) return false;
++      size_t at = 10 + size_t(data[9]); // route string and reserved byte
++      for (unsigned point = 0; point < 2; ++point) {
++        if (at + 4 > data.size() || u16(at) != unsigned(token - 1 + point) ||
++            data[at + 2] < 2 || data[at + 3] != 1) return false;
++        at += 2 + size_t(data[at + 2]) + 8;
++        if (at > data.size()) return false;
++      }
++      if (at != data.size()) return false;
++    } else if (i == 1) {
++      // TRUE rhumb-line bearing; no ETA/closing-velocity guesses; no arrived flag.
++      if (data[5] != 0x40 || u32(1) > 75839400u || u16(14) > 62832u ||
++          u32(16) != unsigned(token - 1) || u32(20) != token ||
++          u32(6) != 0xffffffffu || u16(10) != 0xffffu || u16(32) != 0x7fffu) return false;
++    } else {
++      const auto raw = u32(2);
++      const auto magnitude = (raw & 0x80000000u) ? ~raw + 1u : raw;
++      if (data[1] != 0 || magnitude > 7583940u) return false;
++    }
++    tN2kMsg encoded;
++    encoded.SetPGN(order[i]); encoded.Priority = 6; encoded.Destination = 255;
++    for (auto byte : frame->payload) encoded.AddByte(byte);
++    const auto packet = BufferToActisenseFormat(encoded);
++    if (bytes.size() + packet.size() > 512) return false;
++    bytes.insert(bytes.end(), packet.begin(), packet.end());
++  }
++  return m_serial_state.EnqueueNavigation(bytes, epoch, token, source_at);
++#else
++  return false;
++#endif
++}
++
  void CommDriverN2KSerial::ProcessManagementPacket(
-@@ -470,33 +523,31 @@ void CommDriverN2KSerial::ProcessManagementPacket(
+@@ -470,33 +579,31 @@ void CommDriverN2KSerial::ProcessManagementPacket(
  
  void CommDriverN2KSerial::handle_N2K_SERIAL_RAW(
      CommDriverN2KSerialEvent& event) {
@@ -487,7 +606,7 @@ index 7687354..9dc00f3 100644
  }
  
  int CommDriverN2KSerial::GetMfgCode() {
-@@ -544,23 +595,15 @@ int CommDriverN2KSerial::SendMgmtMsg(unsigned char* string, size_t string_size,
+@@ -544,23 +651,15 @@ int CommDriverN2KSerial::SendMgmtMsg(unsigned char* string, size_t string_size,
  
    // Send the msg
    bool bsent = false;
@@ -519,7 +638,7 @@ index 7687354..9dc00f3 100644
    }
  
    if (!bsent) return 1;
-@@ -661,7 +704,7 @@ void CommDriverN2KSerial::AddTxPGN(int pgn) {
+@@ -661,7 +760,7 @@ void CommDriverN2KSerial::AddTxPGN(int pgn) {
  
  CommDriverN2KSerialThread::CommDriverN2KSerialThread(
      CommDriverN2KSerial* Launcher, const wxString& PortName,
@@ -528,7 +647,7 @@ index 7687354..9dc00f3 100644
    m_pParentDriver = Launcher;  // This thread's immediate "parent"
  
    m_PortName = PortName;
-@@ -682,7 +725,6 @@ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
+@@ -682,7 +781,6 @@ CommDriverN2KSerialThread::CommDriverN2KSerialThread(
      m_driver_stats.available = false;
    }
  
@@ -536,7 +655,7 @@ index 7687354..9dc00f3 100644
  }
  
  CommDriverN2KSerialThread::~CommDriverN2KSerialThread(void) {
-@@ -707,10 +749,13 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
+@@ -707,10 +805,13 @@ bool CommDriverN2KSerialThread::OpenComPortPhysical(const wxString& com_name,
      // std::cerr << "Unhandled Exception while opening serial port: " <<
      // e.what() << std::endl;
    }
@@ -551,7 +670,7 @@ index 7687354..9dc00f3 100644
    try {
      m_serial.close();
    } catch (std::exception&) {
-@@ -750,7 +795,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
+@@ -750,7 +851,7 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
    if (!m_serial.isOpen()) return 0;
    try {
      size_t status = m_serial.write((uint8_t*)msg, length);
@@ -560,7 +679,7 @@ index 7687354..9dc00f3 100644
      return status;
    } catch (std::exception& e) {
      DEBUG_LOG << "Unhandled Exception while writing to serial port: "
-@@ -761,384 +806,63 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
+@@ -761,384 +862,63 @@ size_t CommDriverN2KSerialThread::WriteComPortPhysical(unsigned char* msg,
  
  bool CommDriverN2KSerialThread::SetOutMsg(
      const std::vector<unsigned char>& msg) {
@@ -992,7 +1111,7 @@ index 7687354..9dc00f3 100644
  
  #endif  // Android
  
-@@ -1146,15 +870,22 @@ void* CommDriverN2KSerialThread::Entry() {
+@@ -1146,15 +926,22 @@ void* CommDriverN2KSerialThread::Entry() {
  // Actisense Format:
  // <10><02><93><length (1)><priority (1)><PGN (3)><destination (1)><source
  // (1)><time (4)><len (1)><data (len)><CRC (1)><10><03>
@@ -1019,3 +1138,163 @@ index 7687354..9dc00f3 100644
    int byteSum = 0;
    uint8_t CheckSum;
    unsigned char ActisenseMsgBuf[MaxActisenseMsgBuf];
+diff --git i/model/include/model/autopilot_output.h w/model/include/model/autopilot_output.h
+--- i/model/include/model/autopilot_output.h
++++ w/model/include/model/autopilot_output.h
+@@ -25,14 +25,24 @@
+ #ifndef _AUTOPILOTOUTPUT_H__
+ #define _AUTOPILOTOUTPUT_H__
+ 
++#include <cstdint>
++#include <functional>
+ #include "comm_driver.h"
+ #include "model/route.h"
+ 
+ bool UpdateAutopilotN0183(Routeman &routeman);
+ bool UpdateAutopilotN2K(Routeman &routeman);
++// Optional application-thread reservation of an output interface. An empty
++// guard preserves stock Legacy/Safe output and introduces no GUI dependency.
++void SetAutopilotN2KInterfaceGuard(std::function<bool(const std::string&)> guard);
+ 
+ bool SendPGN129283(Routeman &routeman, AbstractCommDriver *driver);
+ bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver);
+ bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver);
++// Explicit owned-ID overloads preserve the existing two-argument symbols.
++bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver,
++                  uint16_t origin, uint16_t destination, bool include_eta);
++bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver,
++                  uint16_t origin, uint16_t destination);
+ 
+ #endif
+diff --git i/model/src/autopilot_output.cpp w/model/src/autopilot_output.cpp
+--- i/model/src/autopilot_output.cpp
++++ w/model/src/autopilot_output.cpp
+@@ -266,6 +266,13 @@
+   return true;
+ }
+ 
++namespace {
++std::function<bool(const std::string&)> n2k_interface_guard;
++}
++void SetAutopilotN2KInterfaceGuard(std::function<bool(const std::string&)> guard) {
++  n2k_interface_guard = std::move(guard);
++}
++
+ bool UpdateAutopilotN2K(Routeman &routeman) {
+   bool fail_any = false;
+ 
+@@ -290,7 +297,10 @@
+       }
+     }
+   }
+   if (!found) return false;
++  // Preserve stock driver selection; reservation must not reroute output to
++  // another configured interface that was not previously selected.
++  if (n2k_interface_guard && n2k_interface_guard(found->iface)) return false;
+ 
+   // N2K serial drivers require maintenance of an enabled PGN TX list
+   auto drv_serial = dynamic_cast<CommDriverN2KSerial *>(found);
+@@ -309,6 +319,11 @@
+ }
+ 
+ bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver) {
++  return SendPGN129285(routeman, driver, 0, 1);
++}
++
++bool SendPGN129285(Routeman &routeman, AbstractCommDriver *driver,
++                  uint16_t origin, uint16_t destination) {
+   bool fail_any = false;
+ 
+   // Set max WP name length
+@@ -328,14 +343,14 @@
+   std::string sname = start_point_name.ToStdString();
+   char *s = (char *)sname.c_str();
+ 
+-  fail_any |= !AppendN2kPGN129285(msg129285, 0, s, pLegBeginPoint->m_lat,
++  fail_any |= !AppendN2kPGN129285(msg129285, origin, s, pLegBeginPoint->m_lat,
+                                   pLegBeginPoint->m_lon);
+   // Append destination point of current leg
+   RoutePoint *pActivePoint = routeman.GetpActivePoint();
+   wxString destination_name = pActivePoint->GetName().Truncate(maxName);
+   std::string dname = destination_name.ToStdString();
+   char *d = (char *)dname.c_str();
+-  fail_any |= !AppendN2kPGN129285(msg129285, 1, d, pActivePoint->m_lat,
++  fail_any |= !AppendN2kPGN129285(msg129285, destination, d, pActivePoint->m_lat,
+                                   pActivePoint->m_lon);
+ 
+   if (fail_any) return false;
+@@ -352,30 +367,41 @@
+ }
+ 
+ bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver) {
++  return SendPGN129284(routeman, driver, 0, 1, true);
++}
++
++bool SendPGN129284(Routeman &routeman, AbstractCommDriver *driver,
++                  uint16_t origin, uint16_t destination, bool include_eta) {
+   bool fail_any = false;
+   tN2kMsg msg129284;
+   RoutePoint *pActivePoint = routeman.GetpActivePoint();
+ 
+-  // Calculate closing velocity and ETA
+-  double vmg = 0.;
+-  if (!std::isnan(gCog) && !std::isnan(gSog)) {
+-    double brg = routeman.GetCurrentBrgToActivePoint();
+-    vmg = gSog * cos((brg - gCog) * PI / 180.);
+-  }
+-  wxTimeSpan tttg_span;
+-  wxDateTime arrival_time = wxDateTime::Now();
+-  if (vmg > 0.) {
+-    double tttg_sec = (routeman.GetCurrentRngToActivePoint() / gSog) * 3600;
+-    tttg_span = wxTimeSpan::Seconds((long)tttg_sec);
+-    arrival_time += tttg_span;
+-  }
+-  double time_days_1979 = arrival_time.GetTicks() / (3600. * 24.);
+-
+-  //  ETA time_seconds, expressed as seconds since midnight
+-  //  ETA date, expressed as whole days since 1 January 1970
+-  double eta_time_days;
+-  double eta_time_seconds = modf(time_days_1979, &eta_time_days);
+-  int16_t eta_time_days_16 = static_cast<uint16_t>(eta_time_days);
++  // The guarded feed has no qualified SOG/COG contract. Do not evaluate
++  // legacy ETA arithmetic from those globals for that path.
++  double vmg = N2kDoubleNA, eta_time_seconds = N2kDoubleNA;
++  int16_t eta_time_days_16 = -1;  // Unsigned ETA-date field: 0xffff unavailable.
++  if (include_eta) {
++    // Calculate closing velocity and ETA
++    vmg = 0.;
++    if (!std::isnan(gCog) && !std::isnan(gSog)) {
++      double brg = routeman.GetCurrentBrgToActivePoint();
++      vmg = gSog * cos((brg - gCog) * PI / 180.);
++    }
++    wxTimeSpan tttg_span;
++    wxDateTime arrival_time = wxDateTime::Now();
++    if (vmg > 0.) {
++      double tttg_sec = (routeman.GetCurrentRngToActivePoint() / gSog) * 3600;
++      tttg_span = wxTimeSpan::Seconds((long)tttg_sec);
++      arrival_time += tttg_span;
++    }
++    double time_days_1979 = arrival_time.GetTicks() / (3600. * 24.);
++
++    //  ETA time_seconds, expressed as seconds since midnight
++    //  ETA date, expressed as whole days since 1 January 1970
++    double eta_time_days;
++    eta_time_seconds = modf(time_days_1979, &eta_time_days);
++    eta_time_days_16 = static_cast<uint16_t>(eta_time_days);
++  }
+ 
+   SetN2kPGN129284(
+       msg129284,
+@@ -396,6 +422,12 @@
+       pActivePoint->m_lat,  //   double DestinationLatitude,
+       pActivePoint->m_lon,  //    double DestinationLongitude,
+       vmg);                 //    double  WaypointClosingVelocity);
++  // The pinned N2K serializer accepts uint8_t IDs despite writing 32-bit
++  // fields. Preserve its ABI and replace only those two defined wire fields.
++  for (unsigned i = 0; i < 4; ++i) {
++    msg129284.Data[16 + i] = (uint32_t(origin) >> (8 * i)) & 0xff;
++    msg129284.Data[20 + i] = (uint32_t(destination) >> (8 * i)) & 0xff;
++  }
+ 
+   auto dest_addr = std::make_shared<const NavAddr2000>(driver->iface, 255);
+   std::vector<uint8_t> payload;
