@@ -1,0 +1,352 @@
+{
+  "schema": 1,
+  "kind": "sanitized-native-cold-hold-helper-evidence",
+  "workItem": "SCRUM-22",
+  "relatedStagedProductCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "scope": "Inert maintenance-helper fixtures; no product or real-boat recovery acceptance.",
+  "applicationOrInstallerProductSourceChanged": false,
+  "applicationBuildRequiredForFixtureCorrection": false,
+  "nativeJobs": [
+    {
+      "runId": 38889555934,
+      "runAttempt": 1,
+      "jobId": 116935466337,
+      "harnessCommit": "3bec26c322ef017aed6e6890b5cbba07989ebebd",
+      "jobConclusion": "failure",
+      "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38889555934",
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38889555934/job/116935466337",
+      "artifact": {
+        "id": 12041296138,
+        "name": "installer-cold-hold-harness3bec26c322ef017aed6e6890b5cbba07989ebebd-run38889555934-attempt1",
+        "bytes": 9736,
+        "sha256": "e894d08b649a799347397464e3b988d9625447660c3b9654b5cc8fd43082ad13",
+        "allMemberCRCsPassed": true
+      },
+      "custody": {
+        "privateEvidenceBasename": "cold-hold-custody.json",
+        "bytes": 2955,
+        "sha256": "1bd737542421d5c2e6066244265f037c641ea359cfe5a6589b05b41567589a84"
+      },
+      "originalJobLog": {
+        "privateEvidenceBasename": "cold-hold-job-original.log",
+        "bytes": 21966,
+        "sha256": "71785ae55c2e52115a99eecf3ae494e415384db23675186f765ca9d7e605c662"
+      },
+      "sourceIdentityReport": {
+        "name": "source-identity.json",
+        "bytes": 552,
+        "sha256": "4f467a3f922ce01ebf3a3fa39d59c7c09a76a478535840453c36ac6e51b6fd93",
+        "crc32": "63a8753d"
+      },
+      "recordedSourceIdentities": [
+        {
+          "path": "opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "fb6e8aaa1d932b9c66c3e66b0ece44c3016622b8",
+          "gitBytes": 14099,
+          "gitSha256": "800d80e892a65aa476fc6a75e12a8810231e790a656309dd1dbb84b035f0f03a",
+          "crlfCheckoutSha256": "051540ec2de4564ee6a55f7e5811545491029ce3ce1ce85fb7a75072885dabe6"
+        },
+        {
+          "path": "opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "36313ac0efb736a83057a3ef2cf64ac245c65251",
+          "gitBytes": 13417,
+          "gitSha256": "8b732f948cf7aa97c3ef50a8da2c64e8fadc873ed50f986b7607f1f632cb6c9e",
+          "crlfCheckoutSha256": "d9b89590ad9bd098b50fa1d495efd3f9f272d0324f4be0988b78abf02c2a7213"
+        },
+        {
+          "path": "opennav-x/tools/boat/Preparation.ps1",
+          "gitBlob": "d6b0c50470f1c73c0de43671ed79118c69f811db",
+          "gitBytes": 21220,
+          "gitSha256": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+          "crlfCheckoutSha256": "97fad3888d33de482b87a42f2f1054012aef68915a7df8cae67f5a173e162313"
+        },
+        {
+          "path": "opennav-x/tools/boat/Common.ps1",
+          "gitBlob": "d1bf7f005f5c31b637b04fdd336aeeb14538b737",
+          "gitBytes": 20073,
+          "gitSha256": "4bbab6f0833f77bdf505326d1115b91deaea6f0060297502b43687d7fd4716c8",
+          "crlfCheckoutSha256": "bedc1025684dad7cc74bfc6d237f3eaaf9396ad8bb4caeb05384b4af611524fe"
+        },
+        {
+          "path": "opennav-x/tools/boat/CommissioningProfileLock.cs",
+          "gitBlob": "904936f1e408474c833244661ae66b69c2d2713f",
+          "gitBytes": 9974,
+          "gitSha256": "ca42d5612bd91f15302661fc36143ace79366685fc7135debd23f7c52d631f2c",
+          "crlfCheckoutSha256": "b11c5545b0ba88577906cdbc95ec9783a8572c0b1d08208886a4407ddf482522"
+        }
+      ],
+      "nativeResultsPresent": false,
+      "firstFailure": "Profile mutation is detected before hold",
+      "acceptance": false
+    },
+    {
+      "runId": 38890077375,
+      "runAttempt": 1,
+      "jobId": 116937159472,
+      "harnessCommit": "c639a3147cc2ee597d555dbe2e0e094e879c5c7c",
+      "jobConclusion": "success",
+      "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38890077375",
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38890077375/job/116937159472",
+      "artifact": {
+        "id": 12041426579,
+        "name": "installer-cold-hold-harnessc639a3147cc2ee597d555dbe2e0e094e879c5c7c-run38890077375-attempt1",
+        "bytes": 11026,
+        "sha256": "362cf64e1bb6e9daa775e950a259fc34eda6f1f42e6ec0fad19a3ef410ce6894",
+        "allMemberCRCsPassed": true
+      },
+      "custody": {
+        "privateEvidenceBasename": "cold-hold-custody.json",
+        "bytes": 6019,
+        "sha256": "dabac45b43dc3da2efc9423d2236c023d074bb0e7b096723a30aefd8c86726ce"
+      },
+      "originalJobLog": {
+        "privateEvidenceBasename": "cold-hold-job-original.log",
+        "bytes": 25894,
+        "sha256": "581e63a7c3ad18a9d2719370708d1070edeb90e9ca4392fce957153c2140f9c4"
+      },
+      "sourceIdentityReport": {
+        "name": "source-identity.json",
+        "bytes": 552,
+        "sha256": "5ef146b5f922a432d0a636f111f2670054844cdf9f69af452f83049fe6dd28e3",
+        "crc32": "25ceb207"
+      },
+      "recordedSourceIdentities": [
+        {
+          "path": "opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "fb6e8aaa1d932b9c66c3e66b0ece44c3016622b8",
+          "gitBytes": 14099,
+          "gitSha256": "800d80e892a65aa476fc6a75e12a8810231e790a656309dd1dbb84b035f0f03a",
+          "crlfCheckoutSha256": "051540ec2de4564ee6a55f7e5811545491029ce3ce1ce85fb7a75072885dabe6"
+        },
+        {
+          "path": "opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "24287df90062fd806156967cce87db062e271ea4",
+          "gitBytes": 13799,
+          "gitSha256": "2910ab493f35d41afafdbe7ae8a06c4a8e0ef0f87a7d4ffeb94e9e72ce49ddaa",
+          "crlfCheckoutSha256": "9b6780723b20d676d85dcbba099ffd19eefc801ce7b7e4fb243b8cc42c2ddb86"
+        },
+        {
+          "path": "opennav-x/tools/boat/Preparation.ps1",
+          "gitBlob": "d6b0c50470f1c73c0de43671ed79118c69f811db",
+          "gitBytes": 21220,
+          "gitSha256": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+          "crlfCheckoutSha256": "97fad3888d33de482b87a42f2f1054012aef68915a7df8cae67f5a173e162313"
+        },
+        {
+          "path": "opennav-x/tools/boat/Common.ps1",
+          "gitBlob": "d1bf7f005f5c31b637b04fdd336aeeb14538b737",
+          "gitBytes": 20073,
+          "gitSha256": "4bbab6f0833f77bdf505326d1115b91deaea6f0060297502b43687d7fd4716c8",
+          "crlfCheckoutSha256": "bedc1025684dad7cc74bfc6d237f3eaaf9396ad8bb4caeb05384b4af611524fe"
+        },
+        {
+          "path": "opennav-x/tools/boat/CommissioningProfileLock.cs",
+          "gitBlob": "904936f1e408474c833244661ae66b69c2d2713f",
+          "gitBytes": 9974,
+          "gitSha256": "ca42d5612bd91f15302661fc36143ace79366685fc7135debd23f7c52d631f2c",
+          "crlfCheckoutSha256": "b11c5545b0ba88577906cdbc95ec9783a8572c0b1d08208886a4407ddf482522"
+        }
+      ],
+      "nativeResult": {
+        "name": "native-results.json",
+        "bytes": 3358,
+        "sha256": "c218ec41a0e944275940831b5d1e69e5229e74a5a0b8b17fb68b6d4392e04644",
+        "crc32": "c004d6e2"
+      },
+      "nativeResultSummary": {
+        "status": "passed",
+        "nativeObservation": "passed",
+        "hostPowerShell": "5.1.20348.5622",
+        "hostBits": 64,
+        "helperSha256": "051540ec2de4564ee6a55f7e5811545491029ce3ce1ce85fb7a75072885dabe6",
+        "checkCount": 38
+      }
+    },
+    {
+      "runId": 38891027391,
+      "runAttempt": 1,
+      "jobId": 116940294357,
+      "harnessCommit": "654119a759a4f0a229a67549e8b70bb53c72c214",
+      "jobConclusion": "success",
+      "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38891027391",
+      "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38891027391/job/116940294357",
+      "artifact": {
+        "id": 12042370669,
+        "name": "installer-cold-hold-harness654119a759a4f0a229a67549e8b70bb53c72c214-run38891027391-attempt1",
+        "bytes": 12350,
+        "sha256": "e3f625ecfdba03da2e1988da023d9977a8ab3f65a0711030ae6538a19be2c619",
+        "allMemberCRCsPassed": true
+      },
+      "custody": {
+        "privateEvidenceBasename": "cold-hold-custody.json",
+        "bytes": 7942,
+        "sha256": "9b141e0ca2c8798f3c4b4992455e2c7e1fd5163d1f74de2c19b0fcfe21923e5a"
+      },
+      "originalJobLog": {
+        "privateEvidenceBasename": "cold-hold-job-original.log",
+        "bytes": 25251,
+        "sha256": "a71d9e0c85e9a04b2d10bb9b975a4f0da58cd78d11788e66b083e243fa267533"
+      },
+      "sourceIdentityReport": {
+        "name": "source-identity.json",
+        "bytes": 552,
+        "crc32": "929c6a3c",
+        "sha256": "b036b5d655d6dd0b5d351f44bc9cbe155d2f63d1b1de893b40db96873bc286e3"
+      },
+      "recordedSourceIdentities": [
+        {
+          "path": "opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "00ec5ed939c4094d6b5bfdefc99e2843418cf841",
+          "gitBytes": 15687,
+          "gitSha256": "e90143f604a46806ab26b6ddba705b8deccc2a8d603378c36d36d4eaedec86f5",
+          "crlfCheckoutSha256": "9a3ee3714f45145c7d5151254c928e1d1f27c59a55a8b982c197b3b877271ca9"
+        },
+        {
+          "path": "opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1",
+          "gitBlob": "d7b82f2132e790e5594f34e68805078b543b7ccd",
+          "gitBytes": 17043,
+          "gitSha256": "a440562de2c214bc043ca30ca68e0f67f94bf23ca63e2eb5e7f9886bfa76d0e1",
+          "crlfCheckoutSha256": "3fc521946586d20a65e6b458671274e9ec1a35e3398528a11c923f0d2835de15"
+        },
+        {
+          "path": "opennav-x/tools/boat/Preparation.ps1",
+          "gitBlob": "d6b0c50470f1c73c0de43671ed79118c69f811db",
+          "gitBytes": 21220,
+          "gitSha256": "62b423e73b8abb1cba4ef03839c684ae23db044586d935b567465060fc5912c1",
+          "crlfCheckoutSha256": "97fad3888d33de482b87a42f2f1054012aef68915a7df8cae67f5a173e162313"
+        },
+        {
+          "path": "opennav-x/tools/boat/Common.ps1",
+          "gitBlob": "d1bf7f005f5c31b637b04fdd336aeeb14538b737",
+          "gitBytes": 20073,
+          "gitSha256": "4bbab6f0833f77bdf505326d1115b91deaea6f0060297502b43687d7fd4716c8",
+          "crlfCheckoutSha256": "bedc1025684dad7cc74bfc6d237f3eaaf9396ad8bb4caeb05384b4af611524fe"
+        },
+        {
+          "path": "opennav-x/tools/boat/CommissioningProfileLock.cs",
+          "gitBlob": "904936f1e408474c833244661ae66b69c2d2713f",
+          "gitBytes": 9974,
+          "gitSha256": "ca42d5612bd91f15302661fc36143ace79366685fc7135debd23f7c52d631f2c",
+          "crlfCheckoutSha256": "b11c5545b0ba88577906cdbc95ec9783a8572c0b1d08208886a4407ddf482522"
+        }
+      ],
+      "nativeResult": {
+        "name": "native-results.json",
+        "bytes": 4157,
+        "crc32": "e6d921eb",
+        "sha256": "2d365cd13cc7cab425e9f5c33ca56b2e9f23e2d5de8a96dc99e385cc7bdabd56"
+      },
+      "nativeResultSummary": {
+        "status": "passed",
+        "nativeObservation": "passed",
+        "hostPowerShell": "5.1.20348.5622",
+        "hostBits": 64,
+        "helperSha256": "9a3ee3714f45145c7d5151254c928e1d1f27c59a55a8b982c197b3b877271ca9",
+        "checkCount": 49
+      },
+      "runnerLabel": "windows-2022",
+      "runnerImage": "20261012.333.1",
+      "separateInstallerRetestJob": {
+        "id": "116940296593",
+        "conclusion": "skipped"
+      }
+    }
+  ],
+  "fixtureCorrection": {
+    "commit": "78e44f568cff4278f0b3b194668f349dff36c531",
+    "path": "opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1",
+    "sourceDiagnosis": "The original test appended a bare changed token to the INI, creating malformed syntax while expecting the later protected-tree mutation refusal. The original assertion failed; its output did not expose the underlying refusal reason.",
+    "correction": "Assert malformed syntax refusal separately, then write a valid changed INI and assert the protected-tree mutation refusal. Retain bounded expected/actual refusal text on future fixture failure.",
+    "originalExpectedCheckCount": 37,
+    "correctedPassedCheckCount": 38,
+    "productionHelperChanged": false
+  },
+  "originalPortableContracts": {
+    "result": {
+      "privateEvidenceBasename": "rtlsdr-portable-contracts-20261016-final.json",
+      "bytes": 776,
+      "sha256": "99b6fa1b81c5738f38cb76a484f6dac3c7d9f5db896cec3f38f7b47880d2f214"
+    },
+    "status": "passed",
+    "nativeObservation": "not-run",
+    "hostPowerShell": "7.6.7",
+    "hostBits": 64,
+    "helperSha256": "800d80e892a65aa476fc6a75e12a8810231e790a656309dd1dbb84b035f0f03a",
+    "checkCount": 8,
+    "checks": [
+      "Production pin rejects inert same-size DLL",
+      "Unrelated inert process and task observations are permitted",
+      "Live opencpn.exe blocks cold hold",
+      "Live rtl_ais.exe blocks cold hold",
+      "Live skager-start.exe blocks cold hold",
+      "Application scheduled task refuses even without actions",
+      "Indirect scheduled protected-tree action refuses",
+      "Concurrent supervisor command refuses"
+    ],
+    "sourceCommitReportedByAuthor": "0d098d02b9fa116aa96d843a2defe79e6cc4eb16",
+    "sourceCommitIsNotEmbeddedInPortableResult": true
+  },
+  "nativeFixtureBoundary": {
+    "temporaryInertFilesOnly": true,
+    "vendorBinariesExecuted": false,
+    "productionPinFirstRejectsInertSameSizeBytes": true,
+    "testOnlyDllHashSubstitutionCount": 1,
+    "stockIdentitySubstitutedAfterProductionValidatorNegative": true,
+    "processAndScheduledTaskObservationsSubstituted": true,
+    "actualHelperPathAclJournalMutexTransactionLockAndMoveCodeUsed": true,
+    "actualUserEntrypointInvoked": false,
+    "actualInstallerUpdateExecutedByColdHoldFixture": false,
+    "actualNativeExecAndClientOnlyComHandlerCimObjectsCheckedInLatestRun": true
+  },
+  "coveredNativeBehaviors": [
+    "Exact one-time Hold/Restore under actual profile and transaction locks; original ACL and protected trees preserved.",
+    "Interrupted Hold before/after move and interrupted Restore; occupied destination never overwritten; newly selected owned generation permitted for restoration.",
+    "Existing cold markers, wrong plan hash, busy/missing transaction lock, corrupt backup/held bytes, malformed or changed profile and changed adjacent helper refuse.",
+    "Hard-linked source and redirected journal refuse."
+  ],
+  "limitations": [
+    "The original failed native job remains failed and has no native-results.json; it is not relabeled by the later pass.",
+    "The historical 38-case pass applies only to the first helper version; the 49-case result separately binds the task-action correction to its exact source and fixture hashes.",
+    "The original eight portable checks did not run Windows filesystem, ACL, hardlink/junction or native lock/move cases.",
+    "The latest fixture additionally checks actual native Exec and client-only COM CIM object shapes. Process/task inventories remain substituted; arbitrary COM registration or handler behavior is not audited.",
+    "No successful boat Inspect, Hold, Update or Restore is established here; fresh operational receipts and installed/profile identities remain separate.",
+    "Raw logs, machine/user paths, real profile data and native file inventories remain private."
+  ],
+  "sameHelperFirstTwoNativeJobs": {
+    "path": "opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1",
+    "gitBlob": "fb6e8aaa1d932b9c66c3e66b0ece44c3016622b8",
+    "gitLfSha256": "800d80e892a65aa476fc6a75e12a8810231e790a656309dd1dbb84b035f0f03a",
+    "nativeCrlfBytes": 14313,
+    "nativeCrlfSha256": "051540ec2de4564ee6a55f7e5811545491029ce3ce1ce85fb7a75072885dabe6"
+  },
+  "currentQualifiedHelper": {
+    "harnessCommit": "654119a759a4f0a229a67549e8b70bb53c72c214",
+    "nativeRunId": 38891027391,
+    "nativeCheckCount": 49,
+    "nativeCrlfSha256": "9a3ee3714f45145c7d5151254c928e1d1f27c59a55a8b982c197b3b877271ca9",
+    "testNativeCrlfSha256": "3fc521946586d20a65e6b458671274e9ec1a35e3398528a11c923f0d2835de15",
+    "scope": "Inert native maintenance-helper fixture only; no boat recovery or installed product acceptance."
+  },
+  "taskActionCorrection": {
+    "commit": "654119a759a4f0a229a67549e8b70bb53c72c214",
+    "trigger": "Later real Inspect stopped before backup or hold when an existing scheduled-task COM action had no Execute property.",
+    "behavior": "Recognize only declared MSFT_TaskExecAction and MSFT_TaskComHandlerAction shapes; inspect their applicable fields and refuse unknown/malformed shapes. Keep application task-name, explicit protected-path and process barriers.",
+    "nativeConstruction": "New-ScheduledTaskAction creates an Exec object; Get-CimClass plus New-CimInstance -ClientOnly creates a COM handler object. No task is registered or run.",
+    "earlier38CheckLabelsRetained": true,
+    "additionalPassedChecks": [
+      "Known COM action with valid braced identity and null data needs no Execute property",
+      "Known-name barrier also refuses COM actions",
+      "COM data with explicit protected path refuses",
+      "Malformed COM identity refuses",
+      "Unknown native action class refuses",
+      "Unclassified action cannot silently become Exec",
+      "Known Exec missing Execute refuses",
+      "Known COM missing Data property refuses",
+      "Exec working directory is checked for protected roots",
+      "Actual native MSFT_TaskExecAction object is recognized",
+      "Actual client-only native MSFT_TaskComHandlerAction object is recognized"
+    ],
+    "comRegistrationOrHandlerBehaviorAudited": false,
+    "applicationOrInstallerProductSourceChanged": false
+  }
+}
