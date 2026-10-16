@@ -40,6 +40,9 @@ target_compile_features(opennav_marine PUBLIC cxx_std_17)
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/MarineBridge.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OpenCPNPilot.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NativeRouteOutput.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE
+  "${OPENNAV_ROOT}/src/integration/RoutePassageSettings.cpp"
+  "${OPENNAV_ROOT}/src/integration/ActiveRoutePassageOverlay.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
   "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp"
   "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
@@ -212,6 +215,7 @@ function(opennav_attach_route_tests)
       "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
       "${OPENNAV_ROOT}/src/integration/UpdateStartupReceipt.cpp"
       "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
+      "${OPENNAV_ROOT}/src/integration/RoutePassageSettings.cpp"
       "${OPENNAV_ROOT}/src/integration/OpenCPNRouteReader.cpp")
     target_include_directories(tests PRIVATE "${OPENNAV_ROOT}/src" "${CMAKE_BINARY_DIR}/include")
     target_link_libraries(tests PRIVATE opennav_integration opennav_marine opennav_application)

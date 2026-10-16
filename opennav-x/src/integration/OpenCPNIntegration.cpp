@@ -22,6 +22,7 @@
 #include "integration/UpdateStartupReceipt.h"
 #include "integration/UpdateQualification.h"
 #include "integration/RoutePassWatch.h"
+#include "integration/RoutePassageSettings.h"
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/ChartPresentation.h"
@@ -403,6 +404,9 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
       wxLogWarning("SKAGER diagnostic directory unavailable: %s", folder);
   }
   integration::ConfigureChartPresentation(config, IsXNav());
+  // Explicit route arrival preferences belong to the shared profile. A mode
+  // change must not silently change a configured route's advancement policy.
+  integration::ConfigureRoutePassage(&config);
   executable = wxStandardPaths::Get().GetExecutablePath().ToStdString(wxConvUTF8);
   wxLogMessage("SKAGER startup: %s", selected == StartupMode::Safe ? "safe" : IsXNav() ? "xnav" : "legacy");
 }
@@ -1527,6 +1531,7 @@ bool PrepareClose(wxFileConfig& config) {
   route_progress.reset();
   SetAutopilotN2KInterfaceGuard({});
   native_route_output.reset();
+  integration::ConfigureRoutePassage(nullptr);
   integration::FinishDashboardPresentation();
   shell.reset();
   online_chart.Clear();

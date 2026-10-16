@@ -67,6 +67,44 @@ int main() {
     test("deletion and retained lifetime", [] { Change([](auto& r){r.route.registered=false;r.route.points.clear();},RouteState::InvalidRoute); });
     test("reversal", [] { Change([](auto& r){std::reverse(r.route.points.begin(),r.route.points.end()); r.route.active_index=2;},RouteState::RouteChanged); });
     test("edit while active", [] { Change([](auto& r){r.route.points[1].latitude_deg=56.5; r.route.points[1].incoming_leg_nm=8;},RouteState::RouteChanged); });
+    test("passage policy invalidates retained navigation guidance", [] {
+      Change([](auto& r){r.route.passage.arrival_radius_m=25;}, RouteState::RouteChanged);
+      Change([](auto& r){r.route.passage.corridor_width_m=150;}, RouteState::RouteChanged);
+      Change([](auto& r){r.route.passage.storage_revision="record:v1|stock|100";}, RouteState::RouteChanged);
+      auto a=Fixture(); auto b=a;
+      a.route.passage.valid=b.route.passage.valid=false;
+      a.route.passage.reason=b.route.passage.reason="Malformed settings";
+      a.route.passage.storage_revision="record:broken-one";
+      b.route.passage.storage_revision="record:broken-two";
+      Require(!SameRoute(a.route,b.route),"Distinct malformed records cannot share a repair selection");
+      Invalid(Evaluate(a),RouteState::InvalidRoute);
+    });
+    test("route passage numeric bounds and missing radius", [] {
+      application::RoutePassageSettings value;
+      Require(!value.arrival_radius_m && value.corridor_width_m==100 &&
+                  application::ValidateRoutePassage(value).empty(),
+              "Absent radius retains stock behavior with full display width 100m");
+      for(double radius:{2.,1852.}) {
+        value.arrival_radius_m=radius;
+        Require(application::ValidateRoutePassage(value).empty(),"Arrival endpoints accepted");
+      }
+      for(double width:{2.,20000.}) {
+        value.corridor_width_m=width;
+        Require(application::ValidateRoutePassage(value).empty(),"Full-width endpoints accepted");
+      }
+      for(double invalid:{-1.,0.,1.99,1852.01,std::numeric_limits<double>::quiet_NaN(),
+                          std::numeric_limits<double>::infinity()}) {
+        auto r=Fixture(); r.route.passage.arrival_radius_m=invalid;
+        Require(!application::ValidateRoutePassage(r.route.passage).empty(),"Invalid radius rejected");
+        Invalid(Evaluate(r),RouteState::InvalidRoute);
+      }
+      for(double invalid:{-1.,0.,1.99,20000.01,std::numeric_limits<double>::quiet_NaN(),
+                          std::numeric_limits<double>::infinity()}) {
+        auto r=Fixture(); r.route.passage.corridor_width_m=invalid;
+        Require(!application::ValidateRoutePassage(r.route.passage).empty(),"Invalid full width rejected");
+        Invalid(Evaluate(r),RouteState::InvalidRoute);
+      }
+    });
     test("open edit stays unavailable even with stable copied values", [] {auto r=Fixture();r.route.editing=true;Invalid(Evaluate(r),RouteState::RouteEditing); });
     test("repeated identity including inactive point", [] {auto r=Fixture(); r.route.points[2].id="b"; Invalid(Evaluate(r),RouteState::AmbiguousPoint); });
     test("invalid active waypoint", [] {auto r=Fixture(); r.route.active_index.reset(); Invalid(Evaluate(r),RouteState::InvalidActivePoint); });

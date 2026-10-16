@@ -1,4 +1,5 @@
 #pragma once
+#include "application/RoutePassage.h"
 #include "vessel/AisState.h"
 #include <chrono>
 #include <functional>
@@ -16,6 +17,7 @@ struct Route {
   std::string id, revision, name, description;
   std::vector<Waypoint> points;
   bool active = false, editable = false, visible = false;
+  RoutePassageSettings passage;
 };
 struct Catalog {
   std::vector<Route> routes;
@@ -105,6 +107,7 @@ struct NavigationActions {
   // SCRUM-328/329: forecast wind chart layer (off by default) and the shared
   // forecast time step (nullopt = nearest to now). Presentation only.
   std::function<ChartPresentationResult(bool)> set_chart_wind;
+  std::function<ChartPresentationResult(bool)> set_chart_corridor;
   std::function<std::optional<std::chrono::system_clock::time_point>()> weather_time;
   std::function<void(std::optional<std::chrono::system_clock::time_point>)> set_weather_time;
   std::function<CommandResult(int)> view_ais;
@@ -125,6 +128,8 @@ struct NavigationActions {
   std::function<CommandResult(const Route &, const std::string &,
                               const std::string &)>
       edit_route;
+  std::function<CommandResult(const Route &, const RoutePassageSettings &)>
+      set_route_passage;
   std::function<CommandResult(const Waypoint &, const std::string &,
                               const std::string &)>
       edit_waypoint;

@@ -2,6 +2,7 @@
 #include "application/NavigationNaming.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
+#include "integration/RoutePassageSettings.h"
 #include "integration/WeatherOverlay.h"
 #include "model/navobj_db.h"
 #include "model/route.h"
@@ -182,12 +183,16 @@ MakeNavigationActions(MyFrame &frame,
                  wxString::FromUTF8(r.message));
     return r;
   };
-  // Forecast wind is an XNav-owned presentation layer: the layer row reports
-  // the overlay toggle and credential-free forecast state, never OpenCPN data.
+  // XNav presentation layers report their actual display preferences. Passage
+  // visibility is independent of arrival policy and chart hazard assessment.
+  // Forecast status remains credential-free, separate from measured wind.
   const auto with_wind = [&frame] {
     auto state = CopyChartPresentation(frame);
-    if (state.available)
+    if (state.available) {
       state.wind_vectors = {WeatherOverlayVisible(), true, WeatherLayerReason()};
+      state.route_corridor = {PassageVisible(), true,
+                             "Active passage; width set in route settings"};
+    }
     return state;
   };
   a.chart_presentation = with_wind;
@@ -213,6 +218,16 @@ MakeNavigationActions(MyFrame &frame,
     const bool ok = r.state.wind_vectors.visible == show;
     r.command = {ok, ok ? "Chart presentation applied"
                         : "Chart presentation changed; inspect current state"};
+    return r;
+  };
+  a.set_chart_corridor = [&frame, with_wind](bool show) {
+    application::ChartPresentationResult r;
+    r.command = SetPassageVisible(show);
+    if (r.command.ok) {
+      frame.InvalidateAllGL();
+      frame.RefreshAllCanvas(false);
+    }
+    r.state = with_wind();
     return r;
   };
   a.weather_time = [] { return WeatherDisplayTime(); };
@@ -271,6 +286,9 @@ MakeNavigationActions(MyFrame &frame,
   a.edit_route = [result](const auto &r, const auto &name,
                           const auto &description) {
     return result(EditRoute(r, name, description));
+  };
+  a.set_route_passage = [result](const auto &r, const auto &passage) {
+    return result(EditRoutePassage(r, passage));
   };
   a.edit_waypoint = [result](const auto &p, const auto &name,
                              const auto &description) {

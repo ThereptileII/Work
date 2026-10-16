@@ -330,6 +330,10 @@ void ControlBoundary() {
       return application::CommandResult{true, "ok"};
     };
     actions.deactivate = actions.activate;
+    actions.set_route_passage = [&](const auto &, const auto &) {
+      ++count;
+      return application::CommandResult{true, "ok"};
+    };
     actions.create_waypoint = [&](auto, const auto &, const auto &) {
       ++count;
       return application::CommandResult{true, "ok"};
@@ -352,7 +356,8 @@ void ControlBoundary() {
     actions = application::GuardNavigationChanges(
         std::move(actions), [&] { return !service.Replaying(); });
     Check(!actions.activate({}).ok && !actions.deactivate({}).ok &&
-              !actions.create_waypoint({}, "", "").ok,
+              !actions.create_waypoint({}, "", "").ok &&
+              !actions.set_route_passage({}, {}).ok,
           "Replay blocks real navigation mutations");
     Check(!actions.go_to({}, "destination").ok &&
               !actions.go_to_waypoint({}).ok &&
@@ -365,6 +370,8 @@ void ControlBoundary() {
     service.StopReplay();
     Check(actions.activate({}).ok && count == 1 && actions.can_undo_route_point(),
           "Explicit replay exit restores normal human actions");
+    Check(actions.set_route_passage({}, {}).ok && count == 2,
+          "Only explicit replay exit restores route-arrival edits");
     diagnostics::Commissioning denied(
         root, [] { return "Output-capable connection active"; });
     Check(!denied.OpenReplay(file, now).ok && !denied.Replaying(),
