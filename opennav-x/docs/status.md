@@ -90,6 +90,29 @@ Protected signed B0/B1 and interactive UAC acceptance, fresh boat validation and
 physical GPU acceptance remain open. Design/endurance runs remain off, no
 Production promotion occurred and public access remains closed.
 
+The authorized boat Update on 16 October failed **before atomic commit** when
+the exact stock `rtlsdr_pi.dll` was imported: it requires the absent
+`wxbase312u_vc_custom.dll`. This is the previously recorded wx 3.1 compatibility
+gap, now an actual installer refusal. At 10:35:52 UTC, the installed `f1a1e68c`
+generation, executable, state, stock executable and profile INI hashes remain
+unchanged; no application/helper is running and all three remote-access services
+are running. Before the attempt, the complete current profile and existing
+recovery copy matched across 4,206 files. The original 850-byte failure report
+is retained privately with SHA-256
+`cd58d5b19e54dc003868e5338235c59683abea3ded4f0d526a5e4fd96fb2fefa`.
+No automatic retry or incompatible wx DLL substitution is authorized by that
+result. SCRUM-17/22 track a narrow reversible hold/restoration of this exact old
+plugin and review of the remaining imported PE closure. The existing
+commissioning quarantine cannot be used during maintenance.
+
+SCRUM-211's certificate-verification software criteria were independently
+reviewed and accepted on 16 October; Jira is **Done**. This closes that defect,
+not the separate installer, protected-updater or boat gates. SCRUM-209 still
+needs the retained package's full Repair/Uninstall and retained-addition
+lifecycle checks; the shorter Staging result must not be described as those
+checks. A focused retained installer-lifecycle scope is being added without a
+product rebuild or Production promotion.
+
 
 ## Installer trust correction — native boundary and replacement installation pass
 
