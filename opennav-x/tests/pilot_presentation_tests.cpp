@@ -65,13 +65,32 @@ TEST(OpenNavPilotPresentation, PendingAndTimeoutNeverInventConfirmation) {
   EXPECT_EQ(v.outcome, "+10\xC2\xB0 not confirmed by the pilot");
   p.command.request.action = adapters::PilotAction::Wind;
   p.command.state = adapters::CommandState::Rejected;
-  EXPECT_EQ(View(p).outcome, "Wind refused by the pilot");
+  p.command.detail = "Adapter rejected transmission";
+  EXPECT_EQ(View(p).outcome, "Wind request rejected");
+  EXPECT_EQ(View(p).note, p.command.detail);
   p.command.state = adapters::CommandState::Confirmed;
   EXPECT_TRUE(View(p).outcome.empty());
   p.command.state = adapters::CommandState::TimedOut;
   p.command.request.action = adapters::PilotAction::AlterCourse;
   EXPECT_FALSE(View(p, stamp + 3s).heading_magnetic_deg);
   EXPECT_TRUE(View(p, stamp + 3s).standby);
+}
+TEST(OpenNavPilotPresentation, NativeTrackRequiresConfirmedAutoOrTrack) {
+  auto p = Live();
+  p.capabilities.track = p.capabilities.wind = true;
+  EXPECT_TRUE(View(p).track);
+  EXPECT_TRUE(View(p).wind);
+  p.feedback.mode = adapters::PilotMode::Standby;
+  EXPECT_FALSE(View(p).track);
+  EXPECT_TRUE(View(p).wind);
+  p.feedback.mode = adapters::PilotMode::Wind;
+  EXPECT_FALSE(View(p).track);
+  p.feedback.mode = adapters::PilotMode::Track;
+  EXPECT_TRUE(View(p).track);
+  p.command.state = adapters::CommandState::Pending;
+  EXPECT_FALSE(View(p).track);
+  EXPECT_FALSE(View(p).wind);
+  EXPECT_TRUE(View(p).standby);
 }
 TEST(OpenNavPilotPresentation, InvalidFreshnessAndHeading) {
   for (int change = 0; change < 7; ++change) {

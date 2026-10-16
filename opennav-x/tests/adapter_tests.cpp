@@ -52,13 +52,23 @@ void Manual() {
   Check(pilot.Request(PilotAction::AlterCourse, 1, epoch + 1900ms).state ==
             CommandState::Rejected,
         "Manual course requires AUTO");
-  pilot.Request(PilotAction::Track, 0, epoch + 2s);
+  Check(pilot.Request(PilotAction::Track, 0, epoch + 2s).state ==
+            CommandState::Rejected,
+        "Native TRACK never silently switches WIND to AUTO");
+  Check(pilot.Request(PilotAction::Auto, 0, epoch + 2s).state ==
+            CommandState::Pending,
+        "Operator explicitly requests AUTO before TRACK");
   pilot.Tick(epoch + 2500ms);
-  Check(pilot.GetState(epoch + 2500ms).feedback.mode == PilotMode::Track,
-        "Capability-supported simulated track mode");
-  pilot.Request(PilotAction::Standby, 0, epoch + 2600ms);
+  Check(pilot.GetState(epoch + 2500ms).feedback.mode == PilotMode::Auto &&
+            pilot.GetState(epoch + 2500ms).command.state == CommandState::Confirmed,
+        "AUTO needs measured feedback before TRACK");
+  pilot.Request(PilotAction::Track, 0, epoch + 2600ms);
   pilot.Tick(epoch + 3100ms);
-  Check(pilot.GetState(epoch + 3100ms).feedback.mode == PilotMode::Standby,
+  Check(pilot.GetState(epoch + 3100ms).feedback.mode == PilotMode::Track,
+        "Capability-supported simulated track mode");
+  pilot.Request(PilotAction::Standby, 0, epoch + 3200ms);
+  pilot.Tick(epoch + 3700ms);
+  Check(pilot.GetState(epoch + 3700ms).feedback.mode == PilotMode::Standby,
         "Standby observed");
   Check(!pilot.Log().empty() &&
             pilot.Log().back().state == CommandState::Confirmed,

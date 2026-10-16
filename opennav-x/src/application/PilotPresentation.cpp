@@ -45,7 +45,9 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
   p.standby = p.enabled && authorized && caps.standby;
   p.auto_mode = p.enabled && authorized && fresh && !p.pending &&
                 caps.auto_mode && bool(p.actual_heading_magnetic_deg);
-  p.track = p.enabled && authorized && fresh && !p.pending && caps.track;
+  p.track = p.enabled && authorized && fresh && !p.pending && caps.track &&
+            (p.mode == adapters::PilotMode::Auto ||
+             p.mode == adapters::PilotMode::Track);
   p.wind = p.enabled && authorized && fresh && !p.pending && caps.wind;
   p.alter_course = p.enabled && authorized && fresh && !p.pending &&
                    caps.alter_course && p.mode == adapters::PilotMode::Auto &&
@@ -84,7 +86,8 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
       p.outcome = action + " not confirmed by the pilot";
       break;
     case adapters::CommandState::Rejected:
-      p.outcome = action + " refused by the pilot";
+      // Local validation and transport refusal are not physical pilot feedback.
+      p.outcome = action + " request rejected";
       break;
     case adapters::CommandState::StaleFeedback:
       p.outcome = action + " not sent: no current pilot feedback";
@@ -99,8 +102,9 @@ PilotPresentation PresentPilot(const adapters::PilotView &pilot,
              "was retried.";
     break;
   case adapters::CommandState::Rejected:
-    p.note =
-        "Command rejected. Check pilot diagnostics before another request.";
+    p.note = pilot.command.detail.empty()
+                 ? "Request rejected. Check pilot diagnostics before another request."
+                 : pilot.command.detail;
     break;
   case adapters::CommandState::StaleFeedback:
     p.note = "Command not sent: current pilot feedback is required.";

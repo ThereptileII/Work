@@ -150,6 +150,14 @@ PilotCommand ManualAutopilot::Request(PilotAction action, double delta,
            "Fresh measured magnetic heading required for AUTO", now);
     return command_;
   }
+  // Native TRACK engages the physical pilot's route mode. It is not
+  // AutoTrack's software heading loop and must not engage AUTO implicitly.
+  if (action == PilotAction::Track && feedback.mode != PilotMode::Auto &&
+      feedback.mode != PilotMode::Track) {
+    Record(CommandState::Rejected,
+           "Select AUTO and wait for pilot confirmation before TRACK", now);
+    return command_;
+  }
   if (action == PilotAction::AlterCourse) {
     if (feedback.mode != PilotMode::Auto ||
         !Heading(feedback.locked_heading_magnetic_deg, now)) {
