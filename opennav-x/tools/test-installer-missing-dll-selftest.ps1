@@ -20,7 +20,8 @@ if ($errors.Count) { throw 'Production Lifecycle.ps1 does not parse.' }
 # is forbidden here: the missing import must stop SelfTest before ReadJson and
 # its later product/policy/profile checks. Those functions are not substituted.
 # Production Hash uses .NET: inherited PSModulePath may omit Get-FileHash.
-$names=@('Hash','PlainPath','PeArchitecture','SelfTest')
+$names=@('Hash','PlainPath','PeArchitecture','Get-ProtectedBrokerObservation',
+  'Assert-NoProtectedBrokerEnrollment','Assert-LifecycleMutation','SelfTest')
 $definitions=@($ast.FindAll({param($node)
   $node -is [Management.Automation.Language.FunctionDefinitionAst] -and $node.Name -in $names
 },$true))
@@ -28,8 +29,14 @@ foreach ($name in $names) {
   if (@($definitions | Where-Object Name -ceq $name).Count -ne 1) { throw 'Missing or duplicate production function.' }
 }
 foreach ($definition in $definitions) { . ([scriptblock]::Create($definition.Extent.Text)) }
+# SelfTest's real mutation guard runs both at entry and immediately before
+# process creation. Import its frozen armed-barrier implementation and bind the
+# same installation root as Lifecycle; never substitute an always-clear guard.
+$transactionSource=Join-Path (Split-Path $source -Parent) 'UpdateTransaction.ps1'
+. $transactionSource
+$Root=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1'
 $Stage=PlainPath $Stage; $Report=PlainPath $Report
-$generations=Join-Path ([Environment]::GetFolderPath('LocalApplicationData')) 'OpenNavXAlpha1\generations'
+$generations=Join-Path $Root 'generations'
 if ([IO.Path]::GetDirectoryName($Stage) -ine $generations -or
     [IO.Path]::GetFileName($Stage) -cnotmatch '^[a-f0-9]{32}$' -or
     -not [IO.Directory]::Exists($Stage) -or (Test-Path -LiteralPath (Join-Path $Stage 'ownership.json'))) {
@@ -52,7 +59,7 @@ public static class MissingDllProofErrorMode {
 # Remove inherited suppression only in this proof process; production SelfTest
 # must establish and restore its own error mode around its actual child launch.
 $inheritedMode=[MissingDllProofErrorMode]::SetErrorMode(0)
-$receipt=[ordered]@{status='failed';sourceSha256=(Hash $source);
+$receipt=[ordered]@{status='failed';sourceSha256=(Hash $source);transactionSourceSha256=(Hash $transactionSource);
   executableSha256=$ExpectedExecutableSha256;stage=$Stage;missingDependency=$MissingDependency;
   initialErrorMode=[MissingDllProofErrorMode]::GetErrorMode();restoredErrorMode=$null;error=$null;
   scope='Actual production SelfTest missing-DLL loader refusal only; no installer guard bypass or product qualification'}
