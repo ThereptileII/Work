@@ -1,0 +1,165 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-17",
+  "status": "native-contracts-passed",
+  "toolCommit": "bc2d1d5a36ce8b55a91ea6f5e4f3e3c443eff996",
+  "workflow": ".github/workflows/opennav-boat-tools.yml",
+  "workflowSourceSha256": "3e0e76809ff05bf9cf9d26e3c32bd7bf9d5242b1ba6df5e248019cb019302ed7",
+  "run": {
+    "id": 38897699400,
+    "attempt": 1,
+    "event": "workflow_dispatch",
+    "scope": "installed-warning",
+    "conclusion": "success",
+    "jobId": 116962052211,
+    "otherJobsSkipped": 8
+  },
+  "platform": {
+    "powershell": "5.1.20348.5622",
+    "processBits": 64,
+    "runner": "windows-2022",
+    "imageVersion": "20261012.333.1"
+  },
+  "results": {
+    "installedWelcome": {
+      "status": "passed",
+      "checks": 127,
+      "policyChecks": 98,
+      "isolatedRuntimeFixtureChecks": 29,
+      "windowsApisInvoked": false,
+      "actualInstalledModalAcceptance": false
+    },
+    "interactiveJobBudget": {
+      "status": "passed",
+      "checks": 33,
+      "actualDispatcherStatements": true,
+      "schedulerSubstituted": true,
+      "actualScheduler": false,
+      "nativeTimingAcceptance": false
+    }
+  },
+  "artifact": {
+    "id": 12044448020,
+    "bytes": 617468,
+    "sha256": "73ea39bd0857520d3156b8ba38c1a2a51f0470e634a36b3d139f648cc709e839",
+    "apiSizeAndDigestMatched": true,
+    "crcCheckedMembers": 167
+  },
+  "sourceBinding": {
+    "rawToolCount": 164,
+    "sourceIdentityEntries": 164,
+    "allRecordedSizesAndHashesMatched": true,
+    "gitByteExactCount": 0,
+    "gitLfToWindowsCrlfOnlyCount": 164,
+    "otherByteDifferenceCount": 0,
+    "selectedFiles": [
+      {
+        "name": "Common.ps1",
+        "sourceBytes": 20748,
+        "sourceSha256": "038975deaa54096fcebd0fd3dca0997cbfdaa1d921f7193398ae190082a568f3",
+        "nativeBytes": 21048,
+        "nativeSha256": "e92bf6e4176919eb802f8d2feb719e9df41dcea4288173b1704053d6bd1a92e3",
+        "comparison": "Git LF to Windows CRLF only"
+      },
+      {
+        "name": "InstalledWelcome.ps1",
+        "sourceBytes": 19189,
+        "sourceSha256": "e9f55c5f7913dd7275bf74ebe588ba712826a14545788a9bdae32ff556e02044",
+        "nativeBytes": 19388,
+        "nativeSha256": "6267be3d2a0f6b143443c6185228889c4036b98d2eefeb3c34e322b37a5619d5",
+        "comparison": "Git LF to Windows CRLF only"
+      },
+      {
+        "name": "run-mode.ps1",
+        "sourceBytes": 1403,
+        "sourceSha256": "ee4fed8324e5d3a74c9e4589be624d9e361d26cb1ee9aeceb02e9d71415530e7",
+        "nativeBytes": 1418,
+        "nativeSha256": "ebd2a25e93d8e87f6b45141d2f0c1db1b1e06dd1254996abb5bbe5759db1f40d",
+        "comparison": "Git LF to Windows CRLF only"
+      },
+      {
+        "name": "smoke-test.ps1",
+        "sourceBytes": 2875,
+        "sourceSha256": "dd854dc7a5c4e82a41aa94740fcf02f85eaad4e04374981bf7672e075c1e08b4",
+        "nativeBytes": 2915,
+        "nativeSha256": "6043516ebca2215e51a868c53d062c2d5a3303e98d6166ae0f3a6f3556cff7ca",
+        "comparison": "Git LF to Windows CRLF only"
+      },
+      {
+        "name": "test-installed-welcome.ps1",
+        "sourceBytes": 13662,
+        "sourceSha256": "dad86c80eb6cd826bd1869da387c7fe7192a2359da392e6d4013d2a288156ea0",
+        "nativeBytes": 13760,
+        "nativeSha256": "8c90407515bc05206878fb66dcd624da862d68747bd6a032b3d5721179b1f4e7",
+        "comparison": "Git LF to Windows CRLF only"
+      },
+      {
+        "name": "test-interactive-job-budget.ps1",
+        "sourceBytes": 7211,
+        "sourceSha256": "2365bb0bd34cf2b9a980a74db942b36f31717dbba87f59edc6bb1b78fb9ecd0a",
+        "nativeBytes": 7305,
+        "nativeSha256": "a8eba4f93874ee30d251b68bca8363a173c5491f4cecd51c9fd905cbb2f2afba",
+        "comparison": "Git LF to Windows CRLF only"
+      }
+    ]
+  },
+  "originalReports": {
+    "source-identity.json": {
+      "bytes": 40100,
+      "sha256": "a770761cf23582066b4a2e4d5dfa10ab03b970a7bb166fe27bf7391ee6228c85"
+    },
+    "installed-welcome.log": {
+      "bytes": 20104,
+      "sha256": "e7926ec40cc8694613cc7e93c1d4219fe9f2bbcc4d14decce20bb5c47c235616"
+    },
+    "interactive-job-budget.log": {
+      "bytes": 6430,
+      "sha256": "832f06ae9b4639eced55387c909a4483b54417044ea8dc953c8c33f743537acc"
+    }
+  },
+  "retainedCustody": {
+    "receiptBytes": 2741,
+    "receiptSha256": "bebb246b5ba663d33e45f5861d1e24746d8124ede083399175bbb8a238dd0dc9",
+    "artifactApi": {
+      "bytes": 817,
+      "sha256": "44757749ba2d1aa571b8e0c9d64f8a0f9e97ea00094569151a6b26697bf5fbd0"
+    },
+    "runApi": {
+      "bytes": 12099,
+      "sha256": "b6acf349c7ac38a8087cee54d0125d6847199e9b0aa71d7dc685d79fc026cfd3"
+    },
+    "jobsApi": {
+      "bytes": 9707,
+      "sha256": "4489292104596224c30539981a78f300e5772cf8a63f1f3c4687bce830416bf9"
+    },
+    "jobLog": {
+      "bytes": 39153,
+      "sha256": "02afeaed1b9ac338841f38c1051d2e535fa6b73aa4ed8b6d4f7cf8fc2bf3aedc"
+    },
+    "memberInventory": {
+      "bytes": 30106,
+      "sha256": "2b1b3ec44a656c3579386a11a9828b475bc707f50c21969bc4b2be5cd3f27937"
+    },
+    "gitSourceInventory": {
+      "bytes": 26215,
+      "sha256": "9c0c48bf5b2793d491158ef0c532a2a29dbedf0881f84cb41682babcfd5a91f3"
+    },
+    "allSourceByteComparisons": {
+      "bytes": 55791,
+      "sha256": "c22d92bb23fd514519260e1cae2aeaf572930aafa08ace4b77f41d0b22e9192e"
+    }
+  },
+  "limits": {
+    "applicationBuilt": false,
+    "applicationLaunched": false,
+    "boatAccess": false,
+    "hardwareCommands": false,
+    "actualWindowTested": false,
+    "actualSchedulerTested": false,
+    "fullToolingMatrixPassed": false,
+    "stagingProvedByThisReceipt": false,
+    "commissioningAccepted": false,
+    "productAccepted": false
+  },
+  "scope": "Native PowerShell policy and isolated runtime/scheduler contracts only. No actual warning acknowledgement, scheduled-task timing, application or boat acceptance."
+}
