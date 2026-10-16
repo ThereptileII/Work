@@ -1,0 +1,217 @@
+{
+  "schema": 1,
+  "evidenceDate": "2026-10-16",
+  "scope": "Completed private Staging composition of frozen product and authenticated replacement suffix; not Production or boat acceptance",
+  "product": {
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "version": "0.4.0-beta2.4"
+  },
+  "originalQualifier": {
+    "jobId": "116562831922",
+    "conclusion": "failure",
+    "artifactId": "11994723756",
+    "artifactSha256": "9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
+    "jobLogSha256": "8a65919799ef26adb9d6a256cd1f711822a335eeb1d091cab4daedcaddaae896",
+    "failure": "Original bootstrap launcher-completion timeout remains failed; no original report rewritten",
+    "errorSha256": "d7ec224e748325f717910d8011fca946ac73659d1f577b0b82a89ba755e4d939"
+  },
+  "replacement": {
+    "helperCommit": "3fe8866fa191a72eb47290368311cbed11463664",
+    "runId": "38882281891",
+    "runAttempt": "1",
+    "jobId": "116911623959",
+    "conclusion": "success",
+    "scope": "installer-charts",
+    "artifactId": "12039410527",
+    "artifactSha256": "24453d32db0c72f1d6c18c9c7e0e27d964faebb626f2aed591d1b719c6c1b824",
+    "installerChecks": 9,
+    "packagedUpdaterChecks": [
+      "Actual installed launcher bootstraps real application and exact authenticated health receipt",
+      "Exact Setup supervised update publishes pending candidate; real startup authenticates and finalizes one attempt",
+      "Fault-injected candidate is refused before launch; actual guarded rollback restores verified previous without profile changes",
+      "Restored actual generation launches and closes cleanly with retained authenticated receipt"
+    ],
+    "finishChoice": {
+      "label": "Open SKAGER",
+      "checked_before": true,
+      "checked_after": false
+    },
+    "faultInjectionRestored": true,
+    "chartsResult": "passed; native screenshot review and physical GPU gate remain separate",
+    "evidence": "../scrum22-installer-charts-854-20261016/receipt.json"
+  },
+  "composition": {
+    "runId": "38885572956",
+    "runAttempt": "1",
+    "helperCommit": "686c2c553e40cb207c468e1ce01400cb9bb2d811",
+    "conclusion": "success",
+    "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38885572956/attempts/1",
+    "logs": [
+      {
+        "jobId": "116922368094",
+        "name": "Compose retained Staging evidence",
+        "conclusion": "success",
+        "logSha256": "fa3fed8903000139c9c0fabb29aaff8530ee224bb818c622f09518a1e8c3b4bc"
+      },
+      {
+        "jobId": "116923305978",
+        "name": "Record composed draft Staging Release",
+        "conclusion": "success",
+        "logSha256": "ba47f78c01876e6147a4d4305e63e42c8ed346caca78cc74a9e6a756020afa04"
+      }
+    ],
+    "requestSha256": "370a6dea76fa03b1e791df90d39d0af84a785809f9282f865d40658746f95619",
+    "assemblyReportSha256": "44db0a57cdb485c2d9417770a4f970aafef33f2da6698da9dc821e5662356b2f",
+    "assembly": {
+      "status": "assembled",
+      "product": {
+        "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+        "runId": "38765418126",
+        "runAttempt": "1"
+      },
+      "execution": {
+        "commit": "686c2c553e40cb207c468e1ce01400cb9bb2d811",
+        "runId": "38885572956",
+        "runAttempt": "1"
+      },
+      "originalRuntimeConclusion": "failure",
+      "qualificationSha256": "49e57fca3a3919fcd3308b4ea5a2715b4cd473b3dd5a15d627991b74b0354b4e",
+      "manifestSha256": "d826083ede4944c29101e257554c53deafaca1b8c253ff4403120ca9882561e0",
+      "requestSha256": "370a6dea76fa03b1e791df90d39d0af84a785809f9282f865d40658746f95619",
+      "productRebuilt": false,
+      "applicationsExecuted": false,
+      "publicAccess": false
+    }
+  },
+  "reportBinding": {
+    "originalReportCount": 21,
+    "replacementReportCount": 5,
+    "all26ReportMembersMatchCommittedRequest": true,
+    "requestPath": "opennav-x/tools/staging-composition-request.json",
+    "requestSha256": "370a6dea76fa03b1e791df90d39d0af84a785809f9282f865d40658746f95619",
+    "originalFailureReportsSha256": {
+      "installer-staging.json": "f83420d29443a52aa6d9733d6bb47283bb54f793e6e4903b7ceee3a14924dfba",
+      "packaged-updater.json": "ae7e45a6296c7a98c2553e7ef2e3f1ba8205754a31b43fa95ca4ebdf7ec136b4"
+    },
+    "replacementReportsSha256": {
+      "charts-results.json": "3983e0b8388d28f230ebd3d55d5214382fd631f3e800164d2bc77b2d22066b2c",
+      "installer-staging.json": "95b387d2786646f14b7c11cf04663954cce1a767ecc2e75f46124e1d9f56bbef",
+      "packaged-updater.json": "13899b875866f69c02c55449074f95b9b977318d9625daa78988bc2ab63dcc15",
+      "staging-inputs.json": "6c39f69a9098873a75b2a7da514ccea434b7231b32cf591aea06666991ef1412",
+      "staging-retest.json": "37f291559f8dbdf990fa959add43a9edadcd923cb1721016cd7bf6a29b9305ae"
+    },
+    "completePinAuthority": "Exact committed request at composition.helperCommit; all 26 report hashes verified against it"
+  },
+  "downloadedEvidence": {
+    "id": "12039078341",
+    "name": "composed-staging-evidence-686c2c553e40cb207c468e1ce01400cb9bb2d811-run38885572956-attempt1",
+    "sha256": "ddb6e76f496ad171eb844fc6af35c2e67d0a7a7777347b80633dd20fd04cbe7c",
+    "bytes": 54756,
+    "crcVerifiedMembers": 28
+  },
+  "draftRelease": {
+    "id": "414814496",
+    "url": "https://github.com/ThereptileII/Work/releases/tag/untagged-6d43932bcfbfd132b178",
+    "tag": "skager-staging-0.4.0-beta2.4-run38765418126-attempt1-854078a5de2e",
+    "targetCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "draft": true,
+    "prerelease": true,
+    "publicAccess": false,
+    "assetCount": 11
+  },
+  "authenticatedDraftDownloads": [
+    {
+      "name": "RELEASE.json",
+      "assetId": "646944946",
+      "bytes": 1978,
+      "sha256": "d826083ede4944c29101e257554c53deafaca1b8c253ff4403120ca9882561e0",
+      "downloadedOriginalOnce": true
+    },
+    {
+      "name": "QUALIFICATION.json",
+      "assetId": "646944888",
+      "bytes": 6073,
+      "sha256": "49e57fca3a3919fcd3308b4ea5a2715b4cd473b3dd5a15d627991b74b0354b4e",
+      "downloadedOriginalOnce": true
+    },
+    {
+      "name": "SHA256SUMS.txt",
+      "assetId": "646945002",
+      "bytes": 565,
+      "sha256": "d81b0ef346dbcd080f8035dd4678d1f953fd6167dbdd5e881881cf74b23bd151",
+      "downloadedOriginalOnce": true
+    },
+    {
+      "name": "RETEST_SUPPORT.json",
+      "assetId": "646944977",
+      "bytes": 345,
+      "sha256": "21f6ee01c2319c35b31d2cfb20b36037c73a86a486d6f44e3a2a26221f83e228",
+      "downloadedOriginalOnce": true
+    },
+    {
+      "name": "SKAGER-Beta2-Setup.exe",
+      "assetId": "646945483",
+      "bytes": 187484268,
+      "sha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d",
+      "downloadedOriginalOnce": true
+    }
+  ],
+  "custodyReview": {
+    "all26ReportMembersMatchCommittedRequest": true,
+    "originalFailedRuntimePreserved": true,
+    "manifestInventorySha256Verified": true,
+    "all11AssetsApiSizesAndDigestsMatchManifest": true,
+    "allSha256SumsMatchManifest": true,
+    "newDraftSetupDownloadedOnceAndMatchesOriginal": true,
+    "recoveryAndSourceApiDigestsAndSizesMatchOriginalAuthenticatedArchives": true,
+    "recoveryAndSourceDownloadedFromRelease": false,
+    "candidateArtifactDownloaded": false,
+    "supportArtifactDownloaded": false,
+    "smallDraftMetadataDownloaded": [
+      "RELEASE.json",
+      "QUALIFICATION.json",
+      "SHA256SUMS.txt",
+      "RETEST_SUPPORT.json"
+    ],
+    "qualificationCompositionEqualsReviewedRequest": true,
+    "sameVersionUpdaterChecks": 4,
+    "installerChecks": 9,
+    "protectedB0B1Acceptance": false,
+    "physicalGpuAcceptance": false,
+    "boatAcceptance": false,
+    "workerDispatchOrRetry": false
+  },
+  "historicalCompatibility": {
+    "commit": "3784b6b769220188457e3ef215d17cec2dce44a9",
+    "integratedMerge": "686c2c553e40cb207c468e1ce01400cb9bb2d811",
+    "historicalParent": "b2e3f2ea4e50e61724fca7ae66386fa05cc72e3c",
+    "focusedChecksPassed": 25,
+    "independentReview": "passed",
+    "preserved": "Strict historical schema-2 request, provenance and assembly; current 854 request and native helpers unchanged",
+    "moduleSha256": "59792facf97070aeebad3388c0ffa7f626c81fe9760f58532603e8e65ebcf46b",
+    "testSha256": "179715f15910b6612cd8b1b0310e4ae64631ca42fe62b8fd21762fdf9ad12196"
+  },
+  "privateCustodyReceiptSha256": "38ecd016a7919f5672666e19e235125f190f2763e3dc742196e51c97362eb123",
+  "originalMetadataSha256": {
+    "run-original.json": "27ca01c4df12f08ef0037cc1a0dfc8546d49ca72524458c7869bcf0d2e890d51",
+    "jobs-original.json": "dfed8814b522566724af5fcc86130fbaa5c6c482a68d2edceab7b02e668d83d5",
+    "artifacts-original.json": "50c8bffc516c0085795e33a57d5721e51ee849a97287ebbe256ba1227b347dbc",
+    "release-original.json": "9b635b45d2e65673bbb19cb52086357cb23d6dcc3fdb0ef13a50d4f15754ec2c",
+    "release-assets-original.json": "b293fa9cb8467d5ad7141aa6d35600c59b5a9cb807cd5a98b3388f9e79b94508"
+  },
+  "limits": {
+    "productRebuilt": false,
+    "applicationsExecutedByComposition": false,
+    "publicAccess": false,
+    "productionPromotion": false,
+    "protectedSignedB0B1Acceptance": false,
+    "interactiveUacAcceptance": false,
+    "boatAcceptance": false,
+    "physicalGpuAcceptance": false,
+    "designReview": "not-requested",
+    "endurance": "skipped",
+    "documentationChangeReranTestsOrApplications": false
+  }
+}

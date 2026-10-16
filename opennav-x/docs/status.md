@@ -1,6 +1,6 @@
 # SKAGER status — 2026-10-16
 
-## Replacement candidate — retained installer/startup/charts pass; Staging composition next
+## Replacement candidate — private composed Staging delivered
 
 Frozen product `854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc`, version
 `0.4.0-beta2.4`, was built once in
@@ -75,13 +75,20 @@ launches over the verified 1,046-file package; no extra CRT-specific run is
 selected. This is not a per-DLL loaded-hash census or a transfer of all 13
 PluginHandler cases to the final DLL combination.
 [Exact component acceptance and package distinction](evidence/scrum211-retained-854-20261016/README.md).
-The reviewed composition helper binds the original 21 reports and replacement
-five reports to this exact package, preserving the original failed qualifier.
-All 17 focused composition, 15 composed-delivery and 20 release-delivery checks
-pass. The original and replacement reports also pass offline semantic validation;
-this is not completed CI assembly/publication. Protected signed B0/B1 customer
-acceptance and fresh boat validation remain open;
-design/endurance runs remain off and public access remains closed.
+[Composition 38885572956](https://github.com/ThereptileII/Work/actions/runs/38885572956),
+attempt 1 at `686c2c553e40cb207c468e1ce01400cb9bb2d811`, now passes both
+assembly and draft-release jobs. It binds the original 21 reports and replacement
+five reports while preserving the original failed qualifier and frozen product.
+The actual Setup downloaded from [private draft 414814496](https://github.com/ThereptileII/Work/releases/tag/untagged-6d43932bcfbfd132b178)
+has the original 187,484,268-byte size and SHA-256; all 11 release asset metadata
+records match the manifest. Assembly records `productRebuilt=false` and no
+application execution. The history-preserving merge retains strict historical
+schema-2 compatibility; all 25 focused composition checks and independent review
+pass. Earlier 15 composed-delivery and 20 release-delivery checks remain recorded.
+[Composition, draft download custody and exact boundaries](evidence/scrum290-composed-854-20261016/README.md).
+Protected signed B0/B1 and interactive UAC acceptance, fresh boat validation and
+physical GPU acceptance remain open. Design/endurance runs remain off, no
+Production promotion occurred and public access remains closed.
 
 
 ## Installer trust correction — native boundary and replacement installation pass
@@ -106,7 +113,7 @@ The original artifact, launcher identity and both native receipts authenticate.
 [Exact focused evidence and limitations](evidence/scrum22-installer-trust-20261015/README.md).
 The focused check alone is not installed-package or boat acceptance. The new
 launcher and lifecycle engine were then included in replacement candidate 854
-above, whose initial installation passes while later startup remains blocked.
+above, whose initial installation and retained startup/updater journey now pass.
 All 30 SDK source inputs remain unchanged, allowing the existing strictly
 verified two-image dependency selection. Design and endurance runs remain off.
 
