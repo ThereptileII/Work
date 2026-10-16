@@ -67,6 +67,12 @@ Batch full suites at integration/delivery. Ordinary docs or helper corrections
 do not justify a fresh application build. Corrected helpers can retest retained
 exact bytes through the supported authenticated workflow; never relabel them.
 
+Keep one coordinator-owned candidate build while agents handle independent,
+bounded investigations or the next batch in isolated worktrees. Before retrying
+a failed stage, use the [candidate-cycle decisions](../skager-build/references/candidate-cycle.md)
+to select preflight, same-source replay, retained-helper verification or a new
+product build. Preserve completed work and each job's actual attempt.
+
 Staging is the default. Production readiness/promotion requires explicit user
 instruction for a selected candidate, reusing qualified package bytes. Do not
 start prototype comparison, aesthetic refinement or design-only DPI sweeps
@@ -93,6 +99,14 @@ user explicitly changes it. Validate exact OpenCPN bytes against the current
 manifest before installation, with verified recovery and user-data preservation.
 Public downloads/payments stay closed until separate readiness and human GO;
 Staging, promotion, or website deployment does not imply public-launch approval.
+
+If a boat operation loses SSH or exceeds its wait, inspect the existing remote
+process and durable journal before retrying; do not start a second installer or
+application. Resume only the reviewed recovery path for the observed phase.
+SSH availability does not establish a logged-in desktop. When the guarded path
+requires that desktop, leave the operation pending until the user logs in; do not
+bypass the identity check. Cold file verification and an installer success remain
+separate from ordinary startup acceptance.
 
 Report changes, focused results, product/helper revision distinction and remaining
 gates. Keep Jira status consistent with actual acceptance. For recurring failures,

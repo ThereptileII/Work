@@ -39,6 +39,17 @@ is needed, use the smallest relevant native check. Do not repeat an already
 discriminating log/source observation merely to get another red result before
 repair; qualify the correction at its actual boundary before a full build.
 
+For a timeout, inspect which deadline expired and whether a child is still alive.
+Compare exact relevant source/fixture bytes, runner/tool versions and preceding
+suite timings. Progress dots without a final summary are not a pass; a slow run
+alone does not prove an antivirus, disk or product fault. Where evidence supports
+transient timing in an unchanged inert suite, select at most one failed-job replay
+after the current run finishes. If it fails again, investigate/correct the harness
+instead of retrying further. A measured suite-specific timeout correction must
+retain assertions and bounded per-command/security/physical-control deadlines;
+do not broadly raise timeouts. Record which timeout actually qualified the frozen
+candidate. See the [candidate-cycle example](../skager-build/references/candidate-cycle.md).
+
 For Windows file/lock fixtures, inspect the actual PowerShell/.NET behavior and
 handle lifetimes. The profile-lock fixture needs an explicit `File.Replace`
 backup path and checks original backup bytes. Unlink a junction itself with the
@@ -64,6 +75,13 @@ original producer commit/run/attempt/hashes alongside the new harness commit.
 Missing or changed artifacts stop reuse. A helper rerun neither creates a new
 executable nor relabels its source/version. Keep failed original runs intact;
 composed Staging acceptance needs its explicit authenticated evidence record.
+
+Keep original job logs privately, recording their byte hashes before filtering
+ANSI output for inspection. Report distinct test cases separately from repeated
+executions across fixture/fixture-free variants, and preserve each prerequisite's
+original attempt. A declarative import-policy fixture, native loader/custody test
+and actual installed plugin Init are different evidence boundaries; none silently
+substitutes for another.
 
 Report each relevant result as passed, failed, skipped, pending or not requested,
 with exact revision, platform, command/scope and retained evidence. Separate

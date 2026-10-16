@@ -19,6 +19,9 @@ documents control scheduling; historical evidence is not current acceptance.
   repairs and channel changes do not require application compilation. Packaged
   notices/licenses/resources, installer/build recipes and `tests/**` can be
   product inputs; filename extensions do not decide this.
+  This is the default efficiency policy, not a veto on an explicit user request
+  for a fresh candidate. Honor that request through the coordinator's supported
+  manual Staging selection, with its preflight and required gates.
 - The coordinator integrates a coherent batch and owns the full application
   build. Delegated tasks return focused results without starting duplicate builds.
   Read current entrypoints/options in `opennav-x/README.md` and the selected
@@ -28,6 +31,13 @@ documents control scheduling; historical evidence is not current acceptance.
 - Default to Staging. Production requires explicit user instruction for an exact
   candidate and reuses qualified package bytes; changing channels does not change
   the embedded version. Both channels remain draft while public access is closed.
+
+Before requesting a candidate build, run the cheap distribution preflight from
+the selected checkout: `python opennav-x/tools/verify-distribution-inputs.py`.
+In particular, `src/application/Version.h` and the installer's
+`compatibility.json` `openNavVersion` must agree. Fix inconsistent inputs before
+compilation; do not change supported stock hashes to resolve a version mismatch.
+A preflight pass is not build or release acceptance.
 
 ## Verify dependencies and preserve completed work
 
@@ -53,6 +63,11 @@ documents control scheduling; historical evidence is not current acceptance.
   separately from helper commit. Reuse the clean same-run native updater artifact
   rather than rebuilding it in the integrated checkout. Failed SDK recovery
   material stays unqualified and cannot be selected as a verified producer.
+
+For a candidate build, downstream failure or interrupted delivery, use the
+[candidate-cycle decisions](references/candidate-cycle.md). Resume the failed
+stage against authenticated unchanged inputs; preserve successful job attempts
+and distinguish compiled recovery, sealed test inputs and a qualified package.
 
 Report exact build/input identity, artifact hashes, checks and remaining gates.
 Compilation or SDK reuse does not establish package, native desktop or boat
