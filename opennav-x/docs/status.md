@@ -35,9 +35,12 @@ for an inert package test; no assertion failure was reported. The identical
 predecessor suite passed in 56.119 seconds. One failed-job retry, after Linux
 completed, passes the same 14 cases in 48.163 seconds and all 126 package cases
 without changing code, assertions or deadlines. The original timeout remains
-recorded. Native updater job `117028247900` passes in attempt 2; Windows producer
-`117036304896` is running with authenticated dependency reuse. No application
-package has yet been produced by this run. Original Linux job `117008195582`
+recorded. Native updater job `117028247900` passes in attempt 2. Windows producer
+`117036304896` passes at 15:49:44 UTC with authenticated dependency reuse:
+146 CTest cases pass in each native variant, and native loader/TLS checks,
+recovery/Setup packaging and immutable input retention pass. Downstream job
+`117061245460` is qualifying those retained bytes without recompilation.
+No package has yet passed the full delivery gate. Original Linux job `117008195582`
 passes all 154 CTest cases in both fixture-enabled and fixture-free builds,
 actual chart/data/lifecycle checks and both loader checks. Design and endurance
 sweeps remain skipped. This evidence-only update does not move the frozen candidate.

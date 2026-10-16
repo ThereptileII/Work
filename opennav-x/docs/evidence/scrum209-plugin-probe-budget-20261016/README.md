@@ -130,5 +130,27 @@ same source, assertions, Windows image, Python version and 60-second deadline.
 Original replay log: 5,766,950 bytes, SHA-256
 `b919a1f8fdf8a1a9cb7cc5508b8e0afc68dd05ebaf1b1b977a62e51083d7374b`.
 This result does not erase the original failure or establish its specific host
-cause. Native application producer `117036304896` started subsequently; its
-build/package/boat results are separate and not accepted by this record.
+cause.
+
+## Replacement native application producer
+
+Native producer `117036304896`, attempt 2 of the same run, completed successfully
+at 15:49:44 UTC for exact candidate `9feae59c`. It used MSVC **19.44.35229.0**, the
+supported **Win32** ABI and hosted image `20261012.333.1`. Both fixture and
+fixture-free builds passed **146 CTest cases each** (292 executions). Private
+module imports, native Downloader trust/rejection, peer response buffers, exact
+updater transfer, recovery and Setup packaging, and compiled-input sealing pass.
+
+Original log: 2,882,087 bytes, SHA-256
+`65e30fd76fd8f0327053a86a5b03e49399ddacdfa7683ac85b2dd9ec223d1e8e`.
+The producer reports sealed `STAGING_BUILD_INPUTS` SHA-256
+`780016793dd2d171e5ab183a49b8bba4195ce4d371bfba7ccc55341f08e61438`.
+Artifact `12056119927` is 1,541,894,596 bytes; its API identity/digest agrees with
+the original upload log. This is metadata/log verification, not a local
+authentication of the archive payload. Separate unqualified compiled recovery,
+plugin SDK capture and build evidence are also retained.
+
+Downstream job `117061245460` started at 15:49:47 UTC and runs native desktop and
+installer qualification against those retained bytes. It does not recompile the
+application. Its outcome, draft-release custody and actual boat installation
+remain pending; this producer pass does not establish those results.
