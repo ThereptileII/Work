@@ -21,7 +21,7 @@
   "candidateAccepted": false,
   "normalCloseExitCode": 0,
   "applicationAndChartHelpersAbsentAfterClose": true,
-  "sourceTreeRestorationPending": true,
+  "sourceTreeRestorationPending": false,
   "privateEvidence": {
     "observe-passive-854-v2.ps1": {
       "bytes": 8627,
@@ -90,6 +90,14 @@
     "cold-restoration-records/20261016-133713-cold-recover-builtins-854-ef212433/completed.json": {
       "bytes": 1871,
       "sha256": "316bbdbde1cea2b38eb1494391f081f8765fb883e6f8f85373ca3a1e2df08a22"
+    },
+    "ordinary-restore-completion.json": {
+      "bytes": 655,
+      "sha256": "e4c1ca64251d6a6a4d638972d7224a391e235ace6c34783fd0e84d229dbd4d46"
+    },
+    "post-restore-health.json": {
+      "bytes": 804,
+      "sha256": "1eed10a45fb5435b433e8651fe768ed7ab05ae4b0b761e760406e247f4b27a43"
     }
   },
   "limits": [
@@ -101,5 +109,9 @@
     "Protected customer-UAC/B0/B1 and complete boat qualification remain separate."
   ],
   "missingOwnedBuiltinsRecreated": true,
-  "ordinaryCommissioningRestoreStatus": "in-progress"
+  "ordinaryCommissioningRestoreStatus": "passed",
+  "profileBaselineRestored": true,
+  "otherCurrentProfileFilesPreserved": true,
+  "originalOutputConfigurationRestoredWithApplicationClosed": true,
+  "activeCommissioningMarkerRemoved": true
 }

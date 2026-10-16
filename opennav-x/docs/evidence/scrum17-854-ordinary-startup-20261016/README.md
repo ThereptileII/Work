@@ -101,9 +101,20 @@ tree inventory. The post-session INI is archived and remains exactly
 `494fc03d3f94d7fc15781446220df8ab208368380ac1cf8f4f9fe9330b0bfad8`.
 Source-reviewed changes comprise nine display/cache/last-view fields in addition
 to the intentional input-only connection change; no installed resource-location
-adoption is involved. Ordinary baseline restoration is in progress and must
-preserve every current non-INI profile file. File recreation is not a successful
-plugin load. The original failed session and all private evidence remain kept.
+adoption is involved. Ordinary baseline restoration subsequently passed. Its
+completion SHA-256 is
+`e4c1ca64251d6a6a4d638972d7224a391e235ace6c34783fd0e84d229dbd4d46`:
+the original INI and plugin inventory are restored and every current non-INI
+profile file is preserved. The archived post-session INI remains available.
+At 13:48:47 UTC, the active commissioning marker is absent, no application/chart
+helper or SKAGER task is running, and SSH/Tailscale/RustDesk remain running.
+The stock executable SHA-256 remains
+`7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c`,
+and the restored INI is
+`7ffd9e6b59f89e2d656924f8ddaceb68cd3b826b2bba4b0e27308d774900f559`.
+Original output configuration is restored **with the application closed**;
+any further passive launch needs a fresh input-only preparation. File recreation
+is not a successful plugin load. Original failures and private evidence remain kept.
 No automatic relaunch, Production promotion or public release is authorized by
 this record. Legacy/Safe transitions and complete ordinary builtin loading
 remain unaccepted for this boat session.

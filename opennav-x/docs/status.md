@@ -13,15 +13,34 @@ The exact three-root graph needs 270 probes for 62 found dependencies. Correctio
 `896ad520` separates 1,024 bounded lookups from 256 admitted dependency PEs and
 the unchanged 256 MiB aggregate limit. All 9,930 portable checks and two
 independent reviews pass; obsolete-TLS refusal and native custody are retained.
-The replacement version is `0.4.0-beta2.5`. A focused native Win32 check precedes
-one required Staging application build; native product and boat results remain
-pending. Dependency inputs are unchanged. No design or endurance sweep is selected.
+The replacement version is `0.4.0-beta2.5`. Its policy sources at
+`0615e79ba122a32d5adb6193ab5c5b9bfad30ce9` pass focused native Win32/MSVC
+[38910455080](https://github.com/ThereptileII/Work/actions/runs/38910455080)
+passes the same 9,930 checks. Authenticated artifact `12049428405` and its actual
+compiled source hashes match that revision's Windows checkout. This is a policy
+fixture pass, not application/plugin-load acceptance. The first integrated run
+[38910703440](https://github.com/ThereptileII/Work/actions/runs/38910703440)
+failed the distribution preflight because the coordinator bumped `Version.h`
+without the matching installer `openNavVersion`. It was cancelled before the
+Windows application build; the original failed job is preserved. The manifest
+now matches, with its supported stock hashes unchanged. The existing local
+distribution preflight passes all 16 required inputs and the one stock
+configuration; the focused workflow now runs it before any compilation too.
+This packaging-only correction does not change the already-tested policy sources.
+One corrected integrated run is required. Native product and corrected-boat
+results remain pending. All 30 SDK-bound inputs match the two locked producers; fresh
+native environment verification still applies. No design or endurance sweep is selected.
 [Correction, exact inputs and limits](evidence/scrum209-plugin-probe-budget-20261016/README.md).
 
 The observed application closed normally with exit 0. Four missing owned builtin
 DLLs were recreated cold from the authenticated original 854 recovery archive,
 with exact hashes and unchanged profile bytes. The ordinary hash-bound
-commissioning restore is in progress; no automatic relaunch is selected.
+commissioning restore then passed: original INI and plugin inventory restored,
+all other current profile files preserved. A 13:48:47 UTC observation confirms
+the exact stock executable and original INI hashes, no active commissioning
+marker, no application/helper processes or running SKAGER tasks, and running
+SSH/Tailscale/RustDesk services. The application remains closed; restoring the
+original output configuration is not authorization to launch or send commands.
 Original failed evidence remains preserved. The new source does not change the
 installed executable or qualify it.
 [Actual startup, failure and recovery evidence](evidence/scrum17-854-ordinary-startup-20261016/README.md).
