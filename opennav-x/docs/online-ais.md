@@ -96,18 +96,33 @@ provider tries to supply them. Missing fields remain empty.
 
 ## Cache and time
 
-Position and static reports have independent monotonic observation clocks.
+Position and static fields have independent monotonic observation clocks.
 Static updates never refresh position. Out-of-order/duplicate positions and
 future/missing timestamps are rejected. Reading does not refresh observations;
-owned snapshots survive cache edits/removal. Online position thresholds:
+owned snapshots survive cache edits/removal. The 2026-10-16 source-only change
+under SCRUM-16 extends **supplemental online display** thresholds:
 
 | Age | State |
 |---|---|
-| <15 s | LIVE |
-| 15–60 s | AGING |
-| 60–120 s | STALE |
-| 120–600 s | LOST, not current/selectable navigation |
-| ≥600 s | Expired, removed from display |
+| <3 min | LIVE |
+| 3–10 min | AGING |
+| 10–20 min | STALE, no current chart-selection action |
+| 20–30 min | LOST, not current/selectable navigation |
+| ≥30 min | Expired, removed from display |
+
+`ais/OnlineAisAge.h` is the shared source for online sample, chart and cache
+thresholds. These are product display choices for intermittent Internet reports,
+not a claim about a vessel's mandated transmission interval or a guaranteed
+position age. The drawer continues to show service/receipt age and delayed-data
+provenance. Connection loss is still reported immediately and independently;
+these intervals do not delay transport failure/reconnect. OpenCPN onboard AIS,
+its alarms/CPA/TCPA and vessel-sensor freshness keep their existing thresholds.
+
+The ordinary deterministic cases advance a virtual clock, without real waits.
+The separately selected real-clock lost/reconnect fixture below now needs more
+than 20 minutes, remains excluded from ordinary suites and requires an explicit
+run request. No fixture, build or live/boat check was executed for this source
+change. Historical test results below qualify only their recorded revisions.
 
 Age denotes local receipt unless a validated service `MetaData.time_utc`
 timestamp is available. `AisTimeBasis` distinguishes OpenCPN report, online
@@ -117,6 +132,47 @@ Cached metadata coordinates cannot become a new position report. Cache capacity
 is 2,000; expired entries are reclaimed before allocation, otherwise new
 identities are refused. Numeric bounds, AIS sentinels, strings, extreme clocks
 and retained-copy behavior have deterministic coverage.
+
+## Vessel names and partial reports — SCRUM-16 source-only follow-up
+
+The cache retains one owned target per MMSI. The typed payload identity and
+`MetaData.MMSI` must agree before any field is admitted. As documented by
+[AISStream](https://aisstream.io/documentation) and its
+[message schemas](https://github.com/aisstream/ais-message-models), the supported
+name paths are:
+
+| Report | Vessel-name field |
+|---|---|
+| Ship static/voyage | `Message.ShipStaticData.Name` |
+| Extended Class B position | `Message.ExtendedClassBPositionReport.Name` |
+| Class B static part A | `Message.StaticDataReport.ReportA.Name` |
+| Any supported, valid vessel report | `MetaData.ShipName` fallback |
+
+A typed name takes precedence over the service's cached metadata name, both
+within a message and across messages. Reports are not recursively searched for
+arbitrary fields called `Name`: for example, part B vendor information is not a
+vessel name. Unsupported station/AtoN reports cannot become vessel identities.
+AIS space/`@` padding and empty strings do not erase a known identity. Existing
+UTF-8, control-character, length and message-size validation stays in place.
+
+Static fields merge independently: a delayed name can fill its gap even after a
+newer callsign/dimension report, while an older same-source field cannot replace
+its newer value. Exact duplicate static fields make no cache change. Position
+ordering stays strict; neither a name, static report nor subscription confirmation
+changes position time, motion or target location. Metadata coordinates are never
+promoted to a position. Onboard precedence still applies to the complete target.
+
+Current/aging online chart marks carry a separate display label: the sanitized
+name, otherwise the validated nine-digit MMSI. MMSI is not written into the
+semantic name field. A later real name replaces the label without renewing the
+position. Existing zoom/detail, viewport, collision and 128-label bounds still
+apply. Stale/lost marks keep their age symbols but have no live label, direction
+or chart hit target. Standard chart styling and onboard labels are unchanged.
+
+Test sources cover these field paths, report order/duplicates, padded/malformed
+names, name precedence, MMSI-to-name transitions, independent clocks, extended
+age boundaries and onboard precedence. They have **not been run** for this
+source-only increment, nor has it been built or deployed.
 
 ## Inspected transport boundaries — 2026-09-28
 
@@ -317,7 +373,7 @@ out-of-order callbacks, acknowledgement timeouts and repeated failures.
 
 The separately selected, non-installed `ais_outage_test_client` and
 `tests/ais_transport/outage_tests.py` add a real-clock report-silence fixture:
-more than 120 seconds without position reports while loopback TLS ping/pong
+more than 20 minutes without position reports while loopback TLS ping/pong
 remains responsive, followed by actual TCP teardown, bounded reconnect,
 confirmation-only lost state and fresh-report recovery. The server checks both
 owned endpoint tuples; the client checks immutable capture time/generation,
@@ -352,7 +408,7 @@ for display; it creates no navigation position, route distance or CPA.
 
 The glyph path follows `.ais-ship` and its inherited palette. Missing valid
 heading/motion uses an unoriented ring, never an invented northbound vessel.
-Aging is dashed, stale is crossed, lost is double-crossed and ten-minute-old
+Aging is dashed, stale is crossed, lost is double-crossed and thirty-minute-old
 marks disappear. Online provenance uses a small dot; detail views identify
 AISStream and distinguish service/receipt age from transponder observation.
 There is no speculative course vector or risk classification.

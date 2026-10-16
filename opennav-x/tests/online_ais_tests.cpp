@@ -31,22 +31,32 @@ int main() {
   Check(retained.targets[0].origin==vessel::AisOrigin::AisStreamOnline&&retained.targets[0].source==ais::OnlineSource,"Online provenance explicit");
   Check(!retained.targets[0].cpa_nm.value&&!retained.targets[0].range_nm.value&&!retained.targets[0].upstream_alarm,"No invented local navigation metrics");
   Check(vessel::AisSelection::CurrentPosition(retained.targets[0],t),"Current owned position usable for display selection");
-  Check(ais::Age(t,t+14999ms)==ais::TargetAge::Live,"Live upper boundary");
-  Check(ais::Age(t,t+15s)==ais::TargetAge::Aging,"Aging boundary");
-  Check(ais::Age(t,t+60s)==ais::TargetAge::Stale,"Stale boundary");
-  Check(ais::Age(t,t+2min)==ais::TargetAge::Lost,"Lost boundary");
-  Check(ais::Age(t,t+10min)==ais::TargetAge::Expired,"Expiry boundary");
+  Check(ais::Age(t,t+3min-1ms)==ais::TargetAge::Live,"Live upper boundary");
+  Check(ais::Age(t,t+3min)==ais::TargetAge::Aging,"Aging boundary");
+  Check(ais::Age(t,t+10min-1ms)==ais::TargetAge::Aging,"Aging upper boundary");
+  Check(ais::Age(t,t+10min)==ais::TargetAge::Stale,"Stale boundary");
+  Check(ais::Age(t,t+20min-1ms)==ais::TargetAge::Stale,"Stale upper boundary");
+  Check(ais::Age(t,t+20min)==ais::TargetAge::Lost,"Lost boundary");
+  Check(ais::Age(t,t+30min-1ms)==ais::TargetAge::Lost,"Lost upper boundary");
+  Check(ais::Age(t,t+30min)==ais::TargetAge::Expired,"Expiry boundary");
+  Check(vessel::Assess(retained.targets[0].latitude_deg,t+2min).quality==vessel::Quality::Live,
+        "Sparse online position stays live under the display policy");
+  Check(vessel::Assess(retained.targets[0].latitude_deg,t+3min).quality==vessel::Quality::Aging,
+        "Sample and chart aging thresholds agree");
+  Check(vessel::AisSelection::CurrentPosition(retained.targets[0],t+10min-1ms),
+        "Aging online position remains inspectable before stale boundary");
   Check(ais::Age(t,t-1ms)==ais::TargetAge::Invalid,"Future observation rejected");
   Check(ais::Age(vessel::Time::min(),vessel::Time::max())==ais::TargetAge::Expired,"Extreme clock difference cannot overflow");
   Check(ais::Age({},t)==ais::TargetAge::Invalid,"Missing timestamp invalid");
   info.observed_at=t+61s;info.callsign="TEST123";
   Check(cache.Observe(info,t+61s),"Static refresh accepted");
-  const auto stale=cache.Read(t+61s);
+  const auto stale=cache.Read(t+10min);
   Check(stale.observed_at==t&&stale.targets[0].latitude_deg.observed_at==t,"Static/UI copy never renews position");
-  Check(vessel::Assess(stale.targets[0].latitude_deg,t+61s).quality==vessel::Quality::Stale,"Retained value visibly stale");
-  Check(!vessel::AisSelection::CurrentPosition(stale.targets[0],t+61s),"Stale selection is not current");
-  Check(cache.Read(t+2min).targets[0].lost&&!cache.Read(t+2min).targets[0].active,"Lost state explicit");
-  Check(cache.Read(t+10min).targets.empty(),"Online traffic ages off chart");
+  Check(vessel::Assess(stale.targets[0].latitude_deg,t+10min).quality==vessel::Quality::Stale,"Retained value visibly stale");
+  Check(!vessel::AisSelection::CurrentPosition(stale.targets[0],t+10min),"Stale selection is not current");
+  Check(cache.Read(t+20min).targets[0].lost&&!cache.Read(t+20min).targets[0].active,"Lost state explicit");
+  Check(cache.Read(t+30min).targets.empty(),"Online traffic ages off chart");
+  Check(!cache.Observe(Position(t,265000003),t+30min),"Expired incoming position cannot allocate a target");
   Check(!cache.Observe(Position(t-1s),t),"Out-of-order position rejected");
   Check(!cache.Observe(Position(t),t),"Duplicate observation cannot refresh receipt age");
   Check(!cache.Observe(Position(t+1s),t),"Future observation cannot enter cache");
@@ -138,6 +148,9 @@ int main() {
   auto &local=onboard.targets[0];local.origin=vessel::AisOrigin::LocalOpenCPN;
   local.source="OpenCPN";local.latitude_deg.value=59;local.upstream_alarm=true;
   local.cpa_nm={.1,"OpenCPN",t,vessel::Validity::Measured};
+  local.latitude_deg.freshness=local.longitude_deg.freshness={15s,60s};
+  Check(!vessel::AisSelection::CurrentPosition(local,t+60s),"Local AIS retains its shorter stale policy");
+  Check(vessel::AisSelection::CurrentPosition(retained.targets[0],t+60s),"Online display policy does not alter local AIS");
   ais::ProviderSnapshot online;online.targets=cache.Read(t+63s);
   auto merged=ais::Aggregate(onboard,online);
   Check(merged.display.targets.size()==2,"MMSI deduplication with online-only addition");
@@ -160,7 +173,7 @@ int main() {
   for(std::size_t i=0;i<ais::TargetCache::Capacity;++i)
     Check(bounded.Observe(Position(t,265000000+static_cast<int>(i)),t),"Bounded set capacity accepts unique identities");
   Check(!bounded.Observe(Position(t,366000000),t),"Cache cannot grow past bound");
-  Check(bounded.Observe(Position(t+11min,366000000),t+11min)&&bounded.Size()==1,"Expired records reclaimed before allocation");
+  Check(bounded.Observe(Position(t+31min,366000000),t+31min)&&bounded.Size()==1,"Expired records reclaimed before allocation");
   auto boxes=ais::SubscriptionArea({57,58,16,17});
   Check(boxes.size()==1&&boxes[0].south<57&&boxes[0].east>17,"Viewport subscription gets a geographic margin");
   boxes=ais::SubscriptionArea({57,58,179,-179});

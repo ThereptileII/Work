@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Opt-in >120 real seconds without AIS reports over responsive loopback TLS.
+"""Opt-in >20 real minutes without AIS reports over responsive loopback TLS.
 
 No firewall, packet-loss injection, real AIS credential or external endpoint.
 The client is excluded from ordinary builds; this fixture is never in CTest.
@@ -63,7 +63,7 @@ def run_case(client, ipv6=False):
 
                 reader = threading.Thread(target=collect)
                 reader.start()
-                watchdog = threading.Timer(155, process.kill)
+                watchdog = threading.Timer(20 * 60 + 35, process.kill)
                 watchdog.start()
                 metrics = {'clientPings': 0, 'serverPongs': 0, 'maxPongSeconds': 0}
 
@@ -118,7 +118,7 @@ def run_case(client, ipv6=False):
                         next_ping, pending = sent_at, {}
                         while 'lost' not in phases:
                             now = time.monotonic()
-                            assert now - sent_at < 132, 'Report outage deadline expired'
+                            assert now - sent_at < 20 * 60 + 12, 'Report outage deadline expired'
                             assert process.poll() is None, 'Provider exited during report outage'
                             if now >= next_ping:
                                 payload = str(len(pending) + metrics['serverPongs']).encode()
@@ -138,9 +138,9 @@ def run_case(client, ipv6=False):
                                     metrics['maxPongSeconds'] = max(metrics['maxPongSeconds'], latency)
                             assert all(time.monotonic() - at < 5 for at in pending.values()), 'Pong missing'
                         metrics['reportSilenceSeconds'] = time.monotonic() - sent_at
-                        assert metrics['reportSilenceSeconds'] > 120
+                        assert metrics['reportSilenceSeconds'] > 20 * 60
                         assert 'stale' in phases and metrics['clientPings'] >= 3
-                        assert metrics['serverPongs'] >= 12 and not pending
+                        assert metrics['serverPongs'] >= 120 and not pending
                         # Genuine TCP teardown, after the actual provider has
                         # observed lost state. Cache/enable are never reset.
                         stream.shutdown(socket.SHUT_RDWR)

@@ -1,5 +1,15 @@
 # SKAGER status — 2026-10-16
 
+## Online AIS identity and age — local source changes only
+
+SCRUM-16's user-feedback increment merges vessel-name reports per MMSI, includes
+AISStream metadata names, and uses MMSI as the chart label when no name exists.
+Online display aging/stale/lost/expiry becomes 3/10/20/30 minutes; local AIS and
+vessel data keep their existing rules. Static data never refreshes position age.
+See [the contract and unperformed qualification](online-ais.md#cache-and-time).
+Source review and test-source updates only: no build, test, CI, deployment or
+boat operation. The installed candidate and its outstanding gates are unchanged.
+
 ## Route passage settings — local source changes only
 
 SCRUM-373 adds an optional per-route radial arrival distance and a separate

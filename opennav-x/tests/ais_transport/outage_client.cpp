@@ -2,6 +2,7 @@
 #include "ais/AisStreamProvider.h"
 #include "ais/Credentials.h"
 #include "ais/TargetCache.h"
+#include "ais/OnlineAisAge.h"
 #include <chrono>
 #include <iostream>
 #include <stdexcept>
@@ -49,7 +50,7 @@ int main(int argc, char **argv) {
     provider->SetEnabled(true);
     ais::ProviderSnapshot retained, stale, lost, confirmed;
     bool initial = false, saw_stale = false, saw_lost = false, cleared = false, reconfirmed = false;
-    const auto deadline = vessel::Clock::now() + 150s;
+    const auto deadline = vessel::Clock::now() + ais::OnlineLostAfter + 30s;
     while (vessel::Clock::now() < deadline) {
       const auto now = vessel::Clock::now();
       const auto s = provider->Read(now);
@@ -72,13 +73,13 @@ int main(int argc, char **argv) {
           if (s.connection.generation == retained.connection.generation) {
             Check(Same(s.connection, retained.connection));
             Check(s.health.subscription_confirmed && s.health.reconnects == 0);
-            if (!saw_stale && age >= 61s) {
+            if (!saw_stale && age >= ais::OnlineStaleAfter + 1s) {
               Check(ais::Age(target.observed_at, now) == ais::TargetAge::Stale);
               Check(target.active && !target.lost);
               stale = s; saw_stale = true;
               std::cout << "PHASE stale " << std::chrono::duration_cast<std::chrono::milliseconds>(age).count() << std::endl;
             }
-            if (!saw_lost && age >= 121s) {
+            if (!saw_lost && age >= ais::OnlineLostAfter + 1s) {
               Check(saw_stale && ais::Age(target.observed_at, now) == ais::TargetAge::Lost);
               Check(!target.active && target.lost);
               lost = s; saw_lost = true;

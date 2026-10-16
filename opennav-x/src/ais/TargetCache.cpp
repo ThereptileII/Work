@@ -1,4 +1,5 @@
 #include "ais/TargetCache.h"
+#include "ais/OnlineAisAge.h"
 #include <cmath>
 
 namespace opennav::ais {
@@ -21,7 +22,7 @@ std::optional<std::string> Unpadded(std::optional<std::string> value) {
   return value->substr(first, last - first + 1);
 }
 vessel::Sample Sample(std::optional<double> value, vessel::Time at) {
-  return {value, OnlineSource, at, value ? vessel::Validity::Measured : vessel::Validity::Invalid, {15s, 60s}};
+  return {value, OnlineSource, at, value ? vessel::Validity::Measured : vessel::Validity::Invalid, OnlinePositionFreshness};
 }
 vessel::TextSample StaticText(const std::optional<std::string> &value, vessel::Time at) {
   return {value, OnlineSource, at, value ? vessel::Validity::Measured : vessel::Validity::Invalid, {1h, 6h}};
@@ -38,10 +39,10 @@ TargetAge Age(vessel::Time observed, vessel::Time now) {
   const auto at_least = [&](vessel::Duration span) {
     return now >= vessel::Time::min() + span && observed <= now - span;
   };
-  if (at_least(10min)) return TargetAge::Expired;
-  if (at_least(2min)) return TargetAge::Lost;
-  if (at_least(60s)) return TargetAge::Stale;
-  if (at_least(15s)) return TargetAge::Aging;
+  if (at_least(OnlineExpireAfter)) return TargetAge::Expired;
+  if (at_least(OnlineLostAfter)) return TargetAge::Lost;
+  if (at_least(OnlineStaleAfter)) return TargetAge::Stale;
+  if (at_least(OnlineAgingAfter)) return TargetAge::Aging;
   return TargetAge::Live;
 }
 TargetCache::Entry *TargetCache::FindOrInsert(int mmsi, vessel::Time at) {

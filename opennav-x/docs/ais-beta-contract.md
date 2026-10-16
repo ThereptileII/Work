@@ -26,7 +26,10 @@ an AIS receiver is healthy or failed.
 The Sensors AIS row describes **report health**, not transport connectivity.
 An available OpenCPN decoder with an empty target set shows **No targets
 received**. At least one usable target position report shows **Targets current**;
-the existing report thresholds (15 seconds aging, 60 seconds stale) still apply.
+the existing onboard report thresholds (15 seconds aging, 60 seconds stale) still
+apply. Supplemental Internet targets use the separately documented
+[Online AIS display policy](online-ais.md#cache-and-time); they do not feed this
+receiver-health assessment or the onboard safety model.
 Retained expired coordinates show **Targets stale**, upstream lost targets show
 **Targets lost**, and invalid/future/incoherent target positions remain
 unavailable. Mixed traffic can have current and stale targets; this row reports

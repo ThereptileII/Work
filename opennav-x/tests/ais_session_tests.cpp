@@ -140,7 +140,7 @@ void diagnostic_checks() {
   CHECK(read.health.subscription_confirmed && read.health.subscription_pending &&
         !read.health.subscription_awaiting_confirmation);
   const auto before=session.Read(start+6s);
-  const auto expired=session.Read(start+11min);
+  const auto expired=session.Read(start+31min);
   CHECK(expired.cached_position_count==0 && expired.health.accepted==1);
   CHECK(expired.health.received_messages==before.health.received_messages);
   CHECK(session.Read(start+6s).cached_position_count==1); // diagnostic reads never advance session
@@ -159,7 +159,7 @@ void diagnostic_checks() {
 }
 void outage_recovery_checks() {
   // Virtual monotonic time isolates cache/observation semantics. This is not
-  // evidence of a real 120-second network interruption or a WFP deadman lease.
+  // evidence of a real 20-minute network interruption or a WFP deadman lease.
   ais::AisStreamSession session;
   CHECK(session.Enable(true, start));
   CHECK(session.ObserveViewport({59, 60, 18, 19}));
@@ -175,48 +175,48 @@ void outage_recovery_checks() {
   CHECK(retained.targets.targets.size() == 1);
 
   // Silent transport receipt must not refresh either the report or tuple age.
-  session.Tick(start + 61s, 0);
-  const auto stale = session.Read(start + 61s);
+  session.Tick(start + 10min + 1s, 0);
+  const auto stale = session.Read(start + 10min + 1s);
   CHECK(stale.targets.targets.size() == 1);
-  CHECK(ais::Age(stale.targets.targets[0].observed_at, start + 61s) ==
+  CHECK(ais::Age(stale.targets.targets[0].observed_at, start + 10min + 1s) ==
         ais::TargetAge::Stale);
   CHECK(stale.targets.targets[0].active && !stale.targets.targets[0].lost);
   CHECK(stale.connection.captured_at == start);
-  session.Tick(start + 121s, 0);
-  const auto lost = session.Read(start + 121s);
+  session.Tick(start + 20min + 1s, 0);
+  const auto lost = session.Read(start + 20min + 1s);
   CHECK(lost.targets.targets.size() == 1);
   CHECK(lost.targets.targets[0].lost && !lost.targets.targets[0].active);
   CHECK(lost.targets.targets[0].observed_at == start);
   CHECK(lost.health.accepted == 1 && lost.health.last_position == start);
   CHECK(lost.connection.generation == 1 && lost.connection.captured_at == start);
 
-  session.Disconnected(start + 122s, 0);
-  CHECK(session.Read(start + 122s).connection.family == ais::AddressFamily::Unavailable);
-  CHECK(session.Read(start + 122s).targets.targets[0].lost);
-  CHECK(!session.Opened(start + 122s, first)); // late Open cannot restore tuple
+  session.Disconnected(start + 20min + 2s, 0);
+  CHECK(session.Read(start + 20min + 2s).connection.family == ais::AddressFamily::Unavailable);
+  CHECK(session.Read(start + 20min + 2s).targets.targets[0].lost);
+  CHECK(!session.Opened(start + 20min + 2s, first)); // late Open cannot restore tuple
   auto replacement = first;
   replacement.local.port = 45001;
   replacement.generation = 2;
-  replacement.captured_at = start + 124s;
-  CHECK(session.Connecting(start + 124s));
-  CHECK(session.Opened(start + 124s, replacement));
-  CHECK(session.SubscriptionSent(start + 124s));
-  session.Receive(confirmation, start + 124s, wall, 0);
-  const auto confirmed = session.Read(start + 124s);
+  replacement.captured_at = start + 20min + 4s;
+  CHECK(session.Connecting(start + 20min + 4s));
+  CHECK(session.Opened(start + 20min + 4s, replacement));
+  CHECK(session.SubscriptionSent(start + 20min + 4s));
+  session.Receive(confirmation, start + 20min + 4s, wall, 0);
+  const auto confirmed = session.Read(start + 20min + 4s);
   CHECK(confirmed.health.subscription_confirmed);
   CHECK(confirmed.targets.targets.size() == 1);
   CHECK(confirmed.targets.targets[0].lost && !confirmed.targets.targets[0].active);
   CHECK(confirmed.targets.targets[0].observed_at == start);
   CHECK(confirmed.health.accepted == 1 && confirmed.health.last_position == start);
   CHECK(confirmed.connection.generation == 2);
-  CHECK(confirmed.connection.captured_at == start + 124s);
+  CHECK(confirmed.connection.captured_at == start + 20min + 4s);
 
-  session.Receive(position, start + 125s, wall, 0);
-  const auto recovered = session.Read(start + 125s);
+  session.Receive(position, start + 20min + 5s, wall, 0);
+  const auto recovered = session.Read(start + 20min + 5s);
   CHECK(recovered.targets.targets.size() == 1);
   CHECK(recovered.targets.targets[0].active && !recovered.targets.targets[0].lost);
-  CHECK(recovered.targets.targets[0].observed_at == start + 125s);
-  CHECK(recovered.health.accepted == 2 && recovered.health.last_position == start + 125s);
+  CHECK(recovered.targets.targets[0].observed_at == start + 20min + 5s);
+  CHECK(recovered.health.accepted == 2 && recovered.health.last_position == start + 20min + 5s);
   CHECK(retained.targets.targets[0].observed_at == start && !retained.targets.targets[0].lost);
   CHECK(lost.targets.targets[0].lost && lost.connection.generation == 1);
   CHECK(retained.connection.local.port == 45000 && retained.connection.captured_at == start);
@@ -276,11 +276,11 @@ int main() {
                 10s); // complete subscription even though viewport unchanged
     CHECK(session.Read(start + 11s).health.reconnects == 1);
     CHECK(
-        session.Read(start + 62s).targets.targets[0].latitude_deg.observed_at ==
+        session.Read(start + 10min + 2s).targets.targets[0].latitude_deg.observed_at ==
         start + 2s);
-    CHECK(ais::Age(start + 2s, start + 62s) == ais::TargetAge::Stale);
-    CHECK(session.Read(start + 123s).targets.targets[0].lost);
-    CHECK(session.Read(start + 602s).targets.targets.empty());
+    CHECK(ais::Age(start + 2s, start + 10min + 2s) == ais::TargetAge::Stale);
+    CHECK(session.Read(start + 20min + 3s).targets.targets[0].lost);
+    CHECK(session.Read(start + 30min + 2s).targets.targets.empty());
     session.Receive(
         R"({"error":"deliberate-server-text-must-not-be-retained"})",
         start + 13s, wall, 0);

@@ -133,6 +133,7 @@ int OnlineAisOverlay::HitTest(ViewPort &vp, ChartCanvas &canvas,int x,int y) con
   for(const auto &stored:targets_) {
     const auto current=ais::CurrentChartMark(stored,now);if(!current)continue;
     const auto &t=*current;
+    if(t.age!=ais::TargetAge::Live && t.age!=ais::TargetAge::Aging)continue;
     wxPoint p;if(!Project(canvas,vp,t,p))continue;
     const double dx=static_cast<double>(p.x)-x,dy=static_cast<double>(p.y)-y,d=dx*dx+dy*dy;
     if(d<best){best=d;result=t.mmsi;ambiguous=false;}

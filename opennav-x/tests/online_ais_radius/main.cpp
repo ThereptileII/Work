@@ -175,8 +175,8 @@ int main() {
   Connect(session,now+10s,provider->area);
   const auto latest = ais::SubscriptionArea(provider->area);
   Check(!latest.empty() && session.PendingSubscription(now+10s).empty(), "reconnect confirms latest radius once");
-  provider->snapshot = session.Read(now+11min);
-  Check(service->Read(now+11min).targets.targets.empty(), "expired positions never reappear in radius");
+  provider->snapshot = session.Read(now+31min);
+  Check(service->Read(now+31min).targets.targets.empty(), "expired positions never reappear in radius");
   service->ObserveViewport({},true);
   Check(!provider->enabled && service->Read(now).targets.targets.empty(), "missing chart cannot retain prior traffic area");
   std::cout << "PASS " << checks << " offline AIS radius/data-path checks\n";

@@ -163,7 +163,7 @@ class DrawerTest final : public wxApp {
     });
     Add([this] {
       Check(shown_ == std::vector<int>({local_id, online_id}), "manual online chart action emits identity");
-      Feed(stamp + 61s);
+      Feed(stamp + 10min + 1s);
     });
     Add([this] {
       Check(!Require<ui::XNavButton>("Show on chart")->IsEnabled(), "stale target chart action disabled");
@@ -171,12 +171,12 @@ class DrawerTest final : public wxApp {
     });
     Add([this] {
       Check(shown_.size() == 2, "even queued stale action cannot emit chart selection");
-      Feed(stamp + 121s);
+      Feed(stamp + 20min + 1s);
     });
     Add([this] {
       Check(display_.targets.back().lost, "lost state propagated");
       Check(!Require<ui::XNavButton>("Show on chart")->IsEnabled(), "lost target chart action disabled");
-      Capture("online-lost-day"); Feed(stamp + 601s);
+      Capture("online-lost-day"); Feed(stamp + 30min + 1s);
     });
     Add([this] {
       Check(!Require<ui::XNavButton>("Show on chart")->IsEnabled(), "removed target unavailable");
