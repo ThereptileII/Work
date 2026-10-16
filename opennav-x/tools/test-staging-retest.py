@@ -207,6 +207,10 @@ class PinnedRetest(unittest.TestCase):
         self.assertIn('if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }',native['run'])
         self.assertIn('helperSha256 = (Get-FileHash -Algorithm SHA256',native['run'])
         self.assertIn('testSha256 = (Get-FileHash -Algorithm SHA256',native['run'])
+        self.assertIn("foreach ($Name in @('hold-incompatible-rtlsdr.ps1', 'test-hold-incompatible-rtlsdr.ps1'))",native['run'])
+        self.assertIn("Copy-Item -LiteralPath (Join-Path 'opennav-x/tools/boat' $Name) -Destination (Join-Path $EvidenceDirectory $Name) -ErrorAction Stop",native['run'])
+        for field in ('preparationSha256','commonSha256','profileLockSha256'):
+            self.assertIn(field+' = (Get-FileHash -Algorithm SHA256',native['run'])
         self.assertEqual(cold['steps'][-1]['if'],'always()')
         self.assertIn('run${{ github.run_id }}-attempt${{ github.run_attempt }}',cold['steps'][-1]['with']['name'])
         for step in steps:

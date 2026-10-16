@@ -40,11 +40,17 @@ jobs:
         run: |
           $EvidenceDirectory = Join-Path $env:RUNNER_TEMP 'installer-cold-hold-evidence'
           New-Item -ItemType Directory -Path $EvidenceDirectory -ErrorAction Stop | Out-Null
+          foreach ($Name in @('hold-incompatible-rtlsdr.ps1', 'test-hold-incompatible-rtlsdr.ps1')) {
+            Copy-Item -LiteralPath (Join-Path 'opennav-x/tools/boat' $Name) -Destination (Join-Path $EvidenceDirectory $Name) -ErrorAction Stop
+          }
           @{
             schema = 1
             harnessCommit = $env:GITHUB_SHA
             helperSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/hold-incompatible-rtlsdr.ps1).Hash.ToLowerInvariant()
             testSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1).Hash.ToLowerInvariant()
+            preparationSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/Preparation.ps1).Hash.ToLowerInvariant()
+            commonSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/Common.ps1).Hash.ToLowerInvariant()
+            profileLockSha256 = (Get-FileHash -Algorithm SHA256 -LiteralPath opennav-x/tools/boat/CommissioningProfileLock.cs).Hash.ToLowerInvariant()
           } | ConvertTo-Json | Set-Content -LiteralPath (Join-Path $EvidenceDirectory 'source-identity.json') -Encoding UTF8
           powershell.exe -NoProfile -NonInteractive -ExecutionPolicy Bypass -File opennav-x/tools/boat/test-hold-incompatible-rtlsdr.ps1 -Evidence (Join-Path $EvidenceDirectory 'native-results.json')
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
