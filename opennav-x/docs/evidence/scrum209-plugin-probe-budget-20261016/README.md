@@ -60,10 +60,27 @@ can detect a node/byte overflow; the native per-file read remains bounded at
 128 MiB. The root PE is additional to the dependency-node count and included in
 the aggregate byte count.
 
-Native Windows custody/topology validation, a rebuilt candidate, and installed
-boat acceptance of the correction remain **pending**. These results do not
-qualify DLL execution, builtin `Init`, the complete Windows loader search or
-the unchanged installed 854 binaries. Original failures remain failures.
+## Focused native Windows result
+
+[Run 38910455080, attempt 1](https://github.com/ThereptileII/Work/actions/runs/38910455080)
+([job 117004670051](https://github.com/ThereptileII/Work/actions/runs/38910455080/job/117004670051))
+passed **9,930 checks** at exact source
+`0615e79ba122a32d5adb6193ab5c5b9bfad30ce9`, using native **Win32 MSVC
+19.44.35229.0** on image `20261012.333.1` (Windows SDK `10.0.26100.0`).
+The four reported source/workflow hashes match that commit's Git blobs with
+normal Windows CRLF checkout bytes. Original artifact `12049428405` is 2,237
+bytes; its API SHA-256 and all four member CRCs/hashes match the retained
+archive. The machine-readable receipt records those exact hashes.
+
+This accepts the compiled declarative policy fixture on native Windows. The
+fixture uses synthetic PE graphs; it does not load plugin DLLs or qualify native
+file custody, actual loader topology, builtin `Init`, or the installed 854
+application. No check was rerun for this documentation.
+
+Application build, native product qualification, native file custody/topology
+and installed boat acceptance are **not established** by this focused fixture.
+Full candidate acceptance remains separate; original 854 failures remain
+failures. This record makes no assertion about a full Staging run's status.
 
 [receipt.json](receipt.json) records exact source/input/result hashes. Large
 original logs, graph traces and executable inputs remain private; this directory

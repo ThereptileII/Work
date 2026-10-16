@@ -114,10 +114,77 @@
   "acceptance": {
     "peModulesLoadedOrExecuted": false,
     "applicationExecutedByThisProof": false,
-    "nativeWindows": "PENDING",
+    "nativeWindows": "FOCUSED_DECLARATIVE_POLICY_PASS_ONLY",
     "rebuiltCandidate": "PENDING",
     "installedBoatCorrection": "PENDING",
     "completeWindowsLoaderClosure": false,
-    "originalFailuresReclassified": false
+    "originalFailuresReclassified": false,
+    "nativeWindowsFileCustodyTopology": "PENDING"
+  },
+  "nativeFocusedChecks": {
+    "result": "PASS",
+    "scope": "native Win32 declarative plugin-import policy test only",
+    "sourceCommit": "0615e79ba122a32d5adb6193ab5c5b9bfad30ce9",
+    "repository": "ThereptileII/Work",
+    "runId": 38910455080,
+    "runAttempt": 1,
+    "jobId": 117004670051,
+    "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38910455080",
+    "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38910455080/job/117004670051",
+    "runStatus": "completed",
+    "runConclusion": "success",
+    "event": "push",
+    "architecture": "Win32 / x86",
+    "compiler": "MSVC 19.44.35229.0",
+    "windowsSdkVersion": "10.0.26100.0",
+    "imageVersion": "20261012.333.1",
+    "checks": 9930,
+    "stdout": "PASS: 9930 deterministic Win32 import-reader checks",
+    "executableSha256": "b1924f1796d0923de26c6d59e70bd7d453afb4fbce6409d0cbe99d9f13b04463",
+    "sourceIdentity": {
+      "nativeCheckoutSha256": {
+        "opennav-x/src/integration/Win32PeImports.h": "cb8dfcb458d79d49b951f5e141567acfbd1260bfa8d92fd3b7beedb212db0f7e",
+        "opennav-x/src/integration/Win32PluginTlsImports.h": "8781ff33de8af4413b818ca28518417a6d228382c9d4319df76bfaa6e093d3a0",
+        "opennav-x/tests/win32_pe_imports_test.cpp": "6de9782cef8c1ab8b66c5342d8e9193efa72cf90b224aa4fae6be8e17d5f1167",
+        ".github/workflows/skager-plugin-import-policy.yml": "312c3aa39c12ea012d5fd18811e5497c218429c4c123f6d68fc8f16c0dfd3591"
+      },
+      "comparison": "All four native checkout hashes match exact sourceCommit Git blobs converted from LF to Windows CRLF. No semantic source differences."
+    },
+    "artifact": {
+      "id": 12049428405,
+      "name": "native-plugin-policy-0615e79ba122a32d5adb6193ab5c5b9bfad30ce9-run38910455080-attempt1",
+      "bytes": 2237,
+      "sha256": "a589e6dc259d003913f050474eb089ac32e066b79607a3fbbc1afa56c0539130",
+      "originalApiDigestMatched": true,
+      "originalMemberCrcVerified": true,
+      "members": {
+        "build.log": {
+          "bytes": 5220,
+          "sha256": "f6bc8123d6ae786def74c8b32486a02f1d82460d94260ddb25cec355da6c8921",
+          "crc32": "709822da"
+        },
+        "configure.log": {
+          "bytes": 569,
+          "sha256": "d91852d3ce9a7f688eeb37e53ab9c8e74d2a162ea5107c5709bfb0d7f1659cef",
+          "crc32": "4236cd96"
+        },
+        "report.json": {
+          "bytes": 953,
+          "sha256": "ab6b61dbf8c9b90275186e7bde456e747c63d16bc7f12ab0113460f33d68ea23",
+          "crc32": "24d5ddd7"
+        },
+        "result.log": {
+          "bytes": 53,
+          "sha256": "6b214d066096c1cbbe83c6e4df5d45a6bcb5a1287574acd45ceeea6a86e34143",
+          "crc32": "a5079bb3"
+        }
+      }
+    },
+    "productAcceptance": false,
+    "actualPluginDllsLoaded": false,
+    "nativeFileCustodyTopologyQualified": false,
+    "completeWindowsLoaderClosure": false,
+    "boatAcceptance": false,
+    "rerunForDocumentation": false
   }
 }
