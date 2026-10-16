@@ -9,7 +9,9 @@ attempt 1. Linux passes both 154-case CTest executions and its chart, lifecycle,
 synthetic-input and fixture-free checks.
 [Original Linux results](evidence/scrum22-linux-854078a5-20261015/README.md).
 Windows producer `116536443214` passes both 146-case CTest executions, native
-AIS/TLS checks and packaging. All five original Windows artifacts and the
+AIS/TLS checks and packaging.
+[Original native scopes and counts](evidence/candidate-854078a5-native-outcomes-20261016/README.md).
+All five original Windows artifacts and the
 Setup/recovery/source inventories are authenticated.
 [Exact package custody and limitations](evidence/candidate-854078a5-custody-20261016/README.md).
 
