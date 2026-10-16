@@ -27,12 +27,20 @@ unestablished. Moving the wait after application closure or raising the timeout
 would not repair this contract.
 
 Helper-only revision `2ff32b3439365b86a67b66a54c7baf95cd4cdb21` adds a bounded
-diagnostic in the existing retained workflow; 19 focused checks pass. Native
+diagnostic in the existing retained workflow. Native
 [38878511171](https://github.com/ThereptileII/Work/actions/runs/38878511171)
-uses the original 854 package and original installed supervisor under x86
-Windows PowerShell, retaining redacted child output without modifying installed
-code. It is diagnostic-only and cannot grant qualification even if that direct
-invocation succeeds. The original failed attempt remains failed. No replacement
+restores the exact 854 package and installs successfully, but its WOW64 host-path
+query returns an empty buffer and fails before invoking the supervisor. This is
+a helper failure, not new evidence of the product cause. The underlying API
+behavior has not been established. Corrected helper
+`293eae1213e44adc6eed5728ee6f62a438760b94` validates a bounded host query before
+restoring inputs; all 21 focused checks pass. Its single corrected native run,
+[38880343949](https://github.com/ThereptileII/Work/actions/runs/38880343949),
+passes that early I386-host preflight and is running the original installed
+supervisor under x86 Windows PowerShell. It retains redacted child output without
+modifying installed code. The scope is diagnostic-only and cannot grant
+qualification even if direct invocation succeeds. Both original failed attempts
+remain failed. No replacement
 application build or boat deployment follows from this diagnostic. Installed
 bootstrap/lifecycle, new-capture PluginHandler qualification, protected B0/B1
 customer acceptance and fresh boat validation remain open; design/endurance
