@@ -72,6 +72,13 @@ the x86 launcher's contract, exact application working directory and unchanged
 security checks. It does not repeat the original launcher or later lifecycle
 phases. The original failed qualifier remains authoritative.
 
+A read-only WOW64 host query and PE32 check now runs before retained artifact
+restoration, recording `startup-diagnostic-host.json`. Diagnostic run
+`38878511171` failed in host-path validation before invoking the supervisor;
+that failed attempt supplies no receiver or product result. The query starts
+with a 260-character buffer, permits one bounded retry, and rejects empty,
+relative or length-mismatched output before constructing the executable path.
+
 `packaged-updater.json` retains the original failure reference, installed input
 hashes, host identity, exit/timeout observation and bounded, redacted stdout and
 stderr. No startup challenge or environment dump is exported. A surviving app

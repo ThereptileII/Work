@@ -40,17 +40,30 @@ def diagnostic_text(raw):
     return re.sub(r'(?i)[a-f0-9]{64}', '[redacted 64-hex value]', text)
 
 
-def diagnostic_host(launcher):
+def wow64_system_directory():
+    query = ctypes.WinDLL('kernel32', use_last_error=True).GetSystemWow64DirectoryW
+    query.argtypes = (ctypes.POINTER(ctypes.c_wchar), ctypes.c_uint); query.restype = ctypes.c_uint
+    capacity = 260  # Conventional MAX_PATH; never pass a 65536-byte WCHAR buffer.
+    for attempt in range(2):
+        system = ctypes.create_unicode_buffer(capacity)
+        length = query(system, capacity)
+        assert length > 0, 'Windows WOW64 system directory query failed'
+        if length >= capacity:
+            assert attempt == 0 and length < 32767, 'Windows WOW64 system directory exceeds the bounded retry'
+            capacity = length + 1
+            continue
+        value = system.value
+        assert value and len(value.encode('utf-16-le')) // 2 == length and Path(value).is_absolute(), 'Windows WOW64 directory must be nonempty, absolute and match the returned length'
+        return Path(value)
+    raise AssertionError('Windows WOW64 system directory query did not complete')
+
+
+def diagnostic_host(launcher=None):
     # The packaged GOARCH=386 launcher calls GetSystemDirectory and leaves WOW64
     # redirection enabled. Explicitly select that x86 host from this x64 harness.
-    system = ctypes.create_unicode_buffer(32768)
-    query = ctypes.WinDLL('kernel32', use_last_error=True).GetSystemWow64DirectoryW
-    query.argtypes = (ctypes.c_wchar_p, ctypes.c_uint); query.restype = ctypes.c_uint
-    length = query(system, len(system))
-    assert 0 < length < len(system), 'The original x86 launcher requires the Windows WOW64 system directory'
-    host = Path(system.value) / 'WindowsPowerShell/v1.0/powershell.exe'
-    bounded_plain(launcher, 64 * 1024 * 1024)
-    for path in (launcher, host):
+    host = wow64_system_directory() / 'WindowsPowerShell/v1.0/powershell.exe'
+    if launcher is not None: bounded_plain(launcher, 64 * 1024 * 1024)
+    for path in ((launcher, host) if launcher is not None else (host,)):
         # Serviced OS files may legitimately have WinSxS hard links.
         for ancestor in (path, *path.parents):
             assert not ancestor.is_symlink() and not (getattr(ancestor.lstat(), 'st_file_attributes', 0) & 0x400), 'Redirected diagnostic host refuses'
@@ -599,4 +612,11 @@ Write-Output 'Exact-generation DPAPI startup receipt authenticated.'
 
 
 if __name__ == '__main__':
+    if sys.argv[1:] == ['--diagnostic-host-preflight']:
+        assert sys.platform == 'win32' and os.environ.get('GITHUB_ACTIONS') == 'true' and os.environ.get('RUNNER_ENVIRONMENT') == 'github-hosted', 'Disposable native CI required'
+        host = diagnostic_host()
+        print(json.dumps(dict(scope='Read-only WOW64 host preflight; no supervisor or application execution',
+                              hostPath=str(host), hostSha256=digest(host), hostMachine='I386',
+                              testSourceSha256=digest(Path(__file__)), acceptance=False), indent=2))
+        raise SystemExit(0)
     raise SystemExit('Run through smoke-installer-windows.py with its disposable package/profile fixture')

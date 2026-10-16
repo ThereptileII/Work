@@ -173,6 +173,29 @@ class TrustTests(unittest.TestCase):
 
 
 class StartupDiagnosticTests(unittest.TestCase):
+    def test_wow64_query_rejects_empty_relative_mismatched_and_oversized_results(self):
+        for text, length in (('', 20), ('relative', 8), ('/absolute', 2), ('', 0), ('', 32768)):
+            query = mock.Mock(side_effect=lambda buffer, size: (setattr(buffer, 'value', text) or length))
+            with self.subTest(text=text, length=length), \
+                 mock.patch.object(helper.ctypes, 'WinDLL', create=True, return_value=types.SimpleNamespace(GetSystemWow64DirectoryW=query)):
+                with self.assertRaises(AssertionError): helper.wow64_system_directory()
+            self.assertEqual(query.call_args.args[1], 260)
+
+    def test_wow64_query_uses_one_bounded_required_capacity_retry(self):
+        text = str(Path(tempfile.gettempdir()).resolve() / ('x'*280))
+        calls = []
+        def query_path(buffer, capacity):
+            calls.append(capacity)
+            if len(calls) == 1: return len(text) + 1
+            buffer.value = text
+            return len(text)
+        query = mock.Mock(side_effect=query_path)
+        with mock.patch.object(helper.ctypes, 'WinDLL', create=True, return_value=types.SimpleNamespace(GetSystemWow64DirectoryW=query)):
+            self.assertEqual(helper.wow64_system_directory(), Path(text))
+            self.assertEqual(calls, [260, len(text) + 2])
+            query.side_effect = lambda buffer, size: size + 1
+            with self.assertRaisesRegex(AssertionError, 'bounded retry'): helper.wow64_system_directory()
+
     def test_bounded_capture_retains_original_error_and_never_exports_challenge(self):
         for code, raw in ((0, b'current-qualified\n'), (1, b'Receiver: connect-timeout\n'),
                           (None, b'CloseOwned failed\n'), (1, b'x' * 65537)):

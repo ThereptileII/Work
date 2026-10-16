@@ -33,6 +33,13 @@ jobs:
     timeout-minutes: 120
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Validate diagnostic WOW64 host before restoring retained inputs
+        if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installer-startup-diagnostic' }}
+        run: |
+          New-Item -ItemType Directory -Force opennav-x/evidence/local | Out-Null
+          python opennav-x/tools/test-packaged-updater-windows.py --diagnostic-host-preflight > opennav-x/evidence/local/startup-diagnostic-host.json
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          Get-Content -LiteralPath opennav-x/evidence/local/startup-diagnostic-host.json
       - name: Authenticate successful producer and restore exact retained inputs
         id: prepare
         env:
