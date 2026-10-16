@@ -19,7 +19,11 @@ $checks=New-Object 'Collections.Generic.List[string]'
 function Check([bool]$Ok,[string]$Name) { if (-not $Ok) { throw $Name };$checks.Add($Name) }
 function Refuses([scriptblock]$Action,[string]$Pattern,[string]$Name) {
   $message='';try { $null=& $Action } catch { $message=$_.Exception.Message }
-  Check (-not [string]::IsNullOrEmpty($message) -and $message -like $Pattern) $Name
+  if ([string]::IsNullOrEmpty($message) -or $message -notlike $Pattern) {
+    if ($message.Length -gt 1024) { $message=$message.Substring(0,1024)+' [truncated]' }
+    throw ($Name+'; expected refusal matching ['+$Pattern+']; actual ['+$message+']')
+  }
+  $checks.Add($Name)
 }
 $root=Join-Path ([IO.Path]::GetTempPath()) ('SKAGER-rtlsdr-fixture-'+[guid]::NewGuid().ToString('N'))
 $null=New-Item -ItemType Directory -Path $root
@@ -130,8 +134,11 @@ try {
       [IO.File]::WriteAllText((Join-Path (Split-Path $p.record) $corrupt),'corrupt')
       Refuses { Phase $f $p 'Restore' } '*Only the exact reviewed*' ('Corrupt '+$corrupt+' blocks restoration')
     }
-    $f=Fixture;$p=Inspect $f;[IO.File]::AppendAllText((Join-Path $f.context.profile 'opencpn.ini'),'changed')
-    Refuses { Phase $f $p 'Hold' } '*Protected tree changed*profile*' 'Profile mutation is detected before hold'
+    $f=Fixture;$p=Inspect $f;$ini=Join-Path $f.context.profile 'opencpn.ini'
+    [IO.File]::AppendAllText($ini,'changed')
+    Refuses { Phase $f $p 'Hold' } '*Unrecognized profile syntax*' 'Malformed profile refuses before hold'
+    [IO.File]::WriteAllText($ini,"[Settings]`r`nKeep=changed`r`n")
+    Refuses { Phase $f $p 'Hold' } '*Protected tree changed*profile*' 'Valid profile mutation is detected before hold'
     $f=Fixture;$p=Inspect $f;$null=Phase $f $p 'Hold'
     [IO.File]::AppendAllText((Join-Path $f.context.application 'plugins\rtlsdr_pi\bin\rtl_ais.exe'),'changed')
     Refuses { Phase $f $p 'Restore' } '*Protected tree changed*stock*' 'Adjacent helper mutation prevents false preserved-tree receipt'
