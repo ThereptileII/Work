@@ -490,7 +490,7 @@ def wait_installer_selection(process,frame,title):
         if installer_selection_ready(frame,process.pid,title):return
         time.sleep(.1)
     raise RuntimeError('Installer selection page did not open')
-def disable_installer_finish_launch(frame,pid):
+def installer_finish_launch_checkbox(frame,pid):
     assert any(handle==frame and owner==pid for handle,owner,_ in ui.windows(pid)) and ui.IsWindowEnabled(frame),'Finish page is not the owned enabled installer'
     matches=[child for child,caption in ui.children(frame) if caption.replace('&','')=='Open SKAGER']
     assert len(matches)==1,'Expected one exact Open SKAGER launch checkbox before Finish'
@@ -498,6 +498,11 @@ def disable_installer_finish_launch(frame,pid):
     kind=ctypes.create_unicode_buffer(128);ui.GetClassNameW(child,kind,len(kind))
     style=ui.declare(ui.user,'GetWindowLongW',ctypes.c_long,ctypes.c_void_p,ctypes.c_int)(child,-16)
     assert kind.value=='Button' and (style & 0xf) in (2,3) and ui.IsWindowEnabled(child),'Open SKAGER is not an enabled native checkbox'
+    owner=ui.W.DWORD();ui.GetWindowThreadProcessId(child,ctypes.byref(owner))
+    assert owner.value==pid and ui.IsChild(frame,child),'Launch checkbox is not owned by the installer frame'
+    return child
+def disable_installer_finish_launch(frame,pid):
+    child=installer_finish_launch_checkbox(frame,pid)
     before=ui.SendMessageW(child,0x00F0,0,0)  # BM_GETCHECK
     assert before in (0,1),'Unknown launch checkbox state'
     ui.SendMessageW(child,0x00F1,0,0)  # BM_SETCHECK / BST_UNCHECKED, exactly once.
@@ -551,6 +556,7 @@ def wizard(stock,install=False):
         time.sleep(.5)
         ui.capture(h,EVIDENCE/'installer-wizard-installed.png',resize=False,screen_pixels=True)
         report['screenshots'].append('installer-wizard-installed.png')
+        assert installer_finish_launch_checkbox(h,p.pid)==launch_choice['control'],'Installer launch checkbox was replaced before Finish'
         assert ui.SendMessageW(launch_choice['control'],0x00F0,0,0)==0,'Installer launch checkbox changed before Finish'
         press(1)
         assert p.wait(timeout=30)==0
