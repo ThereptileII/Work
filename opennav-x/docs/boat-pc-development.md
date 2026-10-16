@@ -89,6 +89,18 @@ live chart/UI acceptance.
 10. Retest modes/chart content and record the tested commit, executable hash,
     screenshots, timings, data availability, and remaining physical limitations.
 
+Diagnostic JSON must contain bounded scalar metadata and explicitly selected
+report fields. Use the maintained size-bounded reader for known JSON. Never
+embed complete `Get-Content` output or whole log bodies in `ConvertTo-Json`.
+For log inspection, record file length/time/hash and read a byte-bounded tail as
+plain text; a line limit alone does not bound a long line. Retain a needed full
+log as a separate private file, copying/streaming bytes and verifying size/hash.
+Keep original evidence and verify the diagnostic process exits: an SSH return or
+timeout alone is not remote exit evidence. On 16 October an owned, read-only
+whole-log serializer remained alive with 26.1 GB private memory; exact command
+and process-creation binding allowed only that diagnostic to be stopped. This
+does not establish an application leak or a particular allocation-function cause.
+
 A normal application exit can change its INI. Renew the read-only audit after
 reviewing those changes before the next launch; do not blindly refresh its hash.
 No script clicks pilot commands, activates routes, injects sensor input or creates
