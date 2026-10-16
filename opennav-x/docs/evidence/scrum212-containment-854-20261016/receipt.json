@@ -1,0 +1,315 @@
+{
+  "schema": 1,
+  "kind": "exact-source-peer-unavailable-containment-evidence",
+  "workItem": "SCRUM-212",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "reviewDate": "2026-10-16",
+  "policyDecision": {
+    "issueUrl": "https://swedishcountrysideliving.atlassian.net/browse/SCRUM-212",
+    "selectedAlternative": "Explicit safe disabled/unavailable product boundary",
+    "selectionCommentId": "10157",
+    "sourceReviewCommentId": "11414",
+    "currentEvidenceTaskCommentId": "11857",
+    "reviewedIssueStatus": "Testning",
+    "completeCommentCountReadBeforeTaskComment": 30
+  },
+  "recommendation": {
+    "softwareContainmentEvidence": "sufficient for the explicitly unavailable alternative, within the recorded limits",
+    "coordinatorOwnsFinalAcceptanceDecision": true,
+    "authenticatedSharingAccepted": false,
+    "genericSecurityOrReleaseApproval": false
+  },
+  "sourceBoundary": {
+    "nonConfigurablePolicy": "ocpn::PeerSharingAvailable() returns false",
+    "modes": [
+      "XNav",
+      "Legacy",
+      "Safe"
+    ],
+    "inbound": "Production startup does not enter certificate generation, REST-server startup or peer mDNS advertisement. Direct upstream server tests remain separate.",
+    "outbound": "UI send/discovery and forced handlers, four model entrypoints and CLI key commands refuse before peer credentials, serialization or transport.",
+    "unchanged": "Pristine OpenCPN and existing navigation/user storage; saved peer identity and credentials are retained for future reviewed migration.",
+    "sourceReviewInputs": [
+      {
+        "path": "opennav-x/patches/opencpn-5.12.4-peer-unavailable.patch",
+        "gitBytes": 11876,
+        "gitSha256": "5bf1c2ae4b09043ce18151f766aebd2b881b993f352000e34399de7e8b36b6d3"
+      },
+      {
+        "path": "opennav-x/tests/peer_unavailable_tests.cpp",
+        "gitBytes": 2787,
+        "gitSha256": "5872510ec1c3ceae882e0d94d3d5a32b121049c77e86115de091e6998afce2c5"
+      },
+      {
+        "path": "opennav-x/src/integration/OpenCPN.cmake",
+        "gitBytes": 35937,
+        "gitSha256": "80a1d86e57f4973f768d383dadaec3731562f78de14cad6a6151ae3b030239aa"
+      },
+      {
+        "path": "opennav-x/tools/smoke-peer-two-instances.py",
+        "gitBytes": 22512,
+        "gitSha256": "99c9787a0bae8a1b7b63bc5fe65bc17769e5ea75aca34e92e5b449ad5469295e"
+      },
+      {
+        "path": "opennav-x/tools/peer_boundary.py",
+        "gitBytes": 11525,
+        "gitSha256": "12b7da31d9d84dc30a27039130d66f180cffd0c2035d5941523acf231e70f2be"
+      },
+      {
+        "path": "opennav-x/tools/test-peer-cli.py",
+        "gitBytes": 9991,
+        "gitSha256": "26bd160af81effcd96766cd77af21c91a126a0322dcfa1e1eb0b8893581608d8"
+      }
+    ],
+    "completeSourceProvenance": "../candidate-854078a5-custody-20261016/receipt.json"
+  },
+  "originalRun": {
+    "runId": 38765418126,
+    "attempt": 1,
+    "originalConclusion": "failure",
+    "originalFailurePreserved": true,
+    "nativeProducerJob": {
+      "repository": "ThereptileII/Work",
+      "runId": 38765418126,
+      "runAttempt": 1,
+      "jobId": 116536443214,
+      "job": "windows-integration",
+      "conclusion": "success",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38765418126/job/116536443214",
+      "recordedStepConclusions": {
+        "success": 34
+      }
+    },
+    "nativeProducerArtifact": {
+      "artifactId": "11992784515",
+      "name": "windows-build-evidence-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-attempt1",
+      "bytes": 65383721,
+      "sha256": "14d14df0f80e20f7b40877bca167d527914c900c5f1b092db31c0cc8ca5b8bb9",
+      "crcVerifiedMembers": 18125
+    },
+    "windowsQualifierArtifact": {
+      "artifactId": "11994723756",
+      "name": "windows-qualification-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-attempt1",
+      "source": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "runId": "38765418126",
+      "runAttempt": "1",
+      "bytes": 25206117,
+      "sha256": "9ae383747ad38c25b700e72ad1ae57a7fbae17c153b4d80310eefeabdfc97353",
+      "crcVerifiedMembers": 5532,
+      "producerRunStatusAtDownload": "completed",
+      "producerRunConclusionAtDownload": "failure",
+      "custodyOnly": true,
+      "nativeAcceptance": false,
+      "productAcceptance": false
+    },
+    "linuxJob": {
+      "id": 116527477400,
+      "name": "Linux integrated regression gate",
+      "conclusion": "success",
+      "labels": [
+        "ubuntu-24.04"
+      ],
+      "startedAt": "2026-10-15T16:01:48Z",
+      "completedAt": "2026-10-15T16:46:58Z",
+      "stepCount": 33,
+      "successfulSteps": 32,
+      "originalMetadataSha256": "2a42f899c5101167161e53eaade32331e62338d33cf3d538d69ce0fbef22198d",
+      "originalLogBytes": 995477,
+      "originalLogSha256": "12ddee8e64d63a7576db44fe3471cf2f2ba5812f6057d6327a717547260f67fa"
+    },
+    "linuxArtifact": {
+      "id": 11992076552,
+      "name": "linux-integration-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+      "bytes": 14636581,
+      "sha256": "ba1b5ccf2c90ec68d8ae067df051b98cfbe5a085b880404eaaa5f9ea5cd0b073",
+      "githubDigestMatched": true,
+      "zipMembers": 3984,
+      "allCrcsPassed": true,
+      "rawArtifactListingSha256": "4162a04cb782db99c6f743e069111d73e0ec97036c16505fd80f6e830bdf0923"
+    },
+    "scope": "Successful original component/runtime prefix reports remain narrower than the original failed whole run."
+  },
+  "modelEvidence": [
+    {
+      "member": "windows-xnav-tests.xml",
+      "bytes": 129575,
+      "sha256": "ea9908bd37c4cd32cafcad0d0fb3cd4b7788d39c8259677eaf9f53e019d6035a",
+      "peerCaseNames": [
+        "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+        "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+        "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+        "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential"
+      ],
+      "passedPeerCases": 4,
+      "scope": "Actual model entrypoints linked into the corresponding fixture or fixture-free test build."
+    },
+    {
+      "member": "windows-production-tests.xml",
+      "bytes": 130483,
+      "sha256": "f04622a74f4ef9a71074510b2731181bea3c7807af3a5610541e2bd279449d90",
+      "peerCaseNames": [
+        "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+        "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+        "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+        "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential"
+      ],
+      "passedPeerCases": 4,
+      "scope": "Actual model entrypoints linked into the corresponding fixture or fixture-free test build."
+    },
+    {
+      "member": "xnav-linux-tests.xml",
+      "bytes": 134127,
+      "sha256": "db6c07a0d369344c56a09756630428128bfbad5197abf6fc8f1dcc20a5655bdf",
+      "peerCaseNames": [
+        "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+        "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+        "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+        "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential"
+      ],
+      "passedPeerCases": 4,
+      "scope": "Actual model entrypoints linked into the corresponding fixture or fixture-free test build."
+    },
+    {
+      "member": "production-linux-tests.xml",
+      "bytes": 135030,
+      "sha256": "3af9cc4b3297db788ee60287c5671b19e06b2a02308372db14b827e2da212dec",
+      "peerCaseNames": [
+        "OpenNavPeerUnavailable.RejectsEmptyTransfersInsteadOfClaimingSuccess",
+        "OpenNavPeerUnavailable.ForcedSendDoesNotInspectOrSerializeObjects",
+        "OpenNavPeerUnavailable.ClearsRetainedVersionWithoutPairingOrFallback",
+        "OpenNavPeerUnavailable.DirectKeyCheckRejectsWithoutSendingCredential"
+      ],
+      "passedPeerCases": 4,
+      "scope": "Actual model entrypoints linked into the corresponding fixture or fixture-free test build."
+    }
+  ],
+  "nativeCli": {
+    "member": "windows-peer-cli-receipt.json",
+    "bytes": 649,
+    "sha256": "3582737fb18a396f2f171b96e31b4730a1c0126e329cb8b49394a4a3b18f05f8",
+    "status": "success",
+    "executableSha256": "ca5dcdbc6341489871ba7dfe43a943fbf8e78c136c9de17fab1bba23f9f838b5",
+    "scope": "Generate/store-key refusal with nonzero exit, fixed unavailable reason, no key stdout and unchanged disposable config."
+  },
+  "nativeResponseBuffer": {
+    "bytes": 1589,
+    "sha256": "82277a6cd1746975d2b9aac9c3ba9bb0d1c45f9da8856384d0d31adfafbdeed1",
+    "member": "peer-buffer-windows.log",
+    "passedCases": 1,
+    "scope": "Allocation/bounds behavior only; not pairing JSON or authentication acceptance."
+  },
+  "windows": {
+    "concurrentReport": {
+      "member": "peer-two-instances-results.json",
+      "bytes": 1944,
+      "sha256": "74bd9723a898f4e8a34ca3f58c29c7b86b5cd717961764c41d5e2c1f946a7310"
+    },
+    "modeReport": {
+      "member": "mode-cycle-results.json",
+      "bytes": 5561,
+      "sha256": "e20b77df4db831d6005e63deaf73113c8acf0af72d90f37231db6d58a6d51251"
+    },
+    "result": "PASS",
+    "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "testCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "testScriptSha256": "bf73bbfc80c2e33a2f1711831ff354bc543a5b2d85254a4a2c2c62cdb896f2d3",
+    "testedExecutableSha256": "714cd164d50cecd29f3b07f017c26e96a4842168a5befe9030bbb9e40be5812e",
+    "launchModes": [
+      "ordinary",
+      "portable"
+    ],
+    "distinctLiveProcesses": 2,
+    "distinctDisposableProfiles": 2,
+    "bothProfilesPreserved": true,
+    "certAndKeyPreservedAtBothCleanExits": true,
+    "observedOwnedTcpListenerPorts": [
+      [],
+      []
+    ],
+    "forbiddenPeerTcpPorts": [
+      8443,
+      8444
+    ],
+    "modePreservationObservationCount": 5,
+    "allModeObservationsPreserved": true,
+    "allModeObservedOwnedTcpListenerPortsEmpty": true,
+    "supportedStreamsCheckedForFixtureCredentialSentinels": [
+      "application log",
+      "stdout",
+      "stderr"
+    ]
+  },
+  "linux": {
+    "concurrentReport": {
+      "member": "peer-two-instances-results.json",
+      "bytes": 1698,
+      "sha256": "7fade64535edb6d530e2661b69191ab4895bf455fddbc40b38d32a9d15b3b922"
+    },
+    "modeReport": {
+      "member": "linux-mode-cycle-results.json",
+      "bytes": 4626,
+      "sha256": "285a9090caa753c20ef21485e3403ec3d94e532ecef966a33e2cad78ecf90580"
+    },
+    "result": "PASS",
+    "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "testCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "testScriptSha256": "99c9787a0bae8a1b7b63bc5fe65bc17769e5ea75aca34e92e5b449ad5469295e",
+    "testedExecutableSha256": "8e48f38c9cd84da61228e3c8f1b57a7347a207c781d3f8803afb8b238b58c1ef",
+    "launchModes": [
+      "ordinary",
+      "ordinary"
+    ],
+    "distinctLiveProcesses": 2,
+    "distinctDisposableProfiles": 2,
+    "bothProfilesPreserved": true,
+    "certAndKeyPreservedAtBothCleanExits": true,
+    "observedOwnedTcpListenerPorts": [
+      [],
+      []
+    ],
+    "forbiddenPeerTcpPorts": [
+      8443,
+      8444
+    ],
+    "modePreservationObservationCount": 5,
+    "allModeObservationsPreserved": true,
+    "allModeObservedOwnedTcpListenerPortsEmpty": true,
+    "supportedStreamsCheckedForFixtureCredentialSentinels": [
+      "application log",
+      "stdout",
+      "stderr"
+    ]
+  },
+  "finalPackageBoundary": {
+    "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+    "sameExecutableAsWindowsConcurrentProbe": false,
+    "fixtureFreeRecoveryReport": {
+      "member": "production-recovery-results.json",
+      "bytes": 7004,
+      "sha256": "84a9238b3b1fdc67cc76b90894db6da14db25c1751ec9841b237d8b687e05912"
+    },
+    "fixtureFreeRecoveryStatus": "passed",
+    "separatePackageQualification": "../scrum290-composed-854-20261016/receipt.json",
+    "actualInstallationEvidence": "../scrum17-854-install-20261016/receipt.json",
+    "scope": "Final-package loader/recovery/installed results are separate evidence; the concurrent peer result is not relabeled as an execution of this executable."
+  },
+  "unexecutedPairingScenarios": {
+    "status": "unreachable through the selected production peer entrypoints; not executed passes",
+    "scenarios": [
+      "authenticated pairing and confirmation",
+      "pairing cancellation and malformed peer-response JSON",
+      "changed certificate or peer identity authentication",
+      "replay/relay resistance",
+      "credential migration and persistent protected identity storage"
+    ],
+    "reason": "Containment refuses before discovery, pairing, response parsing, credential use or peer transport. Enabling sharing requires a separately reviewed protocol and its own tests."
+  },
+  "limits": [
+    "The Windows concurrent check uses one ordinary and one portable process, not two ordinary installed instances; Linux uses two ordinary processes.",
+    "TCP ownership observations and supported-stream sentinel checks are not UDP/mDNS or outbound packet capture, every logging path, or arbitrary plugin traffic proof.",
+    "No additional tests, application build, CI dispatch, boat action or public operation was performed to create this receipt.",
+    "Full installer lifecycle, fresh installed ordinary-profile/boat observation and public-release security approval remain separate gates; this receipt does not mark them passed.",
+    "No legacy authentication repair, TOFU, automatic changed-key trust, fallback or restored peer-sharing compatibility is claimed.",
+    "Private profile paths, account details, fixture credentials and raw streams are omitted."
+  ]
+}
