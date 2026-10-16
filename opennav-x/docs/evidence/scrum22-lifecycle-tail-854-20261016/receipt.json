@@ -1,0 +1,309 @@
+{
+  "schema": 1,
+  "runId": 38896539839,
+  "attempt": 1,
+  "harnessCommit": "d742a20cd35ec17125ed2b1dacf3a9622dab61a0",
+  "productCommit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "commit": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "runId": "38765418126",
+    "runAttempt": "1",
+    "job": "windows-integration",
+    "platform": "windows-2022",
+    "architecture": "Win32"
+  },
+  "jobId": 116958255505,
+  "jobConclusion": "success",
+  "runConclusion": "success",
+  "jobStartedUtc": "2026-10-16T11:51:24Z",
+  "jobCompletedUtc": "2026-10-16T12:14:20Z",
+  "runnerLabel": "windows-2022",
+  "runnerImage": "20261012.333.1",
+  "artifact": {
+    "id": 12045042394,
+    "name": "staging-retest-evidence-38765418126-attempt1-harnessd742a20cd35ec17125ed2b1dacf3a9622dab61a0-run38896539839-attempt1",
+    "size_in_bytes": 11964963,
+    "digest": "sha256:a9962ff9560866d56aba0f0938b1381e03c279d92b74ee162ffb2822e588710c",
+    "workflow_run": {
+      "id": 38896539839,
+      "repository_id": 864043804,
+      "head_repository_id": 864043804,
+      "head_branch": "codex/software-qualification-20261016",
+      "head_sha": "d742a20cd35ec17125ed2b1dacf3a9622dab61a0"
+    }
+  },
+  "memberCount": 1558,
+  "allMemberCrcsVerified": true,
+  "jobLog": {
+    "bytes": 67874,
+    "sha256": "ec2097fd39f4f4e01c288d9ce6eb3cec9e81fd5615f1b1ab9d36184be3f96982"
+  },
+  "reports": [
+    {
+      "name": "installer-lifecycle-tail.json",
+      "bytes": 7765,
+      "crc32": "e35ad71c",
+      "sha256": "32acbd1b14ad8e1853323b8bb5be25fa25715a8280ea75dd5b2df90052655d8c"
+    },
+    {
+      "name": "installer-missing-dll-imports.json",
+      "bytes": 501,
+      "crc32": "26eff216",
+      "sha256": "240bc1c08f39ddd61ef10fe23429ad653b5be71154e7d510b329962297422c73"
+    },
+    {
+      "name": "installer-missing-dll-imports.log",
+      "bytes": 1585,
+      "crc32": "b8e6fe03",
+      "sha256": "3d79c9f372d1a56a8cd7a0e58d55d7ef3eebf622ba1439f143257484cc739fe3"
+    },
+    {
+      "name": "installer-missing-dll-selftest.json",
+      "bytes": 743,
+      "crc32": "4eeff025",
+      "sha256": "5008e289c807079fa6c47d63c12c27881e4a2ad119ea8840b566f1df895bdc79"
+    },
+    {
+      "name": "installer-missing-dll-selftest.log",
+      "bytes": 0,
+      "crc32": "00000000",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "name": "staging-retest.json",
+      "bytes": 758,
+      "crc32": "f8f381a5",
+      "sha256": "a145a509bead0edb25bdb20fb4c7d6c111f76029cf931867f8fcea7df71b1321"
+    }
+  ],
+  "nativeImports": {
+    "status": "passed",
+    "checks": 16,
+    "nativeGuards": true,
+    "helperSha256": "233ec1862e2fe68d8d5a93cc671b43e63a09588ece9d87129fe5064ea9f1785d",
+    "lifecycleSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "transactionSha256": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+    "powershellVersion": "5.1.20348.5622",
+    "processBits": 64,
+    "missingDllLoaderExecuted": false,
+    "productAcceptance": false
+  },
+  "nativeMissingDll": {
+    "status": "passed",
+    "sourceSha256": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "transactionSourceSha256": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2",
+    "executableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+    "missingDependency": "wxbase32u_vc14x.dll",
+    "initialErrorMode": 0,
+    "restoredErrorMode": 0,
+    "error": "Staged executable self-test failed: -1073741515",
+    "scope": "Actual production SelfTest missing-DLL loader refusal only; no installer guard bypass or product qualification"
+  },
+  "tailChecks": [
+    "Official supported OpenCPN installed and exact PE executable SHA-256 verified",
+    "Fresh exact candidate, shared profile, custom tide and retained addition establish lifecycle-tail preconditions",
+    "Exact missing wx base import rejected before loader or commit, without OS modal residue",
+    "Actual production SelfTest suppresses missing-DLL OS dialog and restores error mode in separate failed-stage process",
+    "Correctly hashed native fixture-enabled executable is refused before product publication",
+    "Locked atomic state file preserves previous generation and durable recovery journal without temporary residue",
+    "Rerun after file-lock failure repairs and recovers normally",
+    "Interrupted update before atomic commit retains active app and recovers on rerun",
+    "Interrupted post-commit shortcut publication recovers from durable journal",
+    "Diagnostics verifies installed hashes without collecting navigation or raw sensor data",
+    "Conventional uninstaller removes verified owned app files; exact stock/profile unchanged; custom additions retained",
+    "Expected candidate-to-stock safety notice captured and acknowledged through its visible Agree button",
+    "Stock resource defaults survive every generation and uninstall; explicit custom tide selection is preserved",
+    "Original official OpenCPN still loads charts and shared navigation data after uninstall",
+    "Beta 2 reinstall after uninstall preserves original stock, shared profile and retained custom additions",
+    "Beta 2 same-version rebuild/update creates a rollback generation without changing user data"
+  ],
+  "operations": [
+    {
+      "action": "Install",
+      "report": "installer-00-Install.json",
+      "bytes": 789,
+      "sha256": "d8e6e75bae6f2b942376b239fbed7b93b8f60fbce01a98b29eaeaebfa7949242",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-01-Update.json",
+      "bytes": 787,
+      "sha256": "45995e4580270189850edf69447672f102db9f8338f264826622fc6b90a8c596",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "damaged-package",
+      "report": "installer-02-damaged-package.json",
+      "bytes": 804,
+      "sha256": "f35bdf7ae127c73981820f970155c761435bed1ce81cc6dfc717188b6f2318af",
+      "status": "failed",
+      "completionSeconds": null
+    },
+    {
+      "action": "damaged-package",
+      "report": "installer-03-damaged-package.json",
+      "bytes": 604,
+      "sha256": "e3925c935a71f64f30c7e35e0487a716aed2a748c9a68247ed53f09e530713ce",
+      "status": "failed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-04-Update.json",
+      "bytes": 980,
+      "sha256": "e075c25cebc38b5b5a5e1265e0c76d3f28f39a4c5137357e5cdb08413d2c67f8",
+      "status": "failed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Repair",
+      "report": "installer-05-Repair.json",
+      "bytes": 882,
+      "sha256": "5f7482c1726fe80b247fef2d93a753383acc1e6019b78ed2daa3050d84619d88",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-06-Update.json",
+      "bytes": 782,
+      "sha256": "c47b72caa5d7c2526a74dbeebcece888bfb5b6328e42b39ebb6797aaf1fd03e4",
+      "status": "failed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-07-Update.json",
+      "bytes": 882,
+      "sha256": "9dc4979a60c1207cb4b96c89f0a43cceb3dc7ec6dd1414dfc7190c8eb44c15ef",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-08-Update.json",
+      "bytes": 780,
+      "sha256": "ca96675561f28e7468e69f9fd2a8a47ca918cefab152c226d5b134e8fa6709ab",
+      "status": "failed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Repair",
+      "report": "installer-09-Repair.json",
+      "bytes": 882,
+      "sha256": "41e3f9393f9168f1f41971e0680eee50b5ecc3f59a71d9af4e8adaa1b57a6f58",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Diagnostics",
+      "report": "installer-10-Diagnostics.json",
+      "bytes": 324042,
+      "sha256": "91bce2131f78d5e7446efc5521b4dccafd65d6fb1af48b80ef1d7a42ad75e720",
+      "status": null,
+      "completionSeconds": 8.313
+    },
+    {
+      "action": "Maintain-Uninstall",
+      "report": "installer-11-Maintain-Uninstall.json",
+      "bytes": 520,
+      "sha256": "2fd905d08a085dcea187afd7582484409c3d93c3bf6091334413b27be78f2edd",
+      "status": "passed",
+      "completionSeconds": 89.844
+    },
+    {
+      "action": "Install",
+      "report": "installer-12-Install.json",
+      "bytes": 789,
+      "sha256": "c1ae01656586e983a466b2e3ca32f3961815f5f169324a519ff847481452aa55",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Update",
+      "report": "installer-13-Update.json",
+      "bytes": 787,
+      "sha256": "1983f7349375e8cf7ea632cdf3b3ab49e110796d04a98637e0854564d27a175b",
+      "status": "passed",
+      "completionSeconds": null
+    },
+    {
+      "action": "Uninstall",
+      "report": "installer-14-Uninstall.json",
+      "bytes": 520,
+      "sha256": "3739985424c0b6385cd5529d5b10c085a76a4955a1cab4789e42ee45594743ef",
+      "status": "passed",
+      "completionSeconds": 71.484
+    }
+  ],
+  "operationStatusCounts": {
+    "passed": 9,
+    "failed": 5,
+    "None": 1
+  },
+  "finalDirectUninstallPassed": true,
+  "freshTailPreconditions": {
+    "freshInstallation": true,
+    "realSameVersionUpdate": true,
+    "customAdditionPreserved": true,
+    "profileAndStockUnchanged": true,
+    "activeExecutableSha256": "8ad205a452683316330549bb93a5d0c039b2a2acb4d59eaa6aa4c5d3b85bc511",
+    "stateSha256": "9dbf1932fab9406fb0807ef5a191454c234bf714fa46c9126b73b73a7d6375b9"
+  },
+  "frozenSourceFiles": {
+    "opennav-x/installer/windows/Lifecycle.ps1": "e601683ee45b9f34fb6a5be20b5f72755be574e8796d1fffd9933ce31666b3e7",
+    "opennav-x/installer/windows/UpdateSupervisor.ps1": "2c2e23cd53d37c1d0da26110bfd4a7fab3017b9904c9036a69198c9cd03af7ac",
+    "opennav-x/installer/windows/UpdateTransaction.ps1": "f4a310ecbaad34f7cdc948120d085f017d56c00cc82ba1358e895514a6ca46d2"
+  },
+  "setupSha256": "c7155c093050fc87df95801b3b6962e313721e68207819af0c3177709cc4382d",
+  "stockSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+  "sourceArchiveSha256": "cc5042b371f8f664222cec9c0aa1af7b36c98d57d2b45d54a50e2685b0a67142",
+  "sourceBinding": {
+    "opennav-x/tools/smoke-installer-windows.py": {
+      "gitBlob": "d492f9d58f1406d81e6135387976a6e84158c0c8",
+      "gitSha256": "2af6636bdcdfd0f66dc66cf125ab29b29c3f7c1fb84078ce81bdc9abb61817d5",
+      "recordedWindowsCrlfSha256": "1bc4b68101549c0055f7af3d44631442f1ed3e4272cb50003f70a69078a2a11a"
+    },
+    "opennav-x/tools/test-installer-missing-dll-selftest.ps1": {
+      "gitBlob": "e6887a1e687e98512ac63db68ff0a593fa3e7719",
+      "gitSha256": "20b67c668ab49bdb03df67bd87e26b5293b83ef5070e60395996a27f4a417ea5",
+      "recordedWindowsCrlfSha256": "233ec1862e2fe68d8d5a93cc671b43e63a09588ece9d87129fe5064ea9f1785d"
+    },
+    "opennav-x/tools/test-installer-missing-dll-imports.ps1": {
+      "gitBlob": "89e4b97e9395b27145885c119def600411b29ce0",
+      "gitSha256": "bb45d22cad8909be21943ed29ad6c325bd3848d78a4de1952e01479238cb99b3",
+      "recordedWindowsCrlfSha256": "e79022766455f6233bd74c76b8ab5616dae9452693d23cd0f0eda907c6753228"
+    }
+  },
+  "wholeLifecycleAcceptance": false,
+  "publicAccess": false,
+  "priorFailedRun": 38889555934,
+  "scope": "Fresh-state suffix plus native import prerequisite only; original full matrix remains failed.",
+  "limits": [
+    "Original prior prefix/historical fixture transitions were not replayed in this tail.",
+    "No application rebuild, Production promotion, protected-host UAC, boat acceptance or public access."
+  ],
+  "kind": "sanitized-authenticated-retained-lifecycle-tail",
+  "workItems": [
+    "SCRUM-22",
+    "SCRUM-209",
+    "SCRUM-290"
+  ],
+  "runUrl": "https://github.com/ThereptileII/Work/actions/runs/38896539839",
+  "jobUrl": "https://github.com/ThereptileII/Work/actions/runs/38896539839/job/116958255505",
+  "tailCheckCount": 16,
+  "operationRecordCount": 15,
+  "operationOutcomeScope": "Nine positive passed outcomes, five expected negative failed outcomes and one diagnostics record without a status; not fifteen positive installations.",
+  "privateCustody": {
+    "basename": "tail-custody.json",
+    "bytes": 11661,
+    "sha256": "a3d6e689b0cd0461e8413477a0067f01905319cc40cda474e58e4f7467329048"
+  },
+  "priorFailedPrefixEvidence": "../scrum22-full-lifecycle-854-20261016/receipt.json",
+  "evidenceComposition": "The prior35 completed labels and this fresh-state suffix are separately authenticated. Do not add overlapping/preparation checks or relabel the original failed matrix as a successful full execution.",
+  "allTwelvePreviouslyUnexecutedStaticLabelsPresent": true
+}
