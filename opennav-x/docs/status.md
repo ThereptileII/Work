@@ -136,9 +136,15 @@ platforms. This does not qualify an authenticated sharing protocol.
 not the separate installer, protected-updater or boat gates. SCRUM-209 still
 needs the retained package's full Repair/Uninstall and retained-addition
 lifecycle checks; the shorter Staging result must not be described as those
-checks. The focused full retained installer-lifecycle scope is running in
-[38889555934](https://github.com/ThereptileII/Work/actions/runs/38889555934),
-against the original package, without a product rebuild or Production promotion.
+checks. The focused full retained installer-lifecycle run
+[38889555934](https://github.com/ThereptileII/Work/actions/runs/38889555934)
+passes 35 grouped lifecycle checks and all four updater checks, then stops in a
+qualification helper: its extracted SelfTest definition calls the omitted
+`Assert-LifecycleMutation` dependency. Repair, both historical migrations and
+retained obsolete-TLS refusals pass; the final current-product uninstall/recovery
+suffix is not reached. A bounded helper correction is in progress with the real
+production guard intact. No product rebuild or Production promotion occurred.
+[Original failed run, passing prefix and exact cause](evidence/scrum22-full-lifecycle-854-20261016/README.md).
 
 
 ## Installer trust correction — native boundary and replacement installation pass
