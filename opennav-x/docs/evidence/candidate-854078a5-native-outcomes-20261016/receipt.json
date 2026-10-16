@@ -1,0 +1,353 @@
+{
+  "schema": 1,
+  "scope": "Original native Windows producer functional outcomes; evidence extraction only, no test rerun or installed-product acceptance",
+  "candidate": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+  "version": "0.4.0-beta2.4",
+  "producer": {
+    "repository": "ThereptileII/Work",
+    "runId": 38765418126,
+    "runAttempt": 1,
+    "jobId": 116536443214,
+    "job": "windows-integration",
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38765418126/job/116536443214",
+    "recordedStepConclusions": {
+      "success": 34
+    }
+  },
+  "artifact": {
+    "artifactId": "11992784515",
+    "name": "windows-build-evidence-854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc-attempt1",
+    "bytes": 65383721,
+    "sha256": "14d14df0f80e20f7b40877bca167d527914c900c5f1b092db31c0cc8ca5b8bb9",
+    "crcVerifiedMembers": 18125
+  },
+  "originalLog": {
+    "name": "producer-job-original.log",
+    "bytes": 2879992,
+    "sha256": "6d405c136ce05dca73402d3c33ca5d6d3640aa584eef0498e377739bdebc8818"
+  },
+  "extraction": {
+    "date": "2026-10-16",
+    "testExecution": false,
+    "downloadRepeated": false,
+    "fullArchiveCrcRepeated": false,
+    "selectedOriginalMemberCount": 21
+  },
+  "host": {
+    "runnerImage": "20261012.333.1",
+    "applicationAbi": "MSVC Win32 on Windows x64",
+    "compiler": "MSVC 19.44.35229.0",
+    "compilerPointerBytes": 4
+  },
+  "ctest": {
+    "members": [
+      "windows-xnav-tests.xml",
+      "windows-production-tests.xml"
+    ],
+    "uniqueNames": 146,
+    "executionsPerMember": 146,
+    "executionCount": 292,
+    "sameOrderedNames": true,
+    "failuresPerMember": 0,
+    "disabledPerMember": 0,
+    "skippedPerMember": 0,
+    "xmlSummaryLines": [
+      2,
+      6
+    ],
+    "producerLogSummaryLines": [
+      6474,
+      10652
+    ],
+    "peerUnavailableCasesPerExecution": 4,
+    "peerUnavailableCaseLines": [
+      727,
+      743,
+      759,
+      775
+    ],
+    "caseNamesAuthoritativeInOriginalXml": true
+  },
+  "ais": {
+    "passed": true,
+    "providerLifecycles": 8,
+    "providerResultMember": "ais-native-runtime/provider.log",
+    "providerPassLines": [
+      4,
+      9,
+      14,
+      19,
+      24,
+      29,
+      34,
+      39
+    ],
+    "transportScenarios": 18,
+    "transportSummary": "ais-native-runtime/transport.log:19",
+    "sessionActualChecks": 251,
+    "sessionSummary": "ais-native-runtime/session.log:1",
+    "sessionDeclaredMinimum": 178,
+    "minimumReference": "ais-native-runtime/report.json:14",
+    "scope": "Actual AIS MSVC Win32 loopback only",
+    "productAcceptance": false,
+    "wfpAcceptance": false,
+    "boatAcceptance": false
+  },
+  "tls": {
+    "downloader-trust-windows/summary.json": {
+      "status": "passed",
+      "cleanup": "verified",
+      "sourceKind": "integrated-core",
+      "downloader": {
+        "cases": 12,
+        "accepted": 3,
+        "expectedRefusals": 9
+      },
+      "wxCurl": {
+        "cases": 12,
+        "accepted": 4,
+        "expectedRefusals": 8
+      },
+      "statusAndCleanupLines": [
+        2,
+        4
+      ],
+      "prerequisiteMember": "downloader-trust-windows/prerequisites.json"
+    },
+    "ocharts-private-wxcurl-trust-windows/summary.json": {
+      "status": "passed",
+      "cleanup": "verified",
+      "sourceKind": "verified-private-ocharts",
+      "downloader": {
+        "cases": 12,
+        "accepted": 3,
+        "expectedRefusals": 9
+      },
+      "wxCurl": {
+        "cases": 12,
+        "accepted": 4,
+        "expectedRefusals": 8
+      },
+      "statusAndCleanupLines": [
+        2,
+        4
+      ],
+      "prerequisiteMember": "ocharts-private-wxcurl-trust-windows/prerequisites.json"
+    }
+  },
+  "privateChartModule": {
+    "status": "passed",
+    "scope": "real installed host imports/binding/unload; no chart rendering",
+    "candidate": "854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc",
+    "nativeProductAcceptance": false,
+    "cases": [
+      {
+        "name": "option-without-selftest",
+        "exit": 2,
+        "expected": 2
+      },
+      {
+        "name": "default",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "module",
+        "exit": 0,
+        "expected": 0
+      },
+      {
+        "name": "wrong-original",
+        "exit": 1,
+        "expected": 1
+      }
+    ],
+    "profilesUnchanged": true,
+    "summaryMember": "ocharts-real-host-module/summary.json",
+    "caseLines": [
+      32,
+      53
+    ],
+    "moduleMember": "ocharts-real-host-module/module.json",
+    "factoryCalled": false,
+    "pluginInitialized": false,
+    "chartRenderingAcceptance": false
+  },
+  "peer": {
+    "cliReceipt": "windows-peer-cli-receipt.json",
+    "cliStatus": "success",
+    "cliExecutableSha256": "ca5dcdbc6341489871ba7dfe43a943fbf8e78c136c9de17fab1bba23f9f838b5",
+    "cliLogVerificationLine": 6527,
+    "bufferMember": "peer-buffer-windows.log",
+    "bufferCases": 1,
+    "bufferPassed": 1,
+    "bufferSummaryLines": [
+      23,
+      25
+    ]
+  },
+  "fixtureFreeSelftests": {
+    "loaderMember": "production-package-selftest.json",
+    "loaderPassed": true,
+    "resourcesPresent": 4,
+    "testFixtures": false,
+    "profileInitialized": false,
+    "pluginsLoaded": false,
+    "restartMember": "production-restart-selftest.json",
+    "restartCapability": 1,
+    "restartProfileAccessed": false,
+    "restartChildStarted": false
+  },
+  "producerHelperChecks": [
+    {
+      "name": "AIS runtime gate",
+      "passed": 12,
+      "logLines": [
+        514,
+        528,
+        530
+      ]
+    },
+    {
+      "name": "Packaged curl certificate-tool source patch",
+      "passed": 1,
+      "logLines": [
+        6490,
+        6515,
+        6517
+      ]
+    },
+    {
+      "name": "Prepackage compiled recovery",
+      "passed": 7,
+      "logLines": [
+        10836,
+        10854,
+        10856
+      ]
+    }
+  ],
+  "additionalEvidence": {
+    "peDependencyAudit": "preview-dll-audit.json",
+    "peDependencyEntries": 88,
+    "missingDependencies": 0,
+    "brandingMember": "installer-skager-pe-brand.json",
+    "brandingScope": "Data-only application/setup PE branding and exact versions; no setup execution",
+    "opensslConsumerRuntimeStatus": "Both original consumer observations passed; original dependency-producer suites are not new test executions here"
+  },
+  "provenanceLimit": {
+    "compiledRecoveryTrackedSourceDirty": true,
+    "producerLogLine": 10866,
+    "statement": "Producer reports and selected members bind this outcome accounting to854. Exact consumed-source inventory/audit is separate; dirty=true is not silently treated as a clean checkout."
+  },
+  "remainingAndUnperformed": {
+    "originalQualifier": {
+      "jobId": 116562831922,
+      "conclusion": "failure",
+      "url": "https://github.com/ThereptileII/Work/actions/runs/38765418126/job/116562831922"
+    },
+    "runtimeExplicitlyDeferredLogLines": [
+      6488,
+      10834
+    ],
+    "pluginHandler": "Capture only in this artifact; fresh retained native gate remains separate",
+    "installedLifecycleAndBoatAcceptance": false,
+    "designValidation": false,
+    "designLogLine": 54,
+    "endurance": "Not exercised here; existing user-directed skip remains a skip"
+  },
+  "accounting": [
+    "CTest contains146 names repeated twice.",
+    "TLS repeats the12 core Downloader scenarios in the private wxCurl invocation.",
+    "AIS provider lifecycles, transport scenarios and session checks are distinct nested scopes; no aggregate test total is claimed.",
+    "Expected negative exit codes are successful refusals, not failed test cases.",
+    "All34 recorded producer job steps succeeded; producer success does not revise the original failed downstream qualifier."
+  ],
+  "members": {
+    "windows-xnav-tests.xml": {
+      "bytes": 129575,
+      "sha256": "ea9908bd37c4cd32cafcad0d0fb3cd4b7788d39c8259677eaf9f53e019d6035a"
+    },
+    "windows-production-tests.xml": {
+      "bytes": 130483,
+      "sha256": "f04622a74f4ef9a71074510b2731181bea3c7807af3a5610541e2bd279449d90"
+    },
+    "ais-native-runtime/report.json": {
+      "bytes": 207389,
+      "sha256": "7f5832521941ef81c36ada31113b2da774e7e20cfbabf94264b2e4029d325e2d"
+    },
+    "ais-native-runtime/provider.log": {
+      "bytes": 3500,
+      "sha256": "ec36afaa468dd1f775059700ffa2dcf86dd335714db9e20c939a2c1bc2d294ba"
+    },
+    "ais-native-runtime/transport.log": {
+      "bytes": 1412,
+      "sha256": "5e3c665083cca4724c7db8f35789abbf508438b3475ccdcbda80bbac271a3807"
+    },
+    "ais-native-runtime/session.log": {
+      "bytes": 27,
+      "sha256": "76e3795ef79e2823a969b1b46771b58ed70b2b1e1de9d8dd628319421b408041"
+    },
+    "downloader-trust-windows/summary.json": {
+      "bytes": 19280,
+      "sha256": "7056e9300ba2d56b66ddfe06d732474be9a1b54338c78d040a8303e3d4094ffa"
+    },
+    "downloader-trust-windows/prerequisites.json": {
+      "bytes": 8410,
+      "sha256": "b3b9282b647466f11b25dea4f8d9b71c36af7ec7b1ed8b2419694e020bf9a568"
+    },
+    "ocharts-private-wxcurl-trust-windows/summary.json": {
+      "bytes": 19280,
+      "sha256": "c8847f0dceaaf2182236c932fac9cdea3e0cafea198b9bbee0c487762a80ba7b"
+    },
+    "ocharts-private-wxcurl-trust-windows/prerequisites.json": {
+      "bytes": 8518,
+      "sha256": "aa9bce9a8d6303380f360431dd0e599d1195c01c9fdc254ce1c687199ae98e87"
+    },
+    "ocharts-real-host-module/summary.json": {
+      "bytes": 18382,
+      "sha256": "7971d53bf5a35e3f4b3a257b844cf0fa40dc39e3999cbbecbd901a7822fcd853"
+    },
+    "ocharts-real-host-module/module.json": {
+      "bytes": 6961,
+      "sha256": "ea58d4af0d658aeaf3d4d5260d1133980234ca11ca253abd122ea7fc6d012cd7"
+    },
+    "windows-peer-cli-receipt.json": {
+      "bytes": 649,
+      "sha256": "3582737fb18a396f2f171b96e31b4730a1c0126e329cb8b49394a4a3b18f05f8"
+    },
+    "peer-buffer-windows.log": {
+      "bytes": 1589,
+      "sha256": "82277a6cd1746975d2b9aac9c3ba9bb0d1c45f9da8856384d0d31adfafbdeed1"
+    },
+    "production-package-selftest.json": {
+      "bytes": 933,
+      "sha256": "4970a2dd722b4e192b8a1893f8a0f167654dd856c2b487fd3e6e41525ba3289c"
+    },
+    "production-restart-selftest.json": {
+      "bytes": 178,
+      "sha256": "633153e96540bf422da5669e635fe7ab187031e3ae7e93fac7e8ced41915a734"
+    },
+    "plugin-guard-capture.log": {
+      "bytes": 98,
+      "sha256": "0fbfc1a1da38805a49894bf0877b9aabd38b8880183ced661ab8cbf9832978c5"
+    },
+    "preview-dll-audit.json": {
+      "bytes": 69678,
+      "sha256": "54cabdea4e2875809d984499380882f1d2faf2ba177e2086c1593da96bd3753a"
+    },
+    "installer-skager-pe-brand.json": {
+      "bytes": 4099,
+      "sha256": "59a306a31bbb243357aae986cc74bc0a23a1dd0cb11a6490ed00de73bd4818c5"
+    },
+    "openssl-consumer-runtime-344b7ef3021c4a96883ae5113254ec79.json": {
+      "bytes": 2311,
+      "sha256": "0d1b9120d25e3fe786a96fd7d65e19155d822bd6dbb9cdc6e873cbb7beb789ae"
+    },
+    "openssl-consumer-runtime-b0f5810ac95d4d588d60fba6a77e4473.json": {
+      "bytes": 2311,
+      "sha256": "0d1b9120d25e3fe786a96fd7d65e19155d822bd6dbb9cdc6e873cbb7beb789ae"
+    }
+  }
+}
