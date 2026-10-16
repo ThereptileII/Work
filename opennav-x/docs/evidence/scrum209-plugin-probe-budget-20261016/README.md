@@ -114,3 +114,21 @@ A repeated failure requires a focused harness correction, not further retries.
 The original failure remains evidence; neither this analysis nor a prior pass
 qualifies the new product. Private comparison receipt SHA-256:
 `43b46a14cc82a549d24241117a81eca0ae3cf501cf8dd7840d8bf6980b28dcc0`.
+
+The original Linux job `117008195582` completed successfully at 14:36:58 UTC:
+154 distinct CTest names passed in both fixture-enabled and fixture-free builds
+(308 executions), alongside chart/data/lifecycle and loader checks. The preview
+design sweep and endurance were skipped. Original Linux log: 995,530 bytes,
+SHA-256 `bddecad8060a66758e5aa830d39d844a8340e278a8d86cc01f9dcb59ddf79c84`.
+
+After attempt 1 completed, the single selected failed-job replay created attempt
+2, retaining the successful Linux and other independent jobs. Windows updater
+job `117028247900` completed successfully at 14:55:45 UTC. All eight source-package
+suites passed (18, 16, 33, 12, 10, 14, 7 and 16 cases: 126 total). The previously
+timed-out provisioner suite passed its 14 cases in **48.163 seconds**, with the
+same source, assertions, Windows image, Python version and 60-second deadline.
+Original replay log: 5,766,950 bytes, SHA-256
+`b919a1f8fdf8a1a9cb7cc5508b8e0afc68dd05ebaf1b1b977a62e51083d7374b`.
+This result does not erase the original failure or establish its specific host
+cause. Native application producer `117036304896` started subsequently; its
+build/package/boat results are separate and not accepted by this record.
