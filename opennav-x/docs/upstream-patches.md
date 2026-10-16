@@ -18,6 +18,18 @@ the unresolved northern lighthouse classification.
 
 ## Route completion policy and query DPI — SCRUM-298
 
+The 2026-10-16 source-only follow-up adds `PrepareRouteFinish` at the entry to
+native `ChartCanvas::FinishRoute`, before it clears the draft. New XNav routes
+finished through Escape or native menu actions now share the checked naming and
+save operation with the explicit XNav save action. Legacy/Safe, existing-route
+appends and the detached cancellation path keep native behavior. The bridge
+uses the actual canvas's loaded chart context, preserves reused/user-named
+points, retains coordinate fallbacks and shows newly assigned point labels.
+Failed persistence restores the draft's names and label visibility; the hook
+does not recursively call route completion. No route geometry, storage format
+or plugin ABI is changed. **Builds and tests are deliberately deferred at the
+user's request; this source change is not Windows or boat acceptance.**
+
 `opencpn-5.12.4-route-focus.patch` replaces eight temporary focus-policy
 assignments in the native chart canvas with scoped restoration. Mouse/touch
 reuse, route append/insert and great-circle dialogs, keyboard menus and
