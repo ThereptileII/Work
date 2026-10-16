@@ -147,10 +147,10 @@ unavailable-peer containment alternative is also **Done**, supported by exact
 854 model, CLI, concurrent-instance and mode-preservation evidence on both
 platforms. This does not qualify an authenticated sharing protocol.
 [Containment evidence and precise limits](evidence/scrum212-containment-854-20261016/README.md). This closes that defect,
-not the separate installer, protected-updater or boat gates. SCRUM-209 still
-needs the retained package's full Repair/Uninstall and retained-addition
-lifecycle checks; the shorter Staging result must not be described as those
-checks. The focused full retained installer-lifecycle run
+not the separate installer, protected-updater or boat gates. The shorter Staging
+result is supplemented by the retained package's Repair/Uninstall and
+retained-addition lifecycle evidence below; ordinary installed module/plugin
+observation remains pending for SCRUM-209. The focused full retained installer-lifecycle run
 [38889555934](https://github.com/ThereptileII/Work/actions/runs/38889555934)
 passes 35 grouped lifecycle checks and all four updater checks, then stops in a
 qualification helper: its extracted SelfTest definition calls the omitted
@@ -161,9 +161,14 @@ mutation/protected-enrollment/armed-update guard dependencies and a distinct
 retained `installer-lifecycle-tail` scope. Independent review confirms the
 original suffix assertions are preserved. Native
 [38896539839](https://github.com/ThereptileII/Work/actions/runs/38896539839)
-is running the import prerequisite and unfinished suffix over fresh real
-installed state using original 854 bytes. Its result remains pending; it cannot
-relabel the original failed full run or claim the historical prefix was replayed.
+now passes 16 native import/guard checks and all 16 suffix labels over fresh real
+installed state using original 854 bytes. The 15 operation records include
+expected negative refusals. Missing-DLL/error-mode handling, fault recovery,
+current uninstall, stock startup/resource preservation, reinstall/Update and
+final direct Uninstall pass. Its original artifact and frozen product/source
+identities authenticate. This distinct result does not relabel the original
+failed full run or claim the historical prefix was replayed.
+[Authenticated suffix and exact limits](evidence/scrum22-lifecycle-tail-854-20261016/README.md).
 No product rebuild or Production promotion occurred.
 [Original failed run, passing prefix and exact cause](evidence/scrum22-full-lifecycle-854-20261016/README.md).
 
