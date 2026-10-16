@@ -3,6 +3,12 @@ on:
   push:
     branches: [opennav-x-boat-tools, opennav-x-orphan-recovery, skager-shell-migration, skager-boat-review-composition]
   workflow_dispatch:
+    inputs:
+      scope:
+        description: Qualify all boat tools or only installed-warning helper changes
+        type: choice
+        options: [all, installed-warning]
+        default: all
 permissions:
   contents: read
 concurrency:
@@ -10,6 +16,7 @@ concurrency:
   cancel-in-progress: true
 jobs:
   native-zlib-source:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Pinned zlib source only (no native build)
     runs-on: windows-2022
     timeout-minutes: 10
@@ -30,6 +37,7 @@ jobs:
           path: opennav-x/evidence/local/windows-zlib-1.3.2/source-verification.json
           if-no-files-found: error
   native-installer-shortcuts:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Actual COM shortcut migration (${{ matrix.arch }})
     strategy:
       fail-fast: false
@@ -52,6 +60,7 @@ jobs:
           path: opennav-x/evidence/local/installer-shortcuts
           if-no-files-found: error
   native-desktop-diagnostics:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Read-only native warning desktop diagnostics
     runs-on: windows-2022
     timeout-minutes: 5
@@ -70,6 +79,7 @@ jobs:
           path: opennav-x/evidence/local/desktop-diagnostics
           if-no-files-found: error
   native-restart-transport:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Native Win32 commissioning restart process boundary
     runs-on: windows-2022
     timeout-minutes: 20
@@ -93,6 +103,7 @@ jobs:
           path: opennav-x/evidence/local/restart-transport
           if-no-files-found: warn
   native-maintenance:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Disposable native Windows tooling checks
     runs-on: windows-2022
     timeout-minutes: 20
@@ -118,6 +129,7 @@ jobs:
           path: opennav-x/evidence/local/maintenance-*.log
           if-no-files-found: error
   native-restart-window:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Fixed guarded mode UI actions on disposable native windows
     needs: native-maintenance
     runs-on: windows-2022
@@ -157,6 +169,7 @@ jobs:
             opennav-x/evidence/local/stock-close
           if-no-files-found: error
   native-stock-welcome:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Actual official OpenCPN portable upgrade caution (${{ matrix.locale }})
     strategy:
       fail-fast: false
@@ -180,6 +193,7 @@ jobs:
           path: opennav-x/evidence/local/stock-welcome
           if-no-files-found: error
   native-restart-broker:
+    if: ${{ inputs.scope != 'installed-warning' }}
     name: Actual restart broker with disposable marker-only installation
     needs: [native-restart-transport, native-maintenance]
     runs-on: windows-2022
@@ -210,3 +224,36 @@ jobs:
             opennav-x/evidence/local/restart-broker
             opennav-x/evidence/local/restart-prepare-arm
           if-no-files-found: warn
+
+  native-installed-warning:
+    if: ${{ github.event_name == 'workflow_dispatch' && inputs.scope == 'installed-warning' }}
+    name: Installed warning version and dispatcher contracts only
+    runs-on: windows-2022
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          persist-credentials: false
+      - name: Qualify exact helpers in native PowerShell 5.1 without application or boat access
+        shell: powershell
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Evidence = Join-Path $env:RUNNER_TEMP 'skager-installed-warning-contracts'
+          New-Item -ItemType Directory -Path $Evidence -ErrorAction Stop | Out-Null
+          $Files = @(Get-ChildItem -LiteralPath opennav-x/tools/boat -File | Where-Object { $_.Extension -in @('.ps1','.cs','.py','.json') } | Sort-Object Name | ForEach-Object {
+            @{ name=$_.Name; sha256=(Get-FileHash -LiteralPath $_.FullName -Algorithm SHA256).Hash.ToLowerInvariant() }
+          })
+          @{ schema=1; commit=$env:GITHUB_SHA; files=$Files; powershell=$PSVersionTable.PSVersion.ToString(); processBits=[IntPtr]::Size*8 } |
+            ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'source-identity.json') -Encoding UTF8
+          foreach ($Suite in @('installed-welcome','interactive-job-budget')) {
+            $Log = Join-Path $Evidence ($Suite+'.log')
+            & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "opennav-x/tools/boat/test-$Suite.ps1" *> $Log
+            if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $Log; throw ('Native helper contract failed: '+$Suite) }
+            Get-Content -LiteralPath $Log
+          }
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: installed-warning-contracts-${{ github.sha }}-run${{ github.run_id }}-attempt${{ github.run_attempt }}
+          path: ${{ runner.temp }}/skager-installed-warning-contracts
+          if-no-files-found: error
