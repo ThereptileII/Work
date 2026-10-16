@@ -230,7 +230,11 @@ function Invoke-ReviewedNormalClose([Diagnostics.Process]$Process,[int]$Expected
     throw ('Application normal close requires review; closeEvidence='+($proof|ConvertTo-Json -Depth 4 -Compress))
   }
 }
-function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) {
+function Invoke-InteractiveJob([string]$Workspace,$Job,
+  [int]$TimeoutSeconds=$(if($Job.action -cin @('Launch','LaunchStartup','ReviewInstalledWelcome')){720}else{90})) {
+  # Full commissioning hashes precede the separate, unchanged application/modal
+  # deadlines. Explicit caller timeouts still win; this is not a retry budget.
+  $longProof=$Job.action -cin @('Launch','LaunchStartup','ReviewInstalledWelcome')
   $manual=$Job.action -cin @('LaunchManualPilot','CloseManualPilot','ManualPilotUi')
   $engine=$null
   if($manual) {
@@ -254,8 +258,8 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
   $hostImage=if($manual){$engine.path}else{Join-Path $env:WINDIR 'System32\WindowsPowerShell\v1.0\powershell.exe'}
   $action=New-ScheduledTaskAction -Execute $hostImage -Argument ('-NoProfile -NonInteractive -ExecutionPolicy Bypass -File "'+$script+'" -Request "'+$request+'"')
   $principal=New-ScheduledTaskPrincipal -UserId $sid -LogonType Interactive -RunLevel Limited
-  $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes $(if($Job.action -ceq 'LaunchStartup'){15}else{5})) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
-  $task=$null
+  $settings=New-ScheduledTaskSettingsSet -ExecutionTimeLimit (New-TimeSpan -Minutes $(if($longProof){15}else{5})) -AllowStartIfOnBatteries -DontStopIfGoingOnBatteries
+  $task=$null;$retainPendingTask=$false
   try {
     $task=Register-ScheduledTask -TaskName $name -Action $action -Principal $principal -Settings $settings
     if($manual){
@@ -264,7 +268,13 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
     Start-ScheduledTask -TaskName $name
     $deadline=[DateTime]::UtcNow.AddSeconds($TimeoutSeconds)
     while (-not [IO.File]::Exists($result) -and [DateTime]::UtcNow -lt $deadline) { Start-Sleep -Milliseconds 250 }
-    if (-not [IO.File]::Exists($result)) { throw 'Interactive job timed out. Inspect the desktop; no application was force-killed.' }
+    if (-not [IO.File]::Exists($result)) {
+      if($longProof) {
+        $retainPendingTask=$true
+        throw ('Interactive job result is pending after dispatcher timeout; task='+$name+'; request='+$request+'; result='+$result+'. Inspect this same job before any further action; no retry or application termination was requested.')
+      }
+      throw 'Interactive job timed out. Inspect the desktop; no application was force-killed.'
+    }
     $value=Read-Record $result
     if ($value.status -cne 'passed') {
       $detail=if ($value.PSObject.Properties['error']) {$value.error}
@@ -276,7 +286,7 @@ function Invoke-InteractiveJob([string]$Workspace,$Job,[int]$TimeoutSeconds=90) 
     }
     return $value
   } finally {
-    if ($task) { Unregister-ScheduledTask -TaskName $name -Confirm:$false }
+    if ($task -and -not $retainPendingTask) { Unregister-ScheduledTask -TaskName $name -Confirm:$false }
   }
 }
 function Get-OptionalRestartBinding($Job,$Installed,$Config,$LaunchEnvironment) {
