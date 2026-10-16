@@ -140,9 +140,13 @@ basename; one shared queue traverses chains crossing all these roots. Candidate
 handles and native directory identities remain retained through original-module custody.
 Extension-less names resolve to `.dll`; case-folded names plus directory
 identity deduplicate repeated declarations and cycles. The walk refuses
-unsupported names, unreadable or redirected candidates, malformed x86 PE and
-more than256 directory/basename probes (including missing files) or256MiB
-of inspected bytes. The root handoff itself is bounded before additional opens.
+unsupported names, unreadable or redirected candidates and malformed x86 PE.
+The current limits separately allow at most 256 admitted dependency PE nodes
+and 1,024 unique directory/basename lookup probes, including missing files.
+The aggregate 256 MiB inspected-byte budget, including the original plugin,
+and the remaining refusal rules are unchanged. Historical evidence retains
+its recorded source revision and limits. The root handoff itself is bounded
+before additional opens.
 Absent additional plugin directories are skipped without creation; inaccessible
 or invalid existing directories refuse. Missing candidates are outside the
 inspected current roots, not evidence that Windows cannot resolve them elsewhere.

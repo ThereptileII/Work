@@ -1804,8 +1804,13 @@ export forwarders, following candidates in both the original plugin directory
 and the actual executable directory, plus the actual `PluginPaths::Libdirs()`
 roots now supplied by the common upstream hook, in one bounded graph while
 retaining inspection handles. Candidate identity includes the directory identity; a clean
-sibling cannot hide an unsafe application-directory copy. The256-probe bound
-counts missing as well as present directory/basename candidates. Unsupported ambiguous forwarder spellings fail closed.
+sibling cannot hide an unsafe application-directory copy. The current graph
+separately bounds admitted dependency PE nodes at 256 and unique directory/basename
+lookup probes at 1,024, counting missing as well as present candidates. The
+aggregate 256 MiB inspected-byte budget, including the original plugin, and
+the remaining refusal rules are unchanged. Historical native evidence remains
+bound to its recorded source revision and limits. Unsupported ambiguous
+forwarder spellings fail closed.
 This bounded graph does not establish general loader resolution or dynamic/helper
 dependency closure. The hook already covers initial/reload discovery
 and ordinary fallback from every upstream plugin root. This small hook argument
