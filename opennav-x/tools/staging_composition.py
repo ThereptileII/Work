@@ -71,6 +71,15 @@ GATES = dict(linux='passed', windows='passed', installer='passed', package='pass
 MAX_ARTIFACT = 8 * 1024**3
 MAX_REPORT = 32 * 1024**2
 FAILURE = "RuntimeError('Native process did not exit within the deadline')"
+# This additional reviewed boundary is only for the original 854 bootstrap
+# failure. It does not admit other candidates, runs, failure phases or suffixes.
+BOOTSTRAP_854 = dict(commit='854078a5de2ef8ed61a6529b7f2bb200ed6cf1bc',
+                     runId='38765418126', runAttempt='1')
+BOOTSTRAP_854_ERROR = 'd7ec224e748325f717910d8011fca946ac73659d1f577b0b82a89ba755e4d939'
+PACKAGE_854_HASHES = {
+    'docs/PRODUCT_BUILD.json': '3b9a4f64ef5a3a676916b3b0d0bc357364d02e04151e01a0b236f545055d46ac',
+    'FILE_SHA256.json': 'af16573d73141824316da4d0438bc653fbd9ae70f342a92d20e2ef1921884331',
+}
 require = manifest.require
 
 
@@ -396,10 +405,50 @@ def _eq(value, expected, message):
     require(value == expected and type(value) is type(expected), message)
 
 
-def validate_reports(original, retest, q, frozen):
+def is_bootstrap_854(producer):
+    if producer['commit'] != BOOTSTRAP_854['commit']:
+        return False
+    require(producer == BOOTSTRAP_854, '854 composition requires its exact original run and attempt')
+    return True
+
+
+def recovery_854_binding(tree):
+    """Read only the two original metadata files after authenticated restore.
+
+    The full retained manifest was already checked by inputs.restore. These
+    extra immutable pins bind the changed policy and file count to the exact
+    reviewed package, rather than trusting either report's declarations alone.
+    """
+    raw = {name: inputs.plain_file(tree, inputs.PACKAGE_ROOT + '/' + name).read_bytes()
+           for name in PACKAGE_854_HASHES}
+    require(all(digest(raw[name]) == expected for name, expected in PACKAGE_854_HASHES.items()),
+            '854 frozen package metadata differs')
+    product = inputs.strict_json(raw['docs/PRODUCT_BUILD.json'])
+    inventory = inputs.strict_json(raw['FILE_SHA256.json'])
+    require(isinstance(inventory, dict) and len(inventory) == 1046 and
+            inventory.get('docs/PRODUCT_BUILD.json') == digest(raw['docs/PRODUCT_BUILD.json']) and
+            inventory.get('app/opencpn.exe') == product.get('executable_sha256') and
+            inventory.get('app/skager-start.exe') == product.get('startup_launcher_sha256'),
+            '854 frozen inventory does not bind product and launcher')
+    return dict(build=product, files=len(inventory))
+
+
+def validate_reports(original, retest, q, frozen, *, package_854=None):
     """Fixed semantic checks in addition to the request's exact reviewed hashes."""
     require(set(original) == PREFIX_REPORTS and set(retest) == RETEST_REPORTS, 'Incomplete report coverage')
     p = q['composition']['producer']; commit = p['commit']; c = q['composition']
+    bootstrap_854 = is_bootstrap_854(p)
+    policy = 'manual-commissioning' if bootstrap_854 else 'status-only'
+    if bootstrap_854:
+        require(isinstance(package_854, dict), '854 authenticated frozen package binding required')
+        _fields(package_854, ('build', 'files'))
+        product = package_854['build']
+        require(product.get('commit') == commit and product.get('test_fixtures') is False and
+                product.get('build_purpose') == 'INSTALLED PRODUCT' and
+                product.get('xnav_hardware_output_policy') == policy and
+                type(product.get('xnav_manual_control_contract')) is int and
+                product['xnav_manual_control_contract'] == 1 and package_854['files'] == 1046,
+                '854 frozen product policy/inventory differs')
     for reports, harness in ((original, commit), (retest, c['retest']['commit'])):
         r = reports['staging-inputs.json']
         require(r['status'] == 'restored' and r['qualification'] == 'not-run' and
@@ -442,7 +491,7 @@ def validate_reports(original, retest, q, frozen):
     require(r['result'] == 'passed' and r['phase'] == 'done' and len(r['checks']) == 28 and
             r['late_connection_added_after_deferred'] is True, 'Object contract incomplete')
     expected_results = {'recording-results.json': ('passed; screenshot review required', 6),
-                        'pilot-results.json': ('passed; screenshot review required', 6),
+                        'pilot-results.json': ('passed; screenshot review required', 7 if bootstrap_854 else 6),
                         'recovery-results.json': ('passed; native screenshot review required', 5),
                         'user-flows-results.json': ('passed; native screenshots require review', 8),
                         'pilot-status-only/pilot-results.json': ('passed; screenshot review required', 5)}
@@ -458,27 +507,53 @@ def validate_reports(original, retest, q, frozen):
             pilot['received_bytes'] == 0, 'Installed product emitted control bytes')
     diag = original['pilot-status-only/pilot-opennav-diagnostics.json']
     require(diag['build_commit'] == commit and diag['test_fixtures'] is False and
-            diag['build_purpose'] == 'INSTALLED PRODUCT' and diag['xnav_hardware_output_policy'] == 'status-only',
+            diag['build_purpose'] == 'INSTALLED PRODUCT' and diag['xnav_hardware_output_policy'] == policy,
             'Installed product identity/output policy differs')
     passive = diag['runtime']['pilot']
-    require(passive['output_unavailable'] is True and passive['control_capability'] is False and
+    require(passive['output_unavailable'] is (not bootstrap_854) and passive['control_capability'] is False and
             passive['enabled'] is False and passive['command_id'] == '0' and passive['command_state'] == 'None' and
             passive['fresh'] is True and passive['mode'] == 'STANDBY', 'Installed pilot gate was not passive/fresh')
+    if bootstrap_854:
+        require(type(diag.get('xnav_manual_control_contract')) is int and
+                diag['xnav_manual_control_contract'] == 1 and diag['runtime']['test_fixtures'] is False and
+                passive['configured_permission'] is True and
+                all(passive[field] is False for field in
+                    ('serial_session_enabled', 'simulated', 'track_capability', 'wind_capability')),
+                '854 saved permission or global declaration bypassed product TCP refusal')
     recovery = original['production-recovery-results.json']
     require(recovery['status'] == 'passed' and len(recovery['checks']) == 7 and
             recovery['build']['commit'] == commit and recovery['build']['test_fixtures'] is False and
             recovery['build']['build_purpose'] == 'INSTALLED PRODUCT' and
-            recovery['build']['xnav_hardware_output_policy'] == 'status-only' and
-            recovery['design_validation'] == 'not requested' and recovery['files_verified'] == 1019 and
+            recovery['build']['xnav_hardware_output_policy'] == policy and
+            recovery['design_validation'] == 'not requested' and
+            recovery['files_verified'] == (package_854['files'] if bootstrap_854 else 1019) and
             len(recovery['chart_rendering']) == 10 and
             all(s['coastline_visible'] is True for s in recovery['chart_rendering']), 'Original recovery gate differs')
-    for name in ('installer-staging.json', 'packaged-updater.json'):
-        require(original[name]['status'] == 'failed' and original[name]['error'] == FAILURE,
-                'Original failure must remain the reviewed early-close failure')
-    require(original['packaged-updater.json']['checks'] == UPDATER_CHECKS[:3] and
-            original['packaged-updater.json']['commit'] == commit and
-            original['packaged-updater.json']['faultInjection']['restored'] is True,
-            'Original updater failure progressed outside the reviewed boundary')
+    if bootstrap_854:
+        require(recovery['build'] == package_854['build'], '854 recovery report differs from frozen product')
+        for name in ('installer-staging.json', 'packaged-updater.json'):
+            require(original[name]['status'] == 'failed' and
+                    digest(original[name]['error'].encode('utf-8')) == BOOTSTRAP_854_ERROR,
+                    '854 original failure must remain its exact bootstrap timeout')
+        failed = original['packaged-updater.json']
+        operations = failed['operations']
+        require(failed['checks'] == [] and failed['commit'] == commit and 'faultInjection' not in failed and
+                failed['legacyTrustState'] == 'not-verified' and failed['nativeProtectedUpdaterAcceptance'] is False and
+                failed['protectedUpdaterGate'] == 'pending-real-B0-B1' and len(operations) == 1 and
+                operations[0]['phase'] == 'bootstrap' and operations[0]['status'] == 'failed' and
+                operations[0]['lastStage'] == 'launcher-completion' and
+                operations[0]['error'] == failed['error'] and operations[0]['seconds'] == 240.0 and
+                operations[0]['startupLog']['freshInitialization'] is True and
+                len(original['installer-staging.json']['checks']) == 8,
+                '854 original updater progressed outside the reviewed bootstrap boundary')
+    else:
+        for name in ('installer-staging.json', 'packaged-updater.json'):
+            require(original[name]['status'] == 'failed' and original[name]['error'] == FAILURE,
+                    'Original failure must remain the reviewed early-close failure')
+        require(original['packaged-updater.json']['checks'] == UPDATER_CHECKS[:3] and
+                original['packaged-updater.json']['commit'] == commit and
+                original['packaged-updater.json']['faultInjection']['restored'] is True,
+                'Original updater failure progressed outside the reviewed boundary')
     result = retest['staging-retest.json']
     require(result['status'] == 'passed' and result['scope'] == 'installer-charts' and
             result['productCommit'] == commit and result['producer'] == original['staging-inputs.json']['producer'] and
@@ -492,6 +567,15 @@ def validate_reports(original, retest, q, frozen):
             retest['installer-staging.json']['harness_commit'] == c['retest']['commit'] and
             retest['charts-results.json']['result'] == 'passed; native screenshot review and physical GPU gate remain separate',
             'Replacement native reports failed or differ')
+    if bootstrap_854:
+        choices = retest['installer-staging.json'].get('finish_launch')
+        require(isinstance(choices, list) and len(choices) == 1,
+                '854 replacement must record its exact Finish launch choice')
+        _fields(choices[0], ('label', 'control', 'checked_before', 'checked_after'))
+        require(choices[0]['label'] == 'Open SKAGER' and type(choices[0]['control']) is int and
+                0 < choices[0]['control'] < 2**64 and type(choices[0]['checked_before']) is bool and
+                choices[0]['checked_after'] is False,
+                '854 replacement did not establish unchecked launch before Finish')
     updater = retest['packaged-updater.json']
     require(updater['status'] == 'passed' and updater['commit'] == commit and updater['checks'] == UPDATER_CHECKS and
             updater['setupSha256'] == retest['installer-staging.json']['setup_sha256'] and
@@ -558,7 +642,8 @@ def assemble(gh, request_path, output):
     for group, reports in (('original', old_raw), ('retest', new_raw)):
         for name, data in reports.items():
             target = evidence / group / name; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(data)
-    validate_reports(original, retest, q, receipt)
+    package_854 = recovery_854_binding(tree) if is_bootstrap_854(p) else None
+    validate_reports(original, retest, q, receipt, package_854=package_854)
     require(digest(old_raw['staging-inputs.json']) == original['boat-feedback-windows/result.json']['restore_receipt_sha256'],
             'Original component receipt does not bind original restoration')
     require(original['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and

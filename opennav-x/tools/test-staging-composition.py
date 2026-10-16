@@ -7,6 +7,7 @@ import json
 import os
 from pathlib import Path
 import stat
+import sys
 import tempfile
 import unittest
 from unittest.mock import patch
@@ -337,6 +338,153 @@ class CompositionTests(unittest.TestCase):
                     self.assertEqual((release/name).read_bytes(),members['opennav-x/docs/beta2/'+name])
             self.assertFalse((tree/'build/developer-preview/CHANGED').exists())
             self.assertFalse((tree/'OpenCPN-5.12.4-integrated').exists())
+
+
+class Bootstrap854CompositionTests(unittest.TestCase):
+    """Synthetic schema fixtures only; no successful native retest is implied."""
+    def setUp(self):
+        self.q = fixture()[2]
+        self.q['composition']['producer'] = dict(c.BOOTSTRAP_854)
+        with patch.object(sys.modules[__name__], 'PRODUCT', c.BOOTSTRAP_854['commit']):
+            self.original, self.retest, self.frozen = report_fixture(self.q)
+        recovery = self.original['production-recovery-results.json']
+        recovery['build'].update(xnav_hardware_output_policy='manual-commissioning',
+                                 xnav_manual_control_contract=1, startup_launcher_sha256='b'*64)
+        recovery['files_verified'] = 1046
+        self.package = dict(build=copy.deepcopy(recovery['build']), files=1046)
+        self.original['pilot-results.json']['checks'].append('synthetic seventh check')
+        diag = self.original['pilot-status-only/pilot-opennav-diagnostics.json']
+        diag.update(xnav_hardware_output_policy='manual-commissioning', xnav_manual_control_contract=1)
+        diag['runtime']['test_fixtures'] = False
+        diag['runtime']['pilot'].update(output_unavailable=False, configured_permission=True,
+            serial_session_enabled=False, simulated=False, track_capability=False, wind_capability=False)
+        # Keep test data independent of ephemeral CI paths. Only this fixture's
+        # expected error pin is substituted; production keeps the original pin.
+        self.error = 'synthetic exact bootstrap timeout'
+        self.error_pin = patch.object(c, 'BOOTSTRAP_854_ERROR', c.digest(self.error.encode()))
+        self.error_pin.start(); self.addCleanup(self.error_pin.stop)
+        self.original['installer-staging.json'].update(error=self.error, checks=['prefix']*8)
+        failed = self.original['packaged-updater.json']
+        failed.update(error=self.error, checks=[], legacyTrustState='not-verified',
+            nativeProtectedUpdaterAcceptance=False, protectedUpdaterGate='pending-real-B0-B1',
+            operations=[dict(phase='bootstrap', status='failed', lastStage='launcher-completion',
+                error=self.error, seconds=240.0, startupLog=dict(freshInitialization=True))])
+        del failed['faultInjection']
+        self.retest['installer-staging.json']['finish_launch'] = [
+            dict(label='Open SKAGER', control=123, checked_before=True, checked_after=False)]
+
+    def validate(self, original=None, retest=None, package=None):
+        c.validate_reports(original if original is not None else self.original,
+                           retest if retest is not None else self.retest, self.q, self.frozen,
+                           package_854=package if package is not None else self.package)
+
+    def test_exact_profile_requires_authenticated_package_and_complete_future_suffix(self):
+        self.validate()
+        with self.assertRaisesRegex(ValueError, 'frozen package binding required'):
+            c.validate_reports(self.original, self.retest, self.q, self.frozen)
+        for key, value in [('runId', '38765418127'), ('runAttempt', '2')]:
+            q = copy.deepcopy(self.q); q['composition']['producer'][key] = value
+            with self.subTest(key=key), self.assertRaisesRegex(ValueError, 'exact original run'):
+                c.validate_reports(self.original, self.retest, q, self.frozen, package_854=self.package)
+
+    def test_original_bootstrap_boundary_cannot_accept_other_failure_or_progress(self):
+        mutations = [
+            ('installer-staging.json', ('status',), 'passed'),
+            ('installer-staging.json', ('error',), self.error+' different'),
+            ('installer-staging.json', ('checks',), ['prefix']*7),
+            ('packaged-updater.json', ('checks',), c.UPDATER_CHECKS[:1]),
+            ('packaged-updater.json', ('faultInjection',), dict(restored=True)),
+            ('packaged-updater.json', ('nativeProtectedUpdaterAcceptance',), True),
+            ('packaged-updater.json', ('legacyTrustState',), 'verified'),
+            ('packaged-updater.json', ('operations',0,'phase'), 'restored-startup'),
+            ('packaged-updater.json', ('operations',0,'lastStage'), 'other-stage'),
+            ('packaged-updater.json', ('operations',0,'error'), 'different failure'),
+            ('packaged-updater.json', ('operations',0,'startupLog','freshInitialization'), False),
+            ('packaged-updater.json', ('operations',), []),
+        ]
+        for name, path, value in mutations:
+            changed = copy.deepcopy(self.original); target = changed[name]
+            for key in path[:-1]: target = target[key]
+            target[path[-1]] = value
+            with self.subTest(name=name, path=path), self.assertRaises(ValueError):
+                self.validate(original=changed)
+
+    def test_manual_declaration_never_grants_tcp_control_or_changed_inventory(self):
+        mutations = [(('runtime','pilot',field), True) for field in
+                     ('enabled','control_capability','serial_session_enabled','simulated',
+                      'track_capability','wind_capability','output_unavailable')]
+        mutations += [(('runtime','pilot','configured_permission'),False),
+                      (('xnav_manual_control_contract',),True),
+                      (('runtime','test_fixtures'),True)]
+        for path, value in mutations:
+            changed = copy.deepcopy(self.original)
+            target = changed['pilot-status-only/pilot-opennav-diagnostics.json']
+            for key in path[:-1]: target = target[key]
+            target[path[-1]] = value
+            with self.subTest(path=path), self.assertRaises(ValueError): self.validate(original=changed)
+        for name, path, value in [
+            ('pilot-status-only/pilot-results.json', ('received_bytes',), 1),
+            ('pilot-results.json', ('checks',), ['x']*6),
+            ('production-recovery-results.json', ('files_verified',), 1019),
+            ('production-recovery-results.json', ('build','startup_launcher_sha256'), 'c'*64),
+            ('route-input-results.json', ('route_contract','checks'), [{}]*25),
+            ('mode-cycle-results.json', ('peer_boundary',0,'profile_preserved'), False),
+        ]:
+            changed = copy.deepcopy(self.original); target = changed[name]
+            for key in path[:-1]: target = target[key]
+            target[path[-1]] = value
+            with self.subTest(name=name, path=path), self.assertRaises(ValueError): self.validate(original=changed)
+
+    def test_finish_choice_and_all_replacement_checks_remain_mandatory(self):
+        finish = self.retest['installer-staging.json']['finish_launch'][0]
+        for choices in (None, [], [finish, finish],
+                        [dict(finish, label='Launch SKAGER Beta 2')],
+                        [dict(finish, control=0)], [dict(finish, control=True)],
+                        [dict(finish, checked_before=1)], [dict(finish, checked_after=True)],
+                        [dict(finish, checked_after=0)]):
+            changed = copy.deepcopy(self.retest)
+            changed['installer-staging.json']['finish_launch'] = choices
+            with self.subTest(choices=choices), self.assertRaises(ValueError): self.validate(retest=changed)
+        for name, path, value in [
+            ('staging-retest.json', ('scope',), 'installer'),
+            ('staging-retest.json', ('checks',1,'status'), 'not-run'),
+            ('installer-staging.json', ('status',), 'failed'),
+            ('charts-results.json', ('result',), 'not run'),
+            ('packaged-updater.json', ('checks',), c.UPDATER_CHECKS[:3]),
+            ('packaged-updater.json', ('faultInjection','restored'), False),
+            ('packaged-updater.json', ('setupSha256',), '1'*64),
+            ('packaged-updater.json', ('executableSha256',), '1'*64),
+        ]:
+            changed = copy.deepcopy(self.retest); target = changed[name]
+            for key in path[:-1]: target = target[key]
+            target[path[-1]] = value
+            with self.subTest(name=name, path=path), self.assertRaises(ValueError): self.validate(retest=changed)
+
+    def test_package_binding_checks_original_bytes_before_report_semantics(self):
+        with tempfile.TemporaryDirectory() as directory:
+            tree = Path(directory); root = tree/c.inputs.PACKAGE_ROOT
+            (root/'docs').mkdir(parents=True)
+            product = json.dumps(self.package['build']).encode()
+            inventory = {'docs/PRODUCT_BUILD.json':c.digest(product),
+                         'app/opencpn.exe':self.package['build']['executable_sha256'],
+                         'app/skager-start.exe':self.package['build']['startup_launcher_sha256']}
+            inventory.update({f'fixture/{index}':'0'*64 for index in range(1043)})
+            raw = {'docs/PRODUCT_BUILD.json':product, 'FILE_SHA256.json':json.dumps(inventory).encode()}
+            for name, data in raw.items(): (root/name).write_bytes(data)
+            # Synthetic package pins exercise the actual reader without shipping
+            # the private 854 payload or granting this fixture native authority.
+            with patch.object(c, 'PACKAGE_854_HASHES', {n:c.digest(d) for n,d in raw.items()}):
+                self.assertEqual(c.recovery_854_binding(tree), self.package)
+                for name, data in raw.items():
+                    (root/name).write_bytes(data+b' ')
+                    with self.subTest(name=name), self.assertRaisesRegex(ValueError, 'metadata differs'):
+                        c.recovery_854_binding(tree)
+                    (root/name).write_bytes(data)
+                inventory['app/skager-start.exe'] = 'c'*64
+                changed = json.dumps(inventory).encode(); (root/'FILE_SHA256.json').write_bytes(changed)
+                with patch.dict(c.PACKAGE_854_HASHES, {'FILE_SHA256.json':c.digest(changed)}):
+                    with self.assertRaisesRegex(ValueError, 'bind product and launcher'):
+                        c.recovery_854_binding(tree)
 
 
 if __name__ == '__main__':
