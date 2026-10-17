@@ -62,6 +62,7 @@ p{margin:0}
 .grid-3{grid-template-columns:repeat(3,1fr)}
 .card{position:relative;display:flex;flex-direction:column;gap:12px;padding:26px;border:1px solid var(--line);border-radius:18px;background:var(--panel)}
 .card.feature{background:linear-gradient(150deg,rgba(111,224,234,.12),var(--panel) 55%);border-color:rgba(111,224,234,.35)}
+.actions{display:flex;flex-wrap:wrap;gap:10px}
 .card .actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:auto;padding-top:6px}
 .badge{display:inline-flex;align-items:center;gap:6px;width:max-content;padding:4px 10px;border-radius:999px;font-size:12px;font-weight:650;letter-spacing:.04em}
 .badge.ok{background:rgba(182,239,206,.14);color:var(--mint)}
@@ -119,3 +120,15 @@ tr:last-child td{border-bottom:0}
 @keyframes skeleton{from{background-position:100% 0}to{background-position:0 0}}
 @media (prefers-reduced-motion:reduce){.skeleton-card{animation:none}}
 @media (max-width:860px){.skeleton-grid{grid-template-columns:1fr}}
+/* Download steps */
+.setup-steps{display:flex;flex-wrap:wrap;gap:8px;margin:0 0 18px;padding:0;list-style:none}
+.setup-steps button{display:flex;align-items:center;gap:8px;padding:6px 14px 6px 6px;border:1px solid var(--line);border-radius:999px;background:none;color:var(--sec);font-size:13px;cursor:pointer}
+.setup-steps button span{display:grid;place-items:center;width:24px;height:24px;border-radius:50%;background:rgba(242,246,244,.08);font-weight:700;font-size:12px}
+.setup-steps [aria-current] button{border-color:var(--cyan);color:var(--text)}
+.setup-steps [aria-current] button span{background:var(--cyan);color:#04161b}
+.setup-steps .is-done button span{background:var(--mint);color:#04161b}
+.setup-card{display:grid;gap:4px}
+.setup-card h2{font-size:clamp(26px,3vw,34px)}
+.setup-card h2:focus,#setup-title:focus{outline:none}
+.step-of{margin-bottom:12px}
+button.text-link{padding:0;border:0;background:none;cursor:pointer}

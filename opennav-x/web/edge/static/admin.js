@@ -3,13 +3,13 @@ import { escapeHTML as esc, money } from "./portal.js";
 const $ = id => document.getElementById(id);
 const content = $("admin-content"), message = $("admin-message");
 const say = (text, kind = "") => { message.textContent = text; message.className = `message ${kind}`.trim(); };
-const PAGES = { products: "/admin/", orders: "/admin/orders/", customers: "/admin/customers/", settings: "/admin/settings/" };
+const PAGES = { products: "/admin/", steps: "/admin/steps/", orders: "/admin/orders/", customers: "/admin/customers/", settings: "/admin/settings/" };
 const pageFor = pathname => Object.keys(PAGES).find(key => PAGES[key] === pathname.replace(/\/?$/, "/")) || "products";
 let page = pageFor(location.pathname);
 // The overview lives in this page's memory only, so switching tabs renders at once.
 let csrf = "", data = null, rendered = null;
 
-export function productForm(product = {}) {
+export function productForm(product = {}, steps = []) {
   const locked = product.kind === "access";
   return `<form id="product-form" class="form card" data-id="${esc(product.id || "")}">
     <h2>${product.id ? `Edit ${esc(product.name)}` : "New product"}</h2>
@@ -19,7 +19,7 @@ export function productForm(product = {}) {
     <div class="row"><label>Price (USD)${locked ? " · set by the Stripe price" : ""}<input name="price" type="number" min="0" step="0.01" required value="${esc(((product.price_minor ?? 0) / 100).toFixed(2))}" ${locked ? "readonly" : ""}></label>
       <label>Sort order<input name="sort" type="number" min="0" max="10000" value="${esc(product.sort ?? 100)}"></label></div>
     ${product.kind && product.kind !== "hardware" ? "" : `<label class="check"><input name="shippable" type="checkbox" ${product.shippable !== false ? "checked" : ""}> Physical product (ships)</label>
-    <label class="check"><input name="checkoutAddon" type="checkbox" ${product.checkout_addon ? "checked" : ""}> Offer as an add-on in the SKAGER checkout</label>`}
+    <label>Checkout step<select name="stepId"><option value="">Not in the checkout (shop only)</option>${steps.filter(step => step.flow === "checkout").map(step => `<option value="${esc(step.id)}" ${product.step_id === step.id ? "selected" : ""}>${esc(step.title)}${step.active ? "" : " (hidden)"}</option>`).join("")}</select></label>`}
     ${locked ? "" : `<label class="check"><input name="active" type="checkbox" ${product.active !== false ? "checked" : ""}> Visible in the shop</label>`}
     ${product.id ? `<label>Image (PNG, JPEG or WebP, up to 2 MB)<input name="image" type="file" accept="image/png,image/jpeg,image/webp"></label>` : ""}
     <div class="actions"><button class="button" type="submit">Save</button><button class="button button-secondary" type="button" id="product-cancel">Cancel</button></div></form>`;
@@ -29,9 +29,45 @@ function renderProducts() {
   return `<div class="actions"><button class="button" type="button" id="product-new">Add product</button></div><div id="product-editor"></div>
   <div class="table-wrap after"><table><thead><tr><th></th><th>Product</th><th>Type</th><th>Price</th><th>Status</th><th></th></tr></thead><tbody>
   ${data.products.map(product => `<tr><td>${product.image_key ? `<img class="thumb" src="/api/media/${esc(product.image_key)}" alt="">` : '<span class="thumb"></span>'}</td>
-    <td><strong>${esc(product.name)}</strong><div class="note">${esc(product.summary)}</div></td><td>${esc(product.kind)}${product.checkout_addon ? " · add-on" : ""}</td>
+    <td><strong>${esc(product.name)}</strong><div class="note">${esc(product.summary)}</div></td><td>${esc(product.kind)}${product.step_id ? ` · step: ${esc(data.steps?.find(step => step.id === product.step_id)?.title || "")}` : ""}</td>
     <td>${esc(money(product.price_minor))}${product.interval ? " / month" : ""}</td><td>${product.active ? '<span class="badge ok">Visible</span>' : '<span class="badge off">Hidden</span>'}</td>
     <td><button class="button button-secondary" type="button" data-edit="${esc(product.id)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`;
+}
+const FLOWS = { checkout: ["Checkout", "Shown in order after the account step and before payment. Customers choose one of the step's products or the \u201cI already have\u201d answer."],
+  download: ["Download page", "Shown in order before the SKAGER download in the customer account. Customers follow the link or answer that they already have it."] };
+export function stepForm(step = {}) {
+  const flow = step.flow || "checkout";
+  return `<form id="step-form" class="form card" data-id="${esc(step.id || "")}">
+    <h2>${step.id ? `Edit ${esc(step.title)}` : `New ${esc(FLOWS[flow][0].toLowerCase())} step`}</h2>
+    ${step.id ? "" : `<label>Where<select name="flow"><option value="checkout" ${flow === "checkout" ? "selected" : ""}>Checkout</option><option value="download" ${flow === "download" ? "selected" : ""}>Download page</option></select></label>`}
+    <label>Title<input name="title" maxlength="60" required value="${esc(step.title || "")}" placeholder="Your helm PC"></label>
+    <label>Text<textarea name="summary" maxlength="600">${esc(step.summary || "")}</textarea></label>
+    <label>\u201cAlready have it\u201d answer<input name="skipLabel" maxlength="80" required value="${esc(step.skip_label || "")}" placeholder="I already have a PC"></label>
+    <div class="row"><label>Link (optional, https://)<input name="linkUrl" type="url" maxlength="500" value="${esc(step.link_url || "")}" placeholder="https://"></label>
+      <label>Link button text<input name="linkLabel" maxlength="80" value="${esc(step.link_label || "")}" placeholder="Download OpenCPN"></label></div>
+    <div class="row"><label>Sort order<input name="sort" type="number" min="0" max="10000" value="${esc(step.sort ?? 100)}"></label></div>
+    <label class="check"><input name="multiple" type="checkbox" ${step.multiple ? "checked" : ""}> Customers may pick several products in this step</label>
+    <label class="check"><input name="active" type="checkbox" ${step.active !== false ? "checked" : ""}> Show this step</label>
+    <p class="note">Checkout steps list the products you assign to them on the Products tab.</p>
+    <div class="actions"><button class="button" type="submit">Save</button><button class="button button-secondary" type="button" id="step-cancel">Cancel</button></div></form>`;
+}
+function renderSteps() {
+  const steps = data.steps || [];
+  const products = id => data.products.filter(product => product.step_id === id).map(product => esc(product.name)).join(", ");
+  return `<div class="actions"><button class="button" type="button" data-new-step="checkout">Add checkout step</button><button class="button button-secondary" type="button" data-new-step="download">Add download step</button></div><div id="step-editor"></div>
+  ${Object.entries(FLOWS).map(([flow, [title, note]]) => {
+    const rows = steps.filter(step => step.flow === flow);
+    const fixed = flow === "checkout" ? ["Account (email)", "Review and pay"] : [null, "Download SKAGER"];
+    return `<h2 class="section-title">${esc(title)}</h2><p class="note">${esc(note)}</p>
+    <div class="table-wrap"><table><thead><tr><th>Order</th><th>Step</th><th>${flow === "checkout" ? "Products" : "Link"}</th><th>Status</th><th></th></tr></thead><tbody>
+    ${fixed[0] ? `<tr><td>—</td><td><strong>${esc(fixed[0])}</strong><div class="note">Always first</div></td><td></td><td><span class="badge ok">Fixed</span></td><td></td></tr>` : ""}
+    ${rows.map(step => `<tr><td>${esc(step.sort)}</td><td><strong>${esc(step.title)}</strong><div class="note">${esc(step.skip_label)}</div></td>
+      <td>${flow === "checkout" ? (products(step.id) || '<span class="note">No products yet</span>') : step.link_url ? `<span class="note">${esc(step.link_label)}</span>` : ""}</td>
+      <td>${step.active ? '<span class="badge ok">Shown</span>' : '<span class="badge off">Hidden</span>'}</td>
+      <td><button class="button button-secondary" type="button" data-edit-step="${esc(step.id)}">Edit</button></td></tr>`).join("")}
+    <tr><td>—</td><td><strong>${esc(fixed[1])}</strong><div class="note">Always last</div></td><td></td><td><span class="badge ok">Fixed</span></td><td></td></tr>
+    </tbody></table></div>`;
+  }).join("")}`;
 }
 function address(order) {
   const a = order.shipping?.address;
@@ -71,7 +107,7 @@ async function request(url, payload) {
 }
 function render() {
   rendered = JSON.stringify([page, data]);
-  content.innerHTML = { products: renderProducts, orders: renderOrders, customers: renderCustomers, settings: renderSettings }[page]();
+  content.innerHTML = { products: renderProducts, steps: renderSteps, orders: renderOrders, customers: renderCustomers, settings: renderSettings }[page]();
   bind();
 }
 async function load() {
@@ -82,7 +118,7 @@ function mark() {
   for (const link of document.querySelectorAll("#admin-nav a")) {
     if (link.dataset.page === page) link.setAttribute("aria-current", "page"); else link.removeAttribute("aria-current");
   }
-  $("admin-title").textContent = { products: "Products", orders: "Orders", customers: "Customers", settings: "Shipping" }[page];
+  $("admin-title").textContent = { products: "Products", steps: "Steps", orders: "Orders", customers: "Customers", settings: "Shipping" }[page];
 }
 /** Show tab p from memory, then refresh; re-render only when the data changed, so open forms stay open. */
 async function show(p) {
@@ -108,7 +144,7 @@ function confirmTwice(button, label) {
 function bind() {
   const editor = $("product-editor");
   const openEditor = product => {
-    editor.innerHTML = productForm(product);
+    editor.innerHTML = productForm(product, data.steps || []);
     $("product-cancel").addEventListener("click", () => { editor.innerHTML = ""; });
     $("product-form").addEventListener("submit", async event => {
       event.preventDefault();
@@ -117,7 +153,7 @@ function bind() {
         priceMinor: Math.round(Number(field("price").value) * 100), sort: Number(field("sort").value) };
       if (product.id) payload.id = product.id;
       if (field("shippable")) payload.shippable = field("shippable").checked;
-      if (field("checkoutAddon")) payload.checkoutAddon = field("checkoutAddon").checked;
+      if (field("stepId")) payload.stepId = field("stepId").value || null;
       if (field("active")) payload.active = field("active").checked;
       try {
         const saved = await request("/api/admin/product", payload);
@@ -131,6 +167,25 @@ function bind() {
     });
   };
   $("product-new")?.addEventListener("click", () => openEditor({}));
+  const stepEditor = $("step-editor");
+  const openStep = step => {
+    stepEditor.innerHTML = stepForm(step);
+    $("step-cancel").addEventListener("click", () => { stepEditor.innerHTML = ""; });
+    $("step-form").addEventListener("submit", async event => {
+      event.preventDefault();
+      const form = event.target, field = name => form.elements.namedItem(name);
+      const payload = { title: field("title").value.trim(), summary: field("summary").value.trim(), skipLabel: field("skipLabel").value.trim(),
+        linkUrl: field("linkUrl").value.trim(), linkLabel: field("linkLabel").value.trim(), sort: Number(field("sort").value),
+        multiple: field("multiple").checked, active: field("active").checked };
+      if (step.id) payload.id = step.id; else payload.flow = field("flow").value;
+      try { await request("/api/admin/step", payload); say("Step saved.", "ok"); await load(); }
+      catch (error) { say(error.message, "error"); }
+    });
+  };
+  for (const button of content.querySelectorAll("[data-new-step]")) button.addEventListener("click", () => openStep({ flow: button.dataset.newStep }));
+  for (const button of content.querySelectorAll("[data-edit-step]")) {
+    button.addEventListener("click", () => openStep(data.steps.find(step => step.id === button.dataset.editStep)));
+  }
   for (const button of content.querySelectorAll("[data-edit]")) {
     button.addEventListener("click", () => openEditor(data.products.find(p => p.id === button.dataset.edit)));
   }

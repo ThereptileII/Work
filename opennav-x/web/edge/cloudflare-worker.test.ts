@@ -43,7 +43,7 @@ test('member, sign-in and admin shells have fixed routes; public signup routes n
   const shells: Record<string, string> = {
     '/portal/downloads/': 'portal.html', '/portal/shop/': 'portal.html', '/portal/cloud/': 'portal.html', '/portal/account': 'portal.html',
     '/auth/login/': 'auth.html', '/auth/forgot/': 'auth.html', '/auth/verify': 'auth.html',
-    '/admin/': 'admin.html', '/admin/orders/': 'admin.html', '/admin/settings/': 'admin.html',
+    '/admin/': 'admin.html', '/admin/steps/': 'admin.html', '/admin/orders/': 'admin.html', '/admin/settings/': 'admin.html',
   };
   for (const [path, file] of Object.entries(shells)) {
     const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);

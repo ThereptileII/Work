@@ -94,7 +94,7 @@ export async function handleWorker(request, transport = fetch) {
   let path = url.pathname;
   if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path)) path = '/portal.html';
   else if (/^\/auth\/(?:login|forgot|verify)\/?$/.test(path)) path = '/auth.html';
-  else if (/^\/admin(?:\/(?:orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
+  else if (/^\/admin(?:\/(?:steps|orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
   else if (path.endsWith('/')) path += 'index.html';
   const asset = ASSETS[path];
   if (!asset) return finish(new Response('Not found', { status: 404 }));

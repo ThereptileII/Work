@@ -87,8 +87,10 @@ class MarketingPages(SimpleTestCase):
         checkout = self.client.get(reverse("marketing:checkout"))
         self.assertContains(checkout, 'id="checkout-email"')
         self.assertContains(checkout, "account is created with this email when you pay")
-        self.assertContains(checkout, 'class="helm-scene"')
-        self.assertContains(checkout, 'data-fit="1280x800"')
+        self.assertContains(checkout, 'class="checkout-photo"')
+        self.assertContains(checkout, 'checkout-yacht-1586.webp')
+        for step in ('data-step="account"', 'id="option-steps"', 'data-step="review"', 'id="step-nav"'):
+            self.assertContains(checkout, step)
         self.assertNotContains(checkout, "<script>")
         pricing = self.client.get(reverse("marketing:pricing"))
         self.assertContains(pricing, 'class="cta plan-cta" href="/checkout/"')

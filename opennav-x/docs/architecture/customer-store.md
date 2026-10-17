@@ -6,11 +6,16 @@ This replaces the invited-beta flow described in
 
 ## Journey
 
-1. `/pricing/` and every “Get SKAGER” call to action lead to `/checkout/`: Public
-   Beta Access (USD 20, the configured Stripe Price), optional add-ons
-   (`store_products.checkout_addon`, e.g. the GPS module), a discount code and an
-   email address. No public page offers sign-up; **an account exists only
-   because of a purchase**.
+1. `/pricing/` and every “Get SKAGER” call to action lead to `/checkout/`, one
+   step per requirement: **Account** (email; Public Beta Access, USD 20, the
+   configured Stripe Price), then each active checkout step from
+   `store_steps` (seeded: **Your helm PC** and **GPS**) where the customer picks
+   one of the step's products or its “I already have one” answer, then **Review
+   and pay** (lines, shipping, discount code, total). Products belong to a step
+   through `store_products.step_id`; `checkout_addon` is kept equal to “in an
+   active checkout step” so order validation is unchanged. `?add=<slug>`
+   preselects a product in its step. No public page offers sign-up; **an
+   account exists only because of a purchase**.
 2. `POST /api/store/checkout` (CSRF + exact Origin, throttled per email and
    globally) creates an order from database prices, refuses emails that already
    own SKAGER (`exists`), have an unfinished account (`setup`) or were refunded
@@ -50,7 +55,10 @@ subscription is cancelled at Stripe. Zero-total orders refund locally.
 
 ## Portal (`/portal/…`, `edge/static/portal.*`)
 
-Overview · Downloads (Windows x64 from the reviewed catalog in `downloads.ts`,
+Overview · Downloads (first each active download step from `store_steps`,
+seeded **Install OpenCPN** with a link to the official OpenCPN 5.12.4 Windows
+installer or “I already have OpenCPN installed”, then Windows x64 from the
+reviewed catalog in `downloads.ts`,
 one fresh 60-second R2 link per press; Windows on ARM, Linux x64, Linux ARM64
 and macOS shown disabled as “Coming”) · Shop (hardware, `POST /api/store/shop`)
 · Cloud (USD 2/month subscription Checkout `POST /api/store/cloud`, Stripe
@@ -60,7 +68,10 @@ billing portal `POST /api/store/billing`, services listed as “Coming”) · Or
 ## Admin (`/admin/…`, `edge/static/admin.*`, `admin.ts`)
 
 Only verified sessions whose email is in `SKAGER_ADMIN_EMAILS` and that have a
-password. Products (name, summary, description, price, add-on, visibility,
+password. Steps (checkout and download stages: title, text, “already have it”
+answer, optional https link, multiple choice, sort, shown/hidden; the account,
+review and SKAGER download steps are fixed). Products (name, summary,
+description, price, checkout step, visibility,
 image up to 2 MB stored in R2 bucket `skager-media`, served at
 `/api/media/products/<id>/<sha256>.<ext>`), orders (mark shipped with tracking,
 refund), customers, shipping rate and countries. The access price is fixed by
@@ -97,7 +108,9 @@ email OTP length 6, templates send `{{ .Token }}`.
 
 ## Data
 
-`web/edge/store.sql` (private schema `skager_private`, RLS on, SECURITY DEFINER
-RPCs callable only by `service_role`). Assertions in `store.postgres.sql` run in
+`web/edge/store.sql`, then `web/edge/store-steps.sql` (private schema
+`skager_private`, RLS on, SECURITY DEFINER RPCs callable only by
+`service_role`). Assertions in `store.postgres.sql` and
+`store-steps.postgres.sql` run in
 CI against disposable PostgreSQL; never apply `bootstrap-test.sql` or
 `*.postgres.sql` to a real project.

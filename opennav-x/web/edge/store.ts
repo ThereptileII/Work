@@ -51,7 +51,12 @@ function publicProduct(product: Json): Json {
   return { id: product.id, slug: product.slug, kind: product.kind, name: product.name, summary: product.summary,
     description: product.description, priceMinor: product.price_minor, currency: product.currency,
     interval: product.interval ?? null, shippable: product.shippable, checkoutAddon: product.checkout_addon,
-    imageUrl: product.image_key ? `/api/media/${product.image_key}` : null };
+    imageUrl: product.image_key ? `/api/media/${product.image_key}` : null, stepId: product.step_id ?? null };
+}
+
+function publicStep(step: Json): Json {
+  return { id: step.id, flow: step.flow, title: step.title, summary: step.summary, skipLabel: step.skip_label,
+    multiple: step.multiple === true, linkUrl: step.link_url ?? null, linkLabel: step.link_label || null, sort: step.sort };
 }
 
 /** Build and bind a hosted Checkout Session for a freshly created order. */
@@ -111,7 +116,7 @@ async function guestCheckout(req: Request, ctx: StoreContext, config: Configurat
     input = await body(req);
     only(input, ['email', 'addons', 'discountCode']);
     requireValue(typeof input.email === 'string' && input.email.length <= 254 && EMAIL.test(input.email.trim()));
-    requireValue(input.addons === undefined || (Array.isArray(input.addons) && input.addons.length <= 3
+    requireValue(input.addons === undefined || (Array.isArray(input.addons) && input.addons.length <= 9
       && input.addons.every((id: unknown) => typeof id === 'string' && UUID.test(id))));
     requireValue(input.discountCode === undefined || input.discountCode === '' || (typeof input.discountCode === 'string' && CODE.test(input.discountCode)));
   } catch { return reply(400, { error: 'Check your email address and try again.' }); }
@@ -415,7 +420,8 @@ export async function handleStore(req: Request, ctx: StoreContext): Promise<Resp
     if (req.method !== 'GET') return reply(405, { error: 'GET required' });
     try {
       const data = await catalog(ctx);
-      return reply(200, { products: data.products.map(publicProduct), shippingMinor: data.shipping_minor,
+      return reply(200, { products: data.products.map(publicProduct),
+        steps: (Array.isArray(data.steps) ? data.steps : []).map(publicStep), shippingMinor: data.shipping_minor,
         shippingCountries: data.shipping_countries, checkoutOpen: ctx.env.STRIPE_TEST_CHECKOUT_ENABLED === 'true' });
     } catch { return reply(503, { error: 'The shop is temporarily unavailable.' }); }
   }

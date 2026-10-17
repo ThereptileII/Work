@@ -23,7 +23,8 @@ BEGIN
     RAISE EXCEPTION 'Access order totals wrong: %', created;
   END IF;
   BEGIN
-    PERFORM public.store_create_order('access','x@example.com',NULL,jsonb_build_array(jsonb_build_object('product_id',pc_id,'quantity',1)),NULL,NULL);
+    PERFORM public.store_create_order('access','x@example.com',NULL,jsonb_build_array(jsonb_build_object('product_id',access_id,'quantity',1),
+      jsonb_build_object('product_id',cloud_id,'quantity',1)),NULL,NULL);
     RAISE EXCEPTION 'Non-addon product accepted in access checkout';
   EXCEPTION WHEN raise_exception THEN IF SQLERRM LIKE 'Non-addon%' THEN RAISE; END IF; END;
   BEGIN

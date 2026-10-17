@@ -53,6 +53,31 @@ const PLATFORMS = [
   ["macOS", "Apple silicon and Intel Macs", "MAC"],
 ];
 const downloadUnavailable = "Downloads are being prepared. Please check back shortly.";
+/** Admin-defined download steps (such as installing OpenCPN) that come before SKAGER. */
+export function downloadSteps(catalog) {
+  return (Array.isArray(catalog?.steps) ? catalog.steps : []).filter(step => step && step.flow === "download"
+    && typeof step.title === "string" && typeof step.skipLabel === "string");
+}
+const safeLink = value => {
+  try { const url = new URL(value); return url.protocol === "https:" && !url.username && !url.password ? url.href : null; } catch { return null; }
+};
+/** One step at a time: each prerequisite, then the SKAGER download itself. */
+export function renderSetup(downloads, steps = [], current = steps.length, used = []) {
+  if (!steps.length) return renderDownloads(downloads);
+  const at = Math.max(0, Math.min(current, steps.length));
+  const names = [...steps.map(step => step.title), "Download SKAGER"];
+  const nav = `<ol class="setup-steps" aria-label="Install steps">${names.map((name, index) => `<li${index === at ? ' aria-current="step"' : index < at ? ' class="is-done"' : ""}><button type="button" data-setup-step="${index}"><span aria-hidden="true">${index < at ? "✓" : index + 1}</span>${esc(name)}</button></li>`).join("")}</ol>`;
+  if (at === steps.length) {
+    return `${nav}<p class="eyebrow step-of">Step ${at + 1} of ${names.length}</p><h2 class="visually-hidden" id="setup-title" tabindex="-1">Download SKAGER</h2>${renderDownloads(downloads)}
+      <div class="actions after"><button class="button button-secondary" type="button" data-setup-step="${at - 1}">← Back</button></div>`;
+  }
+  const step = steps[at], link = step.linkUrl && step.linkLabel ? safeLink(step.linkUrl) : null, clicked = used.includes(at);
+  const linkButton = link ? `<a class="button${clicked ? " button-secondary" : ""}" href="${esc(link)}" target="_blank" rel="noopener noreferrer" data-setup-link="${at}">${esc(step.linkLabel)} ↗</a>` : "";
+  const next = `<button class="button${link && !clicked ? " button-secondary" : ""}" type="button" data-setup-step="${at + 1}">${clicked ? "Done, next step →" : esc(step.skipLabel)}</button>`;
+  return `${nav}<section class="card feature setup-card"><p class="eyebrow">Step ${at + 1} of ${names.length}</p><h2 id="setup-title" tabindex="-1">${esc(step.title)}</h2>
+    ${step.summary ? `<p class="lead">${esc(step.summary)}</p>` : ""}<div class="actions">${linkButton}${next}</div>
+    ${at > 0 ? `<div class="actions"><button class="text-link" type="button" data-setup-step="${at - 1}">← Back</button></div>` : ""}</section>`;
+}
 export function renderDownloads(downloads) {
   const coming = PLATFORMS.map(([name, detail, icon]) => `<section class="card disabled" aria-disabled="true"><div class="platform"><span class="platform-icon" aria-hidden="true">${icon}</span><div><h3>${esc(name)}</h3><p class="note">${esc(detail)}</p></div></div>${badge(["Coming", "soon"])}<div class="actions"><button class="button button-secondary" type="button" disabled>Coming</button></div></section>`).join("");
   const links = '<a class="text-link" href="/install/">Installation guide ↗</a><a class="text-link" href="/open-source/">Open source &amp; licenses ↗</a>';
@@ -189,8 +214,8 @@ export function renderAccount(data, setup) {
       <form id="boat-form" class="form"><label>Boat name<input id="boat-name" maxlength="80" required></label><button class="button button-secondary" type="submit">Add boat</button></form></section></div>`;
 }
 
-export function renderDashboard(data, page = "dashboard", extra) {
-  if (page === "downloads") return renderDownloads(extra);
+export function renderDashboard(data, page = "dashboard", extra, setup) {
+  if (page === "downloads") return setup ? renderSetup(extra, setup.steps, setup.current, setup.used) : renderDownloads(extra);
   if (page === "shop") return renderShop(extra);
   if (page === "cloud") return renderCloud(data, extra);
   if (page === "orders") return renderOrders(data);
@@ -231,6 +256,10 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   // Portal data lives in this page's memory only (never in browser storage), so
   // switching tabs renders at once and refreshes in the background.
   const cache = {};
+  // Where the customer is in the download steps; memory only, like the rest.
+  const setup = { current: 0, used: [] };
+  const setupFor = p => p === "downloads" && cache.dashboard?.betaAccess === "active"
+    ? { steps: downloadSteps(cache.catalog), current: setup.current, used: setup.used } : undefined;
   function mark() {
     document.querySelector("h1").textContent = TITLES[page];
     for (const link of $("portal-nav")?.querySelectorAll("a") || []) {
@@ -277,6 +306,21 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   }
   function bind(data, extra) {
     if (page === "downloads") {
+      for (const button of content.querySelectorAll("[data-setup-step]")) {
+        button.addEventListener("click", () => {
+          setup.current = Number(button.dataset.setupStep);
+          render();
+          $("setup-title")?.focus({ preventScroll: true });
+          if (content.getBoundingClientRect().top < 0) content.scrollIntoView({ block: "start", behavior: "smooth" });
+        });
+      }
+      for (const link of content.querySelectorAll("[data-setup-link]")) {
+        link.addEventListener("click", () => {
+          if (!setup.used.includes(Number(link.dataset.setupLink))) setup.used.push(Number(link.dataset.setupLink));
+          // After the link opens, the next step becomes the main action.
+          setTimeout(() => { render(); content.querySelector(`[data-setup-step="${setup.current + 1}"]`)?.focus(); }, 0);
+        });
+      }
       for (const button of content.querySelectorAll(".portal-download")) {
         button.addEventListener("click", async () => {
           button.disabled = true;
@@ -348,10 +392,12 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   const cached = p => cache.dashboard !== undefined && extraFor(p) !== undefined;
   // What the visible tab was last rendered from, so a refresh re-renders only on change.
   let rendered = null;
-  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page)]);
+  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page), setupFor(page)]);
   /** Fetch what page p shows into the cache. */
   async function refresh(p) {
-    const [dashboard, catalog] = await Promise.all([api("/api/portal/dashboard"), shopPage(p) ? api("/api/store/catalog") : cache.catalog]);
+    // The download steps are guidance: without the catalog the download itself still shows.
+    const [dashboard, catalog] = await Promise.all([api("/api/portal/dashboard"), shopPage(p) ? api("/api/store/catalog")
+      : p === "downloads" ? api("/api/store/catalog").catch(error => { if (error.status === 401) throw error; return cache.catalog; }) : cache.catalog]);
     const downloads = p === "downloads" && dashboard.betaAccess === "active" ? await downloadsCatalog() : cache.downloads;
     // A second request can end the session after api resolves but before
     // this caller resumes. Guard each private effect at its await boundary.
@@ -360,7 +406,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   }
   function render() {
     rendered = shownFrom();
-    content.innerHTML = renderDashboard(cache.dashboard, page === "boats" ? "account" : page, extraFor(page));
+    content.innerHTML = renderDashboard(cache.dashboard, page === "boats" ? "account" : page, extraFor(page), setupFor(page));
     content.setAttribute("aria-busy", "false");
     $("logout").hidden = false;
     if ($("portal-nav")) $("portal-nav").hidden = false;

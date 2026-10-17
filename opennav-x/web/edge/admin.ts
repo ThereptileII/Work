@@ -1,5 +1,5 @@
 /** Store administration for the addresses in SKAGER_ADMIN_EMAILS: products, prices,
- * images, orders (ship, refund), customers and shipping settings. */
+ * images, checkout and download steps, orders (ship, refund), customers and shipping settings. */
 import { boundedBytes, configuration, integer, object, requireValue, strictJson, type Configuration } from './commerce.ts';
 import { adminRecipients, sendDue } from './email.ts';
 import { MAX_IMAGE_BYTES, putImage } from './media.ts';
@@ -27,17 +27,41 @@ function slugify(name: string): string {
 
 /** Validate an admin product edit; the database re-checks every constraint. */
 export function productInput(value: Json): Json | null {
-  const keys = ['id', 'name', 'summary', 'description', 'priceMinor', 'shippable', 'checkoutAddon', 'active', 'sort'];
+  const keys = ['id', 'name', 'summary', 'description', 'priceMinor', 'shippable', 'stepId', 'active', 'sort'];
   if (!object(value) || !Object.keys(value).every(key => keys.includes(key))) return null;
   if (value.id !== undefined && !(typeof value.id === 'string' && UUID.test(value.id))) return null;
   if (!plain(value.name, 80) || !value.name.trim() || (value.summary !== undefined && !plain(value.summary, 200))
     || (value.description !== undefined && !(typeof value.description === 'string' && value.description.length <= 4000))) return null;
   if (!integer(value.priceMinor) || value.priceMinor < 0 || value.priceMinor > 10_000_000) return null;
-  for (const key of ['shippable', 'checkoutAddon', 'active']) if (value[key] !== undefined && typeof value[key] !== 'boolean') return null;
+  for (const key of ['shippable', 'active']) if (value[key] !== undefined && typeof value[key] !== 'boolean') return null;
+  if (value.stepId !== undefined && value.stepId !== null && !(typeof value.stepId === 'string' && UUID.test(value.stepId))) return null;
   if (value.sort !== undefined && (!integer(value.sort) || value.sort < 0 || value.sort > 10000)) return null;
   return { id: value.id ?? null, slug: value.id ? undefined : slugify(value.name), kind: 'hardware',
     name: value.name.trim(), summary: (value.summary ?? '').trim(), description: value.description ?? '',
-    price_minor: value.priceMinor, shippable: value.shippable ?? true, checkout_addon: value.checkoutAddon ?? false,
+    price_minor: value.priceMinor, shippable: value.shippable ?? true, step_id: value.stepId ?? null,
+    active: value.active ?? true, sort: value.sort ?? 100 };
+}
+
+/** Validate a checkout or download stage; the database re-checks every constraint. */
+export function stepInput(value: Json): Json | null {
+  const keys = ['id', 'flow', 'title', 'summary', 'skipLabel', 'multiple', 'linkUrl', 'linkLabel', 'active', 'sort'];
+  if (!object(value) || !Object.keys(value).every(key => keys.includes(key))) return null;
+  if (value.id !== undefined && !(typeof value.id === 'string' && UUID.test(value.id))) return null;
+  if (value.id === undefined && !['checkout', 'download'].includes(value.flow)) return null;
+  if (!plain(value.title, 60) || !value.title.trim() || !plain(value.skipLabel, 80) || !value.skipLabel.trim()
+    || (value.summary !== undefined && !plain(value.summary, 600))) return null;
+  const link = typeof value.linkUrl === 'string' ? value.linkUrl.trim() : '';
+  const label = typeof value.linkLabel === 'string' ? value.linkLabel.trim() : '';
+  if ((value.linkUrl !== undefined && typeof value.linkUrl !== 'string') || (value.linkLabel !== undefined && !plain(value.linkLabel, 80))) return null;
+  if (link) {
+    let url: URL;
+    try { url = new URL(link); } catch { return null; }
+    if (url.protocol !== 'https:' || url.username || url.password || link.length > 500 || /[\s<>"]/.test(link) || !label) return null;
+  } else if (label) return null;
+  for (const key of ['multiple', 'active']) if (value[key] !== undefined && typeof value[key] !== 'boolean') return null;
+  if (value.sort !== undefined && (!integer(value.sort) || value.sort < 0 || value.sort > 10000)) return null;
+  return { id: value.id ?? null, flow: value.flow, title: value.title.trim(), summary: (value.summary ?? '').trim(),
+    skip_label: value.skipLabel.trim(), multiple: value.multiple ?? false, link_url: link, link_label: label,
     active: value.active ?? true, sort: value.sort ?? 100 };
 }
 
@@ -54,7 +78,7 @@ function base64(value: unknown): Uint8Array | null {
 export async function handleAdmin(req: Request, ctx: StoreContext): Promise<Response | null> {
   const path = new URL(req.url).pathname;
   if (!path.startsWith('/api/admin/')) return null;
-  const routes: Record<string, string> = { '/api/admin/overview': 'GET', '/api/admin/product': 'POST', [IMAGE_ROUTE]: 'POST',
+  const routes: Record<string, string> = { '/api/admin/overview': 'GET', '/api/admin/product': 'POST', '/api/admin/step': 'POST', [IMAGE_ROUTE]: 'POST',
     '/api/admin/ship': 'POST', '/api/admin/refund': 'POST', '/api/admin/settings': 'POST' };
   if (!routes[path]) return reply(404, { error: 'Not found' });
   if (req.method !== routes[path]) return reply(405, { error: `${routes[path]} required` });
@@ -71,6 +95,13 @@ export async function handleAdmin(req: Request, ctx: StoreContext): Promise<Resp
       if (!product) return reply(400, { error: 'Check the product fields.' });
       try { return reply(200, { product: await ctx.rpc('store_admin_save_product', { p_admin: admin, p_product: product }) }); }
       catch { return reply(400, { error: 'The product could not be saved.' }); }
+    }
+    if (path === '/api/admin/step') {
+      let step: Json | null = null;
+      try { step = stepInput(await input(req)); } catch { step = null; }
+      if (!step) return reply(400, { error: 'Check the step fields. Links must start with https:// and need a button text.' });
+      try { return reply(200, { step: await ctx.rpc('store_admin_save_step', { p_admin: admin, p_step: step }) }); }
+      catch { return reply(400, { error: 'The step could not be saved.' }); }
     }
     if (path === IMAGE_ROUTE) {
       let data: Json;

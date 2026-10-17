@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { STRIPE_API_VERSION } from './commerce.ts';
 import { handleStore, type StoreContext } from './store.ts';
-import { handleAdmin, productInput } from './admin.ts';
+import { handleAdmin, productInput, stepInput } from './admin.ts';
 import { compose, sendDue } from './email.ts';
 import { imageExtension, MEDIA_KEY } from './media.ts';
 
@@ -24,6 +24,9 @@ const products = [
   { id: GPS, slug: 'gps-module', kind: 'hardware', name: 'SKAGER GPS module', price_minor: 4900, checkout_addon: true, shippable: true, image_key: null },
   { id: CLOUD, slug: 'skager-cloud', kind: 'subscription', name: 'SKAGER Cloud', price_minor: 200, interval: 'month' },
 ];
+const STEP = 'e5555555-5555-4555-8555-555555555555';
+const steps = [{ id: STEP, flow: 'checkout', title: 'GPS', summary: 'Position for the chart.', skip_label: 'I already have a GPS', multiple: false,
+  link_url: null, link_label: '', active: true, sort: 20 }];
 const accessItems = [{ product_id: ACCESS, slug: 'skager-beta-access', kind: 'access', name: 'SKAGER Public Beta Access', quantity: 1, unit_minor: 2000, interval: null },
   { product_id: GPS, slug: 'gps-module', kind: 'hardware', name: 'SKAGER GPS module', quantity: 1, unit_minor: 4900, interval: null, shippable: true }];
 
@@ -50,7 +53,7 @@ function fixture(overrides: Record<string, any> = {}) {
           || p_limit < 1 || p_limit > 100 || p_seconds < 1 || p_seconds > 3600) throw new Error('Invalid throttle configuration');
         return state.throttle;
       }
-      if (name === 'store_catalog') return { products, shipping_minor: 1500, shipping_countries: ['SE'] };
+      if (name === 'store_catalog') return { products, steps, shipping_minor: 1500, shipping_countries: ['SE'] };
       if (name === 'store_create_order') return typeof state.order === 'function' ? state.order(args) : state.order;
       if (name === 'store_order_binding') return state.binding;
       if (name === 'store_receive_event') return { state: state.receipt };
@@ -61,6 +64,7 @@ function fixture(overrides: Record<string, any> = {}) {
       if (name === 'store_job_maintenance') return { expired_orders: 0 };
       if (name === 'store_admin_overview') return { products: [], orders: [], customers: [] };
       if (name === 'store_admin_save_product') return { id: GPS, ...args.p_product };
+      if (name === 'store_admin_save_step') return { id: STEP, ...args.p_step };
       return true;
     },
     fetch: async (input: any, init?: any) => {
@@ -146,6 +150,7 @@ test('invalid input, unknown discount codes, throttling and foreign origins stop
     [post('/api/store/checkout', { email: 'not-an-email' }), {}, 400],
     [post('/api/store/checkout', { email: 'b@example.com', price: 1 }), {}, 400],
     [post('/api/store/checkout', { email: 'b@example.com', addons: ['x'] }), {}, 400],
+    [post('/api/store/checkout', { email: 'b@example.com', addons: Array(10).fill(GPS) }), {}, 400],
     [post('/api/store/checkout', { email: 'b@example.com' }), { throttle: false }, 429],
     [post('/api/store/checkout', { email: 'b@example.com' }, 'https://evil.example'), {}, 403],
   ];
@@ -285,6 +290,33 @@ test('admin routes need an allowlisted, password-protected account and validate 
   assert.equal(productInput({ name: '', priceMinor: 100 }), null);
   assert.equal(productInput({ name: 'X', priceMinor: -1 }), null);
   assert.equal(productInput({ name: 'Helm PC', priceMinor: 54900 })!.kind, 'hardware');
-  const saved = await handleAdmin(post('/api/admin/product', { name: 'Helm PC', priceMinor: 54900, shippable: true }), f.ctx);
+  const saved = await handleAdmin(post('/api/admin/product', { name: 'Helm PC', priceMinor: 54900, shippable: true, stepId: STEP }), f.ctx);
   assert.equal(saved!.status, 200);
+  assert.equal(f.calls.find(c => c.name === 'store_admin_save_product')!.args.p_product.step_id, STEP);
+  assert.equal(productInput({ name: 'Helm PC', priceMinor: 54900, stepId: 'gps' }), null);
+  assert.equal(productInput({ name: 'Helm PC', priceMinor: 54900, checkoutAddon: true }), null);
+});
+
+test('checkout and download steps: public in the catalog, edited only by admins with safe links', async () => {
+  const f = fixture();
+  const catalog = await (await handleStore(new Request('https://beta.skager.app/api/store/catalog'), f.ctx))!.json();
+  assert.deepEqual(catalog.steps, [{ id: STEP, flow: 'checkout', title: 'GPS', summary: 'Position for the chart.', skipLabel: 'I already have a GPS',
+    multiple: false, linkUrl: null, linkLabel: null, sort: 20 }]);
+  const step = { flow: 'download', title: 'Install OpenCPN', skipLabel: 'I already have OpenCPN installed',
+    linkUrl: 'https://github.com/OpenCPN/OpenCPN/releases/tag/Release_5.12.4', linkLabel: 'Download OpenCPN' };
+  assert.equal(stepInput(step)!.link_url, step.linkUrl);
+  for (const bad of [{ ...step, flow: 'shop' }, { ...step, title: '' }, { ...step, skipLabel: ' ' }, { ...step, linkUrl: 'http://opencpn.org/' },
+    { ...step, linkUrl: 'javascript:alert(1)' }, { ...step, linkUrl: 'https://user:pw@example.com/' }, { ...step, linkLabel: '' },
+    { ...step, linkUrl: '', linkLabel: 'Go' }, { ...step, extra: 1 }, { ...step, sort: -1 }]) {
+    assert.equal(stepInput(bad), null, JSON.stringify(bad));
+  }
+  assert.equal(stepInput({ id: STEP, title: 'GPS', skipLabel: 'Skip' })!.flow, undefined);
+  const outsider = fixture({ account: { id: ACCOUNT, email: 'b@example.com', passwordSet: true } });
+  assert.equal((await handleAdmin(post('/api/admin/step', step), outsider.ctx))!.status, 403);
+  assert.equal(outsider.calls.length, 0);
+  const admin = fixture({ account: { id: ACCOUNT, email: 'admin@example.com', passwordSet: true } });
+  assert.equal((await handleAdmin(post('/api/admin/step', { ...step, linkUrl: 'http://x.example/' }), admin.ctx))!.status, 400);
+  const saved = await handleAdmin(post('/api/admin/step', step), admin.ctx);
+  assert.equal(saved!.status, 200);
+  assert.equal(admin.calls.find(c => c.name === 'store_admin_save_step')!.args.p_step.skip_label, 'I already have OpenCPN installed');
 });
