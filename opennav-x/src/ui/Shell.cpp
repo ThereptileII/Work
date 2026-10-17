@@ -279,11 +279,13 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   const auto map_button = [&](XNavIcon icon,const wxString &label,const wxString &name,std::function<void()> action) {
     auto *b=Button(chart_tools_,label,name,std::move(action)); b->SetIcon(icon); b->SetIconOnly(); b->SetFloating(); b->SetRole(ButtonRole::Quiet);
     b->SetMinSize(frame_.FromDIP(wxSize(44,44))); map_tools->Add(b,0,wxTOP|wxBOTTOM,frame_.FromDIP(4));
+    return b;
   };
-  map_button(XNavIcon::Ruler,"Measure","Measure chart distance",actions_.navigation.measure);
-  map_button(XNavIcon::Pin,"Waypoint","Waypoint at chart position",[this]{
-    if(actions_.navigation.chart_position) if(auto point=actions_.navigation.chart_position()) ShowChartContext(*point);
-  });
+  measure_button_ = map_button(XNavIcon::Ruler,"Measure","Measure chart distance",
+                              [this] { ToggleMeasure(); });
+  waypoint_button_ = map_button(XNavIcon::Pin,"Waypoint","Place a waypoint on the chart",
+                               [this] { BeginWaypointPlacement(); });
+  chart_tools_->Bind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
   map_tools->AddSpacer(frame_.FromDIP(5));
   map_button(XNavIcon::Plus,"+","Zoom chart in",actions_.zoom_in);
   map_button(XNavIcon::Minus,wxString::FromUTF8("−"),"Zoom chart out",actions_.zoom_out);
@@ -410,6 +412,23 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   // Creation owns this fixed-height area; appending controls below the horizon
   // clips the actions rather than making the dock taller.
   horizon_layout->Add(route_actions_,1,wxEXPAND);
+  tool_actions_ = new wxPanel(horizon_pane, wxID_ANY);
+  tool_actions_->SetName("SKAGER active chart tool");
+  tool_actions_->Hide();
+  auto *tool_row = new wxBoxSizer(wxHORIZONTAL);
+  tool_hint_ = Text(tool_actions_, "", 15);
+  tool_hint_->SetName("Chart tap instructions");
+  tool_hint_->SetMinSize(wxSize(0, -1));
+  tool_row->Add(tool_hint_, 1, wxALIGN_CENTER_VERTICAL | wxALL, frame_.FromDIP(16));
+  cancel_tool_ = Button(tool_actions_, "Cancel", "Close the active chart tool",
+                       [this] { CancelChartTools(); UpdateChartToolHint(); });
+  cancel_tool_->SetMinSize(frame_.FromDIP(wxSize(112, 48)));
+  cancel_tool_->SetRole(ButtonRole::Quiet);
+  tool_row->Add(cancel_tool_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, frame_.FromDIP(16));
+  tool_actions_->SetSizer(tool_row);
+  // Reuse the fixed horizon slot: hints never resize the chart/data rail or
+  // displace alerts, and route creation retains its own existing controls.
+  horizon_layout->Add(tool_actions_, 1, wxEXPAND);
   horizon_pane->SetSizer(horizon_layout);
   pilot_summary_ = Button(right,"Autopilot","Open autopilot controls",[this]{ShowProduct(ProductPage::Pilot);});
   pilot_summary_->SetMinSize(frame_.FromDIP(wxSize(149,87)));
@@ -590,6 +609,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   }
   frame_.SetAcceleratorTable(wxAcceleratorTable(
       static_cast<int>(accelerators.size()), accelerators.data()));
+  frame_.Bind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
   ApplyTheme();
   Tick();
   manager_.Update();
@@ -598,6 +618,9 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
 }
 
 Shell::~Shell() {
+  frame_.Unbind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
+  chart_tools_->Unbind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
+  CancelChartTools();
   if (boat_setup_) { boat_setup_->Destroy(); boat_setup_ = nullptr; }
   timer_.Stop();
   context_lifetime_.reset();
@@ -1022,12 +1045,7 @@ void Shell::Tick() {
   undo_route_->Enable(creating && !state_.simulated && !state_.replayed &&
       actions_.navigation.undo_route_point && actions_.navigation.can_undo_route_point &&
       actions_.navigation.can_undo_route_point());
-  if (route_actions_->IsShown() != creating) {
-    horizon_->Show(!creating);
-    route_actions_->Show(creating);
-    route_actions_->GetParent()->Layout();
-    route_actions_->Layout();
-  }
+  UpdateChartToolHint();
   if (product_) {
     ProductState p;
     p.vessel = state_;
@@ -1358,6 +1376,7 @@ void Shell::SelectDemo(vessel::DemoScenario scenario) {
 }
 #endif
 void Shell::ShowNavigation() {
+  CancelChartTools();
   CloseContext();
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
@@ -1801,6 +1820,158 @@ void Shell::CloseContext() {
   context_mmsi_ = 0;
   context_position_.reset();
 }
+bool Shell::CanCreateWaypoint() const {
+  return !simulation_ && !state_.simulated && !state_.replayed &&
+      (!actions_.commissioning || !actions_.commissioning->Replaying()) &&
+      bool(actions_.navigation.create_waypoint);
+}
+
+std::uint64_t Shell::WaypointPlacementToken() const {
+  return placing_waypoint_ && CanCreateWaypoint() ? placement_generation_ : 0;
+}
+
+bool Shell::CancelWaypointPlacement() {
+  const bool active = placing_waypoint_ || waypoint_sheet_pending_;
+  if (active) {
+    placing_waypoint_ = waypoint_sheet_pending_ = false;
+    ++placement_generation_;
+    if (!placement_generation_) ++placement_generation_;
+  }
+  return active;
+}
+
+void Shell::CancelChartTools() {
+  CancelWaypointPlacement();
+  if (actions_.navigation.cancel_measure) actions_.navigation.cancel_measure();
+}
+
+void Shell::OnChartToolKey(wxKeyEvent &event) {
+  if (event.GetKeyCode() == WXK_ESCAPE) {
+    const auto state = actions_.navigation.chart_tools
+        ? actions_.navigation.chart_tools() : application::ChartToolState{};
+    if (placing_waypoint_ || waypoint_sheet_pending_ || state.measure_active) {
+      CancelChartTools();
+      UpdateChartToolHint();
+      return;
+    }
+  }
+  event.Skip();
+}
+
+void Shell::BeginWaypointPlacement() {
+  if (placing_waypoint_) {
+    CancelWaypointPlacement();
+    UpdateChartToolHint();
+    return;
+  }
+  ShowNavigation();
+  const auto state = actions_.navigation.chart_tools
+      ? actions_.navigation.chart_tools() : application::ChartToolState{};
+  if (!CanCreateWaypoint() || !state.can_place_waypoint) {
+    UpdateChartToolHint();
+    return;
+  }
+  ++placement_generation_;
+  if (!placement_generation_) ++placement_generation_;
+  placing_waypoint_ = true;
+  UpdateChartToolHint();
+  // The next coordinate comes exclusively from a classified chart tap; the
+  // center of the viewport is never substituted for the user's choice.
+}
+
+void Shell::ToggleMeasure() {
+  const auto before = actions_.navigation.chart_tools
+      ? actions_.navigation.chart_tools() : application::ChartToolState{};
+  ShowNavigation(); // Closes sheets and cancels the previous tool.
+  if (!before.measure_active && before.can_measure && actions_.navigation.measure)
+    actions_.navigation.measure();
+  UpdateChartToolHint(); // Observe whether OpenCPN actually accepted the tool.
+}
+
+bool Shell::AcceptWaypointTap(application::Coordinate position, std::uint64_t token) {
+  if (!token || token != WaypointPlacementToken() ||
+      !std::isfinite(position.latitude_deg) || !std::isfinite(position.longitude_deg) ||
+      std::abs(position.latitude_deg) > 90 || std::abs(position.longitude_deg) > 180)
+    return false;
+  const auto state = actions_.navigation.chart_tools
+      ? actions_.navigation.chart_tools() : application::ChartToolState{};
+  if (!state.can_place_waypoint) return false;
+  placing_waypoint_ = false;
+  waypoint_sheet_pending_ = true;
+  // Disarm synchronously, but leave the native input stack before a modal
+  // sheet. Cancel, page change, rearming or destruction invalidates this work.
+  const wxWeakRef<Shell> target(this);
+  const wxWeakRef<wxFrame> owner(&frame_);
+  frame_.CallAfter([target, owner, position, token] {
+    if (!target || target->placement_generation_ != token ||
+        !target->waypoint_sheet_pending_) return;
+    if (!owner || owner->IsBeingDeleted() || !owner->IsShownOnScreen() || !owner->IsEnabled()) {
+      target->CancelWaypointPlacement();
+      return;
+    }
+    target->waypoint_sheet_pending_ = false;
+    target->UpdateChartToolHint();
+    const auto state = target->actions_.navigation.chart_tools
+        ? target->actions_.navigation.chart_tools() : application::ChartToolState{};
+    if (target->CanCreateWaypoint() && state.can_place_waypoint)
+      target->CreateWaypointAt(position);
+  });
+  return true;
+}
+
+void Shell::CreateWaypointAt(application::Coordinate position) {
+  if (!CanCreateWaypoint() || !std::isfinite(position.latitude_deg) ||
+      !std::isfinite(position.longitude_deg) || std::abs(position.latitude_deg) > 90 ||
+      std::abs(position.longitude_deg) > 180) return;
+  const auto suggestion = actions_.navigation.suggest_waypoint_name
+      ? actions_.navigation.suggest_waypoint_name(position) : application::NavigationNameSuggestion{};
+  const auto fields = EditNavigationNameSheet(frame_, mode_, "Create waypoint",
+      wxString::Format(wxString::FromUTF8("Save the selected position: %.5f° %.5f°"),
+                       position.latitude_deg, position.longitude_deg),
+      suggestion.name, "", "Save", display_.scale_percent);
+  if (!fields || !CanCreateWaypoint()) return;
+  const auto result = actions_.navigation.create_waypoint(position, (*fields)[0], (*fields)[1]);
+  if (!result.ok)
+    ConfirmSheet(frame_, mode_, "Waypoint not saved", wxString::FromUTF8(result.message),
+                 "Back", display_.scale_percent);
+}
+
+void Shell::UpdateChartToolHint() {
+  const auto state = actions_.navigation.chart_tools
+      ? actions_.navigation.chart_tools() : application::ChartToolState{};
+  if ((placing_waypoint_ || waypoint_sheet_pending_) &&
+      (!CanCreateWaypoint() || !state.can_place_waypoint))
+    CancelWaypointPlacement();
+  const bool creating = NewRouteCreationActive();
+  const bool show = !creating && (placing_waypoint_ || state.measure_active);
+  measure_button_->Enable(state.available && (state.measure_active || state.can_measure));
+  measure_button_->SetSelected(state.measure_active);
+  waypoint_button_->Enable(CanCreateWaypoint() && state.available &&
+                            (state.can_place_waypoint || state.measure_active));
+  waypoint_button_->SetSelected(placing_waypoint_);
+  const wxString hint = placing_waypoint_
+      ? "Waypoint: tap the chart where you want to place it"
+      : state.awaiting_first_measure_point ? "Measure: tap the chart to choose the start"
+                                          : "Measure: tap the next point to measure";
+  const int width = std::max(frame_.FromDIP(160), tool_actions_->GetClientSize().x -
+      frame_.FromDIP(48) - cancel_tool_->GetMinSize().x);
+  if (hint != tool_hint_text_ || width != tool_hint_width_) {
+    tool_hint_text_ = hint;
+    tool_hint_width_ = width;
+    tool_hint_->SetLabel(hint);
+    tool_hint_->Wrap(width);
+    tool_actions_->Layout();
+  }
+  cancel_tool_->SetLabel(state.measure_active && !state.awaiting_first_measure_point
+                            ? "Done" : "Cancel");
+  if (tool_actions_->IsShown() != show || route_actions_->IsShown() != creating ||
+      horizon_->IsShown() != (!creating && !show)) {
+    tool_actions_->Show(show);
+    route_actions_->Show(creating);
+    horizon_->Show(!creating && !show);
+    tool_actions_->GetParent()->Layout();
+  }
+}
 void Shell::ShowHealth() {
   ShowNavigation();
   if(!health_drawer_) {
@@ -1868,6 +2039,7 @@ void Shell::UpdateContext(vessel::Time now) {
   CloseContext();
 }
 void Shell::ShowPage(PreviewPage page) {
+  CancelChartTools();
   CloseContext();
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
@@ -2020,6 +2192,7 @@ void Shell::PlaceChartControls() {
 }
 
 void Shell::AfterCanvasLayoutChanged() {
+  CancelChartTools();
   navigation_visibility_.clear();
   for(const auto &name : actions_.navigation_panes) {
     auto &pane=manager_.GetPane(name);
@@ -2063,14 +2236,9 @@ void Shell::ShowChartContext(application::Coordinate position) {
           live() && CurrentMeasuredPosition(state_, vessel::Clock::now()))
         result(actions_.navigation.go_to(position, "Go To"));
     } else if (action == ContextAction::CreateWaypoint && actions_.navigation.create_waypoint) {
-      if (!live()) return;
-      const auto suggestion=actions_.navigation.suggest_waypoint_name
-          ? actions_.navigation.suggest_waypoint_name(position) : application::NavigationNameSuggestion{};
-      const auto fields = EditNavigationNameSheet(frame_, mode_, "Create waypoint", "Save this chart position.",
-                                    suggestion.name,"", "Save", display_.scale_percent);
-      if (fields && live()) result(actions_.navigation.create_waypoint(position, (*fields)[0], (*fields)[1]));
+      CreateWaypointAt(position);
     } else if (action == ContextAction::Measure && actions_.navigation.measure) {
-      actions_.navigation.measure();
+      ToggleMeasure();
     } else if (action == ContextAction::Info && actions_.navigation.object_info_at) {
       actions_.navigation.object_info_at(position);
     }

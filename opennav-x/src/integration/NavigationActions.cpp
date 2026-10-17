@@ -428,12 +428,38 @@ MakeNavigationActions(MyFrame &frame,
     if (route) g_pRouteMan->DeleteRoute(route);
     return result({true, "Route creation cancelled"});
   };
-  a.measure = [&frame] {
+  a.chart_tools = [&frame] {
+    application::ChartToolState state;
+    if (!wxIsMainThread()) return state;
     auto *cc = frame.GetPrimaryCanvas();
+    if (!cc) return state;
+    state.available = true;
+    state.measure_active = cc->IsMeasureActive();
+    state.awaiting_first_measure_point = state.measure_active && cc->m_nMeasureState == 1;
+    const bool editing = cc->m_routeState || cc->isRouteEditing() || cc->isMarkEditing();
+    state.can_measure = !editing;
+    state.can_place_waypoint = !editing && !state.measure_active;
+    return state;
+  };
+  a.cancel_measure = [&frame] {
+    if (!wxIsMainThread()) return;
+    auto *cc = frame.GetPrimaryCanvas();
+    if (!cc || !cc->IsMeasureActive()) return;
+    cc->CancelMeasureRoute();
+    cc->InvalidateGL();
+    cc->Refresh(false);
+  };
+  a.measure = [&frame] {
+    if (!wxIsMainThread()) return;
+    auto *cc = frame.GetPrimaryCanvas();
+    if (!cc || cc->m_routeState || cc->isRouteEditing() || cc->isMarkEditing()) return;
     if (cc->IsMeasureActive())
       cc->CancelMeasureRoute();
     else
       cc->StartMeasureRoute();
+    cc->InvalidateGL();
+    cc->Refresh(false);
+    cc->SetFocus();
   };
   a.object_info = [&frame] {
     auto *cc = frame.GetPrimaryCanvas();

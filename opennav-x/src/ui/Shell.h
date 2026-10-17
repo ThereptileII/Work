@@ -156,6 +156,11 @@ public:
   bool LoadPersistentPerspective(const wxString &perspective);
   void ShowChartContext(application::Coordinate position);
   void ShowChartInformation(application::ChartInfo info);
+  // Chart-input integration exchanges copied coordinates and a generation,
+  // never native chart objects. A tap is accepted at most once per arming.
+  std::uint64_t WaypointPlacementToken() const;
+  bool AcceptWaypointTap(application::Coordinate position, std::uint64_t token);
+  bool CancelWaypointPlacement();
 
 private:
   bool NewRouteCreationActive() const {
@@ -178,6 +183,13 @@ private:
   void UpdateAlerts();
   void PlaceChartControls();
   void CloseContext();
+  bool CanCreateWaypoint() const;
+  void BeginWaypointPlacement();
+  void ToggleMeasure();
+  void CancelChartTools();
+  void UpdateChartToolHint();
+  void OnChartToolKey(wxKeyEvent &event);
+  void CreateWaypointAt(application::Coordinate position);
   void UpdateContext(vessel::Time now);
   XNavScroll *CurrentScroll() const;
   void UpdateScrollControls();
@@ -273,6 +285,14 @@ private:
   XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;
   wxStaticText *route_hint_ = nullptr;
+  wxPanel *tool_actions_ = nullptr;
+  wxStaticText *tool_hint_ = nullptr;
+  XNavButton *measure_button_ = nullptr, *waypoint_button_ = nullptr,
+      *cancel_tool_ = nullptr;
+  std::uint64_t placement_generation_ = 0;
+  bool placing_waypoint_ = false, waypoint_sheet_pending_ = false;
+  wxString tool_hint_text_;
+  int tool_hint_width_ = -1;
   XNavFloatingSurface *chart_tools_ = nullptr, *chart_orientation_ = nullptr,
       *chart_layers_ = nullptr, *chart_follow_ = nullptr, *chart_turn_ = nullptr;
   class XNavNextTurnCard *turn_card_ = nullptr;

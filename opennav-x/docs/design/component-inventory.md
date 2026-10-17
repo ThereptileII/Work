@@ -13,6 +13,8 @@ the actual source boundary, not a claim that every role is a separate C++ class.
 | XNavRouteContextCard | `ui/RouteContextCard.*`, `application/RouteContext.*` | Chart-bounded modeless route summary; copied identity/state/endpoints, View on chart and Details. Hover does not take focus or replace an open task; Close/outside/Escape dismisses; no activation callback |
 | XNavNameEditor | `ui/NameEditor.*`, `application/NavigationNaming.h` | Inline Route name / Waypoint name, explicit Save or Enter; Cancel/Escape restores the saved name without leaving details. Changed drafts survive timer/theme refreshes; invalid/read-only/stale writes cannot silently replace saved data |
 | Navigation naming sheet | `ui/NameEditor.*`, `EditNavigationNameSheet` | Shared themed Name and optional Description fields for creation and fuller edits; chart-derived suggestions or coordinate fallback for new objects only; explicit Save/Cancel with draft retained after invalid input |
+| Active chart-tool instructions | `ui/Shell.*`, copied `ChartToolState` | Measure/Waypoint tap instructions and Cancel/Done reuse the fixed horizon area; actual native tool state drives visibility; source-only SCRUM-375 |
+| Startup navigation notice | `ui/StartupNavigationNotice.*` | Complete upstream warning in themed SKAGER presentation, explicit Agree/Cancel, scrollable text with fixed actions; rejection on Escape/close, no consent persistence owned here; source-only SCRUM-341 |
 | XNavChartInfoDrawer | `ui/ChartInfoDrawer.*`, `application/ChartInfo.*` | Read-only chart information sections, concise summaries and Show all chart details / Hide chart details. Preserves unknown fields and attachment references as inert text; empty/truncated notices remain explicit; shares drawer scrolling and Day/Dusk/Night roles |
 | Product value group | `ProductPanel::Visual` plus `XNavPainter` | Owned-state instrument, pilot, AIS detail, anchor and alert groups |
 | XNavSheet | `ui/Sheet.*`, `EditSheet`/`ConfirmSheet` | Focused dark modal, explicit actions, bounded fields, scrollable content; no write before acceptance |
@@ -31,8 +33,9 @@ the actual source boundary, not a claim that every role is a separate C++ class.
 ## Tokens and layout
 
 `ui/Theme.h` owns semantic colors, touch sizes, spacing and radii. `UiFont`
-owns font choice/scaling. Native Windows uses Segoe UI; no additional font
-installation is required. Body spacing uses the 8-DIP family; high-frequency
+owns font choice/scaling. Its prototype-ordered installed font stack is Segoe
+UI Variable Display, Segoe UI, then Arial; no font installation is required.
+Body spacing uses the 8-DIP family; high-frequency
 controls are at least 48×48 DIP and pilot course/standby actions use 56-DIP rows.
 
 Large values carry the hierarchy. Labels and units are quieter, with extra

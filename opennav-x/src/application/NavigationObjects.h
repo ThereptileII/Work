@@ -111,7 +111,18 @@ struct AlarmPreferences {
 };
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.
+// Application-thread copies of native chart-tool state. No chart/route pointers
+// leave integration and inspecting readiness never starts or advances a tool.
+struct ChartToolState {
+  bool available = false;
+  bool measure_active = false;
+  bool awaiting_first_measure_point = false;
+  bool can_measure = false;
+  bool can_place_waypoint = false;
+};
 struct NavigationActions {
+  std::function<ChartToolState()> chart_tools;
+  std::function<void()> cancel_measure;
   // Copies only; every action returns fresh readback and never caches preferences.
   std::function<ChartPresentationState()> chart_presentation;
   std::function<AlarmPreferences()> alarm_preferences;

@@ -1,5 +1,27 @@
 # Direct OpenCPN Upstream Modifications
 
+## Measurement, placement input and first start — SCRUM-375 / SCRUM-341
+
+Three source-only patches follow the chart-presentation/route-hit patches:
+
+- `opencpn-5.12.4-measure-label.patch`: the shared `RouteLegInfo` helper accepts
+  measurement context for SKAGER typography/surface colors. Upstream computed
+  text and placement remain intact; route creation and Legacy/Safe are stock.
+- `opencpn-5.12.4-chart-tool-input.patch`: native chart pointer classification
+  can consume one explicitly armed waypoint tap before object editing/selection.
+  It passes coordinates and a mode generation to the shell, preserving pan and
+  cancel behavior; no new navigation database or retained route pointer exists.
+- `opencpn-5.12.4-startup-presentation.patch`: early XNav frame branding, native
+  full safety notice, and deferral of automatic stock first-use setup in XNav.
+  Explicit wizard requests and Legacy/Safe remain stock. The existing
+  `ShowNavWarning` caller still owns trigger, consent persistence and updater
+  pending/accepted receipts. No plugin/error/recovery dialog is suppressed.
+
+Build/source/receipt inventories include the patches. Exact dependency consumer
+compatibility hashes have not been silently relaxed. All execution qualification
+remains pending under the user's source-only instruction. See
+[chart tools and first start](chart-tools-and-first-start.md).
+
 ## Explicit route arrival and passage overlay — SCRUM-373
 
 The source-only 2026-10-16 extension adds a narrow optional policy in the existing

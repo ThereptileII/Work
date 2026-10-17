@@ -1,5 +1,22 @@
 # SKAGER status — 2026-10-17
 
+## Chart tools and first-start presentation — local source changes only
+
+SCRUM-375 replaces the measurement-only yellow label with SKAGER presentation,
+adds persistent tap instructions and Cancel/Done in the existing horizon slot,
+and changes the map Waypoint action to choose a real chart position before its
+existing Save/Cancel sheet. OpenCPN retains measurement math and navigation
+storage. The first-start portion of SCRUM-341 adds the early SKAGER title and
+themed complete navigation warning, while automatic XNav setup uses the existing
+Boat Setup rather than launching the stock first-use wizard as well. Explicit
+stock setup and Legacy/Safe remain available; consent and updater receipts are
+unchanged. This does not claim to replace every plugin/recovery/error dialog or
+resolve Windows Search identity.
+
+See [scope, preserved boundaries and pending qualification](chart-tools-and-first-start.md).
+Manual source review only: no builds, tests, patch checks, CI or boat operations.
+The installed candidate and its acceptance state below are unchanged.
+
 ## Alarm settings discoverability — local source changes only
 
 SCRUM-374 separates active notifications from **Alarms & warnings**, available
