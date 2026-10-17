@@ -109,6 +109,7 @@ void ProductPanel::Back() {
   case ProductPage::AisDetail: parent = ProductPage::Ais; break;
   case ProductPage::SourceDetail: case ProductPage::BoatMapping: case ProductPage::SourcesAdvanced: parent = ProductPage::Sources; break;
   case ProductPage::RailLayout: case ProductPage::InstrumentLayout: parent = ProductPage::Display; break;
+  case ProductPage::AlarmSettings: parent = ProductPage::Settings; break;
   case ProductPage::EnergySettings: case ProductPage::VesselSettings:
   case ProductPage::NavigationSettings: case ProductPage::Sources:
   case ProductPage::Display: case ProductPage::Radar:
@@ -275,6 +276,8 @@ std::string ProductPanel::PageTitle() const {
     return "Commissioning & recordings";
   case ProductPage::Alerts:
     return "Alerts";
+  case ProductPage::AlarmSettings:
+    return "Alarm settings";
   case ProductPage::System:
     return "System";
   case ProductPage::NavigationSettings: return "Navigation settings";
@@ -1149,6 +1152,8 @@ void ProductPanel::Build() {
     InstrumentSelection(page_ == ProductPage::RailLayout);
   } else if (page_ == ProductPage::EnergySettings) {
     EnergySettings();
+  } else if (page_ == ProductPage::AlarmSettings) {
+    AlarmSettings();
   } else if (page_ == ProductPage::Sources) {
     Sources();
   } else if (page_ == ProductPage::SourcesAdvanced) {

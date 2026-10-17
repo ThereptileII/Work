@@ -5,6 +5,7 @@
 #include "vessel/DisplayItems.h"
 #include "vessel/AisHealth.h"
 #include "application/SourceHealthView.h"
+#include "application/AnchorView.h"
 #include <algorithm>
 #include <cmath>
 #include <filesystem>
@@ -61,6 +62,108 @@ void ProductPanel::SaveSettings(application::Settings s) {
   } catch (const std::exception &e) {
     Result({false, e.what()});
   }
+}
+void ProductPanel::AlarmSettings() {
+  Heading("Alarms & warnings", "Your current settings and automatic warnings");
+  const bool live = !state_.vessel.replayed && !state_.vessel.simulated;
+  if (state_.vessel.replayed)
+    Text("REPLAY: AIS and energy settings belong to the current installation, "
+         "not this recording. Watch status and alerts are historical. "
+         "Return to LIVE to change settings.");
+  else if (state_.vessel.simulated)
+    Text("DEMO: AIS and energy settings belong to the current installation. "
+         "Vessel data are simulated. Return to LIVE to change settings.");
+  Action("Review active alerts", actions_.alerts);
+  // Action defers callbacks. Check the current mode again after a queued tap,
+  // even if the button was enabled when this page was built.
+  const auto settings_link = [this, live](const wxString &label,
+                                         std::function<void()> action) {
+    const bool available = bool(action);
+    Action(label, [this, action = std::move(action)] {
+      if (!state_.vessel.replayed && !state_.vessel.simulated && action)
+        action();
+    }, live && available);
+  };
+
+  Heading("AIS collision warnings", "Configured in OpenCPN");
+  LiveText([](const auto &s) -> wxString {
+    const auto &a = s.alarm_preferences;
+    if (!a.available)
+      return "AIS alarm settings are unavailable. Open AIS settings to inspect them.";
+    const auto limit = [](bool enabled, const std::optional<double> &value,
+                          const wxString &unit) -> wxString {
+      const wxString status = enabled ? "On / " : "Off / Saved limit ";
+      return status + (value && std::isfinite(*value) && *value >= 0
+          ? N(*value) + " " + unit : wxString("unavailable"));
+    };
+    return "Closest approach (CPA): " + limit(a.cpa_enabled, a.cpa_nm, "nm") +
+        "\nTime to approach (TCPA) filter: " + limit(a.tcpa_enabled, a.tcpa_min, "min") +
+        "\nMaximum target range filter: " + limit(a.range_enabled, a.range_nm, "nm") +
+        "\nAlert dialog: " + (a.target_dialog_enabled ? "On" : "Off") +
+        " / Moored targets: " + (a.moored_suppressed ? "Suppressed" : "Included");
+  });
+  Text("Time and range filters limit CPA warnings. Sound choices and AIS "
+       "exceptions are managed in OpenCPN.");
+  BeginActions(2);
+  settings_link("AIS alarm settings", actions_.navigation.ais_alarm_settings);
+  settings_link("Alarm sounds", actions_.navigation.alarm_sound_settings);
+  EndActions();
+
+  Heading("Anchor watch", "Armed separately from other warnings");
+  LiveText([](const auto &s) -> wxString {
+    const auto watch = application::PresentAnchor(s.anchor, s.vessel, s.now);
+    if (!watch.active) return "Watch not armed. Start it explicitly in Anchor watch.";
+    return wxString(watch.alarm ? "ANCHOR ALARM" : "Watch armed") +
+        (watch.radius_m ? " / " + N(*watch.radius_m) + " m / Alarm " +
+            (watch.inner_alarm ? "inside radius" : "outside radius")
+                       : wxString(" / Radius unavailable"));
+  });
+  settings_link("Anchor watch", actions_.anchor_watch);
+
+  Heading("Energy reserve", "Advisory arrival estimate");
+  LiveText([](const auto &s) {
+    return "Configured reserve: " + Configured(s.settings.energy.battery.reserve_soc_percent, "%");
+  });
+  Text("Warns when a valid route estimate falls below your reserve or runs "
+       "out of energy. A new profile has no reserve set; this is not a "
+       "low-battery alarm.");
+  settings_link("Energy reserve settings", [this] {
+    ShowPage(ProductPage::EnergySettings, mode_);
+  });
+
+  Heading("Source loss", "Automatic warnings");
+  Text("Warns when a previously usable source becomes stale or unavailable, "
+       "or reports invalid data. Sensors never seen do not raise a missing-data "
+       "warning. Freshness limits belong to each source.");
+  LiveText([](const auto &s) {
+    const auto freshness = [](const vessel::Sample &sample) -> wxString {
+      const auto &f = sample.freshness;
+      if (sample.source.empty()) return "No selected source";
+      if (f.aging_after <= vessel::Duration::zero() || f.stale_after <= f.aging_after)
+        return "Limits unavailable";
+      return wxString::Format("aging %.1f s / stale %.1f s",
+                              f.aging_after.count() / 1000., f.stale_after.count() / 1000.);
+    };
+    return "Selected depth source: " + freshness(s.vessel.environment.depth_below_transducer_m) +
+        "\nSelected battery SOC source: " + freshness(s.vessel.battery.soc_percent);
+  });
+  BeginActions(2);
+  Action("Inspect source health", actions_.source_health);
+  settings_link("Sensor settings", [this] {
+    ShowPage(ProductPage::Sources, mode_);
+  });
+  EndActions();
+
+  Heading("Pilot feedback", "Automatic warnings");
+  Text("Warns if feedback is lost after the pilot was engaged, or a manual "
+       "request is rejected or remains unconfirmed. Check the physical pilot; "
+       "lost communication does not disengage it.");
+  Heading("Know the limits", "");
+  Text("SKAGER has no threshold alarms for measured shallow depth, high wind, "
+       "high temperature or low voltage. Safety depth changes chart styling "
+       "only. Keep monitoring your instruments.");
+  Text("Acknowledging a SKAGER warning does not resolve its condition or mute "
+       "OpenCPN alarms. Unresolved warnings remain visible.");
 }
 void ProductPanel::EnergySettings() {
   Heading("Energy configuration",

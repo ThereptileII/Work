@@ -46,7 +46,8 @@ enum class ProductPage {
   BoatMapping,
   SourcesAdvanced,
   SourceHealth,
-  Weather  // SCRUM-325/327/329: forecast wind and GRIBstream settings
+  Weather,  // SCRUM-325/327/329: forecast wind and GRIBstream settings
+  AlarmSettings
 };
 struct ProductState {
   std::vector<application::Alert> alerts;
@@ -65,6 +66,7 @@ struct ProductState {
   std::vector<vessel::SourceHealth> sources;
   adapters::RadarState radar;
   vessel::Time now{};
+  application::AlarmPreferences alarm_preferences;
 };
 struct ProductActions {
   std::function<std::vector<diagnostics::BundleEntry>(const std::optional<std::string> &)> field_bundle;
@@ -140,6 +142,7 @@ private:
   void PointActions();
   void CreateMark();
   void EnergySettings();
+  void AlarmSettings();
   void CommissioningPanel();
   void FieldReportPanel();
   void ExportFieldReport(bool include_recording);
