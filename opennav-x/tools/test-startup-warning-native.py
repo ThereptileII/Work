@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Exact pinned navigation-warning boundary on disposable native Windows only."""
+"""Patched SKAGER/stock warning boundary on disposable native Windows only."""
 import argparse
 import importlib.util
 import json
@@ -22,7 +22,7 @@ $stream=[IO.File]::OpenRead($Worker)
 try {$hash=([BitConverter]::ToString($sha.ComputeHash($stream))).Replace('-','').ToLowerInvariant()}
 finally {$stream.Dispose();$sha.Dispose()}
 $results=@()
-foreach($case in @('agree','cancel','timeout','fast')) {
+foreach($case in @('agree','cancel','escape','close','timeout','fast')) {
  $identity=[pscustomobject]@{generation=('a'*32);commit=$Commit;packageSha256=('b'*64);executableSha256=$hash}
  $session=New-UpdateHealthSession $identity
  $process=$null
@@ -39,11 +39,11 @@ foreach($case in @('agree','cancel','timeout','fast')) {
   $process=[Diagnostics.Process]::Start($start)
   $accepted=$session.server.Receive($process,$Worker,$hash,(Get-UpdateReadyFrame $identity $session),3000,7000)
   Check ($accepted -eq ($case -in @('agree','fast'))) ('Unexpected exact-modal decision: '+$case+'; '+$session.server.FailureReason)
-  if($case -in @('agree','cancel')) {
+  if($case -in @('agree','cancel','escape','close')) {
    Check ($clock.ElapsedMilliseconds -ge 3500) 'Actual modal did not remain unqualified beyond initial startup deadline.'
   }
-  if($case -eq 'cancel') {
-   Check ($session.server.Phase -ceq 'cancelled' -and $session.server.FailureReason -ceq 'human-cancelled') 'Actual Cancel did not remain cancellation.'
+  if($case -in @('cancel','escape','close')) {
+   Check ($session.server.Phase -ceq 'cancelled' -and $session.server.FailureReason -ceq 'human-cancelled') ('Actual dismissal did not remain cancellation: '+$case)
   }
   if($case -eq 'timeout') {
    Check ($session.server.Phase -ceq 'awaiting-human' -and $session.server.FailureReason -ceq 'human-wait-timeout') 'Unanswered actual warning did not exhaust its finite human deadline.'
@@ -57,16 +57,49 @@ foreach($case in @('agree','cancel','timeout','fast')) {
    $output=$process.StandardOutput.ReadToEnd()+$process.StandardError.ReadToEnd()
    [IO.File]::WriteAllText((Join-Path $Evidence ('modal-'+$case+'.log')),$output)
    $process.Dispose()
-   Check ($output.Contains('PASS exact upstream modal visible; no consent yet') -and -not $output.Contains('FAIL')) ('Actual upstream modal failed: '+$case)
+   Check ($output.Contains('PASS exact SKAGER modal visible; no consent yet') -and -not $output.Contains('FAIL')) ('Actual SKAGER modal failed: '+$case)
+   Check ($output.Contains('PASS complete pinned safety notice and explicit Agree/Cancel controls')) ('Actual safety notice or actions changed: '+$case)
    if($case -ne 'timeout') {
-    $choice=if($case -eq 'cancel'){'cancel'}else{'agree'}
+    $choice=if($case -in @('cancel','escape','close')){'cancel'}else{'agree'}
     Check ($output.Contains('PASS exact dialog result '+$choice+'; original nav-message branch preserved')) 'Original dialog and call-site result were not observed.'
     Check ($output.Contains('PASS synthetic post-dialog checkpoint probe; not installed health')) 'Component-only health probe did not complete.'
    }
   }
   [IO.File]::WriteAllText((Join-Path $Evidence 'modal-results.json'),(ConvertTo-Json -InputObject @($results) -Depth 5))
  }
- Write-Host ('PASS exact upstream modal and authenticated phase protocol: '+$case)
+ Write-Host ('PASS exact SKAGER modal and authenticated phase protocol: '+$case)
+}
+# Legacy retains the exact pinned stock modal and original acceptance branch.
+# It does not participate in the XNav updater health protocol.
+foreach($case in @('legacy-agree','legacy-cancel')) {
+ $process=$null
+ try {
+  $start=New-Object Diagnostics.ProcessStartInfo
+  $start.FileName=$Worker;$start.UseShellExecute=$false;$start.CreateNoWindow=$true
+  $start.RedirectStandardOutput=$true;$start.RedirectStandardError=$true
+  foreach($key in @('SKAGER_UPDATE_PIPE','SKAGER_UPDATE_GENERATION','SKAGER_UPDATE_CHALLENGE')) {
+   $start.EnvironmentVariables.Remove($key)
+  }
+  $start.EnvironmentVariables['SKAGER_WARNING_FIXTURE_MODE']=$case
+  $start.EnvironmentVariables['SKAGER_WARNING_FIXTURE_PROFILE']=Join-Path $Evidence ($case+'.ini')
+  $process=[Diagnostics.Process]::Start($start)
+  Check ($process.WaitForExit(10000)) ('Stock legacy modal did not complete: '+$case)
+  Check ($process.ExitCode -eq 0) ('Stock legacy modal worker failed: '+$case)
+ } finally {
+  if($process) {
+   if(-not $process.HasExited){$process.Kill();$process.WaitForExit()}
+   $output=$process.StandardOutput.ReadToEnd()+$process.StandardError.ReadToEnd()
+   [IO.File]::WriteAllText((Join-Path $Evidence ($case+'.log')),$output)
+   $process.Dispose()
+   $choice=if($case -eq 'legacy-cancel'){'cancel'}else{'agree'}
+   Check ($output.Contains('PASS exact stock modal visible; no consent yet') -and -not $output.Contains('FAIL')) ('Stock legacy modal failed: '+$case)
+   Check ($output.Contains('PASS exact dialog result '+$choice+'; original nav-message branch preserved')) ('Stock legacy result changed: '+$case)
+   Check (-not $output.Contains('synthetic post-dialog checkpoint')) 'Legacy unexpectedly used XNav health qualification.'
+  }
+ }
+ $results+=@{case=$case;accepted=($case -eq 'legacy-agree');receiptProtocol='not-used-legacy'}
+ [IO.File]::WriteAllText((Join-Path $Evidence 'modal-results.json'),(ConvertTo-Json -InputObject @($results) -Depth 5))
+ Write-Host ('PASS exact stock legacy modal: '+$case)
 }
 '''
 
@@ -79,13 +112,31 @@ def load(name, path):
 
 
 def extract_boundaries(upstream, generated):
-    """Extract exact pinned function and reconstruct the reviewed patch hunk."""
+    """Extract the pinned text/function and its two production patch boundaries."""
     frame = (upstream / 'gui/src/ocpn_frame.cpp').read_text(encoding='utf-8')
     begin = frame.index('bool ShowNavWarning() {\n')
     end = frame.index('\nbool isSingleChart(', begin)
     function = frame[begin:end]
     if function.count('info_dlg.ShowModal()') != 1 or 'return agreed == wxID_OK;' not in function:
         raise ValueError('Pinned warning function boundary changed')
+    # The expected complete safety text comes from pinned upstream, separately
+    # from the SKAGER component which the fixture observes at runtime.
+    text_begin = function.index('  wxString msg(')
+    text_end = function.index('\n  wxString vs =', text_begin)
+    expected_text = ('wxString ExactUpstreamWarningText() {\n'
+                     + function[text_begin:text_end] + '\n  return msg;\n}\n')
+    presentation = (ROOT / 'patches/opencpn-5.12.4-startup-presentation.patch').read_text(encoding='utf-8')
+    presentation_hunks = re.split(r'^@@[^\n]*@@[^\n]*\n', presentation, flags=re.M)
+    warning_hunks = [h for h in presentation_hunks
+                     if '+    return opennav::ui::ShowStartupNavigationNotice(gFrame);' in h]
+    if len(warning_hunks) != 1:
+        raise ValueError('Expected one SKAGER navigation-notice presentation hunk')
+    lines = warning_hunks[0].splitlines(keepends=True)
+    original = ''.join(line[1:] for line in lines if line.startswith((' ', '-')))
+    updated = ''.join(line[1:] for line in lines if line.startswith((' ', '+')))
+    if function.count(original) != 1:
+        raise ValueError('SKAGER notice hunk does not match the pinned function')
+    function = function.replace(original, updated, 1)
     patch = (ROOT / 'patches/opencpn-5.12.4-xnav.patch').read_text(encoding='utf-8')
     hunks = re.split(r'^@@[^\n]*@@[^\n]*\n', patch, flags=re.M)
     selected = [h for h in hunks if '+      opennav::integration::NotifyUpdateNavigationWarning(true, false);' in h]
@@ -102,6 +153,7 @@ def extract_boundaries(upstream, generated):
     generated.mkdir(parents=True, exist_ok=False)
     (generated / 'exact_warning.inc').write_text(function, encoding='utf-8')
     (generated / 'exact_warning_call.inc').write_text(updated, encoding='utf-8')
+    (generated / 'exact_warning_text.inc').write_text(expected_text, encoding='utf-8')
 
 
 def main():
@@ -122,6 +174,12 @@ def main():
              ROOT / 'tools/test-startup-update-windows.py', ROOT / 'tools/test-windows-changed-units.py',
              ROOT / 'tools/windows-wx.lock.json', ROOT / 'upstream.lock.json',
              ROOT / 'patches/opencpn-5.12.4-xnav.patch',
+             ROOT / 'patches/opencpn-5.12.4-startup-presentation.patch',
+             ROOT / 'src/ui/StartupNavigationNotice.cpp', ROOT / 'src/ui/StartupNavigationNotice.h',
+             ROOT / 'src/ui/Controls.cpp', ROOT / 'src/ui/Controls.h',
+             ROOT / 'src/ui/Theme.h', ROOT / 'src/ui/DisplaySizing.h', ROOT / 'src/ui/PrototypeIcons.h',
+             ROOT / 'src/diagnostics/TestUiTrace.h', ROOT / 'src/integration/BuildFeatures.h',
+             ROOT / 'src/vessel/VesselState.cpp', ROOT / 'src/vessel/VesselState.h',
              ROOT / 'installer/windows/UpdateTransaction.ps1',
              ROOT / 'src/integration/UpdateStartupReceipt.cpp',
              ROOT / 'src/integration/UpdateStartupReceipt.h',
@@ -136,7 +194,7 @@ def main():
     sources = {p.relative_to(ROOT).as_posix(): api.record(p) for p in paths if p.is_file()}
     report = {'status': 'failed', 'commit': subprocess.check_output(
         ['git', 'rev-parse', 'HEAD'], cwd=ROOT, text=True).strip(),
-        'scope': 'exact upstream native modal and authenticated receipt phase boundary; '
+        'scope': 'exact patched SKAGER/stock native modals and authenticated receipt phase boundary; '
                  'synthetic health clock/checkpoint; no installed application health, full application, '
                  'installer, plugins, navigation connections, boat, or visual-design acceptance',
         'nativeProductAcceptance': False, 'receiptFixtureCompiledCommit': receipts.FIXTURE_COMMIT,

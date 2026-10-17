@@ -15,12 +15,14 @@ configure_file(../../src/integration/OpenNavBuild.h.in
   "${CMAKE_CURRENT_BINARY_DIR}/generated/OpenNavBuild.h" @ONLY)
 set(receipt ../../src/integration/UpdateStartupReceipt.cpp)
 add_executable(startup_warning_native warning_native.cpp ${receipt}
+  ../../src/ui/StartupNavigationNotice.cpp ../../src/ui/Controls.cpp
+  ../../src/vessel/VesselState.cpp
   "${WARNING_UPSTREAM}/libs/gui/src/dialog_alert.cpp"
   "${WARNING_UPSTREAM}/libs/gui/src/dialog_base.cpp"
   "${WARNING_UPSTREAM}/libs/gui/src/ui_utils.cpp")
 target_include_directories(startup_warning_native PRIVATE
   "${WARNING_UPSTREAM}/libs/gui/include" "${WARNING_GENERATED}")
-target_link_libraries(startup_warning_native PRIVATE ${wxWidgets_LIBRARIES})
+target_link_libraries(startup_warning_native PRIVATE ${wxWidgets_LIBRARIES} dwrite)
 add_executable(update_startup_receipt_tests ../update_startup_receipt_tests.cpp ${receipt})
 add_executable(update_startup_receipt_native_test ../update_startup_receipt_native_test.cpp ${receipt})
 foreach(target startup_warning_native update_startup_receipt_tests update_startup_receipt_native_test)
