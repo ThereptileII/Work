@@ -51,7 +51,8 @@ def source_inventory(module, goroot, cache, modules, reference, *, graph_root=No
                             'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                             'tools/broker_package.py', 'tools/package-update-provisioner.py',
                             'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
-                            'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
+                            'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'LICENSE',
+                            *launcher.ICON_INPUTS], ROOT).split('\0')
     tracked = [name for name in tracked if name]
     required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                 'tools/broker_package.py', 'tools/package-update-provisioner.py', 'tools/provisioner_package.py',
@@ -59,6 +60,7 @@ def source_inventory(module, goroot, cache, modules, reference, *, graph_root=No
                 'tools/updater_package.py', 'tools/update-verifier/go.mod',
                 'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-update-broker/main.go'}
     required |= {name.removeprefix('project/') for name in component.required_sources}
+    required.update(launcher.ICON_INPUTS)
     if not required.issubset(tracked):
         raise ValueError('Committed complete broker source and dependency locks required')
     for name in tracked:

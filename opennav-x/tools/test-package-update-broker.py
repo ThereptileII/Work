@@ -42,7 +42,7 @@ class BrokerProducerTests(unittest.TestCase):
                         'tools/package-baseline-handoff.py', 'tools/updater_package.py',
                         'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum',
                         'tools/update-verifier/cmd/skager-update-broker/main.go']
-        self.tracked = sorted(set(self.tracked) | {
+        self.tracked = sorted(set(self.tracked) | set(launcher.ICON_INPUTS) | {
             name.removeprefix('project/') for name in producer.broker.REQUIRED_SOURCES})
         for name in self.tracked:
             path = self.repo / name

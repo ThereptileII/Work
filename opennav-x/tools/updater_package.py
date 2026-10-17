@@ -15,6 +15,10 @@ from urllib.parse import urlsplit
 
 GO_VERSION = 'go1.27.1'
 MAIN_MODULE = 'example.com/opennav-update-verifier'
+LAUNCHER_BUILD_RECIPE = ('CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build '
+                         '-mod=readonly -trimpath -buildvcs=true -ldflags=-H=windowsgui ./cmd/skager-start')
+ICON_BUILD_RECIPE = (LAUNCHER_BUILD_RECIPE +
+                    '; embed and verify resources/branding/skager.ico with tools/windows_icon.py before hashing')
 SOURCE_RELATIVE = 'opennav/third-party/updater/updater-source.zip'
 BUNDLE_PATH = 'third-party-sources/skager-updater-source.zip'
 MAX_RECORD_BYTES = 1 << 20
@@ -219,9 +223,9 @@ def _reference(reference, commit):
             reference['productCommit'] != commit or reference['goVersion'] != GO_VERSION or
             reference['mainModule'] != 'tools/update-verifier'):
         raise ValueError('Updater source identity does not match the product')
-    recipe = ('CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build '
-              '-mod=readonly -trimpath -buildvcs=true -ldflags=-H=windowsgui ./cmd/skager-start')
-    if reference['build'] != recipe:
+    # Retained older candidates still use the original exact recipe. Their
+    # unchanged binary/source hashes remain mandatory; do not relabel them.
+    if reference['build'] not in (LAUNCHER_BUILD_RECIPE, ICON_BUILD_RECIPE):
         raise ValueError('Updater source build recipe changed')
     modules = reference['modules']
     if not isinstance(modules, list) or not 1 <= len(modules) <= 256:

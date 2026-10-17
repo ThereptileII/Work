@@ -15,7 +15,7 @@ import zipfile
 
 from updater_package import copy_verified_updater_package, verify_updater_package, GO_VERSION, MAIN_MODULE, SOURCE_RELATIVE, BUNDLE_PATH
 from updater_package import (select_update_trust, copy_selected_update_trust, validate_public_update_trust,
-                             TRUST_SOURCE, STOCK_SHA256, UPSTREAM_COMMIT)
+                             TRUST_SOURCE, STOCK_SHA256, UPSTREAM_COMMIT, ICON_BUILD_RECIPE)
 
 
 def public_config():
@@ -92,6 +92,16 @@ class UpdaterPackageTests(unittest.TestCase):
         self.assertFalse(list(install.glob('.updater-transfer-*')))
         with self.assertRaisesRegex(ValueError, 'overwrite'):
             copy_verified_updater_package(self.app, install, self.commit)
+
+    def test_icon_recipe_preserves_exact_transfer_and_hash_checks(self):
+        self.record['sourceBundle']['reference']['build'] = ICON_BUILD_RECIPE
+        self.write()
+        install = self.destination()
+        copy_verified_updater_package(self.app, install, self.commit)
+        self.assertEqual((install / 'skager-start.exe').read_bytes(), self.binary.read_bytes())
+        self.binary.write_bytes(self.binary.read_bytes() + b'changed-after-branding')
+        with self.assertRaisesRegex(ValueError, 'changed after production'):
+            verify_updater_package(self.app, self.commit)
 
     def test_transfer_refuses_wrong_commit_unknown_closure_and_existing_outputs(self):
         install = self.destination()

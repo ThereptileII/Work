@@ -655,6 +655,11 @@ function PublishShell($State) {
     $link.WorkingDirectory = $directory
     if ($spec.work) { $link.WorkingDirectory = Join-Path $directory $spec.work }
     $link.Description = if ($skager) { 'SKAGER - shared OpenCPN profile' } else { 'OpenNav X - shared OpenCPN profile' }
+    # Startup-health generations launch through skager-start.exe. Select the
+    # same generation's branded application icon explicitly, including repair
+    # of older launchers without resources; never bypass the startup target.
+    $iconTarget = if ($spec.mode -eq 'maintenance') { $spec.target } else { 'app/opencpn.exe' }
+    $link.IconLocation = (RelativePath $directory $iconTarget) + ',0'
     Assert-LifecycleMutation
     $link.Save()
     AssertShortcut $path $shell

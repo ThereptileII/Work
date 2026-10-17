@@ -12,6 +12,8 @@ import struct
 import subprocess
 import tempfile
 import zipfile
+from updater_package import ICON_BUILD_RECIPE
+from windows_icon import embed_icon
 
 ROOT = Path(__file__).resolve().parent.parent
 GO_VERSION = 'go1.27.1'
@@ -22,6 +24,9 @@ MAX_ARCHIVE_BYTES = 256 << 20
 MAX_MODULES = 256
 MAX_COMMAND_BYTES = 8 << 20
 MAIN_MODULE = 'example.com/opennav-update-verifier'
+ICON_INPUTS = ('tools/windows_icon.py', 'tools/verify-skager-pe-brand.py',
+               'tools/product_version.py', 'resources/branding/skager.ico',
+               'resources/branding/provenance.json')
 
 
 def is_native_windows():
@@ -248,14 +253,20 @@ def package(install, commit, go):
     tracked = run(['git', 'ls-files', '-z', '--', 'tools/update-verifier', 'tools/package-update-launcher.py',
                    'tools/package-update-broker.py', 'tools/broker_package.py', 'tools/package-update-provisioner.py',
                    'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
-                   'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'LICENSE'], ROOT).split('\0')
+                   'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'LICENSE', *ICON_INPUTS], ROOT).split('\0')
     tracked = [name for name in tracked if name]
     required = {'LICENSE', 'tools/package-update-launcher.py', 'tools/package-update-broker.py',
                 'tools/broker_package.py', 'tools/package-update-provisioner.py',
                 'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
-                'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum'}
+                'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod', 'tools/update-verifier/go.sum', *ICON_INPUTS}
     if not required.issubset(tracked):
         raise ValueError('Exact launcher source, dependency locks, build recipe and license must be committed')
+    icon_path = plain_path(ROOT / 'resources/branding/skager.ico', boundary='Launcher icon')
+    icon = icon_path.read_bytes()
+    provenance_path = plain_path(ROOT / 'resources/branding/provenance.json', boundary='Launcher icon provenance')
+    provenance = json.loads(provenance_path.read_text(encoding='utf-8'))
+    if hashlib.sha256(icon).hexdigest() != provenance['outputs']['resources/branding/skager.ico']:
+        raise ValueError('Launcher icon differs from approved branding provenance')
     inventory = Inventory()
     for name in tracked:
         if Path(name).suffix.lower() in ('.exe', '.dll', '.pdb', '.test', '.log') or Path(name).name == 'verifier-tests.json':
@@ -319,12 +330,18 @@ def package(install, commit, go):
         archive = source_directory / 'updater-source.zip'
         reference = {'schema': 1, 'productCommit': commit, 'goVersion': GO_VERSION,
                      'mainModule': 'tools/update-verifier', 'modules': sorted(references, key=lambda x: x['path']),
-                     'build': 'CGO_ENABLED=0 GOOS=windows GOARCH=386 GO386=sse2 go build -mod=readonly -trimpath -buildvcs=true -ldflags=-H=windowsgui ./cmd/skager-start'}
+                     'build': ICON_BUILD_RECIPE}
         source_hash = inventory.write(archive, reference)
         # Full source and upstream notices are now available before compilation.
         binary = staging / 'skager-start.exe'
         run([go, 'build', '-mod=readonly', '-trimpath', '-buildvcs=true', '-ldflags=-H=windowsgui',
              '-o', str(binary), './cmd/skager-start'], module, environment)
+        # Brand only this fresh intermediate, before any binary hash/signature
+        # or publication. The helper verifies exact resource bytes without
+        # executing the launcher and preserves its other Windows resources.
+        if icon_path.read_bytes() != icon:
+            raise ValueError('Approved launcher icon changed during packaging')
+        embed_icon(binary, icon)
         run([go, 'mod', 'verify'], module, environment)
         require_clean_sources('Product sources changed during launcher packaging')
         validate_pe32(binary)

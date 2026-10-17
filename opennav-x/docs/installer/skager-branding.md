@@ -12,12 +12,35 @@ resource from `src/integration/Skager.rc.in`. This replaces only the generated
 `opencpn.rc` in the disposable build, after upstream's configuration. The pinned
 upstream resource and ordinary OpenCPN build remain untouched. Resource ID 0 is
 preserved because upstream `MyFrame` loads `wxICON(0)` on Windows. Explorer,
-the frame/taskbar and target-derived shortcuts therefore share the product ICO.
+the frame/taskbar therefore shares the product ICO. Current shortcuts select
+the same generation's application icon explicitly, independently of their
+secure startup-launcher target.
 The setup and generated maintenance executable use the same ICO through NSIS
 `MUI_ICON`/`MUI_UNICON`. Product metadata says SKAGER and retains OpenCPN credit,
 its executable name and its file-version/ABI identity. The generated C++ header
 is explicitly LF in `.gitattributes` so Windows checkout conversion cannot break
 its recorded byte hash.
+
+## Startup launcher icon correction (2026-10-17)
+
+User feedback identified a placeholder on the SKAGER start item while maintenance
+used the correct icon. The startup-health shortcut now targets `skager-start.exe`,
+whose Go build previously had no icon resource. This source wiring explains the
+reported difference; no new installed Windows observation was performed.
+
+`package-update-launcher.py` now embeds the unchanged approved ICO into its fresh
+intermediate launcher using native Windows resource APIs, preserving existing
+resources. It reads back every icon frame before calculating the final binary
+hash. The ICO, provenance and resource-helper sources are included in corresponding
+source, and the build recipe records the resource step. Retained older packages
+keep their original recipe and hashes; no installed/signed binary is patched.
+Shortcut publication, repair and recovery explicitly select the matching
+generation's application icon without changing targets or startup arguments.
+
+This is a **source-only correction**. Packaging and shortcut regression sources
+were updated, but no build, test, CI run, installation or boat operation was
+performed at the user's request. Native PE resource verification and Explorer /
+Start-menu display must still pass with the next authorized Windows candidate.
 
 ## Customer-facing package names
 

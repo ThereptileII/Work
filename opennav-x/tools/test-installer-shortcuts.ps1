@@ -74,6 +74,8 @@ function CheckGroup($state,[string]$version) {
     AssertShortcut $f.FullName $shell
     $s=ShortcutSpec $f.Name (ReadGeneration $state.current);$link=$shell.CreateShortcut($f.FullName)
     Check ([string]::Equals($link.TargetPath,(RelativePath (Generation $state.current) $s.target),[StringComparison]::OrdinalIgnoreCase)) ('Current generation '+$f.Name)
+    $iconTarget=if($s.mode -eq 'maintenance'){$s.target}else{'app/opencpn.exe'}
+    Check ([string]::Equals($link.IconLocation,((RelativePath (Generation $state.current) $iconTarget)+',0'),[StringComparison]::OrdinalIgnoreCase)) ('Current generation branded icon '+$f.Name)
   }
   Check ((Get-ItemProperty -LiteralPath $Registry).ModifyPath -ceq ('"'+(Join-Path (Generation $state.current) 'Maintain.exe')+'"')) 'Registry maintenance points to the exact selected generation'
 }

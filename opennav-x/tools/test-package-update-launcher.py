@@ -219,7 +219,18 @@ class PackageTests(unittest.TestCase):
     def test_missing_imported_updater_helper_is_refused(self):
         self.package_fixture(omitted_source='tools/updater_package.py')
 
-    def package_fixture(self, redirected_roots=False, omitted_source=None):
+    def test_missing_icon_source_or_recipe_is_refused(self):
+        for source in package.ICON_INPUTS:
+            with self.subTest(source=source):
+                # Each complete packaging fixture needs its own directory.
+                with tempfile.TemporaryDirectory(dir=self.root) as directory:
+                    with mock.patch.object(self, 'root', Path(directory)):
+                        self.package_fixture(omitted_source=source)
+
+    def test_icon_embedding_failure_does_not_publish_launcher(self):
+        self.package_fixture(icon_failure=True)
+
+    def package_fixture(self, redirected_roots=False, omitted_source=None, icon_failure=False):
         repo = self.root / 'repo'
         module = repo / 'tools/update-verifier'
         module.mkdir(parents=True)
@@ -227,13 +238,16 @@ class PackageTests(unittest.TestCase):
                    'tools/broker_package.py', 'tools/package-update-provisioner.py',
                         'tools/provisioner_package.py', 'tools/baseline_handoff_package.py',
                         'tools/package-baseline-handoff.py', 'tools/updater_package.py', 'tools/update-verifier/go.mod',
-                   'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-start/main.go']
+                   'tools/update-verifier/go.sum', 'tools/update-verifier/cmd/skager-start/main.go', *package.ICON_INPUTS]
         if omitted_source is not None:
             tracked.remove(omitted_source)
         for name in tracked:
             target = repo / name
             target.parent.mkdir(parents=True, exist_ok=True)
             target.write_text('exact committed source\n', encoding='utf-8')
+        for name in ('resources/branding/skager.ico', 'resources/branding/provenance.json'):
+            if name in tracked:
+                (repo / name).write_bytes((package.ROOT / name).read_bytes())
         goroot = self.root / 'go'
         (goroot / 'src/runtime').mkdir(parents=True)
         (goroot / 'src/runtime/runtime.go').write_text('package runtime\n', encoding='utf-8')
@@ -295,6 +309,9 @@ class PackageTests(unittest.TestCase):
                     self.assertEqual(source.read('project/tools/updater_package.py'),
                                      (repo / 'tools/updater_package.py').read_bytes())
                     self.assertIn('provisioning/go.sum', source.namelist())
+                    for name in package.ICON_INPUTS:
+                        self.assertEqual(source.read('project/' + name), (repo / name).read_bytes())
+                    self.assertEqual(json.loads(source.read('SOURCE_REFERENCE.json'))['build'], package.ICON_BUILD_RECIPE)
                 self.assertGreaterEqual(events.count(['mod', 'verify']), 2)
                 self.assertIn('-mod=readonly', command)
                 self.assertIn('-trimpath', command)
@@ -306,17 +323,34 @@ class PackageTests(unittest.TestCase):
                 return f'private-producer-path: {package.GO_VERSION}\n\tpath\t{package.MAIN_MODULE}/cmd/skager-start\n\tbuild\tCGO_ENABLED=0\n\tbuild\tGOARCH=386\n\tbuild\tGOOS=windows\n\tbuild\tvcs.revision={commit}\n\tbuild\tvcs.modified=false\n'
             self.fail('Unexpected external command in fixture')
 
-        with mock.patch.object(package, 'ROOT', repo), mock.patch.object(package, 'is_native_windows', return_value=True), mock.patch.object(package, 'run', side_effect=run):
+        def embed_icon(binary, icon):
+            self.assertIn(['build', '-mod=readonly'], events)
+            self.assertNotIn(['version', '-m'], events)
+            self.assertEqual(icon, (repo / 'resources/branding/skager.ico').read_bytes())
+            if icon_failure:
+                raise ValueError('Icon resource failure')
+            # Changing inert fixture bytes proves the final digest is calculated
+            # after resource embedding, not from the unbranded Go output.
+            binary.write_bytes(binary.read_bytes() + b'fixture-icon-resources')
+
+        with mock.patch.object(package, 'ROOT', repo), mock.patch.object(package, 'is_native_windows', return_value=True), mock.patch.object(package, 'run', side_effect=run), mock.patch.object(package, 'embed_icon', side_effect=embed_icon) as embed:
             if omitted_source is not None:
                 with self.assertRaisesRegex(ValueError, 'must be committed'):
                     package.package(install, commit, str(selected_go))
                 self.assertFalse(any(event[0] == 'build' for event in events))
                 return
+            if icon_failure:
+                with self.assertRaisesRegex(ValueError, 'Icon resource failure'):
+                    package.package(install, commit, str(selected_go))
+                self.assertEqual(list(install.iterdir()), [])
+                return
             result = package.package(install, commit, str(selected_go))
+            embed.assert_called_once()
         self.assertEqual(result['sourceBundle']['archive'], 'opennav/third-party/updater/updater-source.zip')
         self.assertEqual(result['sourceBundle']['path'], 'third-party-sources/skager-updater-source.zip')
         self.assertNotIn('private-producer-path', result['buildInfo'])
         self.assertEqual(result['binary']['sha256'], package.digest(install / 'skager-start.exe'))
+        self.assertTrue((install / 'skager-start.exe').read_bytes().endswith(b'fixture-icon-resources'))
         self.assertEqual(result['sourceBundle']['sha256'], package.digest(install / result['sourceBundle']['archive']))
         self.assertFalse((install / 'updater-trust.json').exists())
 
