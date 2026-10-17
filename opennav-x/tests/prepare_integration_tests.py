@@ -11,8 +11,11 @@ import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
 NAMES = ('xnav', 'regression-tests', 'ais-transport', 'chart-presentation',
+         'route-focus', 'route-hit-dpi', 'measure-label', 'chart-tool-input',
+         'startup-presentation',
          'maintained-curl', 'download-trust', 'wxcurl-trust',
-         'peer-response-buffer', 'peer-unavailable')
+         'peer-response-buffer', 'peer-unavailable', 'pilot-serial',
+         'update-qualification')
 
 
 def git(path, *args, **kwargs):
@@ -30,7 +33,7 @@ class PreparationTests(unittest.TestCase):
         git(source, 'config', 'user.email', 'fixture@example.invalid')
         git(source, 'config', 'core.filemode', str(filemode).lower())
         git(source, 'config', 'core.autocrlf', str(autocrlf).lower())
-        for index in range(9):
+        for index in range(len(NAMES)):
             (source / f'unit{index}.cpp').write_text('one\ntwo\nthree\n')
         git(source, 'add', '.')
         git(source, 'commit', '-m', 'Pinned fixture')

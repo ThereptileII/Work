@@ -34,6 +34,9 @@ class SourceDistributionTests(unittest.TestCase):
                      'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch',
                      'opencpn-5.12.4-route-focus.patch',
                      'opencpn-5.12.4-route-hit-dpi.patch',
+                     'opencpn-5.12.4-measure-label.patch',
+                     'opencpn-5.12.4-chart-tool-input.patch',
+                     'opencpn-5.12.4-startup-presentation.patch',
                      'opencpn-5.12.4-maintained-curl.patch', 'opencpn-5.12.4-download-trust.patch',
                      'opencpn-5.12.4-wxcurl-trust.patch', 'opencpn-5.12.4-peer-response-buffer.patch',
                      'opencpn-5.12.4-peer-unavailable.patch',
@@ -97,8 +100,9 @@ class SourceDistributionTests(unittest.TestCase):
                              self.release_notes.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-prototype.yml'), self.prototype.read_bytes())
-            self.assertEqual(len(references['integrationPatches']), 12)
-            for suffix in ('route-focus', 'route-hit-dpi'):
+            self.assertEqual(len(references['integrationPatches']), 15)
+            for suffix in ('route-focus', 'route-hit-dpi', 'measure-label',
+                           'chart-tool-input', 'startup-presentation'):
                 route_patch = next(item for item in references['integrationPatches']
                                    if item['path'] == 'opennav-x/patches/opencpn-5.12.4-' + suffix + '.patch')
                 self.assertEqual(route_patch['sha256'], hashlib.sha256(
