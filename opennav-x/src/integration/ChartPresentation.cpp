@@ -573,6 +573,29 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
   dc.DrawText(label, x + padx, y + pady);
   return true;
 }
+bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
+                            MeasureLabelStyle &style) {
+  if (!wxIsMainThread() || !xnav_mode || !upstream_font.IsOk()) return false;
+  const auto face = ui::UiFontWeight(canvas, 12, 500);
+  if (!face.IsOk()) return false;
+  // Adopt the native SKAGER face/weight without applying a second DPI scale or
+  // replacing the user's RouteLegInfoRollover size. Upstream still measures it.
+  style.font = upstream_font;
+  style.font.SetFamily(wxFONTFAMILY_SWISS);
+  if (!style.font.SetFaceName(face.GetFaceName())) return false;
+  style.font.SetStyle(wxFONTSTYLE_NORMAL);
+  style.font.SetNumericWeight(500);
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  const auto floating = ui::FloatingTheme(mode);
+  style.surface = ui::Colour(floating.surface);
+  style.ink = ui::Colour(floating.primary);
+  style.border = ui::Colour(ui::Theme(mode).border);
+  style.padding = canvas.FromDIP(6);
+  style.radius = canvas.FromDIP(6);
+  return true;
+}
 std::string ChartPresentationStatus() {
   return status + "; " + OChartsPresentationStatus();
 }

@@ -3,6 +3,7 @@
 #include <functional>
 #include "application/NavigationObjects.h"
 #include <wx/colour.h>
+#include <wx/font.h>
 #include <wx/hashmap.h>
 #include <wx/dynarray.h>
 #include <wx/string.h>
@@ -58,6 +59,16 @@ bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);
 // Paint only after the original overzoom indicator returns its current map.
 // False preserves that same stock map; this never decides warning visibility.
 bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y);
+// Measurement UI only. The caller keeps the stock strings, text measurement and
+// placement formulas; font size already includes upstream's DIP correction.
+// This floating UI follows XNav even when the chart style is Standard.
+struct MeasureLabelStyle {
+  wxFont font;
+  wxColour surface, ink, border;
+  int padding = 0, radius = 0;
+};
+bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
+                            MeasureLabelStyle &style);
 bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y, int &reference_width);
 bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
                     int x, int y, int length, wxRect &bounds);

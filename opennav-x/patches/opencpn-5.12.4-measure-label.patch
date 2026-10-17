@@ -1,0 +1,72 @@
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -11120,3 +11120,4 @@
+ static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
+-                         const wxString &second) {
++                         const wxString &second,
++                         ChartCanvas *measure_canvas = nullptr) {
+   wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
+@@ -11130,3 +11131,17 @@
+       false, dFont->GetFaceName());
+ 
++#ifdef OPENNAV_X
++  const auto old_font = dc.GetFont();
++  const auto old_ink = dc.GetTextForeground();
++  const auto old_pen = dc.GetPen();
++  const auto old_brush = dc.GetBrush();
++  opennav::integration::MeasureLabelStyle measure_style;
++  const bool themed_measure = measure_canvas &&
++      opennav::integration::ChartMeasureLabelStyle(
++          *measure_canvas, *psRLI_font, measure_style);
++  if (themed_measure) psRLI_font = &measure_style.font;
++#else
++  (void)measure_canvas;
++#endif
++
+   dc.SetFont(*psRLI_font);
+@@ -11164,11 +11179,34 @@
+   yp = ref_point.y;
+   yp += hilite_offset;
+ 
+-  AlphaBlending(dc, xp, yp, w, h, 0.0, GetGlobalColor(_T ( "YELO1" )), 172);
+-
+-  dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" ))));
+-  dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
++#ifdef OPENNAV_X
++  if (themed_measure) {
++    // Same upstream text coordinates; only the floating surface gains padding.
++    // ocpnDC supplies the same rounded primitive for software and OpenGL.
++    const int pad = measure_style.padding;
++    dc.SetPen(wxPen(measure_style.border, measure_canvas->FromDIP(1)));
++    dc.SetBrush(wxBrush(measure_style.surface));
++    dc.DrawRoundedRectangle(xp - pad, yp - pad, w + 2 * pad, h + 2 * pad,
++                            measure_style.radius);
++    dc.CalcBoundingBox(xp - pad - 1, yp - pad - 1);
++    dc.CalcBoundingBox(xp + w + pad + 1, yp + h + pad + 1);
++    dc.SetTextForeground(measure_style.ink);
++  } else
++#endif
++  {
++    AlphaBlending(dc, xp, yp, w, h, 0.0, GetGlobalColor(_T ( "YELO1" )), 172);
++    dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" ))));
++    dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
++  }
+ 
+   dc.DrawText(first, xp, yp);
+   if (second.Len()) dc.DrawText(second, xp, yp + h1);
++#ifdef OPENNAV_X
++  if (themed_measure) {
++    dc.SetFont(old_font);
++    dc.SetTextForeground(old_ink);
++    dc.SetPen(old_pen);
++    dc.SetBrush(old_brush);
++  }
++#endif
+ }
+@@ -11349,3 +11387,4 @@
+-  RouteLegInfo(dc, r_rband, routeInfo, s0);
++  RouteLegInfo(dc, r_rband, routeInfo, s0,
++               route == m_pMeasureRoute ? this : nullptr);
+ 
+   m_brepaint_piano = true;
