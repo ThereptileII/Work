@@ -354,6 +354,13 @@ void ControlBoundary() {
       ++count; return application::CommandResult{true, "ok"};
     };
     actions.legacy_settings = [&] { ++count; };
+    actions.ais_alarm_settings = [&] { ++count; };
+    actions.alarm_sound_settings = [&] { ++count; };
+    application::AlarmPreferences preferences;
+    preferences.available = true;
+    preferences.cpa_enabled = true;
+    preferences.cpa_nm = 2.;
+    actions.alarm_preferences = [&] { return preferences; };
     actions = application::GuardNavigationChanges(
         std::move(actions), [&] { return !service.Replaying(); });
     Check(!actions.activate({}).ok && !actions.deactivate({}).ok &&
@@ -367,13 +374,25 @@ void ControlBoundary() {
           "Replay blocks Go To and draft route mutation");
     actions.start_route();
     actions.legacy_settings();
+    actions.ais_alarm_settings();
+    actions.alarm_sound_settings();
     Check(count == 0, "Replay blocks advanced mutation entry");
+    const auto observed_preferences = actions.alarm_preferences();
+    preferences.cpa_nm = 1.;
+    Check(observed_preferences.available && observed_preferences.cpa_enabled &&
+              observed_preferences.cpa_nm == 2. &&
+              actions.alarm_preferences().cpa_nm == 1. && count == 0,
+          "Replay retains read-only owned alarm preferences without opening settings");
     service.StopReplay();
     Check(actions.activate({}).ok && count == 1 && actions.can_undo_route_point() &&
               actions.can_finish_route(),
           "Explicit replay exit restores normal human actions");
     Check(actions.set_route_passage({}, {}).ok && count == 2,
           "Only explicit replay exit restores route-arrival edits");
+    actions.ais_alarm_settings();
+    actions.alarm_sound_settings();
+    Check(count == 4,
+          "Only explicit replay exit restores native alarm configuration entry");
     diagnostics::Commissioning denied(
         root, [] { return "Output-capable connection active"; });
     Check(!denied.OpenReplay(file, now).ok && !denied.Replaying(),

@@ -4,6 +4,7 @@
 #include "integration/NavigationObjects.h"
 #include "integration/RoutePassageSettings.h"
 #include "integration/WeatherOverlay.h"
+#include "model/ais_state_vars.h"
 #include "model/navobj_db.h"
 #include "model/route.h"
 #include "model/route_point.h"
@@ -455,6 +456,26 @@ MakeNavigationActions(MyFrame &frame,
   };
   a.toggle_ais = [&frame] { frame.ToggleAISDisplay(frame.GetPrimaryCanvas()); };
   a.fullscreen = [&frame] { frame.ToggleFullScreen(); };
+  a.alarm_preferences = [] {
+    application::AlarmPreferences state;
+    if (!wxIsMainThread()) return state;
+    const auto number = [](double value) -> std::optional<double> {
+      return std::isfinite(value) && value >= 0 ? std::make_optional(value)
+                                               : std::nullopt;
+    };
+    state.available = true;
+    state.cpa_enabled = g_bCPAWarn;
+    state.cpa_nm = number(g_CPAWarn_NM);
+    state.tcpa_enabled = g_bTCPA_Max;
+    state.tcpa_min = number(g_TCPA_Max);
+    state.range_enabled = g_bCPAMax;
+    state.range_nm = number(g_CPAMax_NM);
+    state.target_dialog_enabled = g_bAIS_CPA_Alert;
+    // Both upstream options suppress low-speed/moored CPA alarms, even when
+    // only the hide-moored display option was selected.
+    state.moored_suppressed = g_bAIS_CPA_Alert_Suppress_Moored || g_bHideMoored;
+    return state;
+  };
   a.legacy_settings = [&frame] { frame.DoSettings(); };
   a.connections_settings = [&frame] {
     // Pinned OpenCPN options::CreateControls creates Display, Charts, then
@@ -470,6 +491,24 @@ MakeNavigationActions(MyFrame &frame,
     options_lastPage = previous_page;
     options_subpage = previous_subpage;
   };
+  const auto alarm_settings = [&frame](int page) {
+    if (!wxIsMainThread()) return;
+    // Pinned options::CreateControls: Ships/AIS Targets = (3,1),
+    // User Interface/Sounds = (4,1). Restore the prior initial-page preference
+    // after opening; the user's eventual selection remains owned by OpenCPN.
+    struct RestoreOptions {
+      int page, subpage;
+      ~RestoreOptions() {
+        options_lastPage = page;
+        options_subpage = subpage;
+      }
+    } restore{options_lastPage, options_subpage};
+    options_lastPage = page;
+    options_subpage = 1;
+    frame.DoSettings();
+  };
+  a.ais_alarm_settings = [alarm_settings] { alarm_settings(3); };
+  a.alarm_sound_settings = [alarm_settings] { alarm_settings(4); };
   a.plugin_settings = [&frame] {
     // Pinned options::CreateControls creates Display, Charts, Connections,
     // Ships, User Interface, then Plugins. Plugin-added pages follow these.

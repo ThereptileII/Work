@@ -61,6 +61,8 @@ NavigationActions GuardNavigationChanges(NavigationActions a,
   a.legacy_settings = Guard(a.legacy_settings, allowed);
   a.connections_settings = Guard(a.connections_settings, allowed);
   a.plugin_settings = Guard(a.plugin_settings, allowed);
+  a.ais_alarm_settings = Guard(a.ais_alarm_settings, allowed);
+  a.alarm_sound_settings = Guard(a.alarm_sound_settings, allowed);
   a.legacy_route_manager = Guard(a.legacy_route_manager, allowed);
   return a;
 }

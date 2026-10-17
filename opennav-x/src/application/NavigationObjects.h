@@ -96,11 +96,25 @@ struct NavigationNameSuggestion {
   std::string name;
   bool from_chart = false;
 };
+// Owned readback of the current OpenCPN alarm preferences, not new defaults.
+// A missing number means the stored value could not be represented safely.
+struct AlarmPreferences {
+  bool available = false;
+  bool cpa_enabled = false;
+  std::optional<double> cpa_nm;
+  bool tcpa_enabled = false;
+  std::optional<double> tcpa_min;
+  bool range_enabled = false;
+  std::optional<double> range_nm;
+  bool target_dialog_enabled = false;
+  bool moored_suppressed = false;
+};
 // UI receives owned values and explicit human-command callbacks. The service
 // implementation remains inside the OpenCPN integration boundary.
 struct NavigationActions {
   // Copies only; every action returns fresh readback and never caches preferences.
   std::function<ChartPresentationState()> chart_presentation;
+  std::function<AlarmPreferences()> alarm_preferences;
   std::function<ChartPresentationResult(bool)> set_chart_ais, set_chart_enc_text,
       set_chart_soundings;
   std::function<ChartPresentationResult(ChartOrientation)> set_chart_orientation;
@@ -154,7 +168,8 @@ struct NavigationActions {
       finish_route_named;
   std::function<void(Coordinate)> object_info_at;
   std::function<void()> legacy_settings, connections_settings,
-      legacy_route_manager, plugin_settings;
+      legacy_route_manager, plugin_settings, ais_alarm_settings,
+      alarm_sound_settings;
   std::function<CommandResult(double)> start_anchor;
   std::function<CommandResult(const std::string &)> clear_anchor;
 };
