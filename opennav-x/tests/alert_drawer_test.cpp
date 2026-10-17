@@ -48,6 +48,7 @@ public:
              p.c.secondary);
     });
     ui::AlertDrawerActions actions;
+    actions.settings = [this] { ++settings_opened_; };
     actions.inspect = [this](application::AlertArea area) {
       ++inspected_;
       last_area_ = area;
@@ -153,8 +154,12 @@ private:
         Feed();
         break;
       case 1:
-        Check(requested_ == 0 && inspected_ == 0,
-              "paint never acknowledges or inspects");
+        Check(requested_ == 0 && inspected_ == 0 && settings_opened_ == 0,
+              "paint never acknowledges, inspects or opens settings");
+        Check(Button("Alarms & warnings") &&
+                  Button("Alarms & warnings")->IsEnabled() &&
+                  Button("Alarms & warnings")->GetSize().y >= 48,
+              "alarm settings has a touch-sized entry above active alerts");
         Check(Button("Acknowledge")->IsEnabled(),
               "new critical episode can be acknowledged");
         Check(Button("View source health")->GetSize().y == 48,
@@ -200,6 +205,8 @@ private:
         Check(Button("Acknowledge") == nullptr, "recovered condition removed");
         Check(Find<wxPanel>("No current alerts") != nullptr,
               "honest empty state");
+        Check(Button("Alarms & warnings") && Button("Alarms & warnings")->IsEnabled(),
+              "alarm settings remains available with no active alerts");
         Capture("alerts-empty-day");
         empty_ = false;
         alert_.episode = 2;
@@ -234,6 +241,19 @@ private:
       case 10:
         Check(inspected_ == 2 && last_area_ == application::AlertArea::Ais,
               "AIS inspect uses copied area");
+        Click("Alarms & warnings");
+        Click("Alarms & warnings");
+        break;
+      case 11:
+        Check(settings_opened_ == 1 && requested_ == 2 && inspected_ == 2,
+              "repeated settings tap opens once without acknowledging or inspecting");
+        replay_ = true;
+        Feed();
+        Click("Alarms & warnings");
+        break;
+      case 12:
+        Check(settings_opened_ == 2 && requested_ == 2 && inspected_ == 2,
+              "read-only rules remain discoverable during replay without mutating alerts");
         Click("Close");
         Check(!drawer_->IsShown(),
               "close hides sheet without clearing condition");
@@ -273,7 +293,7 @@ private:
   std::vector<std::string> names_;
   std::string last_id_;
   std::uint64_t last_episode_ = 0;
-  int step_ = 0, checks_ = 0, requested_ = 0, inspected_ = 0;
+  int step_ = 0, checks_ = 0, requested_ = 0, inspected_ = 0, settings_opened_ = 0;
   bool failed_ = false, replay_ = false, empty_ = false;
 };
 } // namespace

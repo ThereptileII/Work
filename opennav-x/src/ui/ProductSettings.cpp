@@ -67,12 +67,14 @@ void ProductPanel::AlarmSettings() {
   Heading("Alarms & warnings", "Your current settings and automatic warnings");
   const bool live = !state_.vessel.replayed && !state_.vessel.simulated;
   if (state_.vessel.replayed)
-    Text("REPLAY: AIS and energy settings belong to the current installation, "
-         "not this recording. Watch status and alerts are historical. "
+    Text("REPLAY: AIS settings belong to the current installation. Energy "
+         "reserve and sensor timing come from the recording. Current "
+         "anchor-watch status is unavailable. "
          "Return to LIVE to change settings.");
   else if (state_.vessel.simulated)
     Text("DEMO: AIS and energy settings belong to the current installation. "
-         "Vessel data are simulated. Return to LIVE to change settings.");
+         "Vessel data and energy predictions use separate test assumptions. "
+         "Return to LIVE to change settings.");
   Action("Review active alerts", actions_.alerts);
   // Action defers callbacks. Check the current mode again after a queued tap,
   // even if the button was enabled when this page was built.
@@ -111,18 +113,26 @@ void ProductPanel::AlarmSettings() {
 
   Heading("Anchor watch", "Armed separately from other warnings");
   LiveText([](const auto &s) -> wxString {
+    if (s.vessel.replayed || s.vessel.simulated || s.anchor.source.empty() ||
+        s.anchor.observed_at == vessel::Time{} || s.anchor.observed_at > s.now)
+      return "Current anchor-watch status unavailable.";
     const auto watch = application::PresentAnchor(s.anchor, s.vessel, s.now);
-    if (!watch.active) return "Watch not armed. Start it explicitly in Anchor watch.";
+    if (!watch.active)
+      return s.anchor.state.empty() ? wxString("Anchor-watch status unavailable.")
+                                    : W(s.anchor.state);
     return wxString(watch.alarm ? "ANCHOR ALARM" : "Watch armed") +
         (watch.radius_m ? " / " + N(*watch.radius_m) + " m / Alarm " +
             (watch.inner_alarm ? "inside radius" : "outside radius")
                        : wxString(" / Radius unavailable"));
   });
+  Text("Start a watch explicitly and choose its radius. New watches propose "
+       "50 m; an existing watch keeps its own radius.");
   settings_link("Anchor watch", actions_.anchor_watch);
 
   Heading("Energy reserve", "Advisory arrival estimate");
   LiveText([](const auto &s) {
-    return "Configured reserve: " + Configured(s.settings.energy.battery.reserve_soc_percent, "%");
+    return wxString(s.vessel.replayed ? "Recorded reserve: " : "Configured reserve: ") +
+        Configured(s.settings.energy.battery.reserve_soc_percent, "%");
   });
   Text("Warns when a valid route estimate falls below your reserve or runs "
        "out of energy. A new profile has no reserve set; this is not a "

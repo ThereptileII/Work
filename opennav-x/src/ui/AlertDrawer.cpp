@@ -62,6 +62,24 @@ void XNavAlertDrawer::Update(const std::vector<application::Alert> &alerts,
 void XNavAlertDrawer::Rebuild() {
   const int scroll = body_->GetViewStart().y;
   ClearBody();
+  // Configuration remains discoverable even when no condition is active.
+  // Opening the overview never acknowledges or silences an alarm.
+  auto *settings = new XNavButton(body_, wxID_ANY, "Alarms & warnings",
+                                  "See automatic warnings and adjust alarm settings");
+  settings->SetLightMode(light_);
+  settings->SetMinSize(FromDIP(wxSize(300, 48)));
+  settings->Enable(bool(actions_.settings));
+  settings->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    if (queued_ || !actions_.settings)
+      return;
+    queued_ = true;
+    CallAfter([this] {
+      queued_ = false;
+      if (actions_.settings)
+        actions_.settings();
+    });
+  });
+  content_->Add(settings, 0, wxEXPAND | wxBOTTOM, FromDIP(16));
   const auto visual = [&](int height, const wxString &name, auto paint) {
     auto *panel = new wxPanel(body_, wxID_ANY);
     panel->SetBackgroundColour(Colour(Theme(light_).background));

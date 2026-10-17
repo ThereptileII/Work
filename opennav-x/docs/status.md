@@ -1,4 +1,21 @@
-# SKAGER status — 2026-10-16
+# SKAGER status — 2026-10-17
+
+## Alarm settings discoverability — local source changes only
+
+SCRUM-374 separates active notifications from **Alarms & warnings**, available
+from the bell drawer even when empty and first under Settings → Navigation.
+The overview explains automatic warnings, reads the current OpenCPN AIS
+thresholds, and links to the existing AIS, sound, anchor, energy-reserve and
+sensor-freshness settings. It does not introduce new alarm types, defaults,
+suppression, acknowledgement semantics or control output. Chart safety depth
+is explicitly distinguished from an unimplemented measured-depth alarm.
+See [operational alarm settings](operational-alerts.md#finding-and-adjusting-alarms)
+and the [presentation boundary](alert-presentation-contract.md).
+
+Source review and test-source updates only, under the user's no-build/no-test
+instruction. Native interaction, readback and replay qualification remain
+pending. No CI, deployment or boat operation was performed; the installed
+candidate and its acceptance state below are unchanged.
 
 ## Online AIS identity and age — local source changes only
 

@@ -499,6 +499,20 @@ private:
         Check(closed_==3 && !panel_->IsShown(),"close hides only preferences");
         display_.scale_percent=100;
         panel_->SetDisplayPreferences(display_);
+        panel_->Select(ui::SettingsSection::Navigation);
+        Feed();
+        {
+          auto *alarms=Find(panel_,"Alarms & warnings");
+          Check(alarms && alarms->IsEnabled() &&
+                    ScrollBody()->GetScreenRect().Contains(alarms->GetScreenRect()),
+                "alarm settings visible without scrolling Navigation preferences");
+          const auto previous=navigations_;
+          Click("Alarms & warnings");wxTheApp->Yield(true);
+          Check(navigations_==previous+1 && last_page_==ui::ProductPage::AlarmSettings,
+                "alarm entry opens settings overview rather than active notifications");
+          Check(saves_==2 && display_saves_==2,
+                "opening alarm settings never changes configured values");
+        }
         panel_->Select(ui::SettingsSection::Vessel);
         Feed();
         break;

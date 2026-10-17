@@ -360,11 +360,11 @@ void XNavSettingsDrawer::Build() {
       VesselForm();
       break;
     case SettingsSection::Navigation:
-      Page("Navigation preferences","Units, chart orientation and navigation alarms",XNavIcon::Compass,ProductPage::NavigationSettings);
+      Page("Alarms & warnings","Automatic warnings and adjustable settings",XNavIcon::Bell,ProductPage::AlarmSettings);
+      Page("Navigation preferences","Units and chart orientation",XNavIcon::Compass,ProductPage::NavigationSettings);
       Link("Chart presentation","Layers, orientation and chart palette",XNavIcon::Layers,actions_.chart_presentation);
       Page("Weather (GRIBstream)","Forecast wind, chart wind layer and provider token",XNavIcon::Compass,ProductPage::Weather);
       Link("Charts & coverage","Configured OpenCPN charts and connections",XNavIcon::Chart,actions_.advanced);
-      Page("Alarms & thresholds","Inspect current navigation conditions",XNavIcon::Bell,ProductPage::Alerts);
       Page("Passage library","Saved OpenCPN routes",XNavIcon::Route,ProductPage::Routes);
       Page("Waypoints","Saved places and chart marks",XNavIcon::Pin,ProductPage::Waypoints);
       break;

@@ -6,6 +6,7 @@ namespace opennav::ui {
 struct AlertDrawerActions {
   std::function<void(application::AlertArea)> inspect;
   std::function<void(const std::string &, std::uint64_t)> acknowledge;
+  std::function<void()> settings;
 };
 // Owns copied presentation episodes only. Acknowledgement never controls
 // equipment, clears a condition or acknowledges an upstream OpenCPN alarm.

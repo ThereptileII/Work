@@ -202,7 +202,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   alert_label_->SetFont(UiFont(*alert_pane_, 15, true));
   alert_label_->SetMinSize(wxSize(0, -1));
   alert_row->Add(alert_label_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
-  alert_button_ = Button(top, "Alerts", "Inspect active alerts", [this] { ShowProduct(ProductPage::Alerts); });
+  alert_button_ = Button(top, "Alerts", "Active alerts and alarm settings", [this] { ShowProduct(ProductPage::Alerts); });
   alert_button_->SetMinSize(frame_.FromDIP(wxSize(44, 44)));
   alert_button_->SetIcon(XNavIcon::Bell); alert_button_->SetIconOnly();
 
@@ -445,6 +445,19 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.commissioning = actions_.commissioning;
   product_actions.navigation = actions_.navigation;
   product_actions.navigation.legacy_settings=[this]{ShowNavigation();if(actions_.navigation.legacy_settings)actions_.navigation.legacy_settings();};
+  const std::weak_ptr<int> alarm_lifetime = context_lifetime_;
+  if (actions_.navigation.ais_alarm_settings)
+    product_actions.navigation.ais_alarm_settings=[this, alarm_lifetime] {
+      if (alarm_lifetime.expired() || state_.simulated || state_.replayed) return;
+      ShowNavigation();
+      actions_.navigation.ais_alarm_settings();
+    };
+  if (actions_.navigation.alarm_sound_settings)
+    product_actions.navigation.alarm_sound_settings=[this, alarm_lifetime] {
+      if (alarm_lifetime.expired() || state_.simulated || state_.replayed) return;
+      ShowNavigation();
+      actions_.navigation.alarm_sound_settings();
+    };
   product_actions.navigation.plugin_settings=[this]{ShowNavigation();if(actions_.navigation.plugin_settings)actions_.navigation.plugin_settings();};
   product_actions.navigation.view_ais = [this](int mmsi) {
     if (state_.simulated || state_.replayed || !actions_.navigation.view_ais ||
@@ -1058,6 +1071,8 @@ void Shell::Tick() {
     }
     pilot_summary_->SetSummary(pilot_mode,pilot_detail);
     p.settings = config;
+    if (actions_.navigation.alarm_preferences)
+      p.alarm_preferences = actions_.navigation.alarm_preferences();
     if(actions_.vessel_name)p.vessel_name=actions_.vessel_name();
     if(actions_.chart_safety_depth_m)p.chart_safety_depth_m=actions_.chart_safety_depth_m();
     if (pilot_drawer_ && pilot_drawer_->IsShown()) {
@@ -1755,6 +1770,10 @@ void Shell::ShowAlerts() {
   ShowNavigation();
   if(!alert_drawer_) {
     AlertDrawerActions callbacks;
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    callbacks.settings=[this, lifetime] {
+      if (!lifetime.expired()) ShowProduct(ProductPage::AlarmSettings);
+    };
     callbacks.acknowledge=[this](const std::string &id,std::uint64_t episode) {
       alerts_.Acknowledge(id,episode);Tick();
     };

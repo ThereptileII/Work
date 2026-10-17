@@ -1,5 +1,44 @@
 # Beta operational alerts
 
+## Finding and adjusting alarms
+
+SCRUM-374 (2026-10-17, source only) adds **Alarms & warnings** in two places:
+
+- Bell → Alarms & warnings. The entry remains available with no active alerts.
+- Settings → Navigation → Alarms & warnings, as the first navigation setting.
+
+This overview is separate from **Active alerts**. Viewing either changes no
+settings and acknowledges nothing. The overview shows actual profile values,
+not prototype examples or presumed factory settings.
+
+| Condition | Current behavior | Adjustment path |
+| --- | --- | --- |
+| AIS close approach | OpenCPN owns CPA/TCPA and alarm eligibility. The overview copies the current enabled flags, thresholds, range limit, target-dialog setting and effective moored-target suppression. Invalid numeric preferences show unavailable. Online AIS is display-only. | AIS alarm settings opens OpenCPN Ships → AIS Targets. Alarm sounds opens User Interface → Sounds. |
+| Anchor watch | Requires explicit arming. Existing watch radius is retained; a new SKAGER watch proposes 50 m with adjustment before starting. | Anchor watch. Opening the view does not arm it. |
+| Energy reserve / shortfall | Automatic advisory/warning only with valid route, battery and consumption inputs. Capacity and reserve start unconfigured; no default reserve is invented. | Energy reserve settings, using the existing validated energy configuration. |
+| Missing/stale sensor | Automatic after usable data has been observed, or an explicit invalid observation. Generic instrument freshness starts at aging 2 s / stale 5 s; configured sources may differ. | Sensor settings → instrument → Configure freshness. This changes data validity and dependent advice, not just notification timing. GPS/route freshness is not editable here. |
+| Autopilot feedback / command failure | Automatic fixed safety rules. Missing engaged feedback or an unconfirmed command is critical; other rejected requests remain explicit. | Inspect the pilot/connection. No alarm-delay or mute switch is added. |
+
+There are currently no independent configurable measured shallow-depth,
+high-wind, high-motor-temperature or low-battery-voltage threshold alarms.
+Chart safety depth controls chart presentation; it does not enable a measured
+depth alarm. Do not infer that an empty alert list means these conditions are
+being monitored. Acknowledgement neither resolves a condition nor silences
+OpenCPN's own alarms.
+
+During replay the overview distinguishes current-installation AIS preferences
+from recorded energy assumptions and source timing. Current anchor status is
+unavailable; mutation entry points remain disabled. Missing callbacks are
+disabled, not replaced by inert controls.
+
+No execution evidence is claimed for this source-only change. Updated fixture
+sources cover settings access with empty/live/replay alerts, repeated taps,
+the Navigation settings destination, and replay guards. When testing is
+authorized, run those focused fixtures and verify real profile readback,
+the targeted upstream tabs, returning from settings, and native 1280×800 layout.
+
+## Existing alert semantics
+
 `application::AlertCenter` consumes owned Vessel Data, route-energy, copied AIS,
 anchor-watch and pilot views. It has no adapter/command reference. The shell
 observes the same coherent tick used for the displayed advice; retained sensor

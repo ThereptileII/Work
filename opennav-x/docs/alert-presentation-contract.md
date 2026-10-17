@@ -23,6 +23,25 @@ Integration source inspection: `src/integration/NavigationObjects.cpp` copies
 anchor-watch observations and adapter state are unchanged. No upstream hook or
 physical control boundary changes are required by this UI migration.
 
+SCRUM-374 adds a read-only alarm-settings overview, distinct from active
+notifications. `NavigationActions::alarm_preferences` copies current OpenCPN
+AIS flags and finite, nonnegative optional threshold values on the application
+thread. Off-thread observation is unavailable. The view owns no upstream
+pointers and reading it neither updates navigation nor changes preferences.
+The effective moored suppression includes OpenCPN's hide-moored setting because
+the pinned decoder uses both flags for alarm suppression.
+
+Explicit AIS and sound-settings actions open the pinned OpenCPN options pages
+(Ships/AIS Targets 3/1 and User Interface/Sounds 4/1). The previous initial-page
+selection is restored after opening, and the normal upstream dialog owns edits
+and persistence. Replay guards cover both actions; the native overview also
+rechecks mode before deferred mutation entry. The bell drawer's overview link
+remains usable during replay for explanation only. No upstream patch or new
+alarm configuration store is needed. See [available settings](operational-alerts.md#finding-and-adjusting-alarms).
+
+The 2026-10-17 source-only increment has no new execution/visual evidence.
+Existing acceptance evidence must not be attributed to these changes.
+
 The prototype fixture is a separate, non-installed `alert_drawer_test` binary.
 The normal product has no synthetic alert injection interface. Deterministic
 fault episodes are tested offline and never aboard.
