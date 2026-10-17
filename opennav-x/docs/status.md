@@ -1,5 +1,29 @@
 # SKAGER status — 2026-10-17
 
+## Boat reconnected — startup crash blocks acceptance
+
+The authorized 17 October check authenticated the installed `9feae59c` /
+`0.4.0-beta2.5` executable and all nine retained runtime files. The desktop is
+available and remote access remains healthy. Resuming the interrupted RTL-SDR
+receipt correctly refuses because the user profile changed before this session;
+the original DLL is already restored and the non-profile protected trees match.
+Newer user settings/navigation data were preserved, not replaced to satisfy an
+old hash. A fresh reviewed baseline is still required.
+
+Actual earlier user-session evidence now shows the rebuilt builtin plugins,
+o-charts, real sensor data, Online AIS and Intel OpenGL working, followed by
+normal shutdowns. However, the first start crashed at **11:16:19 UTC**. Exact
+dump/disassembly analysis locates serial navigation event delivery; the last
+AIS-VD compatibility log line does not establish plugin causation. A concrete
+shared-list locking defect is identified as a candidate mechanism, with pointer
+lifetime still requiring investigation. This is
+[SCRUM-376](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-376),
+not a passing stability gate. SCRUM-17 remains open.
+
+No application relaunch, build, deployment, profile modification or physical
+command was performed in this check. The later source-only batch remains
+unbuilt. [Exact evidence and limits](evidence/scrum17-9fe-boat-resume-20261017/README.md).
+
 ## Chart tools and first-start presentation — local source changes only
 
 SCRUM-375 replaces the measurement-only yellow label with SKAGER presentation,
@@ -67,7 +91,7 @@ scope; AutoTrack's automatic heading loop is not copied. See
 There is no new build, execution result, firmware upload or boat acceptance for
 this work. Original release/boat evidence below remains unchanged.
 
-## Replacement candidate — native Staging passed; installed, boat startup pending
+## Replacement candidate — native Staging passed; installed, boat acceptance blocked
 
 The user made the desktop available on 16 October. The same installed `854078a5`
 process then provided fresh real chart content, initialized o-charts, native Intel
@@ -130,13 +154,15 @@ hashes were unchanged, and previous generations remained available.
 
 The boat unexpectedly rebooted at 16:40:25 UTC before any new application launch.
 The exact stock RTL-SDR DLL had already been moved back, but the final restoration
-receipt was interrupted. Reconnected inspection verifies its original bytes and
-the durable restoration intent. Continuation safely refuses until the user logs
-into the Windows desktop again. Kernel-Power 41 / EventLog 6008 establish an
+receipt was interrupted. Reconnected inspection verified its original bytes and
+the durable restoration intent. The 16 October continuation safely refused while
+the interactive Windows desktop was unavailable. Kernel-Power 41 / EventLog 6008 establish an
 unexpected shutdown, not its cause; no deployment command requested a reboot.
-Finish that existing journal, bind fresh read-only commissioning to the installed
-generation, then perform the bounded ordinary startup check. Do not reinstall or
-rebuild merely to resume it.
+The 17 October resumption above supersedes the desktop-only blocker: actual user
+profile changes prevent the historical preservation assertion, and a captured
+startup crash now blocks acceptance. Preserve the journal and current user data;
+review a new baseline rather than overwriting either. Do not reinstall or rebuild
+merely to repeat already captured evidence.
 [Installation and interrupted recovery evidence](evidence/scrum17-9fe-install-20261016/README.md).
 
 Native CI and cold file identities do not establish ordinary boat startup,
