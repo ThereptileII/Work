@@ -1,0 +1,61 @@
+diff --git a/gui/src/ocpn_app.cpp b/gui/src/ocpn_app.cpp
+--- a/gui/src/ocpn_app.cpp
++++ b/gui/src/ocpn_app.cpp
+@@ -25,5 +25,6 @@
+ #ifdef OPENNAV_X
++#include "application/Brand.h"
+ #include "integration/OpenCPNIntegration.h"
+ #include "integration/InstallerSelfTest.h"
+ #include "integration/UpdateStartupReceipt.h"
+ #endif
+@@ -1430,6 +1431,14 @@ bool MyApp::OnInit() {
+ #ifndef __ANDROID__
+   //  Now that locale is established, possibly run the startup wizard.
++#ifdef OPENNAV_X
++  // SKAGER schedules its existing Boat Setup after deferred initialization.
++  // Do not run the stock wizard automatically in front of it. This does not
++  // complete either setup or configure units, connections or chart folders.
++  // Explicit stock-wizard requests and Legacy/Safe startup remain unchanged.
++  if (g_config_wizard || (b_initial_load && !opennav::IsXNav())) {
++#else
+   if (g_config_wizard || b_initial_load) {
++#endif
+     FirstUseWizImpl wiz(gFrame, pConfig);
+     auto res = wiz.Run();
+     if (res) {
+@@ -1640,6 +1649,11 @@ bool MyApp::OnInit() {
+   wxString myframe_window_title =
+       wxString(wxT("OpenCPN ") + short_version_name);
+ 
++#ifdef OPENNAV_X
++  // SelectMode has resolved the profile and recovery mode before this point.
++  if (opennav::IsXNav())
++    myframe_window_title = opennav::application::brand::WindowTitle;
++#endif
+   if (g_bportable) {
+     myframe_window_title += _(" -- [Portable(-p) executing from ");
+     myframe_window_title += g_Platform->GetHomeDir();
+diff --git a/gui/src/ocpn_frame.cpp b/gui/src/ocpn_frame.cpp
+--- a/gui/src/ocpn_frame.cpp
++++ b/gui/src/ocpn_frame.cpp
+@@ -25,6 +25,7 @@
+ #ifdef OPENNAV_X
+ #include "integration/OpenCPNIntegration.h"
++#include "ui/StartupNavigationNotice.h"
+ #endif
+ #include "config.h"
+ 
+ #ifdef __MINGW32__
+@@ -518,6 +519,12 @@
+ bool ShowNavWarning() {
++#if defined(OPENNAV_X) && !defined(__ANDROID__)
++  // Presentation only: the original caller retains the version/first-run
++  // trigger, explicit cancellation and updater waiting/accepted receipts.
++  if (opennav::IsXNav())
++    return opennav::ui::ShowStartupNavigationNotice(gFrame);
++#endif
+   wxString msg(
+       _("\n\
+ OpenCPN is distributed in the hope that it will be useful, \
+ but WITHOUT ANY WARRANTY; without even the implied \
+ warranty of MERCHANTABILITY or FITNESS FOR A \
