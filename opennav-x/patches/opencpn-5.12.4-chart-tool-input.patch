@@ -1,0 +1,136 @@
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -3252,6 +3252,10 @@
+         case 27:
++#ifdef OPENNAV_X
++          // Placement Escape must not fall through to native FinishRoute.
++          if (opennav::CancelWaypointPlacement(*this)) break;
++#endif
+           // Generic break
+           if (m_bMeasure_Active) {
+             CancelMeasureRoute();
+ 
+             SetCursor(*pCursorArrow);
+@@ -7656,6 +7660,15 @@
+   if (SendMouseEventToPlugins(event))
+     return (true);  // PlugIn did something, and does not want the canvas to
+                     // do anything else
++#ifdef OPENNAV_X
++  // Do not let an earlier delayed release inherit a later placement press.
++  // Discard it before that new press can replace the classifier's token.
++  if (event.LeftDown() && singleClickEventIsValid &&
++      opennav::WaypointPlacementToken(*this)) {
++    m_DoubleClickTimer->Stop();
++    singleClickEventIsValid = false;
++  }
++#endif
+ 
+   // Capture LeftUp's and time them, unless it already came from the timer.
+ 
+@@ -8230,6 +8243,8 @@
+   Refresh(false);  // needed for MSW, not GTK  Why??
+ }
++bool panleftIsDown;
++
+ #ifdef OPENNAV_X
+ namespace {
+ // Pointer-down state for XNav primary selection. Kept out of ChartCanvas so
+ // the shared header layout is identical for every translation unit.
+@@ -8238,6 +8253,7 @@
+   wxPoint at;
+   bool valid = false;
+   bool tap = false;  // Pointer LeftUp still eligible after stock handling.
++  std::uint64_t waypoint_token = 0;  // The mode that owned this press, not release.
+ };
+ XNavPress g_xnav_press;
+ }  // namespace
+@@ -8248,10 +8264,20 @@
+ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
+-  // For now just bail out completely if the point clicked is not on the chart
+-  if (std::isnan(m_cursor_lat)) return false;
+ #ifdef OPENNAV_X
+   if (opennav::IsXNav()) {
++    auto waypoint_token = opennav::WaypointPlacementToken(*this);
++    if (event.RightDown() && opennav::CancelWaypointPlacement(*this)) {
++      g_xnav_press.valid = g_xnav_press.tap = false;
++      return true;  // Cancel only; do not open a native/context menu.
++    }
++    if (waypoint_token && (m_routeState || m_bMeasure_Active ||
++        m_bAppendingRoute || m_bRouteEditing || m_bMarkEditing ||
++        m_pRoutePointEditTarget || m_bRoutePoinDragging)) {
++      opennav::CancelWaypointPlacement(*this);
++      waypoint_token = 0;
++    }
+     if (event.LeftDown()) {
+       g_xnav_press = {this, event.GetPosition(), true};
++      g_xnav_press.waypoint_token = waypoint_token;
+     } else if (event.Dragging() && g_xnav_press.valid) {
+       // Touch/pointer slop: movement beyond it is a pan, never a selection.
+       const wxPoint d = event.GetPosition() - g_xnav_press.at;
+@@ -8263,6 +8289,31 @@
+                          !m_routeState && !m_bMeasure_Active &&
+                          !m_bRoutePoinDragging;
+       g_xnav_press.valid = false;
++      if (waypoint_token || (g_xnav_press.canvas == this &&
++                             g_xnav_press.waypoint_token)) {
++        const auto pressed_token = g_xnav_press.waypoint_token;
++        const double dx = double(event.GetX()) - g_xnav_press.at.x;
++        const double dy = double(event.GetY()) - g_xnav_press.at.y;
++        const int slop = FromDIP(g_btouch ? 12 : 5);
++        const bool place = g_xnav_press.tap && pressed_token &&
++                           pressed_token == waypoint_token &&
++                           GetClientRect().Contains(event.GetPosition()) &&
++                           dx * dx + dy * dy <= double(slop) * slop &&
++                           !event.ShiftDown() && !event.ControlDown() &&
++                           !event.AltDown() && !event.MetaDown();
++        g_xnav_press = {};
++        leftIsDown = panleftIsDown = false;
++        m_bChartDragging = false;
++        if (place) {
++          double latitude, longitude;
++          GetCanvasPixPoint(event.GetX() * m_displayScale,
++                            event.GetY() * m_displayScale, latitude, longitude);
++          opennav::AcceptWaypointTap(*this, latitude, longitude, pressed_token);
++        }
++        // Owned releases never select/edit a native object or recenter, even
++        // if canceled/rearmed, rejected, outside the chart, or after a pan.
++        return true;
++      }
+       // Touch selects points for dragging on LeftUp. Select first unless a
+       // point is already in its drag-handle edit state, so a tap opens the
+       // card without leaving the point stuck in OpenCPN edit mode.
+@@ -8281,8 +8332,24 @@
+         }
+       }
+     }
++    if (waypoint_token || (g_xnav_press.canvas == this &&
++                           g_xnav_press.waypoint_token)) {
++      if (event.LeftDClick()) {
++        g_xnav_press.valid = g_xnav_press.tap = false;
++        // Match the native double-click suppression of the following LeftUp.
++        m_DoubleClickTimer->Start();
++        singleClickEventIsValid = false;
++        return true;
++      }
++      // Native LeftDown can select an existing waypoint for drag editing.
++      // Let only the canvas handler see these presses/drags, retaining pan.
++      if (event.LeftDown() || event.Dragging()) return false;
++    }
+   }
+ #endif
++  // Ordinary object processing still requires a valid chart coordinate.
++  // Placement handled its release above, so an invalid tap cannot recenter.
++  if (std::isnan(m_cursor_lat)) return false;
+ 
+   //          Mouse Clicks
+   bool ret = false;  // return true if processed
+@@ -10022,8 +10089,6 @@
+   return ret;
+ }
+ 
+-bool panleftIsDown;
+-
+ bool ChartCanvas::MouseEventProcessCanvas(wxMouseEvent &event) {
+   // Skip all mouse processing if shift is held.
+   // This allows plugins to implement shift+drag behaviors.

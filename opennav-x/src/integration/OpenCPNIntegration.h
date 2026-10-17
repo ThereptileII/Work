@@ -1,5 +1,6 @@
 #pragma once
 #include "vessel/RouteProgress.h"
+#include <cstdint>
 
 class wxCmdLineParser;
 class wxFileConfig;
@@ -27,6 +28,12 @@ bool ShowNavigationObjectCard(const std::string& id,bool route);
 bool PrepareRouteFinish(ChartCanvas &canvas);
 bool ShowRouteContext(const std::string &id, bool hover = false);
 bool ShowChartContext(double latitude, double longitude);
+// GUI-thread, current primary-canvas identity only; the token does not grant
+// placement readiness. No canvas pointer is retained by these hooks.
+std::uint64_t WaypointPlacementToken(ChartCanvas &canvas);
+bool AcceptWaypointTap(ChartCanvas &canvas, double latitude, double longitude,
+                       std::uint64_t token);
+bool CancelWaypointPlacement(ChartCanvas &canvas);
 // Owned native presentation of the upstream's complete chart query result.
 // False preserves the normal Legacy/Safe object-query path.
 bool ShowChartInformation(const wxString &html, double latitude, double longitude);

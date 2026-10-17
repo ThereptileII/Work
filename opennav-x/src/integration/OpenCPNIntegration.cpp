@@ -1421,6 +1421,33 @@ bool ShowChartContext(double latitude, double longitude) {
   });
   return true;
 }
+std::uint64_t WaypointPlacementToken(ChartCanvas &canvas) {
+  if (!wxIsMainThread() || !IsXNav() || !host || !shell || restart ||
+      host->GetPrimaryCanvas() != &canvas) return 0;
+  return shell->WaypointPlacementToken();
+}
+bool AcceptWaypointTap(ChartCanvas &canvas, double latitude, double longitude,
+                       std::uint64_t token) {
+  if (!token || WaypointPlacementToken(canvas) != token ||
+      (commissioning && commissioning->Replaying()) ||
+      selected_navigation.simulated || selected_navigation.replayed ||
+      shell->HasTransientSurface() || canvas.m_routeState ||
+      canvas.IsMeasureActive() || canvas.m_bAppendingRoute ||
+      canvas.isRouteEditing() || canvas.isMarkEditing() ||
+      !std::isfinite(latitude) || !std::isfinite(longitude) ||
+      std::abs(latitude) > 90) return false;
+  longitude = std::remainder(longitude, 360.0);
+  // Shell consumes the token synchronously, then owns any deferred name sheet.
+  // No native pointer or later viewport position crosses that boundary.
+  return shell->AcceptWaypointTap({latitude, longitude}, token);
+}
+bool CancelWaypointPlacement(ChartCanvas &canvas) {
+  if (!wxIsMainThread() || !IsXNav() || !host || !shell || restart ||
+      host->GetPrimaryCanvas() != &canvas) return false;
+  // Cancellation remains possible when a sheet is pending or readiness was
+  // lost. It never invokes the native route/measure cancellation paths.
+  return shell->CancelWaypointPlacement();
+}
 bool ShowChartInformation(const wxString &html, double latitude, double longitude) {
   if (!IsXNav() || !shell || !host || restart) return false;
   if (std::isfinite(longitude)) longitude = std::remainder(longitude, 360.0);
