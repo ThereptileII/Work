@@ -15,4 +15,8 @@ bool LoadQualifiedOChartsPresentation(
 // retained after unloading. A query never initializes a renderer.
 std::string OChartsPresentationStatus();
 OChartsPointStyle ReadOChartsPointStyle();
+// Re-resolves the private export only while the exact verified module remains
+// loaded. A disabled adapter stages copied scale data until its next Init;
+// no callback or renderer pointer is retained.
+bool ConfigureOChartsDisplay(bool very_light, int percent);
 }

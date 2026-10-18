@@ -66,7 +66,7 @@ int ChartRouteLabelOrdinal(ChartCanvas &canvas, RoutePoint &point, bool pinned_i
   return RoutePointOrdinal(canvas, point, pinned_icon, true);
 }
 int ChartRouteWaypointExtent(ChartCanvas &canvas) {
-  const double scale = canvas.FromDIP(100) / 100.0 * g_MarkScaleFactorExp;
+  const double scale = canvas.FromDIP(100) / 100.0 * g_MarkScaleFactorExp * ChartDisplayScale();
   return std::isfinite(scale) && scale >= .25 && scale <= 8
       ? static_cast<int>(std::ceil(11 * scale)) : 0;
 }
@@ -83,7 +83,7 @@ bool GenericWaypointIcon(const wxString &icon) {
          (!g_default_routepoint_icon.empty() && icon == g_default_routepoint_icon);
 }
 double MarkerScale(ChartCanvas &canvas) {
-  const double scale = canvas.FromDIP(100) / 100.0 * g_MarkScaleFactorExp;
+  const double scale = canvas.FromDIP(100) / 100.0 * g_MarkScaleFactorExp * ChartDisplayScale();
   return std::isfinite(scale) && scale >= .25 && scale <= 8 ? scale : 0;
 }
 ui::LightMode CanvasMode(ChartCanvas &canvas) {
@@ -256,7 +256,7 @@ bool ChartWaypointMarkerOwnsName(int marker) {
 static bool StandaloneLabel(ChartCanvas &canvas, RoutePoint &point, double scale,
                             wxFont &font, wxString &text) {
   if (!point.m_bShowName || point.GetName().empty()) return false;
-  font = ui::UiFontWeight(canvas, 10, 650);
+  font = ScaleChartFont(ui::UiFontWeight(canvas, 10, 650));
   font.SetFractionalPointSize(font.GetFractionalPointSize() * g_MarkScaleFactorExp);
   text = point.GetName();
   (void)scale;
@@ -295,7 +295,7 @@ bool DrawChartWaypointMarker(ocpnDC &dc, ChartCanvas &canvas, RoutePoint *point,
   const auto label = paint.ordinal ? wxString::Format("%02d", paint.ordinal) : wxString();
   // Prototype ordinal: 8px/650, centered at y+.5. Honors the mark-size
   // preference independently of display DPI.
-  auto ordinal_font = ui::UiFontWeight(canvas, 8, 650);
+  auto ordinal_font = ScaleChartFont(ui::UiFontWeight(canvas, 8, 650));
   ordinal_font.SetFractionalPointSize(ordinal_font.GetFractionalPointSize()*g_MarkScaleFactorExp);
   wxFont name_font;
   wxString name;

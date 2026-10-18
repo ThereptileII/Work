@@ -13,7 +13,8 @@ inline wxFont ChartSoundingFont(double sounding_scale, double content_scale) {
       if (wxFontEnumerator::IsValidFacename(candidate)) return wxString(candidate);
     return wxString("Arial");
   }();
-  if (!std::isfinite(sounding_scale) || sounding_scale < 0.5 || sounding_scale > 2.0)
+  // Native sounding preference (up to 2x) times SKAGER display (up to 1.5x).
+  if (!std::isfinite(sounding_scale) || sounding_scale < 0.5 || sounding_scale > 3.0)
     sounding_scale = 1.0;
   if (!std::isfinite(content_scale) || content_scale <= 0.0)
     content_scale = 1.0;

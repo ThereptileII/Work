@@ -23,8 +23,9 @@ bool Project(ChartCanvas &canvas, ViewPort &vp, const ais::ChartTarget &t,
   if (!vp.IsValid() || !canvas.GetCanvasPointPixVP(vp,t.latitude,t.longitude,&point))
     return false;
   // Upstream may return true with INVALID_COORD; clip before arithmetic/drawing.
-  return point.x>=-32 && point.y>=-32 && point.x<=vp.pix_width+32 &&
-         point.y<=vp.pix_height+32;
+  const int margin=ChartDisplayPixels(canvas,32);
+  return point.x>=-margin && point.y>=-margin && point.x<=vp.pix_width+margin &&
+         point.y<=vp.pix_height+margin;
 }
 std::optional<double> Direction(ChartCanvas &canvas, ViewPort &vp,
                                 const ais::ChartTarget &t, wxPoint point) {
@@ -68,7 +69,7 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
     colors.selected=ChartCanvasInk(mode,colors.selected);
   }
   const auto pen=dc.GetPen();const auto brush=dc.GetBrush();
-  const double scale=canvas.FromDIP(100)/100.0;
+  const double scale=canvas.FromDIP(100)/100.0*ChartDisplayScale();
   const auto now=vessel::Clock::now();
   std::vector<OnlineAisLabelTarget> positioned;
   for(const auto &stored:targets_) {
@@ -83,7 +84,7 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
   wxColour land,water;
   if(application::ShowSecondaryLabels(detail) &&
      ChartBackground(canvas.GetColorScheme(),land,water)) {
-    DrawOnlineAisLabels(dc,canvas,mode,{vp.pix_width,vp.pix_height},positioned);
+    DrawOnlineAisLabels(dc,canvas,mode,{vp.pix_width,vp.pix_height},positioned,ChartDisplayScale());
   }
   // Symbols, age/provenance marks and selection rings stay above their own
   // optional labels. Labels never enlarge the existing native target hit area.
@@ -91,12 +92,12 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
     const auto &t=p.mark;const auto point=p.point;
     const bool old=t.age==ais::TargetAge::Stale||t.age==ais::TargetAge::Lost;
     const auto stroke=Color(old?colors.stale:colors.stroke);
-    dc.SetPen(wxPen(stroke,canvas.FromDIP(2),
+    dc.SetPen(wxPen(stroke,ChartDisplayPixels(canvas,2),
         old||t.age==ais::TargetAge::Aging?wxPENSTYLE_SHORT_DASH:wxPENSTYLE_SOLID));
     dc.SetBrush(wxBrush(Color(t.selected?colors.selected:colors.fill)));
     const auto angle=Direction(canvas,vp,t,point);
     if(angle) {
-      // Exact reference path M0-12 6 9 0 5-6 9Z, scaled only by Windows DPI.
+      // Exact reference path M0-12 6 9 0 5-6 9Z, scaled by display DPI and the presentation percentage.
       // Start at starboard so pinned ocpnDC's 0,1,3,2 GL strip uses the
       // notch-to-bow diagonal. This cyclic shift preserves the software path.
       wxPoint vertices[4];const int x[4]={6,0,-6,0},y[4]={9,5,9,-12};
@@ -105,29 +106,29 @@ void OnlineAisOverlay::Draw(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) const
       dc.DrawPolygon(4,vertices);
     } else {
       dc.SetBrush(*wxTRANSPARENT_BRUSH);
-      dc.DrawCircle(point,canvas.FromDIP(6));
+      dc.DrawCircle(point,ChartDisplayPixels(canvas,6));
     }
     if(old) {
-      const int r=canvas.FromDIP(8);
-      dc.SetPen(wxPen(stroke,canvas.FromDIP(2)));
+      const int r=ChartDisplayPixels(canvas,8);
+      dc.SetPen(wxPen(stroke,ChartDisplayPixels(canvas,2)));
       dc.DrawLine(point.x-r,point.y-r,point.x+r,point.y+r);
       if(t.age==ais::TargetAge::Lost)dc.DrawLine(point.x-r,point.y+r,point.x+r,point.y-r);
     } else {
       // One small provenance dot, not an ONLINE label over every target.
       // Kept at every zoom: it is the online/onboard source identity.
       dc.SetPen(*wxTRANSPARENT_PEN);dc.SetBrush(wxBrush(stroke));
-      dc.DrawCircle(point.x+canvas.FromDIP(10),point.y+canvas.FromDIP(10),canvas.FromDIP(2));
+      dc.DrawCircle(point.x+ChartDisplayPixels(canvas,10),point.y+ChartDisplayPixels(canvas,10),ChartDisplayPixels(canvas,2));
     }
     if(t.selected) {
-      dc.SetBrush(*wxTRANSPARENT_BRUSH);dc.SetPen(wxPen(Color(colors.selected),canvas.FromDIP(1)));
-      dc.DrawCircle(point,canvas.FromDIP(18));
+      dc.SetBrush(*wxTRANSPARENT_BRUSH);dc.SetPen(wxPen(Color(colors.selected),ChartDisplayPixels(canvas,1)));
+      dc.DrawCircle(point,ChartDisplayPixels(canvas,18));
     }
   }
   dc.SetBrush(brush);dc.SetPen(pen);
 }
 int OnlineAisOverlay::HitTest(ViewPort &vp, ChartCanvas &canvas,int x,int y) const {
   if(!wxIsMainThread()||!canvas.GetShowAIS())return 0;
-  const auto radius=canvas.FromDIP(24);double best=static_cast<double>(radius)*radius;
+  const auto radius=ChartDisplayPixels(canvas,24);double best=static_cast<double>(radius)*radius;
   int result=0;bool ambiguous=false;
   const auto now=vessel::Clock::now();
   for(const auto &stored:targets_) {

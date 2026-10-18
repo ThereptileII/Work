@@ -1,0 +1,170 @@
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -197,6 +197,10 @@
+   LUPrec *S52_LUPLookup(LUPname LUP_name, const char *objectName, S57Obj *pObj,
+                         bool bStrict = 0);
+   int _LUP2rules(LUPrec *LUP, S57Obj *pObj);
++  // SKAGER display-only policy. Default construction preserves stock paint.
++  // Caller is the application thread; no GL resource operation occurs here.
++  void ConfigurePresentationDisplay(bool veryLight, int percent);
++  S52color *PresentationColor(ObjRazRules *object, const char *name, bool area);
+   S52color *getColor(const char *colorName);
+   wxColour getwxColour(const wxString &colorName);
+ 
+@@ -558,6 +562,9 @@
+   bool m_anchorOn;
+   bool m_qualityOfDataOn;
+ 
++  bool m_presentationVeryLight = false;
++  double m_presentationDisplayScale = 1.0;
++  S52color m_presentationContourColor{};
+   long m_state_hash;
+ 
+   bool m_txf_ready;
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -46,3 +46,4 @@
+ static const double mercator_k0 = 0.9996;
+ 
+ #include "s52plib.h"
++#include "integration/ChartPresentationPolicy.h"
+@@ -647,6 +648,13 @@
+ 
+   size_t offset = sizeof(int);  // skipping the time int, first element
+ 
++  // Include display policy before the variable-length visibility list. The
++  // native chart state-hash invalidation refreshes cached text/paint geometry.
++  memcpy(&state_buffer[offset], &m_presentationDisplayScale, sizeof(double));
++  offset += sizeof(double);
++  memcpy(&state_buffer[offset], &m_presentationVeryLight, sizeof(bool));
++  offset += sizeof(bool);
++
+   for (int i = 0; i < S52_MAR_NUM; i++) {
+     if ((offset + sizeof(double)) < sizeof(state_buffer)) {
+       double t = S52_getMarinerParam((S52_MAR_param_t)i);
+@@ -1401,6 +1409,33 @@
+   m_ColorScheme = scheme;
+ }
+ 
++void s52plib::ConfigurePresentationDisplay(bool veryLight, int percent) {
++  if (percent != 100 && percent != 125 && percent != 150) return;
++  const double scale = percent / 100.0;
++  if (m_presentationVeryLight == veryLight && m_presentationDisplayScale == scale)
++    return;
++  m_presentationVeryLight = veryLight;
++  m_presentationDisplayScale = scale;
++  // Native state-hash consumers invalidate retained chart/text caches; glyph
++  // caches also key their rendered size. Do not delete GL resources here.
++  ClearTextList();
++  GenerateStateHash();
++}
++
++S52color *s52plib::PresentationColor(ObjRazRules *object, const char *name,
++                                     bool area) {
++  const char *feature = object && object->obj ? object->obj->FeatureName : nullptr;
++  if (area) return getColor(opennav::integration::VeryLightAreaColor(
++      m_presentationVeryLight, feature, name));
++  if (opennav::integration::VeryLightOrdinaryContour(
++          m_presentationVeryLight, feature, name)) {
++    m_presentationContourColor = opennav::integration::FaintDepthContour(
++        *getColor(name), *getColor("DEPDW"));
++    return &m_presentationContourColor;
++  }
++  return getColor(name);
++}
++
+ S52color *s52plib::getColor(const char *colorName) {
+   S52color *c;
+   c = m_chartSymbols.GetColor(colorName, m_colortable_index);
+@@ -3384,7 +3419,8 @@
+ 
+ 
+   double postmult = m_SoundingsScaleFactor;
+-  if ((postmult <= 2.0) && (postmult >= 0.5)) {
++  if ((postmult <= 2.0 * m_presentationDisplayScale) &&
++      (postmult >= 0.5 * m_presentationDisplayScale)) {
+     point_size *= postmult;
+     scale_factor *= postmult;
+     charWidth *= postmult;
+@@ -3685,7 +3721,7 @@
+ 
+   line_segment_element *ls_list = rzRules->obj->m_ls_list;
+ 
+-  S52color *c = getColor(str + 7);  // Colour
++  S52color *c = PresentationColor(rzRules, str + 7, false);  // Colour
+   int w = atoi(str + 5);            // Width
+ 
+ #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+@@ -3871,7 +3907,7 @@
+   int w;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4034,7 +4070,7 @@
+   GLint pos = 0;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4272,7 +4308,7 @@
+   int w;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4433,7 +4469,7 @@
+   S52color *c;
+ 
+   char *instr_str = (char *)rules->INSTstr;
+-  c = getColor(instr_str + 7);  // Colour
++  c = PresentationColor(rzRules, instr_str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   int w = atoi(instr_str + 5);  // Width
+ 
+@@ -7964,7 +8000,7 @@
+   S52color *c;
+   char *str = (char *)rules->INSTstr;
+ 
+-  c = getColor(str);
++  c = PresentationColor(rzRules, str, true);
+ 
+ 
+   LLBBox BBView = GetBBox();
+@@ -9080,7 +9116,7 @@
+   S52color *c;
+   char *str = (char *)rules->INSTstr;
+ 
+-  c = getColor(str);
++  c = PresentationColor(rzRules, str, true);
+ 
+   RenderToBufferFilledPolygon(rzRules, rzRules->obj, c, pb_spec, NULL);
+ 
+@@ -9884,15 +9920,15 @@
+     }
+   }
+ 
+-  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
++  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin() * m_presentationDisplayScale;
+ 
+   // Reset the LIGHTS declutter machine
+   lastLightLat = 0;
+   lastLightLon = 0;
+ 
+   // Precalulate the ENC scale factors
+-  m_SoundingsScaleFactor = (m_nSoundingFactor * .1) + 1; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
+-  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
++  m_SoundingsScaleFactor = ((m_nSoundingFactor * .1) + 1) * m_presentationDisplayScale; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
++  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0)) * m_presentationDisplayScale;
+ }
+ 
+ void s52plib::SetAnchorOn(bool val) {

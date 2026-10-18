@@ -2,6 +2,7 @@
 #include <string>
 #include <functional>
 #include "application/NavigationObjects.h"
+#include "application/ChartStyle.h"
 #include <wx/colour.h>
 #include <wx/font.h>
 #include <wx/hashmap.h>
@@ -19,6 +20,17 @@ namespace opennav::integration {
 // lookup pointers; changing a preference requires the ordinary controlled
 // restart.
 void ConfigureChartPresentation(wxFileConfig &config, bool xnav);
+application::ChartStyle RequestedChartStyle();
+application::CommandResult SetChartStyle(application::ChartStyle style);
+// Main-thread screen-space scale, independent of geographic projection, native
+// chart zoom, safety depths and Day/Dusk/Night. Accepts 100, 125 or 150 only.
+void ConfigureChartDisplayScale(int percent);
+double ChartDisplayScale();
+wxFont ScaleChartFont(wxFont font);
+int ChartDisplayPixels(ChartCanvas &canvas, int logical_pixels);
+// The current library keeps its style until the ordinary controlled restart.
+// Used by the verified private renderer binding, never a public plugin API.
+bool VeryLightChartPresentationActive();
 // For opt-in verified plugin adapters only. No shared-data API redirection.
 wxString VerifiedPluginChartPresentationDirectory();
 s52plib *CreateChartPresentation(const wxString &stock_path, bool force_legacy);
@@ -49,10 +61,12 @@ bool DrawChartHeadingPredictor(ocpnDC &dc, ChartCanvas &canvas,
 // Default fixed or dimension-scaled bitmap ownship artwork. Explicit custom
 // user icons retain upstream rendering. Projection, heading/COG choice and
 // vessel dimensions remain upstream; invalid direction gets no oriented glyph.
-// Angle is the existing clockwise screen angle; scale/beam preserve upstream size.
+// Angle is the existing clockwise screen angle. A dimension-scaled hull keeps
+// native scale/beam; only the fixed-size icon receives the display multiplier.
 bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
                       double angle, double scale, double stretch_x = 1,
-                      bool direction_available = true);
+                      bool direction_available = true,
+                      bool dimension_scaled = false);
 // Returns true only after drawing the upstream-resolved chart depth unit.
 // False preserves the stock emboss path, including Standard/Legacy/Safe.
 bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas);

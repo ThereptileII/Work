@@ -17,7 +17,7 @@ bool ChartRouteUnderlay::Draw(ocpnDC &dc, ChartCanvas &canvas) const {
     return false;
   int width = 0, height = 0;
   dc.GetSize(&width, &height);
-  auto mesh = Mesh(canvas.FromDIP(100) / 100.0, width, height);
+  auto mesh = Mesh(canvas.FromDIP(100) / 100.0 * ChartDisplayScale(), width, height);
   if (!mesh.valid)
     return false;
   if (mesh.triangles.empty())

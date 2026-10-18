@@ -13,6 +13,7 @@
 #include <wx/log.h>
 #include <wx/thread.h>
 #include <cstdint>
+#include <atomic>
 #include <memory>
 
 extern s52plib* ps52plib;
@@ -21,6 +22,9 @@ namespace skager::ocharts {
 namespace {
 BindingState binding;
 PointStyleObservation point_style;
+std::atomic<bool> renderer_active{false};
+uint32_t display_style = SKAGER_CHART_DISPLAY_SKAGER;
+int display_percent = 100;
 using namespace opennav::integration;
 wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx,
                            double *tracking, unsigned char *opacity, bool *light) {
@@ -65,7 +69,44 @@ wxFont *GeographicNameFont(const char *feature, const char *instruction, bool tx
 
 } // namespace
 void SetChartPresentationActive(bool active) {
-  point_style.SetActive(active && wxIsMainThread());
+  const bool ready = active && wxIsMainThread() && ps52plib && ps52plib->m_bOK;
+  if (ready) {
+    SkagerChartPresentationStatusV1 state{};
+    state.structBytes = sizeof(state);
+    state.version = SKAGER_CHART_BINDING_VERSION;
+    if (binding.ReadStatus(&state) && state.state == SKAGER_CHART_SELECTED)
+      ps52plib->ConfigurePresentationDisplay(
+          display_style == SKAGER_CHART_DISPLAY_VERY_LIGHT, display_percent);
+  }
+  renderer_active.store(ready);
+  point_style.SetActive(ready);
+}
+bool ConfigureDisplay(const SkagerChartDisplayV1* value) {
+  if (!wxIsMainThread() || !value || value->structBytes != sizeof(*value) ||
+      value->version != SKAGER_CHART_DISPLAY_VERSION ||
+      (value->style != SKAGER_CHART_DISPLAY_SKAGER &&
+       value->style != SKAGER_CHART_DISPLAY_VERY_LIGHT) ||
+      (value->scalePercent != 100 && value->scalePercent != 125 &&
+       value->scalePercent != 150)) return false;
+  for (auto word : value->reserved) if (word) return false;
+  SkagerChartPresentationStatusV1 state{};
+  state.structBytes = sizeof(state);
+  state.version = SKAGER_CHART_BINDING_VERSION;
+  if (!binding.ReadStatus(&state)) return false;
+  if (state.state == SKAGER_CHART_SELECTED) {
+    // Style selection is frozen once initialized. While disabled, stage only
+    // copied scale data; Init reapplies it before publishing active readback.
+    // Never borrow or resurrect the private renderer after DeInit.
+    if (value->style != display_style) return false;
+    if (renderer_active.load()) {
+      if (!ps52plib || !ps52plib->m_bOK) return false;
+      ps52plib->ConfigurePresentationDisplay(
+          value->style == SKAGER_CHART_DISPLAY_VERY_LIGHT, value->scalePercent);
+    }
+  } else if (state.state != SKAGER_CHART_BOUND_PENDING_INITIALIZATION) return false;
+  display_style = value->style;
+  display_percent = value->scalePercent;
+  return true;
 }
 s52plib* CreateChartPresentation(const wxString& stockDirectory) {
   const auto path=binding.BeginInitialization();
@@ -81,6 +122,8 @@ s52plib* CreateChartPresentation(const wxString& stockDirectory) {
           library->SetTextFontResolver(GeographicNameFont);
           library->SetPresentationTextFace(PrototypeChartTextFace());
           library->SetSoundingFontResolver(ChartSoundingFont);
+          library->ConfigurePresentationDisplay(
+              display_style == SKAGER_CHART_DISPLAY_VERY_LIGHT, display_percent);
           binding.Complete(true,SKAGER_CHART_REASON_NONE);
           wxLogMessage("SKAGER o-charts: verified private presentation selected");
           return library.release();
@@ -100,6 +143,11 @@ s52plib* CreateChartPresentation(const wxString& stockDirectory) {
 #else
 #define SKAGER_ADAPTER_EXPORT extern "C" __attribute__((visibility("default")))
 #endif
+SKAGER_ADAPTER_EXPORT int32_t SKAGER_CHART_CALL skager_configure_chart_display_v1(
+    const SkagerChartDisplayV1* value) {
+  try { return skager::ocharts::ConfigureDisplay(value) ? 1 : 0; }
+  catch (...) { return 0; }
+}
 SKAGER_ADAPTER_EXPORT int32_t SKAGER_CHART_CALL skager_bind_chart_presentation_v1(
     const SkagerChartBindingV1* value) {
   try {return skager::ocharts::binding.Bind(value) ? 1 : 0;} catch (...) {return 0;}

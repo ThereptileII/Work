@@ -1,4 +1,5 @@
 #include "integration/ChartRouteLabel.h"
+#include "integration/ChartPresentation.h"
 #include "integration/ChartRouteLabelRaster.h"
 #include "application/ChartDeclutter.h"
 #include "ui/Controls.h"
@@ -43,10 +44,10 @@ bool PrepareChartRouteLabel(ChartCanvas& canvas, RoutePoint& point, int ordinal)
       configured->GetStyle(),configured->GetWeight(),false,configured->GetFaceName());
   if (!expected || point.m_pMarkFont->GetNativeFontInfoDesc()!=expected->GetNativeFontInfoDesc())
     return fallback();
-  const double scale=canvas.FromDIP(100)/100.*g_MarkScaleFactorExp;
+  const double scale=canvas.FromDIP(100)/100.*g_MarkScaleFactorExp*ChartDisplayScale();
   if (!std::isfinite(scale) || scale<.25 || scale>4 || g_MarkScaleFactorExp<=0)
     return fallback();
-  auto font=ui::UiFont(canvas,10,false);
+  auto font=ScaleChartFont(ui::UiFont(canvas,10,false));
   font.SetFractionalPointSize(font.GetFractionalPointSize()*g_MarkScaleFactorExp);
   const int mode=canvas.GetColorScheme()==GLOBAL_COLOR_SCHEME_NIGHT ? 2 :
       canvas.GetColorScheme()==GLOBAL_COLOR_SCHEME_DUSK ? 1 : 0;

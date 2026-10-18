@@ -40,10 +40,14 @@
 #include <wx/thread.h>
 
 extern BasePlatform *g_BasePlatform;
+extern s52plib *ps52plib;
 namespace opennav::integration {
 namespace {
 wxFileConfig *preferences = nullptr;
 bool xnav_mode = false, requested = true, active = false;
+application::ChartStyle requested_style = application::ChartStyle::Skager;
+application::ChartStyle loaded_style = application::ChartStyle::Skager;
+int display_percent = 100;
 std::string status = "Standard OpenCPN presentation";
 constexpr const char *key = "/OpenNav/ChartPresentationV1";
 wxString ResourceDirectory() {
@@ -122,8 +126,13 @@ void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
   RegisterPluginPresentationLoader(xnav ? LoadQualifiedOChartsPresentation : nullptr);
   active = false;
   wxString saved;
-  requested = !config.Read(key, &saved) || saved == "XNav";
-  if (!saved.empty() && saved != "XNav" && saved != "Standard") {
+  const bool stored = config.Read(key, &saved);
+  requested_style = !stored || saved == "XNav" ? application::ChartStyle::Skager
+      : saved == "XNavVeryLight" ? application::ChartStyle::VeryLight
+                               : application::ChartStyle::Standard;
+  loaded_style = requested_style;
+  requested = requested_style != application::ChartStyle::Standard;
+  if (stored && saved != "XNav" && saved != "XNavVeryLight" && saved != "Standard") {
     requested = false;
     status = "Invalid chart-style setting; using Standard";
   } else if (xnav_mode && requested) {
@@ -131,8 +140,11 @@ void ConfigureChartPresentation(wxFileConfig &config, bool xnav) {
     // coastline-only view still needs the same independently verified palette.
     const auto directory = ResourceDirectory();
     active = !directory.empty() && Verify(directory);
-    status = active ? "SKAGER presentation v1 / verified palette; ENC not loaded"
-                    : "SKAGER presentation resources missing or changed; Standard fallback";
+    status = active
+        ? (loaded_style == application::ChartStyle::VeryLight
+            ? "SKAGER Very Light / verified palette; ENC not loaded"
+            : "SKAGER presentation v1 / verified palette; ENC not loaded")
+        : "SKAGER presentation resources missing or changed; Standard fallback";
   } else {
     status = "Standard OpenCPN presentation";
   }
@@ -155,8 +167,12 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
         library->SetTextFontResolver(GeographicNameFont);
         library->SetPresentationTextFace(PrototypeChartTextFace());
         library->SetSoundingFontResolver(ChartSoundingFont);
+        library->ConfigurePresentationDisplay(
+            loaded_style == application::ChartStyle::VeryLight, display_percent);
         active = true;
-        status = "SKAGER presentation v1 / pinned symbols";
+        status = loaded_style == application::ChartStyle::VeryLight
+            ? "SKAGER Very Light / uniform depth-water paint; safety contours retained"
+            : "SKAGER presentation v1 / pinned symbols";
         wxLogMessage("SKAGER chart presentation: verified SKAGER resources");
         return library;
       }
@@ -170,7 +186,9 @@ s52plib *CreateChartPresentation(const wxString &stock_path,
     status = "Standard OpenCPN presentation";
   // XNav's explicit Standard fallback is not shadowed by a working-directory
   // chartsymbols.xml. Normal Legacy/Safe retain the pinned loader behavior.
-  return new s52plib(stock_path, force_legacy, false);
+  auto* library = new s52plib(stock_path, force_legacy, false);
+  library->ConfigurePresentationDisplay(false, display_percent);
+  return library;
 }
 wxString VerifiedPluginChartPresentationDirectory() {
   if (!wxIsMainThread() || !xnav_mode || !requested || !active) return {};
@@ -199,7 +217,30 @@ bool ChartBackground(ColorScheme scheme, wxColour &land, wxColour &water) {
   water = Color(p.water);
   return true;
 }
+application::ChartStyle RequestedChartStyle() { return requested_style; }
 bool XNavChartRequested() { return requested; }
+bool VeryLightChartPresentationActive() {
+  return XNavChartPresentationActive() && loaded_style == application::ChartStyle::VeryLight;
+}
+double ChartDisplayScale() {
+  return wxIsMainThread() && xnav_mode ? display_percent / 100.0 : 1.0;
+}
+wxFont ScaleChartFont(wxFont font) {
+  if (font.IsOk()) font.SetFractionalPointSize(
+      font.GetFractionalPointSize() * ChartDisplayScale());
+  return font;
+}
+int ChartDisplayPixels(ChartCanvas &canvas, int logical_pixels) {
+  return static_cast<int>(std::lround(canvas.FromDIP(logical_pixels) * ChartDisplayScale()));
+}
+void ConfigureChartDisplayScale(int percent) {
+  if (!wxIsMainThread() || (percent != 100 && percent != 125 && percent != 150)) return;
+  display_percent = percent;
+  if (!xnav_mode) return;
+  if (ps52plib) ps52plib->ConfigurePresentationDisplay(
+      VeryLightChartPresentationActive(), display_percent);
+  ConfigureOChartsDisplay(VeryLightChartPresentationActive(), display_percent);
+}
 bool XNavChartPresentationActive() { return wxIsMainThread() && xnav_mode && active; }
 bool XNavChartBarHidden() { return wxIsMainThread() && xnav_mode; }
 namespace {
@@ -250,7 +291,7 @@ bool DrawChartRouteSegment(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay
   if (dc.GetPen().IsOk()) ink = dc.GetPen().GetColour();
   int width = 0, height = 0; dc.GetSize(&width, &height);
   auto triangles = ChartRouteSegmentMesh(ax, ay, bx, by,
-      canvas.FromDIP(100) / 100.0, width, height, join_start, join_end);
+      canvas.FromDIP(100) / 100.0 * ChartDisplayScale(), width, height, join_start, join_end);
   if (triangles.empty()) return false;
   if (auto *native = dc.GetDC()) {
     std::unique_ptr<wxGraphicsContext> gc(
@@ -312,7 +353,7 @@ bool DrawChartPredictor(ocpnDC &dc, ChartCanvas &canvas, double ax, double ay,
   if (!ChartActiveRouteInk(canvas, ink)) return false;
   int width=0, height=0; dc.GetSize(&width,&height);
   bool valid = false;
-  const double scale = canvas.FromDIP(100)/100.0;
+  const double scale = canvas.FromDIP(100)/100.0 * ChartDisplayScale();
   auto triangles = heading
       ? ChartHeadingPredictorMesh(ax,ay,bx,by,scale,width,height,&valid)
       : ChartCogPredictorMesh(ax,ay,bx,by,scale,width,height,&valid);
@@ -379,7 +420,7 @@ bool DrawChartHeadingPredictor(ocpnDC &dc, ChartCanvas &canvas,
 }
 bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
                       double angle, double scale, double stretch_x,
-                      bool direction_available) {
+                      bool direction_available, bool dimension_scaled) {
   if (!wxIsMainThread() || !xnav_mode || !active ||
       !std::isfinite(x) || !std::isfinite(y) || !std::isfinite(angle) ||
       !std::isfinite(scale) || scale <= 0 ||
@@ -389,6 +430,8 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   // These are logical chart SVG pixels, not vessel dimensions or meters.
   // Measure a larger DIP span so fractional Windows DPI is not rounded to 1.
   scale *= canvas.FromDIP(100) / 100.0;
+  // A native dimension-scaled hull represents actual vessel length/beam.
+  if (!dimension_scaled) scale *= ChartDisplayScale();
   // Reserve room for rotation, the miter and dirty bounds before narrowing to
   // wx integer coordinates. Refuse unusable geometry and let upstream draw.
   constexpr double safe_limit = (std::numeric_limits<int>::max)() / 2.0;
@@ -455,7 +498,7 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
   // Only with a normal fix and a finite SOG; never a remembered speed.
   if (canvas.GetOwnShipState() == SHIP_NORMAL && std::isfinite(gSog) && gSog >= 0 &&
       gSog < 100) {
-    const double ui_scale = canvas.FromDIP(100) / 100.0;
+    const double ui_scale = canvas.FromDIP(100) / 100.0 * ChartDisplayScale();
     std::string name = VesselNameProvider() ? VesselNameProvider()() : std::string();
     wxString text = wxString::FromUTF8(name);
     text.Trim(true).Trim(false);
@@ -464,7 +507,7 @@ bool DrawChartOwnship(ocpnDC &dc, ChartCanvas &canvas, double x, double y,
             wxString::Format("%.1f kn", gSog);
     const auto old_font = dc.GetFont();
     const auto old_ink = dc.GetTextForeground();
-    dc.SetFont(ui::UiFontWeight(canvas, 10, 600));
+    dc.SetFont(ScaleChartFont(ui::UiFontWeight(canvas, 10, 600)));
     wxCoord tw = 0, th = 0;
     dc.GetTextExtent(text, &tw, &th);
     const int pad = static_cast<int>(std::lround(8 * ui_scale));
@@ -504,16 +547,16 @@ bool DrawChartDepthUnit(ocpnDC &dc, ChartCanvas &canvas) {
       ? ui::LightMode::Dusk : ui::LightMode::Day;
   const auto font = dc.GetFont();
   const auto ink = dc.GetTextForeground();
-  dc.SetFont(ui::UiFont(canvas, 8)); // Final .map-disclaimer rule in the HTML.
+  dc.SetFont(ScaleChartFont(ui::UiFont(canvas, 8))); // Final .map-disclaimer rule in the HTML.
   dc.SetTextForeground(ui::Colour(ui::FloatingTheme(mode).secondary));
   const wxString label = _("Chart depths") + ": " + unit;
   wxCoord width = 0, height = 0;
   dc.GetTextExtent(label, &width, &height);
   const auto size = canvas.GetClientSize();
-  const int x = size.x - canvas.FromDIP(22) - width;
+  const int x = size.x - ChartDisplayPixels(canvas, 22) - width;
   // Keep the actual chart selector accessible until its workflow is redesigned.
-  const int inset = (std::max)(canvas.FromDIP(15),
-                               canvas.GetPianoHeight() + canvas.FromDIP(4));
+  const int inset = (std::max)(ChartDisplayPixels(canvas, 15),
+                               canvas.GetPianoHeight() + ChartDisplayPixels(canvas, 4));
   const int y = size.y - inset - height;
   const bool fits = x >= 0 && y >= 0 && width > 0 && height > 0;
   if (fits) dc.DrawText(label, x, y);
@@ -527,7 +570,7 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
       ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
       ? ui::LightMode::Dusk : ui::LightMode::Day;
   const auto theme = ui::Theme(mode);
-  const wxFont font = ui::UiFontWeight(canvas, 12, 550);
+  const wxFont font = ScaleChartFont(ui::UiFontWeight(canvas, 12, 550));
   if (!font.IsOk()) return false;
   // Necessary one-line warning extension: the HTML has no OverZoom component.
   // Preserve its translated source wording, using final warning-callout roles.
@@ -542,7 +585,7 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
   // ocpnDC clamps measured widths to 500; use the full native extent for fit.
   wxClientDC measure(&canvas); measure.SetFont(font);
   int width = 0, height = 0; measure.GetTextExtent(label, &width, &height);
-  const int padx = canvas.FromDIP(15), pady = canvas.FromDIP(13);
+  const int padx = ChartDisplayPixels(canvas, 15), pady = ChartDisplayPixels(canvas, 13);
   const auto size = canvas.GetClientSize();
   // Measure the entire translation. Never elide or clip a warning to make it fit.
   if (width <= 0 || height <= 0 || x >= size.x || y >= size.y ||
@@ -562,12 +605,12 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
                     (ink.Blue()*alpha + base.Blue()*(255-alpha) + 127)/255);
   };
   const auto edge = mix(ui::prototype_ink::warning_border_alpha);
-  dc.SetPen(wxPen(edge, canvas.FromDIP(1)));
+  dc.SetPen(wxPen(edge, ChartDisplayPixels(canvas, 1)));
   dc.SetBrush(wxBrush(mix(ui::prototype_ink::warning_callout_alpha)));
   dc.DrawRoundedRectangle(x, y, bounds.width - 1, bounds.height - 1,
-                          canvas.FromDIP(8));
-  dc.SetPen(wxPen(edge, canvas.FromDIP(2)));
-  dc.DrawLine(x + canvas.FromDIP(1), y, x + canvas.FromDIP(1), y + bounds.height - 1);
+                          ChartDisplayPixels(canvas, 8));
+  dc.SetPen(wxPen(edge, ChartDisplayPixels(canvas, 2)));
+  dc.DrawLine(x + ChartDisplayPixels(canvas, 1), y, x + ChartDisplayPixels(canvas, 1), y + bounds.height - 1);
   dc.SetFont(font);
   dc.SetTextForeground(ui::Colour(theme.attention));
   dc.DrawText(label, x + padx, y + pady);
@@ -576,7 +619,7 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
 bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
                             MeasureLabelStyle &style) {
   if (!wxIsMainThread() || !xnav_mode || !upstream_font.IsOk()) return false;
-  const auto face = ui::UiFontWeight(canvas, 12, 500);
+  const auto face = ScaleChartFont(ui::UiFontWeight(canvas, 12, 500));
   if (!face.IsOk()) return false;
   // Adopt the native SKAGER face/weight without applying a second DPI scale or
   // replacing the user's RouteLegInfoRollover size. Upstream still measures it.
@@ -585,6 +628,7 @@ bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
   if (!style.font.SetFaceName(face.GetFaceName())) return false;
   style.font.SetStyle(wxFONTSTYLE_NORMAL);
   style.font.SetNumericWeight(500);
+  style.font.SetFractionalPointSize(style.font.GetFractionalPointSize() * ChartDisplayScale());
   const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
       ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
       ? ui::LightMode::Dusk : ui::LightMode::Day;
@@ -592,8 +636,8 @@ bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
   style.surface = ui::Colour(floating.surface);
   style.ink = ui::Colour(floating.primary);
   style.border = ui::Colour(ui::Theme(mode).border);
-  style.padding = canvas.FromDIP(6);
-  style.radius = canvas.FromDIP(6);
+  style.padding = static_cast<int>(std::lround(canvas.FromDIP(6) * ChartDisplayScale()));
+  style.radius = style.padding;
   return true;
 }
 std::string ChartPresentationStatus() {
@@ -609,7 +653,7 @@ bool ChartScaleGeometry(ChartCanvas &canvas, int &x, int &y,
   // The prototype puts the bracket above its label, with a 5px gap. Project
   // the real distance at the bracket's actual row, not at the label baseline.
   wxClientDC metrics(&canvas);
-  metrics.SetFont(ui::UiFont(canvas, 8));
+  metrics.SetFont(ScaleChartFont(ui::UiFont(canvas, 8)));
   y = canvas.GetClientSize().y - canvas.FromDIP(37 + 5) - metrics.GetCharHeight();
   // Upstream halves this span, selects a nice distance in the user's units,
   // then projects that actual distance back to pixels. Never draw a fixed
@@ -628,12 +672,19 @@ bool DrawChartScale(ocpnDC &dc, ChartCanvas &canvas, const wxString &label,
   bounds = wxRect();
   return true;
 }
-application::CommandResult SetXNavChartRequested(bool enabled) {
+application::CommandResult SetChartStyle(application::ChartStyle style) {
+  const char* encoded = nullptr;
+  switch (style) {
+    case application::ChartStyle::Standard: encoded = "Standard"; break;
+    case application::ChartStyle::Skager: encoded = "XNav"; break;
+    case application::ChartStyle::VeryLight: encoded = "XNavVeryLight"; break;
+    default: return {false, "Unknown chart style"};
+  }
   if (!wxIsMainThread() || !preferences || !xnav_mode)
     return {false, "Chart style is unavailable in this interface"};
   wxString old;
   const bool existed = preferences->Read(key, &old);
-  if (!preferences->Write(key, wxString(enabled ? "XNav" : "Standard")) ||
+  if (!preferences->Write(key, wxString::FromUTF8(encoded)) ||
       !preferences->Flush()) {
     if (existed)
       preferences->Write(key, old);
@@ -643,7 +694,12 @@ application::CommandResult SetXNavChartRequested(bool enabled) {
     return {false, restored ? "Chart style could not be saved"
                             : "Chart style save failed; check profile storage"};
   }
-  requested = enabled;
+  requested_style = style;
+  requested = style != application::ChartStyle::Standard;
   return {true, "Chart style saved. Restart SKAGER to apply."};
+}
+application::CommandResult SetXNavChartRequested(bool enabled) {
+  return SetChartStyle(enabled ? application::ChartStyle::Skager
+                              : application::ChartStyle::Standard);
 }
 } // namespace opennav::integration

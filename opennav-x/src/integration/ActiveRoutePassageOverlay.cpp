@@ -108,7 +108,7 @@ bool Segment(ocpnDC& dc, ChartCanvas& canvas, ViewPort& vp, Geo a, Geo b,
   if (!Project(canvas, vp, a, pa) || !Project(canvas, vp, b, pb)) return false;
   const auto original = pa;
   const double full_length = std::hypot(pb.x - pa.x, pb.y - pa.y);
-  const double dash = canvas.FromDIP(6), period = dash + canvas.FromDIP(4);
+  const double dash = canvas.FromDIP(6) * ChartDisplayScale(), period = dash + canvas.FromDIP(4) * ChartDisplayScale();
   const double start_phase = dash_phase ? *dash_phase : 0;
   if (dash_phase) *dash_phase = std::fmod(start_phase + full_length, period);
   if (!Clip(pa, pb, vp)) return false;
@@ -190,11 +190,11 @@ void WidthLabel(ocpnDC& dc, ChartCanvas& canvas, ViewPort& vp,
   const auto text = wxString::Format("Passage full width %.6g m", width) +
       (passage.limited ? wxString::Format(" / next %u legs", unsigned(kMaxLegs)) : wxString{}) +
       (drawing_limited ? " / display limited" : "");
-  dc.SetFont(ui::UiFont(canvas, 10));
+  dc.SetFont(ScaleChartFont(ui::UiFont(canvas, 10)));
   wxCoord w = 0, h = 0; dc.GetTextExtent(text, &w, &h);
   const double length = std::hypot(b.x - a.x, b.y - a.y);
-  if (length < canvas.FromDIP(32)) return;
-  const int gap = canvas.FromDIP(12);
+  if (length < ChartDisplayPixels(canvas, 32)) return;
+  const int gap = ChartDisplayPixels(canvas, 12);
   const int x = wxRound((a.x + b.x) / 2 - (b.y - a.y) / length * gap);
   const int y = wxRound((a.y + b.y) / 2 + (b.x - a.x) / length * gap);
   if (x < 0 || y < 0 || x + w >= vp.pix_width || y + h >= vp.pix_height) return;
@@ -219,7 +219,7 @@ void DrawActiveRoutePassage(ocpnDC& dc, ChartCanvas& canvas, ViewPort& vp) {
   const auto ink = ui::Colour(XNavChartPresentationActive() ? ChartCanvasInk(mode, raw) : raw);
   const auto pen = dc.GetPen(); const auto brush = dc.GetBrush();
   const auto font = dc.GetFont(); const auto text_color = dc.GetTextForeground();
-  dc.SetPen(wxPen(ink, canvas.FromDIP(1), wxPENSTYLE_SOLID));
+  dc.SetPen(wxPen(ink, (std::max)(1, int(std::lround(canvas.FromDIP(1) * ChartDisplayScale()))), wxPENSTYLE_SOLID));
   dc.SetBrush(*wxTRANSPARENT_BRUSH);
   unsigned strokes_left = kMaxCorridorStrokes;
   for (std::size_t i = 1; i < passage->path.size() && strokes_left; ++i)
@@ -229,7 +229,7 @@ void DrawActiveRoutePassage(ocpnDC& dc, ChartCanvas& canvas, ViewPort& vp) {
   // crossing/moving-away rule gets no misleading circle. Highlight the actual
   // next waypoint only; its original marker is painted afterwards by OpenCPN.
   if (settings.arrival_radius_m) {
-    dc.SetPen(wxPen(ink, canvas.FromDIP(1), wxPENSTYLE_SOLID));
+    dc.SetPen(wxPen(ink, (std::max)(1, int(std::lround(canvas.FromDIP(1) * ChartDisplayScale()))), wxPENSTYLE_SOLID));
     ArrivalRing(dc, canvas, vp, passage->path[1], *settings.arrival_radius_m);
   }
   dc.SetTextForeground(ink);

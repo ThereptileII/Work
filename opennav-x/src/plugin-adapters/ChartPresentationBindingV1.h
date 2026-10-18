@@ -74,3 +74,21 @@ typedef struct SkagerChartPointStyleV1 {
 } SkagerChartPointStyleV1;
 typedef int32_t (SKAGER_CHART_CALL *SkagerGetChartPointStyleV1)(
     SkagerChartPointStyleV1*);
+
+/* Separate display-only ABI; existing v1 binding/status/observation layouts
+ * and reserved fields retain their meaning. Main-thread only, after verified
+ * binding and before factory initialization; later calls may change scale only.
+ * No coordinates, safety thresholds or renderer pointers cross this boundary. */
+#define SKAGER_CHART_DISPLAY_VERSION 1u
+#define SKAGER_CHART_DISPLAY_EXPORT "skager_configure_chart_display_v1"
+#define SKAGER_CHART_DISPLAY_SKAGER 1u
+#define SKAGER_CHART_DISPLAY_VERY_LIGHT 2u
+typedef struct SkagerChartDisplayV1 {
+  uint32_t structBytes;
+  uint32_t version;
+  uint32_t style;
+  uint32_t scalePercent; /* exactly 100, 125 or 150 */
+  uint32_t reserved[8];
+} SkagerChartDisplayV1;
+typedef int32_t (SKAGER_CHART_CALL *SkagerConfigureChartDisplayV1)(
+    const SkagerChartDisplayV1*);

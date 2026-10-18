@@ -1,0 +1,229 @@
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -232,6 +232,10 @@
+   LUPrec *S52_LUPLookup(LUPname LUP_name, const char *objectName, S57Obj *pObj,
+                         bool bStrict = 0);
+   int _LUP2rules(LUPrec *LUP, S57Obj *pObj);
++  // SKAGER display-only policy. Default construction preserves stock paint.
++  // Caller is the application thread; no GL resource operation occurs here.
++  void ConfigurePresentationDisplay(bool veryLight, int percent);
++  S52color *PresentationColor(ObjRazRules *object, const char *name, bool area);
+   S52color *getColor(const char *colorName);
+   wxColour getwxColour(const wxString &colorName);
+ 
+@@ -635,6 +639,9 @@
+   bool m_anchorOn;
+   bool m_qualityOfDataOn;
+ 
++  bool m_presentationVeryLight = false;
++  double m_presentationDisplayScale = 1.0;
++  S52color m_presentationContourColor{};
+   long m_state_hash;
+ 
+   bool m_txf_ready;
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -68,6 +68,7 @@
+ static const double mercator_k0 = 0.9996;
+ 
+ #include "s52plib.h"
++#include "integration/ChartPresentationPolicy.h"
+ #ifdef OPENNAV_X
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartLightTowerSymbol.h"
+@@ -682,6 +683,13 @@
+ 
+   size_t offset = sizeof(int);  // skipping the time int, first element
+ 
++  // Include display policy before the variable-length visibility list. The
++  // native chart state-hash invalidation refreshes cached text/paint geometry.
++  memcpy(&state_buffer[offset], &m_presentationDisplayScale, sizeof(double));
++  offset += sizeof(double);
++  memcpy(&state_buffer[offset], &m_presentationVeryLight, sizeof(bool));
++  offset += sizeof(bool);
++
+   for (int i = 0; i < S52_MAR_NUM; i++) {
+     if ((offset + sizeof(double)) < sizeof(state_buffer)) {
+       double t = S52_getMarinerParam((S52_MAR_param_t)i);
+@@ -1441,6 +1449,33 @@
+   m_ColorScheme = scheme;
+ }
+ 
++void s52plib::ConfigurePresentationDisplay(bool veryLight, int percent) {
++  if (percent != 100 && percent != 125 && percent != 150) return;
++  const double scale = percent / 100.0;
++  if (m_presentationVeryLight == veryLight && m_presentationDisplayScale == scale)
++    return;
++  m_presentationVeryLight = veryLight;
++  m_presentationDisplayScale = scale;
++  // Native state-hash consumers invalidate retained chart/text caches; glyph
++  // caches also key their rendered size. Do not delete GL resources here.
++  ClearTextList();
++  GenerateStateHash();
++}
++
++S52color *s52plib::PresentationColor(ObjRazRules *object, const char *name,
++                                     bool area) {
++  const char *feature = object && object->obj ? object->obj->FeatureName : nullptr;
++  if (area) return getColor(opennav::integration::VeryLightAreaColor(
++      m_presentationVeryLight, feature, name));
++  if (opennav::integration::VeryLightOrdinaryContour(
++          m_presentationVeryLight, feature, name)) {
++    m_presentationContourColor = opennav::integration::FaintDepthContour(
++        *getColor(name), *getColor("DEPDW"));
++    return &m_presentationContourColor;
++  }
++  return getColor(name);
++}
++
+ S52color *s52plib::getColor(const char *colorName) {
+   S52color *c;
+   c = m_chartSymbols.GetColor(colorName, m_colortable_index);
+@@ -3672,7 +3707,7 @@
+     // Match the stock preference range. This changes the digit font only;
+     // all rule selection, colors and pivot groups below remain upstream.
+     const double sounding_scale =
+-        m_SoundingsScaleFactor >= 0.5 && m_SoundingsScaleFactor <= 2.0
++        m_SoundingsScaleFactor >= 0.5 * m_presentationDisplayScale && m_SoundingsScaleFactor <= 2.0 * m_presentationDisplayScale
+             ? m_SoundingsScaleFactor : 1.0;
+     // Cache the attempt by its inputs even on failure: stock digits must not
+     // rebuild their atlas or retry an unavailable native font for each glyph.
+@@ -3754,7 +3789,8 @@
+   }
+ 
+   double postmult = m_SoundingsScaleFactor;
+-  if ((postmult <= 2.0) && (postmult >= 0.5)) {
++  if ((postmult <= 2.0 * m_presentationDisplayScale) &&
++      (postmult >= 0.5 * m_presentationDisplayScale)) {
+     point_size *= postmult;
+     scale_factor *= postmult;
+     charWidth *= postmult;
+@@ -4023,7 +4059,7 @@
+ 
+   line_segment_element *ls_list = rzRules->obj->m_ls_list;
+ 
+-  S52color *c = getColor(str + 7);  // Colour
++  S52color *c = PresentationColor(rzRules, str + 7, false);  // Colour
+   int w = atoi(str + 5);            // Width
+ 
+ #if !defined(USE_ANDROID_GLES2) && !defined(ocpnUSE_GLSL)
+@@ -4209,7 +4245,7 @@
+   int w;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4372,7 +4408,7 @@
+   GLint pos = 0;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4615,7 +4651,7 @@
+   int w;
+ 
+   char *str = (char *)rules->INSTstr;
+-  c = getColor(str + 7);  // Colour
++  c = PresentationColor(rzRules, str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   w = atoi(str + 5);  // Width
+ 
+@@ -4784,7 +4820,7 @@
+   S52color *c;
+ 
+   char *instr_str = (char *)rules->INSTstr;
+-  c = getColor(instr_str + 7);  // Colour
++  c = PresentationColor(rzRules, instr_str + 7, false);  // Colour
+   wxColour color(c->R, c->G, c->B);
+   int w = atoi(instr_str + 5);  // Width
+ 
+@@ -8584,7 +8620,7 @@
+   S52color *c;
+   char *str = (char *)rules->INSTstr;
+ 
+-  c = getColor(str);
++  c = PresentationColor(rzRules, str, true);
+ 
+ 
+   LLBBox BBView = GetBBox();
+@@ -9742,7 +9778,7 @@
+   S52color *c;
+   char *str = (char *)rules->INSTstr;
+ 
+-  c = getColor(str);
++  c = PresentationColor(rzRules, str, true);
+ 
+   RenderToBufferFilledPolygon(rzRules, rzRules->obj, c, pb_spec, NULL);
+ 
+@@ -10546,15 +10582,15 @@
+   }
+ #endif
+ 
+-  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin();
++  m_ChartScaleFactorExp = GetOCPNChartScaleFactor_Plugin() * m_presentationDisplayScale;
+ 
+   // Reset the LIGHTS declutter machine
+   lastLightLat = 0;
+   lastLightLon = 0;
+ 
+   // Precalulate the ENC scale factors
+-  m_SoundingsScaleFactor = (m_nSoundingFactor * .1) + 1; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
+-  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0));
++  m_SoundingsScaleFactor = ((m_nSoundingFactor * .1) + 1) * m_presentationDisplayScale; //exp(m_nSoundingFactor * (log(2.0) / 5.0));
++  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0)) * m_presentationDisplayScale;
+ }
+ 
+ void s52plib::SetAnchorOn(bool val) {
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -6481,7 +6481,7 @@
+               skager_scaled = opennav::integration::DrawChartOwnship(
+                   dc, *this, direction ? lShipMidPoint.m_x : lGPSPoint.m_x,
+                   direction ? lShipMidPoint.m_y : lGPSPoint.m_y, icon_rad - PI / 2,
+-                  length / (35. * (FromDIP(100) / 100.)), beam * 35. / (length * 22.), direction);
++                  length / (35. * (FromDIP(100) / 100.)), beam * 35. / (length * 22.), direction, true);
+           }
+ #endif
+           if (!skager_scaled)
+@@ -13242,7 +13242,7 @@
+       wxColour ring_ink;
+       if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn1,bGPSValid,false,ring_ink)) {
+         ring_pen.SetColour(ring_ink);
+-        ring_pen.SetWidth(FromDIP(AnchorAlertOn1 ? 4 : 2));
++        ring_pen.SetWidth(opennav::integration::ChartDisplayPixels(*this, AnchorAlertOn1 ? 4 : 2));
+         if(!AnchorAlertOn1 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
+       }
+ #endif
+@@ -13256,7 +13256,7 @@
+       wxColour ring_ink;
+       if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn2,bGPSValid,false,ring_ink)) {
+         ring_pen.SetColour(ring_ink);
+-        ring_pen.SetWidth(FromDIP(AnchorAlertOn2 ? 4 : 2));
++        ring_pen.SetWidth(opennav::integration::ChartDisplayPixels(*this, AnchorAlertOn2 ? 4 : 2));
+         if(!AnchorAlertOn2 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
+       }
+ #endif
+@@ -13270,7 +13270,7 @@
+       wxColour ring_ink;
+       if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn1,bGPSValid,true,ring_ink)) {
+         ring_pen.SetColour(ring_ink);
+-        ring_pen.SetWidth(FromDIP(AnchorAlertOn1 ? 4 : 2));
++        ring_pen.SetWidth(opennav::integration::ChartDisplayPixels(*this, AnchorAlertOn1 ? 4 : 2));
+         if(!AnchorAlertOn1 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
+       }
+ #endif
+@@ -13284,7 +13284,7 @@
+       wxColour ring_ink;
+       if(opennav::integration::ChartAnchorWatchInk(*this,AnchorAlertOn2,bGPSValid,true,ring_ink)) {
+         ring_pen.SetColour(ring_ink);
+-        ring_pen.SetWidth(FromDIP(AnchorAlertOn2 ? 4 : 2));
++        ring_pen.SetWidth(opennav::integration::ChartDisplayPixels(*this, AnchorAlertOn2 ? 4 : 2));
+         if(!AnchorAlertOn2 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
+       }
+ #endif

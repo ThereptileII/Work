@@ -33,7 +33,7 @@ int ChartAnchorWatchExtent(ChartCanvas &canvas, RoutePoint &point, bool pinned_i
       !pinned_icon || point.GetIconName()!="anchor" ||
       point.m_bIsActive || point.m_bBlink ||
       point.m_bRPIsBeingEdited || point.IsDragHandleEnabled()) return 0;
-  const double scale=canvas.FromDIP(100)/100.*g_MarkScaleFactorExp;
+  const double scale=canvas.FromDIP(100)/100.*g_MarkScaleFactorExp*ChartDisplayScale();
   return std::isfinite(scale) && scale>=.25 && scale<=8 ? int(std::ceil(14*scale)) : 0;
 }
 bool DrawChartAnchorMark(ocpnDC &dc, ChartCanvas &canvas, RoutePoint &point,int x,int y,bool pinned_icon) {

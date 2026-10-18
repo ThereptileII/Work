@@ -1,6 +1,7 @@
 #include "integration/OChartsPresentation.h"
 #include "integration/OChartsModuleLoader.h"
 #include "integration/ChartPresentation.h"
+#include "integration/PluginPresentationFallback.h"
 #include "SkagerOChartsPackage.h"
 #include "model/plugin_loader.h"
 #include "model/safe_mode.h"
@@ -13,6 +14,16 @@ namespace {
 std::string last_refusal;
 wxString loaded_original;
 void *loaded_module = nullptr;
+bool ConfigureDisplay(wxDynamicLibrary& library, bool very_light, int percent) {
+  const auto configure = reinterpret_cast<SkagerConfigureChartDisplayV1>(
+      library.GetSymbol(SKAGER_CHART_DISPLAY_EXPORT));
+  SkagerChartDisplayV1 value{};
+  value.structBytes = sizeof(value);
+  value.version = SKAGER_CHART_DISPLAY_VERSION;
+  value.style = very_light ? SKAGER_CHART_DISPLAY_VERY_LIGHT : SKAGER_CHART_DISPLAY_SKAGER;
+  value.scalePercent = percent;
+  return configure && configure(&value) == 1;
+}
 }
 bool LoadQualifiedOChartsPresentation(wxDynamicLibrary &library,
     const wxString &original, const PluginCompatibilityCheck &compatible) {
@@ -38,6 +49,16 @@ bool LoadQualifiedOChartsPresentation(wxDynamicLibrary &library,
     loaded_original.clear(); loaded_module = nullptr;
     wxLogWarning("SKAGER o-charts presentation unavailable: %s",
                  wxString::FromUTF8(result.reason));
+    return false;
+  }
+  // This is still before create_pi. Only the independently hash-verified
+  // module may receive this private display policy. An older/mismatched adapter
+  // falls back as a whole instead of silently ignoring the selected style.
+  if (!ConfigureDisplay(library, VeryLightChartPresentationActive(),
+                        int(ChartDisplayScale() * 100))) {
+    UnloadPluginModuleChecked(library);
+    last_refusal = "private adapter rejected chart display policy";
+    loaded_original.clear(); loaded_module = nullptr;
     return false;
   }
   loaded_original = original;
@@ -97,6 +118,20 @@ OChartsPointStyle ReadOChartsPointStyle() {
     return DecodeOChartsPointStyle(observation);
   }
   return {};
+}
+
+bool ConfigureOChartsDisplay(bool very_light, int percent) {
+  if (!wxIsMainThread() || !loaded_module ||
+      (percent != 100 && percent != 125 && percent != 150)) return false;
+  const auto* plugins = PluginLoader::GetInstance()->GetPlugInArray();
+  for (unsigned i = 0; i < plugins->GetCount(); ++i) {
+    auto* plugin = plugins->Item(i);
+    if (plugin->m_plugin_file == loaded_original &&
+        plugin->m_library.IsLoaded() &&
+        plugin->m_library.GetLibHandle() == loaded_module)
+      return ConfigureDisplay(plugin->m_library, very_light, percent);
+  }
+  return false;
 }
 
 }
