@@ -148,31 +148,11 @@ void XNavDrawer::Arrange() {
   close_->SetSize(size.x - FromDIP(10) - close_width, FromDIP(18), close_width, FromDIP(44));
   body_->FitInside();
   body_->Layout();
-  auto *renderer = wxGraphicsRenderer::GetDefaultRenderer();
-  if (renderer && size.x > 0 && size.y > 0) {
-    auto path = renderer->CreatePath();
-    path.AddRoundedRectangle(0, 0, size.x, size.y,
-                             FromDIP(prototype::drawer_radius));
-    SetShape(path);
-  }
+  shape_.Update(*this, prototype::drawer_radius);
 }
 void XNavDrawer::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(this);
-  const auto c = Theme(light_);
-  dc.SetBackground(wxBrush(Colour(c.background)));
-  dc.Clear();
-  dc.SetBrush(*wxTRANSPARENT_BRUSH);
-  dc.SetPen(wxPen(Colour(c.border)));
-  const auto s = GetClientSize();
-#ifdef __WXMSW__
-  // GDI excludes the right/bottom extent. Keep those strokes in the outer
-  // pixel reserved by Arrange(), rather than underneath its child windows.
-  dc.DrawRoundedRectangle(0, 0, s.x, s.y,
-                          FromDIP(prototype::drawer_radius));
-#else
-  dc.DrawRoundedRectangle(0, 0, s.x - 1, s.y - 1,
-                          FromDIP(prototype::drawer_radius));
-#endif
+  PaintRoundedSurface(*this, dc, light_, prototype::drawer_radius);
 }
 void XNavDrawer::PaintHeading(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(heading_);

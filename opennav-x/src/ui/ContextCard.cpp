@@ -1,6 +1,8 @@
 #include "ui/ContextCard.h"
 #include "ui/Sheet.h"
 #include "ui/NameEditor.h"
+#include "ui/RoundedSurface.h"
+#include "ui/PrototypeGeometry.h"
 #include "vessel/AisSelection.h"
 #include <algorithm>
 #include <cmath>
@@ -50,7 +52,7 @@ std::optional<application::CommandResult> WaypointSheet(
 }
 XNavContextCard::XNavContextCard(wxWindow &owner, ContextKind kind, Action action)
     : wxDialog(&owner, wxID_ANY, kind == ContextKind::Ais ? "SKAGER AIS context" : kind == ContextKind::Waypoint ? "SKAGER waypoint context" : "SKAGER chart context",
-               wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL),
+               wxDefaultPosition, wxDefaultSize, wxBORDER_NONE | wxFRAME_SHAPED | wxTAB_TRAVERSAL),
       kind_(kind), action_(std::move(action)) {
   SetName(kind == ContextKind::Ais ? "OpenNav AIS context" : kind == ContextKind::Waypoint ? "OpenNav waypoint context" : "OpenNav chart context");
   auto *outer = new wxBoxSizer(wxVERTICAL);
@@ -93,6 +95,7 @@ XNavContextCard::XNavContextCard(wxWindow &owner, ContextKind kind, Action actio
   }
   outer->Add(grid, 0, wxEXPAND | wxALL, FromDIP(12));
   SetSizerAndFit(outer);
+  BindRoundedSurface(*this, [this] { return mode_; }, prototype::drawer_radius);
   Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent &) { Dismiss(); });
   wxEvtHandler::AddFilter(this);
   filter_added_ = true;
@@ -131,11 +134,12 @@ bool XNavContextCard::Place(const wxRect &chart) {
 }
 void XNavContextCard::ThemeControls(LightMode mode) {
   mode_ = mode;
-  SetBackgroundColour(Colour(Theme(mode).elevated));
-  content_->SetBackgroundColour(Colour(Theme(mode).elevated));
+  SetBackgroundColour(Colour(Theme(mode).background));
+  content_->SetBackgroundColour(Colour(Theme(mode).background));
   close_->SetLightMode(mode);
   for (auto &entry : actions_) entry.first->SetLightMode(mode);
   content_->Refresh(false);
+  Refresh(false);
 }
 void XNavContextCard::UpdateAis(std::optional<vessel::AisTarget> target,
                                vessel::Time now, bool live, LightMode mode) {
@@ -176,7 +180,7 @@ void XNavContextCard::UpdateChartPosition(application::Coordinate position, Ligh
 }
 void XNavContextCard::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(content_);
-  dc.SetBackground(wxBrush(Colour(Theme(mode_).elevated))); dc.Clear();
+  dc.SetBackground(wxBrush(Colour(Theme(mode_).background))); dc.Clear();
   XNavPainter p(*content_, dc, mode_);
   const int width = content_->ToDIP(content_->GetClientSize().x);
   auto metric = [&](const wxString &title, const vessel::Sample &sample,
@@ -214,6 +218,7 @@ void XNavContextCard::Paint(wxPaintEvent &) {
         std::abs(point_.waypoint->longitude_deg) <= 180;
     p.Text(position_valid ? wxString::Format(W("%.5f°  %.5f°"), point_.waypoint->latitude_deg, point_.waypoint->longitude_deg)
                           : wxString("Position unavailable"), 0, 48, 12, p.c.secondary);
+    p.Rule(0, 72, width);
     metric("RANGE", point_.range_nm, 0, 87, 1, " NM");
     metric("BEARING", point_.bearing_true_deg, width / 2, 87, 0, W("°T"));
     p.Text(W(point_.reason), 0, 151, 12, p.c.secondary, false, width);

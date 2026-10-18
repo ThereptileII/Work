@@ -1,6 +1,7 @@
 #include "ui/Sheet.h"
 #include "ui/DisplaySizing.h"
 #include "ui/Drawer.h"
+#include "ui/RoundedSurface.h"
 #include "ui/ProductPanel.h"
 #include <wx/dialog.h>
 #include <wx/scrolwin.h>
@@ -26,14 +27,15 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
           const wxString &accept, int scale_percent) {
   scale_percent=OwnerScale(parent,scale_percent);
   wxDialog dialog(&parent, wxID_ANY, title, wxDefaultPosition, wxDefaultSize,
-                  wxBORDER_NONE | wxTAB_TRAVERSAL);
+                  wxBORDER_NONE | wxFRAME_SHAPED | wxTAB_TRAVERSAL);
+  BindRoundedSurface(dialog, [mode] { return mode; }, 20); // Prototype .modal.
   dialog.SetName(title);
   dialog.Bind(wxEVT_CHAR_HOOK,[&dialog](wxKeyEvent &event){
     if(event.GetKeyCode()==WXK_ESCAPE) dialog.EndModal(wxID_CANCEL);
     else event.Skip();
   });
   const auto c = Theme(mode);
-  dialog.SetBackgroundColour(Colour(c.elevated));
+  dialog.SetBackgroundColour(Colour(c.background));
   const int gap = dialog.FromDIP(16);
   // A prototype drawer is itself a top-level owned window. Use the containing
   // application frame for modal bounds, not the drawer's narrow client area.
@@ -47,7 +49,7 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
                std::max(dialog.FromDIP(160), available.y - top - bottom - dialog.FromDIP(24))));
   auto *outer = new wxBoxSizer(wxVERTICAL);
   auto *content = new XNavScroll(&dialog);
-  content->SetBackgroundColour(Colour(c.elevated));
+  content->SetBackgroundColour(Colour(c.background));
   auto *body = new wxBoxSizer(wxVERTICAL);
   auto label = [&](const wxString &text, int font_size, bool bold) {
     auto *t = new wxStaticText(content, wxID_ANY, text);
@@ -73,14 +75,15 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
     t->SetName(f.label);
     t->SetFont(
         UiFont(dialog, multiline ? 18 : DisplayFieldFont(scale_percent)));
-    t->SetBackgroundColour(Colour(c.background));
+    t->SetBackgroundColour(Colour(c.surface));
     t->SetForegroundColour(Colour(c.primary));
     t->SetMaxLength(f.maximum);
     body->Add(t, 0, wxEXPAND | wxLEFT | wxRIGHT | wxBOTTOM, gap);
     inputs.push_back(t);
   }
   content->SetSizer(body);
-  outer->Add(content, 1, wxEXPAND);
+  // Keep the native clipped border exposed; the scroll child owns its content.
+  outer->Add(content, 1, wxEXPAND | wxLEFT | wxRIGHT | wxTOP, dialog.FromDIP(1));
   auto *actions = new wxBoxSizer(wxHORIZONTAL);
   std::vector<XNavButton *> scroll_buttons;
   for (int direction : {-1, 1}) {

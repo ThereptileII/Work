@@ -34,32 +34,103 @@ bool badge_collapsed = false;
 // Weak: the filter outlives any one canvas (mode restart, shutdown).
 wxWeakRef<ChartCanvas> badge_canvas;
 wxRect badge_hit;  // Canvas client coordinates of the toggle target.
+wxRect badge_bounds; // The whole opaque badge shields the chart beneath it.
+wxWeakRef<wxWindow> badge_hover_window;
+wxCursor badge_previous_cursor;
+bool badge_pointer_down = false, badge_toggle_armed = false;
+wxWeakRef<ChartCanvas> badge_press_canvas;
 // Shared by painting and the pre-arrow provenance fit gate. Helm readability
 // must not leave the gate measuring an older, smaller font or hit target.
 constexpr int kBadgeTextSize = 14;
 constexpr int kBadgePadding = 12;
 constexpr int kBadgeLineGap = 4;
 constexpr int kBadgeCloseTarget = 48;
+// Denser than the original 48-arrow preview, with explicit paint/search caps.
+constexpr std::size_t kWindArrowLimit = 96, kWindCandidateLimit = 384;
+constexpr std::size_t kLatticeVisitLimit = 4096;
+
+void RestoreBadgeCursor() {
+  if (badge_hover_window) badge_hover_window->SetCursor(badge_previous_cursor);
+  badge_hover_window = nullptr;
+}
+void CancelBadgePress() {
+  badge_pointer_down = badge_toggle_armed = false;
+  badge_press_canvas = nullptr;
+}
+void BadgeCursor(wxWindow &window, bool action) {
+  if (badge_hover_window.get() != &window) {
+    RestoreBadgeCursor();
+    badge_previous_cursor = window.GetCursor();
+    badge_hover_window = &window;
+  }
+  window.SetCursor(wxCursor(action ? wxCURSOR_HAND : wxCURSOR_ARROW));
+}
+void ClearBadge() {
+  badge_bounds = badge_hit = wxRect();
+  badge_canvas = nullptr;
+  RestoreBadgeCursor();
+  // A consumed press still owns its release if the layer disappears meanwhile.
+  badge_toggle_armed = false;
+}
 
 // Painted on the canvas, so the badge has no window of its own to click. A
-// process-wide filter sees the press first, toggles only when it lands on the
-// badge's target, and consumes it so the same tap does not also pan or select.
+// process-wide filter owns the complete badge gesture. Hover must also stop
+// before ChartCanvas's top-edge pan cursor, which otherwise paints a green
+// directional cursor over this opaque control. Chart drags begun outside pass
+// through unchanged, including a release over the badge.
 class BadgeToggleFilter final : public wxEventFilter {
  public:
   int FilterEvent(wxEvent &event) override {
-    ChartCanvas *canvas = badge_canvas.get();
-    if (event.GetEventType() != wxEVT_LEFT_DOWN || !canvas || badge_hit.IsEmpty())
+    if (event.GetEventType() == wxEVT_ACTIVATE_APP) {
+      if (const auto *activation = dynamic_cast<wxActivateEvent *>(&event);
+          activation && !activation->GetActive()) {
+        CancelBadgePress();
+        RestoreBadgeCursor();
+      }
       return Event_Skip;
+    }
+    ChartCanvas *canvas = badge_canvas.get();
     auto *window = dynamic_cast<wxWindow *>(event.GetEventObject());
     auto *mouse = dynamic_cast<wxMouseEvent *>(&event);
-    if (!window || !mouse || (window != canvas && !canvas->IsDescendant(window)))
+    if (!window || !mouse) return Event_Skip;
+    // A release outside this application may never reach the filter. A new
+    // press starts a new gesture, and must not inherit ownership of that one.
+    if (mouse->LeftDown() || mouse->LeftDClick()) CancelBadgePress();
+    const bool ours = canvas && (window == canvas || canvas->IsDescendant(window));
+    if (mouse->LeftUp() && badge_pointer_down) {
+      const bool activate = ours && badge_press_canvas.get() == canvas &&
+          badge_toggle_armed && badge_hit.Contains(
+              canvas->ScreenToClient(window->ClientToScreen(mouse->GetPosition())));
+      CancelBadgePress();
+      if (activate) { badge_collapsed = !badge_collapsed; canvas->Refresh(false); }
+      return Event_Processed;
+    }
+    if (!ours || badge_bounds.IsEmpty()) {
+      if (mouse->Moving() || mouse->Leaving()) RestoreBadgeCursor();
       return Event_Skip;
+    }
     // A GL child receives the press in its own coordinates.
     const auto at = canvas->ScreenToClient(window->ClientToScreen(mouse->GetPosition()));
-    if (!badge_hit.Contains(at)) return Event_Skip;
-    badge_collapsed = !badge_collapsed;
-    canvas->Refresh(false);
-    return Event_Processed;
+    if (mouse->Dragging() && !badge_pointer_down) {
+      RestoreBadgeCursor();
+      return Event_Skip;
+    }
+    if (!badge_bounds.Contains(at) || mouse->Leaving()) {
+      RestoreBadgeCursor();
+      return badge_pointer_down && mouse->Dragging() ? Event_Processed : Event_Skip;
+    }
+    BadgeCursor(*window, badge_hit.Contains(at));
+    if (mouse->LeftDown() || mouse->LeftDClick()) {
+      badge_pointer_down = true;
+      badge_toggle_armed = badge_hit.Contains(at);
+      badge_press_canvas = canvas;
+      return Event_Processed;
+    }
+    // A release belonging to a chart drag must reach the native chart handler.
+    if (mouse->LeftUp()) return Event_Skip;
+    // Keep wheel and non-left-button chart actions on their existing path.
+    return mouse->Moving() || mouse->Entering() ||
+        (badge_pointer_down && mouse->Dragging()) ? Event_Processed : Event_Skip;
   }
 };
 void EnsureBadgeFilter() {
@@ -117,7 +188,7 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   // Touch-sized target even though the glyph itself is small.
   const int target = canvas.FromDIP(kBadgeCloseTarget), glyph = canvas.FromDIP(6);
   const int available = vp.pix_width - 2 * pad;
-  if (available <= 2 * pad + target) { badge_hit = wxRect(); return; }
+  if (available <= 2 * pad + target) { ClearBadge(); return; }
   // Keep the provenance/value/time rows within the chart at scaled DPI.
   const auto fit = [&](wxString text, int limit) {
     wxCoord w = 0, h = 0;
@@ -146,6 +217,7 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
     dc.SetTextForeground(ui::Colour(floating.primary));
     dc.DrawText(label, x + pad, y + (box_h - h) / 2);
     badge_hit = wxRect(x, y, box_w, box_h);  // Tap to expand.
+    badge_bounds = badge_hit;
     return;
   }
   wxCoord width = 0, line_height = 0;
@@ -170,7 +242,8 @@ void DrawBadge(ocpnDC &dc, ChartCanvas &canvas, ViewPort &vp, ui::LightMode mode
   dc.SetPen(wxPen(ui::Colour(floating.secondary), canvas.FromDIP(1)));
   dc.DrawLine(cx - glyph, cy - glyph, cx + glyph + 1, cy + glyph + 1);
   dc.DrawLine(cx - glyph, cy + glyph, cx + glyph + 1, cy - glyph - 1);
-  badge_hit = wxRect(x + box_w - target, y, target, std::max(box_h, target));
+  badge_bounds = wxRect(x, y, box_w, std::max(box_h, target));
+  badge_hit = wxRect(x + box_w - target, y, target, badge_bounds.height);
 }
 } // namespace
 
@@ -179,6 +252,7 @@ void SetWeatherSource(std::function<weather::ForecastSnapshot()> next,
   if (wxIsMainThread()) {
     source = std::move(next);
     vessel_position = std::move(position);
+    if (!source) ClearBadge();
   }
 }
 void SetWeatherDisplayTime(std::optional<weather::WallTime> valid_time) {
@@ -191,6 +265,7 @@ void SetWeatherOverlayVisible(bool show) {
   if (!wxIsMainThread()) return;
   if (show && !visible) badge_collapsed = false;  // Turning the layer on shows it fully.
   visible = show;
+  if (!show) ClearBadge();
 }
 bool WeatherOverlayVisible() { return wxIsMainThread() && visible; }
 
@@ -200,15 +275,18 @@ std::string WeatherLayerReason() {
   const auto now = weather::WallTime::clock::now();
   if (weather::DisplayState(snapshot, now) == weather::ForecastDisplay::Unavailable)
     return weather::UnavailableReason(snapshot, now);
-  return weather::ProvenanceLabel(snapshot, now) + ". Advisory, not measured wind.";
+  return weather::ProvenanceLabel(snapshot, now);
 }
 
 void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
-  if (wxIsMainThread() && badge_canvas.get() == &canvas) badge_hit = wxRect();
+  if (wxIsMainThread() && badge_canvas.get() == &canvas) badge_bounds = badge_hit = wxRect();
   if (!wxIsMainThread() || !visible || !source) return;
   // Verified XNav presentation only; Standard/Legacy/Safe stay untouched.
   wxColour land, water;
-  if (!ChartBackground(canvas.GetColorScheme(), land, water)) return;
+  if (!ChartBackground(canvas.GetColorScheme(), land, water)) {
+    if (badge_canvas.get() == &canvas) ClearBadge();
+    return;
+  }
   const auto snapshot = source();
   const auto now = weather::WallTime::clock::now();
   const auto mode = CanvasMode(canvas);
@@ -231,6 +309,7 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   dc.SetFont(old_font);
   if (vp.pix_width < marker_width + 4 * canvas.FromDIP(kBadgePadding) +
                          canvas.FromDIP(kBadgeCloseTarget)) {
+    if (badge_canvas.get() == &canvas) ClearBadge();
     restore();
     return;
   }
@@ -244,7 +323,10 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   const bool stale = display == weather::ForecastDisplay::Stale;
   const auto times = weather::ValidTimes(snapshot);
   const auto step = weather::ResolveDisplayTime(times, display_time, now);
-  if (!step) { restore(); return; }
+  if (!step) {
+    if (badge_canvas.get() == &canvas) ClearBadge();
+    restore(); return;
+  }
   const auto winds = weather::WindsAt(snapshot, *step);
 
   // SCRUM-360: arrows sit on a geographic lattice -- whole multiples of a
@@ -255,7 +337,7 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
   const double scale = canvas.FromDIP(100) / 100.0;
   const auto detail = application::ChartDetailForScale(vp.chart_scale);
   const double pitch = weather::ArrowGridPitch(vp.pix_width, vp.pix_height,
-                                              weather::ArrowSpacingPx(detail) * scale);
+      weather::ArrowSpacingPx(detail) * scale, kWindArrowLimit);
   struct Cell { wxPoint p; weather::Coordinate at; std::size_t wind; };
   std::vector<Cell> cells;
   const auto box = vp.GetBBox();
@@ -268,11 +350,15 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
     if (lat_step > 0 && lon_step > 0 &&
         (box.GetMaxLat() - box.GetMinLat()) / lat_step < 400 &&
         (box.GetMaxLon() - box.GetMinLon()) / lon_step < 400) {
+      std::size_t visits = 0;
       for (double lat = std::floor(box.GetMinLat() / lat_step) * lat_step;
-           lat <= box.GetMaxLat() + lat_step && cells.size() < 4 * weather::kMaxWindArrows;
+           lat <= box.GetMaxLat() + lat_step && cells.size() < kWindCandidateLimit &&
+               visits < kLatticeVisitLimit;
            lat += lat_step)
         for (double lon = std::floor(box.GetMinLon() / lon_step) * lon_step;
-             lon <= box.GetMaxLon() + lon_step; lon += lon_step) {
+             lon <= box.GetMaxLon() + lon_step && cells.size() < kWindCandidateLimit &&
+                 visits < kLatticeVisitLimit; lon += lon_step) {
+          ++visits;
           const weather::Coordinate at{lat, lon};
           wxPoint p;
           if (!Project(canvas, vp, at, p) || p.x < 0 || p.y < 0 ||
@@ -282,13 +368,13 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
         }
     }
   }
-  // Prototype wind layer: open chevrons in route ink, translucent, no number
-  // per arrow (speed lives in the forecast box). Stale: muted ink.
-  const auto route = ui::Colour(ChartCanvasInk(mode, ui::ActiveRouteInk(mode)));
+  // Keep the prototype's translucent open chevrons, using the requested light
+  // blue (--cyan) family to separate wind from routes. Stale stays muted.
+  const auto wind = ui::Colour(ChartCanvasInk(mode, ui::NavigationContextInk(mode)));
   const auto muted = ui::Colour(ChartCanvasInk(mode, ui::FloatingTheme(mode).secondary));
-  const auto base = stale ? muted : route;
-  const wxColour ink(base.Red(), base.Green(), base.Blue(), 150);
-  const int width = std::max(1, static_cast<int>(std::lround(1.6 * scale)));
+  const auto base = stale ? muted : wind;
+  const wxColour ink(base.Red(), base.Green(), base.Blue(), 89); // Prototype .35 opacity.
+  const int width = std::max(1, static_cast<int>(std::lround(scale)));
   std::unique_ptr<wxGraphicsContext> gc;
   if (auto *native = dc.GetDC()) {
     gc.reset(wxGraphicsContext::CreateFromUnknownDC(*native));
@@ -301,7 +387,11 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
     else dc.DrawLine(static_cast<int>(std::lround(x1)), static_cast<int>(std::lround(y1)),
                      static_cast<int>(std::lround(x2)), static_cast<int>(std::lround(y2)), true);
   };
-  for (const auto &cell : cells) {
+  const auto count = std::min(cells.size(), kWindArrowLimit);
+  for (std::size_t i = 0; i < count; ++i) {
+    // If a rotated viewport exposes extra cells, distribute the fixed budget
+    // across all candidate rows instead of filling only the first rows.
+    const auto &cell = cells[i * cells.size() / count];
     const auto &w = winds[cell.wind];
     const auto p = cell.p;
     const double kn = weather::KnotsFromMps(w.speed_mps);
@@ -327,8 +417,7 @@ void DrawWeatherOverlay(ocpnDC &dc, ViewPort &vp, ChartCanvas &canvas) {
             {W(weather::ProvenanceLabel(snapshot, now)),
              W(weather::ForecastAtVesselLabel(snapshot,
                  vessel_position ? vessel_position() : std::nullopt, *step, now)),
-             "Wind valid " + LocalTime(*step) + " (" + step_text + ")" +
-                 wxString::FromUTF8(" \xC2\xB7 advisory, not measured")},
+             "Wind valid " + LocalTime(*step) + " (" + step_text + ")"},
             stale, stale ? "STALE FORECAST" : "FORECAST");
   restore();
 }

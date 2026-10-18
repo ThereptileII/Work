@@ -4,6 +4,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
+#include "ui/RoundedSurface.h"
 #include "application/MeasuredWindView.h"
 #include "vessel/RouteProgress.h"
 #include "weather/ForecastView.h"
@@ -67,7 +68,7 @@ bool ProductPanel::RefreshWeather(bool force) {
 
 void ProductPanel::WeatherPage() {
   RefreshWeather(true);
-  Heading("Weather", "Forecast wind / advisory, never measured onboard wind");
+  Heading("Weather", "Forecast wind and onboard measurements");
   const auto selected = [this]() -> std::optional<weather::WallTime> {
     return actions_.navigation.weather_time ? actions_.navigation.weather_time() : std::nullopt;
   };
@@ -222,8 +223,7 @@ void ProductPanel::WeatherPage() {
   }, token && bool(actions_.weather.test_connection));
   EndActions();
   Text("Use your own GRIBstream API token. It is stored securely and never shown, "
-       "logged or exported. Forecasts are advisory: they do not replace onboard "
-       "measurements or official weather information.", 12);
+       "logged or exported.", 12);
 }
 
 void ProductPanel::StoreWeatherToken() {
@@ -238,7 +238,8 @@ void ProductPanel::StoreWeatherToken() {
     // SKAGER was restarted. Closing this scope first destroys it normally.
     // Masked entry; only the bounded Secret crosses to storage.
     wxDialog prompt(this, wxID_ANY, "GRIBstream token", wxDefaultPosition, wxDefaultSize,
-                    wxBORDER_NONE | wxTAB_TRAVERSAL);
+                    wxBORDER_NONE | wxFRAME_SHAPED | wxTAB_TRAVERSAL);
+    BindRoundedSurface(prompt, [mode = mode_] { return mode; }, 20);
     prompt.SetName("GRIBstream token");
     prompt.SetBackgroundColour(Colour(Theme(mode_).background));
     auto *layout = new wxBoxSizer(wxVERTICAL);

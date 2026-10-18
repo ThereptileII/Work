@@ -1,5 +1,6 @@
 #pragma once
 #include "ui/Controls.h"
+#include "ui/RoundedSurface.h"
 #include <functional>
 #include <wx/frame.h>
 #include <wx/eventfilter.h>
@@ -38,5 +39,6 @@ private:
   bool has_back_ = false;
   bool wide_ = false;
   int interface_scale_ = 100;
+  RoundedWindowShape shape_;
 };
 } // namespace opennav::ui

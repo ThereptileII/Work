@@ -24,6 +24,7 @@ private:
   application::ChartInfo info_;
   std::vector<TextRow> text_;
   std::vector<XNavButton *> buttons_;
+  std::vector<wxPanel *> separators_;
   bool wrapping_ = false;
 };
 } // namespace opennav::ui

@@ -36,6 +36,7 @@ void XNavChartInfoDrawer::Build() {
   ClearBody();
   text_.clear();
   buttons_.clear();
+  separators_.clear();
   if (info_.position_valid)
     Text(wxString::Format(W("%.5f°, %.5f°"), info_.latitude,
                           info_.longitude).ToStdString(wxConvUTF8), 12, true);
@@ -69,7 +70,14 @@ void XNavChartInfoDrawer::Build() {
       toggle->SetLabel(show ? "Hide chart details" : "Show all chart details");
       Wrap();
     });
-    if (i + 1 < info_.objects.size()) content_->AddSpacer(FromDIP(18));
+    if (i + 1 < info_.objects.size()) {
+      // Prototype .row/.list-card boundaries use one subdued --line rule.
+      auto *rule = new wxPanel(body_, wxID_ANY);
+      rule->SetMinSize(FromDIP(wxSize(1, 1)));
+      rule->SetBackgroundColour(Colour(Theme(light_).border));
+      separators_.push_back(rule);
+      content_->Add(rule, 0, wxEXPAND | wxTOP | wxBOTTOM, FromDIP(12));
+    }
   }
   Text("Chart information is supplied by OpenCPN and the selected charts. "
        "Additional file references are shown as text in the full details.", 12, true);
@@ -82,6 +90,7 @@ void XNavChartInfoDrawer::UpdateLight(LightMode mode) {
     row.window->SetForegroundColour(Colour(row.secondary ? palette.secondary : palette.primary));
   }
   for (auto *button : buttons_) button->SetLightMode(mode);
+  for (auto *rule : separators_) rule->SetBackgroundColour(Colour(palette.border));
 }
 void XNavChartInfoDrawer::Wrap() {
   if (wrapping_) return;

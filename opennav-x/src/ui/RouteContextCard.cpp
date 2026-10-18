@@ -1,4 +1,6 @@
 #include "ui/RouteContextCard.h"
+#include "ui/RoundedSurface.h"
+#include "ui/PrototypeGeometry.h"
 #include <array>
 #include <wx/dcbuffer.h>
 #include <wx/sizer.h>
@@ -8,7 +10,7 @@ namespace { wxString W(const std::string &value) { return wxString::FromUTF8(val
 XNavRouteContextCard::XNavRouteContextCard(wxWindow &owner, std::string selected_id,
                                           Action action, std::function<void()> dismissed)
     : wxDialog(&owner, wxID_ANY, "SKAGER route context", wxDefaultPosition,
-                wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL),
+                wxDefaultSize, wxBORDER_NONE | wxFRAME_SHAPED | wxTAB_TRAVERSAL),
       selected_id_(std::move(selected_id)), action_(std::move(action)),
       dismissed_(std::move(dismissed)) {
   SetName("SKAGER route context");
@@ -66,6 +68,7 @@ XNavRouteContextCard::XNavRouteContextCard(wxWindow &owner, std::string selected
     });
   }
   SetSizerAndFit(outer);
+  BindRoundedSurface(*this, [this] { return light_; }, prototype::drawer_radius);
   Bind(wxEVT_CLOSE_WINDOW, [this](wxCloseEvent &) { Dismiss(); });
   wxEvtHandler::AddFilter(this);
   filter_added_ = true;
@@ -98,7 +101,7 @@ void XNavRouteContextCard::UpdateRoute(const std::optional<application::Route> &
                                       LightMode mode) {
   view_ = application::PresentRouteContext(selected_id_, route);
   light_ = mode;
-  const auto background = Colour(Theme(mode).elevated);
+  const auto background = Colour(Theme(mode).background);
   SetBackgroundColour(background);
   content_->SetBackgroundColour(background);
   close_->SetLightMode(mode);
@@ -114,6 +117,7 @@ void XNavRouteContextCard::UpdateRoute(const std::optional<application::Route> &
   navigate_button_->SetLightMode(mode);
   navigate_button_->Enable(bool(action_) && (stop ? view_.can_stop : view_.can_activate));
   content_->Refresh(false);
+  Refresh(false);
 }
 bool XNavRouteContextCard::Place(const wxRect &chart) {
   auto area = chart;
@@ -126,7 +130,7 @@ bool XNavRouteContextCard::Place(const wxRect &chart) {
 }
 void XNavRouteContextCard::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(content_);
-  dc.SetBackground(wxBrush(Colour(Theme(light_).elevated)));
+  dc.SetBackground(wxBrush(Colour(Theme(light_).background)));
   dc.Clear();
   XNavPainter paint(*content_, dc, light_);
   const int width = content_->ToDIP(content_->GetClientSize().x);
@@ -142,9 +146,11 @@ void XNavRouteContextCard::Paint(wxPaintEvent &) {
   paint.Text("FROM", 0, 82, 10, paint.c.muted);
   paint.Text(W(view_.departure.empty() ? "No departure" : view_.departure), 60, 78,
              14, paint.c.primary, false, width - 60);
+  paint.Rule(0, 103, width);
   paint.Text("TO", 0, 114, 10, paint.c.muted);
   paint.Text(W(view_.destination.empty() ? "No destination" : view_.destination), 60, 110,
              14, paint.c.primary, false, width - 60);
+  paint.Rule(0, 139, width);
   paint.Text(wxString::Format("%u waypoints", static_cast<unsigned>(view_.points)),
              0, 154, 12, paint.c.secondary);
 }
