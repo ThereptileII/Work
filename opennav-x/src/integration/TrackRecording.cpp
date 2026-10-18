@@ -17,6 +17,7 @@
 #include <algorithm>
 #include <cmath>
 #include <iomanip>
+#include <locale>
 #include <map>
 #include <sstream>
 #include <utility>
@@ -102,7 +103,7 @@ bool Editable(Track &track) {
 }
 std::optional<std::chrono::system_clock::time_point> Time(TrackPoint *point) {
   if (!point) return {};
-  const auto value = point->GetCreateTime();
+  auto value = point->GetCreateTime();
   if (!value.IsValid()) return {};
   // Pinned Track::GetDateTime uses FromUTC before user/wall-clock conversion.
   return std::chrono::system_clock::from_time_t(value.FromUTC().GetTicks());
@@ -111,7 +112,7 @@ TrackSummary Summary(Track &track, std::size_t &distance_budget) {
   TrackSummary copy;
   copy.id = Text(track.m_GUID);
   copy.name = Text(track.GetName(true));
-  copy.point_count = static_cast<std::size_t>(std::max(0, track.GetnPoints()));
+  copy.point_count = static_cast<std::size_t>((std::max)(0, track.GetnPoints()));
   copy.recording = &track == g_pActiveTrack && g_bTrackActive && track.IsRunning();
   copy.visible = track.IsVisible();
   copy.in_layer = track.m_bIsInLayer;
@@ -250,7 +251,8 @@ application::TrackCatalog CopyTrackCatalog() {
   std::map<std::string, std::size_t> identities;
   for (auto *track : g_TrackList) if (track) ++identities[Text(track->m_GUID)];
   std::size_t budget = kDistancePointBudget;
-  // Most recently added records first, matching a sailing log's useful order.
+  // Reverse native insertion order is deterministic; imported GPX files can
+  // contain older dates, so this is not presented as a chronological log.
   for (auto it = g_TrackList.rbegin(); it != g_TrackList.rend(); ++it) {
     auto *track = *it;
     if (!track) continue;
@@ -265,7 +267,8 @@ application::TrackCatalog CopyTrackCatalog() {
     }
     catalog.tracks.push_back(Summary(*track, budget));
   }
-  if (catalog.truncated) catalog.reason = "Showing the most recent 256 tracks";
+  if (catalog.truncated)
+    catalog.reason = "Showing up to 256 tracks; use Advanced for the full list";
   return catalog;
 }
 std::optional<TrackSummary> CopyTrack(const std::string &id) {
@@ -411,8 +414,9 @@ CommandResult ViewTrack(MyFrame &frame, const std::string &id) {
   const double rotated_height = std::abs(std::sin(angle)) * width + std::abs(std::cos(angle)) * height;
   const auto size = canvas->GetClientSize();
   if (size.x <= 0 || size.y <= 0) return {false, "Chart canvas has no usable size", id};
-  const double scale = std::min(1.0, .75 * std::min(
-      size.x / std::max(1.0, rotated_width), size.y / std::max(1.0, rotated_height)));
+  const double scale = (std::min)(1.0, .75 * (std::min)(
+      size.x / (std::max)(1.0, rotated_width),
+      size.y / (std::max)(1.0, rotated_height)));
   if (!std::isfinite(scale) || scale <= 0) return {false, "Track chart scale unavailable", id};
   if (!track->IsVisible()) {
     std::size_t budget = 0;
