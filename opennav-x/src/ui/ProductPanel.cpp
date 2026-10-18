@@ -96,6 +96,7 @@ void ProductPanel::SetInterfaceScale(int percent) {
   if (interface_scale_ == percent) return;
   interface_scale_=percent;
   for (auto *button:action_buttons_) button->SetInterfaceScale(percent);
+  if (instruments_) instruments_->SetInterfaceScale(percent);
   Layout();FitInside();
 }
 void ProductPanel::Back() {
@@ -907,8 +908,9 @@ void ProductPanel::PointActions() {
 }
 void ProductPanel::Instruments() {
   instruments_ = new XNavInstrumentPanel(this);
+  instruments_->SetInterfaceScale(interface_scale_);
   instruments_->on_close = actions_.chart;
-  instruments_->on_rail = [this] { ShowPage(ProductPage::RailLayout, mode_); };
+  instruments_->on_rail = actions_.personalise_rail;
   instruments_->on_health = [this] { ShowPage(ProductPage::Sources, mode_); };
   instruments_->on_configure = [this] { ShowPage(ProductPage::InstrumentLayout, mode_); };
   const auto config = actions_.settings ? actions_.settings() : state_.settings;

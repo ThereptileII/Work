@@ -542,26 +542,29 @@ void ProductPanel::DisplaySettings() {
   if (actions_.set_chart_style && actions_.chart_style_requested) {
     Text("Chart style");
     if (actions_.chart_style_status) Text(W(actions_.chart_style_status()));
-    BeginActions(2);
-    const bool requested=actions_.chart_style_requested();
-    for (bool xnav : {true,false}) {
-      auto *button=Action(xnav?application::brand::ModernMode:"Standard", [this,xnav] {
+    BeginActions(3);
+    const auto requested=actions_.chart_style_requested();
+    for (const auto &choice : std::vector<std::pair<wxString, application::ChartStyle>>{
+        {application::brand::ModernMode, application::ChartStyle::Skager},
+        {"Very Light", application::ChartStyle::VeryLight},
+        {"Standard", application::ChartStyle::Standard}}) {
+      auto *button=Action(choice.first, [this,choice] {
         if (!ConfirmSheet(*this,mode_,"Change chart style",
             "Restart SKAGER to apply the chart presentation. Routes, charts and navigation settings are preserved.",
             "Save and restart")) return;
-        const auto result=actions_.set_chart_style(xnav);
+        const auto result=actions_.set_chart_style(choice.second);
         if (!result.ok) { ConfirmSheet(*this,mode_,"Chart style",W(result.message),"Back");return; }
         if (actions_.restart_xnav) actions_.restart_xnav();
       });
-      button->SetSelected(requested==xnav);
+      button->SetSelected(requested==choice.second);
     }
     EndActions();
   }
   Text("Palette changes also use OpenCPN's chart presentation. Hardware screen "
        "brightness is controlled by Windows or the display.");
   BeginActions(2);
-  Action("Configure data rail",
-         [this] { ShowPage(ProductPage::RailLayout, mode_); });
+  Action("Personalise instruments", actions_.personalise_rail,
+         bool(actions_.personalise_rail));
   Action("Configure instruments",
          [this] { ShowPage(ProductPage::InstrumentLayout, mode_); });
   Action("Fullscreen / window", actions_.navigation.fullscreen);
@@ -571,57 +574,27 @@ void ProductPanel::DisplaySettings() {
                         GetDPI().x));
 }
 void ProductPanel::InstrumentSelection(bool rail) {
-  Heading(rail ? "Data rail layout" : "Instrument layout",
-          rail ? "Four essentials, always visible" : "Choose the readings useful to you");
+  if (rail) {
+    Heading("Personalise instruments", "Your four essentials");
+    Text("Choose each rail position and save named arrangements in Personalise.");
+    Action("Open Personalise", actions_.personalise_rail,
+           bool(actions_.personalise_rail));
+    return;
+  }
+  Heading("Instrument layout", "Choose the readings useful to you");
   Action("Back to Display", [this] { ShowPage(ProductPage::Display, mode_); });
   const auto config = actions_.settings ? actions_.settings() : state_.settings;
-  auto selected = rail ? config.data_rail : config.instruments;
-  if (rail && selected.size() > 4) selected.resize(4);
-  const auto normalize = [](application::Settings &settings) {
-    for (std::size_t i = 4; i < settings.data_rail.size(); ++i)
-      if (std::find(settings.instruments.begin(), settings.instruments.end(), settings.data_rail[i]) == settings.instruments.end())
-        settings.instruments.push_back(settings.data_rail[i]);
-    if (settings.data_rail.size() > 4) settings.data_rail.resize(4);
-  };
-  Text(rail ? "Choose up to four readings. Move the most useful one to the top. Additional instruments stay available on the Instruments screen."
-            : "Choose the values shown in each instrument group. At least one must remain selected.");
-  if (rail) {
-    BeginActions(3);
-    for (const auto &preset : std::vector<std::pair<wxString, std::vector<std::string>>>{
-        {"Navigation rail", {"sog", "depth", "aws", "heading"}},
-        {"Sailing rail", {"aws", "awa", "heading", "depth"}},
-        {"Energy rail", {"soc", "pack_power", "sog", "depth"}}})
-      Action(preset.first, [this, preset, normalize] {
-        auto s = actions_.settings(); normalize(s); s.data_rail = preset.second; SaveSettings(std::move(s));
-      });
-    EndActions();
-    for (std::size_t i = 0; i < selected.size(); ++i) {
-      wxString title = W(selected[i]);
-      for (const auto &item : vessel::DisplayItems(state_.vessel))
-        if (selected[i] == item.key) title = W(item.title);
-      Text(wxString::Format("%u  ", static_cast<unsigned>(i + 1)) + title, 18);
-      BeginActions(2, 140);
-      for (int direction : {-1, 1})
-        Action(direction < 0 ? "Move up" : "Move down", [this, normalize, i, direction] {
-          auto s = actions_.settings(); normalize(s);
-          const auto other = static_cast<int>(i) + direction;
-          if (i < s.data_rail.size() && other >= 0 && other < static_cast<int>(s.data_rail.size()))
-            std::swap(s.data_rail[i], s.data_rail[static_cast<std::size_t>(other)]);
-          SaveSettings(std::move(s));
-        }, direction < 0 ? i > 0 : i + 1 < selected.size());
-      EndActions();
-    }
-  }
+  const auto selected = config.instruments;
+  Text("Choose the values shown in each instrument group. At least one must remain selected.");
   BeginActions(2);
   for (const auto &item : vessel::DisplayItems(state_.vessel)) {
     const std::string key = item.key;
     const bool included =
         std::find(selected.begin(), selected.end(), key) != selected.end();
     Action((included ? "Shown / " : "Add / ") + W(item.title),
-           [this, rail, key, normalize] {
+           [this, key] {
              auto s = actions_.settings();
-             if (rail) normalize(s);
-             auto &list = rail ? s.data_rail : s.instruments;
+             auto &list = s.instruments;
              const auto found = std::find(list.begin(), list.end(), key);
              if (found != list.end())
                list.erase(found);
@@ -629,7 +602,7 @@ void ProductPanel::InstrumentSelection(bool rail) {
                list.push_back(key);
              SaveSettings(std::move(s));
            },
-           included ? selected.size() > 1 : !rail || selected.size() < 4);
+           included ? selected.size() > 1 : true);
   }
   EndActions();
 }

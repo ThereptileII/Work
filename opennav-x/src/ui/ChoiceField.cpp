@@ -1,6 +1,7 @@
 #include "ui/ChoiceField.h"
 
 #include "ui/Controls.h"
+#include "ui/DisplaySizing.h"
 #include "ui/PrototypeIcons.h"
 
 #include <wx/bmpbndl.h>
@@ -27,17 +28,26 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
       rows_->Refresh(false);
     });
     rows_->Bind(wxEVT_LEFT_UP, &Popup::OnClick, this);
+    rows_->Bind(wxEVT_LEFT_DOWN, [this](wxMouseEvent &event) {
+      suppress_click_ = false; event.Skip();
+    });
+    rows_->Bind(wxEVT_MOUSEWHEEL, &Popup::OnWheel, this);
+    Bind(wxEVT_MOUSEWHEEL, &Popup::OnWheel, this);
+    rows_->EnableTouchEvents(wxTOUCH_VERTICAL_PAN_GESTURE);
+    rows_->Bind(wxEVT_GESTURE_PAN, &Popup::OnPan, this);
+    Bind(wxEVT_GESTURE_PAN, &Popup::OnPan, this);
     rows_->Bind(wxEVT_CHAR_HOOK, &Popup::OnKey, this);
     Bind(wxEVT_CHAR_HOOK, &Popup::OnKey, this);
     EnableTouchEvents(wxTOUCH_VERTICAL_PAN_GESTURE);
 
     const auto visible = std::min<std::size_t>(owner.choices_.size(), kMaxRows);
     rows_->SetMinSize(wxSize(owner.FromDIP(260), owner.FromDIP(
-        static_cast<int>(visible) * kRowHeight)));
+        static_cast<int>(visible) * RowHeight())));
     auto *sizer = new wxBoxSizer(wxVERTICAL);
     sizer->Add(rows_, 1, wxEXPAND);
     SetSizerAndFit(sizer);
     focus_ = owner.selection_ == wxNOT_FOUND ? 0 : owner.selection_;
+    AdjustTop();
   }
 
   void SetOwner(XNavChoiceField *owner) { owner_ = owner; }
@@ -60,6 +70,9 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
  private:
   static constexpr int kRowHeight = 44;
   static constexpr std::size_t kMaxRows = 6;
+  int RowHeight() const {
+    return DisplayActionHeight(owner_ ? owner_->interface_scale_ : 100, kRowHeight);
+  }
 
   void Finish() {
     if (finished_) return;
@@ -73,7 +86,32 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
     const int rows = VisibleRows();
     if (focus_ < top_) top_ = focus_;
     if (focus_ >= top_ + rows) top_ = focus_ - rows + 1;
-    top_ = std::max(0, top_);
+    top_ = std::clamp(top_, 0, std::max(0, static_cast<int>(owner_->choices_.size()) - rows));
+  }
+  void ScrollRows(int steps) {
+    if (!owner_ || !steps) return;
+    const int maximum = std::max(0, static_cast<int>(owner_->choices_.size()) - VisibleRows());
+    top_ = std::clamp(top_ + steps, 0, maximum);
+    focus_ = std::clamp(focus_, top_, top_ + VisibleRows() - 1);
+    hovered_ = wxNOT_FOUND;
+    rows_->Refresh(false);
+  }
+  void OnWheel(wxMouseEvent &event) {
+    const int delta = event.GetWheelDelta();
+    if (!owner_ || delta <= 0) return;
+    wheel_remainder_ += event.GetWheelRotation();
+    const int steps = wheel_remainder_ / delta;
+    wheel_remainder_ %= delta;
+    ScrollRows(-steps * std::max(1, event.GetLinesPerAction()));
+  }
+  void OnPan(wxPanGestureEvent &event) {
+    if (!owner_) return;
+    if (event.IsGestureStart()) { pan_remainder_ = 0; panning_ = true; }
+    pan_remainder_ -= event.GetDelta().y;
+    const int row = std::max(1, rows_->FromDIP(RowHeight()));
+    ScrollRows(pan_remainder_ / row);
+    pan_remainder_ %= row;
+    if (event.IsGestureEnd()) { panning_ = false; suppress_click_ = true; }
   }
   void PaintRows(wxPaintEvent &) {
     wxAutoBufferedPaintDC dc(rows_);
@@ -82,7 +120,7 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
     const auto size = rows_->GetClientSize();
     dc.SetBackground(wxBrush(Colour(palette.elevated)));
     dc.Clear();
-    const int row_height = rows_->FromDIP(kRowHeight);
+    const int row_height = rows_->FromDIP(RowHeight());
     const int count = VisibleRows();
     const int shown = std::min(count, static_cast<int>(owner_->choices_.size()) - top_);
     for (int row = 0; row < shown; ++row) {
@@ -97,7 +135,9 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
       }
       dc.SetFont(UiFont(*rows_, owner_->FontPixels()));
       dc.SetTextForeground(Colour(index == focus_ ? palette.primary : palette.secondary));
-      dc.DrawText(owner_->choices_[index], rows_->FromDIP(13),
+      const auto label = wxControl::Ellipsize(owner_->choices_[index], dc,
+          wxELLIPSIZE_END, std::max(1, size.x - rows_->FromDIP(48)));
+      dc.DrawText(label, rows_->FromDIP(13),
                   y + (row_height - dc.GetCharHeight()) / 2);
       if (index == owner_->selection_) {
         const int x = size.x - rows_->FromDIP(24);
@@ -107,13 +147,24 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
                     x + rows_->FromDIP(11), y + row_height / 2 - rows_->FromDIP(4));
       }
     }
+    if (static_cast<int>(owner_->choices_.size()) > count) {
+      const int inset = rows_->FromDIP(4);
+      const int travel = size.y - 2 * inset;
+      const int thumb = std::max(rows_->FromDIP(14),
+          travel * count / static_cast<int>(owner_->choices_.size()));
+      const int maximum = static_cast<int>(owner_->choices_.size()) - count;
+      dc.SetPen(*wxTRANSPARENT_PEN);
+      dc.SetBrush(wxBrush(Colour(palette.muted)));
+      dc.DrawRoundedRectangle(size.x - rows_->FromDIP(5),
+          inset + (travel - thumb) * top_ / maximum, rows_->FromDIP(2), thumb, rows_->FromDIP(1));
+    }
     dc.SetBrush(*wxTRANSPARENT_BRUSH);
     dc.SetPen(wxPen(Colour(palette.border), rows_->FromDIP(1)));
     dc.DrawRoundedRectangle(0, 0, size.x, size.y, rows_->FromDIP(8));
   }
   void OnMotion(wxMouseEvent &event) {
-    if (!owner_) return;
-    const int row = top_ + event.GetY() / std::max(1, rows_->FromDIP(kRowHeight));
+    if (!owner_ || panning_ || !rows_->GetClientRect().Contains(event.GetPosition())) return;
+    const int row = top_ + event.GetY() / std::max(1, rows_->FromDIP(RowHeight()));
     if (row >= 0 && row < static_cast<int>(owner_->choices_.size()) && hovered_ != row) {
       hovered_ = row;
       focus_ = row;
@@ -121,8 +172,9 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
     }
   }
   void OnClick(wxMouseEvent &event) {
-    if (!owner_) return;
-    const int row = top_ + event.GetY() / std::max(1, rows_->FromDIP(kRowHeight));
+    if (!owner_ || panning_ || !rows_->GetClientRect().Contains(event.GetPosition())) return;
+    if (suppress_click_) { suppress_click_ = false; return; }
+    const int row = top_ + event.GetY() / std::max(1, rows_->FromDIP(RowHeight()));
     if (owner_->IsEnabled() && row >= 0 && row < static_cast<int>(owner_->choices_.size()))
       owner_->CommitSelection(row);
     DismissAndFinish();
@@ -136,11 +188,15 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
       if (!owner_->IsEnabled()) { DismissAndFinish(); return; }
       owner_->CommitSelection(focus_);
       DismissAndFinish();
-    } else if (key == WXK_UP || key == WXK_DOWN || key == WXK_HOME || key == WXK_END) {
+    } else if (key == WXK_UP || key == WXK_DOWN || key == WXK_HOME || key == WXK_END ||
+               key == WXK_PAGEUP || key == WXK_PAGEDOWN) {
       if (key == WXK_UP) focus_ = std::max(0, focus_ - 1);
       if (key == WXK_DOWN) focus_ = std::min(static_cast<int>(owner_->choices_.size()) - 1, focus_ + 1);
       if (key == WXK_HOME) focus_ = 0;
       if (key == WXK_END) focus_ = static_cast<int>(owner_->choices_.size()) - 1;
+      if (key == WXK_PAGEUP) focus_ = std::max(0, focus_ - VisibleRows());
+      if (key == WXK_PAGEDOWN) focus_ = std::min(static_cast<int>(owner_->choices_.size()) - 1,
+                                                focus_ + VisibleRows());
       AdjustTop();
       rows_->Refresh(false);
     } else {
@@ -153,6 +209,8 @@ class XNavChoiceField::Popup final : public wxPopupTransientWindow {
   int focus_ = 0;
   int top_ = 0;
   int hovered_ = wxNOT_FOUND;
+  int wheel_remainder_ = 0, pan_remainder_ = 0;
+  bool panning_ = false, suppress_click_ = false;
   bool finished_ = false;
 };
 
@@ -232,13 +290,13 @@ void XNavChoiceField::SetInterfaceScale(int percent) {
   if (percent != 100 && percent != 125 && percent != 150) return;
   if (interface_scale_ == percent) return;
   interface_scale_ = percent;
-  const int height = percent == 100 ? 46 : percent == 125 ? 52 : 56;
+  const int height = DisplayFieldHeight(percent);
   SetMinSize(FromDIP(wxSize(-1, height)));
   Refresh(false);
 }
 
 int XNavChoiceField::FontPixels() const {
-  return interface_scale_ == 150 ? 18 : 16;
+  return DisplayFieldFont(interface_scale_);
 }
 
 void XNavChoiceField::Paint(wxPaintEvent &) {
@@ -269,7 +327,8 @@ void XNavChoiceField::Paint(wxPaintEvent &) {
   dc.SetFont(UiFont(*this, FontPixels()));
   dc.SetTextForeground(Colour(IsEnabled() ? palette.primary : palette.muted));
   if (selection_ != wxNOT_FOUND)
-    dc.DrawText(choices_[selection_], FromDIP(13),
+    dc.DrawText(wxControl::Ellipsize(choices_[selection_], dc, wxELLIPSIZE_END,
+                                    std::max(1, size.x - FromDIP(46))), FromDIP(13),
                 (size.y - dc.GetCharHeight()) / 2);
   const auto icon = wxString::Format(
       "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"24\" height=\"24\">"

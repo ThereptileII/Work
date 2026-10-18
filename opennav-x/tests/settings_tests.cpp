@@ -211,12 +211,35 @@ void Display() {
   application::Settings s;
   s.data_rail = {"soc", "pack_power", "rpm"};
   s.instruments = {"sog", "stw", "depth", "water_temp", "rudder"};
+  s.rail_presets = {{"Anchor", {"depth", "heading", "aws", "soc"}},
+                    {"Ånkarplats", {"soc", "depth", "tws", "heading"}}};
   const auto decoded =
       application::DecodeSettings(application::EncodeSettings(s));
   Check(decoded.data_rail == s.data_rail &&
-            decoded.instruments == s.instruments,
-        "Display selections round trip");
+            decoded.instruments == s.instruments && decoded.rail_presets == s.rail_presets,
+        "Display selections and named UTF-8 presets round trip without changing the active rail");
+  Check(application::EncodeSettings(s).rfind("OpenNavXSettings 1\n", 0) == 0,
+        "Named presets retain the existing settings version");
+  Check(application::DecodeSettings(application::EncodeSettings(legacy)).rail_presets.empty(),
+        "Older profiles have no invented named presets");
   auto bad = s;
+  bad.rail_presets.push_back({"anchor", {"sog", "depth", "tws", "soc"}});
+  Reject([&] { application::ValidateSettings(bad); });
+  for (const std::string& name : std::vector<std::string>{"", " Anchor", "Anchor ", "Bad\nname", std::string(65, 'a')}) {
+    bad = s; bad.rail_presets.front().name = name;
+    Reject([&] { application::ValidateSettings(bad); });
+  }
+  for (const auto &values : std::vector<std::vector<std::string>>{
+           {"sog", "depth", "soc"}, {"depth", "depth", "aws", "soc"},
+           {"sog", "depth", "invented_sensor", "soc"}}) {
+    bad = s; bad.rail_presets.front().values = values;
+    Reject([&] { application::ValidateSettings(bad); });
+  }
+  bad = s; bad.rail_presets.clear();
+  for (int i = 0; i < 9; ++i)
+    bad.rail_presets.push_back({"Preset " + std::to_string(i), {"sog", "depth", "tws", "soc"}});
+  Reject([&] { application::ValidateSettings(bad); });
+  bad = s;
   bad.data_rail = {"depth", "depth"};
   Reject([&] { application::ValidateSettings(bad); });
   bad = s;

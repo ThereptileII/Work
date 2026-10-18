@@ -3,6 +3,7 @@
 #include "adapters/Radar.h"
 #include "application/NavigationObjects.h"
 #include "application/Settings.h"
+#include "application/ChartStyle.h"
 #include "application/Alerts.h"
 #include "diagnostics/Commissioning.h"
 #include "diagnostics/FieldReport.h"
@@ -77,6 +78,7 @@ struct ProductActions {
   std::function<void()> chart, route_summary, track_recording, energy, diagnostics;
   std::function<void()> preferences, anchor_watch, pilot_controls, alerts;
   std::function<void()> source_health;
+  std::function<void()> personalise_rail;
   std::function<void(ProductPage)> page_changed;
   std::function<void()> legacy, restart_xnav, safe, diagnostics_folder;
   std::function<void(LightMode)> theme;
@@ -86,8 +88,8 @@ struct ProductActions {
   // SCRUM-295: the single pilot detected from its live status, if any.
   std::function<std::optional<adapters::St4000Binding>()> pilot_detected;
   std::function<std::string()> chart_style_status;
-  std::function<bool()> chart_style_requested;
-  std::function<application::CommandResult(bool)> set_chart_style;
+  std::function<application::ChartStyle()> chart_style_requested;
+  std::function<application::CommandResult(application::ChartStyle)> set_chart_style;
   std::function<application::Settings()> settings;
   std::function<application::CommandResult(const application::Settings &)>
       save_settings;

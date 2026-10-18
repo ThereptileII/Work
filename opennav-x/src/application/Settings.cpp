@@ -1,4 +1,5 @@
 #include "application/Settings.h"
+#include "application/NavigationNaming.h"
 #include "vessel/DisplayItems.h"
 #include <cmath>
 #include <iomanip>
@@ -59,6 +60,20 @@ void ValidateSettings(const Settings &s) {
   };
   display(s.data_rail, 6);
   display(s.instruments, 23);
+  Require(s.rail_presets.size() <= 8, "Save at most eight rail presets");
+  std::set<std::string> preset_names;
+  for (const auto &preset : s.rail_presets) {
+    Require(preset.name.size() <= 64 && ValidNavigationName(preset.name) &&
+                preset.name.front() != ' ' && preset.name.back() != ' ',
+            "Use a short preset name without blank edges or control characters");
+    auto folded = preset.name;
+    for (auto &c : folded)
+      if (c >= 'A' && c <= 'Z') c = static_cast<char>(c + ('a' - 'A'));
+    Require(preset_names.insert(folded).second,
+            "Rail preset names must be distinct");
+    Require(preset.values.size() == 4, "A rail preset needs four quantities");
+    display(preset.values, 4);
+  }
   const auto &e = s.energy;
   Range(e.battery.capacity_kwh, .001, 100000, "usable capacity (kWh)");
   Range(e.battery.reserve_soc_percent, 0, 100, "reserve SOC (%)");
@@ -130,6 +145,14 @@ std::string EncodeSettings(const Settings &s) {
   };
   r["display.rail"] = join(s.data_rail);
   r["display.instruments"] = join(s.instruments);
+  if (!s.rail_presets.empty()) {
+    std::ostringstream presets;
+    presets.imbue(std::locale::classic());
+    for (const auto &preset : s.rail_presets)
+      presets << std::quoted(preset.name) << ' '
+              << std::quoted(join(preset.values)) << '\n';
+    r["display.rail_presets"] = presets.str();
+  }
   if (!s.pilot.interface_id.empty()) {
     r["pilot.interface"] = s.pilot.interface_id;
     r["pilot.name"] = s.pilot.name;
@@ -262,6 +285,25 @@ Settings DecodeSettings(const std::string &record) {
   };
   display("display.rail", s.data_rail);
   display("display.instruments", s.instruments);
+  if (r.count("display.rail_presets")) {
+    std::istringstream presets(take("display.rail_presets"));
+    presets.imbue(std::locale::classic());
+    while (!(presets >> std::ws).eof()) {
+      RailPreset preset;
+      std::string values;
+      Require(presets.peek() == '"' && bool(presets >> std::quoted(preset.name)),
+              "Invalid rail preset name");
+      presets >> std::ws;
+      Require(presets.peek() == '"' && bool(presets >> std::quoted(values)) &&
+                  !values.empty() && values.back() != ',' &&
+                  s.rail_presets.size() < 8,
+              "Invalid or excessive rail presets");
+      std::istringstream list(values);
+      std::string key;
+      while (std::getline(list, key, ',')) preset.values.push_back(key);
+      s.rail_presets.push_back(std::move(preset));
+    }
+  }
   // Migrate only the untouched Alpha/Beta 1 default. Custom source choices and
   // ordering remain stored; additional values remain accessible in Instruments.
   if (s.data_rail == std::vector<std::string>{"aws","depth","sog","cog","heading"})

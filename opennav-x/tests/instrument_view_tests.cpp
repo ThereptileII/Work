@@ -84,6 +84,28 @@ int RunInstrumentChecks() {
     view = application::PresentInstruments(s, keys, stamp);
     Check(view.heading.value == 41 && !view.wind_bearing_true_deg,
           "heading alone does not imply wind direction");
+    s.wind.apparent_angle_deg = Sample(30);
+    s.wind.apparent_speed_kn = Sample(12);
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(view.wind_is_apparent && view.wind_bearing_true_deg == 71 &&
+              view.wind_angle.key == "awa" && view.wind_speed.key == "aws" &&
+              !view.true_angle.value,
+          "coherent measured apparent wind is an explicitly labelled fallback");
+    s.wind.apparent_speed_kn.source = "different wind instrument";
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && !view.wind_bearing_true_deg,
+          "apparent fallback cannot combine unrelated sources");
+    s.wind.apparent_speed_kn = Sample(12);
+    s.wind.apparent_angle_deg.observed_at -= 2001ms;
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && !view.wind_bearing_true_deg,
+          "apparent fallback requires coherent observation times");
+    s = Fixture();
+    s.wind.apparent_angle_deg = Sample(30);
+    s.wind.apparent_speed_kn = Sample(12);
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && view.wind_bearing_true_deg == 329,
+          "available true wind keeps its own reference");
     s = Fixture();
     s.wind.true_angle_deg.observed_at -= 2001ms;
     view = application::PresentInstruments(s, keys, stamp);

@@ -772,12 +772,24 @@ void XNavDataValue::SetCompact(bool compact) {
   SetMinSize(FromDIP(wxSize(120, compact ? 72 : 120)));
   Refresh();
 }
+void XNavDataValue::SetInterfaceScale(int percent) {
+  if ((percent != 100 && percent != 125 && percent != 150) ||
+      interface_scale_ == percent) return;
+  interface_scale_ = percent;
+  Refresh(false);
+}
 
 void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
-  const auto next = vessel::Assess(sample, now);
+  auto next = sample.freshness.aging_after < vessel::Duration::zero() ||
+          sample.freshness.stale_after <= sample.freshness.aging_after
+      ? vessel::Assessment{} : vessel::Assess(sample, now);
+  if (next.value && ((unit_ == "deg true" && (*next.value < 0 || *next.value >= 360)) ||
+                     (unit_ == "deg relative" && std::abs(*next.value) > 180))) {
+    next.value.reset(); next.quality = vessel::Quality::Unavailable;
+  }
   const bool changed = reading_.value != next.value || reading_.quality != next.quality ||
       sample.source != sample_.source ||
-      (!next.age || !reading_.age || next.age->count()/1000 != reading_.age->count()/1000);
+      (!next.age || !reading_.age || next.age->count()/100 != reading_.age->count()/100);
   sample_ = sample;
   reading_ = next;
   const wxString source = sample.source.empty() ? "No source" : wxString::FromUTF8(sample.source);
@@ -791,8 +803,11 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
 }
 
 void XNavDataValue::PaintVisual(wxDC &dc, int x, int top, int right, int bottom) {
+  const auto D = [this](int value) {
+    return FromDIP(static_cast<int>(std::lround(value * interface_scale_ / 100.)));
+  };
   using Kind = MetricVisual::Kind;
-  if (visual_.kind == Kind::None || right - x < FromDIP(40)) return;
+  if (visual_.kind == Kind::None || right - x < D(40)) return;
   const auto colors = Theme(mode_);
   const auto cyan = Colour(NavigationContextInk(mode_));
   const int width = right - x;
@@ -801,14 +816,14 @@ void XNavDataValue::PaintVisual(wxDC &dc, int x, int top, int right, int bottom)
   const auto track = [&](int y, double fraction, wxColour fill) {
     gc->SetPen(*wxTRANSPARENT_PEN);
     gc->SetBrush(wxBrush(Colour(colors.selected)));
-    gc->DrawRectangle(x, y, width, FromDIP(2));
+    gc->DrawRectangle(x, y, width, D(2));
     gc->SetBrush(wxBrush(fill));
-    gc->DrawRectangle(x, y, std::clamp(fraction, 0.0, 1.0) * width, FromDIP(2));
+    gc->DrawRectangle(x, y, std::clamp(fraction, 0.0, 1.0) * width, D(2));
   };
   switch (visual_.kind) {
   case Kind::Sparkline: {
     // .sparkline: 100% x 23 px, cyan 1.1 px stroke, 8 px below the value.
-    const int h = FromDIP(17);
+    const int h = D(17);
     if (visual_.series.size() < 3 || bottom - top < h) return;
     const auto [lo, hi] = std::minmax_element(visual_.series.begin(), visual_.series.end());
     const double span = std::max(*hi - *lo, 0.5);
@@ -818,62 +833,62 @@ void XNavDataValue::PaintVisual(wxDC &dc, int x, int top, int right, int bottom)
       const double py = top + h - (visual_.series[i] - *lo) / span * h;
       if (i) path.AddLineToPoint(px, py); else path.MoveToPoint(px, py);
     }
-    gc->SetPen(wxPen(cyan, std::max(1, FromDIP(1))));
+    gc->SetPen(wxPen(cyan, std::max(1, D(1))));
     gc->StrokePath(path);
     break;
   }
   case Kind::Meter: {
     // .depth-meter: 2 px track at +7, cyan fill, mark, 7 px caption right.
-    if (bottom - top < FromDIP(20) || visual_.fraction < 0) return;
-    const int y = top + FromDIP(7);
+    if (bottom - top < D(20) || visual_.fraction < 0) return;
+    const int y = top + D(7);
     track(y, visual_.fraction, visual_.warning ? Colour(colors.attention) : cyan);
     if (visual_.marker >= 0 && visual_.marker <= 1) {
       gc->SetBrush(wxBrush(Colour(colors.attention)));
-      gc->DrawRectangle(x + visual_.marker * width - FromDIP(1), y - FromDIP(3), FromDIP(2), FromDIP(8));
+      gc->DrawRectangle(x + visual_.marker * width - D(1), y - D(3), D(2), D(8));
     }
     if (!visual_.caption.empty()) {
-      gc->SetFont(UiFont(*this, 7), Colour(colors.muted));
+      gc->SetFont(UiFont(*this, int(std::lround(7 * interface_scale_ / 100.))), Colour(colors.muted));
       double w = 0, h = 0; gc->GetTextExtent(visual_.caption, &w, &h);
-      gc->DrawText(visual_.caption, right - w, y + FromDIP(4));
+      gc->DrawText(visual_.caption, right - w, y + D(4));
     }
     break;
   }
   case Kind::Direction: {
     // .metric-secondary: cyan arrow, angle, muted side word.
-    if (bottom - top < FromDIP(16)) return;
+    if (bottom - top < D(16)) return;
     const double a = visual_.angle_deg * 3.14159265358979 / 180.0;
-    const double cx = x + FromDIP(7), cy = top + FromDIP(8), r = FromDIP(6);
+    const double cx = x + D(7), cy = top + D(8), r = D(6);
     const double dx = std::sin(a), dy = -std::cos(a);
-    gc->SetPen(wxPen(cyan, std::max(1, FromDIP(1))));
+    gc->SetPen(wxPen(cyan, std::max(1, D(1))));
     gc->StrokeLine(cx - dx * r, cy - dy * r, cx + dx * r, cy + dy * r);
     for (const double side : {-0.55, 0.55}) {
       const double b = a + 3.14159265358979 + side;
-      gc->StrokeLine(cx + dx * r, cy + dy * r, cx + dx * r + std::sin(b) * FromDIP(4),
-                     cy + dy * r - std::cos(b) * FromDIP(4));
+      gc->StrokeLine(cx + dx * r, cy + dy * r, cx + dx * r + std::sin(b) * D(4),
+                     cy + dy * r - std::cos(b) * D(4));
     }
-    gc->SetFont(UiFont(*this, 10), Colour(colors.secondary));
+    gc->SetFont(UiFont(*this, int(std::lround(10 * interface_scale_ / 100.))), Colour(colors.secondary));
     double w = 0, h = 0; gc->GetTextExtent(visual_.value_text, &w, &h);
-    gc->DrawText(visual_.value_text, x + FromDIP(20), cy - h / 2);
-    gc->SetFont(UiFont(*this, 8), Colour(colors.muted));
+    gc->DrawText(visual_.value_text, x + D(20), cy - h / 2);
+    gc->SetFont(UiFont(*this, int(std::lround(8 * interface_scale_ / 100.))), Colour(colors.muted));
     double w2 = 0, h2 = 0; gc->GetTextExtent(visual_.caption, &w2, &h2);
-    gc->DrawText(visual_.caption, x + FromDIP(26) + w, cy - h2 / 2);
+    gc->DrawText(visual_.caption, x + D(26) + w, cy - h2 / 2);
     break;
   }
   case Kind::Bar: {
     // .battery-track: 5 px mint bar, then "At destination  43%".
-    if (bottom - top < FromDIP(8) || visual_.fraction < 0) return;
-    const int y = top + FromDIP(6);
+    if (bottom - top < D(8) || visual_.fraction < 0) return;
+    const int y = top + D(6);
     gc->SetPen(*wxTRANSPARENT_PEN);
     gc->SetBrush(wxBrush(Colour(colors.selected)));
-    gc->DrawRoundedRectangle(x, y, width, FromDIP(5), FromDIP(2));
+    gc->DrawRoundedRectangle(x, y, width, D(5), D(2));
     gc->SetBrush(wxBrush(Colour(colors.accent)));
-    gc->DrawRoundedRectangle(x, y, std::clamp(visual_.fraction, 0.0, 1.0) * width, FromDIP(5), FromDIP(2));
-    if (!visual_.caption.empty() && bottom - y > FromDIP(22)) {
-      gc->SetFont(UiFont(*this, 10), Colour(colors.secondary));
-      gc->DrawText(visual_.caption, x, y + FromDIP(11));
-      gc->SetFont(UiFont(*this, 10), Colour(colors.accent));
+    gc->DrawRoundedRectangle(x, y, std::clamp(visual_.fraction, 0.0, 1.0) * width, D(5), D(2));
+    if (!visual_.caption.empty() && bottom - y > D(22)) {
+      gc->SetFont(UiFont(*this, int(std::lround(10 * interface_scale_ / 100.))), Colour(colors.secondary));
+      gc->DrawText(visual_.caption, x, y + D(11));
+      gc->SetFont(UiFont(*this, int(std::lround(10 * interface_scale_ / 100.))), Colour(colors.accent));
       double w = 0, h = 0; gc->GetTextExtent(visual_.value_text, &w, &h);
-      gc->DrawText(visual_.value_text, right - w, y + FromDIP(11));
+      gc->DrawText(visual_.value_text, right - w, y + D(11));
     }
     break;
   }
@@ -885,20 +900,24 @@ void XNavDataValue::Paint(wxPaintEvent&) {
   const auto colors = Theme(mode_);
   dc.SetBackground(wxBrush(Colour(compact_ ? colors.background : colors.surface)));
   dc.Clear();
+  const auto scaled = [this](int pixels) {
+    return static_cast<int>(std::lround(pixels * interface_scale_ / 100.));
+  };
   const bool narrow_rail = compact_ && ToDIP(GetClientSize().x) <= 156;
-  const int x = FromDIP(content_inset_ ? content_inset_ : compact_ ? (narrow_rail ? 14 : 19) : 12);
+  const int x = FromDIP(scaled(content_inset_ ? content_inset_ : compact_ ? (narrow_rail ? 14 : 19) : 12));
   if (compact_) {
     const int height = ToDIP(GetClientSize().y);
     const bool roomy = height >= 108;
     const bool medium = height >= 95;
-    const int label_y = roomy ? 10 : medium ? 7 : 5;
-    const int right = GetClientSize().x - FromDIP(content_inset_ ? content_inset_ : narrow_rail ? 13 : 18);
+    const int label_y = medium ? scaled(roomy ? 10 : 7) : 5;
+    const int right = GetClientSize().x - FromDIP(scaled(content_inset_ ? content_inset_ : narrow_rail ? 13 : 18));
     const int available = right - x;
-    const int detail_y = GetClientSize().y-FromDIP(18);
+    const int detail_y = GetClientSize().y-FromDIP(scaled(18));
     const int value_detail_gap = FromDIP(4);
     dc.SetPen(wxPen(Colour(colors.border)));
     dc.DrawLine(x, GetClientSize().y-1, right, GetClientSize().y-1);
-    dc.SetFont(UiFont(*this,metric_label_size_ ? metric_label_size_ : 11));
+    const int label_size = scaled(metric_label_size_ ? metric_label_size_ : 11);
+    dc.SetFont(UiFont(*this,medium ? label_size : std::min(12, label_size)));
     dc.SetTextForeground(Colour(colors.secondary));
     auto title=label_;
     if(title=="SOG") title="Speed over ground";
@@ -907,7 +926,13 @@ void XNavDataValue::Paint(wxPaintEvent&) {
     if(title=="TRUE WIND") title="True wind";
     if(title=="SPEED OVER GROUND") title="Speed over ground";
     if(title=="HEADING") title="Heading";
-    const int icon_size = FromDIP(16); // .metric-label .icon in the immutable prototype.
+    if(title=="STW") title="Speed through water";
+    if(title=="COG") title="Course over ground";
+    if(title=="BATTERY SOC") title="Battery";
+    if(title=="WATER TEMP") title="Water temperature";
+    if(title=="APPARENT ANGLE") title="Apparent wind angle";
+    if(title=="TRUE ANGLE") title="True wind angle";
+    const int icon_size = FromDIP(scaled(16));
     const int label_width = available - (metric_icon_ == XNavIcon::None ? 0 : icon_size + FromDIP(6));
     dc.DrawText(wxControl::Ellipsize(title,dc,wxELLIPSIZE_END,std::max(1,label_width)),x,FromDIP(label_y));
     if (metric_icon_ != XNavIcon::None) {
@@ -922,18 +947,28 @@ void XNavDataValue::Paint(wxPaintEvent&) {
       if (bitmap.IsOk()) dc.DrawBitmap(bitmap,right-icon_size,icon_y,true);
     }
     const bool stale=reading_.quality==vessel::Quality::Stale;
-    const auto value=reading_.value?wxString::Format("%.*f",decimals_,*reading_.value):wxString::FromUTF8("—");
-    int value_size = metric_font_size_ ? metric_font_size_ : roomy ? 48 : medium ? 40 : 33;
+    const bool relative = unit_ == "deg relative";
+    const bool bearing = unit_ == "deg true";
+    const auto value = !reading_.value ? wxString::FromUTF8("—")
+        : bearing ? wxString::Format("%03.0f", std::fmod(std::round(*reading_.value) + 360., 360.))
+        : wxString::Format("%.*f", decimals_, relative ? std::abs(*reading_.value) : *reading_.value);
+    int value_size = scaled(metric_font_size_ ? metric_font_size_ : roomy ? 48 : medium ? 40 : 33);
     const int tracking=FromDIP(roomy ? -3 : -2);
-    const int value_y=FromDIP(label_y+(roomy?21:16));
+    const int value_y=FromDIP(label_y+(medium ? scaled(roomy?21:16) : 18));
     const auto unit=unit_.StartsWith("m /") ? wxString("m") :
-        unit_=="deg true" ? wxString::FromUTF8("°T") : unit_;
-    const int visual_height = !reading_.value || stale ? 0 :
-        visual_.kind == MetricVisual::Kind::Sparkline ? FromDIP(17) :
-        visual_.kind == MetricVisual::Kind::Meter ? FromDIP(20) :
-        visual_.kind == MetricVisual::Kind::Direction ? FromDIP(16) :
-        visual_.kind == MetricVisual::Kind::Bar ? FromDIP(visual_.caption.empty() ? 8 : 27) : 0;
-    dc.SetFont(UiFont(*this,11));
+        bearing ? wxString::FromUTF8("°T") : relative ? wxString::FromUTF8(
+            !reading_.value || std::abs(*reading_.value) < .5 || std::abs(*reading_.value) >= 179.5
+                ? "°" : *reading_.value < 0 ? "°P" : "°S") : unit_;
+    const bool visual_usable = reading_.value &&
+        (reading_.quality == vessel::Quality::Live || reading_.quality == vessel::Quality::Aging ||
+         reading_.quality == vessel::Quality::Estimated);
+    int visual_height = !visual_usable ? 0 :
+        visual_.kind == MetricVisual::Kind::Sparkline ? FromDIP(scaled(17)) :
+        visual_.kind == MetricVisual::Kind::Meter ? FromDIP(scaled(20)) :
+        visual_.kind == MetricVisual::Kind::Direction ? FromDIP(scaled(16)) :
+        visual_.kind == MetricVisual::Kind::Bar ? FromDIP(scaled(visual_.caption.empty() ? 8 : 27)) : 0;
+    const int unit_size = scaled(11);
+    dc.SetFont(UiFont(*this,unit_size));
     const auto unit_extent=dc.GetTextExtent(unit);
     const auto fits=[&](int size) {
       dc.SetFont(UiFont(*this,size));
@@ -941,51 +976,60 @@ void XNavDataValue::Paint(wxPaintEvent&) {
       const int tracked_width=value_extent.x+tracking*(int(value.length())-1);
       const int unit_x=x+tracked_width+FromDIP(6);
       const bool inline_unit=unit_x+unit_extent.x<=right;
-      const int unit_y=FromDIP(label_y+(roomy?21:16)+size-13);
+      const int unit_y=value_y+FromDIP(size-unit_size-2);
       const int content_bottom=std::max(value_y + value_extent.y,
           inline_unit ? unit_y + unit_extent.y : value_y + value_extent.y);
-      const int visual_bottom = reading_.quality == vessel::Quality::Live && inline_unit
-          ? GetClientSize().y - FromDIP(6) : detail_y - FromDIP(2);
+      const int visual_bottom = detail_y - FromDIP(2);
       return tracked_width<=available &&
           content_bottom+value_detail_gap+visual_height<=visual_bottom;
     };
-    // Compact rows can be shorter than the prototype's normal metric card at
-    // high DPI. Fit the measured glyph bounds before drawing the status line.
+    // Preserve primary text and provenance when a larger interface has less
+    // vertical room. Decorative history/meter detail yields before the number.
+    if ((interface_scale_ > 100 || !roomy) && !fits(value_size)) visual_height = 0;
+    // Fit measured glyph bounds before drawing the status line.
     while(value_size > 16 && !fits(value_size))
       value_size=std::max(16,value_size-2);
     dc.SetFont(UiFont(*this,value_size));
     const auto value_extent = dc.GetTextExtent(value);
     const int tracked_width=value_extent.x+tracking*(int(value.length())-1);
-    dc.SetTextForeground(Colour(stale?colors.muted:colors.primary));
+    dc.SetTextForeground(Colour(stale?colors.muted:label_=="BATTERY SOC"?colors.accent:colors.primary));
     wxArrayInt advances; dc.GetPartialTextExtents(value,advances);
     for(std::size_t i=0;i<value.length();++i)
       dc.DrawText(value.Mid(i,1),x+(i?advances[i-1]:0)+tracking*int(i),value_y);
     const int unit_x=x+tracked_width+FromDIP(6);
-    dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
+    dc.SetFont(UiFont(*this,unit_size));dc.SetTextForeground(Colour(colors.secondary));
     const bool inline_unit=unit_x+dc.GetTextExtent(unit).x<=right;
-    if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-13));
+    if(inline_unit)dc.DrawText(unit,unit_x,value_y+FromDIP(value_size-unit_size-2));
     // Keep the large-value font's measured height. Measuring after selecting
     // the tiny unit font placed the sparkline/meter/arrow through the digits.
     const int value_bottom=value_y+value_extent.y;
-    // SCRUM-352: a live value needs no caption. The routine source and age
-    // line is gone from the rail; the source stays in the hover hint and in
-    // source health. Only a value that cannot be fully trusted (aging, stale,
-    // estimated, unavailable) still says so, because that changes its use.
-    wxString status;
-    if(reading_.quality!=vessel::Quality::Live)
-      status=wxString::FromUTF8(vessel::QualityName(reading_.quality));
+    // Prototype provenance is subtle but always available: source at the left,
+    // observation age at the right. Non-live quality replaces the source;
+    // full provenance remains available in the detail view and tooltip.
+    wxString source = wxString::FromUTF8(sample_.source);
+    if(source.StartsWith("NMEA2000/")) source="NMEA 2000";
+    else if(source.StartsWith("NMEA0183/")) source="NMEA 0183";
+    else if(source.StartsWith("SignalK/")) source="Signal K";
+    if(source.empty())source="No source";
+    wxString status = reading_.quality == vessel::Quality::Live ? source
+        : wxString::FromUTF8(vessel::QualityName(reading_.quality));
     // If a long numeric value fills the rail, retain its unit on the status
     // line. Never hide the unit or clip a valid heading at a narrower DPI.
     if(!inline_unit)status=status.empty()?unit:unit+"  "+status;
-    if(!status.empty()){
-      dc.SetFont(UiFont(*this,8));dc.SetTextForeground(Colour(stale?colors.attention:colors.muted));
-      dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,available)),x,detail_y);
-    }
+    dc.SetFont(UiFont(*this,scaled(8)));
+    const auto age = reading_.age ? wxString::Format("%.1f s", reading_.age->count()/1000.) : wxString{};
+    const int age_width = dc.GetTextExtent(age).x;
+    const bool show_age = available > age_width + FromDIP(scaled(62));
+    const int status_width = available - (show_age ? age_width + FromDIP(scaled(8)) : 0);
+    dc.SetTextForeground(Colour(stale || reading_.quality == vessel::Quality::Uncertain
+                                   ? colors.attention : colors.muted));
+    dc.DrawText(wxControl::Ellipsize(status,dc,wxELLIPSIZE_END,std::max(1,status_width)),x,detail_y);
+    if(show_age)dc.DrawText(age,right-age_width,detail_y);
     // The visual sits between the value and the status line (or tile edge).
     // A stale or missing value gets no visual: it would look current.
-    if(reading_.value && !stale)
+    if(visual_usable && visual_height)
       PaintVisual(dc,x,value_bottom+FromDIP(4),right,
-                  (status.empty()?GetClientSize().y-FromDIP(6):detail_y-FromDIP(2)));
+                  detail_y-FromDIP(2));
     return;
   }
   dc.SetPen(wxPen(Colour(colors.border)));

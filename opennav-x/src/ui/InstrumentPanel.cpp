@@ -14,14 +14,16 @@ wxString Number(const InstrumentReading &r) {
   if (!r.value)
     return W("—");
   if (r.key == "heading" || r.key == "cog")
-    return wxString::Format("%03.0f", *r.value);
+    return wxString::Format("%03.0f", std::fmod(std::round(*r.value) + 360., 360.));
   const bool angle = r.key == "twa" || r.key == "awa";
   return wxString::Format("%.*f", r.decimals,
                           angle ? std::abs(*r.value) : *r.value);
 }
 wxString Unit(const InstrumentReading &r) {
   if ((r.key == "twa" || r.key == "awa") && r.value)
-    return *r.value < 0   ? W("° port")
+    return std::abs(*r.value) >= 179.5 ? W("° astern")
+           : std::abs(*r.value) < .5 ? W("° ahead")
+           : *r.value < 0   ? W("° port")
            : *r.value > 0 ? W("° starboard")
                           : W("° ahead");
   return W(r.unit);
@@ -37,7 +39,9 @@ wxString Health(const InstrumentReading &r) {
   else if (source.StartsWith("SignalK/"))
     source = "Signal K";
   if (r.quality != vessel::Quality::Live)
-    source = W(vessel::QualityName(r.quality));
+    source = W(vessel::QualityName(r.quality)) +
+        (source.empty() ? wxString{} : W(" · ") + source);
+  if (source.empty()) source = "No source";
   if (r.age)
     source += wxString::Format(W(" · %.1f s"), r.age->count() / 1000.);
   return source;
@@ -123,21 +127,36 @@ void XNavInstrumentPanel::Update(const vessel::VesselState &s,
   Refresh(false);
 }
 void XNavInstrumentPanel::Reflow() {
-  const int width = ToDIP(GetClientSize().x);
+  const int width = LogicalWidth();
   InstrumentLayout l(width, view_.tiles.size());
-  SetMinSize(FromDIP(wxSize(320, l.grid_bottom + 148)));
-  const int close_width = close_->InlineWidth(80);  // SCRUM-356
-  close_->SetSize(FromDIP(width - 32) - close_width, FromDIP(28), close_width, FromDIP(44));
+  SetMinSize(FromDIP(wxSize(Scaled(320), Scaled(l.grid_bottom + 148))));
+  const int close_width = std::max(FromDIP(Scaled(80)), close_->InlineWidth(80));
+  close_->SetSize(FromDIP(Scaled(width - 32)) - close_width, FromDIP(Scaled(28)), close_width, FromDIP(Scaled(44)));
   const int split = (l.width - 9) / 2;
-  rail_->SetSize(FromDIP(32), FromDIP(l.grid_bottom + 20), FromDIP(split),
-                 FromDIP(48));
-  health_->SetSize(FromDIP(32 + split + 9), FromDIP(l.grid_bottom + 20),
-                   FromDIP(l.width - split - 9), FromDIP(48));
-  configure_->SetSize(FromDIP(32), FromDIP(l.grid_bottom + 80),
-                      FromDIP(l.width), FromDIP(48));
+  rail_->SetSize(FromDIP(Scaled(32)), FromDIP(Scaled(l.grid_bottom + 20)), FromDIP(Scaled(split)),
+                 FromDIP(Scaled(48)));
+  health_->SetSize(FromDIP(Scaled(32 + split + 9)), FromDIP(Scaled(l.grid_bottom + 20)),
+                   FromDIP(Scaled(l.width - split - 9)), FromDIP(Scaled(48)));
+  configure_->SetSize(FromDIP(Scaled(32)), FromDIP(Scaled(l.grid_bottom + 80)),
+                      FromDIP(Scaled(l.width)), FromDIP(Scaled(48)));
+}
+int XNavInstrumentPanel::Scaled(int value) const {
+  return static_cast<int>(std::lround(value * interface_scale_ / 100.));
+}
+int XNavInstrumentPanel::LogicalWidth() const {
+  return static_cast<int>(std::lround(ToDIP(GetClientSize().x) * 100. / interface_scale_));
+}
+void XNavInstrumentPanel::SetInterfaceScale(int percent) {
+  if ((percent != 100 && percent != 125 && percent != 150) || interface_scale_ == percent) return;
+  interface_scale_ = percent;
+  for (auto *button : Controls()) {
+    button->SetDisplayAction(48);
+    button->SetInterfaceScale(percent);
+  }
+  Reflow(); Refresh(false);
 }
 std::vector<std::pair<wxString, wxRect>> XNavInstrumentPanel::Regions() const {
-  InstrumentLayout l(ToDIP(GetClientSize().x), view_.tiles.size());
+  InstrumentLayout l(LogicalWidth(), view_.tiles.size());
   std::vector<std::pair<wxString, wxRect>> result{
       {"Wind and heading",
        {32, prototype::dashboard_y, l.left, prototype::wind_card_height}}};
@@ -147,6 +166,9 @@ std::vector<std::pair<wxString, wxRect>> XNavInstrumentPanel::Regions() const {
                       {l.rx + static_cast<int>(i % 2) * (split + 12),
                        l.ry + static_cast<int>(i / 2) * 138,
                        i % 2 ? l.right - split - 12 : split, 126}});
+  for (auto &region : result)
+    region.second = {Scaled(region.second.x), Scaled(region.second.y),
+                     Scaled(region.second.width), Scaled(region.second.height)};
   return result;
 }
 void XNavInstrumentPanel::Reading(wxDC &dc, XNavPainter &p,
@@ -248,18 +270,23 @@ void XNavInstrumentPanel::Wind(wxDC &dc, XNavPainter &p, int x, int y,
   svg_text("E", 223, 143, 9, p.c.secondary, false);
   svg_text(Number(view_.heading) + W("°"), 140, 190, 23, p.c.primary);
   svg_text("HEADING / TRUE", 140, 206, 8, p.c.secondary);
+  svg_text(view_.wind_is_apparent ? "APPARENT WIND" : "TRUE WIND",
+           140, 12, 8, p.c.secondary);
   // These provenance lines are required where the illustrative HTML is silent.
-  svg_text(Health(view_.heading) + (view_.wind_bearing_true_deg
-                                        ? wxString{}
-                                        : W(" · wind direction unavailable")),
-           140, 285, 8, p.c.muted);
+  svg_text(Health(view_.heading), 140, 285, 8, p.c.muted);
+  if (!view_.wind_direction_reason.empty())
+    svg_text(W(view_.wind_direction_reason), 140, 298, 8, p.c.muted);
 }
 void XNavInstrumentPanel::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(this);
   XNavPainter p(*this, dc, light_);
   dc.SetBackground(wxBrush(Colour(p.c.background)));
   dc.Clear();
-  InstrumentLayout l(ToDIP(GetClientSize().x), view_.tiles.size());
+  // Keep the same prototype geometry in logical units. Scale the native DC
+  // once, including its vector rose and typography; the outer scroller gets
+  // the corresponding scaled minimum size and control rectangles.
+  dc.SetUserScale(interface_scale_ / 100., interface_scale_ / 100.);
+  InstrumentLayout l(LogicalWidth(), view_.tiles.size());
   p.TextTracked("VESSEL INSTRUMENTS", 32, 36, 9, p.c.accent, 650, 1.17);
   p.TextTracked("Feel the passage. Read the details.", 32, 56, 30, p.c.primary,
                 400, -1.2, l.width - 90);
@@ -274,11 +301,13 @@ void XNavInstrumentPanel::Paint(wxPaintEvent &) {
   p.TextWeight("Wind & heading", 57, 171, 12, p.c.secondary, 500);
   Wind(dc, p, 32, 146, l.left);
   const int stats = (l.left - 50 - 16) / 2;
-  Reading(dc, p, view_.true_speed, 57, 494, stats, false);
-  Reading(dc, p, view_.true_angle, 57 + stats + 16, 494, stats, false);
-  const auto regions = Regions();
+  Reading(dc, p, view_.wind_speed, 57, 494, stats, false);
+  Reading(dc, p, view_.wind_angle, 57 + stats + 16, 494, stats, false);
+  const int split = (l.right - 12) / 2;
   for (std::size_t i = 0; i < view_.tiles.size(); ++i) {
-    const auto &r = regions[i + 1].second;
+    const wxRect r{l.rx + static_cast<int>(i % 2) * (split + 12),
+                   l.ry + static_cast<int>(i / 2) * 138,
+                   i % 2 ? l.right - split - 12 : split, 126};
     dc.SetPen(wxPen(Colour(p.c.border)));
     dc.SetBrush(wxBrush(Colour(p.c.surface)));
     dc.DrawRoundedRectangle(p.D(r.x), p.D(r.y), p.D(r.width), p.D(r.height),

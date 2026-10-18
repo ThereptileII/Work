@@ -8,10 +8,20 @@
 #include <map>
 
 namespace opennav::application {
+struct RailPreset {
+  std::string name;
+  std::vector<std::string> values;
+  bool operator==(const RailPreset &other) const {
+    return name == other.name && values == other.values;
+  }
+};
 // Configuration is not sensor telemetry. Missing numeric configuration is NaN;
 // it never becomes a freshly observed battery/safety datum on a UI read.
 struct Settings {
   std::vector<std::string> data_rail{"sog", "depth", "aws", "heading"};
+  // Optional version-1 extension. Older profiles retain their exact selection;
+  // named presets describe four display quantities, never sensor settings.
+  std::vector<RailPreset> rail_presets;
   std::vector<std::string> instruments{
       "sog", "cog",   "heading",    "stw",      "aws",    "awa", "tws",
       "twa", "depth", "water_temp", "pressure", "rudder", "heel"};

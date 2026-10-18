@@ -9,6 +9,7 @@ namespace opennav::ui {
 class XNavInstrumentPanel final : public wxPanel {
 public:
   explicit XNavInstrumentPanel(wxWindow *parent);
+  void SetInterfaceScale(int percent);
   void Update(const vessel::VesselState &, const std::vector<std::string> &,
               vessel::Time now, LightMode);
   const application::InstrumentView &View() const { return view_; }
@@ -20,11 +21,14 @@ public:
 
 private:
   void Reflow();
+  int Scaled(int value) const;
+  int LogicalWidth() const;
   void Paint(wxPaintEvent &);
   void Wind(wxDC &, XNavPainter &, int x, int y, int width);
   void Reading(wxDC &, XNavPainter &, const application::InstrumentReading &,
                int x, int y, int width, bool tile);
   LightMode light_ = LightMode::Day;
+  int interface_scale_ = 100;
   application::InstrumentView view_;
   XNavButton *close_, *rail_, *health_, *configure_;
 };

@@ -190,6 +190,9 @@ class XNavDataValue final : public wxPanel {
   void SetLightMode(LightMode mode);
   void SetReading(const vessel::Sample& sample, vessel::Time now);
   void SetCompact(bool compact);
+  // These setters accept baseline DIP sizes. Interface scale is applied once
+  // inside this control; the owner independently allocates rail geometry.
+  void SetInterfaceScale(int percent);
   void SetMetricIcon(XNavIcon icon) { if(metric_icon_!=icon){metric_icon_=icon;Refresh(false);} }
   void SetMetricFontSize(int pixels) { if(metric_font_size_!=pixels){metric_font_size_ = pixels; Refresh(false);} }
   void SetMetricLabelSize(int pixels) { if(metric_label_size_!=pixels){metric_label_size_=pixels;Refresh(false);} }
@@ -211,6 +214,7 @@ class XNavDataValue final : public wxPanel {
   bool compact_ = false;
   int metric_font_size_ = 0;
   int metric_label_size_ = 0;
+  int interface_scale_ = 100;
   int content_inset_ = 0;
   XNavIcon metric_icon_ = XNavIcon::None;
   MetricVisual visual_;

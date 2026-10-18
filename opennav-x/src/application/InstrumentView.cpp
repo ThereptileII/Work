@@ -24,6 +24,8 @@ InstrumentReading Read(const vessel::DisplayItem &item, vessel::Time now,
     r.title = "SPEED THROUGH WATER";
   if (r.key == "tws")
     r.title = "TRUE WIND SPEED";
+  if (r.key == "aws")
+    r.title = "APPARENT WIND SPEED";
   if (r.key == "twa")
     r.title = "TRUE WIND ANGLE";
   if (r.key == "awa")
@@ -34,6 +36,8 @@ InstrumentReading Read(const vessel::DisplayItem &item, vessel::Time now,
   }
   if (r.key == "water_temp")
     r.title = "WATER TEMPERATURE";
+  if (r.key == "heading")
+    r.title = "HEADING / TRUE";
   const bool absolute = r.key == "heading" || r.key == "cog";
   const bool relative = r.key == "twa" || r.key == "awa";
   if (absolute) {
@@ -85,13 +89,38 @@ InstrumentView PresentInstruments(const vessel::VesselState &s,
   v.heading = read("heading");
   v.true_speed = read("tws");
   v.true_angle = read("twa");
+  v.wind_speed = v.true_speed;
+  v.wind_angle = v.true_angle;
   const auto heading_at = s.navigation.heading_true_deg.observed_at;
-  const auto wind_at = s.wind.true_angle_deg.observed_at;
-  const auto skew =
-      heading_at > wind_at ? heading_at - wind_at : wind_at - heading_at;
-  if (v.heading.value && v.true_angle.value && skew <= std::chrono::seconds(2))
+  const auto coherent = [](vessel::Time a, vessel::Time b) {
+    return (a > b ? a - b : b - a) <= std::chrono::seconds(2);
+  };
+  const bool true_direction = v.true_angle.value &&
+      coherent(heading_at, s.wind.true_angle_deg.observed_at);
+  const auto apparent_speed = read("aws"), apparent_angle = read("awa");
+  const auto measured = [](const InstrumentReading &reading) {
+    return reading.value && (reading.quality == vessel::Quality::Live ||
+                             reading.quality == vessel::Quality::Aging);
+  };
+  const bool apparent_pair = measured(apparent_speed) && measured(apparent_angle) &&
+      apparent_speed.source == apparent_angle.source &&
+      coherent(s.wind.apparent_speed_kn.observed_at, s.wind.apparent_angle_deg.observed_at);
+  if (!true_direction && apparent_pair) {
+    v.wind_speed = apparent_speed;
+    v.wind_angle = apparent_angle;
+    v.wind_is_apparent = true;
+  }
+  const auto wind_at = v.wind_is_apparent ? s.wind.apparent_angle_deg.observed_at
+                                         : s.wind.true_angle_deg.observed_at;
+  if (v.heading.value && v.wind_angle.value && coherent(heading_at, wind_at))
     v.wind_bearing_true_deg =
-        std::fmod(*v.heading.value + *v.true_angle.value + 360., 360.);
+        std::fmod(*v.heading.value + *v.wind_angle.value + 360., 360.);
+  else if (!v.heading.value)
+    v.wind_direction_reason = "True heading unavailable";
+  else if (!v.wind_angle.value)
+    v.wind_direction_reason = "No coherent wind direction available";
+  else
+    v.wind_direction_reason = "Heading and wind observations are not aligned";
   // Preserve configured selection. Put the prototype's eight primary tiles
   // first, with other configured quantities below; no setting is discarded.
   std::vector<std::string> keys{"sog", "cog", "stw",  "depth",
