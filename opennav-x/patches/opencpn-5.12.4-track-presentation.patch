@@ -1,0 +1,138 @@
+diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
+index 3e5f42e8..757b8382 100644
+--- a/gui/src/chcanv.cpp
++++ b/gui/src/chcanv.cpp
+@@ -75,6 +75,7 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartPresentation.h"
+ #include "integration/ChartAnchorWatch.h"
++#include "integration/TrackPresentation.h"
+ #endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+@@ -4218,8 +4219,12 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
+   // Now the Track info rollover
+   // Show the track segment info
+   bool showTrackRollover = false;
++  bool track_layer_visible = true;
++#ifdef OPENNAV_X
++  track_layer_visible = !opennav::integration::XNavTrackLayerHidden();
++#endif
+ 
+-  if (NULL == m_pRolloverTrackSeg) {
++  if (track_layer_visible && NULL == m_pRolloverTrackSeg) {
+     //    Get a list of all selectable sgements, and search for the first
+     //    visible segment as the rollover target.
+ 
+@@ -4336,7 +4341,7 @@ void ChartCanvas::OnRolloverPopupTimerEvent(wxTimerEvent &event) {
+       } else
+         node = node->GetNext();
+     }
+-  } else {
++  } else if (track_layer_visible) {
+     //    Is the cursor still in select radius, and not timed out?
+     SelectCtx ctx(m_bShowNavobjects, GetCanvasTrueScale(), GetScaleValue(),
+                   FromDIP(100) * m_displayScale / 100.0);
+@@ -7998,7 +8003,11 @@ void ChartCanvas::CallPopupMenu(int x, int y) {
+   pFindAIS = pSelectAIS->FindSelection(ctx, slat, slon, SELTYPE_AISTARGET);
+   pFindRP = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTEPOINT);
+   pFindRouteSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_ROUTESEGMENT);
+-  pFindTrackSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
++  pFindTrackSeg = nullptr;
++#ifdef OPENNAV_X
++  if (!opennav::integration::XNavTrackLayerHidden())
++#endif
++    pFindTrackSeg = pSelect->FindSelection(ctx, slat, slon, SELTYPE_TRACKSEGMENT);
+ 
+   if (m_bShowCurrent)
+     pFindCurrent =
+@@ -8443,7 +8452,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
+       }
+     }
+ 
+-    cursorItem = pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_TRACKSEGMENT);
++    cursorItem = nullptr;
++#ifdef OPENNAV_X
++    if (!opennav::integration::XNavTrackLayerHidden())
++#endif
++      cursorItem = pSelect->FindSelection(ctx, zlat, zlon, SELTYPE_TRACKSEGMENT);
+ 
+     if (cursorItem) {
+       Track *pt = (Track *)cursorItem->m_pData3;
+@@ -9540,7 +9553,11 @@ bool ChartCanvas::MouseEventProcessObjects(wxMouseEvent &event) {
+         }  // while
+       }
+ 
+-      if (!b_start_rollover && !b_startedit_route) {
++      if (!b_start_rollover && !b_startedit_route
++#ifdef OPENNAV_X
++          && !opennav::integration::XNavTrackLayerHidden()
++#endif
++      ) {
+         SelectableItemList SelList = pSelect->FindSelectionList(
+             ctx, m_cursor_lat, m_cursor_lon, SELTYPE_TRACKSEGMENT);
+         wxSelectableItemListNode *node = SelList.GetFirst();
+@@ -12838,7 +12855,11 @@ void ChartCanvas::DrawOverlayObjects(ocpnDC &dc, const wxRegion &ru) {
+ 
+     if (m_muiBar) m_muiBar->DrawDC(dc, 1.0);
+ 
+-    if (m_pTrackRolloverWin) {
++    if (m_pTrackRolloverWin
++#ifdef OPENNAV_X
++        && !opennav::integration::XNavTrackLayerHidden()
++#endif
++    ) {
+       m_pTrackRolloverWin->Draw(dc);
+       m_brepaint_piano = true;
+     }
+diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
+index 75791e2a..8781c584 100644
+--- a/gui/src/glChartCanvas.cpp
++++ b/gui/src/glChartCanvas.cpp
+@@ -72,6 +72,7 @@
+ #ifdef OPENNAV_X
+ #include "integration/ChartPresentation.h"
+ #include "integration/OpenCPNIntegration.h"
++#include "integration/TrackPresentation.h"
+ #endif
+ #include "ChInfoWin.h"
+ #include "cm93.h"  // for chart outline draw
+@@ -4603,7 +4604,11 @@ void glChartCanvas::Render() {
+         m_pcontext, vp, m_pParentCanvas->m_canvasIndex, OVERLAY_OVER_EMBOSS);
+   }
+   if (!g_PrintingInProgress) {
+-    if (m_pParentCanvas->m_pTrackRolloverWin)
++    if (m_pParentCanvas->m_pTrackRolloverWin
++#ifdef OPENNAV_X
++        && !opennav::integration::XNavTrackLayerHidden()
++#endif
++    )
+       m_pParentCanvas->m_pTrackRolloverWin->Draw(gldc);
+ 
+     if (m_pParentCanvas->m_pRouteRolloverWin
+diff --git a/gui/src/track_gui.cpp b/gui/src/track_gui.cpp
+index 6cf35cee..a88e00d6 100644
+--- a/gui/src/track_gui.cpp
++++ b/gui/src/track_gui.cpp
+@@ -9,6 +9,9 @@
+ #include "model/own_ship.h"
+ #include "model/routeman.h"
+ #include "track_gui.h"
++#ifdef OPENNAV_X
++#include "integration/TrackPresentation.h"
++#endif
+ #include "glChartCanvas.h"
+ 
+ extern Routeman *g_pRouteMan;
+@@ -125,6 +128,11 @@ void TrackGui::GetPointLists(ChartCanvas *cc,
+ 
+ void TrackGui::Draw(ChartCanvas *cc, ocpnDC &dc, ViewPort &VP,
+                     const LLBBox &box) {
++#ifdef OPENNAV_X
++  // The same painter serves software, static GL and the active recording.
++  // Do not rewrite Track/Layer visibility or stop recording to hide the ink.
++  if (opennav::integration::XNavTrackLayerHidden()) return;
++#endif
+   std::list<std::list<wxPoint> > pointlists;
+   GetPointLists(cc, pointlists, VP, box);
+ 
