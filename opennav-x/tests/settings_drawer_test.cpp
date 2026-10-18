@@ -1,5 +1,6 @@
 // Non-installed offline widget driver. No OpenCPN profile, network or devices.
 #include "ui/SettingsDrawer.h"
+#include "ui/DisplaySizing.h"
 #include <array>
 #include <cstdlib>
 #include <cmath>
@@ -28,6 +29,12 @@
 using namespace opennav;
 using namespace std::chrono_literals;
 namespace {
+static_assert(ui::DisplayFieldHeight(125)==58 && ui::DisplayFieldFont(125)==20 &&
+              ui::DisplayActionHeight(125,48)==60 && ui::DisplayActionFont(125,12)==15,
+              "125 percent display contract");
+static_assert(ui::DisplayFieldHeight(150)==69 && ui::DisplayFieldFont(150)==24 &&
+              ui::DisplayActionHeight(150,48)==72 && ui::DisplayActionFont(150,12)==18,
+              "150 percent display contract");
 class TestApp final : public wxApp {
 public:
   bool OnInit() override {
@@ -84,9 +91,20 @@ public:
     actions.display=[this]{return display_;};
     actions.save_display=[this](const application::DisplayPreferences &next){
       ++display_saves_;
-      Check(next.scale_percent==125 && next.layout==application::ChartLayout::ChartFocus,
-            "both display choices submitted together");
-      if(display_saves_==1)return application::CommandResult{false,"Synthetic display save failure"};
+      const std::array<application::DisplayPreferences,6> expected{{
+        {125,application::ChartLayout::Balanced},
+        {125,application::ChartLayout::Balanced},
+        {125,application::ChartLayout::ChartFocus},
+        {125,application::ChartLayout::ChartFocus},
+        {150,application::ChartLayout::ChartFocus},
+        {125,application::ChartLayout::ChartFocus}}};
+      Check(display_saves_<=static_cast<int>(expected.size()),
+            "one persistence attempt per committed display choice");
+      const auto &wanted=expected[display_saves_-1];
+      Check(next.scale_percent==wanted.scale_percent && next.layout==wanted.layout,
+            "each display choice submits the current scale and layout together");
+      if(display_saves_==1 || display_saves_==3)
+        return application::CommandResult{false,"Synthetic display save failure"};
       display_=next;
       panel_->SetDisplayPreferences(next);
       panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
@@ -164,6 +182,31 @@ private:
     Check(b && b->IsShownOnScreen() && b->IsEnabled(),"visible enabled contextual action");
     wxCommandEvent event(wxEVT_BUTTON,b->GetId());event.SetEventObject(b);
     b->GetEventHandler()->ProcessEvent(event);
+  }
+  void CheckDisplaySizing(int field_height,int field_font,int action_height) {
+    const auto *scale=FindChoice("Interface and chart scale"),*layout=FindChoice("Chart layout");
+    Check(scale && layout && scale->GetMinSize().y==panel_->FromDIP(field_height) &&
+          layout->GetMinSize().y==panel_->FromDIP(field_height),
+          "both live choice fields use the applied display height");
+    const auto *fullscreen=Find(panel_,"Toggle fullscreen");
+    Check(fullscreen && fullscreen->GetMinSize().y==panel_->FromDIP(action_height),
+          "existing Display action uses the applied display height");
+    const int before=display_saves_;
+    panel_->Select(ui::SettingsSection::Vessel);
+    for(const auto *label:{"Vessel name","Draft · metres","Safety depth · metres",
+                           "Usable battery capacity · kWh","Minimum reserve · %"}) {
+      const auto *field=FindText(panel_,wxString::FromUTF8(label));
+      Check(field && field->GetParent()->GetMinSize().y==panel_->FromDIP(field_height),
+            "all vessel field frames use the applied display height");
+      Check(field->GetFont().GetNativeFontInfoDesc()==
+                ui::UiFont(*panel_,field_font).GetNativeFontInfoDesc(),
+            "all vessel field fonts use the applied display size");
+    }
+    const auto *save=Find(panel_,"Save vessel profile");
+    Check(save && save->GetMinSize().y==panel_->FromDIP(action_height),
+          "vessel save action uses the applied display height");
+    panel_->Select(ui::SettingsSection::Display);
+    Check(display_saves_==before,"rebuilding settings sections does not persist display choices");
   }
   void Capture(const char *name, bool canonical=true) {
     Check(frame_->GetClientSize()==wxSize(1280,800),"canonical native screen");
@@ -358,10 +401,12 @@ private:
         Check(static_cast<ui::XNavButton *>(Find(panel_,"Day"))->IsSelected() &&
               !static_cast<ui::XNavButton *>(Find(panel_,"Night"))->IsSelected(),
               "external light return restores exclusive selection");
-        Check(FindChoice("Interface scale") && FindChoice("Chart layout"),
+        Check(FindChoice("Interface and chart scale") && FindChoice("Chart layout"),
               "both prototype select fields visible");
+        Check(!Find(panel_,"Apply display preferences"),
+              "display choices apply directly without a separate Apply action");
         {
-          auto *choice=FindChoice("Interface scale");
+          auto *choice=FindChoice("Interface and chart scale");
           wxUIActionSimulator input;
           const auto rect=choice->GetScreenRect();
           const wxPoint center(rect.x+rect.width/2,rect.y+rect.height/2);
@@ -389,46 +434,61 @@ private:
           wxMilliSleep(250);wxTheApp->Yield(true);
         }
         Capture("display-day");
-        Choose("Interface scale",1);Choose("Chart layout",1);
-        Check(display_saves_==0 && display_.scale_percent==100,
-              "select changes remain draft before Apply");
+        Check(display_saves_==0,"opening and cancelling choice popups does not save");
+        Choose("Interface and chart scale",1);
+        Check(display_saves_==1 && display_.scale_percent==100 &&
+              display_.layout==application::ChartLayout::Balanced,
+              "scale selection saves immediately and failed persistence keeps stored values");
         light_=ui::LightMode::Night;Feed();
-        Check(FindChoice("Interface scale")->GetSelection()==1 &&
-              FindChoice("Chart layout")->GetSelection()==1,
-              "timer and theme refresh preserve uncommitted selection");
-        Click("Apply display preferences");break;
+        Check(FindChoice("Interface and chart scale")->GetSelection()==0 &&
+              FindChoice("Chart layout")->GetSelection()==0 && display_saves_==1,
+              "failed scale selection rolls back and refresh does not retry persistence");
+        break;
       case 10:
         Check(display_saves_==1 && display_.scale_percent==100,
               "failed display save leaves applied scale unchanged");
         Check(panel_->GetScreenRect().width==432 &&
-              FindChoice("Interface scale")->GetSelection()==1,
-              "failed display save retains editable draft without resizing");
-        Click("Apply display preferences");break;
-      case 11:
+              FindChoice("Interface and chart scale")->GetSelection()==0,
+              "failed display save restores the applied selection without resizing");
+        Choose("Interface and chart scale",1);
         Check(display_saves_==2 && display_.scale_percent==125 &&
+              display_.layout==application::ChartLayout::Balanced &&
+              panel_->GetScreenRect().width==460,
+              "retrying scale selection persists and resizes immediately");
+        Choose("Chart layout",1);
+        Check(display_saves_==3 && display_.scale_percent==125 &&
+              display_.layout==application::ChartLayout::Balanced &&
+              FindChoice("Interface and chart scale")->GetSelection()==1 &&
+              FindChoice("Chart layout")->GetSelection()==0,
+              "failed layout save restores layout while preserving the applied scale");
+        Feed();
+        Check(display_saves_==3 && FindChoice("Chart layout")->GetSelection()==0,
+              "refresh preserves layout rollback without retrying persistence");
+        Choose("Chart layout",1);
+        break;
+      case 11:
+        Check(display_saves_==4 && display_.scale_percent==125 &&
               display_.layout==application::ChartLayout::ChartFocus,
-              "successful Apply commits both choices");
-        Check(panel_->GetScreenRect().width==460,"successful Apply resizes wide drawer immediately");
+              "successful layout retry commits both current choices immediately");
+        Check(panel_->GetScreenRect().width==460,"layout change retains the applied drawer width");
+        CheckDisplaySizing(58,20,60);
         {
-          auto *apply=dynamic_cast<ui::XNavButton *>(Find(panel_,"Apply display preferences"));
-          Check(apply && apply->GetMinSize().y==panel_->FromDIP(48),
-                "125 percent keeps the primary action's base height");
-          auto larger=display_;larger.scale_percent=150;
-          display_=larger;
-          panel_->SetDisplayPreferences(larger);
-          panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
-          Check(apply->GetMinSize().y==panel_->FromDIP(56),
-                "150 percent raises a marked primary action to 56 logical pixels");
-          Check(FindChoice("Interface scale")->GetMinSize().y==panel_->FromDIP(56),
-                "150 percent raises the owner-drawn field to 56 logical pixels");
+          Choose("Interface and chart scale",2);
+          Check(display_saves_==5 && display_.scale_percent==150 &&
+                display_.layout==application::ChartLayout::ChartFocus &&
+                panel_->GetScreenRect().width==480,
+                "150 percent choice persists immediately and retains chart layout");
+          CheckDisplaySizing(69,24,72);
           wxTheApp->Yield(true);
           Capture("display-150-chart-night");
-          display_.scale_percent=125;
-          panel_->SetDisplayPreferences(display_);
-          panel_->Present(wxRect(frame_->ClientToScreen({80,68}),wxSize(1014,698)));
+          Choose("Interface and chart scale",1);
+          Check(display_saves_==6 && display_.scale_percent==125 &&
+                display_.layout==application::ChartLayout::ChartFocus,
+                "returning to 125 percent saves once and retains chart layout");
+          CheckDisplaySizing(58,20,60);
           wxTheApp->Yield(true);
-          Check(apply->GetMinSize().y==panel_->FromDIP(48),
-                "returning to 125 percent restores the action's base height");
+          Check(panel_->GetScreenRect().width==460,
+                "returning to 125 percent restores the applied drawer width");
         }
         Capture("display-applied-125-chart");Click("Dusk");break;
       case 12: Check(light_==ui::LightMode::Dusk,"light callback applied");Capture("display-dusk");Click("Night");break;
@@ -474,7 +534,7 @@ private:
         Check(ScrollBody()->GetScreenRect().Contains(Find(panel_,"Run vessel setup")->GetScreenRect()),
               "System setup action is reachable by scrolling");
         Click("Run vessel setup");wxTheApp->Yield(true);
-        Check(boat_setups_==1 && saves_==2 && display_saves_==2 && navigations_==2,
+        Check(boat_setups_==1 && saves_==2 && display_saves_==6 && navigations_==2,
               "System setup invokes existing setup callback once without saving or navigating");
         Click("Advanced / Legacy Settings");break;
       case 17:
@@ -510,7 +570,7 @@ private:
           Click("Alarms & warnings");wxTheApp->Yield(true);
           Check(navigations_==previous+1 && last_page_==ui::ProductPage::AlarmSettings,
                 "alarm entry opens settings overview rather than active notifications");
-          Check(saves_==2 && display_saves_==2,
+          Check(saves_==2 && display_saves_==6,
                 "opening alarm settings never changes configured values");
         }
         panel_->Select(ui::SettingsSection::Vessel);
@@ -526,7 +586,7 @@ private:
           Check(!body->GetScreenRect().Contains(Find(panel_,"Sensors")->GetScreenRect()),
                 "scrolled Sensors tab starts outside the body viewport");
           Click("Run boat setup");wxTheApp->Yield(true);
-          Check(boat_setups_==2 && saves_==2 && display_saves_==2,
+          Check(boat_setups_==2 && saves_==2 && display_saves_==6,
                 "Vessel setup retains the same callback without saving settings");
           const auto offset=body->GetViewStart();
           light_=ui::LightMode::Dusk;Feed();
@@ -555,7 +615,7 @@ private:
         break;
       case 24:
         Check(panel_->Section()==ui::SettingsSection::Sensors,"pointer reaches Sensors after root reopen");
-        Check(saves_==2 && display_saves_==2,"reopening does not save settings");
+        Check(saves_==2 && display_saves_==6,"reopening does not save settings");
 #ifdef __WXMSW__
         Check(wxFileName::Mkdir(output_+"/activation",wxS_DIR_DEFAULT,wxPATH_MKDIR_FULL),"create separate activation evidence directory");
         activation_repro_=true;
@@ -603,7 +663,7 @@ private:
         break;
       case 30:
         Check(panel_->Section()==ui::SettingsSection::Sensors,"physical Sensors click works after owner to drawer activation");
-        Check(saves_==2 && display_saves_==2,"activation transition does not save settings");
+        Check(saves_==2 && display_saves_==6,"activation transition does not save settings");
         ActivationEvidence("sensors-selected");
 #endif
         Finish();break;
@@ -614,7 +674,7 @@ private:
     std::cout<<"Settings step "<<current<<" end; captures="<<names_.size()
              <<"; display saves="<<display_saves_<<std::endl;
     // Display popup checks yield to real native events. A repeating timer can
-    // enter the next scenario before this one submits Apply (wxMSW WM_TIMER).
+    // enter the next scenario before this one's choices finish (wxMSW WM_TIMER).
     // Rearm only after the entire current scenario, keeping the same cadence.
     if(!finished_)timer_.StartOnce(350);
   }
