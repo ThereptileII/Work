@@ -1,5 +1,31 @@
 # Direct OpenCPN Upstream Modifications
 
+## Sailing-track recording and display — SCRUM-377
+
+Two source-only patches follow the existing startup-presentation patch:
+
+- `opencpn-5.12.4-track-recording.patch` gives the existing track recorder a
+  registered live-position sampling guard and surfaces persistence outcomes.
+  The model hook is header-only and unregistered model consumers retain stock
+  behavior; no GUI linker dependency is introduced into standalone model tests.
+  Normal point selection, distance, daily merge and carryover remain upstream.
+  Failed daily restarts retain pending carryover and tolerate absent points.
+  The existing `NavObj_dB::UpdateTrack` transaction now checks its write/commit
+  results and rolls back failed point replacements, rather than reporting a
+  partial replacement as successful. This narrow model fix also protects native
+  callers; it adds no GUI dependency or separate navigation store.
+- `opencpn-5.12.4-track-presentation.patch` filters the common `TrackGui::Draw`
+  entry and GUI selection/rollover paths, covering software/GL active and saved
+  tracks. It changes no track/layer visibility flags or recording state and is
+  inactive in Legacy/Safe, independent of SKAGER/Standard chart palette.
+
+Source-scoped model compilation, lifecycle cleanup, patch preparation and
+corresponding-source inventories include these hooks. The selected dependency
+consumer helper's exact LF/CRLF hashes change only for the added application
+patch inventory; dependency producer inputs are unchanged. This is source
+maintenance, not a native dependency-reuse acceptance result. Builds, patch
+application and tests are explicitly unperformed. See [sailing tracks](track-recording.md).
+
 ## Measurement, placement input and first start — SCRUM-375 / SCRUM-341
 
 Three source-only patches follow the chart-presentation/route-hit patches:

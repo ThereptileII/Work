@@ -23,6 +23,8 @@
 #include "integration/UpdateQualification.h"
 #include "integration/RoutePassWatch.h"
 #include "integration/RoutePassageSettings.h"
+#include "integration/TrackPresentation.h"
+#include "integration/TrackRecording.h"
 #include "integration/RuntimeDiagnostics.h"
 #include "integration/SettingsStore.h"
 #include "integration/ChartPresentation.h"
@@ -404,6 +406,7 @@ void SelectMode(wxFileConfig& config, bool upstream_safe) {
       wxLogWarning("SKAGER diagnostic directory unavailable: %s", folder);
   }
   integration::ConfigureChartPresentation(config, IsXNav());
+  integration::ConfigureTrackPresentation(&config, IsXNav());
   // Explicit route arrival preferences belong to the shared profile. A mode
   // change must not silently change a configured route's advancement policy.
   integration::ConfigureRoutePassage(&config);
@@ -1559,6 +1562,7 @@ bool PrepareClose(wxFileConfig& config) {
 #ifdef OPENNAV_ROUTE_TESTS
   test::StopObjectScenario();
 #endif
+  integration::ClearTrackRecordingBridge();
   navigation.reset();
   marine.reset();
   selected_navigation = {};
@@ -1566,6 +1570,7 @@ bool PrepareClose(wxFileConfig& config) {
   SetAutopilotN2KInterfaceGuard({});
   native_route_output.reset();
   integration::ConfigureRoutePassage(nullptr);
+  integration::ConfigureTrackPresentation(nullptr, false);
   integration::FinishDashboardPresentation();
   shell.reset();
   online_chart.Clear();

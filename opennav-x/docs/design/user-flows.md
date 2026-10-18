@@ -93,3 +93,24 @@ Dashboard acquisition continues, but its desktop panes do not obscure the chart.
 This presentation choice does not rewrite the user's stored plugin workspace.
 Other plugin interfaces remain unchanged. A failed restart retains the existing
 recovery paths; no physical control command belongs to this flow.
+
+## Sailing-track recording — source-only SCRUM-377
+
+- Start from the chart: **Record → Start recording** (two actions). Missing or
+  stale position disables starting with an explanation. The header reflects
+  actual OpenCPN state. No naming dialog blocks the first valid fix.
+- Stop: **Recording → Stop recording** (two actions). Closing/Escape dismisses
+  the drawer without stopping. OpenCPN may discard an empty/short recording or
+  merge a daily track; report the actual outcome rather than promise a new row.
+- Browse: **Record/Recording → Saved tracks**. Routes and Waypoints link to the
+  same library; Settings → Navigation also provides Saved tracks. Select a row
+  for fit-to-chart, visibility and inline rename. Back returns to saved tracks;
+  canceling the name field preserves the stored name.
+- Filter: **Layers → Tracks** controls chart display only. Recording continues
+  while hidden. Re-enabling restores individual choices. Imported layers keep
+  their data ownership and route/waypoint visibility.
+- Invalid identity, native edit lock, protected layer, replay or storage error
+  refuses the mutation with a reason; readback never fabricates command success.
+
+These are implemented source flows, not native interaction or boat acceptance.
+See [track recording](../track-recording.md) for ownership and deferred checks.

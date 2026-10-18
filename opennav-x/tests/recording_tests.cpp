@@ -361,6 +361,39 @@ void ControlBoundary() {
     preferences.cpa_enabled = true;
     preferences.cpa_nm = 2.;
     actions.alarm_preferences = [&] { return preferences; };
+    actions.start_track = [&] {
+      ++count; return application::CommandResult{true, "Recording enabled"};
+    };
+    actions.stop_track = [&](const std::string &) {
+      ++count; return application::CommandResult{true, "Recording stopped"};
+    };
+    actions.view_track = [&](const std::string &) {
+      ++count; return application::CommandResult{true, "Track shown"};
+    };
+    actions.rename_track = [&](const auto &, const std::string &) {
+      ++count; return application::CommandResult{true, "Track renamed"};
+    };
+    actions.set_track_visible = [&](const auto &, bool) {
+      ++count; return application::CommandResult{true, "Visibility saved"};
+    };
+    actions.track_recording = [] {
+      application::TrackRecordingState state;
+      state.available = state.recording = state.position_fresh = true;
+      state.can_stop = true;
+      return state;
+    };
+    application::TrackSummary recorded_track;
+    recorded_track.id = "real-recorded-track";
+    recorded_track.editable = true;
+    actions.track = [&](const std::string &) {
+      return std::optional<application::TrackSummary>{recorded_track};
+    };
+    actions.tracks = [&] {
+      application::TrackCatalog catalog;
+      catalog.available = true;
+      catalog.tracks.push_back(recorded_track);
+      return catalog;
+    };
     actions = application::GuardNavigationChanges(
         std::move(actions), [&] { return !service.Replaying(); });
     Check(!actions.activate({}).ok && !actions.deactivate({}).ok &&
@@ -377,6 +410,16 @@ void ControlBoundary() {
     actions.ais_alarm_settings();
     actions.alarm_sound_settings();
     Check(count == 0, "Replay blocks advanced mutation entry");
+    Check(!actions.start_track().ok && !actions.stop_track(recorded_track.id).ok &&
+              !actions.view_track(recorded_track.id).ok &&
+              !actions.rename_track(recorded_track, "Voyage").ok &&
+              !actions.set_track_visible(recorded_track, false).ok && count == 0,
+          "Replay cannot mutate the real sailing-track recorder or storage");
+    const auto recorder = actions.track_recording();
+    Check(recorder.recording && !recorder.can_start && !recorder.can_stop &&
+              !actions.track(recorded_track.id)->editable &&
+              !actions.tracks().tracks.front().editable,
+          "Replay retains real track state while disabling mutation controls");
     const auto observed_preferences = actions.alarm_preferences();
     preferences.cpa_nm = 1.;
     Check(observed_preferences.available && observed_preferences.cpa_enabled &&
@@ -393,6 +436,14 @@ void ControlBoundary() {
     actions.alarm_sound_settings();
     Check(count == 4,
           "Only explicit replay exit restores native alarm configuration entry");
+    Check(actions.track_recording().can_stop &&
+              actions.track(recorded_track.id)->editable &&
+              actions.tracks().tracks.front().editable &&
+              actions.start_track().ok && actions.stop_track(recorded_track.id).ok &&
+              actions.rename_track(recorded_track, "Voyage").ok &&
+              actions.set_track_visible(recorded_track, false).ok &&
+              actions.view_track(recorded_track.id).ok && count == 9,
+          "Leaving replay restores explicit sailing-track actions");
     diagnostics::Commissioning denied(
         root, [] { return "Output-capable connection active"; });
     Check(!denied.OpenReplay(file, now).ok && !denied.Replaying(),

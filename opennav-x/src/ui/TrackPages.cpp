@@ -122,7 +122,8 @@ void ProductPanel::TrackActions() {
     const auto result = actions_.navigation.view_track(id);
     if (result.ok && actions_.chart) actions_.chart();
     else Result(result);
-  }, bool(actions_.navigation.view_track));
+  }, bool(actions_.navigation.view_track) &&
+      !state_.vessel.simulated && !state_.vessel.replayed);
   Action(selected.visible ? "Hide track on chart" : "Show track on chart", [this, selected] {
     if (page_ != ProductPage::TrackDetail || track_.id != selected.id ||
         state_.vessel.simulated || state_.vessel.replayed) return;

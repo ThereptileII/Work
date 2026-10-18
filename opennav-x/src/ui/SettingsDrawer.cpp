@@ -366,6 +366,7 @@ void XNavSettingsDrawer::Build() {
       Page("Weather (GRIBstream)","Forecast wind, chart wind layer and provider token",XNavIcon::Compass,ProductPage::Weather);
       Link("Charts & coverage","Configured OpenCPN charts and connections",XNavIcon::Chart,actions_.advanced);
       Page("Passage library","Saved OpenCPN routes",XNavIcon::Route,ProductPage::Routes);
+      Page("Saved tracks","Recorded journeys and chart visibility",XNavIcon::Route,ProductPage::Tracks);
       Page("Waypoints","Saved places and chart marks",XNavIcon::Pin,ProductPage::Waypoints);
       break;
     case SettingsSection::Sensors:

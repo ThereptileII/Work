@@ -1,5 +1,6 @@
 #pragma once
 #include "application/RoutePassage.h"
+#include "application/TrackRecording.h"
 #include "vessel/AisState.h"
 #include <chrono>
 #include <functional>
@@ -47,6 +48,7 @@ struct ChartPresentationState {
   ChartLayerState chart_symbols{{}, false, "Chart symbols remain managed by OpenCPN"};
   ChartLayerState depth_contours{{}, false, "OpenCPN retains safety-contour presentation"};
   ChartLayerState route_corridor{{}, false, "Chart corridor integration unavailable"};
+  ChartLayerState tracks{{}, false, "Track presentation unavailable"};
   ChartLayerState wind_vectors{{}, false, "Chart wind-vector provider unavailable"};
   ChartLayerState radar_overlay{{}, false, "No compatible radar adapter connected"};
 };
@@ -121,6 +123,16 @@ struct ChartToolState {
   bool can_place_waypoint = false;
 };
 struct NavigationActions {
+  std::function<TrackRecordingState()> track_recording;
+  std::function<TrackCatalog()> tracks;
+  std::function<std::optional<TrackSummary>(const std::string &)> track;
+  std::function<CommandResult()> start_track;
+  // Expected active identity prevents a delayed click stopping a new recording.
+  std::function<CommandResult(const std::string &)> stop_track;
+  std::function<CommandResult(const TrackSummary &, const std::string &)> rename_track;
+  std::function<CommandResult(const TrackSummary &, bool)> set_track_visible;
+  std::function<CommandResult(const std::string &)> view_track;
+  std::function<ChartPresentationResult(bool)> set_chart_tracks;
   std::function<ChartToolState()> chart_tools;
   std::function<void()> cancel_measure;
   // Copies only; every action returns fresh readback and never caches preferences.

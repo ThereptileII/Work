@@ -45,6 +45,8 @@ target_sources(${PACKAGE_NAME} PRIVATE
   "${OPENNAV_ROOT}/src/integration/ActiveRoutePassageOverlay.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/NavigationObjects.cpp"
   "${OPENNAV_ROOT}/src/integration/NavigationActions.cpp"
+  "${OPENNAV_ROOT}/src/integration/TrackRecording.cpp"
+  "${OPENNAV_ROOT}/src/integration/TrackPresentation.cpp"
   "${OPENNAV_ROOT}/src/integration/SettingsStore.cpp"
   "${OPENNAV_ROOT}/src/integration/RecoveryStore.cpp"
   "${OPENNAV_ROOT}/src/integration/UpdateStartupReceipt.cpp")
@@ -78,6 +80,12 @@ target_compile_definitions(_OCPN_MODEL INTERFACE SKAGER_PLUGIN_CUSTODY=1)
 # The definition changes no model class layout or ordinary upstream behavior.
 target_compile_definitions(_OCPN_MODEL INTERFACE SKAGER_UPDATE_QUALIFICATION=1)
 target_include_directories(_OCPN_MODEL INTERFACE "${OPENNAV_ROOT}/src")
+# Track sampling consults an optional header-only live-position hook. The
+# headless model retains stock behavior with no GUI linker dependency.
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/track.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY COMPILE_DEFINITIONS OPENNAV_X=1)
+set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/track.cpp"
+  DIRECTORY "${CMAKE_SOURCE_DIR}/model" APPEND PROPERTY INCLUDE_DIRECTORIES "${OPENNAV_ROOT}/src")
 # Preserve normal plugin preferences while upstream Safe Mode blocks loading.
 # Limit this additional definition to the one affected model translation unit.
 set_property(SOURCE "${CMAKE_SOURCE_DIR}/model/src/plugin_loader.cpp"

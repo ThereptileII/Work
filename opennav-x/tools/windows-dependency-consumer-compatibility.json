@@ -50,10 +50,10 @@
         },
         "tools/windows_dependency_reuse.py": {
           "originalSha256": "ee089aa8c3ba5998be6d5d049aa76c3e22ca4125ed12ee4cb53a33d8a19d075e",
-          "currentSha256": "08e014603f91bced2a96482c6af7a02b3d9587d32450b8c5d7954da367915844"
+          "currentSha256": "e18b887b7f21451bcc6785363fda68e33adbdd6a265bc065cc4d2b2c261a1f24"
         }
       },
-      "reason": "Exact LF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance."
+      "reason": "Exact LF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification."
     },
     {
       "producerCommit": "49f9f07407cbf640f6186757a3fe3582c114b895",
@@ -68,10 +68,10 @@
         },
         "tools/windows_dependency_reuse.py": {
           "originalSha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c",
-          "currentSha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9"
+          "currentSha256": "cc7de0b31433b2fa76b04c79552ec382cd8b854a023f0be7e9e87fde307fe0f8"
         }
       },
-      "reason": "Exact CRLF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance."
+      "reason": "Exact CRLF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification."
     }
   ]
 }

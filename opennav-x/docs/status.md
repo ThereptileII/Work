@@ -1,4 +1,19 @@
-# SKAGER status — 2026-10-17
+# SKAGER status — 2026-10-18
+
+## Sailing-track controls — local source changes only
+
+SCRUM-377 adds the approved Record/Recording header control, native recording
+drawer, saved-track library/details and independent Tracks chart-layer filter.
+OpenCPN retains recording/storage and daily/restart policy; SKAGER copies owned
+state and withholds stale GPS samples. The filter leaves recording and each
+track's stored visibility untouched, and covers software/GL drawing and chart
+hit/rollover paths. Replay cannot mutate real track state.
+
+See [the contract and deferred checks](track-recording.md). Source lists,
+upstream patches and package/receipt inventories were updated and manually
+reviewed. No build, test, patch check, CI or boat operation was run, as requested.
+Compilation and runtime acceptance remain pending. The installed candidate and
+startup blocker below are unchanged.
 
 ## Boat reconnected — startup crash blocks acceptance
 

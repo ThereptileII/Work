@@ -7,13 +7,14 @@ namespace opennav::ui {
 namespace {
 using application::ChartOrientation;
 using application::ChartFormat;
-// Actual immutable Windows Layers rows: four 63.5px and four 52px rows.
-constexpr std::array<double, 8> row_top{{0,63.5,115.5,179,231,283,346.5,398.5}};
-constexpr std::array<double, 8> row_height{{63.5,52,63.5,52,52,63.5,52,63.5}};
-constexpr std::array<unsigned, 5> editable_rows{{1,2,3,5,6}};
-constexpr std::array<const char *, 8> labels{{"Chart symbols", "ENC text labels",
+// Prototype rows plus the approved own-ship track display filter. The drawer
+// scrolls; this never steals vertical space from the chart or data rail.
+constexpr std::array<double, 9> row_top{{0,63.5,115.5,179,231,283,346.5,410,462}};
+constexpr std::array<double, 9> row_height{{63.5,52,63.5,52,52,63.5,63.5,52,63.5}};
+constexpr std::array<unsigned, 6> editable_rows{{1,2,3,5,6,7}};
+constexpr std::array<const char *, 9> labels{{"Chart symbols", "ENC text labels",
     "AIS vessels", "Depth soundings", "Depth contours", "Route corridor",
-    "Wind vectors", "Radar overlay"}};
+    "Tracks", "Wind vectors", "Radar overlay"}};
 constexpr std::array<const char *, 3> orientation_labels{{"North up", "Course up", "Head up"}};
 wxString W(const std::string &value) { return wxString::FromUTF8(value); }
 bool Same(const application::ChartLayerState &a,const application::ChartLayerState &b) {
@@ -25,7 +26,8 @@ bool Same(const application::ChartPresentationState &a,const application::ChartP
       Same(a.ais_vessels,b.ais_vessels) && Same(a.enc_text,b.enc_text) &&
       Same(a.depth_soundings,b.depth_soundings) && Same(a.chart_symbols,b.chart_symbols) &&
       Same(a.depth_contours,b.depth_contours) && Same(a.route_corridor,b.route_corridor) &&
-      Same(a.wind_vectors,b.wind_vectors) && Same(a.radar_overlay,b.radar_overlay);
+      Same(a.tracks,b.tracks) && Same(a.wind_vectors,b.wind_vectors) &&
+      Same(a.radar_overlay,b.radar_overlay);
 }
 }
 
@@ -49,7 +51,7 @@ XNavChartPresentationDrawer::XNavChartPresentationDrawer(
 
   rows_=new wxPanel(body_,wxID_ANY);
   rows_->SetBackgroundStyle(wxBG_STYLE_PAINT);
-  rows_->SetMinSize(FromDIP(wxSize(1,462)));
+  rows_->SetMinSize(FromDIP(wxSize(1,526)));
   rows_->Bind(wxEVT_PAINT,&XNavChartPresentationDrawer::PaintRows,this);
   EnableScrollGesture(*rows_);
   for(unsigned i=0;i<layers_.size();++i) {
@@ -152,8 +154,8 @@ void XNavChartPresentationDrawer::Update(const application::ChartPresentationSta
   ReflowNotes();
   rows_->SetBackgroundColour(Colour(Theme(mode).background));
   orientation_track_->SetBackgroundColour(Colour(Theme(mode).surface));
-  const std::array<const application::ChartLayerState *,5> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.route_corridor,&state_.wind_vectors}};
-  const std::array<bool,5> callbacks{{bool(actions_.set_chart_enc_text),bool(actions_.set_chart_ais),bool(actions_.set_chart_soundings),bool(actions_.set_chart_corridor),bool(actions_.set_chart_wind)}};
+  const std::array<const application::ChartLayerState *,6> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.route_corridor,&state_.tracks,&state_.wind_vectors}};
+  const std::array<bool,6> callbacks{{bool(actions_.set_chart_enc_text),bool(actions_.set_chart_ais),bool(actions_.set_chart_soundings),bool(actions_.set_chart_corridor),bool(actions_.set_chart_tracks),bool(actions_.set_chart_wind)}};
   for(unsigned i=0;i<layers_.size();++i) {
     const auto &layer=*states[i];auto *button=layers_[i];
     button->SetLightMode(mode);button->Show(layer.visible.has_value());
@@ -187,6 +189,7 @@ void XNavChartPresentationDrawer::ReflowNotes() {
       "SKAGER uses its own chart symbols. Standard keeps your OpenCPN symbol preference. "
       "OpenCPN depth and safety settings remain in use. "
       "ENC controls do not alter text or soundings embedded in raster charts.",
+      "Tracks changes display only: hiding tracks never stops recording or deletes points. "
       "Course up needs a current course; Head up needs current heading. Check source health.",
       status}};
   wxClientDC dc(notes_);dc.SetFont(UiFont(*notes_,11));
@@ -225,10 +228,11 @@ void XNavChartPresentationDrawer::ReflowNotes() {
 }
 
 void XNavChartPresentationDrawer::ChangeLayer(unsigned index) {
-  const std::array<const application::ChartLayerState *,5> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.route_corridor,&state_.wind_vectors}};
+  const std::array<const application::ChartLayerState *,6> states{{&state_.enc_text,&state_.ais_vessels,&state_.depth_soundings,&state_.route_corridor,&state_.tracks,&state_.wind_vectors}};
   if(!IsShownOnScreen() || index>=states.size() || !state_.available || !states[index]->editable || !states[index]->visible)return;
   const auto callback=index==0?actions_.set_chart_enc_text:index==1?actions_.set_chart_ais:
-      index==2?actions_.set_chart_soundings:index==3?actions_.set_chart_corridor:actions_.set_chart_wind;
+      index==2?actions_.set_chart_soundings:index==3?actions_.set_chart_corridor:
+      index==4?actions_.set_chart_tracks:actions_.set_chart_wind;
   if(callback)Accept(callback(!*states[index]->visible));
 }
 void XNavChartPresentationDrawer::ChangeOrientation(ChartOrientation orientation) {
@@ -262,9 +266,9 @@ void XNavChartPresentationDrawer::PaintRows(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(rows_);XNavPainter p(*rows_,dc,light_);
   dc.SetBackground(wxBrush(Colour(p.c.background)));dc.Clear();
   const int width=rows_->ToDIP(rows_->GetClientSize().x);
-  const std::array<const application::ChartLayerState *,8> states{{&state_.chart_symbols,&state_.enc_text,
+  const std::array<const application::ChartLayerState *,9> states{{&state_.chart_symbols,&state_.enc_text,
       &state_.ais_vessels,&state_.depth_soundings,&state_.depth_contours,&state_.route_corridor,
-      &state_.wind_vectors,&state_.radar_overlay}};
+      &state_.tracks,&state_.wind_vectors,&state_.radar_overlay}};
   for(unsigned i=0;i<labels.size();++i) {
     const int top=std::lround(row_top[i]),height=std::lround(row_height[i]);
     wxString detail;
@@ -277,7 +281,7 @@ void XNavChartPresentationDrawer::PaintRows(wxPaintEvent &) {
     p.Text(labels[i],0,top+label_y,12,p.c.secondary,false,width-85);
     if(!detail.empty())p.Text(detail,0,top+label_y+22,11,p.c.muted,false,width-65);
     if(i==0 || i==4)p.TextWeight("Managed",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
-    else if(i==7 || !states[i]->visible)p.TextWeight("Unavailable",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
+    else if(i==8 || !states[i]->visible)p.TextWeight("Unavailable",width-74,top+(height-16)/2,10,p.c.muted,400,74,true);
     p.Rule(0,std::lround(row_top[i]+row_height[i])-1,width);
   }
 }

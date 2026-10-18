@@ -372,7 +372,7 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
     def test_selected_producer_reuse_change_is_only_the_reviewed_application_patches(self):
         # Check both explicit checkout encodings; runtime verification never
         # normalizes bytes. The selected producer's exact diff adds two receipt
-        # route entries plus three presentation/input entries; the original
+        # route entries plus five presentation/input entries; the original
         # historical producer policy remains separate. The exact consumer
         # compatibility policy must be reviewed before these bytes can reuse it.
         source = Path(__file__).resolve().parent.parent
@@ -382,7 +382,9 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
                  b'    "opencpn-5.12.4-route-hit-dpi.patch",\n'
                  b'    "opencpn-5.12.4-measure-label.patch",\n'
                  b'    "opencpn-5.12.4-chart-tool-input.patch",\n'
-                 b'    "opencpn-5.12.4-startup-presentation.patch",\n')
+                 b'    "opencpn-5.12.4-startup-presentation.patch",\n'
+                 b'    "opencpn-5.12.4-track-recording.patch",\n'
+                 b'    "opencpn-5.12.4-track-presentation.patch",\n')
         self.assertEqual(data.count(added), 1)
         policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
         for newline in (b'\n', b'\r\n'):

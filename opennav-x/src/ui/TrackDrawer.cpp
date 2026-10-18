@@ -1,6 +1,7 @@
 #include "ui/TrackDrawer.h"
 #include <algorithm>
 #include <cmath>
+#include <utility>
 #include <wx/datetime.h>
 #include <wx/dcbuffer.h>
 

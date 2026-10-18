@@ -12,7 +12,7 @@ import unittest
 ROOT = Path(__file__).resolve().parents[1]
 NAMES = ('xnav', 'regression-tests', 'ais-transport', 'chart-presentation',
          'route-focus', 'route-hit-dpi', 'measure-label', 'chart-tool-input',
-         'startup-presentation',
+         'startup-presentation', 'track-recording', 'track-presentation',
          'maintained-curl', 'download-trust', 'wxcurl-trust',
          'peer-response-buffer', 'peer-unavailable', 'pilot-serial',
          'update-qualification')
