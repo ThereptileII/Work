@@ -1,4 +1,5 @@
 // Exercises extracted production bodies and real wx drawing; GL is recording.
+#include "chart_display_scale_fixture.h"
 #include <wx/wx.h>
 #include <wx/graphics.h>
 #include <wx/fontenum.h>

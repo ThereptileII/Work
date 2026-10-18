@@ -1,6 +1,7 @@
 // Runs production painter code with real wx software rendering and a recording
 // GL interface. The latter checks submission/state only, never driver output.
 #include "integration/ChartRouteGeometry.h"
+#include "chart_display_scale_fixture.h"
 #include "reference-route.h"
 #include <wx/wx.h>
 #include <wx/graphics.h>

@@ -86,6 +86,28 @@ int main(int argc,char **argv) {
       canvas.Blit(theme*320,0,320,320,&dc,0,0);
       dc.SelectObject(wxNullBitmap);
     }
+    // Display sizing changes the label's screen-space offset/font only. The
+    // already projected target coordinate and chart report remain untouched.
+    ais::ChartTarget sized;
+    sized.mmsi=265000009;sized.label="DISPLAY SCALE";sized.age=ais::TargetAge::Live;
+    const std::vector<integration::OnlineAisLabelTarget> sizing_targets{{sized,{80,120}}};
+    for(double display_scale : {1.25,1.5}) {
+      ObservedDC observed{canvas,{}};
+      Check(integration::DrawOnlineAisLabels(observed,*window,ui::LightMode::Day,
+            {960,320},sizing_targets,display_scale)==1,"Scaled live AIS label fits");
+      const auto& drawn=observed.drawn.front();
+      auto expected_font=ui::UiFont(*window,9);
+      expected_font.SetFractionalPointSize(expected_font.GetFractionalPointSize()*display_scale);
+      canvas.SetFont(drawn.font);
+      int width=0,height=0,descent=0;
+      canvas.GetTextExtent(drawn.text,&width,&height,&descent);
+      Check(drawn.font==expected_font && drawn.x==80+std::lround(14*display_scale) &&
+            drawn.y+height-descent==120-std::lround(4*display_scale),
+            "125/150 percent scales AIS font and label offset exactly once");
+      Check(sizing_targets.front().point==wxPoint(80,120) &&
+            sizing_targets.front().mark.mmsi==265000009,
+            "Display sizing preserves projected target position and identity");
+    }
     // With the pinned clamp, a 128-byte valid name appears to fit exactly at
     // the right edge even though actual native text is wider. No truncation or
     // drawing is permitted when the measurement has saturated.

@@ -13,6 +13,7 @@
 #include <stdexcept>
 #include "linmath.h"
 #include "ui/Theme.h"
+#include "chart_display_scale_fixture.h"
 static int checks=0;
 void Check(bool v,const char* s){++checks;if(!v)throw std::runtime_error(s);}
 static wxString translation="OverZoom";

@@ -1,6 +1,7 @@
 // Offline native renderer fixture; production painter and current prepared
 // ring function are compiled unchanged. Input adapters have no output transport.
 #include "integration/ChartAnchorWatch.h"
+#include "integration/ChartPresentation.h"
 #include "ui/Controls.h"
 #include "chcanv.h"
 #include "ocpndc.h"
@@ -16,9 +17,13 @@ bool AnchorAlertOn1=false, AnchorAlertOn2=false, bGPSValid=true;
 RoutePoint *pAnchorWatchPoint1=nullptr, *pAnchorWatchPoint2=nullptr;
 float g_MarkScaleFactorExp=1;
 WayPointman *pWayPointMan=nullptr;
-namespace { bool xnav=true, requested=true; }
+namespace { bool xnav=true, requested=true; double display_scale=1.0; }
 namespace opennav::integration {
 bool XNavChartPresentationActive() { return xnav && requested; }
+double ChartDisplayScale() { return xnav ? display_scale : 1.0; }
+int ChartDisplayPixels(ChartCanvas& canvas, int logical_pixels) {
+  return static_cast<int>(std::lround(canvas.FromDIP(logical_pixels)*ChartDisplayScale()));
+}
 }
 wxColour GetGlobalColor(const wxString &name) {
   return name == "UGREN" ? wxColour(0,255,0) : wxColour(255,0,0);
@@ -36,7 +41,8 @@ bool Geometry(const ocpnDC &a,const ocpnDC &b) {
 }
 void RingChecks(ChartCanvas &canvas,RoutePoint &first,RoutePoint &second,ui::LightMode mode) {
   const auto colors=ui::Theme(mode);
-  for(int sign : {-1,1}) {
+  for(double scale : {1.0,1.25,1.5}) for(int sign : {-1,1}) {
+    display_scale=scale;
     first.radius=sign*70.; second.radius=-sign*90.;
     for(int alerts=0;alerts<4;++alerts) for(bool gps : {false,true}) {
       AnchorAlertOn1=(alerts&1)!=0; AnchorAlertOn2=(alerts&2)!=0; bGPSValid=gps;
@@ -57,7 +63,8 @@ void RingChecks(ChartCanvas &canvas,RoutePoint &first,RoutePoint &second,ui::Lig
             const auto expected=alarm ? colors.alarm : !gps ? colors.attention :
                 entry ? colors.alarm : ui::ActiveRouteInk(mode);
             Check(pen.GetColour()==ui::Colour(expected),"Each watch paints its own alarm/GPS/entry state in current theme");
-            Check(pen.GetWidth()==(alarm?4:2),"Alarm emphasis derives from corresponding upstream watch flag");
+            Check(pen.GetWidth()==std::lround((alarm?4:2)*scale),
+                  "Display percentage changes ring stroke, preserving native center and geographic radius");
             Check(pen.GetStyle()==(!alarm&&!gps ? wxPENSTYLE_SHORT_DASH : wxPENSTYLE_SOLID),
                   "GPS loss is uncertain and dashed; a real alarm retains priority");
           }
@@ -65,6 +72,7 @@ void RingChecks(ChartCanvas &canvas,RoutePoint &first,RoutePoint &second,ui::Lig
       }
     }
   }
+  display_scale=1.0;
 }
 bool DrawObservedMark(ocpnDC &dc, ChartCanvas &canvas, RoutePoint &point) {
   const bool pinned=pWayPointMan && WayPointmanGui(*pWayPointMan).IsPinnedAnchor(point.GetIconName(),point.m_pbmIcon);

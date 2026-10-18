@@ -1,11 +1,13 @@
 // Executes the extracted production painter, with a recording DC backed by wx.
 // Caller selection/projection and the real GL driver remain integration gates.
 #include "ui/Theme.h"
+#include "chart_display_scale_fixture.h"
 #include <wx/wx.h>
 #include <wx/graphics.h>
 #include <algorithm>
 #include <array>
 #include <cmath>
+#include <functional>
 #include <iostream>
 #include <limits>
 #include <memory>
@@ -25,6 +27,14 @@ class ChartCanvas {
   int GetColorScheme() const { return scheme; }
   int FromDIP(int value) const { return value * dpi_percent / 100; }
 };
+// This geometry fixture deliberately has no valid speed/name-chip input. Keep
+// that existing coverage boundary explicit when extracting the whole painter.
+double gSog = std::numeric_limits<double>::quiet_NaN();
+namespace opennav::ui {
+wxFont UiFontWeight(ChartCanvas&, int, int) {
+  throw std::runtime_error("Vessel chip is outside the ownship geometry fixture");
+}
+}
 class ocpnDC {
  public:
   explicit ocpnDC(wxMemoryDC &target) : target(target) {}
@@ -38,6 +48,18 @@ class ocpnDC {
   wxBrush GetBrush() const { return brush; }
   void SetPen(wxPen value) { pen = value; }
   void SetBrush(wxBrush value) { brush = value; }
+  wxFont GetFont() const { return target.GetFont(); }
+  wxColour GetTextForeground() const { return target.GetTextForeground(); }
+  void SetFont(const wxFont& value) { target.SetFont(value); }
+  void SetTextForeground(const wxColour& value) { target.SetTextForeground(value); }
+  void GetTextExtent(const wxString& text, wxCoord* width, wxCoord* height) {
+    target.GetTextExtent(text,width,height);
+  }
+  void DrawRoundedRectangle(int x,int y,int w,int h,int radius) {
+    target.DrawRoundedRectangle(x,y,w,h,radius);
+  }
+  void DrawCircle(int x,int y,int radius) { target.DrawCircle(x,y,radius); }
+  void DrawText(const wxString& text,int x,int y) { target.DrawText(text,x,y); }
   void CalcBoundingBox(int x, int y) { bounds.emplace_back(x, y); }
   void StrokeCircle(double x, double y, double radius) {
     ++paints; ++circles; points.clear(); painted_pen=pen; painted_brush=brush;
@@ -56,6 +78,10 @@ class ocpnDC {
 };
 namespace opennav::integration {
 bool xnav_mode = true, active = true;
+const std::function<std::string()>& VesselNameProvider() {
+  static const std::function<std::string()> unavailable;
+  return unavailable;
+}
 wxColour Color(std::uint32_t c) {
   return {static_cast<unsigned char>(c >> 16), static_cast<unsigned char>(c >> 8),
           static_cast<unsigned char>(c)};
@@ -143,11 +169,21 @@ int main(int argc, char **argv) {
     Check(!inside({100,115}), "GL strip fills stern notch");
     // The scaled bitmap setting on the boat carries independent physical
     // length/beam. Preserve both dimensions rather than reverting to fixed art.
-    Check(DrawChartOwnship(dc,canvas,100,100,0,2,.5,true), "scaled vessel refused");
+    Check(DrawChartOwnship(dc,canvas,100,100,0,2,.5,true,true), "scaled vessel refused");
     int minx=1000,maxx=-1000,miny=1000,maxy=-1000;
     for(auto p:dc.points){minx=std::min(minx,p.x);maxx=std::max(maxx,p.x);
       miny=std::min(miny,p.y);maxy=std::max(maxy,p.y);}
     Check(maxx-minx==22 && maxy-miny==70,"scaled vessel lost beam or length");
+    const auto physical_hull=dc.points;
+    for(double display_scale : {1.25,1.5}) {
+      chart_display_fixture_scale=display_scale;
+      Check(DrawChartOwnship(dc,canvas,100,100,0,2,.5,true,true) && dc.points==physical_hull,
+            "Display percentage must preserve actual hull length and beam");
+      Check(draw() && dc.points[0]==wxPoint(std::lround(100+11*display_scale),
+                                           std::lround(100+16*display_scale)),
+            "Display percentage scales the fixed-size ownship glyph exactly once");
+    }
+    chart_display_fixture_scale=1.0;
     for(double stretch:{0.,-1.,std::numeric_limits<double>::infinity(),std::numeric_limits<double>::quiet_NaN()})
       Check(!DrawChartOwnship(dc,canvas,100,100,0,1,stretch),"invalid beam painted");
     int circles=dc.circles;
