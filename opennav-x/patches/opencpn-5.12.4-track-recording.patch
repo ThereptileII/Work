@@ -1,0 +1,205 @@
+--- a/model/src/track.cpp
++++ b/model/src/track.cpp
+@@ -86,6 +86,9 @@
+ #include <wx/utils.h>
+ 
+ #include "model/track.h"
++#ifdef OPENNAV_X
++#include "integration/TrackRecordingHooks.h"
++#endif
+ 
+ #include "model/config_vars.h"
+ #include "model/georef.h"
+@@ -256,7 +259,11 @@
+ }
+ 
+ void ActiveTrack::Stop(bool do_add_point) {
+-  if (m_bRunning) {
++  if (m_bRunning
++#ifdef OPENNAV_X
++      && opennav::integration::NativeTrackSampleAllowed()
++#endif
++  ) {
+     if (do_add_point)
+       AddPointNow(true);  // Force add last point
+     else {
+@@ -279,12 +286,12 @@
+   TrackPoint *pExtendPoint = NULL;
+ 
+   TrackPoint *pLastPoint = GetPoint(0);
+-  if (!pLastPoint->GetCreateTime().IsValid()) return NULL;
++  if (!pLastPoint || !pLastPoint->GetCreateTime().IsValid()) return NULL;
+ 
+   for (Track *ptrack : g_TrackList) {
+     if (!ptrack->m_bIsInLayer && ptrack->m_GUID != m_GUID) {
+       TrackPoint *track_node = ptrack->GetLastPoint();
+-      if (!track_node->GetCreateTime().IsValid())
++      if (!track_node || !track_node->GetCreateTime().IsValid())
+         continue;  // Skip this bad track
+       if (track_node->GetCreateTime() <= pLastPoint->GetCreateTime()) {
+         if (!pExtendPoint ||
+@@ -355,6 +362,15 @@
+ 
+ void ActiveTrack::OnTimerTrack(wxTimerEvent &event) {
+   m_TimerTrack.Stop();
++#ifdef OPENNAV_X
++  // Keep the native recorder armed, but never use stale/invalid own-ship
++  // globals for distance, timestamps or candidate samples. Fresh fixes resume
++  // native sampling/interpolation; this does not reconstruct the missing path.
++  if (!opennav::integration::NativeTrackSampleAllowed()) {
++    m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
++    return;
++  }
++#endif
+   m_track_run++;
+ 
+   if (m_lastStoredTP)
+@@ -376,13 +392,18 @@
+   else  // continuously update track beginning point timestamp if no movement.
+     if ((trackPointState == firstPoint) && !g_bTrackDaily) {
+       wxDateTime now = wxDateTime::Now();
+-      if (TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
++      // An initial fix may expire while the new track is being persisted.
++      if (!TrackPoints.empty()) TrackPoints.front()->SetCreateTime(now.ToUTC());
+     }
+ 
+   m_TimerTrack.Start(1000, wxTIMER_CONTINUOUS);
+ }
+ 
+ void ActiveTrack::AddPointNow(bool do_add_point) {
++#ifdef OPENNAV_X
++  // Also guards Start() and the forced final sample from Stop(true).
++  if (!opennav::integration::NativeTrackSampleAllowed()) return;
++#endif
+   wxDateTime now = wxDateTime::Now();
+ 
+   if (m_prev_dist < 0.0005)  // avoid zero length segs
+@@ -683,7 +704,12 @@
+   // NavObjectChanges::getInstance()->AddNewTrackPoint(
+   //   tPoint, m_GUID);  // This will update the "changes" file only
+ 
+-  NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
++  const bool point_saved = NavObj_dB::GetInstance().AddTrackPoint(this, tPoint);
++#ifdef OPENNAV_X
++  opennav::integration::NativeTrackStorageResult(this, point_saved);
++#else
++  (void)point_saved;
++#endif
+ 
+   // send a wxJson message to all plugins
+   wxJSONValue v;
+--- a/gui/src/ocpn_frame.cpp
++++ b/gui/src/ocpn_frame.cpp
+@@ -24,6 +24,8 @@
+  **************************************************************************/
+ #ifdef OPENNAV_X
+ #include "integration/OpenCPNIntegration.h"
++#include "integration/TrackRecording.h"
++#include "integration/TrackRecordingHooks.h"
+ #endif
+ #include "config.h"
+ 
+@@ -3286,11 +3288,28 @@
+   wxLogMessage(mob_message);
+ }
+ void MyFrame::TrackOn(void) {
++#ifdef OPENNAV_X
++  // Includes startup carryover/menu/plugin paths, not just the SKAGER button.
++  if (opennav::IsXNav() && !opennav::integration::NativeTrackStartAllowed())
++    return;
++#endif
+   g_bTrackActive = true;
+   g_pActiveTrack = new ActiveTrack();
+ 
+   g_TrackList.push_back(g_pActiveTrack);
+-  NavObj_dB::GetInstance().InsertTrack(g_pActiveTrack);
++  const bool track_saved = NavObj_dB::GetInstance().InsertTrack(g_pActiveTrack);
++#ifdef OPENNAV_X
++  opennav::integration::NativeTrackStorageResult(g_pActiveTrack, track_saved);
++  if (opennav::IsXNav() && !track_saved) {
++    g_TrackList.pop_back();
++    delete g_pActiveTrack;
++    g_pActiveTrack = nullptr;
++    g_bTrackActive = false;
++    return;
++  }
++#else
++  (void)track_saved;
++#endif
+   g_pActiveTrack->Start();
+ 
+   // The main toolbar may still be NULL here, and we will do nothing...
+@@ -3315,7 +3334,7 @@
+   wxString name = g_pActiveTrack->GetName();
+   if (name.IsEmpty()) {
+     TrackPoint *tp = g_pActiveTrack->GetPoint(0);
+-    if (tp->GetCreateTime().IsValid())
++    if (tp && tp->GetCreateTime().IsValid())
+       name = tp->GetCreateTime().FormatISODate() + _T(" ") +
+              tp->GetCreateTime().FormatISOTime();
+     else
+@@ -3341,17 +3360,46 @@
+     g_pActiveTrack->Stop(do_add_point);
+ 
+     if (g_pActiveTrack->GetnPoints() < 2) {
+-      NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
+-      RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
+-      return_val = NULL;
++      const bool removed = NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
++#ifdef OPENNAV_X
++      opennav::integration::NativeTrackStorageResult(g_pActiveTrack, removed);
++      if (!opennav::IsXNav() || removed)
++#else
++      (void)removed;
++#endif
++      {
++        RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
++        return_val = NULL;
++      }
+     } else {
+       if (g_bTrackDaily) {
+         Track *pExtendTrack = g_pActiveTrack->DoExtendDaily();
+         if (pExtendTrack) {
+-          NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
+-          RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
+-          NavObj_dB::GetInstance().UpdateTrack(pExtendTrack);
+-          return_val = pExtendTrack;
++#ifdef OPENNAV_X
++          if (opennav::IsXNav()) {
++            // The native merge has populated the destination in memory. Keep
++            // the source until OpenCPN accepts the destination save and source
++            // deletion; a failed operation must not discard its only copy.
++            const bool saved = NavObj_dB::GetInstance().UpdateTrack(pExtendTrack);
++            opennav::integration::NativeTrackStorageResult(pExtendTrack, saved);
++            const bool removed = saved && NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
++            opennav::integration::NativeTrackStorageResult(g_pActiveTrack, removed);
++            if (removed) {
++              RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
++              return_val = pExtendTrack;
++            } else {
++              // DoExtendDaily removes source selection segments; restore them
++              // when retaining the stopped source after a storage failure.
++              pSelect->AddAllSelectableTrackSegments(g_pActiveTrack);
++            }
++          } else
++#endif
++          {
++            NavObj_dB::GetInstance().DeleteTrack(g_pActiveTrack);
++            RoutemanGui(*g_pRouteMan).DeleteTrack(g_pActiveTrack);
++            NavObj_dB::GetInstance().UpdateTrack(pExtendTrack);
++            return_val = pExtendTrack;
++          }
+         }
+       }
+     }
+@@ -5703,6 +5751,10 @@
+     if (!g_bTrackActive) {
+       if (bGPSValid) {
+         gFrame->TrackOn();
++#ifdef OPENNAV_X
++        // A stale selected fix or a storage error leaves carryover pending.
++        if (!opennav::IsXNav() || (g_bTrackActive && g_pActiveTrack))
++#endif
+         g_bDeferredStartTrack = false;
+       }
+     } else {  // tracking has been manually activated

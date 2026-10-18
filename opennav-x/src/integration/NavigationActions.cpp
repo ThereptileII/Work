@@ -3,6 +3,8 @@
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
 #include "integration/RoutePassageSettings.h"
+#include "integration/TrackPresentation.h"
+#include "integration/TrackRecording.h"
 #include "integration/WeatherOverlay.h"
 #include "model/ais_state_vars.h"
 #include "model/navobj_db.h"
@@ -173,16 +175,36 @@ MakeNavigationActions(MyFrame &frame,
   // selection radius unchanged while making the thin route ink easier to hit.
   if (pSelect) pSelect->SetRouteSegmentSelectionScale(1.5f);
   application::NavigationActions a;
+  ConfigureTrackRecording(position);
   auto result = [&frame](application::CommandResult r) {
+    if (!wxIsMainThread()) return r;
     frame.InvalidateAllGL();
     frame.RefreshAllCanvas(false);
     if (pRouteManagerDialog) {
       pRouteManagerDialog->UpdateRouteListCtrl();
       pRouteManagerDialog->UpdateWptListCtrl();
+      pRouteManagerDialog->UpdateTrkListCtrl();
     }
     wxLogMessage("SKAGER navigation action: %s",
                  wxString::FromUTF8(r.message));
     return r;
+  };
+  a.track_recording = CopyTrackRecording;
+  a.tracks = CopyTrackCatalog;
+  a.track = CopyTrack;
+  a.start_track = [&frame, result] { return result(StartTrack(frame)); };
+  a.stop_track = [&frame, result](const std::string &id) {
+    return result(StopTrack(frame, id));
+  };
+  a.rename_track = [result](const application::TrackSummary &track,
+                            const std::string &name) {
+    return result(RenameTrack(track, name));
+  };
+  a.set_track_visible = [result](const application::TrackSummary &track, bool show) {
+    return result(SetTrackVisible(track, show));
+  };
+  a.view_track = [&frame, result](const std::string &id) {
+    return result(ViewTrack(frame, id));
   };
   // XNav presentation layers report their actual display preferences. Passage
   // visibility is independent of arrival policy and chart hazard assessment.
@@ -193,10 +215,17 @@ MakeNavigationActions(MyFrame &frame,
       state.wind_vectors = {WeatherOverlayVisible(), true, WeatherLayerReason()};
       state.route_corridor = {PassageVisible(), true,
                              "Active passage; width set in route settings"};
+      state.tracks = {TrackLayerVisible(), true, "Display recorded and saved tracks"};
     }
     return state;
   };
   a.chart_presentation = with_wind;
+  a.set_chart_tracks = [with_wind, result](bool show) {
+    application::ChartPresentationResult r;
+    r.command = result(SetTrackLayerVisible(show));
+    r.state = with_wind();
+    return r;
+  };
   a.set_chart_ais = [&frame, with_wind](bool show) {
     auto r = SetChartAis(frame, show); r.state = with_wind(); return r;
   };
