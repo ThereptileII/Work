@@ -47,7 +47,9 @@ enum class ProductPage {
   SourcesAdvanced,
   SourceHealth,
   Weather,  // SCRUM-325/327/329: forecast wind and GRIBstream settings
-  AlarmSettings
+  AlarmSettings,
+  Tracks,
+  TrackDetail
 };
 struct ProductState {
   std::vector<application::Alert> alerts;
@@ -72,7 +74,7 @@ struct ProductActions {
   std::function<std::vector<diagnostics::BundleEntry>(const std::optional<std::string> &)> field_bundle;
   std::shared_ptr<diagnostics::Commissioning> commissioning;
   application::NavigationActions navigation;
-  std::function<void()> chart, route_summary, energy, diagnostics;
+  std::function<void()> chart, route_summary, track_recording, energy, diagnostics;
   std::function<void()> preferences, anchor_watch, pilot_controls, alerts;
   std::function<void()> source_health;
   std::function<void(ProductPage)> page_changed;
@@ -109,6 +111,7 @@ public:
   std::vector<ProductGeometry> RegionGeometry() const;
   void ShowAis(int mmsi, LightMode mode);
   void ShowObject(const std::string &id, bool route, LightMode mode);
+  void ShowTrack(const std::string &id, LightMode mode);
   void ShowSource(vessel::Quantity quantity, LightMode mode) {
     source_quantity_ = quantity; ShowPage(ProductPage::SourceDetail, mode);
   }
@@ -118,6 +121,9 @@ private:
   void Build();
   bool RefreshRoute();
   bool RefreshWaypoint();
+  bool RefreshTrack();
+  void TrackLibrary();
+  void TrackActions();
   void BeginActions(int columns, int minimum_width = 200);
   void Back();
   void Visual(const wxString &name, int height,
@@ -169,6 +175,9 @@ private:
   application::Waypoint point_;
   bool point_available_ = false, point_position_valid_ = false, point_can_go_ = false;
   std::chrono::steady_clock::time_point point_refreshed_at_{};
+  application::TrackSummary track_;
+  bool track_available_ = false;
+  std::chrono::steady_clock::time_point track_refreshed_at_{};
   int mmsi_ = 0;
   weather::ForecastSnapshot weather_;
   std::chrono::steady_clock::time_point weather_refreshed_at_{};

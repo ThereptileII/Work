@@ -164,6 +164,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       ShowProduct(ProductPage::Routes);
   });
   row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
+  track_record_ = new XNavTrackRecordButton(top);
+  track_record_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    CallAfter([this] { ShowTrackRecording(); });
+  });
+  row->Add(track_record_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
   row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
   page_up_ = Button(top, "Up", "Scroll page up", [this] {
@@ -504,6 +509,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     }
   };
   product_actions.route_summary = [this] { ShowPassage(); };
+  product_actions.track_recording = [this] { ShowTrackRecording(); };
   product_actions.anchor_watch = [this] { ShowAnchor(); };
   product_actions.pilot_controls = [this] { ShowPilot(); };
   product_actions.alerts = [this] { ShowAlerts(); };
@@ -633,6 +639,7 @@ Shell::~Shell() {
   if (search_drawer_) { search_drawer_->Dismiss(); search_drawer_->Destroy(); search_drawer_ = nullptr; }
   if (chart_presentation_drawer_) { chart_presentation_drawer_->Dismiss(); chart_presentation_drawer_->Destroy(); chart_presentation_drawer_ = nullptr; }
   if (chart_info_drawer_) { chart_info_drawer_->Dismiss(); chart_info_drawer_->Destroy(); chart_info_drawer_ = nullptr; }
+  if (track_drawer_) { track_drawer_->Dismiss(); track_drawer_->Destroy(); track_drawer_ = nullptr; }
   if (health_drawer_) { health_drawer_->Dismiss(); health_drawer_->Destroy(); health_drawer_ = nullptr; }
   if (pilot_drawer_) { pilot_drawer_->Dismiss(); pilot_drawer_->Destroy(); pilot_drawer_ = nullptr; }
   for (const auto &c : commands_)
@@ -781,6 +788,7 @@ void Shell::ApplyTheme() {
     value.second->SetLightMode(mode_);
   source_->SetTextColor(simulation_ ? colors.attention : colors.secondary);
   footer_->Update(footer_->View(),mode_);
+  UpdateTrackRecording();
 }
 
 void Shell::SetLight(LightMode mode) {
@@ -964,6 +972,9 @@ void Shell::ApplyResponsiveLayout() {
 void Shell::ApplyOwnedScale() {
   const int percent=display_.scale_percent;
   if(product_)product_->SetInterfaceScale(percent);
+  // Header status retains its fixed 48 DIP touch target, like the other
+  // header controls; it never grows the top pane or steals chart height.
+  if(track_record_)track_record_->SetInterfaceScale(percent);
   for(auto *drawer:{static_cast<XNavDrawer *>(ais_drawer_),
                     static_cast<XNavDrawer *>(passage_drawer_),
                     static_cast<XNavDrawer *>(settings_drawer_),
@@ -973,6 +984,7 @@ void Shell::ApplyOwnedScale() {
                     static_cast<XNavDrawer *>(health_drawer_),
                     static_cast<XNavDrawer *>(search_drawer_),
                     static_cast<XNavDrawer *>(chart_presentation_drawer_),
+                    static_cast<XNavDrawer *>(track_drawer_),
                     static_cast<XNavDrawer *>(chart_info_drawer_)})
     if(drawer)drawer->SetInterfaceScale(percent);
 }
@@ -1145,6 +1157,7 @@ void Shell::Tick() {
     product_->Update(p, mode_);
   }
   XNAV_TEST_UI_TRACE("tick.product", metrics_.ticks);
+  UpdateTrackRecording();
   if (ais_drawer_ && ais_drawer_->IsShown()) {
     ais_drawer_->Update(ais_state_, online_ais_state_, now, mode_);
     ais_drawer_->Present(DrawerWorkspace());
@@ -1327,6 +1340,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (track_drawer_ && track_drawer_->IsShown()) return "Track recording";
   if (chart_info_drawer_ && chart_info_drawer_->IsShown()) return "Chart information";
   if (search_drawer_ && search_drawer_->IsShown()) return "Chart search";
   if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return "Chart presentation";
@@ -1381,6 +1395,7 @@ void Shell::ShowNavigation() {
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
   if (chart_info_drawer_) chart_info_drawer_->Dismiss();
+  if (track_drawer_) track_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
@@ -1636,6 +1651,33 @@ void Shell::ShowChartPresentation() {
   chart_presentation_drawer_->Open(DrawerWorkspace(),actions_.navigation.chart_presentation
       ? actions_.navigation.chart_presentation() : application::ChartPresentationState{},mode_);
   PlaceChartControls();
+}
+void Shell::ShowTrackRecording() {
+  ShowNavigation();
+  if (!track_drawer_) {
+    track_drawer_ = new XNavTrackDrawer(frame_, actions_.navigation);
+    const std::weak_ptr<int> lifetime = context_lifetime_;
+    track_drawer_->on_saved_tracks = [this, lifetime] {
+      if (!lifetime.expired()) ShowProduct(ProductPage::Tracks);
+    };
+    track_drawer_->on_changed = [this, lifetime] {
+      if (!lifetime.expired()) UpdateTrackRecording();
+    };
+  }
+  track_drawer_->SetInterfaceScale(display_.scale_percent);
+  track_drawer_->Open(DrawerWorkspace(), actions_.navigation.track_recording
+      ? actions_.navigation.track_recording() : application::TrackRecordingState{},
+      !state_.simulated && !state_.replayed, mode_);
+  PlaceChartControls();
+}
+void Shell::UpdateTrackRecording() {
+  const auto state = actions_.navigation.track_recording
+      ? actions_.navigation.track_recording() : application::TrackRecordingState{};
+  if (track_record_) track_record_->Update(state, mode_);
+  if (track_drawer_ && track_drawer_->IsShown()) {
+    track_drawer_->Update(state, !state_.simulated && !state_.replayed, mode_);
+    track_drawer_->Present(DrawerWorkspace());
+  }
 }
 void Shell::ShowBoatSetup(bool explicit_reset) {
   if (boat_setup_) { boat_setup_->Raise(); return; }
@@ -2044,6 +2086,7 @@ void Shell::ShowPage(PreviewPage page) {
   if (search_drawer_) search_drawer_->Dismiss();
   if (chart_presentation_drawer_) chart_presentation_drawer_->Dismiss();
   if (chart_info_drawer_) chart_info_drawer_->Dismiss();
+  if (track_drawer_) track_drawer_->Dismiss();
   if (health_drawer_) health_drawer_->Dismiss();
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();

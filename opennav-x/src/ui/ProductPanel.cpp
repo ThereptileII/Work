@@ -106,6 +106,7 @@ void ProductPanel::Back() {
   case ProductPage::Home: if (actions_.chart) actions_.chart(); return;
   case ProductPage::RouteDetail: parent = ProductPage::Routes; break;
   case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
+  case ProductPage::TrackDetail: parent = ProductPage::Tracks; break;
   case ProductPage::AisDetail: parent = ProductPage::Ais; break;
   case ProductPage::SourceDetail: case ProductPage::BoatMapping: case ProductPage::SourcesAdvanced: parent = ProductPage::Sources; break;
   case ProductPage::RailLayout: case ProductPage::InstrumentLayout: parent = ProductPage::Display; break;
@@ -293,6 +294,10 @@ std::string ProductPanel::PageTitle() const {
     return "Routes";
   case ProductPage::Waypoints:
     return "Waypoints";
+  case ProductPage::Tracks:
+    return "Saved tracks";
+  case ProductPage::TrackDetail:
+    return "Track detail";
   case ProductPage::RouteDetail:
     return "Route detail";
   case ProductPage::WaypointDetail:
@@ -494,8 +499,12 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
   if (page_ == ProductPage::WaypointDetail && IsShownOnScreen() &&
       std::chrono::steady_clock::now() - point_refreshed_at_ >= std::chrono::seconds(1))
     rebuild_pending_ |= RefreshWaypoint();
+  if (page_ == ProductPage::TrackDetail && IsShownOnScreen() &&
+      std::chrono::steady_clock::now() - track_refreshed_at_ >= std::chrono::seconds(1))
+    rebuild_pending_ |= RefreshTrack();
   const bool name_editing = XNavNameEditor::PreserveDrafts(
-      *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed);
+      *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed &&
+          (page_ != ProductPage::TrackDetail || track_available_));
   if (rebuild_pending_ && !name_editing) {
     auto *focus=wxWindow::FindFocus();
     const bool restore_focus=focus && (focus==this || IsDescendant(focus));
@@ -958,6 +967,7 @@ void ProductPanel::Build() {
     for (const auto &p : std::vector<std::pair<wxString, ProductPage>>{
              {"Routes", ProductPage::Routes},
              {"Waypoints", ProductPage::Waypoints},
+             {"Saved tracks", ProductPage::Tracks},
              {"AIS targets", ProductPage::Ais},
              {"Vessel instruments", ProductPage::Instruments},
              {"SmartNav advisories", ProductPage::Advice},
@@ -981,6 +991,7 @@ void ProductPanel::Build() {
     Action(routes ? "Waypoints" : "Routes", [this, routes] {
       ShowPage(routes ? ProductPage::Waypoints : ProductPage::Routes, mode_);
     });
+    Action("Saved tracks", [this] { ShowPage(ProductPage::Tracks, mode_); });
     if (routes) {
       Action("Current passage", actions_.route_summary);
       Action("Create route on chart", [this] {
@@ -1015,7 +1026,11 @@ void ProductPanel::Build() {
     }
     Action("Advanced / Legacy route manager",
            actions_.navigation.legacy_route_manager);
-  } else if (page_ == ProductPage::RouteDetail)
+  } else if (page_ == ProductPage::Tracks)
+    TrackLibrary();
+  else if (page_ == ProductPage::TrackDetail)
+    TrackActions();
+  else if (page_ == ProductPage::RouteDetail)
     RouteActions();
   else if (page_ == ProductPage::WaypointDetail)
     PointActions();
@@ -1138,6 +1153,7 @@ void ProductPanel::Build() {
     BeginActions(2);
     Action("Routes", [this] { ShowPage(ProductPage::Routes, mode_); });
     Action("Waypoints", [this] { ShowPage(ProductPage::Waypoints, mode_); });
+    Action("Saved tracks", [this] { ShowPage(ProductPage::Tracks, mode_); });
     Action("Chart orientation: North / Course up", [this] {
       if (actions_.chart) actions_.chart();
       if (actions_.navigation.orientation) actions_.navigation.orientation();

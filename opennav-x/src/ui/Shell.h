@@ -21,6 +21,7 @@
 #include "ui/SearchDrawer.h"
 #include "ui/ChartPresentationDrawer.h"
 #include "ui/ChartInfoDrawer.h"
+#include "ui/TrackDrawer.h"
 #include "ui/StatusFooter.h"
 #include "integration/BuildFeatures.h"
 #if XNAV_ENABLE_TEST_FIXTURES
@@ -131,6 +132,7 @@ public:
   bool FooterMiddleVisible() const { return footer_->MiddleVisible(); }
   const application::FooterView &NavigationFooter() const { return footer_->View(); }
   std::optional<wxRect> DrawerRegion() const {
+    if (track_drawer_ && track_drawer_->IsShown()) return track_drawer_->GetScreenRect();
     if (chart_info_drawer_ && chart_info_drawer_->IsShown()) return chart_info_drawer_->GetScreenRect();
     if (chart_presentation_drawer_ && chart_presentation_drawer_->IsShown()) return chart_presentation_drawer_->GetScreenRect();
     if (search_drawer_ && search_drawer_->IsShown()) return search_drawer_->GetScreenRect();
@@ -209,6 +211,8 @@ private:
   void ShowHealth();
   void ShowSearch();
   void ShowChartPresentation();
+  void ShowTrackRecording();
+  void UpdateTrackRecording();
   wxRect DrawerWorkspace() const;
   void OnCommand(wxCommandEvent &event);
   void StartDemo();
@@ -231,6 +235,8 @@ private:
   XNavSearchDrawer *search_drawer_ = nullptr;
   XNavChartPresentationDrawer *chart_presentation_drawer_ = nullptr;
   XNavChartInfoDrawer *chart_info_drawer_ = nullptr;
+  XNavTrackDrawer *track_drawer_ = nullptr;
+  XNavTrackRecordButton *track_record_ = nullptr;
   PilotDrawerActions pilot_actions_;
   application::AlertCenter alerts_;
   wxPanel *alert_pane_ = nullptr;
