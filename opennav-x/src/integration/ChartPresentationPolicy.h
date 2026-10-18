@@ -11,7 +11,7 @@ namespace opennav::integration {
 inline const char* VeryLightAreaColor(bool enabled, const char* feature,
                                       const char* color) {
   if (!enabled || !feature || !color ||
-      (std::memcmp(feature, "DEPARE", 6) && std::memcmp(feature, "DRGARE", 6)))
+      (std::strncmp(feature, "DEPARE", 6) && std::strncmp(feature, "DRGARE", 6)))
     return color;
   for (const char* depth : {"DEPDW", "DEPMD", "DEPMS", "DEPVS"})
     if (!std::strncmp(color, depth, 5)) return "DEPDW";
@@ -20,7 +20,7 @@ inline const char* VeryLightAreaColor(bool enabled, const char* feature,
 
 inline bool VeryLightOrdinaryContour(bool enabled, const char* feature,
                                      const char* color) {
-  return enabled && feature && color && !std::memcmp(feature, "DEPCNT", 6) &&
+  return enabled && feature && color && !std::strncmp(feature, "DEPCNT", 6) &&
          !std::strncmp(color, "DEPCN", 5);
 }
 
