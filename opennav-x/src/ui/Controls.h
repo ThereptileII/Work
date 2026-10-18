@@ -106,6 +106,7 @@ class XNavButton : public wxControl {
   void SetDisclosure(const wxString &status, std::uint32_t color, bool expanded);
   void SetSettingsTab(bool value = true) { settings_tab_ = value; Refresh(); }
   void SetVesselProfile() { vessel_profile_ = true; Refresh(); }
+  void SetVesselIdentity(const wxString &name);
   // Prototype 42x25 toggle inside its extended 48x49 touch target. State is
   // supplied by the owner; activation never optimistically changes it.
   void SetToggle() { toggle_ = true; SetMinSize(FromDIP(wxSize(48,49))); Refresh(); }
@@ -148,7 +149,7 @@ class XNavButton : public wxControl {
   int action_base_font_ = 12;
   int interface_scale_ = 100;
   std::optional<std::uint32_t> text_color_;
-  wxString suite_detail_;
+  wxString suite_detail_, vessel_initial_;
   double compass_rotation_ = 0;
   ButtonRole role_ = ButtonRole::Normal;
   XNavIcon icon_ = XNavIcon::None;

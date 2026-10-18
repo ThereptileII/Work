@@ -427,6 +427,14 @@ void XNavButton::SetInterfaceScale(int percent) {
   SetTextSize(DisplayActionFont(percent,action_base_font_));
 }
 
+void XNavButton::SetVesselIdentity(const wxString &name) {
+  auto clean=name;clean.Trim(true).Trim(false);
+  const auto initial=clean.empty()?wxString::FromUTF8("—"):clean.Left(1).Upper();
+  if(initial!=vessel_initial_){vessel_initial_=initial;Refresh(false);}
+  const auto caption=clean.empty()?wxString("Vessel settings / name not configured"):clean+" / Vessel settings";
+  if(GetName()!=caption){SetName(caption);SetHint(caption);}
+}
+
 void XNavButton::SetLabel(const wxString &label) {
   if(GetLabel() == label) return;
   wxControl::SetLabel(label);
@@ -512,10 +520,10 @@ void XNavButton::Paint(wxPaintEvent&) {
     dc.SetPen(HasFocus()&&keyboard_focus_ ? wxPen(Colour(colors.accent),FromDIP(1)) : *wxTRANSPARENT_PEN);
     dc.DrawEllipse(0,0,size.x,size.y);
     dc.SetFont(UiFont(*this,11));dc.SetTextForeground(Colour(colors.secondary));
-    // No configured vessel identity exists in the current contract. Never
-    // reproduce the reference's fictional boat initial or connected state.
-    const wxString unknown=wxString::FromUTF8("—");const auto extent=dc.GetTextExtent(unknown);
-    dc.DrawText(unknown,(size.x-extent.x)/2,(size.y-extent.y)/2);
+    const auto initial=vessel_initial_.empty()?wxString::FromUTF8("—"):vessel_initial_;
+    const auto extent=dc.GetTextExtent(initial);
+    dc.DrawText(initial,(size.x-extent.x)/2,(size.y-extent.y)/2);
+    // Identity is not proof of sensor connectivity; keep the status dot neutral.
     dc.SetPen(wxPen(Colour(colors.background),FromDIP(2)));
     dc.SetBrush(wxBrush(Colour(colors.muted)));
     dc.DrawEllipse(size.x-FromDIP(7),size.y-FromDIP(7),FromDIP(7),FromDIP(7));
