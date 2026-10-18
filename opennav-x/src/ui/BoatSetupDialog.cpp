@@ -1,3 +1,4 @@
+#include "ui/RoundedSurface.h"
 #include "ui/BoatSetupDialog.h"
 #include "ui/Controls.h"
 #include "ui/ChoiceField.h"
@@ -32,9 +33,10 @@ class BoatSetupDialog final : public wxDialog {
   BoatSetupDialog(wxWindow& parent, application::BoatSetupDraft draft,
                   BoatSetupActions actions, LightMode mode)
       : wxDialog(&parent, wxID_ANY, "Boat Setup & Sensor Check", wxDefaultPosition,
-          wxDefaultSize, wxDEFAULT_DIALOG_STYLE | wxRESIZE_BORDER),
+          wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL | wxFRAME_SHAPED),
         draft_(std::move(draft)), actions_(std::move(actions)), mode_(mode), original_safety_(draft_.safety_depth_m) {
     SetName("Boat Setup & Sensor Check");
+    BindRoundedSurface(*this,[this]{return mode_;},20);
     SetBackgroundColour(Colour(Theme(mode_).background));
     auto* layout = new wxBoxSizer(wxVERTICAL);
     body_ = new wxScrolledWindow(this, wxID_ANY);

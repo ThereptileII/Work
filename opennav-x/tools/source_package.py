@@ -93,6 +93,7 @@ def source_inventory(root, commit):
                          'patches/opencpn-5.12.4-startup-presentation.patch',
                          'patches/opencpn-5.12.4-track-recording.patch',
                          'patches/opencpn-5.12.4-track-presentation.patch',
+                         'patches/opencpn-5.12.4-chart-display.patch',
                          'patches/opencpn-5.12.4-maintained-curl.patch',
                          'patches/opencpn-5.12.4-download-trust.patch',
                          'patches/opencpn-5.12.4-wxcurl-trust.patch',

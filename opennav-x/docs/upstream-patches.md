@@ -1,5 +1,33 @@
 # Direct OpenCPN Upstream Modifications
 
+## Very Light presentation and display scale — SCRUM-378
+
+`opencpn-5.12.4-chart-display.patch` follows track presentation. It adds a
+display-only S-52 policy after native conditional symbology has chosen its role:
+DEPARE/DRGARE water fills use the theme's DEPDW in Very Light; ordinary DEPCNT
+DEPCN lines blend 35% contour ink with 65% water. Drying DEPIT, patterns, hazards,
+soundings and safety contour DEPSC retain their meaning and existing policy.
+The presentation state hash includes the policy/scale for cache invalidation.
+The existing native symbol, text and sounding scale factors include the explicit
+100/125/150% display preference. Legacy/Safe retain stock factors.
+
+The matching private `ocharts-chart-display.patch` uses the same policy header.
+Its independent `skager_configure_chart_display_v1` export is part of the private
+build/export verification inventory; public OpenCPN plugin ABI layouts are not
+changed. The existing private sounding patch also admits the combined preference
+range. Unknown/unverified plugin binaries do not receive these private calls.
+
+SKAGER overlay sizing follows the same display preference, while geographic
+route/track positions, passage widths, anchor radii and dimension-scaled hulls
+retain their physical meaning. The core/private patch lists, corresponding
+source lists and isolated painter fixture declarations have been maintained.
+Only the selected dependency-consumer helper hashes change for its application
+patch list; this is not proof of new native dependency reuse. The private
+adapter must be rebuilt for its changed inputs. **No patch application, build or
+test was executed** under the current source-only instruction. See
+[the presentation contract](design/xnav-chart-style.md#very-light-and-display-scale--scrum-378)
+and [review](design/reviews/scrum378-source-refinement.md).
+
 ## Sailing-track recording and display — SCRUM-377
 
 Two source-only patches follow the existing startup-presentation patch:

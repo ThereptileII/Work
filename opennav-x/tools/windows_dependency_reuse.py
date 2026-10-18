@@ -39,6 +39,7 @@ PATCHES = (
     "opencpn-5.12.4-startup-presentation.patch",
     "opencpn-5.12.4-track-recording.patch",
     "opencpn-5.12.4-track-presentation.patch",
+    "opencpn-5.12.4-chart-display.patch",
     "opencpn-5.12.4-maintained-curl.patch",
     "opencpn-5.12.4-download-trust.patch",
     "opencpn-5.12.4-wxcurl-trust.patch",

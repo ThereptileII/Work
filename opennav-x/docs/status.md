@@ -1,5 +1,28 @@
 # SKAGER status — 2026-10-18
 
+## Prototype refinement — source changes, existing boat UI inspected
+
+[SCRUM-378](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-378)
+adds opt-in Very Light chart presentation, effective interface/chart scaling,
+four editable rail slots and named presets, source/age detail, coherent apparent
+wind presentation, rounded owned surfaces and forecast refinements. The vessel
+shortcut refreshes its identity and opens Vessel settings; the header uses the
+active route name. Rail saves do not reconfigure sensors or disable the pilot.
+
+The user-authorized RustDesk inspection compared the existing installed
+`9feae59c` navigation/instruments screens with the immutable prototype and the
+supplied Personalise screenshot. Native captures were **1920×1020 at 120 DPI**,
+not a 1280×800 acceptance run. They confirmed dark depth fills, strong contours,
+missing rail source/age detail, an off-screen vessel shortcut and the absence of
+an apparent-wind compass fallback. The particular northern lighthouse still
+needs an exact object/rule identification; a generic “Light” label does not
+justify replacing every light with a tower symbol.
+
+[The item-by-item review](design/reviews/scrum378-source-refinement.md) separates
+source changes from remaining visual acceptance. No builds, tests, patch
+application/checks, CI, restart, installation or hardware commands were run.
+The installed version and SCRUM-376 startup-blocker status remain unchanged.
+
 ## Sailing-track controls — local source changes only
 
 SCRUM-377 adds the approved Record/Recording header control, native recording

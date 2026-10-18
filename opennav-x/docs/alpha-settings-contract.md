@@ -1,5 +1,36 @@
 # Alpha profile settings and live energy
 
+## 2026-10-18 rail and display extension — source-only
+
+SCRUM-378 adds optional `display.rail_presets` to the existing versioned settings
+record: at most eight uniquely named presets, names at most 64 UTF-8 bytes,
+exactly four distinct supported quantities each. Old records without this field
+remain readable. Choosing one of the four slots replaces/swaps values without
+creating duplicate slots. Restore essentials selects SOG, depth, true wind and
+battery SOC; absent sensors remain unavailable. Save/apply/delete preset actions
+are explicit. Older fifth/sixth rail selections are retained in Instruments when
+the person first chooses the four-slot layout.
+
+The shell routes these operations through a dedicated rail-only integration
+callback. It reads current settings and changes only the rail/preset fields and
+preserved overflow. It does not rerun source selection or disable an enabled
+pilot. Replay/simulation and pending restart cannot write real rail preferences;
+queued popup actions carry a generation and compare retained settings before
+writing. A failed save retains the running configuration.
+
+Settings → Display applies the 100/125/150% interface/chart preference and chart
+layout immediately. Save failure restores the previous choices and displays the
+error. This percentage is additional to Windows DPI; chart positions, ranges,
+passage widths and anchor radii do not change. Four primary rail values retain
+space for numbers, units and source/age; secondary decoration yields first if
+the viewport is too small. Depth is explicitly below transducer: it is not
+compared to a chart-datum safety threshold without a valid datum relationship.
+
+The Personalise popup follows the supplied four-position design and adds bounded
+named presets. Source and test-source changes have been reviewed, but **no build
+or test was executed**. Native persistence, popup gestures, scaling and layout
+remain pending. See [SCRUM-378 review](design/reviews/scrum378-source-refinement.md).
+
 The XNav settings screens now configure the tested live energy wrapper and
 instrument source registry. They reuse the current `wxFileConfig` supplied by
 OpenCPN at `Attach`; they do not create another navigation database or change

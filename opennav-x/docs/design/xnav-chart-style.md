@@ -531,3 +531,30 @@ online AIS provenance dot is kept. XNav mode also enforces S-52 SCAMIN and
 super-SCAMIN at render time, including for chart plugins, without writing the
 user's stored preferences. Before/after frame time and CPU on the boat PC are
 still required.
+## Very Light and display scale — SCRUM-378
+
+Source-only extension, 2026-10-18: the chart-style choice now offers **SKAGER**,
+**Very Light** and **Standard**. It persists in the existing
+`/OpenNav/ChartPresentationV1` entry (`XNav`, `XNavVeryLight`, `Standard`). A style
+change uses the existing controlled-restart path; Day/Dusk/Night remains
+independent. Standard restores stock presentation resources. Raster image
+pixels are not recolored.
+
+Very Light uses the existing prototype-derived DEPDW water role for all normal
+DEPARE/DRGARE depth fills. Ordinary DEPCNT/DEPCN contour ink is an opaque
+35% contour / 65% water blend, identical in software and GL color paths.
+Drying areas, dredged patterns, safety contours, hazard fills outside these depth
+objects and sounding values are not flattened. This is an explicitly selected
+presentation variant; it changes no depth attributes or safety settings.
+
+The interface/chart percentage is an additional 100/125/150% preference.
+Native and verified private o-charts presentation use it for symbols, text and
+soundings. SKAGER-owned route, waypoint, ownship icon, AIS label and anchor
+strokes use matching display sizes. A dimension-scaled ship hull and all
+geographic distances stay unchanged. The preference participates in the native
+presentation hash so retained text/paint does not keep a previous size.
+
+No new lighthouse classification is inferred from a display label. Existing
+LIGHTS and qualified light-support aliases remain authoritative until the
+reported object's class, attributes and effective renderer rule are observed.
+See [item-by-item review and unperformed gates](reviews/scrum378-source-refinement.md).

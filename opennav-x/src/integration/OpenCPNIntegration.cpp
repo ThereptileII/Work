@@ -484,6 +484,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
 #endif
   settings = std::make_unique<integration::SettingsStore>(
       config, fresh_setup_profile && !integration::QualificationProfileRequired());
+  integration::ConfigureChartDisplayScale(settings->Display().scale_percent);
   marine = std::make_unique<integration::MarineBridge>();
   auto configure_sources = [] {
     if (pilots) pilots->live.Enable(false, vessel::Clock::now());
@@ -701,10 +702,15 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   actions.settings = [] { return settings->Read(); };
   actions.display = [] { return settings->Display(); };
-  actions.save_display = [](const application::DisplayPreferences &value) {
+  actions.save_display = [&frame](const application::DisplayPreferences &value) {
     if (commissioning && commissioning->Replaying())
       return application::CommandResult{false,"Stop REPLAY before changing live settings"};
-    return settings->SaveDisplay(value);
+    const auto result=settings->SaveDisplay(value);
+    if(result.ok){
+      integration::ConfigureChartDisplayScale(value.scale_percent);
+      frame.InvalidateAllGL();frame.RefreshAllCanvas(false);
+    }
+    return result;
   };
   actions.vessel_name = [] { return settings->VesselName(); };
   integration::SetChartVesselNameProvider(
@@ -741,6 +747,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       return application::CommandResult{false,"Stop REPLAY or finish restart before restoring settings"};
     const auto result=settings->RestoreBackup(backup);
     if (!result.ok) return result;
+    integration::ConfigureChartDisplayScale(backup.display.scale_percent);
+    frame.InvalidateAllGL();frame.RefreshAllCanvas(false);
     if (pilots) {
       pilots->live.Enable(false,vessel::Clock::now());
       pilots->hardware.Configure(settings->Read().pilot);
@@ -765,6 +773,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (restart || (commissioning && commissioning->Replaying()))
       return application::CommandResult{false,"Stop REPLAY or finish restart before saving setup"};
     const auto result = settings->SaveBoatSetup(draft);
+    if(result.ok){
+      integration::ConfigureChartDisplayScale(draft.display.scale_percent);
+      frame.InvalidateAllGL();frame.RefreshAllCanvas(false);
+    }
     if (result.ok && std::isfinite(draft.safety_depth_m)) {
       S52_setMarinerParam(S52_MAR_SAFETY_DEPTH,draft.safety_depth_m);
       S52_setMarinerParam(S52_MAR_SAFETY_CONTOUR,draft.safety_depth_m);
@@ -776,8 +788,8 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   actions.settings_status = [] { return settings->Status(); };
   actions.chart_style_status = integration::ChartPresentationStatus;
-  actions.chart_style_requested = integration::XNavChartRequested;
-  actions.set_chart_style = integration::SetXNavChartRequested;
+  actions.chart_style_requested = integration::RequestedChartStyle;
+  actions.set_chart_style = integration::SetChartStyle;
   actions.boat_bridge_status = [] { return marine->BoatBridgeStatus(vessel::Clock::now()); };
   actions.save_settings = [configure_sources](const auto &s) {
     if (commissioning && commissioning->Replaying())
@@ -795,6 +807,20 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       pilots->hardware.Configure(s.pilot);
     }
     return result;
+  };
+  actions.save_rail = [](const application::Settings &value) {
+    if(restart || (commissioning && commissioning->Replaying()))
+      return application::CommandResult{false,"Return to live data before changing your instruments"};
+    // A display preference cannot reset source selection, disconnect the pilot
+    // or overwrite a concurrent vessel/model edit from a retained UI copy.
+    auto next=settings->Read();
+    if(next.data_rail!=value.data_rail)
+      for(std::size_t i=4;i<next.data_rail.size();++i)
+        if(std::find(next.instruments.begin(),next.instruments.end(),next.data_rail[i])==next.instruments.end())
+          next.instruments.push_back(next.data_rail[i]);
+    next.data_rail=value.data_rail;
+    next.rail_presets=value.rail_presets;
+    return settings->Save(next);
   };
   actions.source_health = [] {
     return marine->Health(vessel::Clock::now());
@@ -999,7 +1025,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     auto runtime =
         integration::ReadRuntimeDiagnostics(*frame.GetPrimaryCanvas());
     runtime["chart_presentation"]["status"] = wxString::FromUTF8(integration::ChartPresentationStatus());
-    runtime["chart_presentation"]["requested"] = wxString(integration::XNavChartRequested() ? "XNav" : "Standard");
+    runtime["chart_presentation"]["requested"] = wxString(integration::RequestedChartStyle()==application::ChartStyle::VeryLight ? "Very Light" : integration::XNavChartRequested() ? "SKAGER" : "Standard");
     runtime["chart_presentation"]["core"]["available"] = ps52plib != nullptr;
     if (ps52plib) {
       runtime["chart_presentation"]["core"]["saved_point_style"] =

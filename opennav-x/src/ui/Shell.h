@@ -12,6 +12,8 @@
 #include "ui/AisDrawer.h"
 #include "ui/PassageDrawer.h"
 #include "ui/SettingsDrawer.h"
+#include "ui/RailPersonaliseDrawer.h"
+#include "application/ChartStyle.h"
 #include "ui/BoatSetupDialog.h"
 #include <wx/dialog.h>
 #include "ui/AnchorDrawer.h"
@@ -74,8 +76,8 @@ struct ShellActions {
   std::function<vessel::RouteProgress()> route;
   std::function<vessel::VesselState()> live_state;
   std::function<std::string()> chart_style_status;
-  std::function<bool()> chart_style_requested;
-  std::function<application::CommandResult(bool)> set_chart_style;
+  std::function<application::ChartStyle()> chart_style_requested;
+  std::function<application::CommandResult(application::ChartStyle)> set_chart_style;
   std::function<application::Settings()> settings;
   std::function<application::DisplayPreferences()> display;
   std::function<application::CommandResult(const application::DisplayPreferences &)> save_display;
@@ -91,7 +93,7 @@ struct ShellActions {
   std::function<std::string()> settings_status;
   std::function<std::string()> boat_bridge_status;
   std::function<application::CommandResult(const application::Settings &)>
-      save_settings;
+      save_settings, save_rail;
   std::function<std::vector<vessel::SourceHealth>()> source_health;
   std::function<adapters::RadarState()> radar;
   std::function<std::vector<std::string>()> build_info;
@@ -140,6 +142,7 @@ public:
     if (alert_drawer_ && alert_drawer_->IsShown()) return alert_drawer_->GetScreenRect();
     if (pilot_drawer_ && pilot_drawer_->IsShown()) return pilot_drawer_->GetScreenRect();
     if (anchor_drawer_ && anchor_drawer_->IsShown()) return anchor_drawer_->GetScreenRect();
+    if (rail_personalise_ && rail_personalise_->IsShown()) return rail_personalise_->GetScreenRect();
     if (settings_drawer_ && settings_drawer_->IsShown()) return settings_drawer_->GetScreenRect();
     if (passage_drawer_ && passage_drawer_->IsShown()) return passage_drawer_->GetScreenRect();
     return ais_drawer_ && ais_drawer_->IsShown()
@@ -178,6 +181,7 @@ private:
   void UpdateRail(const std::vector<std::string> &keys, vessel::Time now,
                   const smartnav::EnergyPrediction &energy);
   application::RailHistory sog_history_;
+  int rail_input_mode_ = -1;
   void Tick();
   void ApplyResponsiveLayout();
   void ApplyOwnedScale();
@@ -204,7 +208,9 @@ private:
   void ShowTraffic(int mmsi = 0);
   void ShowPassage();
   void ActivateHorizon(const application::HorizonAction &);
-  void ShowSettings();
+  void ShowSettings(std::optional<SettingsSection> section = std::nullopt);
+  void ShowRailPersonalise();
+  void InstallPaneSeparators();
   void ShowAnchor();
   void ShowPilot();
   void ShowAlerts();
@@ -228,6 +234,7 @@ private:
   XNavPassageDrawer *passage_drawer_ = nullptr;
   wxWeakRef<wxDialog> boat_setup_;
   XNavSettingsDrawer *settings_drawer_ = nullptr;
+  XNavRailPersonaliseDrawer *rail_personalise_ = nullptr;
   XNavAnchorDrawer *anchor_drawer_ = nullptr;
   XNavPilotDrawer *pilot_drawer_ = nullptr;
   XNavAlertDrawer *alert_drawer_ = nullptr;
@@ -287,6 +294,7 @@ private:
   XNavButton *vessel_profile_ = nullptr;
   XNavButton *rail_configure_ = nullptr;
   int responsive_class_ = -1, responsive_dpi_ = -1;
+  wxSize responsive_size_;
   XNavHorizon *horizon_ = nullptr;
   XNavStatusFooter *footer_ = nullptr;
   wxPanel *route_actions_ = nullptr;

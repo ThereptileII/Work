@@ -795,7 +795,7 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   const wxString source = sample.source.empty() ? "No source" : wxString::FromUTF8(sample.source);
   const wxString age = reading_.age
       ? wxString::Format("%.1f s old", reading_.age->count() / 1000.0) : "Age unavailable";
-  hint_ = source + "\n" + age;
+  hint_ = label_ + " / " + unit_ + "\n" + source + "\n" + age;
   ApplyHint(*this, mode_, hint_);
   SetName(label_ + ": " + (reading_.value ? wxString::Format("%.*f", decimals_, *reading_.value) : "Unavailable")
           + " " + unit_ + " / " + wxString::FromUTF8(vessel::QualityName(reading_.quality)));

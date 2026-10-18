@@ -141,15 +141,15 @@ void XNavSettingsDrawer::DisplayForm() {
     content_->Add(field,0,wxEXPAND|wxBOTTOM,FromDIP(18));
     return field;
   };
-  scale_field_=choice_field("Interface scale",{"100%","125%","150%"});
+  scale_field_=choice_field("Interface and chart scale",{"100%","125%","150%"});
   scale_field_->SetSelection((display_draft_.scale_percent-100)/25);
   scale_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
-    display_draft_.scale_percent=100+event.GetInt()*25;display_dirty_=true;
+    display_draft_.scale_percent=100+event.GetInt()*25;display_dirty_=true;SaveDisplay();
   });
   layout_field_=choice_field("Chart layout",{"Balanced","Chart focus","Instrument focus"});
   layout_field_->SetSelection(static_cast<int>(display_draft_.layout));
   layout_field_->Bind(wxEVT_CHOICE,[this](wxCommandEvent &event){
-    display_draft_.layout=static_cast<application::ChartLayout>(event.GetInt());display_dirty_=true;
+    display_draft_.layout=static_cast<application::ChartLayout>(event.GetInt());display_dirty_=true;SaveDisplay();
   });
   CopyBlock(33,[](XNavPainter &p,int width){p.TextTracked("LIGHT FOR THE MOMENT",0,4,10,p.c.secondary,400,1.5,width);});
   light_track_=new wxPanel(body_,wxID_ANY);
@@ -178,12 +178,15 @@ void XNavSettingsDrawer::DisplayForm() {
   track_layout->Add(row,1,wxEXPAND|wxALL,FromDIP(4));
   light_track_->SetSizer(track_layout);
   content_->Add(light_track_,0,wxEXPAND|wxBOTTOM,FromDIP(30));
-  Button("Apply display preferences",[this]{SaveDisplay();},ButtonRole::Primary);
+  CopyBlock(44,[](XNavPainter &p,int width){
+    p.Text("Changes apply immediately. Chart distances stay unchanged.",0,3,11,p.c.secondary,false,width);
+  });
   display_message_=new wxStaticText(body_,wxID_ANY,wxEmptyString);
   display_message_->SetFont(UiFont(*this,11));
   display_message_->SetForegroundColour(Colour(Theme(light_).secondary));
   display_message_->Hide();
   content_->Add(display_message_,0,wxEXPAND|wxBOTTOM,FromDIP(12));
+  Page("Chart style","SKAGER, Very Light or Standard",XNavIcon::Layers,ProductPage::Display);
   Page("Personalise instruments","Choose the four primary values",XNavIcon::Sliders,ProductPage::RailLayout);
   Button("Toggle fullscreen",actions_.fullscreen);
 }
@@ -196,8 +199,13 @@ void XNavSettingsDrawer::SaveDisplay() {
     ApplyScale();
   }
   if(display_message_) {
-    display_message_->SetLabel(result.ok?wxString{}:wxString::FromUTF8(result.message));
-    display_message_->Show(!result.ok);
+    if(!result.ok){
+      display_draft_=display_applied_;display_dirty_=false;
+      if(scale_field_)scale_field_->SetSelection((display_applied_.scale_percent-100)/25);
+      if(layout_field_)layout_field_->SetSelection(static_cast<int>(display_applied_.layout));
+    }
+    display_message_->SetLabel(result.ok?wxString::Format("Applied: %d%%",display_applied_.scale_percent):wxString::FromUTF8(result.message));
+    display_message_->Show();
     if(!result.ok)display_message_->Wrap(FromDIP(340));
     body_->Layout();body_->FitInside();
   }

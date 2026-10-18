@@ -1,3 +1,4 @@
+#include "ui/RoundedSurface.h"
 #include "ui/AisDrawer.h"
 #include "ui/DisplaySizing.h"
 #include "ui/Sheet.h"
@@ -563,8 +564,9 @@ void XNavAisDrawer::StoreKey() {
   // diagnostic text or field export. Only the bounded Secret crosses to
   // storage.
   wxDialog prompt(this, wxID_ANY, "AISStream key", wxDefaultPosition,
-                  wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL);
+                  wxDefaultSize, wxBORDER_NONE | wxTAB_TRAVERSAL | wxFRAME_SHAPED);
   prompt.SetName("AISStream key");
+  BindRoundedSurface(prompt,[this]{return light_;},20);
   prompt.SetBackgroundColour(Colour(Theme(light_).background));
   auto *layout = new wxBoxSizer(wxVERTICAL);
   auto *title = new wxStaticText(&prompt, wxID_ANY, "AISStream key");

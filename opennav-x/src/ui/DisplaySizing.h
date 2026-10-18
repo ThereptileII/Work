@@ -2,21 +2,24 @@
 #include <algorithm>
 
 namespace opennav::ui {
-// The immutable prototype changes only these XNav CSS selectors. OS DPI is
-// applied separately by wx FromDIP; these are logical CSS-pixel targets.
+// User display magnification is independent of Windows DPI. Fixed shell bars
+// keep the chart workspace; fields, actions and rail/chart contents magnify.
 constexpr bool ValidInterfaceScale(int percent) {
   return percent == 100 || percent == 125 || percent == 150;
 }
+constexpr int DisplayPixels(int pixels, int percent) {
+  return (pixels * (ValidInterfaceScale(percent) ? percent : 100) + 50) / 100;
+}
 constexpr int DisplayFieldHeight(int percent) {
-  return percent == 150 ? 56 : percent == 125 ? 52 : 46;
+  return DisplayPixels(46, percent);
 }
 constexpr int DisplayFieldFont(int percent) {
-  return percent == 150 ? 18 : 16;
+  return DisplayPixels(16, percent);
 }
 constexpr int DisplayActionHeight(int percent, int base_height) {
-  return percent == 150 ? std::max(base_height, 56) : base_height;
+  return DisplayPixels(base_height, percent);
 }
 constexpr int DisplayActionFont(int percent, int base_font) {
-  return percent == 150 ? 14 : base_font;
+  return DisplayPixels(base_font, percent);
 }
 } // namespace opennav::ui

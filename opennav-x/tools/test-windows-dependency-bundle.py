@@ -384,7 +384,8 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
                  b'    "opencpn-5.12.4-chart-tool-input.patch",\n'
                  b'    "opencpn-5.12.4-startup-presentation.patch",\n'
                  b'    "opencpn-5.12.4-track-recording.patch",\n'
-                 b'    "opencpn-5.12.4-track-presentation.patch",\n')
+                 b'    "opencpn-5.12.4-track-presentation.patch",\n'
+                 b'    "opencpn-5.12.4-chart-display.patch",\n')
         self.assertEqual(data.count(added), 1)
         policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
         for newline in (b'\n', b'\r\n'):

@@ -1,4 +1,5 @@
 #include "ui/Shell.h"
+#include "ui/DisplaySizing.h"
 #include "ui/NextTurnCard.h"
 #include <wx/msgdlg.h>
 #include "ui/NameEditor.h"
@@ -263,7 +264,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   // rail item after where the press actually lands (SCRUM-337).
   nav("Settings", "Settings and preferences", XNavIcon::Settings, [this]{ShowProduct(ProductPage::Home);});
   vessel_profile_ = Button(left,"Vessel profile","Vessel profile / name not configured",[this] {
-    ShowSettings();settings_drawer_->Select(SettingsSection::Vessel);
+    ShowSettings(SettingsSection::Vessel);
   });
   vessel_profile_->SetVesselProfile();
   vessel_profile_->SetMinSize(frame_.FromDIP(wxSize(32,32)));
@@ -492,6 +493,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
     return result;
   };
   product_actions.settings = actions_.settings;
+  product_actions.personalise_rail = [this] { ShowRailPersonalise(); };
   product_actions.chart_style_status = actions_.chart_style_status;
   product_actions.chart_style_requested = actions_.chart_style_requested;
   product_actions.set_chart_style = actions_.set_chart_style;
@@ -616,6 +618,8 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   frame_.SetAcceleratorTable(wxAcceleratorTable(
       static_cast<int>(accelerators.size()), accelerators.data()));
   frame_.Bind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
+  InstallPaneSeparators();
+  ApplyOwnedScale();
   ApplyTheme();
   Tick();
   manager_.Update();
@@ -633,6 +637,7 @@ Shell::~Shell() {
   CloseContext();
   if (ais_drawer_) { ais_drawer_->Dismiss(); ais_drawer_->Destroy(); ais_drawer_ = nullptr; }
   if (passage_drawer_) { passage_drawer_->Dismiss(); passage_drawer_->Destroy(); passage_drawer_ = nullptr; }
+  if (rail_personalise_) { rail_personalise_->Dismiss(); rail_personalise_->Destroy(); rail_personalise_ = nullptr; }
   if (settings_drawer_) { settings_drawer_->Dismiss(); settings_drawer_->Destroy(); settings_drawer_ = nullptr; }
   if (anchor_drawer_) { anchor_drawer_->Dismiss(); anchor_drawer_->Destroy(); anchor_drawer_ = nullptr; }
   if (alert_drawer_) { alert_drawer_->Dismiss(); alert_drawer_->Destroy(); alert_drawer_ = nullptr; }
@@ -806,6 +811,8 @@ void Shell::SetLight(LightMode mode) {
 }
 void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now,
                        const smartnav::EnergyPrediction &energy) {
+  const int input_mode=state_.replayed?2:state_.simulated?1:0;
+  if(input_mode!=rail_input_mode_){sog_history_=application::RailHistory{};rail_input_mode_=input_mode;}
   sog_history_.Observe(state_.navigation.sog_kn, now);
   std::optional<double> safety;
   if (actions_.chart_safety_depth_m) {
@@ -835,6 +842,7 @@ void Shell::UpdateRail(const std::vector<std::string> &keys, vessel::Time now,
           value->SetMetricIcon(MetricIconForKey(key));
           const auto viewport=frame_.ToDIP(frame_.GetClientSize());
           const auto layout=prototype::DisplayDesktop(viewport.x,viewport.y,display_.layout);
+          value->SetInterfaceScale(display_.scale_percent);
           value->SetMetricFontSize(display_.layout==application::ChartLayout::InstrumentFocus
               ? (viewport.x<=760?32:58) : layout.metric_value_font_size);
           value->SetMetricLabelSize(prototype::MetricLabelSize(viewport.x,viewport.y));
@@ -890,6 +898,32 @@ void Shell::UpdateAlerts() {
     alert_pane_->GetParent()->Layout();
   }
 }
+void Shell::InstallPaneSeparators() {
+  // Prototype --line joins the shell surfaces. Reserve one physical pixel
+  // inside each owned pane, never a global AUI border around the chart.
+  for(const auto *name:{"OpenNavTop","OpenNavTools","OpenNavData"}) {
+    auto &pane=manager_.GetPane(name);
+    if(!pane.IsOk()||!pane.window->GetSizer())continue;
+    auto *window=pane.window;
+    auto *existing=window->GetSizer();
+    window->SetSizer(nullptr,false);
+    const bool horizontal=wxString(name)=="OpenNavTop";
+    const bool before=wxString(name)=="OpenNavData";
+    auto *line=new wxPanel(window,wxID_ANY);
+    line->SetName("Shell separator");
+    line->SetMinSize(horizontal?wxSize(-1,1):wxSize(1,-1));
+    line->SetBackgroundStyle(wxBG_STYLE_PAINT);
+    line->Bind(wxEVT_PAINT,[this,line](wxPaintEvent &) {
+      wxAutoBufferedPaintDC dc(line);dc.SetBackground(wxBrush(Colour(Theme(mode_).border)));dc.Clear();
+    });
+    auto *outer=new wxBoxSizer(horizontal?wxVERTICAL:wxHORIZONTAL);
+    if(before)outer->Add(line,0,wxEXPAND);
+    outer->Add(existing,1,wxEXPAND);
+    if(!before)outer->Add(line,0,wxEXPAND);
+    window->SetSizer(outer);
+  }
+}
+
 void Shell::ApplyResponsiveLayout() {
   const auto size = frame_.ToDIP(frame_.GetClientSize());
   const int layout_class = (size.x <= 1100 ? 1 : 0) |
@@ -899,9 +933,18 @@ void Shell::ApplyResponsiveLayout() {
       (size.x >= 1500 && size.y >= 900 ? 16 : 0) |
       (size.x <= 760 ? 32 : 0);
   const int dpi = frame_.GetDPI().x;
-  if (layout_class == responsive_class_ && dpi == responsive_dpi_) return;
+  if (layout_class == responsive_class_ && dpi == responsive_dpi_ && size==responsive_size_) return;
+  responsive_size_=size;
   responsive_class_ = layout_class; responsive_dpi_ = dpi;
-  const auto layout = prototype::DisplayDesktop(size.x, size.y, display_.layout);
+  auto layout = prototype::DisplayDesktop(size.x, size.y, display_.layout);
+  layout.rail = DisplayPixels(layout.rail, display_.scale_percent);
+  // Extra destinations (Weather/Tracks) must not push the vessel shortcut
+  // below the footer. Fit the row budget before laying out the persistent rail.
+  const int count=static_cast<int>(navigation_page_buttons_.size());
+  const int fixed=2*layout.nav_inset+count*layout.nav_gap+
+      layout.divider_before+layout.divider_after+1+32+8;
+  if(count>0)layout.nav_height=std::min(layout.nav_height,
+      std::max(32,(size.y-layout.top-prototype::footer-fixed)/count));
   const auto dip = [this](int v) { return frame_.FromDIP(v); };
   const auto pane_size = [&](const char *name, int width, int height) {
     auto &pane = manager_.GetPane(name);
@@ -918,12 +961,13 @@ void Shell::ApplyResponsiveLayout() {
   const int metric = display_.layout == application::ChartLayout::InstrumentFocus
       ? (size.x <= 760 ? 32 : 58) : layout.metric_value_font_size;
   for (const auto &value : rail_values_) {
+    value.second->SetInterfaceScale(display_.scale_percent);
     value.second->SetMetricFontSize(metric);
     value.second->SetMetricLabelSize(prototype::MetricLabelSize(size.x,size.y));
     value.second->SetContentInset(layout.data_rail_padding_x);
   }
   auto *left = navigation_divider_->GetParent();
-  auto *tools = left->GetSizer();
+  auto *tools = left->GetSizer()->GetItem(std::size_t(0))->GetSizer();
   tools->Clear(false);
   tools->AddSpacer(dip(layout.nav_inset));
   navigation_divider_->SetMinSize(wxSize(dip(layout.navigation-43), dip(1)));
@@ -942,7 +986,7 @@ void Shell::ApplyResponsiveLayout() {
       tools->AddSpacer(dip(layout.divider_after));
     }
   }
-  const bool show_profile=layout.nav_height!=43;
+  const bool show_profile=true;
   vessel_profile_->Show(show_profile);
   if(show_profile) {
     vessel_profile_->SetMinSize(wxSize(dip(32),dip(32)));
@@ -954,7 +998,7 @@ void Shell::ApplyResponsiveLayout() {
   rail_configure_->SetMinSize(wxSize(dip(size.x <= 1100 ? 30 : 40),
                                     dip(size.x <= 1100 ? 30 : 40)));
   rail_header_->GetSizer()->GetItem(std::size_t(0))->SetBorder(dip(layout.data_rail_padding_x));
-  auto *container = rail_header_->GetParent()->GetSizer();
+  auto *container = rail_header_->GetParent()->GetSizer()->GetItem(std::size_t(1))->GetSizer();
   container->GetItem(std::size_t(2))->AssignSpacer(0, dip(layout.pilot_gap));
   auto *pilot_row = container->GetItem(std::size_t(3))->GetSizer();
   const int inset = size.x <= 1100 ? 14 : 19;
@@ -972,6 +1016,8 @@ void Shell::ApplyResponsiveLayout() {
 void Shell::ApplyOwnedScale() {
   const int percent=display_.scale_percent;
   if(product_)product_->SetInterfaceScale(percent);
+  if(rail_personalise_)rail_personalise_->SetInterfaceScale(percent);
+  for(const auto &value:rail_values_)value.second->SetInterfaceScale(percent);
   // Header status retains its fixed 48 DIP touch target, like the other
   // header controls; it never grows the top pane or steals chart height.
   if(track_record_)track_record_->SetInterfaceScale(percent);
@@ -1180,6 +1226,12 @@ void Shell::Tick() {
     passage_drawer_->Present(DrawerWorkspace());
   }
   UpdateRail(config.data_rail, now, energy);
+  vessel_profile_->SetVesselIdentity(actions_.vessel_name
+      ? wxString::FromUTF8(actions_.vessel_name()) : wxString{});
+  if(rail_personalise_ && rail_personalise_->IsShown()){
+    rail_personalise_->Update(mode_,!simulation_&&!replay&&!state_.replayed&&!state_.simulated);
+    rail_personalise_->Present(DrawerWorkspace());
+  }
   if (follow_button_ && actions_.following) {
     // Prototype .follow-btn.active: "Following Reptil" while the chart follows.
     const bool on = actions_.following();
@@ -1242,17 +1294,14 @@ void Shell::Tick() {
     source_->GetParent()->Layout();
   }
   const auto route = state_.navigation.route;
-  const auto distance =
-      route ? vessel::AssessRoute(*route, now).remaining_distance_nm
-            : std::nullopt;
-  wxString summary = "Route unavailable";
-  if (distance) {
-    const auto destination = !route->remaining_steps.empty()
-        ? route->remaining_steps.back().name : route->route_name;
-    summary = wxString::Format("%.1f NM", *distance) + "  /  " +
-        (destination.empty() ? wxString("Destination") : wxString::FromUTF8(destination));
-  } else if (route && route->state == vessel::RouteState::NoActiveRoute) {
-    summary = "No active route";
+  // Route identity remains useful during GPS loss; never substitute a fresh
+  // distance or destination name for the actual active route title.
+  wxString summary = route && route->state == vessel::RouteState::NoActiveRoute
+      ? "No active route" : "Route unavailable";
+  if (route && route->state != vessel::RouteState::NoActiveRoute && !route->route_id.empty()) {
+    summary=wxString::FromUTF8(route->route_name);
+    summary.Trim(true).Trim(false);
+    if(summary.empty())summary="Unnamed route";
   }
   if (creating) summary = "Build route / tap chart to add points";
   else summary += wxString::FromUTF8("  \xE2\x8C\x84");
@@ -1340,6 +1389,7 @@ void Shell::UpdateScrollControls() {
 }
 
 std::string Shell::PageTitle() const {
+  if (rail_personalise_ && rail_personalise_->IsShown()) return "Personalise instruments";
   if (track_drawer_ && track_drawer_->IsShown()) return "Track recording";
   if (chart_info_drawer_ && chart_info_drawer_->IsShown()) return "Chart information";
   if (search_drawer_ && search_drawer_->IsShown()) return "Chart search";
@@ -1400,6 +1450,7 @@ void Shell::ShowNavigation() {
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
+  if (rail_personalise_) rail_personalise_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();
@@ -1432,6 +1483,7 @@ void Shell::ShowNavigation() {
   frame_.Refresh();
 }
 void Shell::ShowProduct(ProductPage page) {
+  if (page == ProductPage::RailLayout) { ShowRailPersonalise(); return; }
   if (page == ProductPage::SourceHealth) { ShowHealth(); return; }
   if (page == ProductPage::Home || page == ProductPage::Settings) { ShowSettings(); return; }
   if (page == ProductPage::Ais) { ShowTraffic(); return; }
@@ -1724,7 +1776,7 @@ void Shell::ShowBoatSetup(bool explicit_reset) {
   };
   boat_setup_=ShowBoatSetupDialog(frame_,std::move(draft),std::move(setup),mode_);
 }
-void Shell::ShowSettings() {
+void Shell::ShowSettings(std::optional<SettingsSection> section) {
   ShowNavigation();
   if (!settings_drawer_) {
     SettingsDrawerActions actions;
@@ -1793,10 +1845,26 @@ void Shell::ShowSettings() {
     settings_drawer_ = new XNavSettingsDrawer(frame_, std::move(actions));
     settings_drawer_->on_dismiss=[this]{if(settings_drawer_)settings_drawer_->ResetDraft();};
   }
+  if(section)settings_drawer_->Select(*section);
   settings_drawer_->SetInterfaceScale(display_.scale_percent);
   settings_drawer_->Open(DrawerWorkspace());
   Tick();
 }
+void Shell::ShowRailPersonalise() {
+  ShowNavigation();
+  if(!rail_personalise_)rail_personalise_=new XNavRailPersonaliseDrawer(frame_,actions_.settings,
+      [this](const application::Settings &next) {
+        if(simulation_||state_.simulated||state_.replayed||
+            (actions_.commissioning&&actions_.commissioning->Replaying()))
+          return application::CommandResult{false,"Return to live data before changing your instruments"};
+        if(!actions_.save_rail)return application::CommandResult{false,"Instrument settings unavailable"};
+        return actions_.save_rail(next);
+      });
+  rail_personalise_->SetInterfaceScale(display_.scale_percent);
+  rail_personalise_->Open(DrawerWorkspace(),mode_,!simulation_&&!state_.simulated&&!state_.replayed&&
+      (!actions_.commissioning||!actions_.commissioning->Replaying()));
+}
+
 application::CommandResult Shell::ApplyDisplayPreferences(
     const application::DisplayPreferences &next) {
   if (!application::ValidDisplayPreferences(next))
@@ -2091,6 +2159,7 @@ void Shell::ShowPage(PreviewPage page) {
   if (alert_drawer_) alert_drawer_->Dismiss();
   if (pilot_drawer_) pilot_drawer_->Dismiss();
   if (anchor_drawer_) anchor_drawer_->Dismiss();
+  if (rail_personalise_) rail_personalise_->Dismiss();
   if (settings_drawer_) settings_drawer_->Dismiss();
   if (passage_drawer_) passage_drawer_->Dismiss();
   if (ais_drawer_) ais_drawer_->Dismiss();

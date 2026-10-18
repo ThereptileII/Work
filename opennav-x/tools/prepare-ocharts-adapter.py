@@ -14,7 +14,7 @@ import urllib.request
 ROOT = Path(__file__).resolve().parents[1]
 LOCK = 'tools/ocharts-adapter-source.lock.json'
 PATCHES = ('patches/ocharts-skager-presentation.patch', 'patches/ocharts-wxcurl-trust.patch',
-           'patches/ocharts-private-hazard-association.patch')
+           'patches/ocharts-private-hazard-association.patch', 'patches/ocharts-chart-display.patch')
 LOCAL = ('src/plugin-adapters/ChartPresentationBindingV1.h',
          'src/plugin-adapters/ocharts/ChartPresentationAdapter.h',
          'src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp',
@@ -27,7 +27,8 @@ LOCAL = ('src/plugin-adapters/ChartPresentationBindingV1.h',
          'src/integration/ChartNameSpacing.h',
          'src/integration/ChartNameAlphaWindows.cpp',
          'src/integration/ChartRenderObservation.h', 'src/integration/ChartLightLabel.h', 'src/integration/ChartLightSymbol.h', 'src/integration/ChartLightTowerSymbol.h', 'src/integration/ChartCaLightPoint.h', 'src/integration/ChartCaFan.h', 'src/integration/ChartCaAllRound.h', 'src/integration/ChartCableWave.h', 'src/integration/ChartSpecialBuoySymbol.h', 'src/integration/ChartYellowBuoySymbol.h', 'src/integration/ChartSoundingFont.h',
-         'src/integration/ChartCanvasInk.h', 'src/ui/Theme.h')
+         'src/integration/ChartCanvasInk.h', 'src/integration/ChartPresentationPolicy.h',
+         'src/application/ChartStyle.h', 'src/ui/Theme.h')
 RECIPE = 'cmake/ocharts-adapter/CMakeLists.txt'
 INPUTS = (LOCK, RECIPE, 'cmake/ocharts-adapter/PreparedPath.cmake',
           'cmake/ocharts-adapter/Targets.cmake', 'tools/prepare-ocharts-adapter.py',

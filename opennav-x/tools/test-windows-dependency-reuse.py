@@ -210,6 +210,7 @@ class SameJobReuseReceiptTests(unittest.TestCase):
             "patches/opencpn-5.12.4-startup-presentation.patch",
             "patches/opencpn-5.12.4-track-recording.patch",
             "patches/opencpn-5.12.4-track-presentation.patch",
+            "patches/opencpn-5.12.4-chart-display.patch",
             "evidence/local/windows-curl-source-preflight/source-analysis.json",
             "evidence/local/windows-curl-source-preflight/test1119.stderr.txt",
             "build/dependency-downloads/zlib-1.3.2.tar.gz",

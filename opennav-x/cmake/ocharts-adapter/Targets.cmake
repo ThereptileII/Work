@@ -46,7 +46,7 @@ add_library(skager-ocharts-adapter SHARED ${SRC} "${P}/libs/gdal/src/s57classreg
   "${SKAGER_PREPARED}/local/src/plugin-adapters/ocharts/ChartPresentationAdapter.cpp"
   "${SKAGER_PREPARED}/local/src/integration/ChartNameAlphaWindows.cpp")
 file(WRITE "${CMAKE_BINARY_DIR}/adapter.def"
-  "LIBRARY skager-ocharts-adapter\nEXPORTS\n create_pi\n destroy_pi\n skager_bind_chart_presentation_v1\n skager_chart_presentation_status_v1\n skager_chart_point_style_v1\n")
+  "LIBRARY skager-ocharts-adapter\nEXPORTS\n create_pi\n destroy_pi\n skager_bind_chart_presentation_v1\n skager_chart_presentation_status_v1\n skager_chart_point_style_v1\n skager_configure_chart_display_v1\n")
 target_sources(skager-ocharts-adapter PRIVATE "${CMAKE_BINARY_DIR}/adapter.def")
 set_target_properties(skager-ocharts-adapter PROPERTIES PREFIX "" OUTPUT_NAME "skager-ocharts-adapter")
 target_link_libraries(skager-ocharts-adapter PRIVATE ocpn::api_wx32
