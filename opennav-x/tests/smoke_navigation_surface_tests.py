@@ -31,8 +31,12 @@ print('7 exact native reference desktop selection checks passed')
 ui_path = root / 'tools/windows-ui.py'
 ui_tree = ast.parse(ui_path.read_text())
 functions = [n for n in ui_tree.body if isinstance(n, ast.FunctionDef)
-             and n.name in ('click_text', 'complete_modal_action')]
-assert len(functions) == 2
+             and n.name in ('click_text', 'complete_modal_action', 'control_text')]
+assert len(functions) == 3
+name_check = next(n for n in tree.body if isinstance(n, ast.FunctionDef)
+                  and n.name == 'require_native_waypoint_name')
+wait_object = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
+                   and n.name == 'wait_object')
 cancel_call = next(n for n in ast.walk(tree) if isinstance(n, ast.Expr)
                   and isinstance(n.value, ast.Call)
                   and isinstance(n.value.func, ast.Attribute)
@@ -40,9 +44,16 @@ cancel_call = next(n for n in ast.walk(tree) if isinstance(n, ast.Expr)
 block = next(n.body for n in ast.walk(tree) if isinstance(n, ast.If)
              and cancel_call in n.body)
 start = block.index(cancel_call) - 1
-sequence = block[start:start + 4]  # Delete, completed Cancel, unchanged name, Edit.
-assert isinstance(sequence[2], ast.Assert)
-assert sequence[3].value.args[1].value == 'Edit waypoint'
+stop = next(i for i in range(start + 2, len(block))
+            if isinstance(block[i], ast.Expr) and isinstance(block[i].value, ast.Call)
+            and isinstance(block[i].value.func, ast.Attribute)
+            and block[i].value.func.attr == 'click_text'
+            and len(block[i].value.args) == 2
+            and isinstance(block[i].value.args[1], ast.Constant)
+            and block[i].value.args[1].value == 'Edit waypoint')
+# Execute the real span through the next Edit, including publication wait and
+# exact native-name observation; its number of statements is not the contract.
+sequence = block[start:stop + 1]
 
 
 class ModalQueue:
@@ -54,6 +65,8 @@ class ModalQueue:
         self.enabled = True
         self.calls = []
         self.name = 'ALPHA TEST UI edited'
+        self.tick = 0
+        self.published_enabled = False
 
     def monotonic(self):
         return self.now
@@ -71,6 +84,11 @@ class ModalQueue:
             self.enabled = True
         if self.phase >= 3 and self.fault == 'cancel-changed-mark':
             self.name = 'incorrectly changed'
+        # HWND owner release precedes the next diagnostic publication. A stale
+        # record still describes disabled controls until this separate event.
+        if self.phase >= 4 and self.fault != 'publication-stuck':
+            self.tick += 1
+            self.published_enabled = self.enabled
 
     def windows(self, pid):
         return [(1, pid, 'SKAGER / OpenCPN')] + (
@@ -93,16 +111,36 @@ class ModalQueue:
         changed = self.fault == 'wrong-pid' or (
             self.fault == 'owner-pid-changed' and self.phase is not None)
         C.cast(output, C.POINTER(W.DWORD)).contents.value = 99 if changed else 77
+        return 10
 
     def parent(self, handle):
         if handle == 2 and self.fault == 'wrong-owner':
             return 99
-        return 1 if handle in (2, 3, 4) else 0
+        return {2: 1, 3: 1, 4: 1, 10: 1, 20: 1, 22: 20, 23: 22, 21: 23}.get(handle, 0)
+
+    def is_child(self, parent, handle):
+        while handle:
+            handle = self.parent(handle)
+            if handle == parent:
+                return True
+        return False
 
     def children(self, handle):
-        return [(10, self.name), (3, 'Delete waypoint'), (4, 'Edit waypoint')] if handle == 1 else []
+        page = [(20, 'SKAGER product page: Waypoint detail'), (22, ''), (23, ''), (21, '')]
+        # The unchanged cached caption intentionally cannot witness the EDIT's
+        # value. Even a changed mark retains this misleading background text.
+        if handle == 1:
+            return [(10, 'ALPHA TEST UI edited'), (3, 'Delete waypoint'), (4, 'Edit waypoint')] + page
+        return page[1:] if handle == 20 else []
 
-    def send(self, handle, message, *_):
+    def send(self, handle, message, wparam=0, lparam=0):
+        if message == 0x000D:  # The actual control_text helper sends WM_GETTEXT.
+            assert handle == 21
+            self.calls.append('read-name')
+            value = C.create_unicode_buffer(self.name)
+            assert len(self.name) < wparam
+            C.memmove(lparam, value, C.sizeof(value))
+            return len(self.name)
         if message == 0x202:
             if handle == 3:
                 self.modal = self.fault != 'missing-modal'
@@ -118,47 +156,80 @@ class ModalQueue:
             raise ValueError('original pointer failure')
         self.phase = 0
 
+    def snapshot(self):
+        field = dict(label='Field: Waypoint name', accessible_name='Waypoint name',
+                     x=100, y=200, width=500, height=48, visible=True,
+                     enabled=self.published_enabled)
+        return dict(ui_page='Waypoint detail', runtime=dict(
+            ui_update=dict(ticks=self.tick), display=dict(interaction_controls=[field])))
 
-def run_cancel(fault=None, without_completion=False):
+
+def run_cancel(fault=None, *, legacy=False, without_completion=False,
+               without_fresh_wait=False, expected=None):
     queue = ModalQueue(fault)
     def class_name(handle, output, capacity):
-        output.value = 'wxWindowNR'
+        output.value = 'Edit' if handle == 21 else 'Static' if handle == 10 else 'wxWindowNR'
+        return len(output.value)
     def rect(handle, output):
         r = C.cast(output, C.POINTER(W.RECT)).contents
-        r.left = r.top = 0
-        r.right = r.bottom = 48
+        bounds = {1: (0, 0, 1280, 800), 20: (80, 68, 1094, 766),
+                  21: (100, 200, 600, 248)}
+        r.left, r.top, r.right, r.bottom = bounds.get(handle, (0, 0, 48, 48))
         return True
     native = dict(C=C, W=W, time=queue, windows=queue.windows,
                   wait_window=lambda title, pid: (2, pid),
-                  GetParent=queue.parent, GetWindowThreadProcessId=queue.pid,
+                  GetParent=queue.parent, IsChild=queue.is_child, GetWindowThreadProcessId=queue.pid,
                   IsWindowVisible=queue.visible, IsWindowEnabled=queue.is_enabled,
                   children=queue.children, text=lambda h: 'SKAGER / OpenCPN',
-                  GetClassNameW=class_name, GetClientRect=rect, SendMessageW=queue.send)
+                  GetClassNameW=class_name, GetClientRect=rect, GetWindowRect=rect,
+                  SendMessageW=queue.send)
     exec(compile(ast.Module(body=functions, type_ignores=[]), str(ui_path), 'exec'), native)
     code = copy.deepcopy(sequence)
-    if without_completion:
-        # This is the original call sequence: queue Cancel then immediately
-        # inspect unchanged background text and synchronously inject Edit.
+    if legacy:
+        # Historical negative control: cached background text allowed Edit to
+        # be injected while the queued Cancel still held the owner disabled.
+        unchanged = ast.parse("assert any(c == 'ALPHA TEST UI edited' for _, c in ui.children(handle))").body[0]
+        code = [code[0], code[1], unchanged, code[-1]]
+    if without_completion or legacy:
         code[1].value = copy.deepcopy(cancel_call.value.args[3].body)
-    scope = dict(ui=SimpleNamespace(**native), app=SimpleNamespace(pid=77),
-                 handle=1, click_object=queue.cancel)
+    if without_fresh_wait:
+        assignment = next(n for n in code if isinstance(n, ast.Assign)
+                          and any(isinstance(target, ast.Name) and target.id == 'cancelled'
+                                  for target in n.targets))
+        assignment.value = ast.parse('object_snapshot()', mode='eval').body
+    scope = dict(ui=SimpleNamespace(**native), app=SimpleNamespace(pid=77, poll=lambda: None),
+                 handle=1, click_object=queue.cancel, time=queue,
+                 object_snapshot=queue.snapshot, report={'native_waypoint_name': []})
+    exec(compile(ast.Module(body=[name_check, wait_object], type_ignores=[]), str(smoke_path), 'exec'), scope)
+    if expected is None:
+        expected = 'refused' if fault or without_fresh_wait else 'edit-dropped' if legacy else 'edit-opened'
     try:
         exec(compile(ast.fix_missing_locations(ast.Module(body=code, type_ignores=[])),
                      str(smoke_path), 'exec'), scope)
     except (AssertionError, RuntimeError, ValueError) as error:
-        assert fault is not None, error
+        assert expected == 'refused', error
         assert 'edit-opened' not in queue.calls and 'edit-dropped' not in queue.calls
         assert queue.calls.count('physical-cancel') <= 1
         if fault == 'action-error':
             assert isinstance(error, ValueError) and str(error) == 'original pointer failure'
+        if fault == 'cancel-changed-mark':
+            assert queue.calls == ['physical-cancel', 'read-name'], queue.calls
+        if fault == 'publication-stuck' or without_fresh_wait:
+            assert queue.calls == ['physical-cancel'], queue.calls
     else:
-        assert fault is None, ('Invalid modal completion accepted', fault)
-        expected = 'edit-dropped' if without_completion else 'edit-opened'
-        assert queue.calls == ['physical-cancel', expected], queue.calls
+        assert expected != 'refused', ('Invalid modal completion accepted', fault)
+        assert queue.calls == (['physical-cancel', expected] if legacy else
+                               ['physical-cancel', 'read-name', expected]), queue.calls
+        if not legacy:
+            assert queue.tick > 0 and queue.phase >= 4
+            observation, = scope['report']['native_waypoint_name']
+            assert observation['stage'] == 'after-delete-cancel'
+            assert observation['value'] == 'ALPHA TEST UI edited'
+            assert observation['reader'] == 'WM_GETTEXT' and observation['edit_handle'] == 21
     return queue
 
 
-run_cancel(without_completion=True)
+run_cancel(legacy=True)
 run_cancel()
 for fault in ('cancel-stuck', 'modal-still-visible', 'owner-still-disabled',
               'cancel-changed-mark', 'duplicate', 'modal-disabled', 'not-modal',
@@ -166,3 +237,9 @@ for fault in ('cancel-stuck', 'modal-still-visible', 'owner-still-disabled',
               'action-error', 'missing-modal', 'initial-modal-hidden', 'initial-owner-hidden'):
     run_cancel(fault)
 print('17 modal cancellation sequencing/ownership/failure checks passed; original sequence drops Edit')
+run_cancel('publication-stuck')
+run_cancel(without_fresh_wait=True)
+# Removing owner completion lets an unrelated modal pass once fresh diagnostics
+# arrive. The unmodified call site above refuses this same wrong-owner fixture.
+run_cancel('wrong-owner', without_completion=True, expected='edit-opened')
+print('3 fresh-publication and missing-completion negative controls passed')
