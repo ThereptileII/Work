@@ -12,6 +12,13 @@ jobs:
     timeout-minutes: 15
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Prepare pinned native Poedit without the package feed
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-prepare-windows-poedit.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-windows-poedit.py --evidence opennav-x/evidence/local/windows-poedit-preparation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify bounded acquisition and actual gettext tools
         shell: pwsh
         run: |
@@ -21,5 +28,7 @@ jobs:
         if: always()
         with:
           name: native-gettext-${{ github.sha }}
-          path: opennav-x/evidence/local/windows-gettext-native
+          path: |
+            opennav-x/evidence/local/windows-gettext-native
+            opennav-x/evidence/local/windows-poedit-preparation
           if-no-files-found: error

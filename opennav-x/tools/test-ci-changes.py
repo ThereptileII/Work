@@ -34,6 +34,14 @@ class ClassificationTests(unittest.TestCase):
         self.expect(['README.md', 'docs/delivery-workflow.md',
                      'docs/evidence/test.json', 'docs/design/prototype/index.html'], ['docs'])
 
+    def test_poedit_ci_acquisition_requires_product_checks_without_sdk_rebuild(self):
+        for layout, prefix in (('local', ''), ('monorepo', 'opennav-x/')):
+            self.expect([prefix + 'tools/prepare-windows-poedit.py'], ['product'], layout)
+            self.expect([prefix + 'tools/future/prepare-windows-poedit.py'],
+                        ['product', 'dependencies', 'helpers'], layout)
+            self.expect([prefix + 'tools/prepare-windows-poedit-other.py'],
+                        ['product', 'dependencies', 'helpers'], layout)
+
     def test_helpers_do_not_build_application(self):
         for path in ('tools/smoke-navigation.py',
                      'tools/test-ci-changes.py', 'tools/ci_changes.py',

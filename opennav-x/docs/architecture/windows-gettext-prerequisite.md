@@ -85,3 +85,27 @@ the exact tool stem, with every other validation unchanged. Failed evidence and
 the captured-banner regression are retained in
 `docs/evidence/scrum255-gettext-banner-failure/`; functional native catalog proof
 still awaits the corrected short workflow.
+
+### Direct vendor CI preparation (2026-10-19, SCRUM-16)
+
+Candidate `11348664` stopped before native AIS/application compilation after all
+three pinned Chocolatey metadata requests returned HTTP503. A separate
+`prepare-windows-poedit.py` step now prepares the same Poedit 3.9.1 prerequisite
+before AIS, and in the focused native Gettext workflow. The original helper,
+build script, SDK producer inputs and native identity checks remain unchanged.
+An already usable known-path pair needs no installation. Otherwise the helper
+downloads only `https://download.poedit.com/Poedit-3.9.1-setup.exe`, requires
+20,038,048 bytes and SHA-256
+`a6cb88246834e6e54224b923a839c9566580cb5d4be95d4eba1d18bd34e8ecc9`,
+then uses `/verysilent /norestart`, accepting only exit zero. The checksum and
+arguments come from the package maintainer's immutable
+[3.9.1 recipe](https://github.com/nykula/chocolatey-packages/blob/17164f32f21671a6d9c17bebc183eb1c15913859/automatic/poedit/tools/chocolateyInstall.ps1);
+the public vendor download was independently hashed to that value.
+
+The download has a 120-second transfer limit and 150-second owned-process bound;
+installation has a 180-second bound. Existing native process cleanup/logging is
+reused. A failed/timeout operation cannot accept leftover files. Fresh native
+tool probes with installation disabled must pass before the new receipt passes.
+Separate preparation evidence preserves the original native proof directory.
+This supplies a reviewed alternative acquisition path for disposable CI; it
+does not replace the native UTF-8 catalog proof, SDK checks or product gates.

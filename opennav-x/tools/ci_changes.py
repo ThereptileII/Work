@@ -115,6 +115,8 @@ def classify_path(raw: str, layout: str) -> tuple[str, str]:
         return 'product', 'compiled test/fixture scope requires application build checks'
     if raw.startswith('tools/'):
         name = path.name
+        if raw == 'tools/prepare-windows-poedit.py':
+            return 'product', 'CI prerequisite acquisition; SDK producer inputs unchanged'
         if raw.startswith('tools/update-verifier/'):
             return 'product', 'installed secure startup updater and its pinned source'
         if raw in QUALIFICATION_HELPER_PATHS:
