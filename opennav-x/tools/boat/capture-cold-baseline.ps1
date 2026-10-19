@@ -47,6 +47,7 @@ if($Action -ceq 'Capture') {
   } else {Join-Path ([IO.Path]::GetDirectoryName($prior.record)) 'baseline.ini'}
   Copy-PreparationFile $priorIni $old $prior.sha256 $prior.bytes
   $saved=Join-Path $backup 'opencpn.ini'
+  $wmmProof=Get-ColdWmmResourceProof $old $saved $context
   if((Get-CommissioningHash (Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($saved)))) -cne (Get-CommissioningHash $input)){
     throw 'Cold copied bytes differ from the proposed one-byte input transform.'
   }
@@ -64,11 +65,12 @@ if($Action -ceq 'Capture') {
   if($finalIni.LastWriteTimeUtc.Ticks -ne $initialLastWriteTicks -or $finalIni.CreationTimeUtc.Ticks -ne $initialCreationTicks){throw 'Profile metadata changed during cold capture.'}
   $record=Join-Path $directory 'capture.json'
   Assert-ColdPrivateEvidence $directory $context.sid
+  Assert-ColdWmmResourceProof $old $saved $context $wmmProof -Live
   Write-Record $record @{schema=1;owner=$script:ColdCaptureOwner;status='captured';createdUtc=[datetime]::UtcNow.ToString('o');
     predecessorRecord=$prior.record;predecessorSha256=$prior.recordSha256;context=$context;profileTree=$live;pluginTrees=$trees;
     profileSha256=(Get-Digest $saved);profileBytes=(Get-Item -LiteralPath $saved).Length;profileAcl=$originalAcl;
     sourceIniLastWriteTicks=$initialLastWriteTicks;sourceIniCreationTicks=$initialCreationTicks;
-    inputSha256=(Get-Digest $inputPath);stockSha256=(Get-Digest $context.executable);
+    inputSha256=(Get-Digest $inputPath);stockSha256=(Get-Digest $context.executable);wmmResourceProof=$wmmProof;
     provenance='pre-existing-current-user-state;origin-unverified';
     profileChanged=$false;applicationLaunched=$false;launchPermission=$false}
   [pscustomobject]@{status='captured-review-required';captureRecord=$record;captureSha256=(Get-Digest $record);
@@ -110,7 +112,9 @@ $reviewPath=Assert-LocalPath $Review
 if((Get-Digest $reviewPath) -cne $ExpectedReviewSha256){throw 'Independent exact-key review changed.'}
 $reviewData=Read-Record $reviewPath
 if($reviewData.captureSha256 -cne $ExpectedCaptureSha256 -or $reviewData.predecessorRecordSha256 -cne $captured.predecessorSha256){throw 'Review belongs to another capture or predecessor.'}
-$changes=@(Assert-ColdBaselineDelta $before $saved $reviewData)
+$wmmProof=if($captured.PSObject.Properties['wmmResourceProof']){$captured.wmmResourceProof}else{$null}
+Assert-ColdWmmResourceProof $before $saved $context $wmmProof -Live
+$changes=@(Assert-ColdBaselineDelta $before $saved $reviewData ([datetime]::UtcNow) $wmmProof $captured.context)
 $reviewCopy=Join-Path $directory 'review.json'
 if(Test-Path -LiteralPath $reviewCopy){throw 'Existing review copy requires a fresh cold capture; do not overwrite partial evidence.'}
 Copy-PreparationFile $reviewPath $reviewCopy $ExpectedReviewSha256 (Get-Item -LiteralPath $reviewPath).Length
@@ -122,6 +126,7 @@ if((Get-Item -LiteralPath $ini -Force).LastWriteTimeUtc.Ticks -ne $captured.sour
 if((Get-Digest $ini) -cne $captured.profileSha256){throw 'Current profile changed before completion.'}
 if(Test-Path -LiteralPath (Join-Path $context.workspace 'commissioning-active.json')){throw 'Commissioning started during cold completion.'}
 Assert-ColdPrivateEvidence $directory $context.sid
+Assert-ColdWmmResourceProof $before $saved $context $wmmProof -Live
 $complete=Join-Path $directory 'completed-cold-baseline.json'
 if(Test-Path -LiteralPath $complete){throw 'A completed cold baseline already exists.'}
 Write-Record $complete @{schema=1;owner=$script:ColdBaselineOwner;status='completed';createdUtc=[datetime]::UtcNow.ToString('o');

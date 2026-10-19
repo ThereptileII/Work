@@ -258,8 +258,9 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
     $reviewPath=Join-Path $directory 'review.json'
     if($value.reviewSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $reviewPath) -cne $value.reviewSha256){throw 'Cold independent review changed.'}
     $review=Read-Record $reviewPath
+    $wmmProof=if($capture.PSObject.Properties['wmmResourceProof']){$capture.wmmResourceProof}else{$null}
     if($review.captureSha256 -cne $value.captureSha256 -or $review.predecessorRecordSha256 -cne $capture.predecessorSha256 -or
-       @((Assert-ColdBaselineDelta $old $saved $review ([datetime]::Parse($value.createdUtc).ToUniversalTime()))).Count -ne $value.changedKeys){
+       @((Assert-ColdBaselineDelta $old $saved $review ([datetime]::Parse($value.createdUtc).ToUniversalTime()) $wmmProof $capture.context)).Count -ne $value.changedKeys){
       throw 'Cold key review no longer matches copied bytes.'
     }
     return Copy-CommissioningBaselineRestrictions ([pscustomobject]@{sha256=$value.baselineSha256;bytes=$value.baselineBytes;record=$record;recordSha256=$Sha256;

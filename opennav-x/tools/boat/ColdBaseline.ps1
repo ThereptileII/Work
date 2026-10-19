@@ -35,7 +35,100 @@ function Assert-ColdPrivateEvidence([string]$Directory,[string]$Sid) {
   }
 }
 
-function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow) {
+function Get-ColdWmmOriginalGeneration([string]$Location,$Context) {
+  # Only the immutable predecessor value selects this path. No resource path
+  # supplied by a review is accepted, and both generations share the owned root.
+  if(-not $Context -or -not $Context.installation){throw 'Cold WMM preservation requires an owned current installation.'}
+  $installation=$Context.installation
+  $generations=Assert-LocalPath (Join-Path $installation.root 'generations')
+  $separator=[string][IO.Path]::DirectorySeparatorChar
+  $prefix=$generations+$separator
+  $current=Assert-LocalPath $installation.generation
+  if(-not $current.StartsWith($prefix,[StringComparison]::Ordinal) -or
+     $current.Substring($prefix.Length) -cnotmatch '^[a-f0-9]{32}$'){throw 'Current WMM generation is outside its owned root.'}
+  $decoded=$Location.Replace('\\','\')
+  $suffix=$separator+'app'+$separator+'plugins'+$separator+'wmm_pi'+$separator+'data'+$separator
+  if(-not $decoded.StartsWith($prefix,[StringComparison]::Ordinal) -or
+     $decoded.Substring($prefix.Length) -cnotmatch ('^[a-f0-9]{32}'+[regex]::Escape($suffix)+'$')){
+    throw 'Cold WMM predecessor must name an exact owned generation resource directory.'
+  }
+  $original=Assert-LocalPath (Join-Path $generations $decoded.Substring($prefix.Length,32))
+  if($original -ceq $current -or $Location -cne (Get-CommissioningWmmLocation (Join-Path $original 'app'))){
+    throw 'Cold WMM predecessor path is not canonical or distinct from the current generation.'
+  }
+  return $original
+}
+
+function Get-ColdWmmResourceProof([string]$Before,[string]$After,$Context) {
+  $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
+  if($old['Directories/WMMDataLocation'] -ceq $new['Directories/WMMDataLocation']){return $null}
+  $generation=Get-ColdWmmOriginalGeneration $old['Directories/WMMDataLocation'] $Context
+  if($new['Directories/WMMDataLocation'] -cne (Get-CommissioningWmmLocation (Join-Path $Context.installation.generation 'app'))){
+    throw 'Cold WMM current path differs from the captured owned generation.'
+  }
+  $proof=[pscustomobject]@{schema=1;owner='OpenNavX.ColdWmmResourceReview.1';
+    original=(Get-ReconciliationWmmOriginalReferenceProof $generation);
+    current=(Get-ReconciliationGenerationWmmProof $Context)}
+  Assert-ColdWmmResourceProof $Before $After $Context $proof
+  return $proof
+}
+
+function Assert-ColdWmmResourceProof([string]$Before,[string]$After,$Context,$Proof,[switch]$Live) {
+  $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
+  if($old['Directories/WMMDataLocation'] -ceq $new['Directories/WMMDataLocation']){
+    if($null -ne $Proof){throw 'Cold WMM proof supplied without a resource-path change.'}
+    return
+  }
+  $generation=Get-ColdWmmOriginalGeneration $old['Directories/WMMDataLocation'] $Context
+  if(-not $Proof -or (@($Proof.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne
+      (@('schema','owner','original','current'|Sort-Object)|ConvertTo-Json -Compress) -or
+      $Proof.schema -ne 1 -or $Proof.owner -cne 'OpenNavX.ColdWmmResourceReview.1' -or
+      $Proof.original.commit -isnot [string] -or $Proof.original.commit -cnotmatch '^[a-f0-9]{40}$' -or
+      $Proof.original.ownershipSha256 -isnot [string] -or $Proof.original.ownershipSha256 -cnotmatch '^[a-f0-9]{64}$' -or
+      $new['Directories/WMMDataLocation'] -cne (Get-CommissioningWmmLocation (Join-Path $Context.installation.generation 'app'))){
+    throw 'Exact independent cold WMM ownership and source proof required.'
+  }
+  $originalContext=[pscustomobject]@{installation=[pscustomobject]@{generation=$generation;
+    commit=$Proof.original.commit;ownershipSha256=$Proof.original.ownershipSha256}}
+  # Frozen manifest bytes remain verifiable after a legitimate generation
+  # retirement. Only Capture/Complete request the additional live-file checks.
+  Assert-ReconciliationGenerationWmmProof $originalContext $Proof.original
+  Assert-ReconciliationGenerationWmmProof $Context $Proof.current
+  if(($Proof.original.resources|ConvertTo-Json -Depth 8 -Compress) -cne ($Proof.current.resources|ConvertTo-Json -Depth 8 -Compress)){
+    throw 'Cold WMM generations do not contain identical pinned source resources.'
+  }
+  if($Live){
+    $actual=Get-ColdWmmResourceProof $Before $After $Context
+    if(($actual|ConvertTo-Json -Depth 12 -Compress) -cne ($Proof|ConvertTo-Json -Depth 12 -Compress)){
+      throw 'Cold WMM ownership or resource bytes changed since capture.'
+    }
+  }
+}
+
+function Assert-ColdDataRailDelta([string]$Before,[string]$After) {
+  # Settings.cpp/Assert-PreservedAlphaSettings define this six-item display
+  # selection. Preserve every other encoded byte, including pilot permission,
+  # identity, sources, calibration, presets and unknown future settings.
+  $known=@('sog','cog','heading','stw','aws','awa','tws','twa','depth','water_temp','pressure','rudder','heel','soc','voltage','current','pack_power','motor_power','rpm','motor_temp','fresh_water','fuel','waste')
+  $pattern='(?<=\\n)"display\.rail" "([^"\\\x00-\x1f]*)"(?=\\n)'
+  $normalized=@()
+  foreach($value in @($Before,$After)){
+    if($value.Length -gt 131072 -or -not $value.StartsWith('OpenNavXSettings 1\n') -or $value -match '[\x00-\x1f\x7f]'){
+      throw 'Unknown cold vessel settings encoding.'
+    }
+    $matches=[regex]::Matches($value,$pattern)
+    if($matches.Count -ne 1 -or [regex]::Matches($value,'(?<=\\n)"display\.rail" ').Count -ne 1){
+      throw 'Exactly one complete cold data-rail field is required.'
+    }
+    $items=$matches[0].Groups[1].Value.Split(',')
+    if($items.Count -lt 1 -or $items.Count -gt 6 -or @($items|Sort-Object -Unique).Count -ne $items.Count){throw 'Cold data-rail selection exceeds source bounds or contains duplicates.'}
+    foreach($item in $items){if($item -cnotin $known){throw 'Unknown cold data-rail item.'}}
+    $normalized+=,[regex]::Replace($value,$pattern,'"display.rail" "<reviewed-display-only>"')
+  }
+  if($normalized[0] -cne $normalized[1]){throw 'Cold data-rail preservation cannot change other vessel, pilot or source bytes.'}
+}
+
+function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[datetime]$At=[datetime]::UtcNow,$WmmResourceProof=$null,$Context=$null) {
   $old=Read-ProfileForAudit $Before;$new=Read-ProfileForAudit $After
   if($Review.schema -ne 1 -or $Review.owner -cne $script:ColdReviewOwner -or
      $Review.beforeSha256 -cne (Get-Digest $Before) -or $Review.afterSha256 -cne (Get-Digest $After) -or
@@ -47,8 +140,16 @@ function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[dateti
   # A valid output-capable baseline is checked by the existing one-byte forward
   # transformation on an owned copy, never by editing the user's live profile.
   $null=Get-CommissioningInputBytes ([IO.File]::ReadAllBytes($After))
+  Assert-ColdWmmResourceProof $Before $After $Context $WmmResourceProof
+  $wmmReview=$Review.PSObject.Properties['wmmResourceProofSha256']
+  if($WmmResourceProof){
+    $proofHash=Get-CommissioningHash ((New-Object Text.UTF8Encoding($false)).GetBytes(($WmmResourceProof|ConvertTo-Json -Depth 12 -Compress)))
+    if(-not $wmmReview -or $wmmReview.Value -isnot [string] -or $wmmReview.Value -cne $proofHash){throw 'Independent review must bind the exact captured cold WMM proof.'}
+  }elseif($wmmReview){throw 'Cold review includes WMM evidence without a resource-path change.'}
+  $preferences=@('OpenNav/ChartPresentationV1','OpenNav/DisplayPreferencesV1','OpenNav/OnlineAIS/v1/RadiusNm','OpenNav/AlphaSettings','Settings/ActiveRoute')
   foreach($key in @(@($old.Keys)+@($new.Keys)|Sort-Object -Unique)) {
-    if($key -cmatch '^(Settings/NMEADataSource/|Directories/|ChartDirectories/|PlugIns/(?!Dashboard/)|OpenNav/(?!InterfaceMode$)|Settings/(?:CommPriority/|PersistActiveRoute$|ActiveRoute$))' -and $old[$key] -cne $new[$key]){
+    if($key -cmatch '^(Settings/NMEADataSource/|Directories/|ChartDirectories/|PlugIns/(?!Dashboard/)|OpenNav/(?!InterfaceMode$)|Settings/(?:CommPriority/|PersistActiveRoute$|ActiveRoute$))' -and $old[$key] -cne $new[$key] -and
+       $key -cnotin $preferences -and -not ($key -ceq 'Directories/WMMDataLocation' -and $WmmResourceProof)){
       throw ('Protected marine or plugin configuration changed: '+$key)
     }
   }
@@ -70,6 +171,32 @@ function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[dateti
     } elseif($key -ceq 'OpenNav/InterfaceMode') {
       if($change.before -and $change.before -cnotin @('xnav','legacy')){throw 'Unknown previous interface mode.'}
       if($change.after -cnotin @('xnav','legacy')){throw 'Unknown current interface mode.'}
+    } elseif($key -ceq 'OpenNav/DisplayPreferencesV1') {
+      Assert-PreservedSetupPreference $key $change.after
+      if($null -ne $change.before){Assert-PreservedSetupPreference $key $change.before}
+    } elseif($key -ceq 'OpenNav/ChartPresentationV1') {
+      foreach($v in @($change.before,$change.after)){
+        if($null -ne $v -and $v -cnotin @('XNav','Standard')){throw 'Unknown cold chart palette preference.'}
+      }
+    } elseif($key -ceq 'OpenNav/OnlineAIS/v1/RadiusNm') {
+      foreach($v in @($change.before,$change.after)){
+        if($null -ne $v -and ($v -cnotmatch '^[1-9][0-9]{0,2}$' -or [int]$v -gt 200)){throw 'Cold AIS radius outside product bounds.'}
+      }
+    } elseif($key -ceq 'OpenNav/AlphaSettings') {
+      if($null -eq $change.before){throw 'Cold data-rail preservation requires an existing vessel settings record.'}
+      Assert-ColdDataRailDelta $change.before $change.after
+    } elseif($key -ceq 'Settings/ActiveRoute') {
+      if($old['Settings/PersistActiveRoute'] -cne '0' -or $new['Settings/PersistActiveRoute'] -cne '0'){
+        throw 'Cold stored route preservation requires route persistence to remain disabled.'
+      }
+      foreach($v in @($change.before,$change.after)){
+        if($null -ne $v -and $v -cne '' -and $v -cnotmatch '^[a-fA-F0-9]{8}-(?:[a-fA-F0-9]{4}-){3}[a-fA-F0-9]{12}$'){
+          throw 'Unknown inert stored route identifier.'
+        }
+      }
+    } elseif($key -ceq 'Directories/WMMDataLocation' -and $WmmResourceProof) {
+      # Exact old/current owned paths, source bytes and independent review were
+      # checked above. This is preservation, never permission to load a plugin.
     } elseif($key -ceq 'PlugIns/Dashboard/SumLogNM') {
       # Cold user state may include a deliberate counter reset; validate both
       # values without claiming the four-hour monotonic startup contract.
@@ -77,7 +204,7 @@ function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[dateti
         if($v -cnotmatch '^(?:0|[1-9][0-9]*)(?:\.[0-9]+)?(?:[eE][+-]?[0-9]+)?$' -or $v.Length -gt 64 -or
            [double]::Parse($v,[Globalization.CultureInfo]::InvariantCulture) -gt 100000000){throw 'Invalid Dashboard counter.'}
       }
-    } elseif($key -cmatch '^PlugIns/Dashboard/Dashboard[23]/(?:BestSize|PersistSize)[XY]$') {
+    } elseif($key -cmatch '^PlugIns/Dashboard/Dashboard[123]/(?:BestSize|PersistSize)[XY]$') {
       foreach($v in @($change.before,$change.after)){Assert-RestartScalar 'size' $v}
     } elseif($key -cmatch '^Settings/AutoTrackRaymarine/Pos[XY]$') {
       foreach($v in @($change.before,$change.after)){Assert-RestartScalar 'position' $v}
@@ -92,6 +219,18 @@ function Assert-ColdBaselineDelta([string]$Before,[string]$After,$Review,[dateti
         throw 'Only a bounded reviewed Swedish menu font entry may be preserved.'
       }
       foreach($component in @($Matches[1],$Matches[2],$Matches[3])){if([int]$component -gt 255){throw 'Font color component outside bounds.'}}
+    } elseif($key -ceq 'Settings/MSWFonts/sv-6f52a406') {
+      if($old['Settings/Locale'] -cne 'sv' -or $new['Settings/Locale'] -cne 'sv' -or
+         $old['Settings/LocaleOverride'] -cne 'sv_SE' -or $new['Settings/LocaleOverride'] -cne 'sv_SE'){
+        throw 'Cold menu font locale changed.'
+      }
+      foreach($v in @($change.before,$change.after)){
+        if($null -eq $v -or $v.Length -gt 256 -or
+           $v -cnotmatch '^[^:;\r\n]{1,64}:(?:-?[0-9]+;){15}[^:;\r\n]{1,64}:rgb\(([0-9]{1,3}), ?([0-9]{1,3}), ?([0-9]{1,3})\)$'){
+          throw 'Unknown existing cold menu font encoding.'
+        }
+        foreach($component in @($Matches[1],$Matches[2],$Matches[3])){if([int]$component -gt 255){throw 'Font color component outside bounds.'}}
+      }
     } else {throw ('Cold preservation needs a separate key policy: '+$key)}
   }
   return $changes

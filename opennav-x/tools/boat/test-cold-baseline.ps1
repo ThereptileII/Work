@@ -121,14 +121,15 @@ function New-ColdFixture([string]$Name){
   $script:contextCalls=0;$script:contextMismatchAt=0;$script:copyRacePath=$null;$script:copyRaceBytes=$null;$script:copyRaceDone=$false;$script:failCompleteWrite=$false
   return [pscustomobject]@{root=$root;workspace=$workspace;profile=$profile;application=$application;managed=$managed;stockPlugins=$stockPlugins;exe=$exe;context=$script:fixtureContext}
 }
-function New-AdoptedPredecessor($Fixture){
+function New-AdoptedPredecessor($Fixture,[string]$WmmLocation=''){
   $runs=Join-Path $Fixture.workspace 'runs';[void](New-Item -ItemType Directory -Path $runs -Force)
   $stamp=[datetime]::UtcNow.ToString('yyyyMMdd-HHmmss')
   $parent=Join-Path $runs ($stamp+'-read-only-commissioning-aaaaaaaa')
   $adoption=Join-Path $runs ($stamp+'-baseline-adoption-bbbbbbbb')
   [void](New-Item -ItemType Directory -Path $parent,$adoption -Force)
   $connection='0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0'
-  $prefix="[Settings]`r`nLocale=sv`r`nLocaleOverride=sv_SE`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Directories]`r`nChartDir=fixture`r`n[Canvas/CanvasConfig1]`r`ncanvasSizeY=800`r`n"
+  $wmmLine=if($WmmLocation){"WMMDataLocation=$WmmLocation`r`n"}else{''}
+  $prefix="[Settings]`r`nLocale=sv`r`nLocaleOverride=sv_SE`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=$connection`r`n[Directories]`r`nChartDir=fixture`r`n$wmmLine[Canvas/CanvasConfig1]`r`ncanvasSizeY=800`r`n"
   $encoding=New-Object Text.UTF8Encoding($false,$true);$tail=21380-$encoding.GetByteCount($prefix)-3
   if($tail -lt 0){throw 'Predecessor fixture exceeds fixed profile bound.'}
   $text=$prefix+'#'+(' '*$tail)+"`r`n";$baseline=Join-Path $parent 'baseline.ini';$inputPath=Join-Path $parent 'input-only.ini'
@@ -189,6 +190,8 @@ function Initialize-ColdLiveProfile($Fixture,$Predecessor){
 try {
   $encoding=New-Object Text.UTF8Encoding($false,$true)
   Initialize-ColdEntry
+  . (Join-Path $PSScriptRoot 'test-cold-preservation-keys.ps1')
+  . (Join-Path $PSScriptRoot 'test-cold-wmm-transaction.ps1')
   $source=Join-Path $testRoot 'source';$copy=Join-Path $testRoot 'copy';$null=New-Item -ItemType Directory -Path $source
   $before=Join-Path $source 'before.ini';$after=Join-Path $source 'opencpn.ini'
   $base="[Settings]`r`nLocale=sv`r`nLocaleOverride=sv_SE`r`nConfigVersionString=Version 5.12.4+37fd0cd Build 2026-09-27`r`nPersistActiveRoute=0`r`n[Settings/NMEADataSource]`r`nDataConnections=0;0;;0;1;COM8;115200;0;1;0;;0;;0;0;1;0;1;Gateway;0;;0`r`n[Canvas/CanvasConfig1]`r`ncanvasSizeY=800`r`n[PlugIns/Dashboard]`r`nSumLogNM=120.50`r`n[Settings/AutoTrackRaymarine]`r`nPosX=100`r`n[Settings/GlobalState]`r`nOwnShipLatLon=`"   57.1000,   16.2000`"`r`n"
