@@ -1,0 +1,89 @@
+# Recent bug-fix audit — 19 October 2026
+
+Audit window: 15–19 October. The source review starts at installed baseline
+`9feae59ce0ef1f54107c3c51f920085297ea7bc8` and includes the integrated corrections
+through `0b2bd995` in `source-batch-20261011`. This is an evidence record for the
+existing Jira work, not another backlog or a release-acceptance certificate.
+
+Earlier source-only instructions explain the deferred checks in the linked
+contracts. On 19 October the user authorized the audit, implementation/build
+repairs and one coordinator-owned Staging build and boat installation. This
+record reports only completed source review and the bounded checks below. It
+does **not** assert that a replacement Staging package was built, installed or
+accepted on the boat. No new design review or endurance run was performed.
+
+## Reports, source response and evidence
+
+| User report / Jira | Source response reviewed | Evidence and limit |
+|---|---|---|
+| Route naming and hard-to-find Finish — [SCRUM-298](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-298) | Shared name editing; naming across native completion paths; prominent Finish/Undo/Cancel; readiness and draft-focus guards (`2f2554cd`, `1984e8b8`, `1764c8d5`). Audit correction `867e060d` makes route/waypoint/track attribute writes atomic and avoids an unchecked duplicate save after successful XNav route preparation. | Native extracted-method SQLite and Finish results below. Full GUI editing, restart persistence and native Windows behavior remain unqualified. |
+| Native pilot Track/Wind — [SCRUM-313](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-313) | Exact mode allowlists, measured AUTO prerequisite, coherent native route-output receipts and no inferred waypoint-turn acknowledgement (`4ff89a7b` through `25327428`). Separate controller changes guard measured apparent-wind forwarding and late echoes. | [Source contract](../../pilot-track-wind.md). Application source is not evidence of bridge delivery or physical acceptance. Controller firmware has not been flashed for this work; Track/Wind commissioning remains unperformed. |
+| Arrival distance and passage width — [SCRUM-373](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-373) | Optional route-specific radial arrival policy and geographic passage overlay; stock behavior when unset; shared waypoint radii preserved (`862cf195`, `811e666d`, `fb49bdf9`). | [Policy and limits](../../route-passage-settings.md). Authored failure/policy cases and source review do not establish GUI arrival-loop or software/OpenGL runtime correctness. |
+| Online AIS names and rapid expiry — [SCRUM-16](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-16) | Merge independent names/static fields by MMSI; fallback label uses MMSI; online aging/stale/lost/expiry at 3/10/20/30 minutes (`a392315d`, `fa6a86cf`, `fb4918d7`). Static updates do not renew position age; local AIS policy is unchanged. | [AIS contract](../../online-ais.md#cache-and-time). Source and revised cases reviewed; live reconnect/aging and replacement chart labels remain unverified here. |
+| Small weather-box text — [SCRUM-357](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-357) | Increased helm text size (`6ad9ca44`); later forecast presentation refinements are recorded under SCRUM-378. | Source review only; no new native legibility result. |
+| Windows launcher/shortcut identity — [SCRUM-236](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-236) | Approved icons embedded in package intermediates and secure launcher/installed shortcuts branded (`2f50b4e2`, `4c9b152a`). | Package-source changes; Windows installation/Search identity is not qualified by source inspection. |
+| Alarm settings hard to find — [SCRUM-374](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-374) | Alarms & warnings remains reachable from an empty bell drawer and Settings → Navigation; owned readback and guarded links expose existing AIS/sound/anchor/energy/freshness settings (`8db2b8e0`, `3ce82695`, `a9356f61`). | [Operational boundary](../../operational-alerts.md#finding-and-adjusting-alarms). No new alarm policy, measured-depth alarm or suppression semantics. Native readback, interaction and replay acceptance remain open. |
+| Yellow measure label, unclear chart tools and wrong waypoint placement — [SCRUM-375](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-375) | Measurement-only themed label preserves upstream bearing/distance/unit/placement calculations; persistent hints and Cancel/Done; one-shot real chart tap before the name sheet (`804347bb`, `594950bc`, `8183ae7c`). | [Tool contract](../../chart-tools-and-first-start.md). Source review covers queued generation/weak ownership, cancellation and replay boundaries. Touch/pan/object overlap, actual coordinates, software/OpenGL and Legacy/Safe runtime checks remain open. |
+| Stock first-start presentation — [SCRUM-341](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-341) | Early SKAGER title and full native safety notice; original consent/receipt ownership retained; automatic XNav setup uses Boat Setup (`cd930e30`, `ab9c1542`). | [First-start boundary](../../chart-tools-and-first-start.md#first-start). Agree/Cancel fixture source exists; no new consent pass asserted. Startup uses Day palette rather than persisted Dusk/Night. Plugin/recovery dialogs and Windows Search identity are outside this fix. |
+| Serial startup crash — [SCRUM-376](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-376) | Shared listener-registry synchronization and replacement-move registration cleanup (`8b109bde`). | Four ordinary and four ASan/UBSan scenarios pass; original source fails both expected negative controls. This proves the corrected synchronization/registration boundary, not the unique cause of the captured crash or boat startup stability. |
+| Record/saved tracks and track-layer control — [SCRUM-377](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-377) | Native recording drawer, saved-track library and XNav master display filter; owned snapshots, replay and fresh-position gates; per-object/layer flags preserved (`8810325e` through `0b3189cc`). Daily restart/replacement corrections and atomic attribute saves included. | [Track contract](../../track-recording.md) and SQLite results below. Actual recording, GPS loss/recovery, daily merge, restart, filtering/hit-testing and Windows/boat interaction remain unqualified. Sailing tracks are separate from pilot TRACK. |
+| Rail details/presets, scaling, compass, chart and surface refinement — [SCRUM-378](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-378) | Very Light option; immediate 100/125/150%; four quantity selectors and named presets; source/age detail; coherent explicitly labeled apparent-wind fallback; profile/route identity, rounded surfaces and forecast refinements (`29281137`, `c20c9a08`, `d1c8df75`). Compass now cycles North/Course/Head (`608b8375`). | [Item-by-item review](../../design/reviews/scrum378-source-refinement.md) records all 14 requests. Measured depth is retained but the unsafe chart-depth comparison is withheld for incompatible datums. Source review preserves replay resets, original observation age and rail-only saves without source reconfiguration. Native fit, paint and DPI acceptance remain open. |
+| “No active route” and other periodic flicker — [SCRUM-378](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-378) | Idempotent roles/themes/settings copy, correct absent-age comparison and top-header-only MSW buffering (`01f876b1`). Audit `0b2bd995` also removes unchanged ChoiceField Enable refreshes. | [Repaint analysis](../../design/reviews/scrum378-source-refinement.md#2026-10-19-ui-flicker-follow-up). No route-text oscillation was found; buffering is a mitigation, not a reproduced cause/fix. Live 250 ms assessment and real freshness/state changes remain intact. |
+
+## Additional audit corrections and executed checks
+
+- **Navigation storage (`867e060d`): 36 SQLite checks and seven native Finish
+  checks passed**, as reported by the coordinator from the isolated
+  [native persistence fixture](../../../tests/navobj_persistence/README.md).
+  It extracts actual patched methods and uses real in-memory SQLite failure
+  injection, with inert object/UI boundaries. It covers failed prepare/write/
+  commit, rollback, nested transactions, route/point order, track attributes and
+  replacement. It is not filesystem durability or a complete application test.
+- **Observable (`8b109bde`): four ordinary plus four ASan/UBSan cases passed**
+  on Linux/GCC 16.2.1 and retained wxWidgets 3.2.11. Two original-source negative
+  controls failed at their expected assertions. The
+  [fixture record](../../../tests/observable_concurrency/README.md) identifies
+  the patch hash, retained logs and corrected initial fixture failures. No
+  production exception was attributed to a plugin merely from log ordering.
+- **Preset downgrade preservation (`0b2bd995`, worker `7b6dddc0`):** presets
+  now use `/OpenNav/RailPresetsV1`; unchanged v1 `/OpenNav/AlphaSettings` retains
+  old-reader-compatible bytes. Earlier inline records migrate on explicit save;
+  absent, empty and corrupt separate records have distinct tested handling.
+  Save, SaveVessel, SaveBoatSetup and RestoreBackup include rollback of every
+  touched key. Portable backups include presets; restoring an older backup
+  without presets clears them. No read-time migration write occurs.
+- **Focused settings verification:** four isolated targets compiled; all six
+  registered settings groups, the backup codec fixture, the backup/store fixture
+  and the boat-setup/store fixture passed (the latter two under Xvfb). These
+  checks include failed writes, restart readback, backup restoration, source
+  preservation and live-energy freshness. A first bare `settings_tests` call
+  printed “Choose group”; the corrected run executed all six registered groups.
+  Retained worker output is in `.tmp/audit-ui-build` in `scrum378-audit-ui`.
+- **125% and repaint (`0b2bd995`):** sheet actions now use the shared scaling
+  path at 100/125/150%; ChoiceField refreshes only on an actual Enable change.
+  Sheet/Choice fixture source was corrected for the current field dimensions;
+  these UI cases were not executed in this worker. The existing ChoiceField
+  fixture lacks a maintained CMake/tool registration; no coverage is inferred.
+
+Manual integration review covered UI declarations/call sites, owned snapshots,
+queued callback lifetime, mode/replay guards, native model versus GUI link
+boundaries, maintained CMake lists and patch/source/dependency-receipt inventories.
+That review is not an MSVC compile, whole-application patch/build pass, installed
+source-package check or runtime acceptance result.
+
+## Explicit remaining evidence boundaries
+
+The specific northern feature reported as a lighthouse is still unclassified.
+Existing LIGHTS and qualified support aliases were reviewed; a generic “Light”
+label does not justify replacing all lights with a tower. No correction of that
+particular feature is claimed.
+
+The [17 October boat record](../scrum17-9fe-boat-resume-20261017/README.md)
+remains failed acceptance for installed `9feae59c` / Beta 2.5. Historical native
+Staging and plugin-loading observations do not qualify these later sources.
+Startup/crash recovery, the actual no-route flicker, chart rendering, sensor
+freshness transitions, profile preservation and supported native Windows
+interaction remain candidate-specific checks. No new boat runtime pass, physical
+command, controller flashing, Track/Wind commissioning, Production promotion or
+public release is established here. The existing endurance skip remains in
+effect; no new design acceptance is claimed.
