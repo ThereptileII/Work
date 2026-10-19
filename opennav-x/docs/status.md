@@ -101,7 +101,22 @@ package or boat update is claimed from that failed run.
 The corrected parser passes 24 refusal/positive cases and accepts the exact
 hash-verified adapter retained from that failed build as bytes only, without
 loading its DLL. See [the bounded correction evidence](evidence/source-batch-20261019/chart-module-abi-correction.json).
-The replacement native host/loading and package gates remain pending.
+Replacement `8c86e97f`, run `39305360742`, passed both 160-case Linux builds
+and both 152-case Windows builds. The real Windows host now passes the exact
+private-adapter import/load/unload check, closing that blocker. Setup and
+portable recovery were built and sealed, but runtime qualification then stopped
+at the route-confirmation fixture before its competing route edit. Windows
+correctly disables the owner of a modal; the fixture incorrectly rechecked the
+enabled name field before consuming its modal-open marker. The fixture now
+latches the verified enabled name before publishing readiness. Real modal,
+external EditRoute and stale-selection activation refusal checks are unchanged.
+Seven extracted-source cases pass, and the original deadlock plus removed-guard
+negative controls fail as expected. This is a fixture correction, not a product
+behavior change or native replacement pass. Retained installer/chart checks run
+separately as `39317764100`; the original qualification remains failed. The
+maintained delivery path cannot replace a compiled fixture independently, so a
+corrected candidate still requires its native build/qualification. Boat update
+remains pending. See [the exact finding](evidence/source-batch-20261019/route-modal-fixture-correction.json).
 
 ## UI flicker — repaint corrections, native confirmation pending
 

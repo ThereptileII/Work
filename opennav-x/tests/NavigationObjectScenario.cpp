@@ -61,6 +61,7 @@ bool settings_capture_started = false;
 bool navigation_settings_capture_started = false;
 int settings_capture_waited = 0;
 int route_detail_stage = 0;
+bool route_detail_name_observed = false;
 bool route_modal_changed = false;
 struct ArrivalPoint { double lat, lon, radius; };
 ArrivalPoint first_arrival{}, final_arrival{};
@@ -476,10 +477,15 @@ bool ObserveRouteDetail(const Navigation &selected) {
       Check(progress->active_waypoint_id == test_route->GetPoint(2)->m_GUID.ToStdString(wxConvUTF8),
             "Open detail uses the newly advanced coherent waypoint contract");
   }
-  if (route_detail_stage == 1 &&
-      !route_modal_changed && !HasVisibleNavigationName(*gFrame,
-          ui::ProductPage::RouteDetail, "BETA TEST externally renamed route")) {
-    Write(); return false; // allow the one-second selected-detail refresh
+  if (route_detail_stage == 1 && !route_detail_name_observed) {
+    if (!HasVisibleNavigationName(*gFrame, ui::ProductPage::RouteDetail,
+                                  "BETA TEST externally renamed route")) {
+      Write(); return false; // allow the one-second selected-detail refresh
+    }
+    // Observe the enabled page before publishing readiness to Python. Its next
+    // action opens a modal, which disables the owner on Windows; rechecking
+    // the name then would prevent the external edit behind that confirmation.
+    route_detail_name_observed = true;
   }
   report["phase"] = wxString::FromUTF8(route_detail_stage == 1 && route_modal_changed
       ? "route-detail-modal-changed" : phases[route_detail_stage]);

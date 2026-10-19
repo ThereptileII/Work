@@ -1,0 +1,36 @@
+{
+  "schema": 1,
+  "status": "fixture-corrected-native-replacement-pending",
+  "candidate": "8c86e97f647a267e611db7941e555143d5ba9dc9",
+  "runId": "39305360742",
+  "buildJob": "118250385678",
+  "buildResult": "success",
+  "linuxDistinctCtestCases": 160,
+  "windowsDistinctCtestCases": 152,
+  "ctestVariants": ["fixture", "fixture-free product"],
+  "qualificationJob": "118276377681",
+  "qualificationResult": "failure",
+  "failure": "smoke-navigation.py:829: Fixture did not change route behind confirmation",
+  "failureLogSha256": "d26d91928c8d5b3d03d58d112055a30becd4195918fd7bbc721cab57259ed20a",
+  "qualificationArtifactSha256": "42d1e2cd1b16e117d80d8a5fcd3adbe166b083f6e8eb76efad3811a56cc3a911",
+  "observed": [
+    "route-modal-opened exists; fixture phase remains route-detail-renamed",
+    "Actual modal Cancel and Activate are visible and enabled",
+    "Underlying route name and parent controls are disabled by the native modal",
+    "No active route; external fixture EditRoute branch has not executed"
+  ],
+  "cause": "The compiled scenario requires enabled name readiness again before consuming its modal-open marker; MSW modal ownership makes that condition false.",
+  "correction": "Latch the strict visible, enabled, exact-name observation before publishing route-detail-renamed; preserve real-modal, external-edit, changed-phase and stale-activation refusal checks.",
+  "workerCommit": "51a7f3de3baca75fe3a2a8b544031c05be236134",
+  "focusedProof": {
+    "scope": "actual extracted stage-1 C++ fragment with inert UI/model boundaries; not native application qualification",
+    "passedScenarios": 7,
+    "expectedNegativeFailures": ["original 8c fragment deadlock", "removed real-modal check", "removed stale-activation check"]
+  },
+  "retainedInstallerChartRun": "39317764100",
+  "retainedInstallerChartResult": "pending",
+  "productBehaviorChanged": false,
+  "boatUpdated": false,
+  "physicalCommands": false,
+  "productionPromotion": false
+}
