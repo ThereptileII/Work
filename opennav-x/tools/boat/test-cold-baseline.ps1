@@ -95,7 +95,13 @@ function Assert-PreparationAcl([string]$Expected,[string]$Actual,[switch]$AllowD
 }
 $checks=New-Object 'Collections.Generic.List[string]'
 function Pass([string]$Name,[scriptblock]$Body){& $Body;$checks.Add($Name)}
-function Refuse([string]$Name,[scriptblock]$Body){$refusalObserved=$false;try{$null=& $Body}catch{$refusalObserved=$true};if(-not $refusalObserved){throw ('Accepted unsafe cold baseline: '+$Name)};$checks.Add($Name)}
+function Refuse([string]$Name,[scriptblock]$Body,[string]$ExpectedMessage=''){
+  $refusalObserved=$false;$message=''
+  try{$null=& $Body}catch{$refusalObserved=$true;$message=$_.Exception.Message}
+  if(-not $refusalObserved){throw ('Accepted unsafe cold baseline: '+$Name)}
+  if($ExpectedMessage -and $message -cne $ExpectedMessage){throw ('Wrong refusal for '+$Name+': '+$message)}
+  $checks.Add($Name)
+}
 function Clone($Value){return ($Value|ConvertTo-Json -Depth 20|ConvertFrom-Json)}
 function Test-BytesEqual([byte[]]$Left,[byte[]]$Right){
   if($Left.Length -ne $Right.Length){return $false}
@@ -247,12 +253,89 @@ try {
     $record=Read-Record $captured.captureRecord;$backup=Join-Path ([IO.Path]::GetDirectoryName($captured.captureRecord)) 'profile-backup\opencpn.ini'
     if((Get-Digest $backup) -cne $record.profileSha256 -or (Get-PreparationTree (Join-Path ([IO.Path]::GetDirectoryName($captured.captureRecord)) 'profile-backup')).entries.Count -ne 3){throw 'Capture did not preserve the complete profile tree.'}
   }
+  # All bytes below are generated from the disposable fixture, never a user's
+  # profile. Exercise both a substantial inventory and the actual Complete /
+  # historical-baseline consumers with an immutable record above generic 4 MiB.
+  $smallCapture=Read-ColdCaptureRecord $captured.captureRecord $captured.captureSha256
+  Pass 'Typed capture reader roundtrips a synthetic inventory larger than 4 MiB' {
+    $large=Clone $smallCapture
+    $entries=New-Object 'Collections.Generic.List[object]'
+    for($index=0;$index -lt 14000;$index++){
+      $entries.Add([pscustomobject]@{path=('synthetic/'+('x'*190)+'/'+$index.ToString('D5')+'.dat');directory=$false;bytes=1;sha256=('a'*64)})
+    }
+    $large.profileTree.entries=$entries.ToArray()
+    $largePath=Join-Path $testRoot 'large-capture.json';Write-Record $largePath $large
+    if((Get-Item -LiteralPath $largePath).Length -le 4194304){throw 'Synthetic inventory did not cross the historical size boundary.'}
+    Refuse 'Generic JSON reader still refuses the same large capture' {$null=Read-Record $largePath}
+    $largeRead=Read-ColdCaptureRecord $largePath (Get-Digest $largePath)
+    if($largeRead.profileTree.entries.Count -ne 14000 -or
+       ($largeRead.profileTree|ConvertTo-Json -Depth 8 -Compress) -cne ($large.profileTree|ConvertTo-Json -Depth 8 -Compress)){
+      throw 'Typed capture reader lost or changed inventory entries.'
+    }
+  }
+  foreach($case in @('owner','authority','extra-field','tree-count','plugin-count','duplicate-path','alias-path','absolute-path','empty-component','entry-shape','entry-number','absent-tree')){
+    Refuse "Typed cold capture rejects $case despite its exact supplied digest" {
+      $badCapture=Clone $smallCapture
+      switch($case){
+        'owner' {$badCapture.owner='OpenNavX.UnrelatedRecord.1'}
+        'authority' {$badCapture.launchPermission=$true}
+        'extra-field' {$badCapture|Add-Member -NotePropertyName unreviewed -NotePropertyValue 'extra'}
+        'tree-count' {$badCapture.profileTree.entries=New-Object object[] 30001}
+        'plugin-count' {$badCapture.context.pluginRoots=@('a','b','c','d');$badCapture.pluginTrees=@($badCapture.pluginTrees[0])*4}
+        'duplicate-path' {$badCapture.profileTree.entries=@($badCapture.profileTree.entries[0],$badCapture.profileTree.entries[0])}
+        'alias-path' {$one=Clone $badCapture.profileTree.entries[0];$two=Clone $one;$one.path='dir/file';$two.path='DIR\file';$badCapture.profileTree.entries=@($one,$two)}
+        'absolute-path' {$badCapture.profileTree.entries[0].path='C:\outside\file'}
+        'empty-component' {$badCapture.profileTree.entries[0].path='dir//file'}
+        'entry-shape' {$badCapture.profileTree.entries[0]|Add-Member -NotePropertyName extra -NotePropertyValue 'extra'}
+        'entry-number' {$badCapture.profileTree.entries[0].bytes=1.5}
+        'absent-tree' {$badCapture.profileTree.exists=$false}
+      }
+      $badPath=Join-Path $testRoot ('bad-capture-'+$case+'.json');Write-Record $badPath $badCapture
+      $null=Read-ColdCaptureRecord $badPath (Get-Digest $badPath)
+    }
+  }
+  Refuse 'Typed cold capture rejects changed bytes with the old supplied digest' {
+    $null=Read-ColdCaptureRecord $captured.captureRecord ('0'*64)
+  }
+  foreach($case in @('malformed','utf8')){
+    Refuse "Typed cold capture rejects $case before any preservation action" {
+      $badPath=Join-Path $testRoot ('bad-capture-'+$case+'.json')
+      if($case -ceq 'utf8'){[IO.File]::WriteAllBytes($badPath,[byte[]]@(123,34,192,175,34,58,49,125))}
+      else{[IO.File]::WriteAllText($badPath,'{"owner":',$encoding)}
+      $null=Read-ColdCaptureRecord $badPath (Get-Digest $badPath)
+    }
+  }
+  Refuse 'Typed cold capture rejects excessive nesting before JSON decoding' {
+    $badPath=Join-Path $testRoot 'bad-capture-depth.json'
+    [IO.File]::WriteAllText($badPath,('{"nested":'+('['*16)+'0'+(']'*16)+'}'),$encoding)
+    $null=Read-ColdCaptureRecord $badPath (Get-Digest $badPath)
+  } 'Cold capture nesting exceeds 16 levels.'
+  Refuse 'Typed cold capture rejects a single-element top-level array' {
+    $badPath=Join-Path $testRoot 'bad-capture-array.json'
+    [IO.File]::WriteAllText($badPath,('['+($smallCapture|ConvertTo-Json -Depth 16)+']'),$encoding)
+    $null=Read-ColdCaptureRecord $badPath (Get-Digest $badPath)
+  } 'Cold capture must be one JSON object.'
+  Refuse 'Typed cold capture rejects a record above its independent 32 MiB ceiling' {
+    $oversize=Join-Path $testRoot 'oversize-capture.json'
+    $stream=[IO.File]::Create($oversize);try{$stream.SetLength(33554433)}finally{$stream.Dispose()}
+    $null=Read-ColdCaptureRecord $oversize ('0'*64)
+  } 'Cold capture size outside 32 MiB bound.'
+  Pass 'Typed capture preserves historical records without the optional WMM field' {
+    $historical=Clone $smallCapture;$historical.PSObject.Properties.Remove('wmmResourceProof')
+    $historicalPath=Join-Path $testRoot 'historical-capture.json';Write-Record $historicalPath $historical
+    $null=Read-ColdCaptureRecord $historicalPath (Get-Digest $historicalPath)
+  }
+  # Padding keeps the actual three-file backup and exact review semantics while
+  # proving that both real production consumers use the larger typed reader.
+  [IO.File]::AppendAllText($captured.captureRecord,(' '*4194304),$encoding)
+  $captured.captureSha256=Get-Digest $captured.captureRecord
+  Refuse 'Generic reader cannot consume the large end-to-end capture' {$null=Read-Record $captured.captureRecord}
   $captureDir=[IO.Path]::GetDirectoryName($captured.captureRecord);$predIni=Join-Path ([IO.Path]::GetDirectoryName($prior.record)) 'baseline.ini'
   $reviewPath=Join-Path $fixture.workspace 'independent-review.json'
   $reviewObj=New-ColdReviewForCapture $predIni $liveIni $captured.captureSha256 $prior.recordSha256
   Write-Record $reviewPath $reviewObj;$reviewHash=Get-Digest $reviewPath
   $completed=Invoke-ColdCapture $fixture 'Complete' $captured.captureRecord $captured.captureSha256 $reviewPath $reviewHash
-  Pass 'Actual Complete and actual cold reader validate preservation-only lineage' {
+  Pass 'Actual Complete and historical cold reader validate the above-4-MiB preservation-only lineage' {
     if($completed.status -cne 'completed-preservation-only' -or $completed.launchPermission -ne $false -or $completed.profileChanged -ne $false -or $completed.applicationLaunched -ne $false){throw 'Complete claimed more than preservation.'}
     $resolved=& $script:actualBaselineReader $fixture.workspace $completed.baselineRecord $completed.baselineRecordSha256
     if($resolved.sha256 -cne $originalHash -or $resolved.bytes -ne $originalBytes.Length -or $resolved.sid -cne $fixture.context.sid -or $resolved.profile -ine $fixture.profile){throw 'Actual reader did not validate the completed cold lineage.'}

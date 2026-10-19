@@ -3,6 +3,90 @@
 $script:ColdBaselineOwner='OpenNavX.ColdProfileBaseline.1'
 $script:ColdCaptureOwner='OpenNavX.ColdProfileCapture.1'
 $script:ColdReviewOwner='OpenNavX.ColdProfileReview.1'
+# A capture carries up to four bounded inventories and two frozen WMM ownership
+# proofs. Native PowerShell's indentation can put it above generic Read-Record's
+# 4 MiB limit. This exception is only for this typed, hash-pinned evidence.
+$script:ColdCaptureMaxBytes=33554432
+
+function Assert-ColdCaptureTree($Tree) {
+  if($Tree -isnot [pscustomobject] -or @($Tree.PSObject.Properties).Count -ne 3 -or
+     $Tree.root -isnot [string] -or $Tree.root.Length -lt 1 -or $Tree.root.Length -gt 32767 -or
+     $Tree.exists -isnot [bool] -or $Tree.entries -isnot [array] -or $Tree.entries.Count -gt 30000 -or
+     (-not $Tree.exists -and $Tree.entries.Count)){throw 'Cold capture tree shape or count outside bounds.'}
+  $seen=New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  foreach($entry in $Tree.entries) {
+    if($entry -isnot [pscustomobject] -or @($entry.PSObject.Properties).Count -ne 4 -or
+       $entry.path -isnot [string] -or $entry.path.Length -lt 1 -or $entry.path.Length -gt 32767 -or
+       $entry.path -match '[\x00-\x1f]|^[\\/]|:|[\\/]{2}|[\\/]$|(^|[\\/])\.\.?([\\/]|$)' -or -not $seen.Add($entry.path.Replace('/','\')) -or
+       $entry.directory -isnot [bool] -or ($entry.bytes -isnot [int] -and $entry.bytes -isnot [long]) -or
+       $entry.bytes -lt 0 -or $entry.sha256 -isnot [string] -or
+       ($entry.directory -and ($entry.bytes -ne 0 -or $entry.sha256 -cne '')) -or
+       (-not $entry.directory -and $entry.sha256 -cnotmatch '^[a-f0-9]{64}$')){
+      throw 'Cold capture inventory entry is malformed or duplicated.'
+    }
+  }
+}
+
+function Read-ColdCaptureRecord([string]$Path,[string]$Hash) {
+  $path=Assert-LocalPath $Path
+  if($Hash -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact cold capture hash required.'}
+  # Hash and decode the same bounded bytes while denying concurrent writers.
+  $stream=New-Object IO.FileStream($path,[IO.FileMode]::Open,[IO.FileAccess]::Read,[IO.FileShare]::Read)
+  try {
+    if($stream.Length -le 0 -or $stream.Length -gt $script:ColdCaptureMaxBytes){throw 'Cold capture size outside 32 MiB bound.'}
+    $bytes=New-Object byte[] ([int]$stream.Length);$offset=0
+    while($offset -lt $bytes.Length) {
+      $read=$stream.Read($bytes,$offset,$bytes.Length-$offset)
+      if($read -eq 0){throw 'Cold capture ended before its bounded length.'}
+      $offset+=$read
+    }
+  } finally {$stream.Dispose()}
+  if((Get-CommissioningHash $bytes) -cne $Hash){throw 'Cold capture bytes changed.'}
+  $text=(New-Object Text.UTF8Encoding($false,$true)).GetString($bytes).TrimStart([char]0xfeff)
+  # ConvertFrom-Json can enumerate a one-element root array into one object.
+  if(-not $text.TrimStart().StartsWith('{')){throw 'Cold capture must be one JSON object.'}
+  # Windows PowerShell 5.1 has no ConvertFrom-Json -Depth parameter. Count only
+  # structural tokens outside quoted strings before invoking its JSON parser.
+  $depth=0
+  foreach($token in [regex]::Matches($text,'"(?:\\.|[^"\\])*"|[{}\[\]]')) {
+    if($token.Value -ceq '{' -or $token.Value -ceq '['){$depth++;if($depth -gt 16){throw 'Cold capture nesting exceeds 16 levels.'}}
+    elseif($token.Value -ceq '}' -or $token.Value -ceq ']'){$depth--;if($depth -lt 0){throw 'Unbalanced cold capture JSON.'}}
+  }
+  if($depth -ne 0){throw 'Unbalanced cold capture JSON.'}
+  $record=$text|ConvertFrom-Json
+  $fields=@('schema','owner','status','createdUtc','predecessorRecord','predecessorSha256','context','profileTree','pluginTrees',
+    'profileSha256','profileBytes','profileAcl','sourceIniLastWriteTicks','sourceIniCreationTicks','inputSha256','stockSha256',
+    'provenance','profileChanged','applicationLaunched','launchPermission')
+  if($record -isnot [pscustomobject]){throw 'Cold capture must be one JSON object.'}
+  if($record.PSObject.Properties['wmmResourceProof']){$fields+='wmmResourceProof'}
+  if((@($record.PSObject.Properties.Name|Sort-Object)|ConvertTo-Json -Compress) -cne (@($fields|Sort-Object)|ConvertTo-Json -Compress) -or
+     ($record.schema -isnot [int] -and $record.schema -isnot [long]) -or $record.schema -ne 1 -or
+     $record.owner -cne $script:ColdCaptureOwner -or $record.status -cne 'captured' -or
+     $record.provenance -cne 'pre-existing-current-user-state;origin-unverified'){
+    throw 'Exact cold capture record kind and fields required.'
+  }
+  foreach($field in @('profileChanged','applicationLaunched','launchPermission')){
+    if($record.$field -isnot [bool] -or $record.$field){throw 'Cold capture cannot claim changes or launch authority.'}
+  }
+  foreach($field in @('predecessorSha256','profileSha256','inputSha256','stockSha256')){
+    if($record.$field -isnot [string] -or $record.$field -cnotmatch '^[a-f0-9]{64}$'){throw 'Exact cold capture identity hashes required.'}
+  }
+  if(($record.profileBytes -isnot [int] -and $record.profileBytes -isnot [long]) -or
+     $record.profileBytes -le 0 -or $record.profileBytes -gt 4194304 -or $record.context -isnot [pscustomobject] -or
+     $record.context.profile -isnot [string] -or $record.context.pluginRoots -isnot [array] -or
+     $record.context.pluginRoots.Count -lt 2 -or $record.context.pluginRoots.Count -gt 3 -or
+     $record.pluginTrees -isnot [array] -or $record.pluginTrees.Count -ne $record.context.pluginRoots.Count){
+    throw 'Cold capture profile or plugin inventory bounds differ.'
+  }
+  Assert-ColdCaptureTree $record.profileTree
+  if(-not $record.profileTree.exists -or $record.profileTree.root -cne $record.context.profile){throw 'Cold capture profile root differs.'}
+  $roots=New-Object 'Collections.Generic.HashSet[string]' ([StringComparer]::OrdinalIgnoreCase)
+  for($index=0;$index -lt $record.pluginTrees.Count;$index++){
+    $tree=$record.pluginTrees[$index];Assert-ColdCaptureTree $tree
+    if($tree.root -cne $record.context.pluginRoots[$index] -or -not $roots.Add($tree.root)){throw 'Cold capture plugin roots differ or repeat.'}
+  }
+  return $record
+}
 
 function Assert-ColdPrivateEvidence([string]$Directory,[string]$Sid) {
   $directory=Assert-LocalPath $Directory

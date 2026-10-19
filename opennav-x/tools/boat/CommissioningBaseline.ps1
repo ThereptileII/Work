@@ -226,7 +226,7 @@ function Read-CommissioningBaseline([string]$Workspace,[string]$Record,[string]$
     $capturePath=Assert-LocalPath $value.captureRecord
     if([IO.Path]::GetDirectoryName($capturePath) -ine $directory -or [IO.Path]::GetFileName($capturePath) -cne 'capture.json' -or
        $value.captureSha256 -cnotmatch '^[a-f0-9]{64}$' -or (Get-Digest $capturePath) -cne $value.captureSha256){throw 'Cold capture lineage changed.'}
-    $capture=Read-Record $capturePath
+    $capture=Read-ColdCaptureRecord $capturePath $value.captureSha256
     if($capture.schema -ne 1 -or $capture.owner -cne $script:ColdCaptureOwner -or $capture.status -cne 'captured' -or
        $capture.provenance -cne $value.provenance -or $capture.launchPermission -isnot [bool] -or $capture.launchPermission -or
        $capture.profileChanged -isnot [bool] -or $capture.profileChanged -or

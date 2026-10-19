@@ -73,7 +73,10 @@ if($Action -ceq 'Capture') {
     inputSha256=(Get-Digest $inputPath);stockSha256=(Get-Digest $context.executable);wmmResourceProof=$wmmProof;
     provenance='pre-existing-current-user-state;origin-unverified';
     profileChanged=$false;applicationLaunched=$false;launchPermission=$false}
-  [pscustomobject]@{status='captured-review-required';captureRecord=$record;captureSha256=(Get-Digest $record);
+  $captureHash=Get-Digest $record
+  # Never announce review-required for evidence Complete cannot consume.
+  $null=Read-ColdCaptureRecord $record $captureHash
+  [pscustomobject]@{status='captured-review-required';captureRecord=$record;captureSha256=$captureHash;
     profileSha256=(Get-Digest $saved);predecessorSha256=$prior.sha256;applicationLaunched=$false;profileChanged=$false} | ConvertTo-Json
   return
 }
@@ -84,7 +87,7 @@ $capturePath=Assert-LocalPath $CaptureRecord;$directory=[IO.Path]::GetDirectoryN
 if([IO.Path]::GetFileName($capturePath) -cne 'capture.json' -or [IO.Path]::GetDirectoryName($directory) -ine (Join-Path $context.workspace 'runs') -or
    [IO.Path]::GetFileName($directory) -cnotmatch '^\d{8}-\d{6}-cold-baseline-[a-f0-9]{8}$' -or
    (Get-Digest $capturePath) -cne $ExpectedCaptureSha256){throw 'Expected immutable private cold capture.'}
-$captured=Read-Record $capturePath
+$captured=Read-ColdCaptureRecord $capturePath $ExpectedCaptureSha256
 if($captured.schema -ne 1 -or $captured.owner -cne $script:ColdCaptureOwner -or $captured.status -cne 'captured' -or
    $captured.provenance -cne 'pre-existing-current-user-state;origin-unverified' -or $captured.launchPermission -isnot [bool] -or $captured.launchPermission){throw 'Capture is incomplete or claims launch authority.'}
 if((Assert-LocalPath $captured.context.workspace) -ine $context.workspace -or
