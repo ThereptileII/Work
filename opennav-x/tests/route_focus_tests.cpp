@@ -57,12 +57,41 @@ struct wxMouseEvent {
 };
 struct Timer { void Start(int, int) {} };
 bool g_btouch = false;
+bool g_brouteCreating = false;
+constexpr int ID_MENU_ROUTE_NEW = 1;
+int pencil_cursor = 7;
+int *pCursorPencil = &pencil_cursor;
+namespace opennav {
+enum class Mode { Legacy, Safe, XNav };
+Mode mode = Mode::Legacy;
+bool IsXNav() { return mode == Mode::XNav; }
+}
+struct MainToolbar {
+  int calls = 0;
+  std::function<void()> on_disable;
+  void DisableTooltips() { ++calls; if (on_disable) on_disable(); }
+};
+MainToolbar *g_MainToolbar = nullptr;
+struct Frame {
+  int calls = 0;
+  bool route_selected = false;
+  void SetMasterToolbarItemState(int, bool selected) {
+    ++calls;
+    route_selected = selected;
+  }
+};
+Frame frame;
+Frame *gFrame = &frame;
+int hidden_toolbars = 0;
+void HideGlobalToolbar() { ++hidden_toolbars; }
 class ChartCanvas;
 int OCPNMessageBox(ChartCanvas *, const wxString &, const wxString &, long);
 class ChartCanvas {
  public:
   bool m_FinishRouteOnKillFocus = false, m_leftdown = false, m_popupWanted = false;
   bool m_bChartDragging = false, m_bMeasure_Active = false;
+  bool m_bDrawingRoute = false;
+  int cursor = -1;
   int m_routeState = 2, m_focus_indicator_pix = 1, finishes = 0, popups = 0;
   int named_saves = 0;
   bool m_disable_edge_pan = false, all_dialogs_suppressed = true;
@@ -80,6 +109,8 @@ class ChartCanvas {
   wxPoint GetClientSize() { return {100, 100}; }
   void RefreshRect(wxRect, bool) {}
   void SetFocus() {}
+  void SetCursor(int value) { cursor = value; }
+  void StartRoute();
   void FinishRoute() { ++finishes; m_routeState = 0; }
   void OnKillFocus(wxFocusEvent &);
   void OnRouteFinishTimerEvent(wxTimerEvent &);
@@ -152,6 +183,58 @@ void Popup(ChartCanvas &canvas, int input) {
 
 int main() {
   try {
+    // Exercise the entire production StartRoute, including the native caller
+    // path. A second canvas must not change its policy when creation is busy.
+    for (auto mode : {opennav::Mode::Legacy, opennav::Mode::Safe, opennav::Mode::XNav}) {
+      opennav::mode = mode;
+      for (bool prior : {false, true}) {
+        for (bool busy : {false, true}) {
+          for (bool with_toolbar : {false, true}) {
+            ChartCanvas canvas;
+            canvas.m_routeState = 0;
+            canvas.m_bDrawingRoute = true;
+            canvas.m_FinishRouteOnKillFocus = prior;
+            g_brouteCreating = busy;
+            frame = {};
+            hidden_toolbars = 0;
+            bool expected_policy = prior;
+#ifdef OPENNAV_X
+            if (!busy && mode == opennav::Mode::XNav) expected_policy = false;
+#endif
+            MainToolbar toolbar;
+            toolbar.on_disable = [&] {
+              Check(canvas.m_FinishRouteOnKillFocus == expected_policy,
+                    "StartRoute establishes policy before the first toolbar callback");
+            };
+            g_MainToolbar = with_toolbar ? &toolbar : nullptr;
+            canvas.StartRoute();
+            Check(canvas.m_FinishRouteOnKillFocus == expected_policy,
+                  "StartRoute preserves Legacy/Safe policy and disables XNav focus completion");
+            if (busy) {
+              Check(!canvas.m_routeState && canvas.m_bDrawingRoute && canvas.cursor == -1 &&
+                        !toolbar.calls && !frame.calls && !hidden_toolbars,
+                    "competing route start has no canvas, toolbar or focus-policy side effects");
+            } else {
+              Check(g_brouteCreating && canvas.m_routeState == 1 && !canvas.m_bDrawingRoute &&
+                        canvas.cursor == pencil_cursor && toolbar.calls == int(with_toolbar) &&
+                        frame.calls == 1 && frame.route_selected && hidden_toolbars == 1,
+                    "accepted native route start retains normal draft and toolbar setup");
+              canvas.LoseFocus();
+              // A previously queued macOS timer must also respect the policy
+              // established by StartRoute, independently of OnKillFocus's gate.
+              wxTimerEvent timer;
+              canvas.OnRouteFinishTimerEvent(timer);
+              Check(expected_policy ? canvas.finishes == 1 && !canvas.m_routeState
+                                    : !canvas.finishes && canvas.m_routeState == 1,
+                    "new route focus/timer completion follows its actual mode policy");
+            }
+            g_MainToolbar = nullptr;
+          }
+        }
+      }
+    }
+    g_brouteCreating = false;
+    opennav::mode = opennav::Mode::Legacy;
     for (int input = 0; input != 3; ++input) {
       for (bool legacy : {false, true}) {
         ChartCanvas canvas;

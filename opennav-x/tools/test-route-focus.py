@@ -8,6 +8,7 @@ import argparse
 import ast
 import os
 from pathlib import Path
+import re
 import subprocess
 
 ROOT = Path(__file__).resolve().parents[1]
@@ -61,16 +62,24 @@ def main():
                        input=(ROOT / patch).read_bytes().replace(b'\r\n', b'\n'),
                        check=True)
     source = (fixture / 'gui/src/chcanv.cpp').read_text()
+    start_route = function(source, 'void ChartCanvas::StartRoute(')
     guard = ''
     if not args.unpatched:
         guard = function(source, 'class RouteFinishFocusGuard') + ';\n'
         # Every temporary assignment, in both route input paths and both menu
-        # paths, must be replaced. The sole remaining true is initialization.
+        # paths, must be replaced. Only constructor initialization and the
+        # deliberate XNav StartRoute policy may assign directly. StartRoute's
+        # actual mode/early-return behavior is exercised by the C++ fixture.
         if source.count('RouteFinishFocusGuard routeFocusGuard(') != 8:
             raise SystemExit('Not all eight native modal scopes are protected')
-        import re
-        assignments = re.findall(r'm_FinishRouteOnKillFocus\s*=\s*(true|false)', source)
-        if assignments != ['true']:
+        assignment = r'\bm_FinishRouteOnKillFocus\s*=(?!=)\s*([^;]+);'
+        constructor = function(source, 'ChartCanvas::ChartCanvas(')
+        if re.findall(assignment, constructor) != ['true']:
+            raise SystemExit('Native constructor focus policy changed')
+        if re.findall(assignment, start_route) != ['false']:
+            raise SystemExit('Native StartRoute explicit completion policy changed')
+        other_scopes = source.replace(constructor, '', 1).replace(start_route, '', 1)
+        if re.search(assignment, other_scopes):
             raise SystemExit('Native handler still overwrites caller focus policy')
         guard = '#define HAS_ROUTE_FOCUS_GUARD 1\n' + guard
     handlers = '\n'.join(function(source, signature) for signature in (
@@ -88,7 +97,6 @@ def main():
     handlers += '\nvoid ChartCanvas::KeyboardMenu() {\n' \
         'wxMouseEvent event; switch(WXK_MENU) {\n' + keyboard + '\n}\n}\n'
     # The second nearby-waypoint condition is the separate native touch path.
-    import re
     nearby = list(re.finditer(r'if \(pNearbyPoint && \(pNearbyPoint != m_prev_pMousePoint\)', objects))
     if len(nearby) != 2:
         raise SystemExit('Expected exact mouse and touch reuse scopes')
@@ -113,14 +121,21 @@ def main():
         handlers += '\nvoid ChartCanvas::' + name + '() {\n' \
             'wxString msg="inert great-circle question";\n' + body + \
             '\nlast_answer=answer;\n}\n'
-    (output / 'production-route-focus.h').write_text(guard + handlers)
-    for label, defines in [('desktop', []), ('mac-timer', ['-D__WXOSX__'])]:
+    (output / 'production-route-focus.h').write_text(guard + start_route + '\n' + handlers)
+    failures = []
+    for label, defines in [('desktop', ['-DOPENNAV_X']),
+                           ('mac-timer', ['-DOPENNAV_X', '-D__WXOSX__']),
+                           ('stock-desktop', []), ('stock-mac-timer', ['-D__WXOSX__'])]:
         executable = output / ('route-focus-' + label)
         subprocess.run([os.environ.get('CXX', 'c++'), '-std=c++17', '-O2',
                         '-Wall', '-Wextra', '-Werror', '-Wno-unused-parameter', *defines,
                         '-I' + str(output), str(ROOT / 'tests/route_focus_tests.cpp'),
                         '-o', str(executable)], check=True)
-        subprocess.run([str(executable)], check=True)
+        print('Route-focus variant: ' + label, flush=True)
+        if subprocess.run([str(executable)]).returncode:
+            failures.append(label)
+    if failures:
+        raise SystemExit('Route-focus regression in: ' + ', '.join(failures))
 
 
 if __name__ == '__main__':
