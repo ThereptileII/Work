@@ -23,11 +23,14 @@
    bool m_txf_ready;
 --- a/libs/s52plib/src/s52plib.cpp
 +++ b/libs/s52plib/src/s52plib.cpp
-@@ -46,3 +46,4 @@
+@@ -46,6 +46,7 @@
  static const double mercator_k0 = 0.9996;
  
  #include "s52plib.h"
 +#include "integration/ChartPresentationPolicy.h"
+ #ifdef SKAGER_OCHARTS_ADAPTER
+ #include "integration/ChartLightSymbol.h"
+ #include "integration/ChartLightTowerSymbol.h"
 @@ -647,6 +648,13 @@
  
    size_t offset = sizeof(int);  // skipping the time int, first element
