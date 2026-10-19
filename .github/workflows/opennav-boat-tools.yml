@@ -113,7 +113,7 @@ jobs:
         run: |
           New-Item -ItemType Directory -Path opennav-x/evidence/local -Force | Out-Null
           $Failed = @()
-          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'restart-window-review', 'stock-review', 'stock-chart', 'stock-welcome', 'installed-welcome', 'baseline-adoption', 'cold-baseline', 'cold-helper-policy', 'cold-helper-workflow', 'chart-helper-attempts', 'broker-fixture-contracts', 'startup-log', 'renderer-log', 'chart-helper-shutdown', 'orphan-chart-helper')) {
+          foreach ($Suite in @('boat-tools', 'official-upgrade-policy', 'preparation', 'commissioning', 'commissioning-launch', 'review-window', 'review-staging', 'source-checkout', 'restart-commissioning', 'restart-aui-persistence', 'restart-window-review', 'stock-review', 'stock-chart', 'stock-welcome', 'installed-welcome', 'skager-welcome', 'baseline-adoption', 'cold-baseline', 'cold-helper-policy', 'cold-helper-workflow', 'chart-helper-attempts', 'broker-fixture-contracts', 'startup-log', 'renderer-log', 'chart-helper-shutdown', 'orphan-chart-helper')) {
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object -FilePath "opennav-x/evidence/local/maintenance-$Suite.log"
             if ($LASTEXITCODE -ne 0) { $Failed += $Suite }
           }
@@ -248,7 +248,7 @@ jobs:
           })
           @{ schema=1; commit=$env:GITHUB_SHA; files=$Files; powershell=$PSVersionTable.PSVersion.ToString(); processBits=[IntPtr]::Size*8 } |
             ConvertTo-Json -Depth 5 | Set-Content -LiteralPath (Join-Path $Evidence 'source-identity.json') -Encoding UTF8
-          foreach ($Suite in @('installed-welcome','interactive-job-budget')) {
+          foreach ($Suite in @('installed-welcome','skager-welcome','interactive-job-budget')) {
             $Log = Join-Path $Evidence ($Suite+'.log')
             & "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe" -NoLogo -NoProfile -NonInteractive -ExecutionPolicy Bypass -File "opennav-x/tools/boat/test-$Suite.ps1" *> $Log
             if ($LASTEXITCODE -ne 0) { Get-Content -LiteralPath $Log; throw ('Native helper contract failed: '+$Suite) }

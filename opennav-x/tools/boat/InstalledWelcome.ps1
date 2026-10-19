@@ -1,8 +1,9 @@
-# Separate installed-product identity for the shared, source-specific upstream
-# warning. This never accepts a stock, portable or restarted-child launch receipt.
+# Separate installed-product identity for source-specific stock and SKAGER
+# navigation warnings. This never accepts a stock, portable or restarted-child launch receipt.
 . (Join-Path $PSScriptRoot 'Commissioning.ps1')
 . (Join-Path $PSScriptRoot 'StockWelcome.ps1')
-$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','InstalledResourceReview.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs')
+. (Join-Path $PSScriptRoot 'SkagerWelcome.ps1')
+$script:InstalledWelcomeFiles=@('InstalledWelcome.ps1','InstalledResourceReview.ps1','StockWelcome.ps1','StockWelcomeNative.cs','RestartWindowNative.cs','SkagerWelcome.ps1','SkagerWelcomeNative.cs')
 function Assert-InstalledWelcomePolicy($Job,$Launch,$Request,$Installed,$Build,[datetime]$Now) {
   if ($Job.action -cne 'ReviewInstalledWelcome' -or $Job.reviewAction -cnotin @('InspectWelcome','FocusWelcome','AcknowledgeWelcome') -or
       $Job.processId -le 0 -or $Job.buildCommit -cnotmatch '^[a-f0-9]{40}$' -or $Job.generation -cnotmatch '^[a-f0-9]{32}$' -or
@@ -103,7 +104,8 @@ function Read-InstalledWelcome($Job) {
   Assert-InstalledWelcomePolicy $Job $launch $request $installed (Read-Record $buildPath) ([datetime]::UtcNow)
   if ((Get-Digest $installed.executable) -cne $Job.executableSha256 -or (Get-Digest (Join-Path $Job.workspace 'boat-target.json')) -cne $launch.targetSha256) { throw 'Executable or read-only target changed since cold launch.' }
   Assert-InstalledWelcomeRuntime (Get-Target $Job.workspace) $installed $launch $Job.workspace
-  return [pscustomobject]@{launch=$launch;installed=$installed}
+  $presentation=Get-InstalledWelcomePresentation $launch $Job
+  return [pscustomobject]@{launch=$launch;installed=$installed;presentation=$presentation}
 }
 function Assert-InstalledWelcomeInspection($Inspection,$Job,$Launch,[datetime]$Now) {
   if ($Inspection.status -cne 'passed' -or $Inspection.action -cne 'ReviewInstalledWelcome' -or $Inspection.reviewAction -cne 'InspectWelcome' -or
@@ -114,7 +116,14 @@ function Assert-InstalledWelcomeInspection($Inspection,$Job,$Launch,[datetime]$N
       $Inspection.imageSha256 -cnotmatch '^[a-f0-9]{64}$') { throw 'Review the warning from this exact installed launch first.' }
   $at=[datetime]::Parse($Inspection.utc).ToUniversalTime()
   if ($at -gt $Now -or ($Now-$at).TotalMinutes -gt 30) { throw 'Installed warning inspection expired.' }
-  Assert-StockWelcomeWindow $Inspection.nativeWindow $Job.processId
+  $presentation=Get-InstalledWelcomePresentation $Launch $Job
+  if($presentation -ceq 'skager') {
+    if($Inspection.noticePresentation -cne 'skager') { throw 'SKAGER inspection source presentation differs.' }
+    Assert-SkagerWelcomeWindow $Inspection.nativeWindow $Job.processId
+  } else {
+    if($Inspection.PSObject.Properties.Name -contains 'noticePresentation' -and $Inspection.noticePresentation -cne 'opencpn') { throw 'Stock inspection source presentation differs.' }
+    Assert-StockWelcomeWindow $Inspection.nativeWindow $Job.processId
+  }
 }
 function Invoke-InstalledWelcomeFocus($Job,$Proof,$Process,[string]$Sid,[int]$Session,[string]$Directory) {
   if ($Job.reviewAction -cne 'FocusWelcome') { throw 'This fixed operation only focuses the installed startup warning.' }
@@ -122,10 +131,11 @@ function Invoke-InstalledWelcomeFocus($Job,$Proof,$Process,[string]$Sid,[int]$Se
   # rechecked around the separately qualified fixed native caption primitive.
   $null=Read-InstalledWelcome $Job;$Process.Refresh();Assert-InstalledWelcomeProcess $Process $Job $Proof.launch $Sid $Session
   $ticks=([datetime]::Parse($Proof.launch.processStartedUtc).ToUniversalTime()).Ticks
-  $info=Invoke-StockWelcomeFocus $Process.Id $ticks (Join-Path $Directory 'focus-intent.json')
+  $prefix=if((Get-InstalledWelcomePresentation $Proof.launch $Job) -ceq 'skager'){'Skager'}else{'Stock'}
+  $info=& ('Invoke-'+$prefix+'WelcomeFocus') $Process.Id $ticks (Join-Path $Directory 'focus-intent.json')
   $null=Read-InstalledWelcome $Job;$Process.Refresh();Assert-InstalledWelcomeProcess $Process $Job $Proof.launch $Sid $Session
   $image=Join-Path $Directory 'focused-warning.png'
-  $hash=Save-StockWelcomeCapture $Process.Id $info $image
+  $hash=& ('Save-'+$prefix+'WelcomeCapture') $Process.Id $info $image
   return @{image=$image;imageSha256=$hash;nativeWindow=$info;focusVerified=$true;acknowledgementSent=$false}
 }
 function Invoke-InstalledWelcome($Job) {
@@ -140,15 +150,19 @@ function Invoke-InstalledWelcome($Job) {
   $process=Get-Process -Id $Job.processId -ErrorAction Stop
   try {
     Assert-InstalledWelcomeProcess $process $Job $proof.launch $sid $session
-    Initialize-StockWelcomeNative
+    $presentation=Get-InstalledWelcomePresentation $proof.launch $Job
+    $prefix=if($presentation -ceq 'skager'){'Skager'}else{'Stock'}
+    & ('Initialize-'+$prefix+'WelcomeNative')
+    $native=if($presentation -ceq 'skager'){[OpenNavX.SkagerWelcomeNative]}else{[OpenNavX.StockWelcomeNative]}
     if (-not ('OpenNavX.RestartWindowNative' -as [type])) { Add-Type -Path (Join-Path $PSScriptRoot 'RestartWindowNative.cs') }
     $oldDpi=[OpenNavX.RestartWindowNative]::SetThreadDpiAwarenessContext([IntPtr](-4));if ($oldDpi -eq [IntPtr]::Zero) { throw 'Physical DPI context unavailable.' }
     try {
       $result=@{status='passed';action='ReviewInstalledWelcome';reviewAction=$Job.reviewAction;utc=[datetime]::UtcNow.ToString('o');processId=$process.Id;
         mode=$proof.launch.mode;buildCommit=$Job.buildCommit;generation=$Job.generation;executableSha256=$Job.executableSha256;
         launchResultSha256=$Job.launchResultSha256;launchRequestSha256=$Job.launchRequestSha256;helperFiles=$Job.helperFiles;
-        bodyTextAccessible=$false;actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true;
+        noticePresentation=$presentation;bodyTextAccessible=($presentation -ceq 'skager');actuatorCommandsIssuedByTool=$false;physicalBusSilenceNotClaimed=$true;
         review='Pinned upstream navigation caution before OpenNav Attach; HTML body requires human review of captured pixels. No other dialog or runtime command is authorized.'}
+      if($presentation -ceq 'skager') { $result.review='Exact source-bound SKAGER navigation safety notice; complete native readonly body verified. No other dialog or runtime command is authorized.' }
       if ($Job.reviewAction -ceq 'FocusWelcome') {
         $focus=Invoke-InstalledWelcomeFocus $Job $proof $process $sid $session $directory
         foreach($key in $focus.Keys) { $result[$key]=$focus[$key] }
@@ -156,9 +170,9 @@ function Invoke-InstalledWelcome($Job) {
         return $result
       }
       if ($Job.reviewAction -ceq 'InspectWelcome') {
-        $info=[OpenNavX.StockWelcomeNative]::Inspect($process.Id)
+        $info=$native::Inspect($process.Id)
         $null=Read-InstalledWelcome $Job;$process.Refresh();Assert-InstalledWelcomeProcess $process $Job $proof.launch $sid $session
-        $image=Join-Path $directory 'welcome.png';$result.imageSha256=Save-StockWelcomeCapture $process.Id $info $image
+        $image=Join-Path $directory 'welcome.png';$result.imageSha256=& ('Save-'+$prefix+'WelcomeCapture') $process.Id $info $image
         $result.image=$image;$result.nativeWindow=$info;$result.acknowledgementSent=$false;return $result
       }
       $inspectionPath=Assert-LocalPath $Job.welcomeInspection;$inspectionDir=[IO.Path]::GetDirectoryName($inspectionPath)
@@ -171,7 +185,7 @@ function Invoke-InstalledWelcome($Job) {
       $info=$inspection.nativeWindow;$intent=Join-Path $inspectionDir 'agree-intent.json'
       if (Test-Path -LiteralPath $intent) { throw 'Warning acknowledgement already consumed; no retry.' }
       $null=Read-InstalledWelcome $Job;$process.Refresh();Assert-InstalledWelcomeProcess $process $Job $proof.launch $sid $session
-      $before=Join-Path $directory 'welcome-before-agree.png';Invoke-StockWelcomeAgreement $process.Id $info $inspection.imageSha256 $before $intent
+      $before=Join-Path $directory 'welcome-before-agree.png';& ('Invoke-'+$prefix+'WelcomeAgreement') $process.Id $info $inspection.imageSha256 $before $intent
       $result.acknowledgementSent=$true;$result.inspectionSha256=$Job.welcomeInspectionSha256;$result.before=$before;$result.beforeSha256=Get-Digest $before
       $result.nativeWindow=$info;$result.modalDismissalConfirmed=$false
       $deadline=[datetime]::UtcNow.AddSeconds(20)
