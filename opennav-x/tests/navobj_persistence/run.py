@@ -1,49 +1,36 @@
 #!/usr/bin/env python3
-"""Exercise prepared native persistence methods against an in-memory SQLite DB.
-
-Only value objects and notification/UI boundaries are inert fixtures. Database
-SQL, transactions, route/track/waypoint save methods and FinishRoute are extracted
-unchanged from the specified prepared OpenCPN source. No profile or hardware opens.
-"""
+"""Configure, build and run only the isolated native persistence fixture."""
 import argparse
 from pathlib import Path
 import subprocess
+import sys
 
 p = argparse.ArgumentParser(description=__doc__)
 p.add_argument('--source', type=Path, required=True)
 p.add_argument('--output', type=Path, required=True)
-p.add_argument('--cxx', default='g++')
+p.add_argument('--generator', help='CMake generator, e.g. Visual Studio 17 2022')
+p.add_argument('--architecture', help='Generator platform, e.g. Win32 (requires --generator)')
+p.add_argument('--config', default='Release')
+p.add_argument('--parallel', type=int, default=2)
+p.add_argument('--cmake', default='cmake')
+p.add_argument('--ctest', default='ctest')
 a = p.parse_args()
-a.output.mkdir(parents=True, exist_ok=True)
-
-def definition(source, signature):
-    start = source.index(signature)
-    brace = source.index('{', start)
-    end, depth = brace + 1, 1
-    while depth:
-        depth += (source[end] == '{') - (source[end] == '}')
-        end += 1
-    return source[start:end]
-
-source = (a.source / 'model/src/navobj_db.cpp').read_text()
-functions = ['CreateTables', 'TrackExists', 'RouteExistsDB', 'RoutePointExists',
-             'DeleteAllCommentsForTrack', 'DeleteAllCommentsForRoute',
-             'DeleteAllCommentsForRoutePoint', 'InsertTrackHTML', 'InsertRouteHTML',
-             'InsertRoutePointHTML', 'InsertRoutePointDB', 'InsertRoutePointLink',
-             'InsertTrackPoint', 'NavObj_dB::UpdateDBTrackAttributes',
-             'NavObj_dB::UpdateDBRouteAttributes', 'NavObj_dB::UpdateDBRoutePointAttributes',
-             'NavObj_dB::UpdateRoute', 'NavObj_dB::UpdateRoutePoint',
-             'NavObj_dB::InsertRoutePoint', 'NavObj_dB::UpdateTrack']
-native = definition(source, 'class NavobjWriteScope') + ';\n'
-native += '\n'.join(definition(source, 'bool ' + name + '(') for name in functions)
-(a.output / 'native.inc').write_text(native)
-canvas = (a.source / 'gui/src/chcanv.cpp').read_text()
-(a.output / 'finish.inc').write_text(definition(canvas, 'void ChartCanvas::FinishRoute('))
+if a.architecture and not a.generator:
+    p.error('--architecture requires an explicit --generator')
+if a.parallel < 1:
+    p.error('--parallel must be positive')
 here = Path(__file__).resolve().parent
-for name in ('persistence', 'finish'):
-    command = [a.cxx, '-std=c++17', '-Wall', '-Wextra', '-Werror',
-               '-I', str(a.output), str(here / (name + '.cpp')), '-o', str(a.output / name)]
-    if name == 'persistence':
-        command += ['-lsqlite3']
-    subprocess.run(command, check=True)
-    subprocess.run([str(a.output / name)], check=True)
+build = a.output.resolve()
+configure = [a.cmake, '-S', str(here), '-B', str(build),
+             '-DOPENCPN_SOURCE_DIR:PATH=' + a.source.resolve().as_posix(),
+             '-DPython3_EXECUTABLE:FILEPATH=' + Path(sys.executable).as_posix(),
+             '-DCMAKE_BUILD_TYPE=' + a.config]
+if a.generator:
+    configure += ['-G', a.generator]
+if a.architecture:
+    configure += ['-A', a.architecture]
+subprocess.run(configure, check=True)
+subprocess.run([a.cmake, '--build', str(build), '--config', a.config,
+                '--parallel', str(a.parallel)], check=True)
+subprocess.run([a.ctest, '--test-dir', str(build), '-C', a.config,
+                '--output-on-failure', '--no-tests=error'], check=True)

@@ -6,6 +6,22 @@ Run against **prepared OpenCPN source containing the current patches**:
 python3 tests/navobj_persistence/run.py --source build/integration-source --output build/navobj-persistence
 ```
 
+The wrapper configures, builds and runs CTest for this fixture only, using
+Release by default. CMake, Python 3 and a C/C++ compiler are required. SQLite is
+compiled directly from the prepared source's `libs/sqlite/src/sqlite3.c`, using
+its matching `libs/sqlite/include/sqlite3.h`; no system SQLite package is used.
+`inputs.json` in the output directory records the native and SQLite input hashes.
+
+Native Win32/MSVC example (from the `opennav-x` directory):
+
+```powershell
+python tests/navobj_persistence/run.py --source build/integration-source --output build/navobj-persistence-win32 --generator "Visual Studio 17 2022" --architecture Win32
+```
+
+Use separate output directories for different generators/architectures. The
+wrapper accepts `--config`, `--parallel`, `--cmake` and `--ctest` overrides.
+Direct CMake use is also supported with `-DOPENCPN_SOURCE_DIR=<prepared-source>`.
+
 This isolated C++/SQLite fixture extracts the actual native update methods and
 helpers, schema, savepoint guard and `ChartCanvas::FinishRoute`. Value objects
 and notifications/UI use inert stubs; SQLite statement execution, triggers,
