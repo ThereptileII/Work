@@ -99,6 +99,12 @@ jobs:
           if-no-files-found: error
   cold-baseline:
     if: ${{ inputs.cold_baseline_only }}
+    strategy:
+      fail-fast: false
+      matrix:
+        # Session preservation already executes native reconciliation. Do not
+        # run that suite twice or serialize independent filesystem fixtures.
+        suite: [cold-baseline, baseline-adoption, session-preservation]
     runs-on: windows-2022
     timeout-minutes: 15
     steps:
@@ -108,18 +114,17 @@ jobs:
         env:
           TRANSACTION_ONLY: ${{ inputs.transaction_only }}
           RECONCILIATION_ONLY: ${{ inputs.reconciliation_only }}
+          SUITE: ${{ matrix.suite }}
         run: |
           if ($env:TRANSACTION_ONLY -eq 'true' -or $env:RECONCILIATION_ONLY -eq 'true') { throw 'Select only one focused check.' }
           $Evidence = 'opennav-x/evidence/local/cold-baseline-only'
           New-Item -ItemType Directory -Path $Evidence -Force | Out-Null
           $Engine = "$env:WINDIR/System32/WindowsPowerShell/v1.0/powershell.exe"
-          foreach ($Suite in @('cold-baseline', 'baseline-adoption', 'session-preservation', 'commissioning-reconciliation')) {
-            & $Engine -NoProfile -File "opennav-x/tools/boat/test-$Suite.ps1" 2>&1 | Tee-Object "$Evidence/$Suite.log"
-            if ($LASTEXITCODE -ne 0) { throw "Cold baseline preservation fixture failed: $Suite" }
-          }
+          & $Engine -NoProfile -File "opennav-x/tools/boat/test-$env:SUITE.ps1" 2>&1 | Tee-Object "$Evidence/$env:SUITE.log"
+          if ($LASTEXITCODE -ne 0) { throw "Cold baseline preservation fixture failed: $env:SUITE" }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: cold-baseline-only-${{ github.sha }}-attempt${{ github.run_attempt }}
+          name: cold-baseline-${{ matrix.suite }}-${{ github.sha }}-attempt${{ github.run_attempt }}
           path: opennav-x/evidence/local/cold-baseline-only
           if-no-files-found: error
