@@ -1,4 +1,13 @@
-# SKAGER status — 2026-10-18
+# SKAGER status — 2026-10-19
+
+## Floating chart compass — source-only correction
+
+The SCRUM-378 follow-up fixes the compass button's two-mode toggle. It now
+cycles North up → Course up → Head up → North up through OpenCPN's existing
+`MyFrame::SetUpMode`, with application-thread and missing-canvas guards. The
+chart-layer selector already supported Head up. OpenCPN still owns rotation,
+heading/course inputs and missing-input behavior; selecting Head up does not
+establish that heading is available. No build, test or boat operation was run.
 
 ## Prototype refinement — source changes, existing boat UI inspected
 

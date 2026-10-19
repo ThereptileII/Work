@@ -1156,7 +1156,7 @@ void ProductPanel::Build() {
     Action("Routes", [this] { ShowPage(ProductPage::Routes, mode_); });
     Action("Waypoints", [this] { ShowPage(ProductPage::Waypoints, mode_); });
     Action("Saved tracks", [this] { ShowPage(ProductPage::Tracks, mode_); });
-    Action("Chart orientation: North / Course up", [this] {
+    Action("Chart orientation: North / Course / Head up", [this] {
       if (actions_.chart) actions_.chart();
       if (actions_.navigation.orientation) actions_.navigation.orientation();
     });

@@ -77,3 +77,24 @@ restart or actuator command was performed. The current boat screenshot cannot
 prove the unbuilt UI's geometry, font fit, rounded-window behavior or renderer
 cache invalidation. Those checks and exact northern light-object identification
 remain pending; SCRUM-378 must not be marked Done on this source work alone.
+
+## 2026-10-19 floating-compass follow-up
+
+The user reported North up / Course up alternating without Head up. The
+`MakeNavigationActions` callback indeed used a two-branch toggle; the existing
+chart-layer selector and copied native state already supported all three modes.
+The callback now cycles North → Course → Head → North using the actual canvas
+mode and `MyFrame::SetUpMode`; missing canvas, unknown mode or a non-application
+thread produces no mutation. Its hint names all three choices.
+
+Pinned `gui/src/chcanv.cpp::SetUpMode` and `DoCanvasCOGSet` remain unchanged:
+Head up rotates with `gHdt`, Course up with the native COG value/average.
+Missing heading does not acquire an invented heading or COG substitution from
+SKAGER. The current native zero-rotation fallback on missing input remains
+OpenCPN behavior, and mode selection alone is not a sensor-health assertion.
+The shell still displays the actual observed mode after a tap. The secondary
+navigation action also names all three modes. The existing user-flow smoke
+source now includes the Head step before returning North; it has not been run.
+The read-only capture helper also recognizes the exact Head label; its fixture
+still rejects an extended control set. This grants no click/control permission.
+Independent source review only; no build, test, new screenshot or boat operation.

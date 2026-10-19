@@ -299,7 +299,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   chart_tools_->SetSizerAndFit(map_tools);
   chart_orientation_ = overlay("OpenNav chart orientation");
   auto *orientation = new wxBoxSizer(wxVERTICAL);
-  orientation_button_ = Button(chart_orientation_, "North", "Change chart orientation", [this] {
+  orientation_button_ = Button(chart_orientation_, "North", "Cycle North up, Course up and Head up", [this] {
     if (actions_.navigation.orientation) actions_.navigation.orientation();
     Tick();
   });

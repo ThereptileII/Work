@@ -138,7 +138,7 @@ namespace OpenNavX {
         case "SKAGER chart context":return SameLabels(directLabels,"Go to","Waypoint","Measure","Info") && SameLabels(headingLabels,"Close");
         case "SKAGER chart information":return SameLabels(directLabels) && SameLabels(headingLabels,"Close");
         case "SKAGER chart tools":return SameLabels(directLabels,"Measure","Waypoint","+","\u2212");
-        case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course");
+        case "SKAGER chart orientation":return SameLabels(directLabels,"North") || SameLabels(directLabels,"Course") || SameLabels(directLabels,"Head");
         case "SKAGER follow boat":return SameLabels(directLabels,"Follow boat");
         case "SKAGER anchor watch":
         case "SKAGER alerts":

@@ -359,8 +359,10 @@ try:
                                    'fresh_position_advanced': True}
     capture('00-course-up')
     click('Course')
+    control('Head')
+    click('Head')
     control('North')
-    report['checks'].append('Touch chart orientation toggles upstream North/Course state and restores North')
+    report['checks'].append('Touch chart orientation cycles upstream North/Course/Head state and restores North')
     capture('01-navigation')
     initial_chart = data()['runtime']['display']['chart_region']
     chart_click(.73, .22, right=True)

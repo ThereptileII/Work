@@ -74,6 +74,8 @@ foreach($spec in @(
  @('SKAGER chart tools',@('Measure','Waypoint','+',[string][char]0x2212),@(),$true),
  @('SKAGER chart orientation',@('North'),@(),$true),
  @('SKAGER chart orientation',@('Course'),@(),$true),
+ @('SKAGER chart orientation',@('Head'),@(),$true),
+ @('SKAGER chart orientation',@('Head','AUTO'),@(),$false),
  @('SKAGER follow boat',@('Follow boat'),@(),$true),
  @('SKAGER passage',@(),@('Close'),$true),
  @('SKAGER preferences',@(),@('Close'),$true),

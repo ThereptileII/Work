@@ -505,9 +505,19 @@ MakeNavigationActions(MyFrame &frame,
     cc->ShowObjectQueryWindow(pixel.x, pixel.y, p.latitude_deg, p.longitude_deg);
   };
   a.orientation = [&frame] {
+    if (!wxIsMainThread()) return;
     auto *cc = frame.GetPrimaryCanvas();
-    frame.SetUpMode(cc, cc->GetUpMode() == NORTH_UP_MODE ? COURSE_UP_MODE
-                                                         : NORTH_UP_MODE);
+    if (!cc) return;
+    // The floating compass must expose the same three native orientations as
+    // the chart-layer selector. OpenCPN still owns rotation and source usage.
+    int next;
+    switch (cc->GetUpMode()) {
+    case NORTH_UP_MODE: next = COURSE_UP_MODE; break;
+    case COURSE_UP_MODE: next = HEAD_UP_MODE; break;
+    case HEAD_UP_MODE: next = NORTH_UP_MODE; break;
+    default: return;
+    }
+    frame.SetUpMode(cc, next);
   };
   a.toggle_ais = [&frame] { frame.ToggleAISDisplay(frame.GetPrimaryCanvas()); };
   a.fullscreen = [&frame] { frame.ToggleFullScreen(); };
