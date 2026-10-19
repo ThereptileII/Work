@@ -131,4 +131,7 @@ tr:last-child td{border-bottom:0}
 .setup-card h2{font-size:clamp(26px,3vw,34px)}
 .setup-card h2:focus,#setup-title:focus{outline:none}
 .step-of{margin-bottom:12px}
+.guide-list{display:grid;gap:10px;max-width:68ch;margin:6px 0 4px;padding:0;list-style:none;counter-reset:guide}
+.guide-list li{position:relative;padding-left:40px;color:var(--sec);line-height:1.55;counter-increment:guide}
+.guide-list li::before{content:counter(guide);position:absolute;left:0;top:-1px;display:grid;place-items:center;width:26px;height:26px;border:1px solid var(--line);border-radius:50%;color:var(--cyan);font-weight:700;font-size:13px}
 button.text-link{padding:0;border:0;background:none;cursor:pointer}

@@ -60,7 +60,10 @@ seeded **Install OpenCPN** with a link to the official OpenCPN 5.12.4 Windows
 installer or “I already have OpenCPN installed”, then Windows x64 from the
 reviewed catalog in `downloads.ts`,
 one fresh 60-second R2 link per press; Windows on ARM, Linux x64, Linux ARM64
-and macOS shown disabled as “Coming”) · Shop (hardware, `POST /api/store/shop`)
+and macOS shown disabled as “Coming”; then each active guide step, seeded
+**Forecast wind with GRIBstream** and **Online AIS with AISstream**, where the
+first line of the text is the introduction and each further line a numbered
+step; then an “All set” card) · Shop (hardware, `POST /api/store/shop`)
 · Cloud (USD 2/month subscription Checkout `POST /api/store/cloud`, Stripe
 billing portal `POST /api/store/billing`, services listed as “Coming”) · Orders
 (refund) · Account (password, boats).
@@ -68,9 +71,10 @@ billing portal `POST /api/store/billing`, services listed as “Coming”) · Or
 ## Admin (`/admin/…`, `edge/static/admin.*`, `admin.ts`)
 
 Only verified sessions whose email is in `SKAGER_ADMIN_EMAILS` and that have a
-password. Steps (checkout and download stages: title, text, “already have it”
-answer, optional https link, multiple choice, sort, shown/hidden; the account,
-review and SKAGER download steps are fixed). Products (name, summary,
+password. Steps (checkout, download and get-going guide stages: title, text
+(line breaks kept, up to 1,200 characters), “already have it” or skip answer,
+optional https link, multiple choice for checkout steps, sort, shown/hidden;
+the account, review and SKAGER download steps are fixed). Products (name, summary,
 description, price, checkout step, visibility,
 image up to 2 MB stored in R2 bucket `skager-media`, served at
 `/api/media/products/<id>/<sha256>.<ext>`), orders (mark shipped with tracking,
@@ -108,9 +112,10 @@ email OTP length 6, templates send `{{ .Token }}`.
 
 ## Data
 
-`web/edge/store.sql`, then `web/edge/store-steps.sql` (private schema
+`web/edge/store.sql`, then `web/edge/store-steps.sql`, then
+`web/edge/store-guide.sql` (private schema
 `skager_private`, RLS on, SECURITY DEFINER RPCs callable only by
 `service_role`). Assertions in `store.postgres.sql` and
-`store-steps.postgres.sql` run in
+`store-steps.postgres.sql` and `store-guide.postgres.sql` run in
 CI against disposable PostgreSQL; never apply `bootstrap-test.sql` or
 `*.postgres.sql` to a real project.

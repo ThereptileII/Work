@@ -34,33 +34,34 @@ function renderProducts() {
     <td><button class="button button-secondary" type="button" data-edit="${esc(product.id)}">Edit</button></td></tr>`).join("")}</tbody></table></div>`;
 }
 const FLOWS = { checkout: ["Checkout", "Shown in order after the account step and before payment. Customers choose one of the step's products or the \u201cI already have\u201d answer."],
-  download: ["Download page", "Shown in order before the SKAGER download in the customer account. Customers follow the link or answer that they already have it."] };
+  download: ["Download page", "Shown in order before the SKAGER download in the customer account. Customers follow the link or answer that they already have it."],
+  guide: ["Get going guide", "Shown in order after the SKAGER download: tips to get started, such as online services. The first line of the text is the introduction; each further line becomes a numbered step."] };
 export function stepForm(step = {}) {
   const flow = step.flow || "checkout";
   return `<form id="step-form" class="form card" data-id="${esc(step.id || "")}">
     <h2>${step.id ? `Edit ${esc(step.title)}` : `New ${esc(FLOWS[flow][0].toLowerCase())} step`}</h2>
-    ${step.id ? "" : `<label>Where<select name="flow"><option value="checkout" ${flow === "checkout" ? "selected" : ""}>Checkout</option><option value="download" ${flow === "download" ? "selected" : ""}>Download page</option></select></label>`}
+    ${step.id ? "" : `<label>Where<select name="flow"><option value="checkout" ${flow === "checkout" ? "selected" : ""}>Checkout</option><option value="download" ${flow === "download" ? "selected" : ""}>Download page</option><option value="guide" ${flow === "guide" ? "selected" : ""}>Get going guide</option></select></label>`}
     <label>Title<input name="title" maxlength="60" required value="${esc(step.title || "")}" placeholder="Your helm PC"></label>
-    <label>Text<textarea name="summary" maxlength="600">${esc(step.summary || "")}</textarea></label>
-    <label>\u201cAlready have it\u201d answer<input name="skipLabel" maxlength="80" required value="${esc(step.skip_label || "")}" placeholder="I already have a PC"></label>
+    <label>Text<textarea name="summary" maxlength="1200" rows="6">${esc(step.summary || "")}</textarea></label>
+    <label>${flow === "guide" ? "Skip button text" : "\u201cAlready have it\u201d answer"}<input name="skipLabel" maxlength="80" required value="${esc(step.skip_label || "")}" placeholder="${flow === "guide" ? "Skip for now" : "I already have a PC"}"></label>
     <div class="row"><label>Link (optional, https://)<input name="linkUrl" type="url" maxlength="500" value="${esc(step.link_url || "")}" placeholder="https://"></label>
       <label>Link button text<input name="linkLabel" maxlength="80" value="${esc(step.link_label || "")}" placeholder="Download OpenCPN"></label></div>
     <div class="row"><label>Sort order<input name="sort" type="number" min="0" max="10000" value="${esc(step.sort ?? 100)}"></label></div>
-    <label class="check"><input name="multiple" type="checkbox" ${step.multiple ? "checked" : ""}> Customers may pick several products in this step</label>
+    <label class="check"${flow === "checkout" ? "" : " hidden"}><input name="multiple" type="checkbox" ${step.multiple ? "checked" : ""}> Customers may pick several products in this step</label>
     <label class="check"><input name="active" type="checkbox" ${step.active !== false ? "checked" : ""}> Show this step</label>
-    <p class="note">Checkout steps list the products you assign to them on the Products tab.</p>
+    <p class="note">${flow === "guide" ? "Each line of the text after the first is shown as a numbered step." : "Checkout steps list the products you assign to them on the Products tab."}</p>
     <div class="actions"><button class="button" type="submit">Save</button><button class="button button-secondary" type="button" id="step-cancel">Cancel</button></div></form>`;
 }
 function renderSteps() {
   const steps = data.steps || [];
   const products = id => data.products.filter(product => product.step_id === id).map(product => esc(product.name)).join(", ");
-  return `<div class="actions"><button class="button" type="button" data-new-step="checkout">Add checkout step</button><button class="button button-secondary" type="button" data-new-step="download">Add download step</button></div><div id="step-editor"></div>
+  return `<div class="actions"><button class="button" type="button" data-new-step="checkout">Add checkout step</button><button class="button button-secondary" type="button" data-new-step="download">Add download step</button><button class="button button-secondary" type="button" data-new-step="guide">Add guide step</button></div><div id="step-editor"></div>
   ${Object.entries(FLOWS).map(([flow, [title, note]]) => {
     const rows = steps.filter(step => step.flow === flow);
-    const fixed = flow === "checkout" ? ["Account (email)", "Review and pay"] : [null, "Download SKAGER"];
+    const fixed = { checkout: ["Account (email)", "Review and pay"], download: [null, "Download SKAGER"], guide: ["Download SKAGER", "All set"] }[flow];
     return `<h2 class="section-title">${esc(title)}</h2><p class="note">${esc(note)}</p>
     <div class="table-wrap"><table><thead><tr><th>Order</th><th>Step</th><th>${flow === "checkout" ? "Products" : "Link"}</th><th>Status</th><th></th></tr></thead><tbody>
-    ${fixed[0] ? `<tr><td>—</td><td><strong>${esc(fixed[0])}</strong><div class="note">Always first</div></td><td></td><td><span class="badge ok">Fixed</span></td><td></td></tr>` : ""}
+    ${fixed[0] ? `<tr><td>—</td><td><strong>${esc(fixed[0])}</strong><div class="note">${flow === "guide" ? "Comes before the guide" : "Always first"}</div></td><td></td><td><span class="badge ok">Fixed</span></td><td></td></tr>` : ""}
     ${rows.map(step => `<tr><td>${esc(step.sort)}</td><td><strong>${esc(step.title)}</strong><div class="note">${esc(step.skip_label)}</div></td>
       <td>${flow === "checkout" ? (products(step.id) || '<span class="note">No products yet</span>') : step.link_url ? `<span class="note">${esc(step.link_label)}</span>` : ""}</td>
       <td>${step.active ? '<span class="badge ok">Shown</span>' : '<span class="badge off">Hidden</span>'}</td>
@@ -171,13 +172,21 @@ function bind() {
   const openStep = step => {
     stepEditor.innerHTML = stepForm(step);
     $("step-cancel").addEventListener("click", () => { stepEditor.innerHTML = ""; });
+    // Changing "Where" redraws the form for that kind of step and keeps what was typed.
+    $("step-form").elements.namedItem("flow")?.addEventListener("change", event => {
+      const field = name => $("step-form").elements.namedItem(name);
+      openStep({ flow: event.target.value, title: field("title").value, summary: field("summary").value, skip_label: field("skipLabel").value,
+        link_url: field("linkUrl").value, link_label: field("linkLabel").value, sort: field("sort").value,
+        multiple: field("multiple").checked, active: field("active").checked });
+      $("step-form").elements.namedItem("flow").focus();
+    });
     $("step-form").addEventListener("submit", async event => {
       event.preventDefault();
-      const form = event.target, field = name => form.elements.namedItem(name);
+      const form = event.target, field = name => form.elements.namedItem(name), flow = step.id ? step.flow : field("flow").value;
       const payload = { title: field("title").value.trim(), summary: field("summary").value.trim(), skipLabel: field("skipLabel").value.trim(),
         linkUrl: field("linkUrl").value.trim(), linkLabel: field("linkLabel").value.trim(), sort: Number(field("sort").value),
-        multiple: field("multiple").checked, active: field("active").checked };
-      if (step.id) payload.id = step.id; else payload.flow = field("flow").value;
+        multiple: flow === "checkout" && field("multiple").checked, active: field("active").checked };
+      if (step.id) payload.id = step.id; else payload.flow = flow;
       try { await request("/api/admin/step", payload); say("Step saved.", "ok"); await load(); }
       catch (error) { say(error.message, "error"); }
     });

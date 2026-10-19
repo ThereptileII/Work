@@ -98,3 +98,30 @@ test('download steps come one at a time before SKAGER; text is escaped and only 
   assert.match(last, /data-artifact-id="installer"/);
   assert.match(renderDashboard(account, 'downloads', validateDownloads(catalog), { steps: [], current: 0, used: [] }), /data-artifact-id="installer"/);
 });
+
+test('the get-going guide follows the SKAGER download, one numbered line per step, then an all-set card', () => {
+  const data = { steps: [
+    { flow: 'download', title: 'Install OpenCPN', skipLabel: 'I already have OpenCPN installed' },
+    { flow: 'guide', title: 'Online AIS', summary: 'Optional: <more> ships.\nCreate a key.\nPaste it in SKAGER.', skipLabel: 'Skip for now',
+      linkUrl: 'https://aisstream.io/authenticate', linkLabel: 'Get an AISstream key' },
+  ] };
+  const steps = downloadSteps(data), guide = downloadSteps(data, 'guide');
+  assert.deepEqual([steps.length, guide.length], [1, 1]);
+  const render = (current: number, used: number[] = []) => renderDashboard(account, 'downloads', validateDownloads(catalog), { steps, guide, current, used });
+  const download = render(1);
+  assert.match(download, /Step 2 of 3/);
+  assert.match(download, /data-artifact-id="installer"/);
+  assert.match(download, /data-setup-step="2">Next: get going →</);
+  const tip = render(2);
+  assert.match(tip, /Get going · Step 3 of 3/);
+  assert.match(tip, /<p class="lead">Optional: &lt;more&gt; ships\.<\/p><ol class="guide-list"><li>Create a key\.<\/li><li>Paste it in SKAGER\.<\/li><\/ol>/);
+  assert.match(tip, /href="https:\/\/aisstream\.io\/authenticate"/);
+  assert.match(tip, /data-setup-step="3">Skip for now</);
+  assert.match(render(2, [2]), /Done, finish →/);
+  const done = render(3);
+  assert.match(done, /You are ready to go/);
+  assert.match(done, /data-setup-step="0">Start again</);
+  assert.doesNotMatch(render(1, []).replace(/Next: get going/, ''), /get going/i);
+  // Without download steps the guide still follows the download.
+  assert.match(renderDashboard(account, 'downloads', validateDownloads(catalog), { steps: [], guide, current: 0, used: [] }), /Step 1 of 2[\s\S]*Next: get going/);
+});

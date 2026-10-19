@@ -53,30 +53,44 @@ const PLATFORMS = [
   ["macOS", "Apple silicon and Intel Macs", "MAC"],
 ];
 const downloadUnavailable = "Downloads are being prepared. Please check back shortly.";
-/** Admin-defined download steps (such as installing OpenCPN) that come before SKAGER. */
-export function downloadSteps(catalog) {
-  return (Array.isArray(catalog?.steps) ? catalog.steps : []).filter(step => step && step.flow === "download"
+/** Admin-defined steps of the download page: "download" steps (such as installing OpenCPN) come
+ * before SKAGER, "guide" steps (such as setting up GRIBstream or AISstream) after it. */
+export function downloadSteps(catalog, flow = "download") {
+  return (Array.isArray(catalog?.steps) ? catalog.steps : []).filter(step => step && step.flow === flow
     && typeof step.title === "string" && typeof step.skipLabel === "string");
 }
 const safeLink = value => {
   try { const url = new URL(value); return url.protocol === "https:" && !url.username && !url.password ? url.href : null; } catch { return null; }
 };
-/** One step at a time: each prerequisite, then the SKAGER download itself. */
-export function renderSetup(downloads, steps = [], current = steps.length, used = []) {
-  if (!steps.length) return renderDownloads(downloads);
-  const at = Math.max(0, Math.min(current, steps.length));
-  const names = [...steps.map(step => step.title), "Download SKAGER"];
+/** First line of a step's text is the introduction; each further line becomes a numbered step. */
+function stepText(summary) {
+  const [intro, ...rest] = String(summary || "").split("\n").map(line => line.trim()).filter(Boolean);
+  return `${intro ? `<p class="lead">${esc(intro)}</p>` : ""}${rest.length ? `<ol class="guide-list">${rest.map(line => `<li>${esc(line)}</li>`).join("")}</ol>` : ""}`;
+}
+/** One step at a time: each prerequisite, the SKAGER download itself, then the get-going guide. */
+export function renderSetup(downloads, steps = [], current = steps.length, used = [], guide = []) {
+  if (!steps.length && !guide.length) return renderDownloads(downloads);
+  const download = steps.length, total = steps.length + 1 + guide.length;
+  const at = Math.max(0, Math.min(current, total));
+  const names = [...steps.map(step => step.title), "Download SKAGER", ...guide.map(step => step.title)];
   const nav = `<ol class="setup-steps" aria-label="Install steps">${names.map((name, index) => `<li${index === at ? ' aria-current="step"' : index < at ? ' class="is-done"' : ""}><button type="button" data-setup-step="${index}"><span aria-hidden="true">${index < at ? "✓" : index + 1}</span>${esc(name)}</button></li>`).join("")}</ol>`;
-  if (at === steps.length) {
+  const back = at > 0 ? `<div class="actions"><button class="text-link" type="button" data-setup-step="${at - 1}">← Back</button></div>` : "";
+  if (at === download) {
     return `${nav}<p class="eyebrow step-of">Step ${at + 1} of ${names.length}</p><h2 class="visually-hidden" id="setup-title" tabindex="-1">Download SKAGER</h2>${renderDownloads(downloads)}
-      <div class="actions after"><button class="button button-secondary" type="button" data-setup-step="${at - 1}">← Back</button></div>`;
+      <div class="actions after">${at > 0 ? `<button class="button button-secondary" type="button" data-setup-step="${at - 1}">← Back</button>` : ""}${guide.length ? `<button class="button" type="button" data-setup-step="${at + 1}">Next: get going →</button>` : ""}</div>`;
   }
-  const step = steps[at], link = step.linkUrl && step.linkLabel ? safeLink(step.linkUrl) : null, clicked = used.includes(at);
+  if (at === total) {
+    return `${nav}<section class="card feature setup-card"><p class="eyebrow">All set</p><h2 id="setup-title" tabindex="-1">You are ready to go</h2>
+      <p class="lead">SKAGER is installed. These steps stay here on the Downloads page whenever you need them again.</p>
+      <div class="actions"><button class="button button-secondary" type="button" data-setup-step="0">Start again</button></div>${back}</section>`;
+  }
+  const step = at < download ? steps[at] : guide[at - download - 1];
+  const link = step.linkUrl && step.linkLabel ? safeLink(step.linkUrl) : null, clicked = used.includes(at);
   const linkButton = link ? `<a class="button${clicked ? " button-secondary" : ""}" href="${esc(link)}" target="_blank" rel="noopener noreferrer" data-setup-link="${at}">${esc(step.linkLabel)} ↗</a>` : "";
-  const next = `<button class="button${link && !clicked ? " button-secondary" : ""}" type="button" data-setup-step="${at + 1}">${clicked ? "Done, next step →" : esc(step.skipLabel)}</button>`;
-  return `${nav}<section class="card feature setup-card"><p class="eyebrow">Step ${at + 1} of ${names.length}</p><h2 id="setup-title" tabindex="-1">${esc(step.title)}</h2>
-    ${step.summary ? `<p class="lead">${esc(step.summary)}</p>` : ""}<div class="actions">${linkButton}${next}</div>
-    ${at > 0 ? `<div class="actions"><button class="text-link" type="button" data-setup-step="${at - 1}">← Back</button></div>` : ""}</section>`;
+  const next = `<button class="button${link && !clicked ? " button-secondary" : ""}" type="button" data-setup-step="${at + 1}">${clicked ? (at === total - 1 ? "Done, finish →" : "Done, next step →") : esc(step.skipLabel)}</button>`;
+  return `${nav}<section class="card feature setup-card"><p class="eyebrow">${at > download ? "Get going · " : ""}Step ${at + 1} of ${names.length}</p><h2 id="setup-title" tabindex="-1">${esc(step.title)}</h2>
+    ${stepText(step.summary)}<div class="actions">${linkButton}${next}</div>
+    ${back}</section>`;
 }
 export function renderDownloads(downloads) {
   const coming = PLATFORMS.map(([name, detail, icon]) => `<section class="card disabled" aria-disabled="true"><div class="platform"><span class="platform-icon" aria-hidden="true">${icon}</span><div><h3>${esc(name)}</h3><p class="note">${esc(detail)}</p></div></div>${badge(["Coming", "soon"])}<div class="actions"><button class="button button-secondary" type="button" disabled>Coming</button></div></section>`).join("");
@@ -215,7 +229,7 @@ export function renderAccount(data, setup) {
 }
 
 export function renderDashboard(data, page = "dashboard", extra, setup) {
-  if (page === "downloads") return setup ? renderSetup(extra, setup.steps, setup.current, setup.used) : renderDownloads(extra);
+  if (page === "downloads") return setup ? renderSetup(extra, setup.steps, setup.current, setup.used, setup.guide) : renderDownloads(extra);
   if (page === "shop") return renderShop(extra);
   if (page === "cloud") return renderCloud(data, extra);
   if (page === "orders") return renderOrders(data);
@@ -259,7 +273,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   // Where the customer is in the download steps; memory only, like the rest.
   const setup = { current: 0, used: [] };
   const setupFor = p => p === "downloads" && cache.dashboard?.betaAccess === "active"
-    ? { steps: downloadSteps(cache.catalog), current: setup.current, used: setup.used } : undefined;
+    ? { steps: downloadSteps(cache.catalog), guide: downloadSteps(cache.catalog, "guide"), current: setup.current, used: setup.used } : undefined;
   function mark() {
     document.querySelector("h1").textContent = TITLES[page];
     for (const link of $("portal-nav")?.querySelectorAll("a") || []) {

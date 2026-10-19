@@ -311,6 +311,13 @@ test('checkout and download steps: public in the catalog, edited only by admins 
     assert.equal(stepInput(bad), null, JSON.stringify(bad));
   }
   assert.equal(stepInput({ id: STEP, title: 'GPS', skipLabel: 'Skip' })!.flow, undefined);
+  // Guide steps keep their line breaks (one numbered step per line); titles and labels stay single-line.
+  const guide = { flow: 'guide', title: 'Online AIS', skipLabel: 'Skip for now', summary: 'Optional.\r\n  Get a key. \n\nPaste it in SKAGER.  ' };
+  assert.equal(stepInput(guide)!.summary, 'Optional.\nGet a key.\nPaste it in SKAGER.');
+  for (const bad of [{ ...guide, summary: 'a\tb' }, { ...guide, summary: 'a\u0007b' }, { ...guide, summary: 'a'.repeat(1201) },
+    { ...guide, title: 'Online\nAIS' }, { ...guide, skipLabel: 'Skip\r' }, { ...guide, summary: 7 }]) {
+    assert.equal(stepInput(bad), null, JSON.stringify(bad));
+  }
   const outsider = fixture({ account: { id: ACCOUNT, email: 'b@example.com', passwordSet: true } });
   assert.equal((await handleAdmin(post('/api/admin/step', step), outsider.ctx))!.status, 403);
   assert.equal(outsider.calls.length, 0);

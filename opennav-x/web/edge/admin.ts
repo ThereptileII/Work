@@ -14,6 +14,7 @@ const reply = (status: number, value: Json) => new Response(JSON.stringify(value
   'X-Content-Type-Options': 'nosniff' } });
 const plain = (value: unknown, maximum: number) => typeof value === 'string' && value.length <= maximum
   && !/[\u0000-\u0008\u000b\u000c\u000e-\u001f\u007f]/.test(value);
+const line = (value: unknown, maximum: number) => plain(value, maximum) && !/[\t\n\r]/.test(value as string);
 
 async function input(req: Request, maximum = 16384): Promise<Json> {
   requireValue(req.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() === 'application/json');
@@ -47,12 +48,14 @@ export function stepInput(value: Json): Json | null {
   const keys = ['id', 'flow', 'title', 'summary', 'skipLabel', 'multiple', 'linkUrl', 'linkLabel', 'active', 'sort'];
   if (!object(value) || !Object.keys(value).every(key => keys.includes(key))) return null;
   if (value.id !== undefined && !(typeof value.id === 'string' && UUID.test(value.id))) return null;
-  if (value.id === undefined && !['checkout', 'download'].includes(value.flow)) return null;
-  if (!plain(value.title, 60) || !value.title.trim() || !plain(value.skipLabel, 80) || !value.skipLabel.trim()
-    || (value.summary !== undefined && !plain(value.summary, 600))) return null;
+  if (value.id === undefined && !['checkout', 'download', 'guide'].includes(value.flow)) return null;
+  // Line breaks are kept in the text (the guide shows each line as a step); titles and labels stay single-line.
+  const summary = typeof value.summary === 'string' ? value.summary.replace(/\r\n?/g, '\n').split('\n').map(row => row.trim()).filter(Boolean).join('\n') : '';
+  if (!line(value.title, 60) || !value.title.trim() || !line(value.skipLabel, 80) || !value.skipLabel.trim()
+    || (value.summary !== undefined && (typeof value.summary !== 'string' || /\t/.test(value.summary) || !plain(summary, 1200)))) return null;
   const link = typeof value.linkUrl === 'string' ? value.linkUrl.trim() : '';
   const label = typeof value.linkLabel === 'string' ? value.linkLabel.trim() : '';
-  if ((value.linkUrl !== undefined && typeof value.linkUrl !== 'string') || (value.linkLabel !== undefined && !plain(value.linkLabel, 80))) return null;
+  if ((value.linkUrl !== undefined && typeof value.linkUrl !== 'string') || (value.linkLabel !== undefined && !line(value.linkLabel, 80))) return null;
   if (link) {
     let url: URL;
     try { url = new URL(link); } catch { return null; }
@@ -60,7 +63,7 @@ export function stepInput(value: Json): Json | null {
   } else if (label) return null;
   for (const key of ['multiple', 'active']) if (value[key] !== undefined && typeof value[key] !== 'boolean') return null;
   if (value.sort !== undefined && (!integer(value.sort) || value.sort < 0 || value.sort > 10000)) return null;
-  return { id: value.id ?? null, flow: value.flow, title: value.title.trim(), summary: (value.summary ?? '').trim(),
+  return { id: value.id ?? null, flow: value.flow, title: value.title.trim(), summary,
     skip_label: value.skipLabel.trim(), multiple: value.multiple ?? false, link_url: link, link_label: label,
     active: value.active ?? true, sort: value.sort ?? 100 };
 }
