@@ -560,9 +560,29 @@ install(FILES ${s57data} DESTINATION ${PREFIX_PKGDATA}/s57data)
             self.generate()
 
     def test_windows_case_alias_rejected(self):
-        self.put('app/LIBCURL.dll', b'alias')
-        with self.assertRaisesRegex(ValueError, 'Ambiguous Windows package path'):
-            self.generate()
+        runtime = self.package / 'app/libcurl.dll'
+        original = runtime.read_bytes()
+
+        # On case-insensitive filesystems, writing the alias would replace
+        # the valid runtime and test hash rejection instead.
+        # Inject only the extra directory entry; its metadata and bytes still
+        # come from the real, unchanged file, and inventory checks stay real.
+        class CaseAliasPath(type(runtime)):
+            def is_symlink(self):
+                return runtime.is_symlink()
+
+            def is_file(self):
+                return runtime.is_file()
+
+            def open(self, *args, **kwargs):
+                return runtime.open(*args, **kwargs)
+
+        entries = list(self.package.rglob('*'))
+        entries.append(CaseAliasPath(self.package / 'app/LIBCURL.dll'))
+        with patch.object(Path, 'rglob', return_value=iter(entries)):
+            with self.assertRaisesRegex(ValueError, 'Ambiguous Windows package path'):
+                self.generate()
+        self.assertEqual(runtime.read_bytes(), original)
 
     def test_symlink_rejected(self):
         (self.package / 'app/linked.ttf').symlink_to('skager.ttf')
