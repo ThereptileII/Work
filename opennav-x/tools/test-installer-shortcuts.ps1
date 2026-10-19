@@ -64,7 +64,7 @@ function FixtureGeneration([string]$id,[string]$version,[switch]$Neutral,[switch
   AtomicJson (Join-Path $d 'ownership.json') $record
   return [pscustomobject]@{owner=$Owner;schema=1;current=$id;previous='';stock=@{path=(Join-Path $Fixture 'stock/opencpn.exe')};shortcutModes=@('xnav','legacy','safe')}
 }
-function CheckGroup($state,[string]$version) {
+function CheckGroup($state,[string]$version,[switch]$HistoricalEngine) {
   $group=ShortcutGroup (ReadGeneration $state.current);$others=@(ShellGroups | Where-Object {$_ -cne $group})
   Check ((Test-Path -LiteralPath $group) -and @($others | Where-Object {Test-Path -LiteralPath $_}).Count -eq 0) ('Only expected group for '+$version)
   $shell=New-Object -ComObject WScript.Shell
@@ -75,7 +75,15 @@ function CheckGroup($state,[string]$version) {
     $s=ShortcutSpec $f.Name (ReadGeneration $state.current);$link=$shell.CreateShortcut($f.FullName)
     Check ([string]::Equals($link.TargetPath,(RelativePath (Generation $state.current) $s.target),[StringComparison]::OrdinalIgnoreCase)) ('Current generation '+$f.Name)
     $iconTarget=if($s.mode -eq 'maintenance'){$s.target}else{'app/opencpn.exe'}
-    Check ([string]::Equals($link.IconLocation,((RelativePath (Generation $state.current) $iconTarget)+',0'),[StringComparison]::OrdinalIgnoreCase)) ('Current generation branded icon '+$f.Name)
+    if($HistoricalEngine) {
+      # The pinned historical engine never set IconLocation. WScript.Shell
+      # reports the inherited target icon as ,0. Do not require a later
+      # branding feature from immutable rollback code; verify its actual
+      # contract while keeping every current-engine icon check exact.
+      Check ($link.IconLocation -ceq ',0') ('Historical engine target icon '+$f.Name)
+    } else {
+      Check ([string]::Equals($link.IconLocation,((RelativePath (Generation $state.current) $iconTarget)+',0'),[StringComparison]::OrdinalIgnoreCase)) ('Current generation branded icon '+$f.Name)
+    }
   }
   Check ((Get-ItemProperty -LiteralPath $Registry).ModifyPath -ceq ('"'+(Join-Path (Generation $state.current) 'Maintain.exe')+'"')) 'Registry maintenance points to the exact selected generation'
 }
@@ -288,7 +296,7 @@ try {
     if ($node.Count -ne 1) { throw "Expected one exact old engine function: $name" }
     . ([scriptblock]::Create($node[0].Extent.Text))
   }
-  Recover;CheckGroup $early 'exact old engine recovers committed historical rollback'
+  Recover;CheckGroup $early 'exact old engine recovers committed historical rollback' -HistoricalEngine
   Check (-not (Test-Path (Join-Path $Root 'transaction.json'))) 'Old engine clears recovered transaction after publishing its original group'
   RemoveShell
   Check (-not (Test-Path -LiteralPath $Registry) -and @(Get-ChildItem -LiteralPath $Programs -Force).Count -eq 0) 'Exact old engine uninstall cannot orphan SKAGER shortcuts'
