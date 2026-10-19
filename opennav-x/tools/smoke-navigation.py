@@ -23,6 +23,67 @@ def exact_native_reference_desktop(display):
     return len(after) >= 2 and tuple(after[:2]) == (1280, 800)
 
 
+def require_native_waypoint_name(ui, owner, pid, record, expected):
+    """Read the selected page's actual EDIT buffer, never a cached caption."""
+    assert record['ui_page'] == 'Waypoint detail', 'Waypoint detail must remain selected'
+
+    def owned(window):
+        process = ui.W.DWORD()
+        assert ui.GetWindowThreadProcessId(window, ui.C.byref(process))
+        assert process.value == pid and ui.IsWindowVisible(window), 'Waypoint control owner changed'
+        assert ui.IsWindowEnabled(window), 'Waypoint control remains disabled or behind a modal'
+
+    def bounds(window):
+        rectangle = ui.W.RECT()
+        assert ui.GetWindowRect(window, ui.C.byref(rectangle))
+        return dict(x=rectangle.left, y=rectangle.top,
+                    width=rectangle.right-rectangle.left, height=rectangle.bottom-rectangle.top)
+
+    def contains(outer, inner):
+        return (inner['width'] > 0 and inner['height'] > 0 and
+                outer['x'] <= inner['x'] and outer['y'] <= inner['y'] and
+                inner['x']+inner['width'] <= outer['x']+outer['width'] and
+                inner['y']+inner['height'] <= outer['y']+outer['height'])
+
+    owned(owner)
+    pages = [window for window, caption in ui.children(owner)
+             if caption == 'SKAGER product page: Waypoint detail']
+    assert len(pages) == 1, ('Expected one owned waypoint detail page', pages)
+    page = pages[0]
+    owned(page)
+    assert ui.IsChild(owner, page), 'Waypoint page escaped the tested frame'
+    edits = []
+    for window, _ in ui.children(page):
+        native_class = ui.C.create_unicode_buffer(128)
+        assert ui.GetClassNameW(window, native_class, len(native_class))
+        if native_class.value.lower() == 'edit':
+            edits.append(window)
+    # PointActions owns exactly one NameEditor. Unrelated pages, modal sheets,
+    # headings and captions cannot satisfy this selection.
+    assert len(edits) == 1, ('Expected the waypoint page\'s unique name EDIT', edits)
+    field = edits[0]
+    owned(field)
+    assert ui.IsChild(page, field), 'Name EDIT escaped the selected waypoint page'
+    native = bounds(field)
+    assert contains(bounds(page), native) and contains(bounds(owner), native), 'Waypoint name is clipped'
+    # Standard EDIT fields can be absent from the MSW diagnostic walk. When
+    # published, their exact field identity and bounds must agree with HWNDs.
+    published = [control for control in record['runtime']['display']['interaction_controls']
+                 if control['label'] == 'Field: Waypoint name' or
+                 control.get('accessible_name') == 'Waypoint name']
+    if published:
+        assert len(published) == 1, ('Ambiguous waypoint name diagnostic', published)
+        observed = published[0]
+        assert (observed['label'] == 'Field: Waypoint name' and
+                observed.get('accessible_name') == 'Waypoint name' and
+                observed['visible'] and observed['enabled']), observed
+        assert all(observed[key] == value for key, value in native.items()), (observed, native)
+    value = ui.control_text(field)  # WM_GETTEXT reads the other process's EDIT buffer.
+    assert value == expected, ('Selected waypoint name changed or failed to save', expected, value)
+    return dict(page_handle=int(page), edit_handle=int(field), bounds=native,
+                value=value, diagnostic_field_published=bool(published), reader='WM_GETTEXT')
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
@@ -856,12 +917,17 @@ try:
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
             click_object('Save',accessible_name='Save');time.sleep(.6)
-            assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle))
+            report.setdefault('native_waypoint_name', []).append(dict(stage='after-save',
+                **require_native_waypoint_name(ui, handle, app.pid, object_snapshot(), 'ALPHA TEST UI edited')))
             capture('waypoint-edit-sheet-result')
             ui.click_text(app.pid,'Delete waypoint')
             ui.complete_modal_action(app.pid,'Delete waypoint',handle,
                 lambda:click_object('Cancel',accessible_name='Cancel'))
-            assert any(c=='ALPHA TEST UI edited' for _,c in ui.children(handle)), 'Cancel changed the mark'
+            cancel_tick=int(object_snapshot()['runtime']['ui_update']['ticks'])
+            cancelled=wait_object(lambda s:int(s['runtime']['ui_update']['ticks'])>cancel_tick,
+                                  'Fresh waypoint state after delete cancellation')
+            report['native_waypoint_name'].append(dict(stage='after-delete-cancel',
+                **require_native_waypoint_name(ui, handle, app.pid, cancelled, 'ALPHA TEST UI edited')))
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
             click_object('Save',accessible_name='Save')
