@@ -1,4 +1,5 @@
 #include "NavigationObjectScenario.h"
+#include "NavigationNameObservation.h"
 #include "application/AnchorRouteTransition.h"
 #include "chcanv.h"
 #include "integration/NavigationObjects.h"
@@ -400,7 +401,8 @@ bool ObserveWaypointDetail(const Navigation &selected) {
     Check(waypoint_detail, "Temporary selected waypoint registered");
     gFrame->GetPrimaryCanvas()->ShowMarkPropertiesDialog(waypoint_detail);
   }
-  if ((waypoint_detail_stage == 1 && !HasVisibleText(gFrame, "BETA TEST externally renamed mark")) ||
+  if ((waypoint_detail_stage == 1 && !HasVisibleNavigationName(*gFrame,
+          ui::ProductPage::WaypointDetail, "BETA TEST externally renamed mark")) ||
       (waypoint_detail_stage == 3 && !HasVisibleText(gFrame, "Position unavailable"))) {
     Write(); return false; // wait for the actual one-second detail refresh
   }
@@ -413,7 +415,8 @@ bool ObserveWaypointDetail(const Navigation &selected) {
         "BETA TEST externally renamed mark", "Changed while detail remains open").ok,
         "Rename selected waypoint externally");
   } else if (waypoint_detail_stage == 1) {
-    Check(HasVisibleText(gFrame, "BETA TEST externally renamed mark"),
+    Check(HasVisibleNavigationName(*gFrame, ui::ProductPage::WaypointDetail,
+              "BETA TEST externally renamed mark"),
           "Selected waypoint detail updates rendered name without reopening");
     waypoint_detail->m_bIsInLayer = true;
   } else if (waypoint_detail_stage == 2) {
@@ -474,7 +477,8 @@ bool ObserveRouteDetail(const Navigation &selected) {
             "Open detail uses the newly advanced coherent waypoint contract");
   }
   if (route_detail_stage == 1 &&
-      !route_modal_changed && !HasVisibleText(gFrame, "BETA TEST externally renamed route")) {
+      !route_modal_changed && !HasVisibleNavigationName(*gFrame,
+          ui::ProductPage::RouteDetail, "BETA TEST externally renamed route")) {
     Write(); return false; // allow the one-second selected-detail refresh
   }
   report["phase"] = wxString::FromUTF8(route_detail_stage == 1 && route_modal_changed

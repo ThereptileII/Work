@@ -1,8 +1,10 @@
 // Offline native input fixture; no navigation connection or chart data.
 #include "ui/NameEditor.h"
+#include "NavigationNameObservation.h"
 #include <wx/app.h>
 #include <wx/frame.h>
 #include <wx/log.h>
+#include <wx/utils.h>
 #include <iostream>
 #include <stdexcept>
 using namespace opennav;
@@ -16,6 +18,65 @@ template<class T> T* Find(wxWindow& owner,const wxString& label) {
  } return nullptr;
 }
 void Click(wxWindow&window){wxCommandEvent e(wxEVT_BUTTON,window.GetId());e.SetEventObject(&window);window.ProcessWindowEvent(e);}
+#ifdef __WXGTK__
+bool OriginalLabelObservation(wxWindow *window,const wxString &text) {
+ if(window->IsShownOnScreen()&&window->GetLabel()==text)return true;
+ for(auto*child:window->GetChildren())if(OriginalLabelObservation(child,text))return true;
+ return false;
+}
+#endif
+void CheckNameObservation(wxFrame &owner) {
+ for (bool route : {true, false}) {
+  const auto kind=route?ui::ProductPage::RouteDetail:ui::ProductPage::WaypointDetail;
+  const wxString name=route?"Route name":"Waypoint name";
+  const wxString renamed=route?"BETA TEST externally renamed route":"BETA TEST externally renamed mark";
+  application::Route saved_route;saved_route.id="route";saved_route.name="Original";saved_route.editable=true;
+  application::Waypoint saved_point;saved_point.id="point";saved_point.name="Original";saved_point.editable=true;
+  ui::ProductActions actions;
+  actions.navigation.route=[&](const std::string&){return std::optional<application::Route>(saved_route);};
+  actions.navigation.waypoint_context=[&](const std::string&,vessel::Time){application::WaypointContext value;value.waypoint=saved_point;return value;};
+  actions.navigation.edit_route=[](const application::Route&,const std::string&,const std::string&){return application::CommandResult{};};
+  actions.navigation.edit_waypoint=[](const application::Waypoint&,const std::string&,const std::string&){return application::CommandResult{};};
+  auto*page=new ui::ProductPanel(&owner,actions);page->SetSize(0,0,760,360);
+  page->ShowObject(route?"route":"point",route,ui::LightMode::Day);page->Show();page->Layout();
+  auto*field=Find<wxTextCtrl>(*page,name);
+  Check(field&&field->IsShownOnScreen(),"actual detail owns visible native name field");
+  Check(!ui::XNavNameEditor::PreserveDrafts(*page,ui::LightMode::Day,true),"idle detail has no editing draft or field focus");
+  saved_route.name=renamed.ToStdString();saved_route.revision="renamed";
+  saved_point.name=renamed.ToStdString();saved_point.revision="renamed";
+  wxMilliSleep(1100);page->Update({},ui::LightMode::Day);page->Layout();
+  field=Find<wxTextCtrl>(*page,name);
+  Check(field&&field->GetValue()==renamed,"actual detail refresh reflects external name change");
+#ifdef __WXGTK__
+  Check(field->GetLabel()!=renamed,"native field value differs from obsolete GTK label observer");
+  Check(!OriginalLabelObservation(&owner,renamed),"original recursive label guard misses actual refreshed name");
+#endif
+  Check(test::HasVisibleNavigationName(owner,kind,renamed),"owned detail exact native name is observed");
+  auto*stale=new wxStaticText(&owner,wxID_ANY,renamed);
+  field->ChangeValue("Wrong value");
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"unrelated matching label cannot hide wrong native value");
+  field->ChangeValue(renamed);field->Hide();
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"hidden native name is refused");field->Show();
+  field->SetName("Other field");
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"wrong field identity is refused");field->SetName(name);
+  auto*duplicate=new wxTextCtrl(page,wxID_ANY,renamed);duplicate->SetName(name);
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"duplicate matching field is refused");delete duplicate;
+  auto*other=new ui::ProductPanel(&owner,actions);other->SetSize(0,0,760,360);
+  other->ShowObject(route?"route":"point",route,ui::LightMode::Day);other->Show();other->Layout();
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"duplicate selected detail page is refused");delete other;
+  page->Hide();
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"hidden selected detail page is refused");page->Show();
+  Check(!test::HasVisibleNavigationName(owner,route?ui::ProductPage::WaypointDetail:ui::ProductPage::RouteDetail,renamed),
+        "value on another detail page cannot satisfy selection");
+  Check(!test::HasVisibleNavigationName(owner,ui::ProductPage::Routes,renamed),"non-detail page cannot satisfy selection");
+  delete field;
+  Check(!test::HasVisibleNavigationName(owner,kind,renamed),"missing native name field is refused");
+  delete stale;delete page;
+ }
+#ifdef __WXGTK__
+ std::cout<<"Route and waypoint external refresh: original GTK label guard misses both; owned native value reader passes\n";
+#endif
+}
 class TestApp final:public wxApp {
  wxFrame*frame_=nullptr;int result_=0;
  bool OnInit()override{wxLog::SetActiveTarget(new wxLogStderr());frame_=new wxFrame(nullptr,wxID_ANY,"Name editing fixture",{0,0},{800,400});frame_->Show();CallAfter([this]{Run();});return true;}
@@ -45,6 +106,7 @@ class TestApp final:public wxApp {
   Check(input->GetValue()=="User override"&&saves==2,"escape cancels to accepted name");
   auto*locked=new ui::XNavNameEditor(*frame_,"Waypoint name","Protected",ui::LightMode::Day,100,false,{},{});
   Check(!Find<wxTextCtrl>(*locked,"Waypoint name")->IsEnabled(),"protected names remain read-only");
+  delete editor;delete locked;CheckNameObservation(*frame_);
   std::cout<<checks<<" native name editor checks passed\n";
  }catch(const std::exception&e){std::cerr<<e.what()<<'\n';result_=1;}frame_->Destroy();ExitMainLoop();}
 };
