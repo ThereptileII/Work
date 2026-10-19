@@ -91,7 +91,7 @@
 .welcome-text{font-size:19px;line-height:1.55;color:rgba(242,246,244,.86)}
 .welcome-form{display:grid;gap:16px;margin-top:24px;max-width:420px}
 .welcome-form label{font-size:14px;font-weight:600}
-.welcome-form .code{font-size:30px;letter-spacing:.4em;text-align:center;font-variant-numeric:tabular-nums}
+.welcome-form .code{font-size:clamp(22px,7vw,30px);letter-spacing:.3em;text-align:center;font-variant-numeric:tabular-nums}
 .welcome-form .cta{justify-content:center;border:0;cursor:pointer;font:inherit;font-weight:650}
 .welcome .order-message{margin-top:18px}
 .welcome .hint{margin-top:30px}

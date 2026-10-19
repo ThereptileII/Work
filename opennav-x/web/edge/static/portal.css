@@ -34,17 +34,17 @@ p{margin:0}
 .message.error{color:var(--red)}
 .message.ok{color:var(--mint)}
 /* Forms */
-.form{display:grid;gap:14px;margin-top:22px}
-.form label{display:grid;gap:6px;font-size:14px;color:var(--sec)}
-.form input,.form textarea,.form select{min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text)}
+.form{display:grid;grid-template-columns:minmax(0,1fr);gap:14px;margin-top:22px}
+.form label{display:grid;grid-template-columns:minmax(0,1fr);gap:6px;min-width:0;font-size:14px;color:var(--sec)}
+.form input,.form textarea,.form select{width:100%;min-width:0;min-height:48px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text)}
 .form textarea{min-height:110px;resize:vertical}
 .form input:focus,.form textarea:focus,.form select:focus{outline:2px solid var(--mint);outline-offset:1px}
 .form .row{display:grid;grid-template-columns:1fr 1fr;gap:14px}
 .form .check{display:flex;align-items:center;gap:10px;color:var(--text)}
 .form .check input{min-height:auto;width:18px;height:18px}
-.code-input{font-size:28px!important;letter-spacing:.4em;text-align:center;font-variant-numeric:tabular-nums}
+.code-input{font-size:clamp(20px,6.5vw,28px)!important;letter-spacing:.3em;text-align:center;font-variant-numeric:tabular-nums}
 /* Auth */
-.auth-shell{display:grid;place-items:center;min-height:calc(100vh - 160px);padding:60px 0}
+.auth-shell{display:grid;grid-template-columns:minmax(0,1fr);place-items:center;min-height:calc(100vh - 160px);padding:60px 0}
 .auth-card{width:min(460px,100%);padding:36px 34px;border:1px solid var(--line);border-radius:22px;background:linear-gradient(160deg,var(--panel2),var(--panel))}
 .auth-card h1{font-size:36px}
 .auth-links{display:flex;justify-content:space-between;gap:12px;margin-top:22px;font-size:14px}
