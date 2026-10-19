@@ -1,4 +1,5 @@
 #pragma once
+#include "plugin-adapters/ChartPresentationBindingV1.h"
 #include <algorithm>
 #include <cstdint>
 #include <set>
@@ -78,8 +79,8 @@ inline bool ChartModulePe(const std::vector<unsigned char>& b,
     const auto exports=u(opt+96,4), exportSize=u(opt+100,4);
     if(!exports || exportSize<40) return false;
     const std::set<std::string> expected{"create_pi","destroy_pi",
-      "skager_bind_chart_presentation_v1","skager_chart_presentation_status_v1",
-      "skager_chart_point_style_v1"};
+      SKAGER_CHART_BINDING_EXPORT, SKAGER_CHART_STATUS_EXPORT,
+      SKAGER_CHART_POINT_STYLE_EXPORT, SKAGER_CHART_DISPLAY_EXPORT};
     const auto at=offset(exports,40);
     if(u(at+20,4)!=expected.size() || u(at+24,4)!=expected.size())return false;
     const auto addresses=u(at+28,4), names=u(at+32,4), ordinals=u(at+36,4);

@@ -149,6 +149,8 @@ jobs:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Verify published distribution inputs before compilation
         run: python opennav-x/tools/verify-distribution-inputs.py
+      - name: Verify private chart module ABI before application compilation
+        run: python opennav-x/tools/test-chart-module-pe.py
       - name: Check corrected setup, executable-version and pilot smoke helpers
         shell: python
         run: |

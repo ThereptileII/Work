@@ -1,0 +1,38 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-298",
+  "failedCandidate": "61364b5db961657c9cb2fad0e11b4871f7116e4c",
+  "failedRun": "https://github.com/ThereptileII/Work/actions/runs/39293837728",
+  "failedJob": 118209374998,
+  "failure": "private adapter ABI is incompatible",
+  "cause": "Host PE validator required five exports; authenticated display-capable adapter has the current six-export contract.",
+  "priorWindowsCompiledCtest": {
+    "fixture": 152,
+    "fixtureFree": 152,
+    "distinctCases": 152
+  },
+  "artifact": {
+    "id": 12212418695,
+    "sha256": "9c8f540251984d4dbece92c55e46652d2afd4d87e2534d61c2a1bc497ef23304"
+  },
+  "recoveryArtifact": {
+    "id": 12211808802,
+    "sha256": "68b98fe77a159261b1a7fc7297de8dc0243968ad6cc3c0a84a1a9ba8291e661f"
+  },
+  "focused": {
+    "originalValidFixture": "failed as expected before correction",
+    "correctedCases": 24,
+    "actualAdapterBytes": 1374208,
+    "actualAdapterSha256": "2b6db681f660ebe39f54b5bfabf2d03c569565b8675639877f1ab7dcbcf5cedd",
+    "actualAdapterPeAccepted": true,
+    "dllExecuted": false,
+    "logSha256": "2142d80fdec7f3956ac9e8cced7856980c9bea07fc54fe57106046371a1eae5e",
+    "sourceSha256": {
+      "opennav-x/src/integration/ChartModulePe.h": "ee279ed4d4b157da7cabb5a207919b80671f887d1c7d489283db2cb542a84707",
+      "opennav-x/tools/test-chart-module-pe.py": "1ecfaa3eba3638a444d48b0a1c3fd51db2215a551aedf31e5006f7db6d13435d"
+    }
+  },
+  "replacementNativeHostGate": "pending",
+  "replacementPackage": "pending",
+  "boatInstalled": false
+}

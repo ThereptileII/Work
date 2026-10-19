@@ -86,6 +86,23 @@ SDK reprobes and complete stock configuration before another full build.
 The new application and its boat startup remain pending; this is not runtime
 acceptance or a delivered replacement.
 
+Candidate `61364b5d`, run `39293837728`, passed both 160-case Linux builds and
+the native runtime/chart tail, and both Windows builds passed 152 compiled
+CTest cases each. Windows then rejected the private chart adapter before
+loading it. The host's PE check still required five exports while the reviewed
+display/Very Light adapter and package validator require six. The existing
+portable parser test reproduces this exact failure on its valid input; it had
+not been included in early CI. The narrow correction uses the current binding
+contract's exact export names and places the focused parser check before full
+application compilation. All malformed/import/forwarder refusals remain.
+This host-code correction requires new application bytes; the retained `613`
+compiled recovery is diagnostic evidence, not a qualified replacement. No
+package or boat update is claimed from that failed run.
+The corrected parser passes 24 refusal/positive cases and accepts the exact
+hash-verified adapter retained from that failed build as bytes only, without
+loading its DLL. See [the bounded correction evidence](evidence/source-batch-20261019/chart-module-abi-correction.json).
+The replacement native host/loading and package gates remain pending.
+
 ## UI flicker — repaint corrections, native confirmation pending
 
 The SCRUM-378 follow-up removes confirmed redundant 250 ms repaint requests
