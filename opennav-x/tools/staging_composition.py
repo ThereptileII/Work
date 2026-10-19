@@ -1,8 +1,9 @@
 #!/usr/bin/env python3
 """Explicit, reviewed composition of a failed Staging run and a narrow retest.
 
-The original runtime job remains failed. Only the fixed installer/chart suffix
-may be replaced. This module never builds, runs applications, or publishes.
+The original runtime job remains failed. Reviewed schema1/2 installer/chart
+suffixes or schema3 complete native evidence may replace their exact boundaries.
+This module never builds, runs applications, or publishes.
 """
 import argparse
 import base64
@@ -20,6 +21,7 @@ import zipfile
 
 import release_manifest as manifest
 import staging_build_inputs as inputs
+import staging_full_retest as full
 
 REPOSITORY = 'ThereptileII/Work'
 REQUEST_PATH = 'opennav-x/tools/staging-composition-request.json'
@@ -179,8 +181,11 @@ def _pins(items, required):
 
 
 def validate_request(request):
-    _fields(request, ('schema', 'repository', 'producer', 'build', 'original', 'retest'))
-    require(type(request['schema']) is int and request['schema'] in (1, 2) and
+    names = {'schema', 'repository', 'producer', 'build', 'original', 'retest'}
+    if request.get('schema') == 3:
+        names.add('restart')
+    _fields(request, names)
+    require(type(request['schema']) is int and request['schema'] in (1, 2, 3) and
             request['repository'] == REPOSITORY, 'Unsupported composition request')
     p = request['producer']; _identity(p)
     artifact_keys = {'artifactId', 'artifactName', 'artifactDigest'}
@@ -207,16 +212,27 @@ def validate_request(request):
                 'Only the reviewed diagnostic-path producer and corrected harness are supported')
         require({i['path']: i['sha256'] for i in request['original']['prefixReports']} == PATH_PREFIX_HASHES,
                 'Original diagnostic-path reports differ from the reviewed failure/prefix')
-    _pins(r['reports'], RETEST_REPORTS)
+    if request['schema'] == 3:
+        full.validate_request(request)
+    _pins(r['reports'], retest_reports(request))
 
 
 def prefix_reports(request):
+    if request['schema'] == 3:
+        return frozenset(full.ORIGINAL_REPORTS)
     return frozenset(PATH_PREFIX_HASHES) if request['schema'] == 2 else PREFIX_REPORTS
+
+
+def retest_reports(request):
+    if request['schema'] == 3:
+        return PREFIX_REPORTS | RETEST_REPORTS | full.EXTRA_REPORTS
+    return RETEST_REPORTS
 
 
 def request_from_qualification(q):
     c = q['composition']
-    return {key: c[key] for key in ('schema', 'repository', 'producer', 'build', 'original', 'retest')}
+    names = ('schema', 'repository', 'producer', 'build', 'original', 'retest')
+    return {key: c[key] for key in names + (('restart',) if c['schema'] == 3 else ())}
 
 
 def qualification(request, request_sha, execution):
@@ -233,8 +249,11 @@ def validate_qualification(q, record, support):
     require(type(q['schemaVersion']) is int and q['schemaVersion'] == 2 and
             q['channel'] == 'staging' and q['gates'] == GATES and q['publicAccess'] is False and
             q['designReview'] == 'not-requested' and q['endurance'] == 'skipped', 'Invalid composed qualification policy')
-    _fields(q['composition'], {'schema', 'repository', 'producer', 'build', 'original', 'retest',
-                              'requestPath', 'requestSha256', 'execution'})
+    names = {'schema', 'repository', 'producer', 'build', 'original', 'retest',
+             'requestPath', 'requestSha256', 'execution'}
+    if q['composition'].get('schema') == 3:
+        names.add('restart')
+    _fields(q['composition'], names)
     c = q['composition']; request = request_from_qualification(q); validate_request(request)
     _identity(c['execution']); _match('[a-f0-9]{64}', c['requestSha256'])
     require(c['requestPath'] == REQUEST_PATH, 'Only the committed composition request is supported')
@@ -292,11 +311,15 @@ def _verify_inputs(gh, q):
     require(gh.repo == REPOSITORY, 'Composition repository differs')
     _run(gh, p, BASELINE, conclusion='failure')
     jobs = gh.pages(f"{gh.base}/actions/runs/{p['runId']}/attempts/{p['runAttempt']}/jobs")
-    for name in REQUIRED_JOBS + (('pilot-serial-contracts / serial',) if c['schema'] == 2 else ()):
+    extra_jobs = full.EXTRA_JOBS if c['schema'] == 3 else (('pilot-serial-contracts / serial',) if c['schema'] == 2 else ())
+    for name in REQUIRED_JOBS + extra_jobs:
         _job(jobs, p, name, 'success')
     _job(jobs, p, RUNTIME_JOB, 'failure', c['original']['jobId'])
     if c['schema'] == 2:
         _verify_path_harness(gh)
+    elif c['schema'] == 3:
+        full.verify_harness(gh)
+        _artifact(gh, c['restart'], p)
     _run(gh, r, RETEST, conclusion='success')
     jobs = gh.pages(f"{gh.base}/actions/runs/{r['runId']}/attempts/{r['runAttempt']}/jobs")
     _job(jobs, r, 'retest', 'success', r['jobId'])
@@ -488,7 +511,7 @@ def _download(gh, pin, identity, path):
             'Downloaded artifact digest/size differs')
 
 
-def _reports(archive, pins, *, forbidden=()):
+def _reports(archive, pins, *, forbidden=(), text_reports=()):
     if forbidden:
         with zipfile.ZipFile(archive) as z:
             require(not set(forbidden) & {n.casefold() for n in z.namelist()},
@@ -496,7 +519,8 @@ def _reports(archive, pins, *, forbidden=()):
     raw = selected_zip(archive, [p['path'] for p in pins])
     for pin in pins:
         require(digest(raw[pin['path']]) == pin['sha256'], 'Reviewed report hash differs: ' + pin['path'])
-    return raw, {name: inputs.strict_json(data.decode('utf-8-sig')) for name, data in raw.items()}
+    return raw, {name: data.decode('utf-8-sig') if name in text_reports else
+                 inputs.strict_json(data.decode('utf-8-sig')) for name, data in raw.items()}
 
 
 def _eq(value, expected, message):
@@ -531,8 +555,12 @@ def recovery_854_binding(tree):
     return dict(build=product, files=len(inventory))
 
 
-def validate_reports(original, retest, q, frozen, *, package_854=None):
+def validate_reports(original, retest, q, frozen, *, package_854=None, full_package=None, restart=None):
     """Fixed semantic checks in addition to the request's exact reviewed hashes."""
+    if q['composition']['schema'] == 3:
+        return full.validate_reports(original, retest, q, frozen, full_package, restart,
+            nav_reports=NAV_REPORTS, report_set=retest_reports(q['composition']),
+            manual_checks=MANUAL_PILOT_CHECKS, passive_checks=PASSIVE_PILOT_CHECKS, updater_checks=UPDATER_CHECKS)
     require(set(original) == prefix_reports(q['composition']) and set(retest) == RETEST_REPORTS, 'Incomplete report coverage')
     p = q['composition']['producer']; commit = p['commit']; c = q['composition']
     path_failure = c['schema'] == 2
@@ -753,7 +781,10 @@ def assemble(gh, request_path, output):
     output.mkdir(parents=True); evidence = output / 'evidence'; evidence.mkdir()
     downloads = output / 'inputs'; downloads.mkdir()
     p = request['producer']; r = request['retest']
-    for key, identity in (('build', p), ('original', p), ('retest', r)):
+    selections = [('build', p), ('original', p), ('retest', r)]
+    if request['schema'] == 3:
+        selections.append(('restart', p))
+    for key, identity in selections:
         _download(gh, request[key], identity, downloads / (key + '.zip'))
     from fetch_ci_inputs import unpack
     unpack(downloads / 'build.zip', downloads / 'build', 'staging')
@@ -763,31 +794,48 @@ def assemble(gh, request_path, output):
                              evidence / 'restored.json')
     old_raw, original = _reports(downloads / 'original.zip', request['original']['prefixReports'],
                                  forbidden=('packaged-updater.json',) if request['schema'] == 2 else ())
-    new_raw, retest = _reports(downloads / 'retest.zip', r['reports'])
-    for group, reports in (('original', old_raw), ('retest', new_raw)):
+    new_raw, retest = _reports(downloads / 'retest.zip', r['reports'],
+                              text_reports=full.SIGNED_LOGS if request['schema'] == 3 else ())
+    groups = [('original', old_raw), ('retest', new_raw)]
+    restart = None
+    if request['schema'] == 3:
+        restart_raw, restart_reports = _reports(downloads / 'restart.zip',
+            [dict(path='qualified.json', sha256=request['restart']['reportSha256'])])
+        with zipfile.ZipFile(downloads / 'restart.zip') as archive:
+            require(archive.namelist() == ['qualified.json'], 'Unexpected restart artifact members')
+        restart = restart_reports['qualified.json']
+        groups.append(('restart', restart_raw))
+    for group, reports in groups:
         for name, data in reports.items():
             target = evidence / group / name; target.parent.mkdir(parents=True, exist_ok=True); target.write_bytes(data)
     package_854 = recovery_854_binding(tree) if is_bootstrap_854(p) else None
-    validate_reports(original, retest, q, receipt, package_854=package_854)
-    require(digest(old_raw['staging-inputs.json']) == original['boat-feedback-windows/result.json']['restore_receipt_sha256'],
-            'Original component receipt does not bind original restoration')
-    require(original['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and
-            original['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe'),
-            'Original runtime report tested different retained executable/Setup bytes')
-    if request['schema'] == 1:
-        require(original['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
-                original['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
-                'Original updater tested different retained executable/Setup bytes')
+    full_package = full.package_binding(tree) if request['schema'] == 3 else None
+    validate_reports(original, retest, q, receipt, package_854=package_854,
+                     full_package=full_package, restart=restart)
+    if request['schema'] == 3:
+        full.bind_runtime_bytes(tree, new_raw, retest)
+        # No failed-prefix evidence is given to the frozen payload assembler.
+        assemble_frozen_payloads(tree, new_raw, new_raw, p['commit'])
     else:
-        require(original['installer-staging.json']['unsupported_build_preservation']['setup_sha256'] ==
-                inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
-                'Original early installer checked different retained Setup bytes')
-    for reports, name, filename in ((original, 'production-recovery-results.json',
-                                     'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip'),
-                                    (retest, 'installer-staging.json', 'build/beta-installer/SKAGER-Beta2-Setup.exe')):
-        key = 'package_sha256' if name.startswith('production') else 'setup_sha256'
-        require(reports[name][key] == inputs.sha(tree / filename), 'Native gate tested another payload')
-    assemble_frozen_payloads(tree, old_raw, new_raw, p['commit'])
+        require(digest(old_raw['staging-inputs.json']) == original['boat-feedback-windows/result.json']['restore_receipt_sha256'],
+                'Original component receipt does not bind original restoration')
+        require(original['installer-loader-selftest.json']['app_sha256'] == inputs.sha(tree / 'build/xnav-install/opencpn.exe') and
+                original['production-recovery-results.json']['build']['executable_sha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe'),
+                'Original runtime report tested different retained executable/Setup bytes')
+        if request['schema'] == 1:
+            require(original['packaged-updater.json']['executableSha256'] == inputs.sha(tree / 'build/production-install/opencpn.exe') and
+                    original['packaged-updater.json']['setupSha256'] == inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+                    'Original updater tested different retained executable/Setup bytes')
+        else:
+            require(original['installer-staging.json']['unsupported_build_preservation']['setup_sha256'] ==
+                    inputs.sha(tree / 'build/beta-installer/SKAGER-Beta2-Setup.exe'),
+                    'Original early installer checked different retained Setup bytes')
+        for reports, name, filename in ((original, 'production-recovery-results.json',
+                                         'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip'),
+                                        (retest, 'installer-staging.json', 'build/beta-installer/SKAGER-Beta2-Setup.exe')):
+            key = 'package_sha256' if name.startswith('production') else 'setup_sha256'
+            require(reports[name][key] == inputs.sha(tree / filename), 'Native gate tested another payload')
+        assemble_frozen_payloads(tree, old_raw, new_raw, p['commit'])
     spec = importlib.util.spec_from_file_location('composition_support', root / 'tools/retain-release-inputs.py')
     module = importlib.util.module_from_spec(spec); spec.loader.exec_module(module)
     support = module.retain(tree, p['commit'], execution['runId'], execution['runAttempt'])

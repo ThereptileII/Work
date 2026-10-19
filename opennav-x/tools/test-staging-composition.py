@@ -658,5 +658,284 @@ class Bootstrap854CompositionTests(unittest.TestCase):
                         c.recovery_854_binding(tree)
 
 
+
+def full_failure_fixture():
+    """Inert complete evidence; real immutable request pins, synthetic reports."""
+    f = c.full
+    request, _, _, _, _ = fixture()
+    request.update(schema=3, producer=copy.deepcopy(f.PRODUCER), build=copy.deepcopy(f.BUILD),
+        original=dict(f.ORIGINAL, prefixReports=[dict(path=n, sha256=h) for n, h in f.ORIGINAL_REPORTS.items()]),
+        restart=copy.deepcopy(f.RESTART))
+    request['retest'].update(commit=f.HARNESS,
+        artifactName=f"staging-retest-evidence-39320631961-attempt1-harness{f.HARNESS}-run200-attempt2",
+        reports=[dict(path=n, sha256='a'*64) for n in sorted(c.retest_reports(request))])
+    raw = json.dumps(request).encode()
+    q = c.qualification(request, c.digest(raw), dict(commit=COMPOSER, runId='300', runAttempt='3'))
+    old, suffix, frozen = report_fixture(fixture()[2])
+    replacements = {PRODUCT:f.PRODUCER['commit'], HARNESS:f.HARNESS, '100':'39320631961',
+                    'd'*64:f.BUILD['archiveSha256'], '5'*64:f.SOURCE_SHA, '6'*64:f.MANIFEST_SHA}
+    def replace(value):
+        if isinstance(value, dict): return {k:replace(v) for k,v in value.items()}
+        if isinstance(value, list): return [replace(v) for v in value]
+        return replacements.get(value, value) if isinstance(value, str) else value
+    fresh, suffix, frozen = replace([old, suffix, frozen])
+    fresh.update(suffix)
+    fresh['staging-retest.json'].update(scope='all', checks=[dict(name='all', status='passed')])
+    fresh['boat-feedback-windows/result.json']['harness_commit'] = f.HARNESS
+    fresh['pilot-results.json']['checks'] = c.MANUAL_PILOT_CHECKS[:6] + [
+        'TRACK stays unavailable without qualified native route output; disabled click creates no request or wire bytes',
+        'WIND UI follows reported capability only; no wind readiness, WIND output or mode confirmation claimed']
+    fresh['user-flows-results.json']['checks'] = ['x']*9
+    fresh['pilot-status-only/pilot-results.json']['checks'] = c.PASSIVE_PILOT_CHECKS.copy()
+    diag = fresh['pilot-status-only/pilot-opennav-diagnostics.json']
+    product = fresh['production-recovery-results.json']['build']
+    for value in (diag, product):
+        value.update(xnav_hardware_output_policy='manual-commissioning', xnav_manual_control_contract=1)
+    diag['runtime']['test_fixtures'] = False
+    diag['runtime']['pilot'].update(output_unavailable=False, configured_permission=True,
+        serial_session_enabled=False, simulated=False, track_capability=False, wind_capability=False)
+    fresh['production-recovery-results.json']['files_verified'] = 1234  # authenticated inventory, not historical1019
+    package = dict(build=copy.deepcopy(product), files=1234)
+    fresh['installer-staging.json']['packaged_updater'] = copy.deepcopy(fresh['packaged-updater.json'])
+    obj = fresh['objects-input-results.json']
+    fresh['objects-input-profile/objects-fixture-results.json'] = copy.deepcopy(obj['object_contract'])
+    obj['native_edit_confirmation'] = 'Themed property sheet saves and refreshes; delete cancellation preserves mark'
+    obj['native_waypoint_name'] = [dict(stage=stage, page_handle=200, edit_handle=201,
+        bounds=dict(x=10, y=10, width=100, height=30), value=value,
+        diagnostic_field_published=False, reader='WM_GETTEXT') for stage, value in
+        [('after-save', 'ALPHA TEST UI edited'), ('after-delete-cancel', 'ALPHA TEST UI edited'),
+         ('after-restore', 'ALPHA TEST edited')]]
+    fresh['peer-two-instances-results.json'] = dict(result='PASS', authority='native Windows CI',
+        test_source_commit=f.HARNESS, product_commit=f.PRODUCER['commit'],
+        test_script_sha256='bf73bbfc80c2e33a2f1711831ff354bc543a5b2d85254a4a2c2c62cdb896f2d3',
+        profiles=[dict(index=i, pid=i+100, build_commit=f.PRODUCER['commit'],
+            launch_mode='ordinary' if i==1 else 'portable', cert_preserved_at_exit=True, key_preserved_at_exit=True,
+            first_start_setup=dict(status='deferred-with-Later', before_ticks=1, after_ticks=2)) for i in (1,2)],
+        observations=[dict(pid=i+100, startup_pid=i+100, profile_preserved=True, owned_tcp_listener_ports=[]) for i in (1,2)])
+    for arch, bits in [('x64',64), ('x86',32)]:
+        fresh[f'signed-update-custody/{arch}.log'] = '\n'.join([
+            'Signed update session: 61 pure contract checks passed; no launch permission or native qualification claimed.',
+            'Signed update operations: 129 pure checks passed; no broker, mutation or launch authority.',
+            'Signed update store: 245 inert checks passed; nativeWindows=True. No launch authority or resumable recovery claimed.',
+            json.dumps(dict(status='passed', count=42, native=True, scope='inert installed barrier and private store only',
+                            applicationLaunched=False, profileAccess=False))])
+        fresh[f'signed-update-custody/{arch}-previous-restore.log'] = json.dumps(dict(status='passed',
+            count=106, checks=['x']*106, sourceSha256={str(i):'a'*64 for i in range(17)},
+            processBits=bits, powerShellVersion='5.1.20348.1', continuousNamespaceCustodyAccepted=False,
+            installedProductAccepted=False, productWired=False, applicationLaunched=False, boatAccess=False))
+    failed_obj = dict(object_contract=copy.deepcopy(obj['object_contract']), native_waypoint_name=[])
+    original = {'staging-inputs.json': copy.deepcopy(frozen), 'objects-input-results.json':failed_obj,
+        'objects-input-profile/objects-fixture-results.json':copy.deepcopy(obj['object_contract']),
+        'objects-input-profile/opennav-diagnostics.json':dict(tick=318)}
+    restart = dict(schema=1, owner='OpenNavX.CI.RestartGates.1', **f.PRODUCER,
+                   transport='success', maintenance='success', broker='success', prepareArm='success', actualBoat=False)
+    return request, raw, q, original, fresh, frozen, package, restart
+
+
+class FullRetestCompositionTests(unittest.TestCase):
+    def setUp(self):
+        (self.request, self.raw, self.q, self.old, self.fresh, self.frozen,
+         self.package, self.restart) = full_failure_fixture()
+
+    def validate(self):
+        c.validate_reports(self.old, self.fresh, self.q, self.frozen,
+                           full_package=self.package, restart=self.restart)
+
+    def github(self):
+        gh = FakeGitHub(self.request, self.raw, self.q)
+        prefix = f"{gh.base}/actions/runs/39320631961/attempts/1/jobs"
+        gh.data[prefix] += [dict(name=name, status='completed', conclusion='success', id=90+i,
+            run_id=39320631961, run_attempt=1, head_sha=c.full.PRODUCER['commit']) for i,name in enumerate(c.full.EXTRA_JOBS)]
+        gh.data[f"{gh.base}/compare/{c.full.PRODUCER['commit']}...{c.full.HARNESS}"] = dict(
+            base_commit=dict(sha=c.full.PRODUCER['commit']), merge_base_commit=dict(sha=c.full.PRODUCER['commit']),
+            status='ahead', total_commits=1, commits=[dict(sha=c.full.HARNESS)],
+            files=[dict(filename=n, sha=h, status='modified') for n,h in c.full.HARNESS_DELTA.items()])
+        pin = self.request['restart']
+        gh.data[f"{gh.base}/actions/artifacts/{pin['artifactId']}"] = dict(id=int(pin['artifactId']),
+            name=pin['artifactName'], digest=pin['artifactDigest'], expired=False,
+            workflow_run=dict(id=39320631961, head_sha=c.full.PRODUCER['commit']), size_in_bytes=335)
+        return gh
+
+    def test_complete_fresh_full_evidence_and_provenance(self):
+        self.validate()
+        c.verify_provenance(self.github(), self.q, complete=True)
+        self.assertEqual(c.request_from_qualification(self.q), self.request)
+        support = fixture()[4]
+        support.update(commit=c.full.PRODUCER['commit'],
+                       artifactName='staging-retest-'+c.full.PRODUCER['commit']+'-attempt3')
+        c.validate_qualification(self.q, dict(c.full.PRODUCER, channel='staging'), support)
+
+    def test_request_exact_original_build_failure_restart_and_harness_pins(self):
+        for group, key in [('producer','commit'), ('producer','runId'), ('build','artifactId'),
+                           ('build','artifactDigest'), ('build','archiveSha256'), ('original','jobId'),
+                           ('original','artifactId'), ('original','artifactDigest'), ('retest','commit'),
+                           ('restart','artifactId'), ('restart','artifactDigest'), ('restart','reportSha256')]:
+            changed=copy.deepcopy(self.request); changed[group][key]='9'*len(changed[group][key])
+            with self.subTest(group=group,key=key), self.assertRaises(ValueError): c.validate_request(changed)
+        for pin in range(len(self.request['original']['prefixReports'])):
+            changed=copy.deepcopy(self.request); changed['original']['prefixReports'][pin]['sha256']='a'*64
+            with self.subTest(pin=pin), self.assertRaises(ValueError): c.validate_request(changed)
+
+    def test_all_fresh_report_paths_required_no_prefix_promotion(self):
+        for path in list(self.fresh):
+            removed=self.fresh.pop(path)
+            with self.subTest(path=path), self.assertRaises(ValueError): self.validate()
+            self.fresh[path]=removed
+        self.fresh['objects-input-results.json']=copy.deepcopy(self.old['objects-input-results.json'])
+        with self.assertRaises((ValueError, KeyError)): self.validate()
+
+    def test_full_scope_success_required(self):
+        record=self.fresh['staging-retest.json']
+        for key,value in [('scope','installer-charts'), ('status','failed'), ('productCommit',HARNESS),
+                          ('harnessCommit',PRODUCT), ('checks',[dict(name='all',status='running')]),
+                          ('publicAccess',True), ('releaseQualification',True)]:
+            original=record[key]; record[key]=value
+            with self.subTest(key=key), self.assertRaises(ValueError): self.validate()
+            record[key]=original
+
+    def test_all_prior_success_jobs_and_failed_job_identity(self):
+        gh=self.github(); key=f'{gh.base}/actions/runs/39320631961/attempts/1/jobs'
+        for i in range(len(gh.data[key])):
+            changed=copy.deepcopy(gh.data[key]); changed[i]['conclusion']='skipped'
+            with patch.dict(gh.data,{key:changed}), self.subTest(index=i), self.assertRaises(ValueError):
+                c.verify_provenance(gh,self.q,complete=True)
+        for field,value in [('head_sha',HARNESS),('run_attempt',2),('id',999)]:
+            changed=copy.deepcopy(gh.data[key]); changed[-3][field]=value # runtime job immediately before2 extra jobs
+            with patch.dict(gh.data,{key:changed}), self.subTest(field=field), self.assertRaises(ValueError):
+                c.verify_provenance(gh,self.q,complete=True)
+
+    def test_closed_harness_delta_refuses_product_workflow_or_hash_changes(self):
+        gh=self.github(); key=f"{gh.base}/compare/{c.full.PRODUCER['commit']}...{c.full.HARNESS}"
+        for extra in ('opennav-x/src/ui/Shell.cpp','.github/workflows/skager-staging-retest.yml',
+                      'opennav-x/tools/qualify-staging-windows.ps1','opennav-x/tools/windows_dependency_reuse.py'):
+            changed=copy.deepcopy(gh.data[key]); changed['files'].append(dict(filename=extra,sha='a'*40,status='modified'))
+            with patch.dict(gh.data,{key:changed}), self.subTest(extra=extra), self.assertRaises(ValueError):
+                c.verify_provenance(gh,self.q,complete=True)
+        for change in ('sha','status','previous_filename'):
+            changed=copy.deepcopy(gh.data[key]); changed['files'][0][change]='unknown'
+            with patch.dict(gh.data,{key:changed}), self.subTest(change=change), self.assertRaises(ValueError):
+                c.verify_provenance(gh,self.q,complete=True)
+        changed=copy.deepcopy(gh.data[key]); changed['commits'].append(dict(sha='a'*40)); changed['total_commits']=2
+        with patch.dict(gh.data,{key:changed}), self.assertRaises(ValueError): c.verify_provenance(gh,self.q,complete=True)
+
+    def test_restart_same_run_full_success_and_artifact_identity(self):
+        for key,value in [('owner','unknown'),('commit',HARNESS),('runId','1'),('runAttempt','2'),
+                          ('transport','failure'),('maintenance','skipped'),('broker','failure'),
+                          ('prepareArm','pending'),('actualBoat',True),('schema',True)]:
+            old=self.restart[key]; self.restart[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError): self.validate()
+            self.restart[key]=old
+        gh=self.github(); key=f"{gh.base}/actions/artifacts/{c.full.RESTART['artifactId']}"
+        changed=copy.deepcopy(gh.data[key]); changed['workflow_run']['id']=123
+        with patch.dict(gh.data,{key:changed}), self.assertRaises(ValueError): c.verify_provenance(gh,self.q,complete=True)
+
+    def test_native_waypoint_reads_require_save_cancel_restore_and_true_value(self):
+        obj=self.fresh['objects-input-results.json']; original=copy.deepcopy(obj)
+        for index in range(3):
+            for key,value in [('stage','other'),('value','unsaved'),('reader','caption'),('edit_handle',0),
+                              ('bounds',dict(x=0,y=0,width=0,height=10))]:
+                obj['native_waypoint_name'][index][key]=value
+                with self.subTest(index=index,key=key), self.assertRaises(ValueError): self.validate()
+                obj.clear(); obj.update(copy.deepcopy(original))
+        obj['native_waypoint_name'].pop()
+        with self.assertRaises(ValueError):self.validate()
+
+    def test_no_old_pilot_contract_or_output_waiver(self):
+        for field,value in [('sent',['bytes']),('wire_output',['bytes']),('received_bytes',1),('transport_failures',['x'])]:
+            record=self.fresh['pilot-status-only/pilot-results.json']; old=record[field];record[field]=value
+            with self.subTest(field=field),self.assertRaises(ValueError):self.validate()
+            record[field]=old
+        passive=self.fresh['pilot-status-only/pilot-opennav-diagnostics.json']['runtime']['pilot']
+        for field in ('enabled','serial_session_enabled','control_capability','simulated','track_capability','wind_capability'):
+            passive[field]=True
+            with self.subTest(field=field),self.assertRaises(ValueError):self.validate()
+            passive[field]=False
+        self.fresh['pilot-results.json']['checks']=c.MANUAL_PILOT_CHECKS.copy()
+        with self.assertRaises(ValueError):self.validate()
+
+    def test_source_inventory_and_component_bytes_are_bound(self):
+        mutations=[(self.frozen,'sourceArchiveSha256','0'*64),(self.frozen,'manifestSha256','0'*64),
+            (self.fresh['staging-inputs.json'],'archiveSha256','0'*64),
+            (self.fresh['boat-feedback-windows/result.json'],'harness_commit',PRODUCT),
+            (self.fresh['boat-feedback-windows/result.json']['tests'][0],'binary_sha256','0'*64),
+            (self.package,'files',1019),(self.package['build'],'xnav_hardware_output_policy','status-only')]
+        for record,key,value in mutations:
+            old=record[key]; record[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate()
+            record[key]=old
+
+    def test_peer_is_native_two_profiles_preserved_with_no_listener(self):
+        record=self.fresh['peer-two-instances-results.json']
+        mutations=[(record,'authority','Linux development'),(record,'test_source_commit',PRODUCT),
+            (record['profiles'][0],'cert_preserved_at_exit',False),
+            (record['observations'][1],'owned_tcp_listener_ports',[8000]),
+            (record['observations'][1],'startup_pid',888)]
+        for node,key,value in mutations:
+            old=node[key];node[key]=value
+            with self.subTest(key=key),self.assertRaises(ValueError):self.validate()
+            node[key]=old
+
+    def test_signed_checks_missing_or_wrong_architecture_or_authority_refused(self):
+        for name in c.full.SIGNED_LOGS:
+            old=self.fresh[name]
+            if name.endswith('previous-restore.log'):
+                record=json.loads(old);record['processBits']=16;self.fresh[name]=json.dumps(record)
+            else:self.fresh[name]=old.replace('245 inert checks','244 inert checks')
+            with self.subTest(name=name),self.assertRaises(ValueError):self.validate()
+            self.fresh[name]=old
+        name='signed-update-custody/x64-previous-restore.log'
+        record=json.loads(self.fresh[name]);record['boatAccess']=True;self.fresh[name]=json.dumps(record)
+        with self.assertRaises(ValueError):self.validate()
+
+    def test_hash_checked_text_reports_are_not_json_and_bad_pins_refuse(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            archive=Path(tmp)/'reports.zip'; data=self.fresh['signed-update-custody/x64.log'].encode()
+            with zipfile.ZipFile(archive,'w') as z:z.writestr('signed-update-custody/x64.log',b'\xef\xbb\xbf'+data)
+            pin=dict(path='signed-update-custody/x64.log',sha256=c.digest(b'\xef\xbb\xbf'+data))
+            _,parsed=c._reports(archive,[pin],text_reports=c.full.SIGNED_LOGS)
+            self.assertEqual(parsed[pin['path']],data.decode())
+            pin['sha256']='a'*64
+            with self.assertRaises(ValueError):c._reports(archive,[pin],text_reports=c.full.SIGNED_LOGS)
+
+    def test_frozen_package_binding_uses_authenticated_inventory_not_historical_count(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tree=Path(tmp); root=tree/c.inputs.PACKAGE_ROOT; (root/'docs').mkdir(parents=True)
+            product=dict(self.package['build'],startup_launcher_sha256='b'*64)
+            raw=json.dumps(product).encode();(root/'docs/PRODUCT_BUILD.json').write_bytes(raw)
+            inventory={'docs/PRODUCT_BUILD.json':c.digest(raw),'app/opencpn.exe':product['executable_sha256'],
+                       'app/skager-start.exe':'b'*64}
+            (root/'FILE_SHA256.json').write_text(json.dumps(inventory))
+            self.assertEqual(c.full.package_binding(tree),dict(build=product,files=3))
+            for key in inventory:
+                old=inventory[key];inventory[key]='c'*64
+                (root/'FILE_SHA256.json').write_text(json.dumps(inventory))
+                with self.subTest(key=key),self.assertRaises(ValueError):c.full.package_binding(tree)
+                inventory[key]=old
+
+    def test_retained_runtime_byte_and_restore_receipt_mismatches_refused(self):
+        with tempfile.TemporaryDirectory() as tmp:
+            tree=Path(tmp)
+            files={'build/xnav-install/opencpn.exe':b'fixture','build/production-install/opencpn.exe':b'product',
+                'build/beta-installer/SKAGER-Beta2-Setup.exe':b'setup',
+                'build/developer-preview/SKAGER-Beta2-Portable-Recovery.zip':b'recovery'}
+            for name,data in files.items():
+                path=tree/name;path.parent.mkdir(parents=True,exist_ok=True);path.write_bytes(data)
+            raw={'staging-inputs.json':b'fresh receipt'}; receipt=c.digest(raw['staging-inputs.json'])
+            for name in ('boat-feedback-windows/result.json','peer-two-instances-results.json'):
+                self.fresh[name]['restore_receipt_sha256']=receipt
+            self.fresh['installer-loader-selftest.json']['app_sha256']=c.digest(b'fixture')
+            self.fresh['peer-two-instances-results.json']['executable_sha256']=c.digest(b'fixture')
+            self.fresh['production-recovery-results.json']['build']['executable_sha256']=c.digest(b'product')
+            self.fresh['production-recovery-results.json']['package_sha256']=c.digest(b'recovery')
+            self.fresh['installer-staging.json']['setup_sha256']=c.digest(b'setup')
+            self.fresh['packaged-updater.json'].update(executableSha256=c.digest(b'product'),setupSha256=c.digest(b'setup'))
+            c.full.bind_runtime_bytes(tree,raw,self.fresh)
+            for name in files:
+                path=tree/name; original=path.read_bytes();path.write_bytes(b'changed')
+                with self.subTest(name=name),self.assertRaises(ValueError):c.full.bind_runtime_bytes(tree,raw,self.fresh)
+                path.write_bytes(original)
+            with self.assertRaises(ValueError):c.full.bind_runtime_bytes(tree,{'staging-inputs.json':b'old receipt'},self.fresh)
+
+
 if __name__ == '__main__':
     unittest.main()
