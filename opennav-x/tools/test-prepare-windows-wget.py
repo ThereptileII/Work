@@ -32,9 +32,16 @@ class PreparationTests(unittest.TestCase):
         self.runner_temp.mkdir()
         self.github_path = self.root / 'github-path'
         self.github_path.write_text('existing-entry\n')
+        self.chocolatey_bin = self.root / 'chocolatey/bin'
+        self.chocolatey_bin.mkdir(parents=True)
+        (self.chocolatey_bin / 'choco.exe').write_bytes(b'inert existing host tool')
+        self.target = self.chocolatey_bin / 'wget.exe'
+        self.original_path = str(self.chocolatey_bin) + ';' + str(self.root / 'other-bin')
         self.curl = self.root / 'Windows/System32/curl.exe'
         self.curl.parent.mkdir(parents=True)
         self.curl.write_bytes(b'inert curl fixture')
+        self.where = self.curl.with_name('where.exe')
+        self.where.write_bytes(b'inert where fixture')
         executable = bytearray(128)
         executable[:2] = b'MZ'
         struct.pack_into('<I', executable, 0x3c, 64)
@@ -43,9 +50,10 @@ class PreparationTests(unittest.TestCase):
         self.executable = bytes(executable)
         self.archive = self.make_archive()
         for fixture in (patch.object(p, 'require_ci'),
+                        patch.object(p, 'CHOCOLATEY_BIN', self.chocolatey_bin),
                         patch.object(p, 'EXECUTABLE', identity(self.executable)),
                         patch.object(p, 'ARCHIVE', identity(self.archive)),
-                        patch.dict(os.environ, {'SystemRoot': str(self.root / 'Windows'),
+                        patch.dict(os.environ, {'SystemRoot': str(self.root / 'Windows'), 'PATH': self.original_path,
                             'RUNNER_TEMP': str(self.runner_temp), 'GITHUB_PATH': str(self.github_path)})):
             fixture.start()
             self.addCleanup(fixture.stop)
@@ -67,6 +75,8 @@ class PreparationTests(unittest.TestCase):
         if Path(command[0]).name == 'curl.exe':
             Path(command[command.index('--output') + 1]).write_bytes(self.archive)
             return {'exitCode': 0, 'timedOut': False}, ''
+        if Path(command[0]).name == 'where.exe':
+            return {'exitCode': 0, 'timedOut': False}, str(self.target) + '\n'
         return {'exitCode': 0, 'timedOut': False}, 'GNU Wget 1.25.0 built on mingw32.\n'
 
     def run_prepare(self, native=None):
@@ -78,19 +88,24 @@ class PreparationTests(unittest.TestCase):
         self.assertEqual(state['status'], 'failed')
         self.assertEqual(state['phase'], phase)
         self.assertFalse(state['nativeProductAcceptance'])
-        self.assertNotIn('pathPublished', state)
+        self.assertNotIn('executablePublished', state)
         self.assertEqual(self.github_path.read_text(), 'existing-entry\n')
+        self.assertEqual(os.environ['PATH'], self.original_path)
 
-    def test_pinned_executable_probed_before_only_owned_directory_is_published(self):
+    def test_exclusive_verified_copy_resolves_without_changing_path(self):
         state = self.run_prepare()
         directory = Path(state['directory'])
         self.assertEqual(directory.parent, self.runner_temp)
         self.assertEqual(set(item.name for item in directory.iterdir()), p.MEMBERS)
         self.assertEqual(state['files']['wget.exe'], identity(self.executable))
         self.assertEqual(state['status'], 'passed')
-        self.assertEqual(self.github_path.read_text(), 'existing-entry\n' + str(directory) + '\n')
+        self.assertEqual(self.github_path.read_text(), 'existing-entry\n')
+        self.assertEqual(os.environ['PATH'], self.original_path)
+        self.assertTrue(state['pathUnchanged'])
+        self.assertEqual(state['inheritedPathSha256'], hashlib.sha256(self.original_path.encode()).hexdigest())
+        self.assertEqual(self.target.read_bytes(), self.executable)
         self.assertFalse(list(self.evidence.glob('*.exe')))
-        download, probe = self.calls
+        download, probe, resolution = self.calls
         self.assertEqual(download[0][0], self.curl)
         for key, value in (('--proto', '=https'), ('--proto-redir', '=https'),
                            ('--connect-timeout', '20'), ('--max-time', '120'),
@@ -98,8 +113,10 @@ class PreparationTests(unittest.TestCase):
             self.assertEqual(download[0][download[0].index(key) + 1], value)
         self.assertIn('--fail', download[0])
         self.assertEqual(download[1], 150)
-        self.assertEqual(probe[0], [directory / 'wget.exe', '--version'])
+        self.assertEqual(probe[0], [self.target, '--version'])
         self.assertEqual(probe[1], 30)
+        self.assertEqual(resolution[0], [self.where, 'wget'])
+        self.assertEqual(resolution[1], 30)
 
     def test_bad_archive_digest_and_size_never_execute_or_publish(self):
         for payload in (b'x' * len(self.archive), self.archive + b'extra'):
@@ -185,6 +202,7 @@ class PreparationTests(unittest.TestCase):
                     return normal if Path(command[0]).name == 'curl.exe' else result
                 with self.assertRaisesRegex(RuntimeError, 'version probe failed'):
                     self.run_prepare(native)
+                self.assertFalse(self.target.exists())
                 self.failed_receipt('native-verification')
 
     def test_probe_timeout_does_not_publish(self):
@@ -213,11 +231,60 @@ class PreparationTests(unittest.TestCase):
             self.run_prepare()
         self.assertEqual(self.calls, [])
 
-    def test_missing_path_command_file_stops_before_download(self):
-        self.github_path.unlink()
+    def test_existing_target_is_never_overwritten_even_when_hash_matches(self):
+        for index, data in enumerate((b'unknown existing tool', self.executable)):
+            with self.subTest(data=data[:10]):
+                self.evidence = self.root / ('existing-' + str(index))
+                self.target.write_bytes(data)
+                with self.assertRaisesRegex(RuntimeError, 'overwrite an existing'):
+                    self.run_prepare()
+                self.assertEqual(self.target.read_bytes(), data)
+                self.failed_receipt('preparation')
+        self.assertEqual(self.calls, [])
+
+    def test_target_created_after_preflight_is_not_overwritten(self):
+        def native(command, timeout, log):
+            result = self.native(command, timeout, log)
+            self.target.write_bytes(b'concurrent existing tool')
+            return result
+        with self.assertRaises(FileExistsError):
+            self.run_prepare(native)
+        self.assertEqual(self.target.read_bytes(), b'concurrent existing tool')
+        self.failed_receipt('exclusive-copy')
+
+    def test_missing_chocolatey_host_tool_stops_before_download(self):
+        (self.chocolatey_bin / 'choco.exe').unlink()
         with self.assertRaises(FileNotFoundError):
             self.run_prepare()
         self.assertEqual(self.calls, [])
+        self.failed_receipt('preparation')
+
+    def test_existing_directory_must_already_be_on_inherited_path(self):
+        with patch.dict(os.environ, {'PATH': str(self.root / 'other-bin')}), \
+                self.assertRaisesRegex(RuntimeError, 'not on inherited PATH'):
+            self.run_prepare()
+        self.assertEqual(self.calls, [])
+
+    def test_other_command_resolution_is_rejected_and_owned_copy_removed(self):
+        def native(command, timeout, log):
+            result = self.native(command, timeout, log)
+            return ({'exitCode': 0}, str(self.root / 'shadow/wget.cmd')) if command[0] == self.where else result
+        with self.assertRaisesRegex(RuntimeError, 'resolution does not select'):
+            self.run_prepare(native)
+        self.assertFalse(self.target.exists())
+        self.failed_receipt('command-resolution')
+
+    def test_path_mutation_during_probe_is_rejected(self):
+        def native(command, timeout, log):
+            result = self.native(command, timeout, log)
+            if command[0] == self.where:
+                os.environ['PATH'] = 'changed-path'
+            return result
+        with self.assertRaisesRegex(RuntimeError, 'Inherited PATH changed'):
+            self.run_prepare(native)
+        self.assertFalse(self.target.exists())
+        os.environ['PATH'] = self.original_path
+        self.failed_receipt('command-resolution')
 
     def test_relative_temp_directory_is_refused(self):
         with patch.dict(os.environ, {'RUNNER_TEMP': 'relative'}), \

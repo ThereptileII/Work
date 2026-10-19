@@ -2,10 +2,12 @@
 """Supply a pinned native wget on disposable Windows CI, without Chocolatey.
 
 This consumer-only tool does not change win_deps.bat or authenticated SDK inputs.
-Vendor binaries and GPL documentation stay in RUNNER_TEMP, outside evidence and
-product packages. Native stock provisioning is a separate required check.
+Vendor files and GPL documentation stay in RUNNER_TEMP; only the verified EXE
+is copied exclusively into the existing CI Chocolatey bin directory. PATH and
+SDK facts stay unchanged. Native stock provisioning is a separate required check.
 """
 import argparse
+import hashlib
 import json
 import os
 from pathlib import Path
@@ -30,6 +32,7 @@ ARCHIVE = {'bytes': 5900718,
 EXECUTABLE = {'bytes': 8555792,
               'sha256': '28068376aab98ff7747ae1792fcb902aadbadc3ef25ca0422724387984cbcd5d'}
 MEMBERS = {'COPYING', 'wget.exe', 'wget.exe.debug', 'wget.html', 'wget.man.html'}
+CHOCOLATEY_BIN = Path('C:/ProgramData/chocolatey/bin')
 
 
 def require_ci():
@@ -92,18 +95,27 @@ def prepare(evidence):
              'vendorSource': 'https://eternallybored.org/misc/wget/src/',
              'license': 'GPL-3.0-or-later', 'expectedArchive': ARCHIVE,
              'expectedExecutable': EXECUTABLE, 'nativeProductAcceptance': False}
+    owned_target = False
+    target = CHOCOLATEY_BIN / 'wget.exe'
     try:
+        inherited_path = os.environ['PATH']
+        state['inheritedPathSha256'] = hashlib.sha256(inherited_path.encode('utf-8')).hexdigest()
+        plain_directory(CHOCOLATEY_BIN)
+        native_tools.plain_file(CHOCOLATEY_BIN / 'choco.exe')
+        if not any(Path(entry.strip('"')).resolve() == CHOCOLATEY_BIN.resolve()
+                   for entry in inherited_path.split(';') if entry):
+            raise RuntimeError('Existing CI Chocolatey bin is not on inherited PATH')
+        if os.path.lexists(target):
+            raise RuntimeError('Refusing to overwrite an existing Wget target')
         runner_temp = Path(os.environ['RUNNER_TEMP'])
         plain_directory(runner_temp)
-        github_path = Path(os.environ['GITHUB_PATH'])
-        native_tools.plain_file(github_path)
         curl = Path(os.environ['SystemRoot']) / 'System32/curl.exe'
+        where = Path(os.environ['SystemRoot']) / 'System32/where.exe'
         native_tools.plain_file(curl)
+        native_tools.plain_file(where)
         state['downloadTool'] = {'path': str(curl), **native_tools.identity(curl)}
         # New owned directory, never an inherited PATH tool or an old receipt.
         directory = Path(tempfile.mkdtemp(prefix='skager-wget-', dir=runner_temp))
-        if any(character in str(directory) for character in '\r\n'):
-            raise RuntimeError('Wget tool directory cannot be published as one PATH entry')
         state['directory'] = str(directory)
         state['phase'] = 'download'
         with tempfile.TemporaryDirectory(prefix='skager-wget-download-', dir=runner_temp) as temporary:
@@ -119,27 +131,47 @@ def prepare(evidence):
                 raise RuntimeError('Pinned Wget download failed')
             state['phase'] = 'extraction'
             state['files'] = extract(archive, directory)
+        state['phase'] = 'exclusive-copy'
+        # This CI-host directory already participates in the frozen producer's
+        # PATH. Never create it, overwrite a tool, or publish a new PATH entry.
+        with target.open('xb') as output_file:
+            owned_target = True
+            output_file.write((directory / 'wget.exe').read_bytes())
+        verify_file(target, EXECUTABLE)
+        state['publishedExecutable'] = {'path': str(target), **EXECUTABLE}
         state['phase'] = 'native-verification'
-        executable = directory / 'wget.exe'
-        result, output = native_tools.native([executable, '--version'], 30, evidence / 'wget-version')
+        result, output = native_tools.native([target, '--version'], 30, evidence / 'wget-version')
         state['probe'] = result
         lines = [line.strip() for line in output.splitlines() if line.strip()]
         line = lines[0] if lines else ''
         if result['exitCode'] != 0 or not re.fullmatch(
                 r'GNU Wget ' + re.escape(VERSION) + r' built on mingw(?:32|64)\.', line):
             raise RuntimeError('Pinned Wget native version probe failed: ' + line)
-        verify_file(executable, EXECUTABLE)
+        verify_file(target, EXECUTABLE)
         state['versionLine'] = line
-        state['phase'] = 'publish-path'
-        native_tools.plain_file(github_path)
-        # This command file affects subsequent steps only. No machine PATH edit
-        # and no MSYS usr/bin or replacement shell/compiler is introduced.
-        with github_path.open('a', encoding='utf-8', newline='\n') as output_file:
-            output_file.write(str(directory) + '\n')
-        state.update(status='passed', phase='complete', pathPublished=True)
+        state['phase'] = 'command-resolution'
+        result, output = native_tools.native([where, 'wget'], 30, evidence / 'wget-resolution')
+        state['resolution'] = result
+        matches = [line.strip() for line in output.splitlines() if line.strip()]
+        if result['exitCode'] != 0 or not matches or Path(matches[0]).resolve() != target.resolve():
+            raise RuntimeError('Native Wget command resolution does not select the verified EXE')
+        verify_file(target, EXECUTABLE)
+        if os.environ['PATH'] != inherited_path:
+            raise RuntimeError('Inherited PATH changed during Wget preparation')
+        state['resolvedExecutable'] = matches[0]
+        state.update(status='passed', phase='complete', pathUnchanged=True, executablePublished=True)
         return state
     except Exception as error:
         state['error'] = str(error)
+        if owned_target:
+            # Remove only our still-identical failed copy, never changed bytes
+            # or an existing tool. The private vendor files remain diagnostic.
+            try:
+                verify_file(target, EXECUTABLE)
+                target.unlink()
+                state['failedCopyRemoved'] = True
+            except (OSError, RuntimeError) as cleanup_error:
+                state['failedCopyRemovalError'] = str(cleanup_error)
         raise
     finally:
         (evidence / 'receipt.json').write_text(json.dumps(state, indent=2) + '\n', encoding='utf-8')
