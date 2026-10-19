@@ -10,10 +10,12 @@ import tempfile
 import unittest
 
 ROOT = Path(__file__).resolve().parents[1]
-NAMES = ('xnav', 'regression-tests', 'ais-transport', 'chart-presentation',
+NAMES = ('xnav', 'observable-locking', 'regression-tests', 'ais-transport',
+         'chart-presentation',
          'route-focus', 'route-hit-dpi', 'measure-label', 'chart-tool-input',
-         'startup-presentation', 'track-recording', 'track-presentation',
-         'maintained-curl', 'download-trust', 'wxcurl-trust',
+         'startup-presentation', 'track-recording', 'navobj-persistence',
+         'track-presentation', 'chart-display', 'maintained-curl',
+         'download-trust', 'wxcurl-trust',
          'peer-response-buffer', 'peer-unavailable', 'pilot-serial',
          'update-qualification')
 
@@ -75,7 +77,8 @@ class PreparationTests(unittest.TestCase):
                 result = self.prepare(root)
                 self.assertEqual(result.returncode, 0, result.stdout + result.stderr)
                 target = root / 'build/integration-source'
-                self.assertEqual((target / 'unit3.cpp').read_text(), 'ONE\nTWO\nthree\n')
+                chart_source = target / f"unit{NAMES.index('chart-presentation')}.cpp"
+                self.assertEqual(chart_source.read_text(), 'ONE\nTWO\nthree\n')
                 self.assertEqual(git(target, 'diff', '--cached', '--name-only').stdout, b'')
                 real_index = Path(git(target, 'rev-parse', '--git-path', 'index').stdout.decode().strip())
                 if not real_index.is_absolute():
@@ -85,11 +88,11 @@ class PreparationTests(unittest.TestCase):
                 self.assertEqual(repeated.returncode, 0, repeated.stdout + repeated.stderr)
                 self.assertEqual(before, hashlib.sha256(real_index.read_bytes()).hexdigest())
                 # Same line count: refuse tampering instead of reapplying over it.
-                (target / 'unit3.cpp').write_text('BAD\nTWO\nthree\n')
+                chart_source.write_text('BAD\nTWO\nthree\n')
                 changed = self.prepare(root)
                 self.assertNotEqual(changed.returncode, 0)
                 self.assertIn('differs from reviewed patches', changed.stderr)
-                self.assertEqual((target / 'unit3.cpp').read_text(), 'BAD\nTWO\nthree\n')
+                self.assertEqual(chart_source.read_text(), 'BAD\nTWO\nthree\n')
                 self.assertEqual(git(source, 'status', '--porcelain').stdout, b'')
 
     def test_wrong_pin_and_dirty_pristine_source_remain_refused(self):
