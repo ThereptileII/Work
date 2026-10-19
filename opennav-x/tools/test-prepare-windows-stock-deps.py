@@ -94,21 +94,58 @@ class StockTests(unittest.TestCase):
         lock = {'archives': [{'file': 'wx.7z', 'url': 'https://fixture.invalid/wx',
                              'bytes': 2, 'sha256': hashlib.sha256(b'wx').hexdigest()}]}
         self.write('tools/windows-wx.lock.json', json.dumps(lock).encode())
+        native_tools = {name: self.write('native-tools/' + name + '.exe', b'inert tool fixture')
+                        for name in ('msgmerge', 'git', 'wget', '7z')}
+        nsis = self.write('program-files/NSIS/makensis.exe', b'inert NSIS fixture')
+        nsis_package = self.root / 'nsis-package'
+        nsis_package.mkdir()
+        cmd = self.root / 'System32/cmd.exe'
+        where = self.root / 'System32/where.exe'
+        original_is_dir = Path.is_dir
+        def is_dir(path):
+            # Model only the upstream fixed package sentinel, on either host.
+            # Never create or inspect the real machine's Chocolatey directory.
+            if path == Path('C:/ProgramData/chocolatey/lib/nsis'):
+                return original_is_dir(nsis_package)
+            return original_is_dir(path)
         calls = []
+        probes = []
         def native(command, timeout, log):
             args = [str(v) for v in command]
             calls.append(args[0])
-            if args[0] == 'curl.exe': Path(args[args.index('--output') + 1]).write_bytes(b'wx')
+            if args[0] == str(where):
+                self.assertEqual(len(args), 2)
+                self.assertIn(args[1], native_tools)
+                self.assertEqual(timeout, 30)
+                self.assertTrue(self.sentinel.exists())
+                probes.append('where-' + args[1])
+                return {'exitCode': 0}, str(native_tools[args[1]]) + '\r\n'
+            elif args[0] == str(cmd) and len(args) >= 4 and args[3] in native_tools:
+                name = args[3]
+                self.assertEqual(args[1:], ['/d', '/c', name, 'i' if name == '7z' else '--version'])
+                self.assertEqual(timeout, 30)
+                self.assertTrue(self.sentinel.exists())
+                probes.append('probe-' + name)
+            elif args[0] == str(nsis):
+                self.assertEqual(args[1:], ['/VERSION'])
+                self.assertEqual(timeout, 30)
+                self.assertTrue(self.sentinel.exists())
+                probes.append('probe-nsis')
+            elif args[0] == 'curl.exe': Path(args[args.index('--output') + 1]).write_bytes(b'wx')
             elif args[0] == '7z': self.write('build/integration-source/cache/wxWidgets-3.2.8/include/wx/version.h', b'wx')
             elif any(arg.endswith('windows_gettext.py') for arg in args):
                 Path(args[args.index('--receipt') + 1]).write_text(json.dumps({'directory': str(self.root / 'gettext')}))
-            elif args[0].endswith('cmd.exe'):
+            elif args[0] == str(cmd):
                 self.assertFalse(self.sentinel.exists())
-                self.assertEqual(args[-1], 'buildwin\\win_deps.bat')
+                self.assertEqual(args[1:], ['/d', '/c', 'buildwin\\win_deps.bat'])
+                self.assertEqual(probes, [part + name for name in native_tools
+                                         for part in ('where-', 'probe-')] + ['probe-nsis'])
                 self.sentinel.write_bytes(b'upstream stock curl')
                 for name in (*stock.STOCK_FILES, 'archive.lib'):
                     self.write(stock.stage.CACHE + '/' + name, self.prefix.read_bytes())
                 self.write('build/integration-source/cache/OCPNWindowsCoreBuildSupport.zip', b'stock archive fixture')
+                self.write('build/integration-source/cache/QuickStartGuide.zip', b'guide archive fixture')
+                self.write('build/integration-source/data/doc/local/index.html', b'guide extraction fixture')
             elif args[0] == 'cmake':
                 self.assertEqual(self.sentinel.read_bytes(), self.prefix.read_bytes())
                 self.assertIn('-DSKAGER_OCHARTS_PACKAGE:PATH=', args)
@@ -123,15 +160,32 @@ class StockTests(unittest.TestCase):
             self.sentinel.write_bytes(self.prefix.read_bytes())
         before = stock.prefix_inventory(self.root)
         original_path = os.environ.get('PATH')
+        original_directory = Path.cwd()
         arguments = ['probe', '--root', str(self.root), '--bundle', str(self.root/'bundle'), '--provenance', str(self.root/'provenance')]
-        with mock.patch.object(probe, 'stock', stock), mock.patch.object(probe.sys, 'platform', 'win32'), mock.patch.object(probe.sys, 'argv', arguments), mock.patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'SystemRoot': str(self.root)}), mock.patch.object(probe.windows_gettext, 'native', side_effect=native), mock.patch.object(stock.bundle_api, 'stage_bundle', side_effect=restage):
+        with (
+            mock.patch.object(probe, 'stock', stock),
+            mock.patch.object(probe.sys, 'platform', 'win32'),
+            mock.patch.object(probe.sys, 'argv', arguments),
+            mock.patch.dict(os.environ, {'GITHUB_ACTIONS': 'true', 'SystemRoot': str(self.root),
+                                         'ProgramFiles(x86)': str(self.root / 'program-files')}),
+            mock.patch.object(probe.shutil, 'which', side_effect=lambda name: str(native_tools[name])) as which,
+            mock.patch.object(Path, 'is_dir', is_dir),
+            mock.patch.object(probe.windows_gettext, 'native', side_effect=native),
+            mock.patch.object(probe.windows_gettext.subprocess, 'Popen',
+                              side_effect=AssertionError('Inert fixture must not launch a process')),
+            mock.patch.object(stock.bundle_api, 'stage_bundle', side_effect=restage),
+        ):
             probe.main()
+        self.assertEqual(which.call_args_list, [mock.call(name) for name in native_tools])
         report = json.loads((evidence/'windows-stock-configure/report.json').read_text())
         self.assertTrue(report['passed']); self.assertTrue(report['prefixesUnchanged'])
         self.assertFalse(report['applicationBuilt']); self.assertFalse(report['applicationInstalled'])
+        self.assertEqual(set(report['tools']), set(native_tools) | {'nsis'})
+        self.assertEqual(report['quickStartGuide']['extractedFiles'], 1)
         self.assertEqual(calls[-2:], ['authenticated-restage', 'cmake'])
         self.assertEqual(stock.prefix_inventory(self.root), before)
         self.assertEqual(os.environ.get('PATH'), original_path)
+        self.assertEqual(Path.cwd(), original_directory)
 
     def test_redirected_sentinel_refused(self):
         self.sentinel.unlink()
