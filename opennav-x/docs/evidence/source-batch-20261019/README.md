@@ -214,3 +214,45 @@ and boat results must be recorded separately with their exact identities.
 
 No new boat installation, profile mutation or physical autopilot command is
 claimed by these CI or isolated desktop-fixture results.
+
+## Pre-build native helper audit
+
+The pilot helper correction (`72ff6e4c`) retains installed-product zero-output
+refusal, measured acknowledgements, timeout/no-retry and reconnect checks. Its
+14 focused policy cases pass; restoring the old capability equality or removing
+TRACK refusal fails the negative controls. No product behavior changed.
+
+The complete selected Linux/Windows runtime tail was then inspected for older
+UI assumptions. The current Windows object gate still searched native captions
+for a saved waypoint name even though the requested single-field editor now owns
+that value. `f7aacb0f` reads the unique visible, enabled, owned waypoint EDIT
+with `WM_GETTEXT`, checks the exact value after Save and delete cancellation,
+and retains diagnostic identity/bounds checks when that field is published.
+Nine focused selection/refusal cases pass. Native application execution is
+still required.
+
+The optional extended preview retained a distance-format route-caption selector.
+`02e1ff32` instead requires the exact initial fixture route name and dropdown
+suffix, retaining parent, clipping and overlap checks. The existing portable
+geometry suite passes, including 25 summary cases and its unchanged page,
+drawer, DPI and pointer guards. This does not run or claim design acceptance.
+
+Explicit run `39257964239` was cancelled during Linux dependency preparation,
+before the Windows application job started, after the current native-name
+mismatch was identified by source review. Push run `39257786982` selected no
+product jobs for its helper-only delta and is not application qualification.
+An attempted extra local application compile was stopped at 144/963 steps
+because it would duplicate CI; its cache is retained, and no local installation
+or runtime pass is claimed. The earlier failed records remain unchanged.
+
+The full-Production-only installer transition helper also retained the stock
+welcome title, early frame and native-button assumptions. `c98fba3a` selects
+the exact notice from the transition, launch mode and authenticated candidate
+source identities (reviewed LF/CRLF C++ representations, unchanged LF patch).
+The current notice must expose its complete readonly instruction and exact
+custom Agree/Cancel identities in the owned modal; consent uses one hit-tested
+pointer action. Historical stock/Beta1 and older retained candidates preserve
+their original contract. Thirteen focused cases pass; restoring the old title,
+dropping full-text validation or dropping action IDs fails the expected negative
+controls. No Production qualification was initiated, and native execution of
+that optional full-Production path remains pending.

@@ -24,8 +24,11 @@ navigation, recording/replay, route progress and instrument/N2K/Signal K input.
 Candidate `62fe2a0f` then stopped at an obsolete pilot-helper expectation that
 TRACK capability always equals manual-control capability. TRACK now also needs
 qualified native route output; the loopback TCP fixture cannot supply it.
-The helper correction must retain product TCP refusal and feedback/timeout
-checks. Run `39253310076` was cancelled before Windows application compilation;
+The reviewed helper correction retains product TCP refusal and feedback/timeout
+checks. The later native-tail audit also corrected waypoint EDIT readback,
+the exact named route-header selector and current versus historical welcome
+notice verification. Their focused policy/geometry checks pass; native runtime
+acceptance remains pending. Run `39253310076` was cancelled before Windows application compilation;
 it is not a qualified replacement package. Independent native launcher repair
 `39249552874` and cold-preservation helpers `39248796997` passed. No replacement
 has been installed on the boat.
