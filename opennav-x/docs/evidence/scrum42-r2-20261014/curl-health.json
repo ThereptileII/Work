@@ -1,0 +1,27 @@
+{
+  "schema": 1,
+  "observedAtUtc": "2026-10-14T07:27:03.856085+00:00",
+  "request": {
+    "method": "GET",
+    "url": "https://beta.skager.app/api/health",
+    "client": "curl",
+    "clientVersion": "8.22.0",
+    "userAgent": "curl/8.22.0",
+    "userAgentSelection": "unmodified curl default",
+    "redirectsFollowed": false,
+    "requestsMade": 1
+  },
+  "response": {
+    "protocol": "HTTP/2",
+    "status": 200,
+    "date": "Wed, 14 Oct 2026 07:27:03 GMT",
+    "contentType": "application/json; charset=utf-8",
+    "server": "cloudflare",
+    "cfRay": "a4a4dbfff978bd27-ARN",
+    "body": "{\"service\":\"skager-web\",\"mode\":\"private-beta\",\"ready\":false}"
+  },
+  "clientExitCode": 0,
+  "stderrPresent": false,
+  "scope": "Unauthenticated public health reachability only; ready remains false. No live R2 authentication, entitlement, signed download or end-to-end acceptance.",
+  "priorEvidence": "Preserve earlier urllib HTTP 403 error 1010 and Chrome ERR_BLOCKED_BY_CLIENT as distinct observations; this request does not establish their causes."
+}

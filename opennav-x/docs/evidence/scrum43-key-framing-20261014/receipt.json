@@ -1,0 +1,89 @@
+{
+  "schemaVersion": 1,
+  "issue": "SCRUM-43",
+  "sourceCommit": "2c1511c4e8dc269fce0846e616af9b99675faca7",
+  "ci": {
+    "repository": "ThereptileII/Work",
+    "runId": "38613459842",
+    "runAttempt": 1,
+    "conclusion": "success",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/38613459842",
+    "artifactId": 11919036360,
+    "artifactBytes": 7830,
+    "artifactSha256": "27ad6c2199e96558620cec7320e6384802229a83388bf26ad27805b2a973c50c",
+    "artifactMetadataMatched": true,
+    "zipMemberCount": 10,
+    "zipCrcsPassed": true,
+    "djangoPassed": 88,
+    "edgePassed": 120,
+    "totalPassed": 208,
+    "failed": 0,
+    "skipped": 0,
+    "disposableSqlPassed": true,
+    "migrationsPassed": true,
+    "originalLogIdentities": {
+      "tests.log": {
+        "bytes": 396,
+        "sha256": "74022a4f94197e263f5103827a43121df6880b371a747e1b70d1e2b11b59a7a0"
+      },
+      "edge-tests.log": {
+        "bytes": 11710,
+        "sha256": "454924a24a584eded93f41949f4a6891cf7fb8960c08e49b683c1251be8f0e3f"
+      },
+      "edge-postgresql.log": {
+        "bytes": 1123,
+        "sha256": "3ce88b5b5779c052db7c37004246a7bee983e57da9dc3b4f4c12f56979115882"
+      },
+      "migration-drift.log": {
+        "bytes": 20,
+        "sha256": "a2bfa7b376c38062f77ce2b1e703876aaa04662f96355cdf5dc9d0d075302b05"
+      }
+    }
+  },
+  "package": {
+    "buildManifestFile": "build-info.json",
+    "buildManifestSha256": "e7b0cd5992116a3f69e7a45e59efcc402dd248b09f80de15cb3c2e4140b5fd43",
+    "server": {
+      "file": "supabase-index.ts",
+      "bytes": 79004,
+      "sha256": "d2bcfbc710c9488d62c51ed62188f4af1d07934fcfc1a9b95c809ee913cbd358"
+    },
+    "frontend": {
+      "file": "cloudflare-upload.js",
+      "bytes": 504268,
+      "sha256": "a42d54ba857209cc76cee87a66905ad34502e5d80fc79d1091e3c27931427f0e",
+      "changed": false,
+      "redeployNeeded": false
+    }
+  },
+  "deployment": {
+    "serverCandidateDeployed": true,
+    "serverEditorReadbackPerformed": true,
+    "browserReconnectPending": false,
+    "earlierOwnerLoginConfirmed": true,
+    "ownerSessionExpired": true,
+    "actualStripeKeyValidityProven": false,
+    "actualTestCheckoutProven": false,
+    "publicAccessOpened": false,
+    "providerProject": "kelwgubkuvditalsbqpr",
+    "functionName": "skager-web",
+    "verifiedAtUtc": "2026-10-14T19:28:35Z",
+    "preDeployEditorBytes": 79004,
+    "postReloadEditorBytes": 79004,
+    "preDeployEditorSha256": "d2bcfbc710c9488d62c51ed62188f4af1d07934fcfc1a9b95c809ee913cbd358",
+    "postReloadEditorSha256": "d2bcfbc710c9488d62c51ed62188f4af1d07934fcfc1a9b95c809ee913cbd358",
+    "exactEditorEqualityBeforeAndAfter": true,
+    "providerRecencyObserved": "a minute ago",
+    "legacyJwtGatewayEnabled": false,
+    "sourceDeploymentIdentifierExposed": true,
+    "newOwnerCodeStepPending": true,
+    "providerDeploymentId": "kelwgubkuvditalsbqpr_8fda2b14-f5cf-4bde-bb44-cd27323b6291_24",
+    "providerVersion": 24,
+    "configurationRefusalObserved": true,
+    "configurationRefusalBinding": "STRIPE_TEST_SECRET_KEY",
+    "configurationRefusalLogId": "6bf3cc1e-a328-4bdb-9bde-494fbc7d1d9d",
+    "configurationRefusalAtUtc": "2026-10-14T19:28:49Z",
+    "ownerKeyCorrectionPending": true
+  },
+  "scope": "Exact retained server bundle deployed through authorized provider UI with whole-editor byte equality before deploy and after reload. Frontend and secrets unchanged. No completed live checkout or payment acceptance yet."
+}

@@ -1,0 +1,175 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block page %}home{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
+{% block footer_status %}{% endblock %}
+{% block content %}
+<section class="hero" aria-labelledby="hero-title">
+  <canvas class="hero-canvas" data-hero-canvas aria-hidden="true"></canvas>
+  <div class="hero-shade" aria-hidden="true"></div>
+  <div class="container hero-inner">
+    <p class="kicker"><span class="pulse-dot" aria-hidden="true"></span>Built around your boat</p>
+    <h1 id="hero-title"><span class="line">Navigation.</span><span class="line accent">Reimagined.</span></h1>
+    <p class="hero-sub">Charts, traffic, wind, depth, energy and autopilot. One beautiful screen, made for the helm.</p>
+    <div class="hero-actions">
+      <a class="cta" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a>
+      <a class="cta-ghost" href="#smart-navigation">Watch it sail <span aria-hidden="true">↓</span></a>
+    </div>
+  </div>
+  <div class="hero-hud" aria-hidden="true">
+    <div><span>SOG</span><b data-hero-value="sog">6.3</b><small>kn</small></div>
+    <div><span>COG</span><b data-hero-value="cog">052°</b></div>
+    <div><span>Depth</span><b data-hero-value="depth">12.4</b><small>m</small></div>
+    <div><span>Wind</span><b data-hero-value="wind">14</b><small>kt</small></div>
+  </div>
+  <a class="scroll-cue" href="#smart-navigation" aria-label="Scroll to see SKAGER in motion"><span></span></a>
+</section>
+
+<section class="tour" id="smart-navigation" data-tour aria-labelledby="tour-title">
+  <div class="tour-sticky">
+    <div class="container tour-layout">
+      <div class="tour-copy">
+        <p class="kicker">See it sail</p>
+        <h2 id="tour-title" class="visually-hidden">SKAGER in motion</h2>
+        <ol class="tour-beats">
+          <li data-beat="0" class="is-active"><h3>This is SKAGER.</h3><p>Everything your boat knows. On one calm, clear screen.</p></li>
+          <li data-beat="1"><span class="beat-number">01</span><h3>Your route, drawn ahead.</h3><p>See the next turn long before you reach it. Distance, bearing and time, right where you look.</p></li>
+          <li data-beat="2"><span class="beat-number">02</span><h3>Every ship around you.</h3><p>Traffic appears on your chart with course and closest approach. One tap tells you who they are.</p></li>
+          <li data-beat="3"><span class="beat-number">03</span><h3>Wind you can see.</h3><p>The forecast flows across your chart, so you plan the passage around the weather.</p></li>
+          <li data-beat="4"><span class="beat-number">04</span><h3>Day. Dusk. Night.</h3><p>The whole display follows the light, so your eyes stay ready for the water.</p></li>
+        </ol>
+        <div class="tour-steps" aria-hidden="true"><span data-step="1">Route</span><span data-step="2">Traffic</span><span data-step="3">Wind</span><span data-step="4">Light</span></div>
+      </div>
+      <div class="tour-stage" data-tour-stage>
+        <div class="device">
+          <div class="screen proto-screen" data-theme="day" data-tour-screen inert aria-hidden="true">
+{% include 'marketing/includes/skager_screen.html' %}
+{% include 'marketing/includes/skager_ais.html' %}
+          </div>
+        </div>
+{% include 'marketing/includes/skager_theme_icons.html' %}
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="meet" id="product" aria-labelledby="meet-title">
+  <div class="container">
+    <p class="kicker" data-reveal>Meet SKAGER</p>
+    <h2 id="meet-title" class="meet-title" data-reveal>One interface.<br><span>Your entire boat.</span></h2>
+    <p class="meet-lead" data-reveal>Stop switching between plotters, apps and instruments. SKAGER brings everything aboard together, and shows you only what matters right now.</p>
+  </div>
+  <div class="marquee" aria-label="Navigation, AIS, wind, depth, energy, autopilot, weather, anchor watch and My Boat">
+    <div class="marquee-track" aria-hidden="true">
+      <span>Navigation</span><span>AIS</span><span>Wind</span><span>Depth</span><span>Energy</span><span>Autopilot</span><span>Weather</span><span>Anchor watch</span><span>My Boat</span>
+      <span>Navigation</span><span>AIS</span><span>Wind</span><span>Depth</span><span>Energy</span><span>Autopilot</span><span>Weather</span><span>Anchor watch</span><span>My Boat</span>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="chart-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">01 · Navigation</p>
+      <h2 id="chart-title">More chart.<br><span>Less searching.</span></h2>
+      <p>SKAGER keeps what matters on screen and lets you switch off the rest. Choose your layers, and nothing else gets in your way.</p>
+    </div>
+    {% include 'marketing/includes/visual_layers.html' %}
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="boat-title">
+  <div class="container chapter-grid wide reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">02 · Instruments</p>
+      <h2 id="boat-title">Know your boat.<br><span>At a glance.</span></h2>
+      <p>Wind, speed, depth and heel, together on one calm screen. One look tells you everything, in figures you can read across the cockpit.</p>
+    </div>
+    {% include 'marketing/includes/visual_instruments.html' %}
+  </div>
+</section>
+
+<section class="chapter" aria-labelledby="pilot-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">03 · Autopilot</p>
+      <h2 id="pilot-title">Autopilot.<br><span>At your fingertips.</span></h2>
+      <p>Engage, adjust and hand back the helm from the screen you already navigate on. One degree or ten, one tap.</p>
+    </div>
+    {% include 'marketing/includes/visual_autopilot.html' %}
+  </div>
+</section>
+
+<section class="chapter" id="energy" aria-labelledby="energy-title">
+  <div class="container chapter-grid wide reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">04 · Energy</p>
+      <h2 id="energy-title">Arrive with<br><span>energy to spare.</span></h2>
+      <p>Know how much charge you’ll have when you get there, before you leave the dock. Range, reserve and arrival, worked out for your route.</p>
+    </div>
+    {% include 'marketing/includes/visual_energy.html' %}
+  </div>
+</section>
+
+<section class="chapter" id="weather" aria-labelledby="weather-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">05 · Weather</p>
+      <h2 id="weather-title">The forecast.<br><span>On your chart.</span></h2>
+      <p>Wind across your route, hour by hour. Pick the perfect window and sail it with the breeze on your side.</p>
+    </div>
+    {% include 'marketing/includes/visual_weather.html' %}
+  </div>
+</section>
+
+<section class="chapter" id="my-boat" aria-labelledby="myboat-title">
+  <div class="container chapter-grid reverse">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">06 · My Boat</p>
+      <h2 id="myboat-title">Your boat.<br><span>Always within reach.</span></h2>
+      <p>Battery, bilge and shore power on your phone. Voyages saved, routes ready and settings in sync. Peace of mind, wherever you are.</p>
+    </div>
+    <div class="chapter-visual visual-myboat" data-reveal aria-hidden="true">
+      <div class="phone">
+        <div class="phone-top"><small>My Boat</small><b>Linnea</b><span><i></i>Moored · Sandhamn</span></div>
+        <div class="phone-grid">
+          <div><small>Battery</small><b>92%</b><span class="bar"><i></i></span></div>
+          <div><small>Shore power</small><b>On</b><span class="ok">Charging</span></div>
+          <div><small>Bilge</small><b>Dry</b><span class="ok">All good</span></div>
+          <div><small>Cabin</small><b>18°</b><span class="ok">Normal</span></div>
+        </div>
+        <div class="phone-voyage"><small>Last voyage</small><b>Sandhamn → Möja</b><span>14.2 NM · 2 h 31 min</span><svg viewBox="0 0 220 50"><path d="M6 42C50 40 70 18 110 20S180 10 214 6"/></svg></div>
+        <div class="phone-toast"><i></i>Shore power connected</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="foundation" aria-labelledby="foundation-title">
+  <div class="container foundation-inner" data-reveal>
+    <div>
+      <p class="kicker">Built on OpenCPN</p>
+      <h2 id="foundation-title">Bring your charts.<br><span>Keep your routes.</span></h2>
+    </div>
+    <div>
+      <p>SKAGER runs on OpenCPN, the proven open-source chart plotter. Your charts, routes, waypoints and instruments come with you, from the first launch.</p>
+      <ul class="foundation-list"><li>Your charts</li><li>Your routes &amp; waypoints</li><li>Your instruments</li></ul>
+      <a class="cta-ghost" href="{% url 'marketing:installation' %}">What you need <span aria-hidden="true">↗</span></a>
+    </div>
+  </div>
+</section>
+
+<section class="finale" aria-labelledby="finale-title">
+  <svg class="finale-route" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 340C220 330 330 220 560 210S900 150 1080 110 1320 40 1460 30"/></svg>
+  <div class="container finale-inner" data-reveal>
+    <h2 id="finale-title">Your boat deserves<br><span>a better interface.</span></h2>
+    <div class="hero-actions">
+      <a class="cta" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a>
+      <a class="cta-ghost" href="/auth/login/">Already own SKAGER? Log in <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

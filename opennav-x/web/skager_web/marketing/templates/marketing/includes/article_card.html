@@ -1,0 +1,6 @@
+<article class="article-card">
+  <p class="eyebrow"><span class="kind kind-{{ article.kind|slugify }}">{{ article.kind }}</span> · {{ article.category }}</p>
+  <h3><a href="{% url 'marketing:article' article.slug %}">{{ article.title }}</a></h3>
+  <p>{{ article.summary }}</p>
+  <p class="meta">{{ article.minutes }} min read</p>
+</article>

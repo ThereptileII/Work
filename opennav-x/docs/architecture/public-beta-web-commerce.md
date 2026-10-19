@@ -1,5 +1,13 @@
 # Public-beta web and commerce architecture
 
+**Superseded vendor choice, 2026-10-13:** the owner selected their Supabase
+project for database/Auth and Stripe for checkout. The current
+[Supabase/Stripe decision](supabase-stripe-decision.md) takes precedence for
+providers, data exposure and payment/tax assumptions. Django's server-side
+authorization, immutable account/order mapping and launch gates remain. The
+original decision below is retained as historical architecture evidence, not
+the current provider configuration.
+
 Status: selected technical direction for SCRUM-31. This document describes the required design; it does not claim these services are implemented or deployed. This decision does not approve vendor accounts, spending, deployment, public payments, or public downloads. Customer-facing identity is **SKAGER / SKAGER App** and `skager.app` is the selected domain; domain control and legal clearance remain launch gates. The existing OpenCPN application and plugin remain native software with the established Windows ABI.
 
 ## Decision

@@ -1,0 +1,32 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Welcome aboard — SKAGER{% endblock %}
+{% block description %}Finish setting up your SKAGER account.{% endblock %}
+{% block page %}welcome{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<meta name="robots" content="noindex">
+  <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/checkout.css' %}?v={{ marketing_checkout_css_version }}">
+  <script src="{% static 'marketing/checkout.js' %}?v={{ marketing_checkout_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="welcome" aria-labelledby="welcome-title">
+  <div class="container welcome-card" id="welcome">
+    <p class="kicker">Welcome aboard</p>
+    <h1 id="welcome-title">Thank you.<br><span id="welcome-sub">Let’s set up your account.</span></h1>
+    <ol class="welcome-steps" aria-label="Account setup">
+      <li data-step="pay" class="is-done"><span>1</span>Payment</li><li data-step="code"><span>2</span>Email code</li><li data-step="password"><span>3</span>Password</li><li data-step="sail"><span>4</span>Download</li>
+    </ol>
+    <p class="welcome-text" id="welcome-text">Confirming your payment…</p>
+    <form id="welcome-email" class="welcome-form" hidden novalidate>
+      <label for="welcome-address">The email address you used at checkout<input id="welcome-address" type="email" autocomplete="email" required maxlength="254"></label>
+      <button class="cta" type="submit">Send my code <span aria-hidden="true">→</span></button>
+    </form>
+    <form id="welcome-code" class="welcome-form" hidden novalidate>
+      <label for="welcome-input">Code from your email<input id="welcome-input" class="code" inputmode="numeric" autocomplete="one-time-code" maxlength="10" pattern="[0-9]{6,10}" required></label>
+      <button class="cta" type="submit">Verify <span aria-hidden="true">→</span></button>
+    </form>
+    <p class="order-message" id="welcome-message" role="status" aria-live="polite"></p>
+    <p class="hint" id="welcome-help">Closed this page? Your receipt email has a link back here. <a href="/auth/login/">Already set up? Log in</a></p>
+  </div>
+</section>
+{% endblock %}

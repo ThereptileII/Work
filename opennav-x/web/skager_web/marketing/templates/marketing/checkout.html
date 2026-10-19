@@ -1,0 +1,60 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Get SKAGER — Checkout{% endblock %}
+{% block description %}Get SKAGER Public Beta Access for USD 20. Add the SKAGER GPS module, pay securely with Stripe and start sailing with SKAGER today.{% endblock %}
+{% block page %}checkout{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/checkout.css' %}?v={{ marketing_checkout_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>
+  <script src="{% static 'marketing/checkout.js' %}?v={{ marketing_checkout_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="checkout" aria-labelledby="checkout-title">
+  <div class="container checkout-grid">
+    <div class="checkout-visual">
+      <p class="kicker">Get SKAGER</p>
+      <h1 id="checkout-title">Your helm.<br><span>Upgraded tonight.</span></h1>
+      <figure class="checkout-photo">
+        <img src="{% static 'marketing/checkout-yacht-1586.webp' %}" srcset="{% static 'marketing/checkout-yacht-960.webp' %} 960w, {% static 'marketing/checkout-yacht-1586.webp' %} 1586w" sizes="(max-width: 980px) 100vw, 60vw" width="1586" height="992" alt="SKAGER on a helm display aboard a classic sailing yacht at sunset" fetchpriority="high">
+      </figure>
+      <ul class="checkout-promises">
+        <li><b>Instant access.</b> Download SKAGER for Windows as soon as you have paid.</li>
+        <li><b>Every beta update.</b> New features land in your account as they ship.</li>
+        <li><b>14-day full refund.</b> Not for you? Get every cent back.</li>
+      </ul>
+    </div>
+
+    <form class="order-panel" id="checkout-form" novalidate>
+      <ol class="step-nav" id="step-nav" aria-label="Checkout steps"></ol>
+
+      <section class="step" data-step="account" aria-labelledby="step-account-title">
+        <p class="step-count" id="step-account-count"></p>
+        <h2 id="step-account-title" tabindex="-1">Your account</h2>
+        <div class="order-line order-main"><div><b>SKAGER Public Beta Access</b><span>SKAGER for Windows, every beta update, your account, support</span></div><strong id="access-price">USD 20</strong></div>
+        <label class="email-field" for="checkout-email">Email address<input id="checkout-email" name="email" type="email" autocomplete="email" required maxlength="254" placeholder="you@example.com"></label>
+        <p class="hint">Your SKAGER account is created with this email when you pay. We send your receipt and sign-in code here.</p>
+        <div class="step-actions"><button class="cta order-cta" type="button" data-next>Continue <span aria-hidden="true">→</span></button></div>
+        <p class="hint already">Already have SKAGER? <a href="/auth/login/">Log in</a></p>
+      </section>
+
+      <div id="option-steps"></div>
+
+      <section class="step" data-step="review" aria-labelledby="step-review-title">
+        <p class="step-count" id="step-review-count"></p>
+        <h2 id="step-review-title" tabindex="-1">Review and pay</h2>
+        <p class="review-email">Account <b id="review-email"></b> <button class="text-button" type="button" data-goto="account">Change</button></p>
+        <ul class="review-lines" id="review-lines"></ul>
+        <details class="discount"><summary>Have a discount code?</summary><label for="discount-code" class="visually-hidden">Discount code</label><input id="discount-code" name="discountCode" maxlength="64" autocomplete="off" spellcheck="false" placeholder="Discount code"><p class="hint">Your discount is applied on the secure payment page before you pay.</p></details>
+        <div class="order-total"><span>Total</span><strong id="order-total">USD 20.00</strong></div>
+        <p class="hint" id="total-note">Price in US dollars. Any discount is shown before you pay.</p>
+        <div class="step-actions"><button class="back-button" type="button" data-back>← Back</button><button class="cta order-cta" id="checkout-submit" type="submit" disabled>Continue to payment <span aria-hidden="true">→</span></button></div>
+        <p class="hint terms">By continuing you agree to the <a href="{% url 'marketing:terms' %}">Terms</a> and the <a href="{% url 'marketing:beta_terms' %}">Beta terms &amp; safety</a>. See the <a href="{% url 'marketing:refunds' %}">Refund Policy</a> and <a href="{% url 'marketing:privacy' %}">Privacy Policy</a>.</p>
+        <p class="secure"><span aria-hidden="true">🔒</span> Secure payment by Stripe. Cards, Apple Pay and Google Pay.</p>
+      </section>
+
+      <p class="step-total" id="step-total" hidden></p>
+      <p class="order-message" id="checkout-message" role="status" aria-live="polite"></p>
+    </form>
+  </div>
+</section>
+{% endblock %}

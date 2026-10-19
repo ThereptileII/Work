@@ -1,0 +1,16 @@
+{
+  "schema": 1,
+  "package": "aws4fetch",
+  "version": "1.0.20",
+  "license": "MIT",
+  "upstream": "https://github.com/mhart/aws4fetch",
+  "sourceCommit": "629b108747e066d1b93e8b72a4adbf2a4220db3b",
+  "tarball": "https://registry.npmjs.org/aws4fetch/-/aws4fetch-1.0.20.tgz",
+  "tarballIntegrity": "sha512-/djoAN709iY65ETD6LKCtyyEI04XIBP5xVvfmNxsEP0uJB5tyaGBztSryRr4HqMStr9R06PisQE7m9zDTXKu6g==",
+  "files": {
+    "aws4fetch.esm.mjs": "3049cd99d00a2fb83ce0e77f0e6b3fb22c17d8e708b740821f906145a8f978e9",
+    "LICENSE": "a9455541e8a4e4766d146a7552ac547c04bfb7a8718f5af516f1b9e346e82a77"
+  },
+  "distributionSource": "dist/aws4fetch.esm.mjs",
+  "modified": false
+}

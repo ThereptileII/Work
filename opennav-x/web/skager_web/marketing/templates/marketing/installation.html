@@ -1,0 +1,45 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Requirements and installation — SKAGER{% endblock %}
+{% block description %}What you need to run SKAGER: a 64-bit Windows PC and OpenCPN 5.12.4 installed separately. Plus how to install, and your way back with Legacy and Safe Mode.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">Requirements &amp; installation</p>
+    <h1>Everything you need to get started.</h1>
+    <p class="lead">SKAGER runs on top of OpenCPN on your Windows PC. Check the requirements, install in a few minutes, and keep your charts and routes exactly where they are.</p>
+  </header>
+
+  <section class="page-section" aria-labelledby="req-heading">
+    <h2 id="req-heading">Requirements</h2>
+    <dl class="spec-table">
+      <div><dt>Operating system</dt><dd>64-bit Windows</dd></div>
+      <div><dt>OpenCPN</dt><dd>OpenCPN 5.12.4 for Windows (Win32 edition), installed separately from the <a href="https://opencpn.org/OpenCPN/info/downloadopencpn.html">official OpenCPN download page</a></dd></div>
+      <div><dt>Display</dt><dd>1280 × 800 or larger. A touch display is recommended at the helm.</dd></div>
+      <div><dt>Charts</dt><dd>Your own charts, configured in OpenCPN. Not included with SKAGER.</dd></div>
+      <div><dt>Instruments</dt><dd>Optional. Anything OpenCPN reads: NMEA 0183, NMEA 2000 through a gateway, or Signal K.</dd></div>
+      <div><dt>Internet</dt><dd>Needed to download and update SKAGER, and for forecast wind and Online AIS. Navigation works offline.</dd></div>
+    </dl>
+  </section>
+
+  <section class="page-section" aria-labelledby="install-heading">
+    <h2 id="install-heading">Install in four steps</h2>
+    <ol class="numbered-steps">
+      <li><h3>Install OpenCPN 5.12.4</h3><p>Download it from the official OpenCPN website, install it, open it once and check About shows 5.12.4. <a href="{% url 'marketing:article' 'opencpn-prerequisite' %}">More detail</a></p></li>
+      <li><h3>Back up</h3><p>Copy your OpenCPN profile and any charts stored elsewhere to a USB drive or another disk.</p></li>
+      <li><h3>Run SKAGER Setup</h3><p>Download Setup from your account and select your OpenCPN installation when asked. Setup checks compatibility and shows exactly what it will change before it starts. <a href="{% url 'marketing:article' 'install-skager' %}">Installation guide</a></p></li>
+      <li><h3>Check before you sail</h3><p>Open SKAGER, confirm your charts, routes and waypoints are there, and check each instrument shows the source and age you expect.</p></li>
+    </ol>
+    <p class="meta">Install and update while moored, with another means of navigation available.</p>
+  </section>
+
+  <section class="page-section" aria-labelledby="back-heading">
+    <h2 id="back-heading">Always a way back</h2>
+    <div class="card-grid">
+      <div class="info-card"><h3>Legacy</h3><p>Opens the classic OpenCPN interface with the same charts, routes and connections, whenever you want it.</p></div>
+      <div class="info-card"><h3>Safe Mode</h3><p>Starts with the minimum, without the SKAGER interface or optional plugins, to sort out a problem.</p></div>
+      <div class="info-card"><h3>Clean uninstall</h3><p>Removing SKAGER leaves OpenCPN, your charts, routes and waypoints in place.</p></div>
+    </div>
+    <p><a href="{% url 'marketing:article' 'legacy-safe-recovery' %}">Using Legacy and Safe Mode</a> · <a href="{% url 'marketing:article' 'updates-repair-uninstall' %}">Updates, repair and uninstall</a></p>
+  </section>
+</div>
+{% endblock %}
