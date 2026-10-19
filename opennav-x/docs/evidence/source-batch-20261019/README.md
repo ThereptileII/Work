@@ -153,3 +153,35 @@ identified these separate issues:
 These are classified corrections, not a passing replacement candidate. The
 boat remained on `9feae59c` / Beta 2.5 throughout this work; no application or
 hardware state was changed.
+
+## Replacement gate findings (before full Windows application build)
+
+Run `39239032704` at `5f02e1a8` passed both contract platforms, native
+UI/startup/shortcut checks, pilot serial, boat-maintenance checks, and the
+actual installer rollback/interruption fixture. It did **not** qualify a
+package: the Linux integrated compile and native launcher packaging failed.
+
+- Linux rejected the wider upstream PGN in aggregate initialization of the
+  normalized 32-bit frame. `f814885b` copies the canonical ordered PGN only
+  after the unchanged exact-equality guard. The actual unit compiles with
+  `-Werror=narrowing`; the original source fails that same compiler check.
+  This does not broaden accepted PGNs or permit output without the existing
+  pilot, route, position and transport conditions.
+- Native diagnostic run `39248589437` reproduced the launcher failure on an
+  inert Go 1.27.1 Win32 executable. Windows icon insertion moved its intact
+  `.symtab` from file offset 1633792 to 2003968 but retained the old COFF
+  symbol-table pointer. Consequently `go version -m` rejected the file. Both
+  images and detailed PE/Go parser evidence are retained in the diagnostic
+  artifact; this is a packaging defect, not an application crash attribution.
+- Independent delivery checks `39239611242` passed Linux and Windows after
+  correcting the case-alias test fixture. No production inventory rejection
+  was weakened.
+- Cold-profile helper run `39240558236` passed the native cold baseline
+  (188 groups), adoption (131), and session preservation (86, including
+  native reconciliation 229). The job then exceeded its 15-minute bound while
+  redundantly repeating reconciliation. Run `39248796997` removes that duplicate
+  and runs the three independent suites in parallel; its final result is not
+  inferred from the earlier partial job.
+
+The boat still runs the preceding installation. Subsequent corrected package
+and boat results must be recorded separately with their exact identities.
