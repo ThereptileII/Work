@@ -36,6 +36,9 @@
 #include "integration/WeatherOverlay.h"
 #include "weather/GribStream.h"
 #include "weather/IxForecastTransport.h"
+#include "cloud/IxCloudTransport.h"
+#include "integration/OnlineCloud.h"
+#include "application/Version.h"
 #include "weather/QueryBuilder.h"
 #include "integration/AisViewport.h"
 #include "integration/StartupMode.h"
@@ -130,6 +133,7 @@ std::unique_ptr<ui::Shell> shell;
 std::unique_ptr<integration::OnlineAis> online_ais;
 integration::OnlineAisOverlay online_chart;
 std::unique_ptr<integration::OnlineWeather> online_weather;
+std::unique_ptr<integration::OnlineCloud> online_cloud;
 std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
@@ -660,6 +664,31 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       weather_query_dirty = true;  // Rebuild on the next tick, not in a minute.
     }
   };
+  // SCRUM-44/369: SKAGER Cloud. Construction never fetches; the worker reads
+  // the device token and makes every request. Boat data sharing defaults off.
+  {
+    cloud::CloudOptions options;
+    options.version = application::Version;
+#ifdef __WXMSW__
+    options.platform = "windows";
+#else
+    options.platform = "linux";
+#endif
+    online_cloud = std::make_unique<integration::OnlineCloud>(config,
+        std::make_unique<cloud::CloudService>(ais::CreateCloudCredentials(),
+                                              cloud::CreateIxCloudTransport(), options));
+  }
+  const auto cloud_unavailable = [] { return application::CommandResult{false, "SKAGER Cloud unavailable"}; };
+  actions.cloud.read = [] { return online_cloud ? online_cloud->Read() : cloud::CloudSnapshot{}; };
+  actions.cloud.link = [cloud_unavailable] { return online_cloud ? online_cloud->Link() : cloud_unavailable(); };
+  actions.cloud.cancel_link = [cloud_unavailable] {
+    return online_cloud ? online_cloud->CancelLink() : cloud_unavailable();
+  };
+  actions.cloud.unlink = [cloud_unavailable] { return online_cloud ? online_cloud->Unlink() : cloud_unavailable(); };
+  actions.cloud.share = [cloud_unavailable](bool on) {
+    return online_cloud ? online_cloud->Share(on) : cloud_unavailable();
+  };
+  actions.cloud.refresh = [] { if (online_cloud) online_cloud->Refresh(); };
   actions.weather_tick = [&frame, last = std::chrono::steady_clock::time_point{}](bool live_allowed) mutable {
     if (!online_weather || !online_weather->Enabled() || restart) return;
     const auto steady = std::chrono::steady_clock::now();
@@ -1326,7 +1355,13 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
   navigation = std::make_unique<NavigationBridge>(
-      [](const vessel::VesselState &state) { selected_navigation = state; });
+      [](const vessel::VesselState &state) {
+        selected_navigation = state;
+        // Live boat data only; the cloud service also refuses simulated and
+        // replayed state and does nothing unless linked with sharing on.
+        if (online_cloud && !restart && !(commissioning && commissioning->Replaying()))
+          online_cloud->Observe(state, vessel::Clock::now());
+      });
   route_progress = std::make_unique<integration::RouteProgressInput>(
       "SKAGER session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS
@@ -1603,6 +1638,7 @@ bool PrepareClose(wxFileConfig& config) {
   online_ais.reset(); // Stop/join worker before configuration/host teardown.
   integration::SetWeatherSource({});
   online_weather.reset(); // Cancels any request and joins the worker.
+  online_cloud.reset(); // Cancels any request and joins the worker.
   commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};

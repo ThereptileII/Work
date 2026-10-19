@@ -459,7 +459,7 @@ void XNavSettingsDrawer::Build() {
         intro->Refresh(false);event.Skip();
       });
       Link("Installation & recovery","Installer unavailable; recovery controls below",XNavIcon::Download,{});
-      Link("Updates","Update controls unavailable",XNavIcon::Refresh,{});
+      Page("SKAGER Cloud","Account, automatic updates and boat data",XNavIcon::Refresh,ProductPage::Cloud);
       Link("Export settings backup","Vessel, display, sources and calibration",XNavIcon::Shield,actions_.backup_export);
       Link("Import settings backup","Validate and review before restoring",XNavIcon::Shield,actions_.backup_import);
       Link("Diagnostics","Versions, data quality and source health",XNavIcon::Instruments,actions_.diagnostics);

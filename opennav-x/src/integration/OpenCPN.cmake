@@ -15,6 +15,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/AnchorGe
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAis.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineAisOverlay.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineWeather.cpp")
+target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnlineCloud.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/WeatherOverlay.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/OnboardAisPresentation.cpp")
 target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/DashboardPresentation.cpp")
@@ -261,6 +262,11 @@ add_library(opennav_weather_runtime "${OPENNAV_ROOT}/src/weather/IxForecastTrans
 target_link_libraries(opennav_weather_runtime PUBLIC opennav_weather PRIVATE ocpn::ixwebsocket)
 target_compile_features(opennav_weather_runtime PUBLIC cxx_std_17)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_weather_runtime)
+# SCRUM-44/369: SKAGER Cloud HTTPS transport, same IX library and CA policy.
+add_library(opennav_cloud_runtime "${OPENNAV_ROOT}/src/cloud/IxCloudTransport.cpp")
+target_link_libraries(opennav_cloud_runtime PUBLIC opennav_cloud PRIVATE ocpn::ixwebsocket)
+target_compile_features(opennav_cloud_runtime PUBLIC cxx_std_17)
+target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_cloud_runtime)
 if(OCPN_BUILD_TEST)
   # Explicit read-only internet commissioning. No chart, profile, plugins or
   # marine output; never installed or launched by the product.
