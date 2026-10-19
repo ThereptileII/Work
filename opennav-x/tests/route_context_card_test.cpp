@@ -62,8 +62,8 @@ private:
         card->UpdateRoute(route_, mode);
         Check(card->View().name == route_.name && card->View().active,
               "Theme updates preserve actual route identity and active status");
-        Check(card->GetBackgroundColour() == ui::Colour(ui::Theme(mode).elevated),
-              "Route hover uses the current XNav theme");
+        Check(card->GetBackgroundColour() == ui::Colour(ui::Theme(mode).background),
+              "Route hover uses the current rounded-surface theme");
       }
       auto *stop = Find<ui::XNavButton>(card, "Stop navigation");
       Check(stop && stop->IsEnabled() && !Find<ui::XNavButton>(card, "Activate route"),
