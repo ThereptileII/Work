@@ -79,6 +79,110 @@ def _native_file(path: Path) -> Path:
     return _plain_file(path, MAX_EXE_BYTES)
 
 
+def _coff_layout(path: Path):
+    """Read bounded PE headers without following the possibly stale COFF pointer."""
+    with _plain_file(path, MAX_EXE_BYTES).open('rb') as source:
+        data = source.read(MAX_EXE_BYTES + 1)
+    if not 64 <= len(data) <= MAX_EXE_BYTES or data[:2] != b'MZ':
+        raise ValueError('Invalid PE DOS header during icon update')
+    pe = struct.unpack_from('<I', data, 60)[0]
+    if pe < 64 or pe + 26 > len(data) or data[pe:pe + 4] != b'PE\0\0':
+        raise ValueError('Invalid PE header during icon update')
+    count = struct.unpack_from('<H', data, pe + 6)[0]
+    optional = struct.unpack_from('<H', data, pe + 20)[0]
+    table = pe + 24 + optional
+    if (not 1 <= count <= 96 or optional < 96 or table + 40 * count > len(data) or
+            struct.unpack_from('<H', data, pe + 24)[0] not in (0x10b, 0x20b)):
+        raise ValueError('Invalid PE section table during icon update')
+    sections = [data[table + 40 * i:table + 40 * (i + 1)] for i in range(count)]
+    spans = []
+    for section in sections:
+        size, offset = struct.unpack_from('<II', section, 16)
+        if size:
+            if offset < table + 40 * count or offset + size > len(data):
+                raise ValueError('PE section exceeds file during icon update')
+            spans.append((offset, offset + size))
+    spans.sort()
+    if any(right[0] < left[1] for left, right in zip(spans, spans[1:])):
+        raise ValueError('Overlapping PE sections during icon update')
+    pointer, symbols = struct.unpack_from('<II', data, pe + 12)
+    return data, pe + 12, pointer, symbols, sections
+
+
+def _snapshot_coff(path: Path):
+    data, header, pointer, symbols, sections = _coff_layout(path)
+    if pointer == 0:
+        if symbols:
+            raise ValueError('Missing COFF symbol table pointer')
+        return None
+    matches = [s for s in sections if s[:8] == b'.symtab\0']
+    if len(matches) != 1:
+        raise ValueError('COFF symbols require one unique .symtab section')
+    section = matches[0]
+    size, offset = struct.unpack_from('<II', section, 16)
+    strings = pointer + 18 * symbols
+    if not offset <= pointer <= strings <= offset + size - 4:
+        raise ValueError('COFF symbol table exceeds .symtab section')
+    string_size = struct.unpack_from('<I', data, strings)[0]
+    if string_size < 4 or strings + string_size > offset + size:
+        raise ValueError('COFF string table exceeds .symtab section')
+    # COFF symbol section numbers are indices, not RVAs. Refuse an update that
+    # would change their meaning instead of rewriting or stripping symbols.
+    references = {}
+    for index in range(symbols):
+        record = pointer + 18 * index
+        # The pinned internal Go linker emits no auxiliary records. Some other
+        # linkers put additional section indices in them; do not guess those.
+        if data[record + 17]:
+            raise ValueError('Unsupported COFF auxiliary symbols')
+        number = struct.unpack_from('<h', data, record + 12)[0]
+        if number < -2 or number > len(sections):
+            raise ValueError('Invalid COFF symbol section number')
+        if number > 0:
+            referenced = sections[number - 1]
+            references[number] = referenced[:20] + referenced[24:]
+    return (header, pointer, symbols, section, data[offset:offset + size], references)
+
+
+def _restore_coff_pointer(path: Path, original) -> None:
+    data, header, pointer, symbols, sections = _coff_layout(path)
+    if original is None:
+        if pointer or symbols:
+            raise ValueError('Icon update unexpectedly introduced COFF symbols')
+        return
+    old_header, old_pointer, old_symbols, old_section, payload, references = original
+    matches = [s for s in sections if s[:8] == b'.symtab\0']
+    if header != old_header or symbols != old_symbols or len(matches) != 1:
+        raise ValueError('Icon update changed COFF symbol identity')
+    section = matches[0]
+    # Windows may relocate both the section RVA and raw offset, but its other
+    # metadata and all symbol/string bytes must remain exactly as compiled.
+    if section[:12] + section[16:20] + section[24:] != old_section[:12] + old_section[16:20] + old_section[24:]:
+        raise ValueError('Icon update changed .symtab section metadata')
+    size, offset = struct.unpack_from('<II', section, 16)
+    old_offset = struct.unpack_from('<I', old_section, 20)[0]
+    relocated = offset + old_pointer - old_offset
+    if data[offset:offset + size] != payload:
+        raise ValueError('Icon update changed COFF symbol or string bytes')
+    if any(number > len(sections) or sections[number - 1][:20] + sections[number - 1][24:] != identity
+           for number, identity in references.items()):
+        raise ValueError('Icon update changed a referenced COFF section index')
+    if pointer not in (old_pointer, relocated):
+        raise ValueError('Icon update produced an unexpected COFF pointer')
+    if pointer != relocated:
+        # EndUpdateResourceW inserts .rsrc before .reloc and moves .symtab,
+        # but leaves this file offset stale (native diagnostic 39248589437).
+        # Repair only that offset after proving the original tables survived.
+        with path.open('r+b') as output:
+            output.seek(header)
+            output.write(struct.pack('<I', relocated))
+            output.flush()
+            os.fsync(output.fileno())
+        repaired = _snapshot_coff(path)
+        if repaired != (header, relocated, symbols, section, payload, references):
+            raise ValueError('COFF pointer repair readback failed')
+
+
 def verify_icon(path: Path, icon: bytes) -> None:
     """Read exact group and frame bytes without executing the target module."""
     path = _native_file(path)
@@ -110,6 +214,7 @@ def embed_icon(path: Path, icon: bytes) -> None:
     path = _native_file(path)
     verifier = _verifier()
     _, group, payloads = _icon_data(icon, verifier)
+    original_coff = _snapshot_coff(path)
     kernel = ctypes.WinDLL('kernel32', use_last_error=True)
     pointer = ctypes.c_void_p
     kernel.BeginUpdateResourceW.argtypes = [ctypes.c_wchar_p, ctypes.c_int]
@@ -143,4 +248,5 @@ def embed_icon(path: Path, icon: bytes) -> None:
     # intermediate; do not retry a possibly consumed handle or claim rollback.
     if not kernel.EndUpdateResourceW(handle, False):
         raise ctypes.WinError(ctypes.get_last_error())
+    _restore_coff_pointer(path, original_coff)
     verify_icon(path, icon)

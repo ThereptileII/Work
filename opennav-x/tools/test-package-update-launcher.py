@@ -11,6 +11,8 @@ import unittest
 from unittest import mock
 import zipfile
 
+import windows_icon
+
 SPEC = importlib.util.spec_from_file_location('update_package', Path(__file__).with_name('package-update-launcher.py'))
 package = importlib.util.module_from_spec(SPEC)
 SPEC.loader.exec_module(package)
@@ -353,6 +355,153 @@ class PackageTests(unittest.TestCase):
         self.assertTrue((install / 'skager-start.exe').read_bytes().endswith(b'fixture-icon-resources'))
         self.assertEqual(result['sourceBundle']['sha256'], package.digest(install / result['sourceBundle']['archive']))
         self.assertFalse((install / 'updater-trust.json').exists())
+
+
+class CoffPreservationTests(unittest.TestCase):
+    """Model the native .rsrc insertion that left Go's COFF file offset stale."""
+    PE = 128
+    TABLE = PE + 24 + 224
+    OLD_SYMBOLS = 2560
+    NEW_SYMBOLS = 3072
+
+    def setUp(self):
+        directory = tempfile.TemporaryDirectory(prefix='skager-coff-')
+        self.addCleanup(directory.cleanup)
+        self.path = Path(directory.name) / 'inert.exe'
+
+    def fixture(self, relocated=False):
+        strings = b'long_function_name\0long_data_name\0'
+        symbols = b''.join(struct.pack('<8sIhHBB', struct.pack('<II', 0, name), 0,
+                                       section, 0x20, 2, 0)
+                           for name, section in ((4, 1), (23, 2)))
+        symbols += struct.pack('<I', 4 + len(strings)) + strings
+        sections = [(b'.text', b'inert code', 0x60000020),
+                    (b'.data', b'preserved Go build identity', 0xc0000040),
+                    (b'.reloc', b'inert relocation', 0x42000040),
+                    (b'.symtab', symbols, 0x42000000)]
+        if relocated:
+            sections.insert(2, (b'.rsrc', b'\x7f' * 512, 0x40000040))
+        content = bytearray(1024 + len(sections) * 512)
+        content[:2] = b'MZ'
+        struct.pack_into('<I', content, 60, self.PE)
+        content[self.PE:self.PE + 4] = b'PE\0\0'
+        struct.pack_into('<HHIIIHH', content, self.PE + 4, 0x14c, len(sections), 0,
+                         self.OLD_SYMBOLS, 2, 224, 2)
+        struct.pack_into('<H', content, self.PE + 24, 0x10b)
+        for index, (name, payload, flags) in enumerate(sections):
+            offset = 1024 + index * 512
+            struct.pack_into('<8sIIIIIIHHI', content, self.TABLE + index * 40,
+                             name, len(payload), (index + 1) * 4096, 512, offset,
+                             0, 0, 0, 0, flags)
+            content[offset:offset + len(payload)] = payload
+        return content
+
+    def snapshot(self):
+        self.path.write_bytes(self.fixture())
+        return windows_icon._snapshot_coff(self.path)
+
+    def test_native_resource_transaction_repairs_only_the_coff_pointer(self):
+        self.path.write_bytes(self.fixture())
+        shifted = self.fixture(relocated=True)
+        expected = bytearray(shifted)
+        struct.pack_into('<I', expected, self.PE + 12, self.NEW_SYMBOLS)
+        kernel = mock.Mock()
+        kernel.BeginUpdateResourceW.return_value = 1
+        kernel.UpdateResourceW.return_value = 1
+
+        def commit(handle, discard):
+            self.assertEqual((handle, discard), (1, False))
+            self.path.write_bytes(shifted)
+            return 1
+
+        def readback(path, icon):
+            self.assertEqual(path.read_bytes(), expected)
+
+        kernel.EndUpdateResourceW.side_effect = commit
+        icon = (package.ROOT / 'resources/branding/skager.ico').read_bytes()
+        with mock.patch.object(windows_icon, '_native_file', side_effect=lambda p: p), \
+                mock.patch.object(windows_icon.ctypes, 'WinDLL', return_value=kernel, create=True), \
+                mock.patch.object(windows_icon, 'verify_icon', side_effect=readback) as verify:
+            windows_icon.embed_icon(self.path, icon)
+        verify.assert_called_once_with(self.path, icon)
+        self.assertEqual(kernel.UpdateResourceW.call_count, 10)
+        self.assertEqual(self.path.read_bytes(), expected)
+
+    def test_unchanged_or_already_corrected_pointer_preserves_every_byte(self):
+        original = self.snapshot()
+        for relocated in (False, True):
+            content = self.fixture(relocated)
+            if relocated:
+                struct.pack_into('<I', content, self.PE + 12, self.NEW_SYMBOLS)
+            self.path.write_bytes(content)
+            windows_icon._restore_coff_pointer(self.path, original)
+            self.assertEqual(self.path.read_bytes(), content)
+
+    def test_unexpected_native_mutations_refuse_before_any_repair(self):
+        original = self.snapshot()
+        symtab = self.TABLE + 4 * 40
+        cases = [
+            ('changed symbols', self.NEW_SYMBOLS, b'X'),
+            ('changed strings', self.NEW_SYMBOLS + 40, b'X'),
+            ('changed padding', self.NEW_SYMBOLS + 511, b'X'),
+            ('changed count', self.PE + 16, struct.pack('<I', 3)),
+            ('unexpected pointer', self.PE + 12, struct.pack('<I', 1111)),
+            ('missing section', symtab, b'.missing'),
+            ('duplicate section', self.TABLE + 2 * 40, b'.symtab\0'),
+            ('changed size', symtab + 8, struct.pack('<I', 123)),
+            ('changed referenced index', self.TABLE, b'.wrong\0\0'),
+            ('changed referenced RVA', self.TABLE + 12, struct.pack('<I', 8192)),
+            ('out of bounds', symtab + 20, struct.pack('<I', 999999)),
+            ('overlap', symtab + 20, struct.pack('<I', 2560)),
+        ]
+        for name, offset, replacement in cases:
+            with self.subTest(name=name):
+                content = self.fixture(True)
+                content[offset:offset + len(replacement)] = replacement
+                self.path.write_bytes(content)
+                with self.assertRaises(ValueError):
+                    windows_icon._restore_coff_pointer(self.path, original)
+                self.assertEqual(self.path.read_bytes(), content)
+
+    def test_malformed_original_tables_are_rejected(self):
+        cases = [(self.PE + 12, struct.pack('<I', self.OLD_SYMBOLS - 1)),
+                 (self.PE + 16, struct.pack('<I', 1000000)),
+                 (self.OLD_SYMBOLS + 36, struct.pack('<I', 0)),
+                 (self.OLD_SYMBOLS + 36, struct.pack('<I', 1000000)),
+                 (self.OLD_SYMBOLS + 12, struct.pack('<h', 99)),
+                 (self.OLD_SYMBOLS + 17, b'\x01')]
+        for offset, replacement in cases:
+            with self.subTest(offset=offset, replacement=replacement):
+                content = self.fixture()
+                content[offset:offset + len(replacement)] = replacement
+                self.path.write_bytes(content)
+                with self.assertRaises(ValueError):
+                    windows_icon._snapshot_coff(self.path)
+                self.assertEqual(self.path.read_bytes(), content)
+
+    def test_symbol_reference_to_a_reindexed_section_is_rejected(self):
+        before = self.fixture()
+        struct.pack_into('<h', before, self.OLD_SYMBOLS + 12, 3)
+        self.path.write_bytes(before)
+        original = windows_icon._snapshot_coff(self.path)
+        after = self.fixture(True)
+        struct.pack_into('<h', after, self.NEW_SYMBOLS + 12, 3)
+        self.path.write_bytes(after)
+        with self.assertRaisesRegex(ValueError, 'referenced COFF section index'):
+            windows_icon._restore_coff_pointer(self.path, original)
+        self.assertEqual(self.path.read_bytes(), after)
+
+    def test_absent_coff_tables_stay_absent(self):
+        before = self.fixture()
+        struct.pack_into('<II', before, self.PE + 12, 0, 0)
+        self.path.write_bytes(before)
+        original = windows_icon._snapshot_coff(self.path)
+        self.assertIsNone(original)
+        windows_icon._restore_coff_pointer(self.path, original)
+        self.assertEqual(self.path.read_bytes(), before)
+        self.path.write_bytes(self.fixture(True))
+        with self.assertRaisesRegex(ValueError, 'introduced COFF symbols'):
+            windows_icon._restore_coff_pointer(self.path, original)
 
 
 if __name__ == '__main__':
