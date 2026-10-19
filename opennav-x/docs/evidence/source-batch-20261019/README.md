@@ -119,3 +119,37 @@ Local coordinator evidence is retained under
 `.tmp/delivery-audit-20261019/` (not shipped). The versioned candidate and its
 CI/boat results will be recorded separately; these preflights do not authorize
 Production or establish physical pilot/lighthouse acceptance.
+
+## First native CI pass and bounded corrections
+
+Run `39237673752` at `c053001d` failed early gates before the full MSVC
+application job. It is not accepted evidence for delivery. The retained logs
+identified these separate issues:
+
+- The corresponding-source fixture lacked the new persistence/observable
+  patches and retained an obsolete count. It now checks all 20 source-package
+  patch paths and their hashes; 13 fixture cases pass. Five related lightweight
+  source/dependency suites also passed (63 cases).
+- The route-focus fixture rejected the intentional XNav StartRoute policy.
+  It now executes the actual StartRoute and guards both the explicit-finish
+  and stock paths: 316 assertions in each of four desktop/macOS, XNav/stock
+  variants. Original regression and missing/unconditional policy mutations
+  fail their expected controls.
+- The pilot serial fixture passed two clock reads as separate arguments.
+  Unspecified evaluation order could make its source sample future-dated.
+  Sequencing source capture fixes the reproducible fixture failure; the
+  production future/stale rejection remains intact. All three native cases
+  pass locally; Windows rerun is still required.
+- MSVC rejected a nested name-editor weak-reference init capture. The weak
+  reference is now constructed before copying into the callback, retaining
+  destruction safety. Focused GCC/Clang compilation passes; native MSVC is
+  the remaining authority.
+- Current installer icon checks passed; the final test invoked the immutable
+  historical installer and incorrectly required its shortcuts to use the new
+  explicit icon. That historical-only assertion now verifies inherited target
+  icons, while all current-generation exact icon checks remain unchanged.
+  Fourteen portable policy checks pass; COM execution remains a Windows gate.
+
+These are classified corrections, not a passing replacement candidate. The
+boat remained on `9feae59c` / Beta 2.5 throughout this work; no application or
+hardware state was changed.
