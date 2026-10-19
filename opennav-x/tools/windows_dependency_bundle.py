@@ -34,6 +34,8 @@ COMPATIBLE_PRODUCER = '1b25542aea3f9ab62c83c5d7a3ecdac9652f7d3e'
 COMPATIBLE_PRODUCERS = frozenset({
     COMPATIBLE_PRODUCER,
     '49f9f07407cbf640f6186757a3fe3582c114b895',
+    '68c835175bdbc441e57aa1201db8f6ca95a7d1e7',
+    'bfbfdca7573c14f4623d2b8b42159abedb99e351',
 })
 # Same-job application patch inventory may change without rebuilding the SDK.
 # Every exception still pins the complete original/current helper bytes.

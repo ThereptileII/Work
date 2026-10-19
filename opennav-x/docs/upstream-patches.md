@@ -1,5 +1,37 @@
 # Direct OpenCPN Upstream Modifications
 
+## 19 October integrated audit — persistence, listener lifetime and composition
+
+`opencpn-5.12.4-observable-locking.patch` follows AIS transport. All wrappers
+sharing the native listener registry now use one translation-unit mutex through
+queue insertion; unregister cannot return while that insertion is in flight.
+Move assignment removes the previous registration and handles self-move. Public
+class layouts and signatures are unchanged. Four ordinary and four sanitized
+native-source/wx queue cases passed, and the original implementation reproduced
+two expected failures. This corrects proven defects, not a unique diagnosis of
+the captured startup crash.
+
+`opencpn-5.12.4-navobj-persistence.patch` follows track recording. Route,
+waypoint and track attribute/hyperlink updates use nested SQLite savepoints and
+checked prepare/bind/step/finalize/release results. Failures leave prior values
+and memberships intact, and hyperlink identity collisions cannot overwrite a
+different owner. Named-waypoint insertion is atomic. Native XNav Finish skips
+its duplicate unchecked write after the integration already persisted the new
+route; append/Legacy retain their normal path. No schema, plugin ABI or separate
+navigation database is introduced. Focused actual-method tests cover 36 SQLite
+checks and seven native Finish checks; full native candidate gates are separate.
+
+The track recording/presentation include hunks now account for the earlier
+startup notice and active-passage includes. The complete 21-patch stack applies
+and reconstructs against the pinned tree using `prepare-integration.py`.
+Corresponding-source and same-job receipt inventories include both new patches.
+The reviewed dependency-consumer hash pairs change only for application-patch
+inventory; SDK producer recipes, bytes and native reprobes are unchanged.
+
+Earlier source-only notes below describe the original implementation stage;
+current qualification is recorded in [the audit](evidence/source-batch-20261019/README.md)
+and `status.md`.
+
 ## Very Light presentation and display scale — SCRUM-378
 
 `opencpn-5.12.4-chart-display.patch` follows track presentation. It adds a

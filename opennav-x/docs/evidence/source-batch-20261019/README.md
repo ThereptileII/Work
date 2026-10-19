@@ -87,3 +87,35 @@ interaction remain candidate-specific checks. No new boat runtime pass, physical
 command, controller flashing, Track/Wind commissioning, Production promotion or
 public release is established here. The existing endurance skip remains in
 effect; no new design acceptance is claimed.
+
+## Coordinator preflight before candidate freeze
+
+- Full maintained 21-patch preparation/reconstruction passed against the pinned
+  OpenCPN revision. Earlier track include-context conflicts were corrected.
+- Standalone production UI library and Sheet/Choice fixtures compiled. Both
+  fixtures passed under Xvfb, including 100/125/150% field/action sizing and
+  selector dismissal/lifetime. Choice already had integrated registration;
+  its new standalone target is guarded to avoid a duplicate native target.
+- Twelve actual integration/upstream translation units compiled with the
+  configured Linux production flags: canvas, GL canvas, frame, track painter,
+  integration bootstrap, navigation objects/actions, track recording, settings,
+  chart presentation, S-52 and navigation database. This is object preflight,
+  not a linked product or Windows qualification. The initial Ninja invocation
+  pulled unrelated dependencies and was stopped; direct generated compile
+  commands then completed the bounded set.
+- Preparation fixtures: 2/2. Corresponding curl-source fixture: 1/1 against the
+  retained locked archive. Dependency receipt tests: 13/13; bundle tests: 31/31.
+  Distribution inputs and workflow YAML parsing passed. Initial fixture calls
+  missing the archive argument and stale patch inventory were corrected; they
+  are not counted as product failures or passing runs.
+- Independent SDK review rehashed both image-locked retained ZIP/manifests and
+  compared all 29 declared source payloads to exact producer Git. Only eight
+  application-patch inventory entries changed. Exact producer-bound helper
+  hash pairs now cover the two locked producers; no dependency recipe, binary,
+  ABI, image/toolchain check or native reprobe was waived. Fresh Windows reuse
+  still must pass in CI.
+
+Local coordinator evidence is retained under
+`.tmp/delivery-audit-20261019/` (not shipped). The versioned candidate and its
+CI/boat results will be recorded separately; these preflights do not authorize
+Production or establish physical pilot/lighthouse acceptance.

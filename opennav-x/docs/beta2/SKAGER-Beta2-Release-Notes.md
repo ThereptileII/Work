@@ -1,8 +1,32 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.4 · Staging candidate · release acceptance pending**
+**Version 0.4.0-beta2.6 · Staging candidate · qualification recorded with the release**
 
 ## This Staging increment
+
+- Route creation suggests chart-based names for its points and route, with one
+  inline name editor and visible Finish/Undo/Cancel actions. Arrival distance is
+  configurable per route; the active passage overlay uses the saved setting.
+- Track recording, saved tracks and a Tracks chart-layer switch are available
+  through SKAGER while OpenCPN retains the underlying recording and storage.
+- Online AIS merges static names by MMSI, keeps position freshness independent,
+  uses longer online aging intervals and shows MMSI when a name is missing.
+- Display adds the optional Very Light chart style, effective 100/125/150%
+  scaling, editable rail slots and personal presets. The compass cycles North,
+  Course and Head up. Forecast text, instrument wind detail, rounded panels,
+  the boat-settings shortcut and active-route heading are refined.
+- Repeated unchanged UI repaints are reduced. A shared listener synchronization
+  defect and stale registration on listener replacement are corrected. Route,
+  waypoint and track saves now refuse failed/partial database writes.
+- Alarm settings are easier to find, chart tools show placement hints, the
+  measurement label is themed and the launcher uses the SKAGER icon.
+
+The exact northern lighthouse reported by the user is not yet classified; this
+candidate does not claim that specific symbol is corrected. No firmware is
+flashed by this installer. TRACK/WIND depend on the configured adapter and
+confirmed pilot capabilities/feedback; physical commissioning remains separate.
+
+## Earlier Staging functionality
 
 - Chart: a click or tap opens the AIS, waypoint or route card; hovering no
   longer opens the route card. Route points and saved waypoints use the SKAGER
@@ -35,7 +59,8 @@
 - The manual pilot path uses the selected OpenCPN Actisense serial connection.
   Control remains OFF until explicitly configured and enabled for the session;
   exact device identity and fresh measured feedback are required. Sending a
-  message alone does not confirm a command. TRACK and WIND remain unavailable.
+  message alone does not confirm a command. Unsupported TRACK/WIND requests stay
+  unavailable or explicitly rejected; an accepted transmission is not success.
 - Private signed-update repository tooling is included in the corresponding
   source. Live signed boat update acceptance remains separate from package
   startup and rollback checks; consult the exact release qualification record.

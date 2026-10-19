@@ -100,12 +100,13 @@
    wxJSONValue v;
 --- a/gui/src/ocpn_frame.cpp
 +++ b/gui/src/ocpn_frame.cpp
-@@ -24,6 +24,8 @@
+@@ -24,7 +24,9 @@
   **************************************************************************/
  #ifdef OPENNAV_X
  #include "integration/OpenCPNIntegration.h"
 +#include "integration/TrackRecording.h"
 +#include "integration/TrackRecordingHooks.h"
+ #include "ui/StartupNavigationNotice.h"
  #endif
  #include "config.h"
  

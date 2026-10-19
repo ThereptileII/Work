@@ -1,5 +1,26 @@
 # SKAGER status — 2026-10-19
 
+## 19 October — audited Staging 0.4.0-beta2.6 preparation
+
+The user authorized reviewing the 15–19 October source-only batch, building a
+new Staging candidate and installing it on the boat. Three isolated Codex
+reviews found and corrected route/waypoint/track save-failure handling, shared
+Observable synchronization and move-registration cleanup, 125% sheet actions,
+unchanged ChoiceField repainting and rail-preset rollback compatibility.
+The previous vessel-settings encoding remains readable by the earlier binary.
+Two conflicting upstream patch contexts were corrected before CI.
+
+The complete patch stack prepares and reconstructs against pinned OpenCPN;
+standalone UI compilation, twelve changed native translation units and targeted
+persistence/settings/concurrency/Sheet/Choice checks have passed. Native Windows/package and replacement boat startup evidence are
+still pending. The exact northern lighthouse is not yet identified; firmware
+flashing and physical TRACK/WIND commissioning are not included. No new design
+sweep, endurance run, Production promotion or public opening is authorized.
+See [the report-by-report audit](evidence/source-batch-20261019/README.md).
+
+Historical source-only entries below remain evidence of what was and was not
+executed then; they do not describe the new candidate as installed or accepted.
+
 ## UI flicker — repaint corrections, native confirmation pending
 
 The SCRUM-378 follow-up removes confirmed redundant 250 ms repaint requests

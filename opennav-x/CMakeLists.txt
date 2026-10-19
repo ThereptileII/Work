@@ -224,6 +224,12 @@ if(OPENNAV_BUILD_UI_COMPONENTS AND (OPENNAV_BUILD_TESTS OR OCPN_BUILD_TEST))
   add_executable(status_footer_test tests/status_footer_test.cpp)
   add_executable(horizon_test tests/horizon_test.cpp)
   add_executable(sheet_field_size_test tests/sheet_field_size_test.cpp)
+  if(OPENNAV_BUILD_TESTS)
+    # Integrated native fixtures are attached by OpenCPN.cmake instead.
+    add_executable(choice_field_test tests/choice_field_test.cpp)
+    target_link_libraries(choice_field_test PRIVATE opennav_ui)
+    set_target_properties(choice_field_test PROPERTIES RUNTIME_OUTPUT_DIRECTORY "${CMAKE_BINARY_DIR}")
+  endif()
   # Explicit component capture only, never installed or run with the app.
   add_executable(chart_chrome_presentation_test tests/chart_chrome_presentation_test.cpp)
   target_compile_definitions(chart_chrome_presentation_test PRIVATE SKAGER_CHROME_CORRECTION)

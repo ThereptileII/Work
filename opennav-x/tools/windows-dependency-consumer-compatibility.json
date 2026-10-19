@@ -6,7 +6,7 @@
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "c9301e3cfbcd25f68c10fa1ae1c3f0af37e1b583721310955f7cad8c3687b6ae",
-          "currentSha256": "78cc2b817c4baa33ffaac86626511a0a5987163e7f3561a37d3b11da41dd1301"
+          "currentSha256": "b97450155e86b38a2a290978e71ed4c9dda4bab097cfead9a270b0f8a841ff33"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "232c452bbded83b413dbf91c2e5a3686a9c32590180532345b0aa3ed5ea10064",
@@ -24,7 +24,7 @@
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "5938c907570e872571b96f9e95b5d25edfe9dca1860efaa16405545aea14b9f3",
-          "currentSha256": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c"
+          "currentSha256": "0f12dc8ff2218a7703d5edb0bf81bdf5531bef6790b0a62044b6b25d3b3effdf"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "2a1fd321ade8c6603f318be6367363bffddf06d1679045f248825038a29f7ada",
@@ -42,7 +42,7 @@
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "8c60716cb5675f7677c6ff29bbccd9d9abe26876a412c88bc14685c15a97218d",
-          "currentSha256": "78cc2b817c4baa33ffaac86626511a0a5987163e7f3561a37d3b11da41dd1301"
+          "currentSha256": "b97450155e86b38a2a290978e71ed4c9dda4bab097cfead9a270b0f8a841ff33"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "558159819ef1e1832aa92a2ff960bff17787a99a4dfb92ca77b6fed4e9410eb5",
@@ -50,17 +50,17 @@
         },
         "tools/windows_dependency_reuse.py": {
           "originalSha256": "ee089aa8c3ba5998be6d5d049aa76c3e22ca4125ed12ee4cb53a33d8a19d075e",
-          "currentSha256": "0243fbaeb8ff847e60c66f9b560a686396cb5d0e2cbadc1cab82b0a4385e8b07"
+          "currentSha256": "b350c5394808b1d0a43a673f2c83adcbfac085b7ab6d46a2cfeea3b132f15e9e"
         }
       },
-      "reason": "Exact LF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification. SCRUM-378 adds only opencpn-5.12.4-chart-display.patch to this consumer receipt inventory; the dependency-only producer still does not consume application presentation patches. Original producer/toolchain/binary identity is unchanged. The new private chart adapter has separate changed inputs and must be rebuilt."
+      "reason": "Exact LF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification. SCRUM-378 adds only opencpn-5.12.4-chart-display.patch to this consumer receipt inventory; the dependency-only producer still does not consume application presentation patches. Original producer/toolchain/binary identity is unchanged. The new private chart adapter has separate changed inputs and must be rebuilt. SCRUM-298/376 audit adds only navobj-persistence and observable-locking application patches to the same-job receipt inventory. The dependency-only producer does not consume them; producer recipes, SDK bytes and native toolchain requirements remain unchanged."
     },
     {
       "producerCommit": "49f9f07407cbf640f6186757a3fe3582c114b895",
       "files": {
         "tools/windows_dependency_bundle.py": {
           "originalSha256": "bc2dae00aa61cd074a4b26ac7e96a1f056896ee2dc34df11edd37fa7e2a7d3a7",
-          "currentSha256": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c"
+          "currentSha256": "0f12dc8ff2218a7703d5edb0bf81bdf5531bef6790b0a62044b6b25d3b3effdf"
         },
         "tools/build-pristine-windows.ps1": {
           "originalSha256": "4d57a2066fd48c2bbff5c5b80bbcc9df0266cfd0ad134878699cf488614ec519",
@@ -68,10 +68,82 @@
         },
         "tools/windows_dependency_reuse.py": {
           "originalSha256": "3d24f69d94db10d1affadc35a7f2746b5d68ae43dcb9e1f2fa7e4967c7768a8c",
-          "currentSha256": "388a76d4b1ed4e39afc16670c4783cb650e4ec1dea3795e5d8ea3028526782f6"
+          "currentSha256": "c4a0053e33e8749e4006ba6d74cff3544f1a00417585a2e37c6df53699f4597b"
         }
       },
-      "reason": "Exact CRLF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification. SCRUM-378 adds only opencpn-5.12.4-chart-display.patch to this consumer receipt inventory; the dependency-only producer still does not consume application presentation patches. Original producer/toolchain/binary identity is unchanged. The new private chart adapter has separate changed inputs and must be rebuilt."
+      "reason": "Exact CRLF source-checkout pair for authenticated producer run 37824634218 attempt 1, artifact 11574361322, ZIP SHA256 4cb9996c170f067850ffda07e5c9eb3906e73a21bd4c462893b19fc32775680d. Complete original payload inventory and all 30 source/workflow inputs independently verified. Only prior consumer deltas are post-application-install wx runtime provenance and same-job application route-focus/route-hit-dpi patch inventory; DependenciesOnly seals and returns before either application stage. The additional verifier change selects an exact producer-bound hash entry from a closed two-producer set. Original source, library recipes/options/ABI, toolchain facts, complete inventory, native reprobes and SDK artifact/manifest remain unchanged. LF/CRLF are explicit source-checkout pairs; verification never normalizes payload or binaries. This is not native reuse or application acceptance. SCRUM-377 adds only track-recording and track-presentation application patches to the same-job source inventory; the dependency-only producer does not consume either patch. This source-only inventory update has not run native reuse qualification. SCRUM-378 adds only opencpn-5.12.4-chart-display.patch to this consumer receipt inventory; the dependency-only producer still does not consume application presentation patches. Original producer/toolchain/binary identity is unchanged. The new private chart adapter has separate changed inputs and must be rebuilt. SCRUM-298/376 audit adds only navobj-persistence and observable-locking application patches to the same-job receipt inventory. The dependency-only producer does not consume them; producer recipes, SDK bytes and native toolchain requirements remain unchanged."
+    },
+    {
+      "producerCommit": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "78cc2b817c4baa33ffaac86626511a0a5987163e7f3561a37d3b11da41dd1301",
+          "currentSha256": "b97450155e86b38a2a290978e71ed4c9dda4bab097cfead9a270b0f8a841ff33"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3",
+          "currentSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "08e014603f91bced2a96482c6af7a02b3d9587d32450b8c5d7954da367915844",
+          "currentSha256": "b350c5394808b1d0a43a673f2c83adcbfac085b7ab6d46a2cfeea3b132f15e9e"
+        }
+      },
+      "reason": "Exact LF checkout pair for the image-locked SDK producer. Retained authenticated ZIP and bundle.json were rehashed on 19 October; all declared source payloads match this exact Git producer. Only eight application PATCHES entries in the same-job receipt helper differ; dependency-only builds never apply them. The verifier additionally extends its closed producer set to these two exact reviewed image-locked producers. No producer recipe, binary, ABI, runner/toolchain requirement or reprobe is waived. Original/current three-helper hashes are explicit and runtime verification never normalizes payload bytes."
+    },
+    {
+      "producerCommit": "68c835175bdbc441e57aa1201db8f6ca95a7d1e7",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+          "currentSha256": "0f12dc8ff2218a7703d5edb0bf81bdf5531bef6790b0a62044b6b25d3b3effdf"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344",
+          "currentSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+          "currentSha256": "c4a0053e33e8749e4006ba6d74cff3544f1a00417585a2e37c6df53699f4597b"
+        }
+      },
+      "reason": "Exact CRLF checkout pair for the image-locked SDK producer. Retained authenticated ZIP and bundle.json were rehashed on 19 October; all declared source payloads match this exact Git producer. Only eight application PATCHES entries in the same-job receipt helper differ; dependency-only builds never apply them. The verifier additionally extends its closed producer set to these two exact reviewed image-locked producers. No producer recipe, binary, ABI, runner/toolchain requirement or reprobe is waived. Original/current three-helper hashes are explicit and runtime verification never normalizes payload bytes."
+    },
+    {
+      "producerCommit": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "78cc2b817c4baa33ffaac86626511a0a5987163e7f3561a37d3b11da41dd1301",
+          "currentSha256": "b97450155e86b38a2a290978e71ed4c9dda4bab097cfead9a270b0f8a841ff33"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3",
+          "currentSha256": "9744856dc1ab694162c51d67c834682fa6437890619718679648116fe2d052a3"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "08e014603f91bced2a96482c6af7a02b3d9587d32450b8c5d7954da367915844",
+          "currentSha256": "b350c5394808b1d0a43a673f2c83adcbfac085b7ab6d46a2cfeea3b132f15e9e"
+        }
+      },
+      "reason": "Exact LF checkout pair for the image-locked SDK producer. Retained authenticated ZIP and bundle.json were rehashed on 19 October; all declared source payloads match this exact Git producer. Only eight application PATCHES entries in the same-job receipt helper differ; dependency-only builds never apply them. The verifier additionally extends its closed producer set to these two exact reviewed image-locked producers. No producer recipe, binary, ABI, runner/toolchain requirement or reprobe is waived. Original/current three-helper hashes are explicit and runtime verification never normalizes payload bytes."
+    },
+    {
+      "producerCommit": "bfbfdca7573c14f4623d2b8b42159abedb99e351",
+      "files": {
+        "tools/windows_dependency_bundle.py": {
+          "originalSha256": "fb23bf009efade77e45af47dc97ac7d9d2874e65b81f9a279a7822341667597c",
+          "currentSha256": "0f12dc8ff2218a7703d5edb0bf81bdf5531bef6790b0a62044b6b25d3b3effdf"
+        },
+        "tools/build-pristine-windows.ps1": {
+          "originalSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344",
+          "currentSha256": "25dd389f31788bf7a49cfc230bcffb3c6e61b5e9c42219b30c7564495e312344"
+        },
+        "tools/windows_dependency_reuse.py": {
+          "originalSha256": "cfa564fac0452eebedd1f539ee5dda5711fdd2e8fadeb8a31cfca9cdb2df10d9",
+          "currentSha256": "c4a0053e33e8749e4006ba6d74cff3544f1a00417585a2e37c6df53699f4597b"
+        }
+      },
+      "reason": "Exact CRLF checkout pair for the image-locked SDK producer. Retained authenticated ZIP and bundle.json were rehashed on 19 October; all declared source payloads match this exact Git producer. Only eight application PATCHES entries in the same-job receipt helper differ; dependency-only builds never apply them. The verifier additionally extends its closed producer set to these two exact reviewed image-locked producers. No producer recipe, binary, ABI, runner/toolchain requirement or reprobe is waived. Original/current three-helper hashes are explicit and runtime verification never normalizes payload bytes."
     }
   ]
 }

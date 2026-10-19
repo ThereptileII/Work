@@ -490,6 +490,12 @@ jobs:
           python3 opennav-x/tools/test-peer-buffer.py > opennav-x/evidence/local/peer-buffer-linux.log 2>&1
       - name: Build integrated application and run regressions without exceptions
         run: bash opennav-x/tools/build-integration-linux.sh
+      - name: Verify native listener lifetime and atomic navigation saves
+        run: |
+          python3 opennav-x/tests/observable_concurrency/run.py --upstream opennav-x/upstream/OpenCPN --build-dir opennav-x/evidence/local/observable-concurrency > opennav-x/evidence/local/observable-concurrency-linux.log 2>&1
+          python3 opennav-x/tests/navobj_persistence/run.py --source opennav-x/build/integration-source --output opennav-x/evidence/local/navobj-persistence --generator Ninja > opennav-x/evidence/local/navobj-persistence-linux.log 2>&1
+          timeout 30s xvfb-run -a opennav-x/build/xnav-linux/sheet_field_size_test
+          timeout 30s xvfb-run -a opennav-x/build/xnav-linux/choice_field_test
       - name: Bound actual core chart raster observation and Standard fallback
         run: |
           python3 opennav-x/tools/test-chart-render-observation.py --source opennav-x/build/integration-source --core-only --output opennav-x/evidence/local/chart-render-observation > opennav-x/evidence/local/chart-render-observation-linux.log 2>&1
@@ -655,6 +661,14 @@ jobs:
       - name: Compile fixture application and run compiled security and unit checks
         id: integrated
         run: ./opennav-x/tools/build-pristine-windows.ps1 -Architecture Win32 -Integration -VerifyPeerCli -PrivateOCharts -DeferRuntimeQualification -DependencyBundle "$env:GITHUB_WORKSPACE/dependency-bundle" -DependencyBundleProvenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
+      - name: Verify native listener lifetime and atomic navigation saves
+        run: |
+          $wx = Join-Path $env:GITHUB_WORKSPACE 'opennav-x/build/integration-source/cache/wxWidgets-3.2.8'
+          $env:PATH = "$wx/lib/vc14x_dll;$env:GITHUB_WORKSPACE/opennav-x/build/integration-source/cache/buildwin;$env:PATH"
+          python opennav-x/tests/observable_concurrency/run.py --upstream opennav-x/upstream/OpenCPN --build-dir opennav-x/evidence/local/observable-concurrency --cmake-arg=-G --cmake-arg="Visual Studio 17 2022" --cmake-arg=-A --cmake-arg=Win32 --cmake-arg="-DwxWidgets_ROOT_DIR=$wx" --cmake-arg="-DwxWidgets_LIB_DIR=$wx/lib/vc14x_dll" --cmake-arg=-DwxWidgets_CONFIGURATION=mswu --cmake-arg=-DwxWidgets_USE_REL_AND_DBG=OFF > opennav-x/evidence/local/observable-concurrency-windows.log 2>&1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tests/navobj_persistence/run.py --source opennav-x/build/integration-source --output opennav-x/evidence/local/navobj-persistence --generator "Visual Studio 17 2022" --architecture Win32 > opennav-x/evidence/local/navobj-persistence-windows.log 2>&1
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify packaged source reproduces the curl certificate-tool patch
         if: ${{ success() && steps.integrated.conclusion == 'success' }}
         run: |

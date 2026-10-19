@@ -2,8 +2,9 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 index 3e5f42e8..757b8382 100644
 --- a/gui/src/chcanv.cpp
 +++ b/gui/src/chcanv.cpp
-@@ -75,6 +75,7 @@
+@@ -75,7 +75,8 @@
  #ifdef OPENNAV_X
+ #include "integration/ActiveRoutePassageOverlay.h"
  #include "integration/ChartPresentation.h"
  #include "integration/ChartAnchorWatch.h"
 +#include "integration/TrackPresentation.h"
@@ -89,8 +90,9 @@ diff --git a/gui/src/glChartCanvas.cpp b/gui/src/glChartCanvas.cpp
 index 75791e2a..8781c584 100644
 --- a/gui/src/glChartCanvas.cpp
 +++ b/gui/src/glChartCanvas.cpp
-@@ -72,6 +72,7 @@
+@@ -72,7 +72,8 @@
  #ifdef OPENNAV_X
+ #include "integration/ActiveRoutePassageOverlay.h"
  #include "integration/ChartPresentation.h"
  #include "integration/OpenCPNIntegration.h"
 +#include "integration/TrackPresentation.h"

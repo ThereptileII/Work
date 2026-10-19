@@ -366,13 +366,16 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
         actual = {name: receipt._digest(source / name) for name in bundle.CONSUMER_FILES}
         matches = [entry for entry in policy['entries'] if all(
             entry['files'][name]['currentSha256'] == actual[name] for name in bundle.CONSUMER_FILES)]
-        self.assertEqual(len(matches), 1)
-        self.assertEqual(matches[0]['producerCommit'], '49f9f07407cbf640f6186757a3fe3582c114b895')
+        self.assertEqual(len(matches), 3)
+        self.assertEqual({entry['producerCommit'] for entry in matches}, {
+            '49f9f07407cbf640f6186757a3fe3582c114b895',
+            '68c835175bdbc441e57aa1201db8f6ca95a7d1e7',
+            'bfbfdca7573c14f4623d2b8b42159abedb99e351'})
 
     def test_selected_producer_reuse_change_is_only_the_reviewed_application_patches(self):
         # Check both explicit checkout encodings; runtime verification never
         # normalizes bytes. The selected producer's exact diff adds two receipt
-        # route entries plus five presentation/input entries; the original
+        # route/presentation entries and two persistence/concurrency entries; the original
         # historical producer policy remains separate. The exact consumer
         # compatibility policy must be reviewed before these bytes can reuse it.
         source = Path(__file__).resolve().parent.parent
@@ -384,17 +387,40 @@ class BundleTests(fixtures.WindowsDependencyEvidenceTests):
                  b'    "opencpn-5.12.4-chart-tool-input.patch",\n'
                  b'    "opencpn-5.12.4-startup-presentation.patch",\n'
                  b'    "opencpn-5.12.4-track-recording.patch",\n'
+                 b'    "opencpn-5.12.4-navobj-persistence.patch",\n'
                  b'    "opencpn-5.12.4-track-presentation.patch",\n'
                  b'    "opencpn-5.12.4-chart-display.patch",\n')
         self.assertEqual(data.count(added), 1)
+        observable = b'    "opencpn-5.12.4-observable-locking.patch",\n'
+        self.assertEqual(data.count(observable), 1)
         policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
         for newline in (b'\n', b'\r\n'):
             current = data.replace(b'\n', newline)
-            original = data.replace(added, b'').replace(b'\n', newline)
+            original = data.replace(added, b'').replace(observable, b'').replace(b'\n', newline)
             expected = {'originalSha256': bundle.hashlib.sha256(original).hexdigest(),
                         'currentSha256': bundle.hashlib.sha256(current).hexdigest()}
             self.assertEqual(sum(entry['producerCommit'] == '49f9f07407cbf640f6186757a3fe3582c114b895' and
                                  entry['files'][name] == expected for entry in policy['entries']), 1)
+
+    def test_image_locked_producer_receipt_delta_is_only_application_inventory(self):
+        source = Path(__file__).resolve().parent.parent
+        name = 'tools/windows_dependency_reuse.py'
+        data = (source / name).read_bytes().replace(b'\r\n', b'\n')
+        original = data
+        for patch in ('observable-locking', 'measure-label', 'chart-tool-input',
+                      'startup-presentation', 'track-recording', 'navobj-persistence',
+                      'track-presentation', 'chart-display'):
+            entry = f'    "opencpn-5.12.4-{patch}.patch",\n'.encode()
+            self.assertEqual(original.count(entry), 1)
+            original = original.replace(entry, b'')
+        policy = json.loads((source / bundle.CONSUMER_COMPATIBILITY).read_text())
+        for producer in ('68c835175bdbc441e57aa1201db8f6ca95a7d1e7',
+                         'bfbfdca7573c14f4623d2b8b42159abedb99e351'):
+            for newline in (b'\n', b'\r\n'):
+                expected = {'originalSha256': bundle.hashlib.sha256(original.replace(b'\n', newline)).hexdigest(),
+                            'currentSha256': bundle.hashlib.sha256(data.replace(b'\n', newline)).hexdigest()}
+                self.assertEqual(sum(entry['producerCommit'] == producer and entry['files'][name] == expected
+                                     for entry in policy['entries']), 1)
 
     def test_live_tool_reprobe_is_required_in_orchestrator(self):
         text = Path(__file__).with_name('build-pristine-windows.ps1').read_text()
