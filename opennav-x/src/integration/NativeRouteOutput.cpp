@@ -35,7 +35,8 @@ class NavigationCollector final : public AbstractCommDriver {
     if (!n2k || !dest || frames.size() >= 3 || n2k->PGN.pgn != order[frames.size()] ||
         n2k->priority != 6 || dest->iface != iface || dest->address != 255 ||
         dest->name.value.Name || n2k->payload.empty() || n2k->payload.size() > 223) return false;
-    frames.push_back({n2k->PGN.pgn, n2k->payload});
+    // The wider upstream PGN has already matched this exact canonical value.
+    frames.push_back({order[frames.size()], n2k->payload});
     return true;
   }
   std::vector<NavigationOutputFrame> frames;
