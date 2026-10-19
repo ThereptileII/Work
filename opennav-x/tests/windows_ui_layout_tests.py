@@ -19,8 +19,11 @@ check = namespace['assert_route_summary_layout']
 passed = 0
 
 
-def fixture(label='17.7 NM  /  Sheltered bay'):
-    # The prototype moves the same destination summary into the status row.
+route_label = 'DEMO coastal passage  \u2304'
+
+
+def fixture(label=route_label):
+    # The status row identifies the actual route and opens its passage panel.
     global labels, parents, bounds
     labels = [(3, ''), (4, 'Alerts 2'), (5, label), (6, 'No vessel input')]
     parents = {3: 2, 4: 2, 5: 2, 6: 2}
@@ -53,10 +56,10 @@ def is_child(parent, window):
 namespace['IsChild'] = is_child
 
 
-def verify(reject=False):
+def verify(reject=False, expected=route_label):
     global passed
     try:
-        check(1)
+        check(1, expected)
     except AssertionError:
         if not reject:
             raise
@@ -65,18 +68,18 @@ def verify(reject=False):
     passed += 1
 
 
-for caption in ('17.7 NM  /  Sheltered bay', '0.0 NM  /  Destination',
-                '1234.5 NM  /  Arkösund', 'Route unavailable', 'No active route'):
+for caption in (route_label, 'Sheltered bay  \u2304', 'Arkösund  \u2304',
+                'Route unavailable  \u2304', 'No active route  \u2304'):
     fixture(caption)
-    verify()
+    verify(expected=caption)
 
-for caption in ('17.7 NM to destination', '17.7 NM  /  ',
-                'NaN NM  /  Sheltered bay', '-1.0 NM  /  Sheltered bay'):
+for caption in ('17.7 NM  /  Sheltered bay', 'DEMO coastal passage',
+                'Wrong route  \u2304', 'No active route  \u2304'):
     fixture(caption)
     verify(reject=True)
 
 fixture()
-labels.append((7, 'Route unavailable'))
+labels.append((7, route_label))
 parents[7] = 99  # Unrelated page text is not the status summary.
 verify()
 
@@ -86,7 +89,7 @@ for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-alerts', 'duplicate
     fixture()
     if fault == 'missing': labels = [entry for entry in labels if entry[0] != 5]
     if fault == 'duplicate':
-        labels.append((7, 'No active route'))
+        labels.append((7, route_label))
         parents[7] = 2
     if fault == 'wrong-pane': parents[5] = 99
     if fault == 'missing-alerts': labels = [entry for entry in labels if entry[0] != 4]
@@ -100,6 +103,10 @@ for fault in ('missing', 'duplicate', 'wrong-pane', 'missing-alerts', 'duplicate
     if fault == 'frame-clipped': bounds[2] = (-1, 0, 1280, 68)
     if fault == 'failed-query': del bounds[5]
     verify(reject=True)
+
+for empty in ('', ' '):
+    fixture(empty)
+    verify(reject=True, expected=empty)
 
 print(f'{passed} native summary caption/geometry contracts passed')
 

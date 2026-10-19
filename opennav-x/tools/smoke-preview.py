@@ -522,13 +522,14 @@ try:
         assert 'Using portable plugin dir:' in native_log
         assert any('PluginLoader: Loading PlugIn:' in line and line.endswith('\\profile\\plugins\\dashboard_pi.dll')
                    for line in native_log.splitlines()), 'Bundled Dashboard was not discovered by the portable loader'
-        # Exercise bottom-pane reflow after a narrow viewport, not just a wide
-        # first launch. Keep the destination summary clear of adjacent controls.
+        # Exercise header reflow after a narrow viewport, not just a wide first
+        # launch. The initial fixture's actual route name replaces distance text.
         assert ui.SetWindowPos(handle,None,0,0,960,800,4)
         time.sleep(.6)
         ui.size_window(handle)
-        ui.assert_route_summary_layout(handle)
-        report['checks'].append('Bottom route summary lays out after narrow-to-wide resize')
+        data(lambda d:d.get('route',{}).get('id')=='DEMO-coastal-passage')
+        ui.assert_route_summary_layout(handle, 'DEMO coastal passage  \u2304')
+        report['checks'].append('Named header route summary lays out after narrow-to-wide resize')
     if not windows:
         command('System','s')
         data(lambda d:d['ui_page']=='System')

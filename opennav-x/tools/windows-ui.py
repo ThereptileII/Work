@@ -585,15 +585,14 @@ def assert_prototype_drawer(handle, name):
     assert ancestor(hit,2)==matches[0], 'Another window covers the drawer'
     return {'page':name,'native_pixels':[rect.right-rect.left,rect.bottom-rect.top], 'visible_and_uncovered':True}
 
-def assert_route_summary_layout(handle):
+def assert_route_summary_layout(handle, expected_label):
     """Destination summary reflows in the prototype status row."""
+    assert isinstance(expected_label, str) and expected_label.strip(), 'Exact route label required'
     labels = children(handle)
     alerts = [h for h,t in labels if re.fullmatch(r'Alerts(?: \d+)?',t)]
     assert len(alerts)==1, 'Status row must have one alert action'
     top = GetParent(alerts[0])
-    summary = [h for h, text in labels if GetParent(h) == top and
-               (text in ('Route unavailable', 'No active route') or
-                re.fullmatch(r'[0-9]+\.[0-9] NM  /  \S.*', text))]
+    summary = [h for h, text in labels if GetParent(h) == top and text == expected_label]
     assert len(summary)==1, 'Route summary missing or ambiguous'
     a,pane,frame=(W.RECT() for _ in range(3))
     for window, rect in ((summary[0], a), (top, pane), (handle, frame)):
