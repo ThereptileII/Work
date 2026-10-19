@@ -76,6 +76,13 @@ dependency; the pinned OpenCPN batch and authenticated SDK recipe remain
 unchanged. A separate native prerequisite job exercises the actual stock,
 iphlpapi and QuickStartGuide downloads before another full application build.
 Its wx inputs use the same three hash-pinned curl archives as the normal driver.
+That focused proof `39286403544` passed, but Staging `39286796729` exposed a
+composition error before application compilation: publishing Wget's private
+folder changed the producer PATH hash. All other native tool facts matched.
+The corrected acquisition adds only an exclusive verified executable to the
+existing disposable CI tool directory; it leaves PATH and SDK checks unchanged.
+The focused native AIS workflow now composes this acquisition with the actual
+SDK reprobes and complete stock configuration before another full build.
 The new application and its boat startup remain pending; this is not runtime
 acceptance or a delivered replacement.
 

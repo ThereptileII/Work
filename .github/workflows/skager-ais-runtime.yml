@@ -58,6 +58,15 @@ jobs:
         run: |
           python opennav-x/tools/windows_dependency_bundle.py restore --root opennav-x --bundle "$env:GITHUB_WORKSPACE/dependency-bundle" --provenance "$env:GITHUB_WORKSPACE/dependency-provenance.json"
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare exact host tools without changing producer PATH
+        shell: pwsh
+        run: |
+          python opennav-x/tools/prepare-windows-poedit.py --evidence opennav-x/evidence/local/windows-poedit-preparation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/test-prepare-windows-wget.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-windows-wget.py --evidence opennav-x/evidence/local/windows-wget-preparation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Verify SDK once before the AIS consumer repeats verification
         shell: pwsh
         run: |
