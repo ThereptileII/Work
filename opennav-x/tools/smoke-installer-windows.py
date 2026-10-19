@@ -453,6 +453,30 @@ def stable_resources(profile,stock,tides=None):
     for section,key,path in [('Directories','BasemapDir',stock/'gshhs'),('Directories','BaseShapefileDir',stock/'basemap_shp'),('Settings/AIS','AISAlertAudioFile',stock/'sounds/2bells.wav')]:
         assert Path(config.get(section,key)).samefile(path),(section,key,config.get(section,key))
         assert path.exists()
+def candidate_notice_sources(commit):
+    # Retained packages may predate the SKAGER notice. Select from their exact
+    # corresponding source, never from a broad version range or observed title.
+    archive=ROOT/'build/developer-preview/SKAGER-Beta2-source.zip'
+    with zipfile.ZipFile(archive) as source:
+        def regular(name,required=True):
+            entries=[e for e in source.infolist() if e.filename.casefold()==name.casefold()]
+            if not entries and not required:return None
+            assert len(entries)==1 and entries[0].orig_filename==name and not entries[0].is_dir()
+            assert (entries[0].external_attr>>16)&0o170000 in (0,0o100000),'Notice source must be a regular file'
+            return source.read(entries[0])
+        reference=staging_inputs.strict_json(regular('SOURCE_REFERENCE.json'))
+        assert reference['productCommit']==commit,'Notice source belongs to another candidate'
+        result={}
+        for path in welcome.SKAGER_SOURCES:
+            content=regular(path,required=False)
+            if content is None:
+                assert path not in reference['files'],'Notice source is missing from its archive'
+            else:
+                digest=hashlib.sha256(content).hexdigest()
+                assert reference['files'].get(path,{}).get('sha256')==digest,'Notice source bytes differ'
+                result[path]=digest
+        return result
+
 def launch(exe,mode,title,profile,name,welcome_transition=None):
     proof=None
     if welcome_transition:
@@ -465,32 +489,62 @@ def launch(exe,mode,title,profile,name,welcome_transition=None):
         accepted=json.loads((ROOT/'tools/accepted-beta1.lock.json').read_text())
         candidate=json.loads((ROOT/'build/developer-preview/SKAGER-Beta2-Portable-Recovery/docs/PRODUCT_BUILD.json').read_text())
         proof=welcome.version_transition(welcome_transition,sha(exe),ownership,accepted['commit'],candidate['commit'],candidate['version'])
+        sources=candidate_notice_sources(candidate['commit']) if welcome_transition=='beta1-to-candidate' and mode==['--xnav'] else None
+        presentation=welcome.notice_presentation(welcome_transition,mode,sources)
+        proof['noticePresentation']=presentation
     before=startup_baseline(profile)
     p=subprocess.Popen([str(exe),'--no_opengl',*mode]);owned.add(p.pid)
     if proof:
         # Pinned MyApp::OnInit shows this caution whenever ConfigVersionString
         # changes, including the genuine accepted Beta1/candidate transition.
         # Preserve and acknowledge that visible notice; never edit its INI flags.
-        dialog,_=ui.wait_window('Welcome to OpenCPN',p.pid,timeout=45)
+        dialog,_=ui.wait_window(welcome.notice_title(presentation),p.pid,timeout=45)
         assert p.poll() is None and sha(exe)==proof['executableSha256']
         query=ui.declare(ui.kernel,'QueryFullProcessImageNameW',ctypes.c_int,ctypes.c_void_p,ctypes.c_ulong,ctypes.c_wchar_p,ctypes.POINTER(ctypes.c_ulong))
         buffer=ctypes.create_unicode_buffer(32768);length=ctypes.c_ulong(len(buffer))
         assert query(int(p._handle),0,buffer,ctypes.byref(length)) and Path(buffer.value).samefile(exe),'Welcome belongs to another executable'
         def verify_notice():
             assert p.poll() is None and sha(exe)==proof['executableSha256']
-            buttons=[]
+            buttons=[];controls=[]
+            get_id=ui.declare(ui.user,'GetDlgCtrlID',ctypes.c_int,ctypes.c_void_p)
+            get_style=ui.declare(ui.user,'GetWindowLongW',ctypes.c_long,ctypes.c_void_p,ctypes.c_int)
             for child,_ in ui.children(dialog):
                 kind=ctypes.create_unicode_buffer(128);ui.GetClassNameW(child,kind,len(kind))
                 if kind.value=='Button':
                     assert ui.IsWindowEnabled(child)
                     buttons.append(ui.control_text(child))
-            welcome.validate_notice(p.pid,dialog,ui.windows(p.pid),buttons)
+                if presentation=='skager':
+                    owner=ui.W.DWORD();ui.GetWindowThreadProcessId(child,ctypes.byref(owner))
+                    controls.append(dict(handle=child,pid=owner.value,parent=ui.GetParent(child),
+                        id=get_id(child),style=get_style(child,-16),label=ui.control_text(child),
+                        **{'class':kind.value,'enabled':bool(ui.IsWindowEnabled(child)),
+                           'visible':bool(ui.IsWindowVisible(child))}))
+            actions=welcome.skager_actions(p.pid,dialog,controls) if presentation=='skager' else {}
+            frame=welcome.validate_notice(p.pid,dialog,ui.windows(p.pid),
+                list(actions) if presentation=='skager' else buttons,presentation)
+            get_owner=ui.declare(ui.user,'GetWindow',ctypes.c_void_p,ctypes.c_void_p,ctypes.c_uint)
+            assert get_owner(dialog,4)==frame and ui.IsWindowEnabled(dialog) and not ui.IsWindowEnabled(frame),'Notice is not the owned active modal'  # GW_OWNER
+            return frame,actions
         verify_notice()
         image=EVIDENCE/(name+'-welcome.png')
         ui.capture(dialog,image,resize=False,screen_pixels=True)
         report['screenshots'].append(image.name)
-        verify_notice()
-        ui.dismiss_native_dialog(dialog,'Agree')
+        frame,actions=verify_notice()
+        if presentation=='skager':
+            def agree():
+                ui.SetForegroundWindow(dialog)
+                current_frame,current_actions=verify_notice()
+                assert current_frame==frame and current_actions==actions,'Notice controls changed before consent'
+                button=actions['Agree'];rect=ui.W.RECT();bounds=ui.W.RECT()
+                assert ui.GetWindowRect(button,ctypes.byref(rect)) and ui.GetWindowRect(dialog,ctypes.byref(bounds))
+                assert bounds.left<=rect.left<rect.right<=bounds.right and bounds.top<=rect.top<rect.bottom<=bounds.bottom
+                point=ui.W.POINT((rect.left+rect.right)//2,(rect.top+rect.bottom)//2)
+                assert ui.WindowFromPoint(point)==button,'Navigation consent action is obscured'
+                assert ui.SetCursorPos(point.x,point.y)
+                ui.MouseEvent(2,0,0,0,0);time.sleep(.05);ui.MouseEvent(4,0,0,0,0)
+            ui.complete_modal_action(p.pid,welcome.notice_title(presentation),frame,agree)
+        else:
+            ui.dismiss_native_dialog(dialog,'Agree')
         report.setdefault('versionNotices',[]).append(dict(proof,pid=p.pid,screenshot=image.name,transition=welcome_transition))
         check('Expected '+welcome_transition+' safety notice captured and acknowledged through its visible Agree button')
     h,pid=ui.wait_window(title,p.pid,timeout=45);wait_ready(profile,before)
