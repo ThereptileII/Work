@@ -657,6 +657,12 @@ jobs:
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
           python opennav-x/tools/prepare-windows-poedit.py --evidence opennav-x/evidence/local/windows-poedit-preparation
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare pinned standalone Wget without the package feed
+        run: |
+          python opennav-x/tools/test-prepare-windows-wget.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-windows-wget.py --evidence opennav-x/evidence/local/windows-wget-preparation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - name: Native AIS observation and transport with verified maintained TLS
         run: |
           python opennav-x/tools/test-ais-runtime-gate.py

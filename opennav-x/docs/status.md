@@ -64,8 +64,20 @@ The closed boat installation has a fresh verified application/profile backup.
 A cold preservation capture retained the current profile and plugins unchanged;
 all 35 differences from its predecessor were reviewed without granting launch
 or hardware authority. Its 4,522,380-byte inventory exposed a separate helper
-reader limit before completion. That bounded tooling repair is being qualified
-before installation proceeds. The boat still has its previous Beta 2.5 build.
+reader limit before completion. The bounded reader repair at `5f11ed9c` passed
+native helper qualification `39279648610`; the real cold-baseline completion
+then succeeded with the preserved profile unchanged and no application launch.
+The boat still has its previous Beta 2.5 build.
+
+Staging `39281113824` passed its native AIS/TLS probe, then stopped before
+application compilation when the Chocolatey Wget feed returned HTTP 499. A
+consumer-only, hash-pinned native Wget acquisition replaces that package-feed
+dependency; the pinned OpenCPN batch and authenticated SDK recipe remain
+unchanged. A separate native prerequisite job exercises the actual stock,
+iphlpapi and QuickStartGuide downloads before another full application build.
+Its wx inputs use the same three hash-pinned curl archives as the normal driver.
+The new application and its boat startup remain pending; this is not runtime
+acceptance or a delivered replacement.
 
 ## UI flicker — repaint corrections, native confirmation pending
 

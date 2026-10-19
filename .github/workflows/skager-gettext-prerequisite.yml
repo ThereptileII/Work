@@ -1,4 +1,4 @@
-name: SKAGER native gettext prerequisite
+name: SKAGER native build prerequisites
 on:
   push:
     branches: [skager-gettext-prerequisite]
@@ -7,9 +7,9 @@ permissions:
   contents: read
 jobs:
   gettext:
-    name: Native Poedit prerequisite and translation proof
+    name: Native tools and unchanged stock provisioning
     runs-on: windows-2022
-    timeout-minutes: 15
+    timeout-minutes: 25
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       - name: Prepare pinned native Poedit without the package feed
@@ -24,11 +24,32 @@ jobs:
         run: |
           python opennav-x/tools/test-windows-gettext-native.py --evidence opennav-x/evidence/local/windows-gettext-native
           if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prepare pinned standalone Wget without the package feed
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-prepare-windows-wget.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-windows-wget.py --evidence opennav-x/evidence/local/windows-wget-preparation
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Fetch and prepare pinned OpenCPN source
+        shell: pwsh
+        run: |
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          python opennav-x/tools/prepare-integration.py
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+      - name: Prove unchanged dependency provisioning before an application build
+        shell: pwsh
+        run: |
+          python opennav-x/tools/test-windows-stock-configure.py --root opennav-x --provision-only
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         if: always()
         with:
-          name: native-gettext-${{ github.sha }}
+          name: native-build-prerequisites-${{ github.sha }}
           path: |
             opennav-x/evidence/local/windows-gettext-native
             opennav-x/evidence/local/windows-poedit-preparation
+            opennav-x/evidence/local/windows-wget-preparation
+            opennav-x/evidence/local/windows-stock-provision
           if-no-files-found: error
