@@ -26,6 +26,7 @@ int main() {
     b.settings.sources[vessel::Quantity::Depth]={"sensor-one",{vessel::Duration{1000},vessel::Duration{3000}}};
     b.settings.signal_k_mappings={{"propulsion.main.electricalPower",vessel::Quantity::MotorPower,.001,0}};
     b.settings.pilot={"excluded-interface","c0508700e76004d2",true};
+    b.settings.rail_presets={{"Anchor",{"depth","heading","aws","soc"}}};
     b.display={125,application::ChartLayout::ChartFocus}; b.chart_safety_depth_m=3.75;
     const auto encoded=application::EncodeSettingsBackup(b);
     Check(encoded.find("pilot.")==std::string::npos && encoded.find("excluded-interface")==std::string::npos,"Pilot permission exported");
@@ -34,9 +35,11 @@ int main() {
         restored.display.layout==b.display.layout && restored.chart_safety_depth_m==3.75 &&
         restored.settings.energy.battery.capacity_kwh==24 && restored.settings.energy.curve.points.size()==2 &&
         restored.settings.sources.at(vessel::Quantity::Depth).pinned_source=="sensor-one" &&
+        restored.settings.rail_presets==b.settings.rail_presets &&
         restored.settings.signal_k_mappings[0].scale==.001 && !restored.settings.pilot.permit_control,"Round trip lost configuration");
     const auto blank=application::DecodeSettingsBackup(application::EncodeSettingsBackup({}));
     Check(std::isnan(blank.settings.energy.battery.capacity_kwh) && std::isnan(blank.chart_safety_depth_m),"Missing values fabricated");
+    Check(blank.settings.rail_presets.empty(),"Older/empty backups invented rail presets");
     for(const auto &bad:{std::string{},"SKAGER_SETTINGS_BACKUP 2\n"+encoded,
           encoded+"\"credentials\" \"secret\"\n",encoded+"\"vessel\" \"duplicate\"\n",
           encoded.substr(0,encoded.size()-3),std::string(application::SettingsBackupLimit+1,'x'),

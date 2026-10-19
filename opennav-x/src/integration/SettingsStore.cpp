@@ -5,10 +5,18 @@
 namespace opennav::integration {
 namespace {
 constexpr const char *key = "/OpenNav/AlphaSettings";
+constexpr const char *presets_key = "/OpenNav/RailPresetsV1";
 constexpr const char *name_key = "/OpenNav/VesselName";
 constexpr const char *chart_key = "/Settings/GlobalState/S52_MAR_SAFETY_CONTOUR";
 constexpr const char *setup_key = "/OpenNav/BoatSetupV1";
 constexpr const char *display_key = "/OpenNav/DisplayPreferencesV1";
+std::string ProfileSettings(const application::Settings &settings) {
+  // Older supported binaries reject unknown AlphaSettings fields. Keep this
+  // record byte-compatible and persist presets only in their separate key.
+  auto compatible = settings;
+  compatible.rail_presets.clear();
+  return application::EncodeSettings(compatible);
+}
 bool ValidName(const std::string &name) {
   if (name.empty()) return true;  // Unconfigured is a real profile state.
   if (name.size() > 128 ||
@@ -52,15 +60,27 @@ SettingsStore::SettingsStore(wxFileConfig &config, bool fresh_profile) : config_
   wxString text;
   if (!config_.Read(key, &text)) {
     if (status_.empty()) status_ = "Live vessel settings unconfigured";
-    return;
+  } else {
+    try {
+      settings_ = application::DecodeSettings(text.ToStdString(wxConvUTF8));
+      if (status_.empty()) status_ = "Loaded OpenCPN profile settings";
+    } catch (const std::exception &e) {
+      status_ =
+          std::string("Settings rejected; live model disabled: ") + e.what();
+      wxLogWarning("SKAGER %s", wxString::FromUTF8(status_));
+    }
   }
-  try {
-    settings_ = application::DecodeSettings(text.ToStdString(wxConvUTF8));
-    if (status_.empty()) status_ = "Loaded OpenCPN profile settings";
-  } catch (const std::exception &e) {
-    status_ =
-        std::string("Settings rejected; live model disabled: ") + e.what();
-    wxLogWarning("SKAGER %s", wxString::FromUTF8(status_));
+  // An absent separate key retains any earlier inline presets until the next
+  // explicit save migrates them. A present key, including empty, owns presets.
+  wxString presets;
+  if (config_.Read(presets_key, &presets)) {
+    settings_.rail_presets.clear();
+    try {
+      settings_.rail_presets = application::DecodeRailPresets(presets.ToStdString(wxConvUTF8));
+    } catch (const std::exception &e) {
+      status_ += std::string("; rail presets rejected: ") + e.what();
+      wxLogWarning("SKAGER %s", wxString::FromUTF8(status_));
+    }
   }
 }
 application::CommandResult SettingsStore::RestoreBackup(
@@ -71,13 +91,14 @@ application::CommandResult SettingsStore::RestoreBackup(
     auto next = backup.settings;
     next.pilot = settings_.pilot; // Local identity never travels in a backup.
     next.pilot.permit_control = false;
-    const char *keys[]{key, name_key, display_key, chart_key};
-    const wxString values[]{wxString::FromUTF8(application::EncodeSettings(next)),
+    const char *keys[]{key, name_key, display_key, presets_key, chart_key};
+    const wxString values[]{wxString::FromUTF8(ProfileSettings(next)),
         wxString::FromUTF8(backup.vessel_name),
         wxString::FromUTF8(application::EncodeDisplayPreferences(backup.display)),
+        wxString::FromUTF8(application::EncodeRailPresets(next.rail_presets)),
         wxString::FromUTF8(application::SettingNumber(backup.chart_safety_depth_m))};
-    const int count = std::isfinite(backup.chart_safety_depth_m) ? 4 : 3;
-    wxString previous[4]; bool existed[4]{};
+    const int count = std::isfinite(backup.chart_safety_depth_m) ? 5 : 4;
+    wxString previous[5]; bool existed[5]{};
     for (int i=0; i<count; ++i) existed[i]=config_.Read(keys[i], &previous[i]);
     bool written=true;
     for (int i=0; i<count && written; ++i) written=config_.Write(keys[i],values[i]);
@@ -121,21 +142,22 @@ application::CommandResult SettingsStore::SaveBoatSetup(const application::BoatS
     next.hazard.draft_m = draft.settings.hazard.draft_m;
     next.energy.battery.capacity_kwh = draft.settings.energy.battery.capacity_kwh;
     next.energy.battery.reserve_soc_percent = draft.settings.energy.battery.reserve_soc_percent;
-    const char* keys[]{key,name_key,display_key,chart_key,setup_key};
-    const wxString values[]{wxString::FromUTF8(application::EncodeSettings(next)),
+    const char* keys[]{key,name_key,display_key,chart_key,setup_key,presets_key};
+    const wxString values[]{wxString::FromUTF8(ProfileSettings(next)),
       wxString::FromUTF8(draft.vessel_name),
       wxString::FromUTF8(application::EncodeDisplayPreferences(draft.display)),
-      wxString::FromUTF8(application::SettingNumber(draft.safety_depth_m)), "v1|complete"};
-    wxString previous[5]; bool existed[5]{};
-    for(int i=0;i<5;++i) existed[i]=config_.Read(keys[i],&previous[i]);
+      wxString::FromUTF8(application::SettingNumber(draft.safety_depth_m)), "v1|complete",
+      wxString::FromUTF8(application::EncodeRailPresets(next.rail_presets))};
+    wxString previous[6]; bool existed[6]{};
+    for(int i=0;i<6;++i) existed[i]=config_.Read(keys[i],&previous[i]);
     bool written=true;
-    for(int i=0;i<5 && written;++i) {
+    for(int i=0;i<6 && written;++i) {
       if(i==3 && !std::isfinite(draft.safety_depth_m)) continue;
       written=config_.Write(keys[i],values[i]);
     }
     if(!written || !config_.Flush()) {
       bool restored=true;
-      for(int i=0;i<5;++i) restored=(existed[i]?config_.Write(keys[i],previous[i]):
+      for(int i=0;i<6;++i) restored=(existed[i]?config_.Write(keys[i],previous[i]):
           (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
       restored=config_.Flush() && restored;
       return {false,restored?"Setup could not be saved; previous values restored":
@@ -177,21 +199,23 @@ application::CommandResult SettingsStore::SaveVessel(
           (std::isfinite(chart_safety_depth_m) &&
            chart_safety_depth_m >= 0 && chart_safety_depth_m <= 1000000)))
       return {false, "Invalid vessel name or chart safety depth"};
-    const wxString encoded = wxString::FromUTF8(application::EncodeSettings(next));
+    const wxString encoded = wxString::FromUTF8(ProfileSettings(next));
+    const wxString presets = wxString::FromUTF8(application::EncodeRailPresets(next.rail_presets));
     const bool update_chart = std::isfinite(chart_safety_depth_m);
     const wxString chart = update_chart
         ? wxString::FromUTF8(application::SettingNumber(chart_safety_depth_m))
         : wxString{};
-    wxString previous[3];
-    const char *keys[]{key, name_key, chart_key};
-    bool existed[3]{};
-    for (int i = 0; i < 3; ++i) existed[i] = config_.Read(keys[i], &previous[i]);
+    wxString previous[4];
+    const char *keys[]{key, name_key, chart_key, presets_key};
+    bool existed[4]{};
+    for (int i = 0; i < 4; ++i) existed[i] = config_.Read(keys[i], &previous[i]);
     const bool written = config_.Write(key, encoded) &&
                          config_.Write(name_key, wxString::FromUTF8(name)) &&
+                         config_.Write(presets_key, presets) &&
                          (!update_chart || config_.Write(chart_key, chart));
     if (!written || !config_.Flush()) {
       bool restored = true;
-      for (int i = 0; i < 3; ++i)
+      for (int i = 0; i < 4; ++i)
         restored = (existed[i] ? config_.Write(keys[i], previous[i])
                                : (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
       restored = config_.Flush() && restored;
@@ -214,15 +238,18 @@ SettingsStore::Save(const application::Settings &settings) {
   if (!wxIsMainThread())
     return {false, "Settings require the application thread"};
   try {
-    const auto text = application::EncodeSettings(settings);
-    wxString old;
-    const bool existed = config_.Read(key, &old);
-    if (!config_.Write(key, wxString::FromUTF8(text)) || !config_.Flush()) {
-      if (existed)
-        config_.Write(key, old);
-      else
-        config_.DeleteEntry(key);
-      const bool restored = config_.Flush();
+    const auto text = ProfileSettings(settings);
+    const auto presets = application::EncodeRailPresets(settings.rail_presets);
+    wxString old[2]; bool existed[2]{};
+    const char *keys[]{key, presets_key};
+    for (int i=0;i<2;++i) existed[i]=config_.Read(keys[i], &old[i]);
+    if (!config_.Write(key, wxString::FromUTF8(text)) ||
+        !config_.Write(presets_key, wxString::FromUTF8(presets)) || !config_.Flush()) {
+      bool restored = true;
+      for (int i=0;i<2;++i)
+        restored = (existed[i] ? config_.Write(keys[i], old[i]) :
+            (!config_.HasEntry(keys[i]) || config_.DeleteEntry(keys[i]))) && restored;
+      restored = config_.Flush() && restored;
       wxLogError("SKAGER settings save failed; previous in-memory settings "
                  "retained; disk restore: %s",
                  restored ? "confirmed" : "failed");

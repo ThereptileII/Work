@@ -30,6 +30,7 @@ int main(){wxInitializer wx; if(!wx)return 1;
       auto configured=store.Read();configured.energy.battery_device_id="existing-pack";
       configured.current=vessel::CurrentConvention::PositiveCharge;
       configured.pilot={"can0","c0508700e76004d2",true};
+      configured.rail_presets={{"Anchor",{"depth","heading","aws","soc"}}};
       const auto seeded=store.Save(configured);if(!seeded.ok)throw std::runtime_error(seeded.message);
       application::BoatSetupDraft draft;draft.settings=store.Read();draft.vessel_name="Test boat";
       draft.safety_depth_m=4;draft.settings.hazard.draft_m=2;draft.settings.energy.battery.capacity_kwh=24;
@@ -42,12 +43,17 @@ int main(){wxInitializer wx; if(!wx)return 1;
       Check(store.SaveBoatSetup(draft).ok,"Explicit completion saved");
       Check(store.Read().pilot.permit_control && store.Read().pilot.name==configured.pilot.name,"Existing pilot permission/identity preserved");
       Check(store.Read().energy.battery_device_id=="existing-pack" && store.Read().current==configured.current,"Source/sign preserved");
+      Check(store.Read().rail_presets==configured.rail_presets &&
+          config.Read("/OpenNav/AlphaSettings","").find("display.rail_presets")==wxString::npos,
+          "Boat setup lost presets or wrote incompatible AlphaSettings");
       Check(config.Read("/OpenNav/Unrelated","")=="preserve me","Unrelated profile unchanged");
     }
     {
       FailingConfig config(file);integration::SettingsStore store(config,false);
       Check(store.SetupState()==application::BoatSetupState::Complete,"Completion survives restart/update");
       Check(store.VesselName()=="Test boat" && store.Display().scale_percent==125,"Preferences persisted");
+      Check(store.Read().rail_presets.size()==1 && store.Read().rail_presets.front().name=="Anchor",
+            "Boat setup presets did not survive restart");
       Check(store.RequestBoatSetup().ok && store.VesselName()=="Test boat","Explicit reset preserves configuration");
     }
     {

@@ -100,11 +100,8 @@ EditSheet(wxWindow &parent, LightMode mode, const wxString &title,
     auto *b = new XNavButton(&dialog, wxID_ANY, pair.first, pair.first);
     b->SetLightMode(mode);
     b->SetRole(pair.second==wxID_OK?ButtonRole::Primary:ButtonRole::Quiet);
-    if (scale_percent == 150) {
-      const int height = DisplayActionHeight(scale_percent, 48);
-      b->SetMinSize(dialog.FromDIP(wxSize(height, height)));
-      b->SetTextSize(DisplayActionFont(scale_percent, 12));
-    }
+    b->SetDisplayAction(48);
+    b->SetInterfaceScale(scale_percent);
     b->Bind(wxEVT_BUTTON, [&dialog, id = pair.second](wxCommandEvent &) {
       dialog.EndModal(id);
     });

@@ -112,6 +112,50 @@ void ValidateSettings(const Settings &s) {
     verifier.Configure(p.first, p.second); // Share the live reducer's limits.
   }
 }
+std::string EncodeRailPresets(const std::vector<RailPreset> &presets) {
+  Settings validation;
+  validation.rail_presets = presets;
+  ValidateSettings(validation);
+  std::ostringstream out;
+  out.imbue(std::locale::classic());
+  out << "SKAGER_RAIL_PRESETS 1\n";
+  for (const auto &preset : presets) {
+    std::string values;
+    for (const auto &key : preset.values) {
+      if (!values.empty()) values += ',';
+      values += key;
+    }
+    out << std::quoted(preset.name) << ' ' << std::quoted(values) << '\n';
+  }
+  Require(out.str().size() <= 8192, "Rail presets exceed 8 KiB");
+  return out.str();
+}
+std::vector<RailPreset> DecodeRailPresets(const std::string &record) {
+  Size(record, 8192, "rail presets");
+  std::istringstream in(record);
+  in.imbue(std::locale::classic());
+  std::string header;
+  std::getline(in, header);
+  Require(header == "SKAGER_RAIL_PRESETS 1", "Unsupported rail preset version");
+  Settings validation;
+  while (!(in >> std::ws).eof()) {
+    RailPreset preset;
+    std::string values;
+    Require(in.peek() == '"' && bool(in >> std::quoted(preset.name)),
+            "Invalid rail preset name");
+    in >> std::ws;
+    Require(in.peek() == '"' && bool(in >> std::quoted(values)) &&
+                !values.empty() && values.back() != ',' &&
+                validation.rail_presets.size() < 8,
+            "Invalid or excessive rail presets");
+    std::istringstream list(values);
+    std::string key;
+    while (std::getline(list, key, ',')) preset.values.push_back(key);
+    validation.rail_presets.push_back(std::move(preset));
+  }
+  ValidateSettings(validation);
+  return validation.rail_presets;
+}
 std::string EncodeSettings(const Settings &s) {
   ValidateSettings(s);
   const auto &e = s.energy;
@@ -146,12 +190,8 @@ std::string EncodeSettings(const Settings &s) {
   r["display.rail"] = join(s.data_rail);
   r["display.instruments"] = join(s.instruments);
   if (!s.rail_presets.empty()) {
-    std::ostringstream presets;
-    presets.imbue(std::locale::classic());
-    for (const auto &preset : s.rail_presets)
-      presets << std::quoted(preset.name) << ' '
-              << std::quoted(join(preset.values)) << '\n';
-    r["display.rail_presets"] = presets.str();
+    const auto presets = EncodeRailPresets(s.rail_presets);
+    r["display.rail_presets"] = presets.substr(presets.find('\n') + 1);
   }
   if (!s.pilot.interface_id.empty()) {
     r["pilot.interface"] = s.pilot.interface_id;
@@ -285,25 +325,8 @@ Settings DecodeSettings(const std::string &record) {
   };
   display("display.rail", s.data_rail);
   display("display.instruments", s.instruments);
-  if (r.count("display.rail_presets")) {
-    std::istringstream presets(take("display.rail_presets"));
-    presets.imbue(std::locale::classic());
-    while (!(presets >> std::ws).eof()) {
-      RailPreset preset;
-      std::string values;
-      Require(presets.peek() == '"' && bool(presets >> std::quoted(preset.name)),
-              "Invalid rail preset name");
-      presets >> std::ws;
-      Require(presets.peek() == '"' && bool(presets >> std::quoted(values)) &&
-                  !values.empty() && values.back() != ',' &&
-                  s.rail_presets.size() < 8,
-              "Invalid or excessive rail presets");
-      std::istringstream list(values);
-      std::string key;
-      while (std::getline(list, key, ',')) preset.values.push_back(key);
-      s.rail_presets.push_back(std::move(preset));
-    }
-  }
+  if (r.count("display.rail_presets"))
+    s.rail_presets = DecodeRailPresets("SKAGER_RAIL_PRESETS 1\n" + take("display.rail_presets"));
   // Migrate only the untouched Alpha/Beta 1 default. Custom source choices and
   // ordering remain stored; additional values remain accessible in Instruments.
   if (s.data_rail == std::vector<std::string>{"aws","depth","sog","cog","heading"})

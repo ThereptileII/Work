@@ -56,6 +56,8 @@ class ModalFieldProbe final : public wxEvtHandler {
 
   void SetScale(int scale) { scale_ = scale; }
   int MinimumHeight() const { return minimum_height_; }
+  int ActionHeight() const { return action_height_; }
+  int ActionMinimumHeight() const { return action_minimum_height_; }
 
  private:
   void Inspect() {
@@ -75,6 +77,10 @@ class ModalFieldProbe final : public wxEvtHandler {
     found_ = true;
     height_ = field->GetSize().y;
     minimum_height_ = field->GetMinSize().y;
+    auto *save = wxWindow::FindWindowByName("Save", wxGetTopLevelParent(field));
+    Require(save, "real EditSheet exposes its Save action");
+    action_height_ = save->GetSize().y;
+    action_minimum_height_ = save->GetMinSize().y;
     if (auto *dialog = wxDynamicCast(wxGetTopLevelParent(field), wxDialog))
       dialog->EndModal(wxID_CANCEL);
   }
@@ -85,6 +91,7 @@ class ModalFieldProbe final : public wxEvtHandler {
   int attempts_ = 0;
   int height_ = -1;
   int minimum_height_ = -1;
+  int action_height_ = -1, action_minimum_height_ = -1;
   bool found_ = false;
 };
 }  // namespace
@@ -98,7 +105,7 @@ int main(int argc, char **argv) {
 
   ModalFieldProbe probe(*frame);
   for (const auto &[scale, logical_height] :
-       {std::pair{100, 48}, std::pair{125, 52}, std::pair{150, 56}}) {
+       {std::pair{100, 48}, std::pair{125, 58}, std::pair{150, 69}}) {
     probe.SetScale(scale);
     const int actual_height = probe.ObserveFieldHeight();
     const int expected = frame->FromDIP(logical_height);
@@ -109,6 +116,10 @@ int main(int argc, char **argv) {
             "real EditSheet text input meets its scale-specific touch target");
     Require(probe.MinimumHeight() >= expected,
             "real EditSheet text input reserves its scale-specific minimum height");
+    const int action_expected = frame->FromDIP(scale == 150 ? 72 : scale == 125 ? 60 : 48);
+    Require(probe.ActionHeight() >= action_expected &&
+                probe.ActionMinimumHeight() >= action_expected,
+            "real EditSheet action preserves its scale-specific touch target");
   }
 
   frame->Destroy();

@@ -270,7 +270,7 @@ void XNavChoiceField::SetSelection(int selection) {
 bool XNavChoiceField::Enable(bool enable) {
   if (!enable && popup_) popup_->DismissAndFinish();
   const bool changed = wxControl::Enable(enable);
-  Refresh(false);
+  if (changed) Refresh(false);
   return changed;
 }
 

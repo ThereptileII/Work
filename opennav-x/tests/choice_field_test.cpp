@@ -62,11 +62,11 @@ int main(int argc, char **argv) {
   Require(field->GetMinSize().y == field->FromDIP(46),
           "100 percent interface scale uses a 46 pixel field");
   field->SetInterfaceScale(125);
-  Require(field->GetMinSize().y == field->FromDIP(52),
-          "125 percent interface scale uses a 52 pixel field");
+  Require(field->GetMinSize().y == field->FromDIP(58),
+          "125 percent interface scale uses a 58 pixel field");
   field->SetInterfaceScale(150);
-  Require(field->GetMinSize().y == field->FromDIP(56),
-          "150 percent interface scale uses a 56 pixel field");
+  Require(field->GetMinSize().y == field->FromDIP(69),
+          "150 percent interface scale uses a 69 pixel field");
   field->SetInterfaceScale(100);
 
   int events = 0;

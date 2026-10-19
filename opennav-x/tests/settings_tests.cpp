@@ -222,6 +222,16 @@ void Display() {
         "Named presets retain the existing settings version");
   Check(application::DecodeSettings(application::EncodeSettings(legacy)).rail_presets.empty(),
         "Older profiles have no invented named presets");
+  Check(application::DecodeRailPresets(application::EncodeRailPresets(s.rail_presets))==s.rail_presets,
+        "Separate profile codec preserves named UTF-8 presets");
+  Check(application::DecodeRailPresets(application::EncodeRailPresets({})).empty(),
+        "Separate empty preset record explicitly represents no presets");
+  for(const auto &record:std::vector<std::string>{"", "SKAGER_RAIL_PRESETS 2\n",
+        "SKAGER_RAIL_PRESETS 1\n\"Anchor\" \"depth,depth,aws,soc\"\n",
+        "SKAGER_RAIL_PRESETS 1\n\"Anchor\" \"depth,heading,aws,soc,\"\n",
+        "SKAGER_RAIL_PRESETS 1\n\"Anchor\" \"depth,heading,aws,soc\" junk",
+        std::string(8193,'x')})
+    Reject([&]{application::DecodeRailPresets(record);});
   auto bad = s;
   bad.rail_presets.push_back({"anchor", {"sog", "depth", "tws", "soc"}});
   Reject([&] { application::ValidateSettings(bad); });
