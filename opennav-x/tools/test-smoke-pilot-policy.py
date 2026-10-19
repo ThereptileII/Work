@@ -8,11 +8,13 @@ from hardware_output_policy import require_product_output_policy
 
 source = Path(__file__).with_name('smoke-pilot.py')
 tree = ast.parse(source.read_text(encoding='utf-8'))
-function = next(n for n in tree.body if isinstance(n, ast.FunctionDef) and
-                n.name == 'require_product_tcp_refusal')
+functions = [next(n for n in tree.body if isinstance(n, ast.FunctionDef) and
+                 n.name == name) for name in
+             ('require_product_tcp_refusal', 'require_tcp_mode_capabilities')]
 namespace = {'require_product_output_policy': require_product_output_policy}
-exec(compile(ast.Module(body=[function], type_ignores=[]), str(source), 'exec'), namespace)
+exec(compile(ast.Module(body=functions, type_ignores=[]), str(source), 'exec'), namespace)
 guard = namespace['require_product_tcp_refusal']
+mode_guard = namespace['require_tcp_mode_capabilities']
 
 
 class ProductTcpPolicy(unittest.TestCase):
@@ -61,6 +63,49 @@ class ProductTcpPolicy(unittest.TestCase):
             report = copy.deepcopy(self.report)
             report.update(xnav_hardware_output_policy=policy, xnav_manual_control_contract=contract)
             with self.assertRaises(ValueError): guard(report)
+
+
+class TcpModeCapabilities(unittest.TestCase):
+    def setUp(self):
+        self.state = dict(simulated=False, control_capability=True,
+            track_capability=False, wind_capability=True,
+            track_blocker='Fixture has no qualified native route output')
+
+    def test_manual_and_wind_support_do_not_qualify_track(self):
+        mode_guard(self.state)
+
+    def test_manual_support_does_not_require_wind_support(self):
+        self.state['wind_capability'] = False
+        mode_guard(self.state)
+
+    def test_refused_link_offers_neither_route_nor_wind_mode(self):
+        self.state.update(control_capability=False, wind_capability=False)
+        mode_guard(self.state)
+
+    def test_track_cannot_appear_on_either_control_state(self):
+        for control in (False, True):
+            with self.subTest(control=control):
+                self.state.update(control_capability=control,
+                                  wind_capability=control, track_capability=True)
+                with self.assertRaises(AssertionError): mode_guard(self.state)
+
+    def test_wind_cannot_appear_on_refused_control_link(self):
+        self.state['control_capability'] = False
+        with self.assertRaises(AssertionError): mode_guard(self.state)
+
+    def test_capabilities_must_be_actual_booleans(self):
+        for field in ('control_capability', 'track_capability', 'wind_capability'):
+            for value in (0, 1, None, 'false'):
+                with self.subTest(field=field, value=value):
+                    state = dict(self.state, **{field: value})
+                    with self.assertRaises(AssertionError): mode_guard(state)
+
+    def test_demo_and_missing_track_reason_are_refused(self):
+        with self.assertRaises(AssertionError): mode_guard(dict(self.state, simulated=True))
+        for blocker in ('', ' ', None):
+            with self.subTest(blocker=blocker):
+                with self.assertRaises(AssertionError):
+                    mode_guard(dict(self.state, track_blocker=blocker))
 
 
 if __name__ == '__main__':

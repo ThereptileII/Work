@@ -34,6 +34,19 @@ def require_product_tcp_refusal(snapshot):
         assert pilot[field] is False, f'Product TCP peer must not gain {field}'
     return 'Enable control' if manual_serial else 'Control unavailable'
 
+def require_tcp_mode_capabilities(state):
+    """This peer cannot qualify native serial route output for TRACK."""
+    assert state['simulated'] is False, 'Exercise the OpenCPN TCP adapter, not DEMO'
+    for field in ('control_capability', 'track_capability', 'wind_capability'):
+        assert type(state[field]) is bool, f'Expected actual boolean {field}'
+    assert state['track_capability'] is False, 'TCP peer has no qualified native route output for TRACK'
+    assert isinstance(state['track_blocker'], str) and state['track_blocker'].strip(), \
+        'Unavailable TRACK needs its actual blocker'
+    # A WIND capability is transport support, not measured wind or confirmation.
+    # Do not infer it merely because manual control is available.
+    assert not state['wind_capability'] or state['control_capability'], \
+        'A refused control link cannot offer WIND'
+
 parser=argparse.ArgumentParser()
 parser.add_argument('--production',action='store_true',help='Verify product TCP output refusal despite saved manual permission')
 args=parser.parse_args()
@@ -135,7 +148,9 @@ def data(predicate=lambda d:True,timeout=15):
         time.sleep(.15)
     raise AssertionError('Pilot diagnostics timed out: '+json.dumps(d.get('runtime',{}).get('pilot',{})))
 def pilot(predicate=lambda p:True,timeout=15):
-    return data(lambda d:predicate(d.get('runtime',{}).get('pilot',{})),timeout)['runtime']['pilot']
+    state=data(lambda d:predicate(d.get('runtime',{}).get('pilot',{})),timeout)['runtime']['pilot']
+    require_tcp_mode_capabilities(state)
+    return state
 def xdo(*args):return subprocess.check_output(['xdotool',*map(str,args)],env=env,text=True).strip()
 def capture(name):
     p=evidence/(name+('.png' if windows else '-linux.png'))
@@ -221,9 +236,6 @@ try:
         xdo('windowsize',handle,1280,800);xdo('windowmove',handle,0,0);xdo('windowfocus',handle)
     state=pilot(lambda p:p.get('fresh') and p.get('mode')=='STANDBY')
     assert not state['enabled'] and not sent,'Permission cannot auto-enable or emit controls'
-    # TRACK/WIND are offered exactly where manual control is (the bridge then
-    # refuses them without fresh route data or wind); a refused link offers none.
-    assert state['track_capability'] == state['wind_capability'] == state['control_capability']
     show_pilot()
     bounds=data()['runtime']['display']['drawer']
     if windows:
@@ -286,6 +298,13 @@ try:
                         int(p.get('command_id','0'))>previous and len(sent)>before)
             assert sent[-1]['key']==key and state['mode']=='AUTO',state
             assert abs(state['locked_heading_magnetic_deg']-target[0])<.02,state
+        # Confirmed AUTO still cannot qualify this TCP peer for native TRACK.
+        previous=state['command_id'];before=len(sent);wire_before=received_bytes[0]
+        click('Track',enabled=False);time.sleep(.8)
+        state=pilot()
+        assert state['command_id']==previous and len(sent)==before and received_bytes[0]==wire_before, \
+            'Disabled TRACK must create no request, partial frame or navigation output'
+        interaction.control(drawer_data,'Wind',product_scroll,enabled=state['wind_capability'])
         capture('pilot-02-confirmed-manual')
         silence.set();before=len(sent)
         click('+1°',790,467)
@@ -331,7 +350,8 @@ try:
           'Missing feedback revokes session immediately and times out without retry',
           'Stale STANDBY emits nothing; fresh recovery stays OFF until explicit re-enable',
           'Same-driver reconnect clears identity and session enablement; new claim required',
-          'TRACK/WIND advertised; the bridge refuses them without route data or wind; no SmartNav control path']
+          'TRACK stays unavailable without qualified native route output; disabled click creates no request or wire bytes',
+          'WIND UI follows reported capability only; no wind readiness, WIND output or mode confirmation claimed']
     if windows:monitor=ui.monitor_process(app.pid);ui.close(handle);ui.wait_clean_exit(monitor)
     else:subprocess.run([str(exe),'--configdir',str(profile),'--remote','--quit'],env=env,check=True,capture_output=True)
     assert app.wait(timeout=30)==0
