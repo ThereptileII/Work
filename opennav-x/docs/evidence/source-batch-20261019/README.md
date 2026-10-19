@@ -185,3 +185,32 @@ package: the Linux integrated compile and native launcher packaging failed.
 
 The boat still runs the preceding installation. Subsequent corrected package
 and boat results must be recorded separately with their exact identities.
+
+## Qualified focused repairs and remaining runtime helper mismatch
+
+- Native launcher diagnostic `39249552874` at `6c748c27` passed after preserving
+  the relocated Go COFF metadata during icon insertion. The original failure
+  remains recorded above. Native cold-preservation run `39248796997` at
+  `c8ba7883` passed its three parallel suites without repeating reconciliation.
+  These focused results do not qualify an application package.
+- Integrated run `39249861160` at `6c748c27` compiled Linux, passed 160 unit
+  tests and the peer checks, then rejected an obsolete route-card fill-color
+  assertion. Correction `62fe2a0f` changes that fixture to the deliberately
+  rounded background surface; actual route/action assertions are unchanged.
+  The focused native GTK check passes, and a stale Day-color mutation fails.
+- Replacement run `39253310076` at `62fe2a0f` passed the Linux compile, 160
+  unit tests, peer checks, all 13 boat-feedback components, listener lifetime,
+  atomic navigation saves, Sheet/Choice, mode lifecycle, navigation, recording,
+  route progress, instruments, N2K, boat-source mapping and Signal K. It then
+  failed `smoke-pilot.py:226`: the helper still equates TRACK/WIND capability
+  with manual control. Current TRACK deliberately also requires qualified
+  native route output, which the TCP fixture does not provide.
+- Both runs were cancelled before the full Windows application compilation,
+  preserving the failing evidence rather than producing a known-unqualified
+  package. The remaining runtime helpers received a bounded source review;
+  no other definite stale expectation was found. The fixture-free tail also
+  invokes `smoke-pilot.py --production`, whose all-capabilities-disabled TCP
+  refusal must remain intact. Source review is not a runtime pass.
+
+No new boat installation, profile mutation or physical autopilot command is
+claimed by these CI or isolated desktop-fixture results.
