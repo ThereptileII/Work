@@ -23,6 +23,7 @@ head = subprocess.check_output(['git', '-C', str(target), 'rev-parse', 'HEAD'], 
 if head != lock['commit']:
     raise SystemExit('Refusing to patch a worktree with a different OpenCPN revision')
 patches = [root / 'patches/opencpn-5.12.4-xnav.patch',
+           root / 'patches/opencpn-5.12.4-observable-locking.patch',
            root / 'patches/opencpn-5.12.4-regression-tests.patch',
            root / 'patches/opencpn-5.12.4-ais-transport.patch',
            root / 'patches/opencpn-5.12.4-chart-presentation.patch',

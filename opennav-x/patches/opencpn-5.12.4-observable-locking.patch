@@ -1,0 +1,56 @@
+diff --git a/libs/observable/src/observable.cpp b/libs/observable/src/observable.cpp
+--- a/libs/observable/src/observable.cpp
++++ b/libs/observable/src/observable.cpp
+@@ -52,10 +52,21 @@
+ 
+ /* Observable implementation. */
+ 
++namespace {
++// Observable wrappers with the same key share listener storage, not their
++// instance mutex. Keep public class layouts unchanged while serializing all
++// access to that storage, including the complete wxQueueEvent call. Unlisten
++// must not return while a producer can still enqueue to the removed handler.
++std::mutex& ListenerMutex() {
++  static std::mutex mutex;
++  return mutex;
++}
++}  // namespace
++
+ using ev_pair = std::pair<wxEvtHandler*, wxEventType>;
+ 
+ void Observable::Listen(wxEvtHandler* listener, wxEventType ev_type) {
+-  std::lock_guard<std::mutex> lock(m_mutex);
++  std::lock_guard<std::mutex> lock(ListenerMutex());
+   const auto& listeners = m_list.listeners;
+ 
+   ev_pair key_pair(listener, ev_type);
+@@ -65,7 +76,7 @@
+ }
+ 
+ bool Observable::Unlisten(wxEvtHandler* listener, wxEventType ev_type) {
+-  std::lock_guard<std::mutex> lock(m_mutex);
++  std::lock_guard<std::mutex> lock(ListenerMutex());
+   auto& listeners = m_list.listeners;
+ 
+   ev_pair key_pair(listener, ev_type);
+@@ -78,7 +89,7 @@
+ const void Observable::Notify(std::shared_ptr<const void> ptr,
+                               const std::string& s, int num,
+                               void* client_data) {
+-  std::lock_guard<std::mutex> lock(m_mutex);
++  std::lock_guard<std::mutex> lock(ListenerMutex());
+   auto& listeners = m_list.listeners;
+ 
+   for (auto l = listeners.begin(); l != listeners.end(); l++) {
+diff --git a/libs/observable/include/observable.h b/libs/observable/include/observable.h
+--- a/libs/observable/include/observable.h
++++ b/libs/observable/include/observable.h
+@@ -151,6 +151,8 @@
+ 
+   /** A listener can only be transferred using std::move(). */
+   ObservableListener& operator=(ObservableListener&& other) {
++    if (this == &other) return *this;
++    Unlisten();
+     key = other.key;
+     listener = other.listener;
+     ev_type = other.ev_type;
