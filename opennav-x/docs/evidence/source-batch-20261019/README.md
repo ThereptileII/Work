@@ -315,3 +315,43 @@ translation unit against hash-recorded retained libraries whose other relevant
 UI sources, including `ProductPanel.cpp`, were unchanged. This was not another
 whole-application build. Independent review found no further object-lifecycle
 label mismatch. Full native runtime qualification remains pending.
+
+
+## Completed Linux tail and Windows preparation failures
+
+Run `39266024705`, candidate `11348664`, completed its full Linux job:
+160 fixture-enabled and 160 fixture-free integrated cases, the corrected native
+name observations, lifecycle/data/object/user-flow/recovery/chart tail and
+fixture-free loader checks. Its native Windows prerequisite stopped before
+application compilation on repeated HTTP 503 from the Poedit package feed.
+The retained Linux log has SHA-256
+`1750cefe135d5b0b2abde84987cc51153353d8fbc62ed156eec6a24cbbfd4c03`.
+The Linux artifact archive has SHA-256
+`6eef9c6d6528e18e456a2d3ecd50a276e3bb3fa6502cf434c2e9efc2f3f9101c`.
+
+`0283a36c` adds bounded acquisition of the hash-pinned official Poedit 3.9.1
+installer, leaving SDK producer identity unchanged. Focused native run
+`39272231284` passed installation, Gettext 0.26 probes and UTF-8 catalogue
+compile/merge/readback. Its native summary has SHA-256
+`5c74397a933332efadcb25955f0bc1bc0da7b7b5d801a26503a829c14ffef70c`.
+
+Staging `39272970370` passed that prerequisite and the native AIS/TLS probes.
+Windows then refused the final o-charts display patch before application
+compilation. Retained job log SHA-256:
+`ad3c3a22bb8c3782175a1b491f46493886cb675e7313c19367209ed9c71608a2`.
+Artifact archive SHA-256:
+`b6a5c5cb02a97328d842b41bb1d3e774d0f3e88069a715a99d2d105c60293568`.
+
+`bea63b5c` repairs only trailing include context and hunk line counts. All
+inserted/deleted C++ lines remain identical. The exact four-patch sequence
+passes against 219 verified pinned source files under both core.autocrlf
+policies, yielding the same derived inventory SHA-256
+`10ec8514f18a48fbbc42e20f56ee74e09f2f146b6780a33a6cfb2edb004dc354`.
+Seventeen existing preparation checks pass. This establishes source preparation;
+it does not claim a Windows application build, package or replacement boat launch.
+
+The boat has a separately verified cold application/profile backup. Its current
+profile was captured without modification and all 35 predecessor differences
+reviewed for preservation only. The 4,522,380-byte inventory exposed a generic
+4 MiB reader limit before Complete. A narrowly scoped helper correction is
+required; private profile contents are not release evidence or repository data.

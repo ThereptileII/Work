@@ -48,6 +48,25 @@ qualification; no replacement package or boat update is claimed.
 Historical source-only entries below remain evidence of what was and was not
 executed then; they do not describe the new candidate as installed or accepted.
 
+The subsequent `11348664` Linux job completed both 160-case integrated suites
+and the runtime/chart tail. Its Windows job stopped before application
+compilation because the external Poedit package feed returned HTTP 503.
+`0283a36c` uses the exact hash-pinned official installer; its focused native
+proof `39272231284` passed. Staging `39272970370` then passed the prerequisite
+and native AIS/TLS probes, but found a strict o-charts patch-context conflict
+before application compilation. `bea63b5c` restores three trailing context
+lines without changing any inserted/deleted C++ statements. All four adapter
+patches now prepare against the pinned source under both Git checkout policies;
+17 preparation checks pass. This is preparation evidence, not Windows runtime
+or boat acceptance.
+
+The closed boat installation has a fresh verified application/profile backup.
+A cold preservation capture retained the current profile and plugins unchanged;
+all 35 differences from its predecessor were reviewed without granting launch
+or hardware authority. Its 4,522,380-byte inventory exposed a separate helper
+reader limit before completion. That bounded tooling repair is being qualified
+before installation proceeds. The boat still has its previous Beta 2.5 build.
+
 ## UI flicker — repaint corrections, native confirmation pending
 
 The SCRUM-378 follow-up removes confirmed redundant 250 ms repaint requests
