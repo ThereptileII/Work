@@ -65,7 +65,8 @@ XNavNameEditor::XNavNameEditor(
       if (frame_) frame_->Refresh(false);
       // The destination may be our Save/Cancel button. Wait for focus to
       // settle before hiding actions, so the initiating click can complete.
-      CallAfter([editor = wxWeakRef<XNavNameEditor>(this)] {
+      const wxWeakRef<XNavNameEditor> editor(this);
+      CallAfter([editor] {
         if (editor) editor->Buttons();
       });
       event.Skip();
