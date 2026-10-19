@@ -1,5 +1,7 @@
 name: SKAGER launcher PE diagnostic
 on:
+  push:
+    branches: [skager-launcher-pe-diagnostic]
   workflow_dispatch:
 permissions:
   contents: read
