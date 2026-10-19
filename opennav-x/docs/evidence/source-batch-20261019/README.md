@@ -256,3 +256,27 @@ their original contract. Thirteen focused cases pass; restoring the old title,
 dropping full-text validation or dropping action IDs fails the expected negative
 controls. No Production qualification was initiated, and native execution of
 that optional full-Production path remains pending.
+
+## Dependent cancellation-test repair
+
+Run `39259936799` at `e0c9ce50` passed 117/118 Ubuntu and 114/115 Windows
+portable contract tests. Both platforms rejected the same dependent behavioral
+test, `native_reference_fullscreen_surface_contract`. Its AST extraction still
+expected the old four-statement delete/cancel/name/edit sequence after the
+native-name helper and fresh diagnostic-publication wait were introduced. This
+is a missed test dependency, not evidence of a product crash.
+
+The already-running Linux integration job was retained to exercise the previously
+unexecuted runtime tail. Windows application compilation remains blocked by the
+failed contracts; no qualified package or boat update is claimed. The correction
+must execute the actual new cancellation sequence and native editor readback,
+retain delayed modal-owner release and changed-name refusals, and pass focused
+checks before another candidate is submitted.
+
+Correction `06b35993` executes the actual span through the next Edit, including
+the fresh diagnostic-publication wait and exact owned `WM_GETTEXT` readback.
+Seven desktop checks, all seventeen existing modal cases, three publication/
+completion negative controls and nine native-name helper cases pass. The
+previously failing CTest entry also passes from the coordinator checkout.
+Dropping the publication wait or owner-completion guard remains detectable;
+unchanged cached background text cannot hide a changed waypoint name.
