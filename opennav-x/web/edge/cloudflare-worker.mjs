@@ -60,7 +60,9 @@ async function updateAccess(token, transport) {
   });
   await response.body?.cancel().catch(() => {});
   const status = response.status === 204 ? 204 : response.status === 401 || response.status === 402 ? response.status : 503;
-  if (status !== 503) {
+  // Only a grant is reused, so a new subscription works at once; a revoked device
+  // can read the (signed, integrity-checked) feed for at most ACCESS_TTL_MS more.
+  if (status === 204) {
     if (accessCache.size >= 1000) accessCache.clear();
     accessCache.set(token, { status, until: Date.now() + ACCESS_TTL_MS });
   }

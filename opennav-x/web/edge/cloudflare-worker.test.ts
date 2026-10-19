@@ -215,6 +215,8 @@ test('the update feed is served only to a linked SKAGER whose account has SKAGER
   assert.equal(unpaid.status, 402);
   assert.match(await unpaid.text(), /SKAGER Cloud/);
   assert.equal(env.reads.length, 0);
+  // A refusal is never cached: subscribing takes effect on the very next request.
+  assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', 'skg1_' + 'c'.repeat(64)), edge(204), env)).status, 200);
 
   const ok = await handleWorker(get('/updates/beta/metadata/timestamp.json', DEVICE_TOKEN), edge(204), env);
   assert.equal(ok.status, 200);

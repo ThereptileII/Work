@@ -262,6 +262,18 @@ void service() {
 
 int main(int argc, char **argv) {
   const std::string group = argc > 1 ? argv[1] : "all";
+  if (group == "emit") {
+    // Prints one upload with every key filled, for the server contract check
+    // (web/edge validTelemetry must accept exactly what the app sends).
+    const auto now = vessel::Clock::now();
+    vessel::VesselState state;
+    for (const auto &key : TelemetryKeys()) {
+      auto &sample = const_cast<vessel::Sample &>(key.sample(state));
+      sample = Measured(key.min + (key.max - key.min) * 0.25, now - 1s, "contract");
+    }
+    std::cout << EncodeTelemetry(state, now).value_or("") << "\n";
+    return 0;
+  }
   try {
     if (group == "protocol" || group == "all") protocol();
     if (group == "service" || group == "all") service();
