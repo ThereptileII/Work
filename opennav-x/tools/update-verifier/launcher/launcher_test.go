@@ -288,9 +288,15 @@ func newLaunchFixture(t *testing.T) *launchFixture {
 		if c.Trust.MetadataURL != f.trust.MetadataURL || c.ArtifactOrigin != f.trust.ArtifactOrigin || c.StateDirectory != filepath.FromSlash(fixtureRoot+"/update-trust/beta") || o != f.trust.Allowlist[0] {
 			t.Error("check did not use installed configuration and measured stock")
 		}
+		if c.AccessToken != fixtureCloudToken {
+			t.Error("check did not present the linked SKAGER Cloud token")
+		}
 		return f.candidate, nil
-	}, prepare: func(ctx context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, consent verifier.ConsentIdentity) (preparation, error) {
+	}, access: func() string { return fixtureCloudToken }, prepare: func(ctx context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, consent verifier.ConsentIdentity) (preparation, error) {
 		f.prepares++
+		if c.AccessToken != fixtureCloudToken {
+			t.Error("prepare did not present the linked SKAGER Cloud token")
+		}
 		if consent != f.candidate.Consent {
 			t.Error("prepare received changed user consent")
 		}
@@ -351,8 +357,10 @@ func (f *launchFixture) publishSuccessor() {
 	f.p.files[fixtureRoot+"/update-pending.json"] = jsonBytes(f.t, pending)
 }
 
+const fixtureCloudToken = "skg1_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
 func TestLauncherOfflineModesAndFirstQualification(t *testing.T) {
-	for _, scenario := range []string{"missing config", "bad config", "first startup", "legacy", "safe", "historical", "check offline", "current"} {
+	for _, scenario := range []string{"missing config", "bad config", "first startup", "legacy", "safe", "historical", "check offline", "current", "not linked", "malformed token", "no access provider"} {
 		t.Run(scenario, func(t *testing.T) {
 			f := newLaunchFixture(t)
 			args := []string{}
@@ -377,6 +385,13 @@ func TestLauncherOfflineModesAndFirstQualification(t *testing.T) {
 				}
 			case "current":
 				f.candidate.Decision = releasepolicy.Current
+			case "not linked":
+				// SKAGER Cloud (SCRUM-44): no linked account means no update check.
+				f.s.access = func() string { return "" }
+			case "malformed token":
+				f.s.access = func() string { return "skg1_" + strings.Repeat("G", 64) }
+			case "no access provider":
+				f.s.access = nil
 			}
 			if err := run(context.Background(), args, f.s); err != nil {
 				t.Fatal(err)
