@@ -1,0 +1,25 @@
+name: SKAGER launcher PE diagnostic
+on:
+  workflow_dispatch:
+permissions:
+  contents: read
+jobs:
+  inert-launcher:
+    runs-on: windows-2022
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version: '1.27.1'
+          cache: false
+      - name: Read inert Win32 fixture before and after native icon update
+        env:
+          GOTOOLCHAIN: local
+        run: python opennav-x/tools/diagnose-launcher-pe.py --output opennav-x/build/launcher-pe-diagnostic
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        if: always()
+        with:
+          name: launcher-pe-diagnostic-${{ github.sha }}-attempt${{ github.run_attempt }}
+          path: opennav-x/build/launcher-pe-diagnostic
+          if-no-files-found: error
