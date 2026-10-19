@@ -348,7 +348,10 @@ void LifecycleTests() {
     Check(!driver.SendPilotMessage(Message(malformed,126208,3),dest,epoch), "TRACK/WIND require the full fixed payload prefix");
     if (key == 0x80) {
       Check(!driver.SendPilotMessage(Message(mode,126208,3),dest,epoch), "TRACK requires navigation written before command enqueue");
-      Check(driver.m_serial_state.EnqueueNavigation(bytes,epoch,7,Clock::now()), "seed navigation independently of pilot ticket");
+      // Capture the source first: argument evaluation could otherwise put it
+      // after EnqueueNavigation's default validation timestamp.
+      const auto source_at = Clock::now();
+      Check(driver.m_serial_state.EnqueueNavigation(bytes,epoch,7,source_at), "seed navigation independently of pilot ticket");
       Check(driver.m_serial_state.WriteOne([](auto& b) { return b.size(); }) == 1, "navigation seed must actually reach writer");
     }
     Check(driver.SendPilotMessage(Message(mode,126208,3),dest,epoch,&command_ticket) && command_ticket != 0, "actual serial sink accepts exact guarded TRACK/WIND mode packet");
@@ -425,7 +428,8 @@ void NavigationTests() {
   Check(state.WriteOne([&](auto& b) { Check(b == latest,"only latest navigation bytes written"); return b.size(); }) == 1, "navigation slot written once");
   Check(state.Get().navigation_written_token == 8 && state.Get().pilot_written_ticket == 0 && state.Get().pilot_writes == 0, "navigation receipt remains independent of pilot tickets");
   Check(state.Enqueue(track,true,epoch,Clock::now(),true,false,nullptr,true), "TRACK can bind current written navigation token");
-  Check(state.EnqueueNavigation(first,epoch,9,Clock::now()), "new waypoint token replaces route slot");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,9,now), "new waypoint token replaces route slot");
   Check(state.WriteOne([&](auto& b) { Check(b == first,"changed token discards queued TRACK"); return b.size(); }) == 1, "replacement route writes without old TRACK");
   Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("old TRACK replayed"); }) == 0, "old token command is not replayed");
   Check(state.Enqueue(standby,true,epoch), "STANDBY queued before route loss");
@@ -443,11 +447,13 @@ void NavigationTests() {
   Check(state.Enqueue(track,true,epoch,Clock::now(),true,false,nullptr,true), "queue TRACK while route receipt fresh");
   Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("TRACK outlived navigation"); },state.Get().navigation_valid_until) == 0, "final TRACK write rechecks route expiry");
   Check(!state.Enqueue(track,true,epoch,state.Get().navigation_valid_until,true,false,nullptr,true), "expired navigation cannot admit a new TRACK");
-  Check(state.EnqueueNavigation(first,epoch,12,Clock::now()), "queue before explicit session disable");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,12,now), "queue before explicit session disable");
   state.EnablePilot(false);
   Check(state.Get().navigation_written_token == 0 && state.WriteOne([](auto&) -> size_t { throw std::runtime_error("disabled navigation written"); }) == 0, "disable clears navigation slot and receipt");
   state.EnablePilot(true);
-  Check(state.EnqueueNavigation(first,epoch,12,Clock::now()), "queue navigation short-write case");
+  now = Clock::now();
+  Check(state.EnqueueNavigation(first,epoch,12,now), "queue navigation short-write case");
   Check(state.WriteOne([](auto&) { return size_t(1); }) == -1 && !state.Get().connected && state.Get().navigation_written_token == 0, "uncertain navigation write disconnects and never supplies receipt");
   state.Connection(true); state.EnablePilot(true);
   Check(state.WriteOne([](auto&) -> size_t { throw std::runtime_error("navigation replayed after reopen"); }) == 0, "reconnect cannot replay navigation");
