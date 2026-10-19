@@ -148,7 +148,7 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
     return finish(new Response(null, { status: 303, headers: { Location: '/auth/login/', 'Cache-Control': 'no-store' } }));
   }
   let path = url.pathname;
-  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats|boat))?\/?$/.test(path) || /^\/link\/?$/.test(path)) path = '/portal.html';
+  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path) || /^\/link\/?$/.test(path)) path = '/portal.html';
   else if (/^\/auth\/(?:login|forgot|verify)\/?$/.test(path)) path = '/auth.html';
   else if (/^\/admin(?:\/(?:steps|orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
   else if (path.endsWith('/')) path += 'index.html';

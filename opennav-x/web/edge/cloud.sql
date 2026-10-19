@@ -291,6 +291,15 @@ end $$;
 create trigger cloud_customer_revoked after update of status on skager_private.store_customers
   for each row execute function skager_private.cloud_customer_revoked();
 
+-- ---------------------------------------------------------------- catalog copy
+-- Automatic updates are a SKAGER Cloud service; Beta Access keeps every update as a
+-- download. Only seed wording is replaced; an admin's own edits are kept.
+update skager_private.store_products set summary = 'SKAGER for Windows with every beta update to download, your account and support.',
+    updated_at = now()
+  where slug = 'skager-beta-access' and summary = 'SKAGER for Windows with every beta update, your account and support.';
+update skager_private.store_products set summary = 'Automatic updates, boat data and your boat online.', updated_at = now()
+  where slug = 'skager-cloud' and summary = 'Boat data, online dashboard and web route planning.';
+
 -- ---------------------------------------------------------------- grants
 do $$
 declare f record;

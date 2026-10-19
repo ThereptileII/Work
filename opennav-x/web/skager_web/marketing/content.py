@@ -677,10 +677,11 @@ FAQS = (
          "answer": "Yes. Add it at checkout, or buy it later from the shop in your account. We ship within the EU/EEA, "
                    "the UK, Norway and Switzerland."},
         {"question": "What is SKAGER Cloud?",
-         "answer": "An optional subscription for USD 2 a month that brings your boat online: boat data, an online "
-                   "dashboard, web route planning and more as they launch. Start or cancel it any time from your account."},
+         "answer": "An optional subscription for USD 2 a month: SKAGER installs new versions for you, and your boat "
+                   "comes online with boat data, an online dashboard and more as they launch. Link SKAGER under "
+                   "Settings, System, SKAGER Cloud. Start or cancel it any time from your account."},
         {"question": "What do I get for the payment?",
-         "answer": "Access to the official beta downloads and update channel, your customer account, the support library, "
+         "answer": "Access to the official beta downloads, including every update, your customer account, the support library, "
                    "support, bug reports and feature requests, and release information as the beta develops."},
         {"question": "Can I get a refund?",
          "answer": "Yes. If SKAGER is not for you, choose Refund on the Orders page of your account within 14 days of "

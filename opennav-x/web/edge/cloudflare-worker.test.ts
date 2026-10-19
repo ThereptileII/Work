@@ -246,9 +246,9 @@ test('device API calls carry the bearer token under its own header, never to oth
   assert.equal(seen[1].has('x-skager-device'), false);
   assert.equal(seen[1].has('authorization'), false);
 });
-test('the pairing page and the boat page use the member shell', async () => {
+test('the SKAGER pairing page uses the member shell', async () => {
   const noBackend = async () => assert.fail('static shells never call the backend');
-  for (const path of ['/link/', '/link', '/portal/boat/']) {
+  for (const path of ['/link/', '/link']) {
     const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);
     assert.equal(response.status, 200, path);
   }

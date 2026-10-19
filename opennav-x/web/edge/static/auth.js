@@ -25,6 +25,8 @@ function show() {
   passwordInput.required = step !== "code" && mode === "login";
   codeInput.required = step === "code";
 }
+// Where to continue after signing in: the portal, or the SKAGER pairing page.
+const returnTo = /[?&]next=(?:\/|%2F)link(?:\/|%2F)(?:&|$)/i.test(String(location.search || "")) ? "/link/" : null;
 function say(text, kind = "") { message.textContent = text; message.className = `message ${kind}`.trim(); }
 async function post(path, payload) {
   const response = await fetch(path, { method: "POST", credentials: "same-origin", cache: "no-store",
@@ -37,7 +39,7 @@ async function bootstrap() {
     const response = await fetch("/api/auth/session", { credentials: "same-origin", cache: "no-store" });
     if (!response.ok) throw new Error("Your account is temporarily unavailable. Please try again shortly.");
     const session = await response.json();
-    if (session.account) { location.assign("/portal/"); return; }
+    if (session.account) { location.assign(returnTo || "/portal/"); return; }
     if (typeof session.csrfToken !== "string" || !session.csrfToken) throw new Error("Please reload this page.");
     csrfToken = session.csrfToken;
     form.hidden = false; show(); say("");
@@ -50,7 +52,9 @@ form.addEventListener("submit", async event => {
     if (step === "code") {
       const { response, data } = await post("/api/auth/verify", { code: codeInput.value.trim() });
       if (!response.ok) throw new Error(data.error || "That code did not work. Request a new one and try again.");
-      location.assign(typeof data.next === "string" && data.next.startsWith("/portal/") ? data.next : "/portal/");
+      // A new account still has to choose its password first.
+      const next = typeof data.next === "string" && data.next.startsWith("/portal/") ? data.next : "/portal/";
+      location.assign(returnTo && next === "/portal/" ? returnTo : next);
       return;
     }
     const payload = mode === "login"

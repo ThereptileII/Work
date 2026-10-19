@@ -38,8 +38,8 @@ create table skager_private.store_products (
 );
 -- The access price is fixed by the configured Stripe price; the row describes it.
 insert into skager_private.store_products(slug,kind,name,summary,description,price_minor,billing_interval,shippable,checkout_addon,sort) values
- ('skager-beta-access','access','SKAGER Public Beta Access','SKAGER for Windows with every beta update, your account and support.','',2000,null,false,false,1),
- ('skager-cloud','subscription','SKAGER Cloud','Boat data, online dashboard and web route planning.','Cloud services for your boat. New services are added as they launch.',200,'month',false,false,2),
+ ('skager-beta-access','access','SKAGER Public Beta Access','SKAGER for Windows with every beta update to download, your account and support.','',2000,null,false,false,1),
+ ('skager-cloud','subscription','SKAGER Cloud','Automatic updates, boat data and your boat online.','Cloud services for your boat. New services are added as they launch.',200,'month',false,false,2),
  ('gps-module','hardware','SKAGER GPS module','Plug-and-play USB multi-GNSS receiver for your helm PC.','A compact USB GPS/GNSS receiver that SKAGER and OpenCPN recognise straight away.',4900,null,true,true,10),
  ('helm-pc','hardware','SKAGER Helm PC','Fanless NUC with SKAGER and OpenCPN preinstalled.','A quiet, fanless mini PC prepared for the helm, with OpenCPN and SKAGER installed and ready to connect.',54900,null,true,false,20);
 

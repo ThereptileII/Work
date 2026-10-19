@@ -10,7 +10,7 @@ const date = value => {
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" });
 };
-export const PAGES = { dashboard: "/portal/", downloads: "/portal/downloads/", shop: "/portal/shop/", cloud: "/portal/cloud/", orders: "/portal/orders/", account: "/portal/account/" };
+export const PAGES = { dashboard: "/portal/", downloads: "/portal/downloads/", shop: "/portal/shop/", cloud: "/portal/cloud/", orders: "/portal/orders/", account: "/portal/account/", link: "/link/" };
 /** Placeholder cards shown while a tab's data is on its way (same markup as portal.html). */
 export const SKELETON = '<div class="skeleton-grid" aria-hidden="true"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card wide"></div></div>';
 /** Portal page for a path; /portal/boats/ is kept as an alias for the account page. */
@@ -37,7 +37,7 @@ export function renderOverview(data) {
       <p class="note">${active ? "Download SKAGER, install it next to OpenCPN and you are ready to sail." : "Your purchase is not active on this account."}</p>
       <div class="actions">${active ? '<a class="button" href="/portal/downloads/">Go to downloads</a>' : ""}<a class="button button-secondary" href="/install/">Installation guide</a></div></section>
     <section class="card"><p class="eyebrow">SKAGER Cloud</p><h2>${sub && ["active", "trialing", "past_due"].includes(sub.status) ? "Cloud is active." : "Your boat, online."}</h2>
-      <p class="note">Boat data, an online dashboard and web route planning for USD 2 a month.</p>
+      <p class="note">Automatic updates, boat data and your boat online for USD 2 a month.</p>
       <div class="actions"><a class="button button-secondary" href="/portal/cloud/">${sub && sub.status === "active" ? "Manage Cloud" : "Explore Cloud"}</a></div></section>
     <section class="card"><p class="eyebrow">Shop</p><h2>Upgrade your helm.</h2><p class="note">GPS modules, helm PCs and more, made for SKAGER.</p>
       <div class="actions"><a class="button button-secondary" href="/portal/shop/">Visit the shop</a></div></section>
@@ -171,14 +171,101 @@ export function renderShop(catalog) {
 }
 
 const CLOUD_FEATURES = [
-  ["Boat data", "Your instruments, battery and position history, safely stored."],
+  ["Automatic updates", "New SKAGER versions install themselves on your helm PC.", true],
+  ["Boat data", "Your instruments, battery and position, with 30 days of history.", true],
   ["Online dashboard", "See your boat from anywhere: battery, bilge, shore power and more."],
   ["Web route planning", "Plan routes in your browser and send them to the boat."],
   ["Health and alerts", "Get notified when something on board needs attention."],
   ["Backup and sync", "Routes, waypoints and settings, safe and in sync."],
   ["Voyage log", "Every passage recorded, with tracks and statistics."],
 ];
-export function renderCloud(data, catalog) {
+// ---------------------------------------------------------------- SKAGER Cloud: boats and pairing
+const ago = seconds => seconds < 90 ? `${Math.max(0, Math.round(seconds))} s ago` : seconds < 5400 ? `${Math.round(seconds / 60)} min ago`
+  : seconds < 172800 ? `${Math.round(seconds / 3600)} h ago` : `${Math.round(seconds / 86400)} days ago`;
+const since = (value, now) => { const t = Date.parse(value); return Number.isFinite(t) ? (now - t) / 1000 : null; };
+const GEAR = ["Forward", "Neutral", "Reverse"], REGEN = ["Off", "One bar", "Two bars"];
+const DEGREES = (v, pos, neg) => { const a = Math.abs(v), d = Math.floor(a); return `${d}° ${((a - d) * 60).toFixed(3)}′ ${v >= 0 ? pos : neg}`; };
+/** A value in its unit as the boat reported it. Never a default: missing stays missing. */
+export function formatReading(key, value, unit) {
+  if (typeof value !== "number" || !Number.isFinite(value)) return "—";
+  if (key === "navigation.latitude") return DEGREES(value, "N", "S");
+  if (key === "navigation.longitude") return DEGREES(value, "E", "W");
+  if (key === "propulsion.gear") return GEAR[Math.round(value)] ?? "—";
+  if (key === "propulsion.regeneration") return REGEN[Math.round(value)] ?? "—";
+  const fixed = { deg: 0, kn: 1, m: 1, C: 1, hPa: 0, "%": 0, V: 2, A: 1, kW: 1, kWh: 1, rpm: 0, "msg/s": 0 }[unit] ?? 1;
+  const suffix = { deg: "°", C: " °C", "%": " %" }[unit] ?? ` ${unit}`;
+  return `${value.toFixed(fixed)}${suffix}`;
+}
+const GROUPS = [["navigation", "Position and motion"], ["wind", "Wind"], ["environment", "Water and weather"],
+  ["battery", "Battery"], ["propulsion", "Motor"], ["tanks", "Tanks"], ["steering", "Steering"], ["connectivity", "Instruments"]];
+const QUALITY = { live: null, aging: ["Aging", "wait"], stale: ["Stale", "off"], estimated: ["Estimated", "wait"], uncertain: ["Uncertain", "wait"] };
+/** Inline SVG sparkline (no script, no style attribute; CSP-safe). */
+export function sparkline(points, width = 280, height = 56) {
+  const clean = (Array.isArray(points) ? points : []).filter(p => Array.isArray(p) && Number.isFinite(p[0]) && Number.isFinite(p[1]));
+  if (clean.length < 2) return '<p class="note">Not enough history yet.</p>';
+  const xs = clean.map(p => p[0]), ys = clean.map(p => p[1]);
+  const [x0, x1, y0, y1] = [Math.min(...xs), Math.max(...xs), Math.min(...ys), Math.max(...ys)];
+  const sx = x => ((x - x0) / Math.max(1, x1 - x0)) * (width - 4) + 2, sy = y => height - 2 - ((y - y0) / Math.max(1e-9, y1 - y0)) * (height - 4);
+  const path = clean.map(([x, y], i) => `${i ? "L" : "M"}${sx(x).toFixed(1)},${sy(y).toFixed(1)}`).join("");
+  return `<svg class="spark" viewBox="0 0 ${width} ${height}" width="${width}" height="${height}" role="img" aria-hidden="true"><path d="${path}" fill="none" stroke="currentColor" stroke-width="2"/></svg>`;
+}
+/** Latest snapshot of one boat. Old data is labelled as old; nothing is shown as live without its age. */
+export function renderBoat(boat, keys, now = Date.now()) {
+  if (!boat || !boat.device) return "";
+  const received = since(boat.receivedAt, now);
+  const items = boat.items && typeof boat.items === "object" ? boat.items : {};
+  const head = received === null
+    ? `<p class="note">${boat.device.telemetryEnabled ? "No boat data received yet." : "Boat data sharing is off in SKAGER (Settings → System → SKAGER Cloud)."}</p>`
+    : `<p class="note">Last update ${esc(ago(received))}${received > 120 ? " · SKAGER is offline or not sharing right now" : ""}</p>`;
+  const groups = GROUPS.map(([prefix, title]) => {
+    const rows = Object.keys(keys || {}).filter(key => key.startsWith(prefix + ".") && items[key]).map(key => {
+      const item = items[key], spec = keys[key];
+      const age = received === null ? null : received + (Number(item.age) || 0);
+      const quality = QUALITY[item.q] || null;
+      return `<li><span>${esc(spec.label)}</span><span><strong>${esc(formatReading(key, item.v, spec.unit))}</strong>${quality ? ` ${badge(quality)}` : ""}<span class="meta">${age === null ? "" : esc(ago(age))}${item.src ? ` · ${esc(item.src)}` : ""}</span></span></li>`;
+    }).join("");
+    return rows ? `<section class="card"><h3>${esc(title)}</h3><ul class="order-lines readings">${rows}</ul></section>` : "";
+  }).join("");
+  const lat = items["navigation.latitude"]?.v, lon = items["navigation.longitude"]?.v;
+  const map = Number.isFinite(lat) && Number.isFinite(lon)
+    ? `<a class="text-link" href="https://www.openstreetmap.org/?mlat=${lat.toFixed(5)}&amp;mlon=${lon.toFixed(5)}#map=13/${lat.toFixed(5)}/${lon.toFixed(5)}" target="_blank" rel="noopener noreferrer">Show position on a map ↗</a>` : "";
+  const series = Object.entries(boat.series || {}).filter(([key]) => keys?.[key]).map(([key, points]) =>
+    `<section class="card"><h3>${esc(keys[key].label)} · last 24 h</h3>${sparkline(points)}</section>`).join("");
+  return `<div class="boat-view">${head}${map ? `<div class="actions">${map}</div>` : ""}<div class="grid grid-2">${groups}${series}</div></div>`;
+}
+/** Linked SKAGER installations, each with its latest data and an Unlink action. */
+export function renderDevices(cloud, boat, now = Date.now()) {
+  if (!cloud) return "";
+  const devices = Array.isArray(cloud.devices) ? cloud.devices : [];
+  const intro = '<p class="note">Link SKAGER under Settings → System → SKAGER Cloud. Linked computers receive automatic updates and can share boat data while SKAGER Cloud is active.</p>';
+  if (!devices.length) return `<h2 class="section-title">Your boats</h2><section class="card">${intro}<div class="actions"><a class="button button-secondary" href="/link/">Enter a pairing code</a></div></section>`;
+  return `<h2 class="section-title">Your boats</h2>${intro}<div class="grid">${devices.map(device => {
+    const seen = since(device.lastSeenAt, now), selected = boat?.device?.id === device.id;
+    return `<section class="card"><div class="order-head"><div><h3>${esc(device.name)}</h3><p class="note">SKAGER ${esc(device.appVersion)} · ${esc(device.platform === "linux" ? "Linux" : "Windows")}${seen === null ? "" : ` · seen ${esc(ago(seen))}`}</p></div>
+      <div>${badge(device.telemetryEnabled ? ["Sharing boat data", "ok"] : ["Not sharing", "off"])}</div></div>
+      <div class="actions"><button class="button${selected ? " button-secondary" : ""}" type="button" data-boat="${esc(device.id)}">${selected ? "Refresh" : "Show boat data"}</button><button class="button button-danger" type="button" data-unlink="${esc(device.id)}">Unlink</button></div>
+      ${selected ? renderBoat(boat, cloud.telemetryKeys, now) : ""}</section>`;
+  }).join("")}</div>`;
+}
+/** The page the SKAGER app sends people to: enter its code, check the computer, approve. */
+export function renderLink(state = {}) {
+  if (state.done) {
+    return `<section class="card feature narrow"><p class="eyebrow">Linked</p><h2>${esc(state.done.name)} is linked.</h2>
+      <p class="note">Go back to SKAGER. It shows your account within a few seconds.</p><div class="actions"><a class="button button-secondary" href="/portal/cloud/">Your boats</a></div></section>`;
+  }
+  if (state.found) {
+    const f = state.found;
+    return `<section class="card feature narrow"><p class="eyebrow">Link SKAGER</p><h2>Link ${esc(f.name)}?</h2>
+      <p class="note">SKAGER ${esc(f.appVersion || "")} on ${esc(f.platform === "linux" ? "Linux" : "Windows")}. Only approve if this code is on your own SKAGER screen right now.</p>
+      <div class="actions"><button class="button" type="button" id="link-approve">Link to my account</button><button class="button button-secondary" type="button" id="link-decline">This is not my computer</button></div></section>`;
+  }
+  return `<section class="card feature narrow"><p class="eyebrow">Link SKAGER</p><h2>Enter the code from SKAGER.</h2>
+    <p class="note">In SKAGER, open Settings → System → SKAGER Cloud and choose Link to my account. The 8-character code appears there.</p>
+    <form id="link-form" class="form"><label>Pairing code<input id="link-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" required placeholder="BCDF-2345"></label>
+    <button class="button" type="submit">Continue</button></form></section>`;
+}
+
+export function renderCloud(data, catalog, cloud, boat) {
   const product = (catalog?.products || []).find(item => item.kind === "subscription");
   const sub = data.subscription;
   const live = sub && ["active", "trialing", "past_due"].includes(sub.status);
@@ -190,8 +277,9 @@ export function renderCloud(data, catalog) {
       : '<p class="note">SKAGER Cloud needs an active SKAGER Beta Access.</p>';
   return `<section class="card feature"><p class="eyebrow">SKAGER Cloud</p><h2>Your boat, wherever you are.</h2><div>${status}</div>
     <p class="note">One subscription for every cloud service. New services switch on for you as they launch. Cancel any time.</p><div class="actions">${action}${data.hasBilling && !live ? '<button class="button button-secondary" type="button" id="cloud-manage">Billing history</button>' : ""}</div></section>
+    ${renderDevices(cloud, boat)}
     <h2 class="section-title">Included services</h2>
-    <div class="feature-list">${CLOUD_FEATURES.map(([name, text]) => `<section class="card"><h3>${esc(name)}</h3><p class="note">${esc(text)}</p>${badge(["Coming", "soon"])}</section>`).join("")}</div>`;
+    <div class="feature-list">${CLOUD_FEATURES.map(([name, text, live]) => `<section class="card"><h3>${esc(name)}</h3><p class="note">${esc(text)}</p>${badge(live ? ["Available", "ok"] : ["Coming", "soon"])}</section>`).join("")}</div>`;
 }
 
 export function renderOrders(data) {
@@ -228,10 +316,11 @@ export function renderAccount(data, setup) {
       <form id="boat-form" class="form"><label>Boat name<input id="boat-name" maxlength="80" required></label><button class="button button-secondary" type="submit">Add boat</button></form></section></div>`;
 }
 
-export function renderDashboard(data, page = "dashboard", extra, setup) {
+export function renderDashboard(data, page = "dashboard", extra, setup, cloud) {
   if (page === "downloads") return setup ? renderSetup(extra, setup.steps, setup.current, setup.used, setup.guide) : renderDownloads(extra);
   if (page === "shop") return renderShop(extra);
-  if (page === "cloud") return renderCloud(data, extra);
+  if (page === "cloud") return renderCloud(data, extra, cloud?.overview, cloud?.boat);
+  if (page === "link") return renderLink(cloud?.link);
   if (page === "orders") return renderOrders(data);
   if (page === "account") return renderAccount(data, false);
   return renderOverview(data);
@@ -245,7 +334,7 @@ export function stripeUrl(value, host) {
 }
 
 // ---------------------------------------------------------------- browser
-const TITLES = { dashboard: "Welcome aboard.", downloads: "Downloads", shop: "Shop", cloud: "SKAGER Cloud", orders: "Orders", account: "Account", boats: "Account" };
+const TITLES = { dashboard: "Welcome aboard.", downloads: "Downloads", shop: "Shop", cloud: "SKAGER Cloud", orders: "Orders", account: "Account", boats: "Account", link: "Link SKAGER" };
 if (typeof document !== "undefined" && document.getElementById("portal-content")) {
   let csrfToken;
   let sessionEnded = false;
@@ -264,7 +353,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
     $("logout").hidden = true;
     if ($("portal-nav")) $("portal-nav").hidden = true;
     tell(sessionMessage);
-    location.assign("/auth/login/");
+    location.assign(page === "link" ? "/auth/login/?next=/link/" : "/auth/login/");
   }
   let page = pageForPath(location.pathname);
   // Portal data lives in this page's memory only (never in browser storage), so
@@ -272,6 +361,8 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   const cache = {};
   // Where the customer is in the download steps; memory only, like the rest.
   const setup = { current: 0, used: [] };
+  // SKAGER Cloud: linked devices, the boat being viewed, and the pairing page.
+  const cloudView = { overview: undefined, boat: null, link: {} };
   const setupFor = p => p === "downloads" && cache.dashboard?.betaAccess === "active"
     ? { steps: downloadSteps(cache.catalog), guide: downloadSteps(cache.catalog, "guide"), current: setup.current, used: setup.used } : undefined;
   function mark() {
@@ -363,6 +454,63 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
       const subscribe = $("cloud-subscribe"), manage = $("cloud-manage");
       subscribe?.addEventListener("click", () => stripe("/api/store/cloud", "checkout.stripe.com", subscribe));
       manage?.addEventListener("click", () => stripe("/api/store/billing", "billing.stripe.com", manage));
+      for (const button of content.querySelectorAll("[data-boat]")) {
+        button.addEventListener("click", async () => {
+          button.disabled = true;
+          try {
+            const deviceId = button.dataset.boat;
+            const keys = Object.keys(cloudView.overview?.telemetryKeys || {});
+            const latest = await api("/api/cloud/boat", { deviceId });
+            const chart = ["navigation.sog", "battery.soc", "environment.depth", "wind.true_speed"].filter(key => keys.includes(key) && latest.items?.[key]);
+            const series = chart.length ? (await api("/api/cloud/boat/series", { deviceId, keys: chart, hours: 24 })).series : {};
+            checkSession();
+            cloudView.boat = { ...latest, series };
+            render();
+          } catch (error) { tell(error.message, "error"); button.disabled = false; }
+        });
+      }
+      for (const button of content.querySelectorAll("[data-unlink]")) {
+        button.addEventListener("click", async () => {
+          // A second press confirms; no browser dialogs.
+          if (button.dataset.confirm !== "yes") { button.dataset.confirm = "yes"; button.textContent = "Press again to unlink"; return; }
+          button.disabled = true;
+          try {
+            await api("/api/cloud/devices/revoke", { deviceId: button.dataset.unlink });
+            if (cloudView.boat?.device?.id === button.dataset.unlink) cloudView.boat = null;
+            cloudView.overview = await api("/api/cloud/overview");
+            checkSession();
+            render();
+            tell("Unlinked. That SKAGER no longer receives automatic updates or shares boat data.", "ok");
+          } catch (error) { tell(error.message, "error"); button.disabled = false; }
+        });
+      }
+    }
+    if (page === "link") {
+      const decide = approve => async () => {
+        for (const id of ["link-approve", "link-decline"]) if ($(id)) $(id).disabled = true;
+        try {
+          const result = await api("/api/cloud/link/decide", { code: cloudView.link.code, approve });
+          checkSession();
+          cloudView.link = approve && result.state === "approved" ? { done: { name: result.name } } : {};
+          render();
+          if (!approve) tell("Declined. That computer was not linked.", "ok");
+        } catch (error) { cloudView.link = {}; render(); tell(error.message, "error"); }
+      };
+      $("link-approve")?.addEventListener("click", decide(true));
+      $("link-decline")?.addEventListener("click", decide(false));
+      $("link-form")?.addEventListener("submit", async event => {
+        event.preventDefault();
+        const button = event.currentTarget.querySelector("button");
+        button.disabled = true;
+        try {
+          const code = $("link-code").value;
+          const found = await api("/api/cloud/link/find", { code });
+          checkSession();
+          cloudView.link = { code, found };
+          render();
+        } catch (error) { tell(error.message, "error"); button.disabled = false; }
+      });
+      $("link-code")?.focus();
     }
     if (page === "orders") {
       // A second press confirms; no browser dialogs.
@@ -403,24 +551,27 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
     if (p === "downloads") return cache.dashboard.betaAccess === "active" ? cache.downloads : { available: false, reason: "Downloads unlock with an active SKAGER purchase." };
     return shopPage(p) ? cache.catalog : null;
   }
-  const cached = p => cache.dashboard !== undefined && extraFor(p) !== undefined;
+  const cached = p => cache.dashboard !== undefined && extraFor(p) !== undefined && (p !== "cloud" || cloudView.overview !== undefined);
   // What the visible tab was last rendered from, so a refresh re-renders only on change.
   let rendered = null;
-  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page), setupFor(page)]);
+  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page), setupFor(page), page === "cloud" || page === "link" ? cloudView : null]);
   /** Fetch what page p shows into the cache. */
   async function refresh(p) {
     // The download steps are guidance: without the catalog the download itself still shows.
     const [dashboard, catalog] = await Promise.all([api("/api/portal/dashboard"), shopPage(p) ? api("/api/store/catalog")
       : p === "downloads" ? api("/api/store/catalog").catch(error => { if (error.status === 401) throw error; return cache.catalog; }) : cache.catalog]);
     const downloads = p === "downloads" && dashboard.betaAccess === "active" ? await downloadsCatalog() : cache.downloads;
+    // Linked devices are part of the Cloud page; failing to load them never hides the subscription.
+    const overview = p === "cloud" ? await api("/api/cloud/overview").catch(error => { if (error.status === 401) throw error; return cloudView.overview ?? null; }) : cloudView.overview;
     // A second request can end the session after api resolves but before
     // this caller resumes. Guard each private effect at its await boundary.
     checkSession();
     Object.assign(cache, { dashboard, catalog, downloads });
+    cloudView.overview = overview;
   }
   function render() {
     rendered = shownFrom();
-    content.innerHTML = renderDashboard(cache.dashboard, page === "boats" ? "account" : page, extraFor(page), setupFor(page));
+    content.innerHTML = renderDashboard(cache.dashboard, page === "boats" ? "account" : page, extraFor(page), setupFor(page), cloudView);
     content.setAttribute("aria-busy", "false");
     $("logout").hidden = false;
     if ($("portal-nav")) $("portal-nav").hidden = false;
