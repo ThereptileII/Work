@@ -13,6 +13,30 @@ import source_package
 import font_payload_test_fixture
 
 
+PATCH_NAMES = (
+    'opencpn-5.12.4-xnav.patch',
+    'opencpn-5.12.4-regression-tests.patch',
+    'opencpn-5.12.4-ais-transport.patch',
+    'opencpn-5.12.4-observable-locking.patch',
+    'opencpn-5.12.4-chart-presentation.patch',
+    'opencpn-5.12.4-route-focus.patch',
+    'opencpn-5.12.4-route-hit-dpi.patch',
+    'opencpn-5.12.4-measure-label.patch',
+    'opencpn-5.12.4-chart-tool-input.patch',
+    'opencpn-5.12.4-startup-presentation.patch',
+    'opencpn-5.12.4-track-recording.patch',
+    'opencpn-5.12.4-navobj-persistence.patch',
+    'opencpn-5.12.4-track-presentation.patch',
+    'opencpn-5.12.4-chart-display.patch',
+    'opencpn-5.12.4-maintained-curl.patch',
+    'opencpn-5.12.4-download-trust.patch',
+    'opencpn-5.12.4-wxcurl-trust.patch',
+    'opencpn-5.12.4-peer-response-buffer.patch',
+    'opencpn-5.12.4-peer-unavailable.patch',
+    'opencpn-5.12.4-pilot-serial.patch',
+)
+
+
 class SourceDistributionTests(unittest.TestCase):
     def setUp(self):
         self.temporary = tempfile.TemporaryDirectory(prefix='opennav-source-test-')
@@ -30,20 +54,7 @@ class SourceDistributionTests(unittest.TestCase):
         self.release_notes.parent.mkdir(parents=True)
         self.release_notes.write_text('# SKAGER Beta 2\nEvaluation candidate; exact acceptance pending.\n')
         (self.root / 'patches').mkdir()
-        for name in ('opencpn-5.12.4-xnav.patch', 'opencpn-5.12.4-regression-tests.patch',
-                     'opencpn-5.12.4-ais-transport.patch', 'opencpn-5.12.4-chart-presentation.patch',
-                     'opencpn-5.12.4-route-focus.patch',
-                     'opencpn-5.12.4-route-hit-dpi.patch',
-                     'opencpn-5.12.4-measure-label.patch',
-                     'opencpn-5.12.4-chart-tool-input.patch',
-                     'opencpn-5.12.4-startup-presentation.patch',
-                     'opencpn-5.12.4-track-recording.patch',
-                     'opencpn-5.12.4-track-presentation.patch',
-                     'opencpn-5.12.4-chart-display.patch',
-                     'opencpn-5.12.4-maintained-curl.patch', 'opencpn-5.12.4-download-trust.patch',
-                     'opencpn-5.12.4-wxcurl-trust.patch', 'opencpn-5.12.4-peer-response-buffer.patch',
-                     'opencpn-5.12.4-peer-unavailable.patch',
-                     'opencpn-5.12.4-pilot-serial.patch'):
+        for name in PATCH_NAMES:
             (self.root / 'patches' / name).write_text('fixture patch\n')
         def add_font(name, data):
             path = self.root / name
@@ -103,14 +114,12 @@ class SourceDistributionTests(unittest.TestCase):
                              self.release_notes.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-baseline.yml'), self.workflow.read_bytes())
             self.assertEqual(source.read('.github/workflows/opennav-prototype.yml'), self.prototype.read_bytes())
-            self.assertEqual(len(references['integrationPatches']), 17)
-            for suffix in ('route-focus', 'route-hit-dpi', 'measure-label',
-                           'chart-tool-input', 'startup-presentation',
-                           'track-recording', 'track-presentation'):
-                route_patch = next(item for item in references['integrationPatches']
-                                   if item['path'] == 'opennav-x/patches/opencpn-5.12.4-' + suffix + '.patch')
-                self.assertEqual(route_patch['sha256'], hashlib.sha256(
-                    source.read(route_patch['path'])).hexdigest())
+            self.assertCountEqual(
+                [item['path'] for item in references['integrationPatches']],
+                ['opennav-x/patches/' + name for name in PATCH_NAMES])
+            for item in references['integrationPatches']:
+                self.assertEqual(item['sha256'], hashlib.sha256(
+                    source.read(item['path'])).hexdigest())
             self.assertIn('.github/workflows/opennav-prototype.yml', references['workflows'])
             self.assertEqual(source.read('opennav-x/source-link'), b'source.cpp')
             self.assertEqual(source.getinfo('opennav-x/source-link').external_attr >> 16 & 0o170000, 0o120000)
