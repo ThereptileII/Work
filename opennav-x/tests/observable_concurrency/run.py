@@ -15,6 +15,8 @@ parser.add_argument('--upstream', type=Path, required=True)
 parser.add_argument('--build-dir', type=Path, required=True)
 parser.add_argument('--cmake', default='cmake')
 parser.add_argument('--ctest', default='ctest')
+parser.add_argument('--config', choices=('Debug', 'Release', 'RelWithDebInfo', 'MinSizeRel'),
+                    default='Release', help='Build configuration; native mswu wx uses Release')
 parser.add_argument('--cmake-arg', action='append', default=[])
 parser.add_argument('--sanitize', action='store_true')
 parser.add_argument('--negative-control', action='store_true',
@@ -45,12 +47,12 @@ if not args.negative_control:
 run(args.cmake, '-S', HERE, '-B', build / 'build',
     f'-DOPENCPN_SOURCE_DIR:PATH={source.as_posix()}',
     f'-DOBSERVABLE_SANITIZE={"ON" if args.sanitize else "OFF"}',
-    '-DCMAKE_BUILD_TYPE=Debug', *args.cmake_arg)
-run(args.cmake, '--build', build / 'build', '--config', 'Debug', '--parallel', '2')
+    f'-DCMAKE_BUILD_TYPE={args.config}', *args.cmake_arg)
+run(args.cmake, '--build', build / 'build', '--config', args.config, '--parallel', '2')
 if args.negative_control:
     executable = build / 'build' / 'observable_concurrency'
     if not executable.exists():
-        executable = build / 'build' / 'Debug' / 'observable_concurrency.exe'
+        executable = build / 'build' / args.config / 'observable_concurrency.exe'
     for scenario, expected in (
         ('unregister', 'unregister waits until queue delivery returns'),
         ('move', 'move assignment removes the previous registration')):
@@ -60,7 +62,7 @@ if args.negative_control:
         if result.returncode != 1 or expected not in result.stderr:
             raise RuntimeError(f'Unpatched {scenario} did not fail at the expected boundary')
 else:
-    run(args.ctest, '--test-dir', build / 'build', '-C', 'Debug', '--output-on-failure')
+    run(args.ctest, '--test-dir', build / 'build', '-C', args.config, '--output-on-failure')
 (build / 'evidence.json').write_text(json.dumps({
     'pin': PIN,
     'result': 'unpatched defects reproduced' if args.negative_control else 'four scenarios passed',
@@ -70,5 +72,6 @@ else:
     'fixture_sha256': {name: hashlib.sha256((HERE / name).read_bytes()).hexdigest()
                        for name in ('main.cpp', 'CMakeLists.txt', 'run.py')},
     'sanitizers': args.sanitize,
+    'configuration': args.config,
     'scope': 'Actual pinned Observable implementation and wx event queue; controlled queue barrier and bounded concurrent churn; no device or full application.'
 }, indent=2) + '\n')
