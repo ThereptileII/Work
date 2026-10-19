@@ -1,0 +1,73 @@
+{
+  "schema": 1,
+  "issue": "SCRUM-298",
+  "productCommit": "bf4896833fda8389cfb03924cde7d6c89de5e5e6",
+  "productVersion": "0.4.0-beta2.6",
+  "producer": {
+    "runId": "39320631961",
+    "attempt": 1,
+    "url": "https://github.com/ThereptileII/Work/actions/runs/39320631961",
+    "windowsBuild": "passed",
+    "runtimeQualification": "failed"
+  },
+  "failure": {
+    "jobId": "118321923727",
+    "logSha256": "c2585f1bc2dafbd8c184ed2cce7ddd547c587ab3264a776a5ceac61dd44a3dea",
+    "artifactId": "12223183895",
+    "artifactSha256": "fd754f83c7beb21eaa5992a3ffee0b1f380c45f27a1a02c982d42c1d18006c2d",
+    "boundary": "diagnostic enabled-state assertion after the first native waypoint Save",
+    "observations": [
+      "Actual native owner/page/field visibility and enabled checks passed before the diagnostic assertion.",
+      "The saved database name was ALPHA TEST UI edited.",
+      "The retained diagnostic tick 318 still described the disabled owner field and visible modal Save/Cancel controls.",
+      "The actual WM_GETTEXT comparison had not yet been reached.",
+      "The compiled objects fixture passed through phase done."
+    ],
+    "classification": "helper synchronization; fixed 0.6-second sleep was shorter than the one-second diagnostic publication cadence"
+  },
+  "correction": {
+    "commit": "43a088a2d15fc33f3fd13956dcc61f0e52754b8c",
+    "changedPaths": [
+      "opennav-x/tools/smoke-navigation.py",
+      "opennav-x/tools/test-smoke-native-waypoint-name.py",
+      "opennav-x/tests/smoke_navigation_surface_tests.py"
+    ],
+    "behavior": "Wait for exact modal completion, then a strictly newer post-close diagnostic tick; keep all native assertions and inspect restored value. Select the exact Delete waypoint cancellation span in its policy fixture.",
+    "applicationChanged": false,
+    "assertionsWeakened": false,
+    "focusedChecks": {
+      "nativeNameAndCompletion": 14,
+      "desktopPolicy": 7,
+      "cancellation": 17,
+      "freshnessAndRemovedCompletionNegatives": 3
+    },
+    "independentSourceReview": "no remaining blocker"
+  },
+  "retest": {
+    "runId": "39331651669",
+    "attempt": 1,
+    "scope": "all",
+    "url": "https://github.com/ThereptileII/Work/actions/runs/39331651669",
+    "status": "passed",
+    "applicationRebuilt": false,
+    "productCommit": "bf4896833fda8389cfb03924cde7d6c89de5e5e6",
+    "harnessCommit": "43a088a2d15fc33f3fd13956dcc61f0e52754b8c",
+    "completedUtc": "2026-10-19T22:22:57Z",
+    "jobId": "118331078881",
+    "logSha256": "a5ff7b2944f33ff95ef14c834e20c6d13499a747346f527a7af51c9ea192ece6",
+    "artifactId": "12226521177",
+    "artifactSha256": "b371054963f14894bcec6ee62f71f12b763e9d66b383960bc06a45c5cb9b5a5d",
+    "reportCount": 29,
+    "nativeWaypointReadStages": [
+      "after-save",
+      "after-delete-cancel",
+      "after-restore"
+    ],
+    "independentSemanticValidation": "passed; actual frozen payload binding remains the composition gate"
+  },
+  "boatInstallation": "pending",
+  "physicalCommands": false,
+  "designReview": "not requested",
+  "endurance": "skipped",
+  "productionPromotion": false
+}

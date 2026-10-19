@@ -1,4 +1,30 @@
-# SKAGER status — 2026-10-19
+# SKAGER status — 2026-10-20
+
+## 20 October — retained Windows qualification
+
+Candidate `bf489683` / `0.4.0-beta2.6`, build `39320631961/1`, passed
+both 160-case Linux variants and both 152-case Windows variants. The actual
+Windows private-chart module check passed, and the earlier compiled route-modal
+fixture now completes. The subsequent runtime job failed after a waypoint Save:
+the database contained the saved name and the native field was enabled, but the
+helper read the previous, modal-open diagnostic publication before its one-second
+refresh. This is not a new failed application build.
+
+Reviewed helper `43a088a2` waits for exact native modal completion and a strictly
+newer diagnostic tick after both Saves, retaining native field ownership,
+visibility, enabled-state and value assertions. Delete-cancellation checks are
+unchanged. Its 14 focused helper cases and 27 surface/policy checks pass.
+Full retained native run `39331651669/1` passed against the **same** sealed
+`bf489683` package. No application rebuild occurred; replacement boat installation
+remains pending. [The exact correction record](evidence/source-batch-20261019/waypoint-save-synchronization.json)
+preserves the original failure and separates product from helper identity.
+
+The bounded composed-delivery extension requires every runtime gate from that
+fresh full run, the original successful build/dependency jobs and same-run native
+restart proof. It cannot promote the failed prefix or change package/source
+bytes. Its 40 composition, 15 composed-delivery and 20 release-delivery tests
+pass; the authenticated composed draft Release remains pending. No new
+design review, endurance run, physical command or Production promotion applies.
 
 ## 19 October — audited Staging 0.4.0-beta2.6 preparation
 
