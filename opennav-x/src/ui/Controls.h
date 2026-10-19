@@ -85,7 +85,11 @@ class XNavButton : public wxControl {
   }
 #endif
   void SetLabel(const wxString &label) override;
-  void SetRole(ButtonRole role) { role_ = role; Refresh(); }
+  void SetRole(ButtonRole role) {
+    if (role_ == role) return;
+    role_ = role;
+    Refresh(false);
+  }
   // A CSS-like segment inside a padded surface track; other Segment users
   // retain their existing geometry and typography.
   void SetSegmentInTrack() { role_ = ButtonRole::Segment; segment_in_track_ = true; Refresh(); }

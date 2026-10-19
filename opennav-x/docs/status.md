@@ -1,5 +1,21 @@
 # SKAGER status — 2026-10-19
 
+## UI flicker — repaint corrections, native confirmation pending
+
+The SCRUM-378 follow-up removes confirmed redundant 250 ms repaint requests
+from unchanged alert-button roles, unchanged unavailable rail readings and
+unchanged drawer themes/settings copy. Data assessment, observation timestamps,
+source health and alert cadence are unchanged. A Windows-only buffered header
+keeps native route/clock labels and sibling controls painted together during
+real header updates; it does not include the chart or its OpenGL canvas.
+
+The reported “No active route” flicker has not been reproduced on replacement
+bytes: source inspection did not establish route-state oscillation, and wxMSW
+already ignores identical native labels. Header buffering is a targeted
+mitigation, not a verified diagnosis of that flash. Source review only; no build,
+test, CI, deployment or boat operation. See the
+[repaint review](design/reviews/scrum378-source-refinement.md#2026-10-19-ui-flicker-follow-up).
+
 ## Floating chart compass — source-only correction
 
 The SCRUM-378 follow-up fixes the compass button's two-mode toggle. It now

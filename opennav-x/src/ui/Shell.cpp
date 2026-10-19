@@ -113,6 +113,12 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   const int gap = frame_.FromDIP(spacing::base);
   auto *top = MakePane("OpenNavTop", wxAuiPaneInfo().Top().Layer(10).BestSize(
                                          -1, frame_.FromDIP(prototype::top)));
+#ifdef __WXMSW__
+  // Composite native route/clock text and sibling controls together during
+  // header updates. Keep this local: the frame also owns the OpenGL chart,
+  // which must not become a descendant of a composited window.
+  top->SetDoubleBuffered(true);
+#endif
   auto *row = new wxBoxSizer(wxHORIZONTAL);
   auto *brand = new wxPanel(top, wxID_ANY);
   brand_panel_ = brand;
@@ -1257,7 +1263,8 @@ void Shell::Tick() {
   horizon_->Update(application::PresentHorizon(state_,field_snapshot_.advice,horizon_ais_,now),mode_);
   PlaceChartControls();
   UpdateContext(wall_now);
-  clock_->SetLabel(simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M"));
+  const wxString clock_text = simulation_ ? "10:42" : wxDateTime::Now().Format("%H:%M");
+  if (clock_->GetLabel() != clock_text) clock_->SetLabel(clock_text);
   wxString label =
       replay ? wxString::Format("REPLAY / %s / %.0f s",
                                 replay->paused  ? "PAUSED"
@@ -1308,10 +1315,11 @@ void Shell::Tick() {
   const bool show_summary = true;
   const bool summary_layout = route_summary_->GetLabel() != summary ||
                               route_summary_->IsShown() != show_summary;
-  route_summary_->SetLabel(summary);
-  route_summary_->Show(show_summary);
-  if (summary_layout)
+  if (summary_layout) {
+    route_summary_->SetLabel(summary);
+    route_summary_->Show(show_summary);
     route_summary_->GetParent()->Layout();
+  }
   if (page_ && page_->IsShown())
     page_->Update(current_page_, mode_, state_, now, model, energy,
                   actions_.build_info ? actions_.build_info()

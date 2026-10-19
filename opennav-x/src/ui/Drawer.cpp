@@ -105,6 +105,10 @@ void XNavDrawer::SetHeading(const wxString &eyebrow, const wxString &title,
   }
 }
 void XNavDrawer::SetLight(LightMode mode) {
+  // Live drawer updates call this on every shell tick. Repainting the entire
+  // native child tree is only necessary for the initial or a changed palette.
+  if (theme_initialized_ && light_ == mode) return;
+  theme_initialized_ = true;
   light_ = mode;
   const auto c = Theme(mode);
   SetBackgroundColour(Colour(c.background));

@@ -55,6 +55,14 @@ void XNavSettingsDrawer::Select(SettingsSection section) {
   Build();
 }
 void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
+  // Only the Autopilot and Radar copy blocks depend on the live snapshot.
+  // New panels and resize handlers still request their normal first/size paint.
+  const bool copy_state_changed=
+      (section_==SettingsSection::Autopilot &&
+       (state_.pilot.enabled!=state.pilot.enabled ||
+        state_.pilot.fresh!=state.pilot.fresh)) ||
+      (section_==SettingsSection::Radar &&
+       state_.radar.available!=state.radar.available);
   state_=state;
   const bool changed=mode!=light_;
   SetLight(mode);
@@ -105,7 +113,8 @@ void XNavSettingsDrawer::Update(const ProductState &state,LightMode mode) {
       SetDisplayPreferences(current);
     }
   }
-  for(auto *p:copies_)p->Refresh(false);
+  if(changed || copy_state_changed)
+    for(auto *p:copies_)p->Refresh(false);
 }
 void XNavSettingsDrawer::ResetDraft(){
   draft_initialized_=false;draft_dirty_=false;touched_.fill(false);feedback_.clear();

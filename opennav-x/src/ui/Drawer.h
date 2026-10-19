@@ -37,6 +37,7 @@ private:
   XNavButton *back_ = nullptr, *close_ = nullptr;
   wxString eyebrow_, title_;
   bool has_back_ = false;
+  bool theme_initialized_ = false;
   bool wide_ = false;
   int interface_scale_ = 100;
   RoundedWindowShape shape_;

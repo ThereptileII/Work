@@ -787,9 +787,12 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
                      (unit_ == "deg relative" && std::abs(*next.value) > 180))) {
     next.value.reset(); next.quality = vessel::Quality::Unavailable;
   }
+  // Two unavailable ages are unchanged, not a reason to repaint every tick.
+  // Still assess and retain every observation, including freshness transitions.
+  const bool age_changed = next.age.has_value() != reading_.age.has_value() ||
+      (next.age && reading_.age && next.age->count()/100 != reading_.age->count()/100);
   const bool changed = reading_.value != next.value || reading_.quality != next.quality ||
-      sample.source != sample_.source ||
-      (!next.age || !reading_.age || next.age->count()/100 != reading_.age->count()/100);
+      sample.source != sample_.source || age_changed;
   sample_ = sample;
   reading_ = next;
   const wxString source = sample.source.empty() ? "No source" : wxString::FromUTF8(sample.source);
@@ -799,7 +802,7 @@ void XNavDataValue::SetReading(const vessel::Sample& sample, vessel::Time now) {
   ApplyHint(*this, mode_, hint_);
   SetName(label_ + ": " + (reading_.value ? wxString::Format("%.*f", decimals_, *reading_.value) : "Unavailable")
           + " " + unit_ + " / " + wxString::FromUTF8(vessel::QualityName(reading_.quality)));
-  if(changed) Refresh();
+  if(changed) Refresh(false);
 }
 
 void XNavDataValue::PaintVisual(wxDC &dc, int x, int top, int right, int bottom) {

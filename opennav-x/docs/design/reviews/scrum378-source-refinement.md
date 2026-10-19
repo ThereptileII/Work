@@ -98,3 +98,41 @@ source now includes the Head step before returning North; it has not been run.
 The read-only capture helper also recognizes the exact Head label; its fixture
 still rejects an extended control set. This grants no click/control permission.
 Independent source review only; no build, test, new screenshot or boat operation.
+
+## 2026-10-19 UI flicker follow-up
+
+The owner reports flickering “No active route” and other UI elements. The shell
+assesses live data every 250 ms; that cadence is retained. Source inspection
+identified these redundant invalidations and corrections:
+
+- `XNavButton::SetRole` refreshed even for the same alert-button role. It now
+  repaints only when the role changes, without requesting a separate erase.
+- `XNavDataValue::SetReading` treated two absent ages as a change. It now
+  compares optional-age presence and the existing age display bucket correctly.
+  Every sample is still assessed/copied, and source, value, age and quality
+  transitions still request repaint. Missing data remains unavailable.
+- `XNavDrawer::SetLight` refreshed its whole native child tree on every live
+  update. It now initializes once and refreshes for actual palette changes.
+  New child construction, content updates, resize and show behavior remain.
+- Settings copy panels refresh when their displayed Autopilot enabled/fresh or
+  Radar available state changes, or the theme changes. Static copy no longer
+  repaints on each timer tick; editing/drafts and size-driven wrapping remain.
+- Windows buffers the top header's native labels and sibling controls together
+  during actual updates. This is scoped to `OpenNavTop`, not the parent frame:
+  the chart and OpenGL canvas are outside that panel's descendant tree. Route
+  and clock label calls are also guarded by their actual displayed strings.
+
+No stable “No active route” / “Route unavailable” state oscillation was found in
+the route producer/header path. Pinned wxWidgets 3.2.8 MSW `wxStaticText::SetLabel`
+already returns for an identical label. Neither label assignment alone nor the
+route check is therefore established as the reported native flash's cause.
+Header buffering is a scoped mitigation for erase/child-paint transitions; it
+does not imply that the reported boat flicker has been reproduced or eliminated.
+
+Independent manual source review covered initial/repeated themes, unavailable
+age pairs and presence transitions, real state changes, header ownership and
+route-title updates. Future authorized native review must check the idle
+no-route header, activation/deactivation/renaming, real health/alert changes,
+stale readings, drawer themes and header layout/DPI changes. No automated check,
+build, test, screenshot, CI, deployment or boat operation was run for this
+follow-up. The installed boat candidate remains unchanged.
