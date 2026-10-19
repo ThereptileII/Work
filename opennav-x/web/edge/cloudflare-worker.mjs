@@ -40,9 +40,58 @@ async function readBounded(stream, limit = MAX_BODY) {
   return result;
 }
 
-export async function handleWorker(request, transport = fetch) {
+// The SKAGER app and its updater authenticate with a device token, never a cookie.
+const DEVICE_TOKEN = /^Bearer (skg1_[a-f0-9]{64})$/;
+const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
+// TUF metadata and signed artifacts for one channel; no traversal or empty segments.
+const UPDATE_KEY = /^(?:beta|stable)\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}(?:\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}){0,4}$/;
+const ACCESS_TTL_MS = 60000;
+const accessCache = new Map();
+
+function plain(status, body) {
+  return finish(new Response(body, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } }));
+}
+
+async function updateAccess(token, transport) {
+  const cached = accessCache.get(token);
+  if (cached && cached.until > Date.now()) return cached.status;
+  const response = await transport(EDGE + '/api/device/update-access', {
+    method: 'GET', headers: { 'x-skager-device': token }, redirect: 'manual', signal: AbortSignal.timeout(10000),
+  });
+  await response.body?.cancel().catch(() => {});
+  const status = response.status === 204 ? 204 : response.status === 401 || response.status === 402 ? response.status : 503;
+  if (status !== 503) {
+    if (accessCache.size >= 1000) accessCache.clear();
+    accessCache.set(token, { status, until: Date.now() + ACCESS_TTL_MS });
+  }
+  return status;
+}
+
+/** SKAGER Cloud update feed: only a linked SKAGER with an active subscription may read
+ * it. TUF signatures, not this check, establish what is trusted; this only decides who
+ * may download. Objects come from the SKAGER_UPDATES R2 binding on this same origin. */
+async function serveUpdate(request, url, env, transport) {
+  if (!['GET', 'HEAD'].includes(request.method)) return plain(405, 'GET required');
+  const key = url.pathname.slice('/updates/'.length);
+  if (url.search || !UPDATE_KEY.test(key) || key.split('/').some(part => part === '.' || part === '..')) return plain(404, 'Not found');
+  const match = DEVICE_TOKEN.exec(request.headers.get('authorization') || '');
+  if (!match) return plain(401, 'Link SKAGER to your account to receive automatic updates.');
+  let access;
+  try { access = await updateAccess(match[1], transport); } catch { access = 503; }
+  if (access === 401) return plain(401, 'This SKAGER is no longer linked to an account.');
+  if (access === 402) return plain(402, 'Automatic updates are part of SKAGER Cloud.');
+  if (access !== 204 || !env?.SKAGER_UPDATES) return plain(503, 'Update service temporarily unavailable.');
+  const object = request.method === 'HEAD' ? await env.SKAGER_UPDATES.head(key) : await env.SKAGER_UPDATES.get(key);
+  if (!object) return plain(404, 'Not found');
+  const headers = new Headers({ 'Content-Type': key.endsWith('.json') ? 'application/json' : 'application/octet-stream',
+    'Content-Length': String(object.size), 'Cache-Control': 'private, no-store', 'Content-Encoding': 'identity' });
+  return finish(new Response(request.method === 'HEAD' ? null : object.body, { headers }));
+}
+
+export async function handleWorker(request, transport = fetch, env = undefined) {
   const url = new URL(request.url);
   if (url.origin !== ORIGIN) return finish(new Response('Use beta.skager.app', { status: 421 }));
+  if (url.pathname.startsWith('/updates/')) return serveUpdate(request, url, env, transport);
   if (url.pathname.startsWith('/api/')) {
     if (url.pathname === '/api/portal/downloads' && url.search) return finish(new Response('{"error":"Download query parameters are not supported."}', {
       status: 400, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
@@ -53,6 +102,13 @@ export async function handleWorker(request, transport = fetch) {
     for (const name of ['content-type', 'origin', 'cookie', 'x-csrf-token', 'stripe-signature']) {
       const value = request.headers.get(name);
       if (value && value.length <= 8192) headers.set(name, value);
+    }
+    if (url.pathname.startsWith('/api/device/')) {
+      // The app's bearer token travels to the function under its own name only.
+      const token = DEVICE_TOKEN.exec(request.headers.get('authorization') || '');
+      if (token) headers.set('x-skager-device', token[1]);
+      const version = request.headers.get('x-skager-version');
+      if (version && VERSION.test(version)) headers.set('x-skager-version', version);
     }
     let body;
     try { if (request.method === 'POST') body = await readBounded(request.body, url.pathname === IMAGE_ROUTE ? IMAGE_BODY : MAX_BODY); }
@@ -92,7 +148,7 @@ export async function handleWorker(request, transport = fetch) {
     return finish(new Response(null, { status: 303, headers: { Location: '/auth/login/', 'Cache-Control': 'no-store' } }));
   }
   let path = url.pathname;
-  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path)) path = '/portal.html';
+  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats|boat))?\/?$/.test(path) || /^\/link\/?$/.test(path)) path = '/portal.html';
   else if (/^\/auth\/(?:login|forgot|verify)\/?$/.test(path)) path = '/auth.html';
   else if (/^\/admin(?:\/(?:steps|orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
   else if (path.endsWith('/')) path += 'index.html';
@@ -104,4 +160,4 @@ export async function handleWorker(request, transport = fetch) {
   }));
 }
 
-export default { fetch: request => handleWorker(request) };
+export default { fetch: (request, env) => handleWorker(request, fetch, env) };

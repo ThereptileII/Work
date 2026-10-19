@@ -189,3 +189,67 @@ for (const status of [301, 302, 303, 307, 308]) {
     } finally { console.warn = originalWarn; }
   });
 }
+
+const DEVICE_TOKEN = 'skg1_' + 'b'.repeat(64);
+function updatesBucket(objects: Record<string, string>) {
+  const reads: string[] = [];
+  return { reads, SKAGER_UPDATES: {
+    async get(key: string) { reads.push(key); return key in objects ? { size: objects[key].length, body: new Blob([objects[key]]).stream() } : null; },
+    async head(key: string) { reads.push(key); return key in objects ? { size: objects[key].length } : null; },
+  } };
+}
+test('the update feed is served only to a linked SKAGER whose account has SKAGER Cloud', async () => {
+  const env = updatesBucket({ 'beta/metadata/timestamp.json': '{"signed":{}}' });
+  const checks: string[] = [];
+  const edge = (status: number) => async (url: string, init: RequestInit) => {
+    checks.push(url + ' ' + new Headers(init.headers).get('x-skager-device'));
+    return new Response(null, { status });
+  };
+  const get = (path: string, token?: string) => new Request('https://beta.skager.app' + path,
+    { headers: token ? { Authorization: 'Bearer ' + token } : {} });
+
+  const anonymous = await handleWorker(get('/updates/beta/metadata/timestamp.json'), edge(204), env);
+  assert.equal(anonymous.status, 401);
+  assert.equal(checks.length, 0);
+  const unpaid = await handleWorker(get('/updates/beta/metadata/timestamp.json', 'skg1_' + 'c'.repeat(64)), edge(402), env);
+  assert.equal(unpaid.status, 402);
+  assert.match(await unpaid.text(), /SKAGER Cloud/);
+  assert.equal(env.reads.length, 0);
+
+  const ok = await handleWorker(get('/updates/beta/metadata/timestamp.json', DEVICE_TOKEN), edge(204), env);
+  assert.equal(ok.status, 200);
+  assert.equal(await ok.text(), '{"signed":{}}');
+  assert.equal(ok.headers.get('Content-Type'), 'application/json');
+  assert.equal(ok.headers.get('Cache-Control'), 'private, no-store');
+  assert.equal(checks.at(-1), 'https://kelwgubkuvditalsbqpr.supabase.co/functions/v1/skager-web/api/device/update-access ' + DEVICE_TOKEN);
+  // A positive answer is reused briefly so one update check costs one entitlement lookup.
+  const before = checks.length;
+  assert.equal((await handleWorker(get('/updates/beta/metadata/missing.json', DEVICE_TOKEN), edge(204), env)).status, 404);
+  assert.equal(checks.length, before);
+
+  for (const path of ['/updates/beta/../secret', '/updates/other/x.json', '/updates/beta//x', '/updates/beta/x.json?y=1', '/updates/beta/.hidden']) {
+    assert.equal((await handleWorker(get(path, DEVICE_TOKEN), edge(204), env)).status, 404, path);
+  }
+  const post = new Request('https://beta.skager.app/updates/beta/metadata/timestamp.json', { method: 'POST', headers: { Authorization: 'Bearer ' + DEVICE_TOKEN } });
+  assert.equal((await handleWorker(post, edge(204), env)).status, 405);
+  assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', 'skg1_' + 'd'.repeat(64)), edge(204), {})).status, 503);
+});
+test('device API calls carry the bearer token under its own header, never to other routes', async () => {
+  const seen: Headers[] = [];
+  const upstream = async (_url: string, init: RequestInit) => { seen.push(new Headers(init.headers)); return new Response('{}', { headers: { 'content-type': 'application/json' } }); };
+  const headers = { Authorization: 'Bearer ' + DEVICE_TOKEN, 'X-Skager-Version': '0.4.0-beta2.7' };
+  await handleWorker(new Request('https://beta.skager.app/api/device/status', { headers }), upstream);
+  await handleWorker(new Request('https://beta.skager.app/api/portal/dashboard', { headers }), upstream);
+  assert.equal(seen[0].get('x-skager-device'), DEVICE_TOKEN);
+  assert.equal(seen[0].get('x-skager-version'), '0.4.0-beta2.7');
+  assert.equal(seen[0].has('authorization'), false);
+  assert.equal(seen[1].has('x-skager-device'), false);
+  assert.equal(seen[1].has('authorization'), false);
+});
+test('the pairing page and the boat page use the member shell', async () => {
+  const noBackend = async () => assert.fail('static shells never call the backend');
+  for (const path of ['/link/', '/link', '/portal/boat/']) {
+    const response = await handleWorker(new Request('https://beta.skager.app' + path), noBackend);
+    assert.equal(response.status, 200, path);
+  }
+});

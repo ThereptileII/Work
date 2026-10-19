@@ -4,6 +4,7 @@ import { handleStore } from './store.ts';
 import { handleAdmin, IMAGE_BODY_LIMIT, IMAGE_ROUTE } from './admin.ts';
 import { handlePortal } from './portal.ts';
 import { handleDownloads } from './downloads.ts';
+import { handleCloud, isDeviceRoute } from './cloud.ts';
 import { bootstrapCsrf, boundedBytes, csrfValid, json, MAX_BODY, PUBLIC_ORIGIN, rpcClient } from './platform.ts';
 import type { Context, RuntimeEnv } from './platform.ts';
 
@@ -28,14 +29,16 @@ export async function handleRequest(request: Request, env: RuntimeEnv, transport
       catch { return json({ error: 'Request too large' }, 413); }
       request = new Request(PUBLIC_ORIGIN + path, { method: 'POST', headers: request.headers, body: bytes });
     } else request = new Request(PUBLIC_ORIGIN + path, { headers: request.headers });
-    // Stripe webhooks are signed and the scheduled job carries its own secret; browsers need CSRF.
-    if (request.method === 'POST' && path !== '/api/stripe/webhook' && path !== '/api/jobs/tick' && !await csrfValid(request)) {
+    // Stripe webhooks are signed, the scheduled job carries its own secret and SKAGER app
+    // routes use a device code/token and refuse cookies; browsers need CSRF.
+    if (request.method === 'POST' && path !== '/api/stripe/webhook' && path !== '/api/jobs/tick' && !isDeviceRoute(path)
+        && !await csrfValid(request)) {
       return json({ error: 'Please refresh the page and try again.' }, 403);
     }
     const ctx: Context = { env, fetch: transport, rpc: rpcClient(env, transport), getAccount: async () => null };
     ctx.getAccount = req => getAccount(req, ctx);
     let response = await handleAuth(request, ctx) ?? await handleStore(request, ctx) ?? await handleAdmin(request, ctx)
-      ?? await handlePortal(request, ctx) ?? await handleDownloads(request, ctx);
+      ?? await handlePortal(request, ctx) ?? await handleDownloads(request, ctx) ?? await handleCloud(request, ctx);
     if (!response) response = json({ error: 'Not found' }, 404);
     if (path === '/api/auth/session' && request.method === 'GET') response = await bootstrapCsrf(request, response);
     if (!path.startsWith('/api/media/')) response.headers.set('Cache-Control', 'no-store');

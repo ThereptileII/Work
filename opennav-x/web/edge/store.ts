@@ -401,8 +401,10 @@ async function tick(req: Request, ctx: StoreContext): Promise<Response> {
     return reply(403, { error: 'Forbidden' });
   }
   const maintenance = await ctx.rpc('store_job_maintenance', {});
+  // Cloud maintenance (expired pairings, 30-day history) must not hold back email.
+  const cloud = await ctx.rpc('cloud_job_maintenance', {}).catch(() => null);
   const email = await sendDue(ctx, 20);
-  return reply(200, { ok: true, maintenance, email });
+  return reply(200, { ok: true, maintenance, cloud, email });
 }
 
 // ---------------------------------------------------------------- router
