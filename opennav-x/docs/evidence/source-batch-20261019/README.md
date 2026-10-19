@@ -280,3 +280,38 @@ completion negative controls and nine native-name helper cases pass. The
 previously failing CTest entry also passes from the coordinator checkout.
 Dropping the publication wait or owner-completion guard remains detectable;
 unchanged cached background text cannot hide a changed waypoint name.
+
+## Remaining object-lifecycle fixture investigation
+
+The same `e0c9ce50` run completed its Linux build, unit suite, native listener/
+navigation-save checks, shared boat widgets, mode/input/recording/route/
+instrument/Signal K gates and the corrected actual TCP pilot smoke. It then
+failed the objects scenario at `route-card` with `Object scenario timed out`;
+user-flow, recovery and chart tail steps did not execute. Linux artifact
+`12191023814` has SHA-256
+`a5228d0e777810e0fa00fa3ffe95011f9d7c75e08db9a9b7eba9130a0e0913a3`.
+
+The retained marker and Python report prove the initial route detail was
+observed. Its isolated database contains the subsequent external route rename.
+The native scenario stalls before publishing the renamed phase, at a
+`HasVisibleText` gate that reads only `GetLabel`; the current name lives in a
+`wxTextCtrl`. The artifact does not record the post-rename editor value, so
+source inspection alone does not establish that it refreshed. Focused native
+reader/focus verification is required before correcting this remaining fixture.
+No Windows replacement or boat acceptance is claimed.
+
+The subsequent test-only repair replaces exactly those three renamed-name
+checks (route once, waypoint twice) with a unique owned native field read in
+the selected detail page. Actual static unavailable-label checks stay intact.
+The existing native name-editor fixture passes 43 Linux checks, including
+external name/revision updates on real Route detail and Waypoint detail pages.
+The original GTK caption observer misses both refreshed names; the new typed
+field reader succeeds. Hidden/missing/duplicate/wrong-field/other-page and
+matching stale-caption controls are rejected. The old GTK failure proof is
+GTK-specific; owned-field correctness remains tested on both platforms.
+
+The component run freshly compiled current `NameEditor.cpp` and its test
+translation unit against hash-recorded retained libraries whose other relevant
+UI sources, including `ProductPanel.cpp`, were unchanged. This was not another
+whole-application build. Independent review found no further object-lifecycle
+label mismatch. Full native runtime qualification remains pending.

@@ -35,10 +35,15 @@ has been installed on the boat.
 
 The next run `39259936799` reached 117/118 Linux and 114/115 Windows contract
 passes, with the same remaining dependent cancellation-test failure on both
-platforms. That test still extracts the former four-statement helper sequence;
-its repair preserves native editor readback and modal-completion checks. The
-already-started Linux runtime gate is retained for diagnostic coverage. This
-run is not a qualified replacement and has not changed the boat installation.
+platforms. Its corrected actual cancellation sequence passes the focused CTest
+entry while retaining native editor readback and modal-completion checks. The
+retained Linux run subsequently passed its actual TCP pilot test, then timed out
+in the object lifecycle after an external route rename. The native scenario
+read a caption instead of the inline name field. Its three renamed-name guards
+are corrected; 43 focused native checks prove real route/waypoint refresh and
+preserve exact ownership/value/visibility refusals. User-flow/recovery/chart
+tail checks did not run. The next candidate still requires full native runtime
+qualification; no replacement package or boat update is claimed.
 
 Historical source-only entries below remain evidence of what was and was not
 executed then; they do not describe the new candidate as installed or accepted.

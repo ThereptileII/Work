@@ -834,8 +834,8 @@ try:
                                     'Route change must not rebuild a live modal sheet')
                         capture('route-detail-stale-confirmation')
                         click_object('Activate',accessible_name='Activate')
-                        # Inline name-editor Cancel stays visible on the detail
-                        # page; only the owned confirmation must disappear.
+                        # Inline editor actions have separate accessible names;
+                        # only the owned confirmation must disappear.
                         wait_object(lambda s:not context_controls(s,'Cancel','Cancel'),
                                     'Stale confirmation closes normally')
                         (profile/'route-modal-confirmed').write_text('Confirmed original activation intent after external edit.\n')
