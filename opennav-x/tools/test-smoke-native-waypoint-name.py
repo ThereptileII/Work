@@ -5,16 +5,20 @@ import copy
 import ctypes
 from ctypes import wintypes
 from pathlib import Path
+from types import SimpleNamespace
 import unittest
 
 
 source = Path(__file__).with_name('smoke-navigation.py')
 tree = ast.parse(source.read_text(encoding='utf-8'))
-function = next(node for node in tree.body if isinstance(node, ast.FunctionDef)
-                and node.name == 'require_native_waypoint_name')
+functions = [node for node in tree.body if isinstance(node, ast.FunctionDef)
+             and node.name in ('require_native_waypoint_name', 'complete_native_waypoint_modal')]
+wait_function = next(node for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)
+                     and node.name == 'wait_object')
 namespace = {}
-exec(compile(ast.Module(body=[function], type_ignores=[]), str(source), 'exec'), namespace)
+exec(compile(ast.Module(body=functions, type_ignores=[]), str(source), 'exec'), namespace)
 require_name = namespace['require_native_waypoint_name']
+complete_modal = namespace['complete_native_waypoint_modal']
 
 
 class NativeUi:
@@ -150,6 +154,95 @@ class NativeWaypointName(unittest.TestCase):
         self.record['runtime']['display']['interaction_controls'] = [self.field, dict(self.field)]
         with self.assertRaises(AssertionError):
             self.read()
+
+
+class NativeWaypointModalCompletion(unittest.TestCase):
+    def setUp(self):
+        self.ui = NativeUi()
+        self.events = []
+        self.elapsed = 0
+        self.samples = []
+        self.read_count = 0
+        self.closed = False
+
+        def finish_modal(pid, title, owner, action):
+            self.events.append(('modal', pid, title, owner))
+            action()
+            self.closed = True
+            self.events.append('closed')
+
+        def snapshot():
+            self.assertTrue(self.closed, 'Diagnostic baseline must follow native modal completion')
+            self.read_count += 1
+            if len(self.samples) > 1:
+                return self.samples.pop(0)
+            return self.samples[0]
+
+        def sleep(seconds):
+            self.elapsed += seconds
+
+        self.ui.complete_modal_action = finish_modal
+        self.snapshot = snapshot
+        # Exercise the real bounded polling helper without starting a process,
+        # sleeping, or filtering on whether the published UI state is correct.
+        scope = dict(time=SimpleNamespace(monotonic=lambda: self.elapsed, sleep=sleep),
+                     app=SimpleNamespace(poll=lambda: None), object_snapshot=snapshot)
+        exec(compile(ast.Module(body=[wait_function], type_ignores=[]), str(source), 'exec'), scope)
+        self.wait = scope['wait_object']
+
+    @staticmethod
+    def record(tick, enabled=True):
+        field = dict(label='Field: Waypoint name', accessible_name='Waypoint name',
+                     x=100, y=200, width=500, height=48, visible=True, enabled=enabled)
+        return dict(ui_page='Waypoint detail', runtime=dict(ui_update=dict(ticks=tick),
+                    display=dict(interaction_controls=[field])))
+
+    def complete(self):
+        return complete_modal(self.ui, 1, 42, 'Edit waypoint',
+                              lambda: self.events.append('action'), self.snapshot, self.wait)
+
+    def test_waits_beyond_post_close_baseline_before_reading_name(self):
+        self.samples = [self.record(318, False), self.record(318, False), self.record(319)]
+        record = self.complete()
+        self.assertEqual(self.events, [('modal', 42, 'Edit waypoint', 1), 'action', 'closed'])
+        self.assertEqual(self.read_count, 3)
+        self.assertEqual(record['runtime']['ui_update']['ticks'], 319)
+        self.assertEqual(require_name(self.ui, 1, 42, record, 'ALPHA TEST UI edited')['value'],
+                         'ALPHA TEST UI edited')
+
+    def test_unchanged_tick_times_out_even_when_name_is_correct(self):
+        self.samples = [self.record(318)]
+        with self.assertRaisesRegex(AssertionError, 'Fresh waypoint state'):
+            self.complete()
+        self.assertGreaterEqual(self.elapsed, 10)
+        self.assertEqual(self.events.count('action'), 1)
+        self.assertEqual(self.ui.reads, [])
+
+    def test_first_fresh_disabled_diagnostic_is_not_retried_until_good(self):
+        self.samples = [self.record(318, False), self.record(319, False), self.record(320)]
+        record = self.complete()
+        with self.assertRaises(AssertionError):
+            require_name(self.ui, 1, 42, record, 'ALPHA TEST UI edited')
+        self.assertEqual(self.read_count, 2)
+        self.assertEqual(self.ui.reads, [])
+
+    def test_fresh_diagnostic_cannot_hide_disabled_native_name(self):
+        self.samples = [self.record(318), self.record(319)]
+        self.ui.nodes[3]['enabled'] = False
+        record = self.complete()
+        with self.assertRaisesRegex(AssertionError, 'Waypoint control remains disabled'):
+            require_name(self.ui, 1, 42, record, 'ALPHA TEST UI edited')
+        self.assertEqual(self.ui.reads, [])
+
+    def test_failed_modal_completion_does_not_read_or_retry(self):
+        def fail_modal(pid, title, owner, action):
+            action()
+            raise RuntimeError('Native modal did not close')
+        self.ui.complete_modal_action = fail_modal
+        with self.assertRaisesRegex(RuntimeError, 'Native modal did not close'):
+            self.complete()
+        self.assertEqual(self.read_count, 0)
+        self.assertEqual(self.events, ['action'])
 
 
 if __name__ == '__main__':

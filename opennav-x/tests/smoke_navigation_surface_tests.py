@@ -40,7 +40,10 @@ wait_object = next(n for n in ast.walk(tree) if isinstance(n, ast.FunctionDef)
 cancel_call = next(n for n in ast.walk(tree) if isinstance(n, ast.Expr)
                   and isinstance(n.value, ast.Call)
                   and isinstance(n.value.func, ast.Attribute)
-                  and n.value.func.attr == 'complete_modal_action')
+                  and n.value.func.attr == 'complete_modal_action'
+                  and len(n.value.args) >= 2
+                  and isinstance(n.value.args[1], ast.Constant)
+                  and n.value.args[1].value == 'Delete waypoint')
 block = next(n.body for n in ast.walk(tree) if isinstance(n, ast.If)
              and cancel_call in n.body)
 start = block.index(cancel_call) - 1

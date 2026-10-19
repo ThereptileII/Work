@@ -84,6 +84,16 @@ def require_native_waypoint_name(ui, owner, pid, record, expected):
                 value=value, diagnostic_field_published=bool(published), reader='WM_GETTEXT')
 
 
+def complete_native_waypoint_modal(ui, owner, pid, title, action, snapshot, wait):
+    """Finish the exact modal, then cross a post-close diagnostic tick boundary."""
+    ui.complete_modal_action(pid, title, owner, action)
+    # Diagnostics publish less often than the UI timer. A completed native
+    # action can still leave the last published snapshot showing the modal.
+    closed_tick = int(snapshot()['runtime']['ui_update']['ticks'])
+    return wait(lambda state: int(state['runtime']['ui_update']['ticks']) > closed_tick,
+                f'Fresh waypoint state after {title} completion')
+
+
 parser = argparse.ArgumentParser(description=__doc__)
 mode = parser.add_mutually_exclusive_group()
 for flag in ('route-fixture', 'route-fixture-standard', 'instruments', 'objects', 'n2k', 'boat'):
@@ -916,9 +926,10 @@ try:
             ui.click_text(app.pid,'Settings');ui.click_text(app.pid,'Navigation');ui.click_text(app.pid,'Waypoints')
             ui.click_text(app.pid,'ALPHA TEST edited / mark');ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST edited','ALPHA TEST UI edited')
-            click_object('Save',accessible_name='Save');time.sleep(.6)
+            saved=complete_native_waypoint_modal(ui,handle,app.pid,'Edit waypoint',
+                lambda:click_object('Save',accessible_name='Save'),object_snapshot,wait_object)
             report.setdefault('native_waypoint_name', []).append(dict(stage='after-save',
-                **require_native_waypoint_name(ui, handle, app.pid, object_snapshot(), 'ALPHA TEST UI edited')))
+                **require_native_waypoint_name(ui, handle, app.pid, saved, 'ALPHA TEST UI edited')))
             capture('waypoint-edit-sheet-result')
             ui.click_text(app.pid,'Delete waypoint')
             ui.complete_modal_action(app.pid,'Delete waypoint',handle,
@@ -930,7 +941,10 @@ try:
                 **require_native_waypoint_name(ui, handle, app.pid, cancelled, 'ALPHA TEST UI edited')))
             ui.click_text(app.pid,'Edit waypoint')
             ui.set_text_in_dialog(app.pid,'Edit waypoint','ALPHA TEST UI edited','ALPHA TEST edited')
-            click_object('Save',accessible_name='Save')
+            restored=complete_native_waypoint_modal(ui,handle,app.pid,'Edit waypoint',
+                lambda:click_object('Save',accessible_name='Save'),object_snapshot,wait_object)
+            report['native_waypoint_name'].append(dict(stage='after-restore',
+                **require_native_waypoint_name(ui, handle, app.pid, restored, 'ALPHA TEST edited')))
             report['native_edit_confirmation']='Themed property sheet saves and refreshes; delete cancellation preserves mark'
     elif boat:
         def snapshot(name):
