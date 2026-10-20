@@ -1,5 +1,26 @@
 # Direct OpenCPN Upstream Modifications
 
+## Chart-edge cursor and click removal — SCRUM-378
+
+The 20 October extension to `opencpn-5.12.4-chart-tool-input.patch` suppresses
+the stock directional edge cursor and edge-click panning in XNav. The existing
+cursor-region classification remains intact, so an edge click cannot become a
+click-to-center action. Ordinary drag panning, center-click recentering, wheel
+zoom, plugin cursors and route/measurement pencil cursors retain their behavior.
+`CheckEdgePan` and its route-creation, measurement and route-point-drag callers
+are unchanged. Legacy/Safe and builds without `OPENNAV_X` retain stock behavior.
+The existing patch is already in preparation, corresponding-source and
+dependency-consumer inventories; no patch entry or public ABI is added.
+
+The complete 21-patch stack applied and reconstructed against pinned OpenCPN
+`37fd0cddb7334fe489e9f18aa163977a9c5c84f7` in an isolated local clone.
+`tools/test-chart-edge-input.py` compiled and executed the actual canvas input
+and cursor methods with inert movement/cursor sinks: 219 checks passed with
+`OPENNAV_X`, and 219 without it. Stock methods reproduced exactly eight expected
+XNav failures (cursor and click at each edge). The two preparation helper tests
+also passed. These are source/input-dispatch checks, not native wx event delivery,
+cursor rendering, a full application build, or installed/boat acceptance.
+
 ## 19 October integrated audit — persistence, listener lifetime and composition
 
 `opencpn-5.12.4-observable-locking.patch` follows AIS transport. All wrappers
