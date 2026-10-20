@@ -2303,6 +2303,14 @@ void Shell::PlaceChartControls() {
       if (tools.Intersects(wxRect(position,size)))
         position.y=tools.y-size.y;
     }
+    if (overlay==chart_turn_ && chart_follow_->IsShown()) {
+      wxRect follow(frame_.ScreenToClient(chart_follow_->GetScreenPosition()),
+                    chart_follow_->GetSize());
+      follow.Inflate(frame_.FromDIP(8));
+      // On a very short, narrow chart retain the usable Follow control.
+      // The route header still opens the complete next-turn information.
+      if (follow.Intersects(wxRect(position,size))) {overlay->Hide();continue;}
+    }
     if (overlay==chart_layers_) {
       const auto tools_size=chart_tools_->GetSize();
       wxRect tools(chart.x+chart.width-tools_size.x-frame_.FromDIP(22),

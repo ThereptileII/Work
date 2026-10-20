@@ -1,5 +1,29 @@
 # SKAGER status — 2026-10-20
 
+## 20 October — chart-tool feedback, awaiting the next candidate
+
+Owner feedback is implemented in source under SCRUM-377/378: the permanent
+Record header button is replaced by a compact recording icon beside Measure
+and Waypoint. Its drawer retains explicit Start/Stop and saved tracks, and the
+icon reflects actual recording/position state. The wider tool group avoids
+covering Follow on narrow charts; on very short charts the optional next-turn
+overlay yields to Follow, with route details still accessible from the header.
+
+XNav no longer shows the stock directional chart-edge arrow or pans on an edge
+click. Native region classification, ordinary drag-pan, center recentering,
+route/measurement scrolling and Legacy/Safe behavior remain unchanged.
+The existing upstream patch composes with all 21 maintained patches.
+Three changed UI translation units pass Linux syntax checks; the actual canvas
+input methods pass 219 focused checks with `OPENNAV_X` and 219 without it.
+The original methods reproduce the eight expected edge-click/cursor failures.
+Two preparation checks and the source archive/hash check also pass.
+
+These are source and input-dispatch results, not native Windows/UI acceptance.
+No application package, CI run, installation, restart or boat operation was
+requested for this follow-up. The installed `bf489683` / Beta 2.6 remains
+unchanged. The revised control placement and cursor behavior await the next
+candidate's native interaction check.
+
 ## 20 October — retained Windows qualification
 
 Candidate `bf489683` / `0.4.0-beta2.6`, build `39320631961/1`, passed
