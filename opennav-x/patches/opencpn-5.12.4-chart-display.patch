@@ -229,3 +229,196 @@
          if(!AnchorAlertOn2 && !bGPSValid) ring_pen.SetStyle(wxPENSTYLE_SHORT_DASH);
        }
  #endif
+--- a/libs/s52plib/src/s52plib.h
++++ b/libs/s52plib/src/s52plib.h
+@@ -29,10 +29,11 @@
+ #include <vector>
+ #include "s52s57.h"  //types
+ #ifdef OPENNAV_X
+ #include "integration/ChartCaLightPoint.h"
+ #include "integration/ChartRenderObservation.h"
++#include "integration/ChartSymbolRaster.h"
+ #endif
+ 
+ class wxGLContext;
+ 
+ #include "LLRegion.h"
+@@ -640,10 +641,15 @@
+   bool m_qualityOfDataOn;
+ 
+   bool m_presentationVeryLight = false;
+   double m_presentationDisplayScale = 1.0;
+   S52color m_presentationContourColor{};
++#ifdef OPENNAV_X
++  opennav::integration::ChartSymbolRasterCache m_presentationSymbolRasters;
++  bool RenderPresentationSymbol(ObjRazRules *object, Rule *rule,
++                                 const wxPoint &point, double scale);
++#endif
+   long m_state_hash;
+ 
+   bool m_txf_ready;
+   int m_txf_avg_char_width;
+   int m_txf_avg_char_height;
+--- a/libs/s52plib/src/s52plib.cpp
++++ b/libs/s52plib/src/s52plib.cpp
+@@ -530,11 +530,11 @@
+ 
+   m_display_size_mm /= m_displayScale;
+ }
+ 
+ void s52plib::SetScaleFactorExp(double ChartScaleFactorExp) {
+-  m_ChartScaleFactorExp = ChartScaleFactorExp;
++  m_ChartScaleFactorExp = ChartScaleFactorExp * m_presentationDisplayScale;
+ }
+ 
+ void s52plib::SetScaleFactorZoomMod(int chart_zoom_modifier_vector) {
+   m_chart_zoom_modifier_vector = chart_zoom_modifier_vector;
+ }
+@@ -1291,10 +1291,13 @@
+   rh->clear();
+   delete rh;
+ }
+ 
+ void s52plib::FlushSymbolCaches(const ChartCtx& ctx) {
++#ifdef OPENNAV_X
++  m_presentationSymbolRasters.Clear();
++#endif
+   m_chartSymbols.LoadRasterFileForColorTable(m_colortable_index, true, ctx);
+   RuleHash *rh = _symb_sym;
+ 
+   if (!rh) return;
+ 
+@@ -1454,10 +1457,15 @@
+   const double scale = percent / 100.0;
+   if (m_presentationVeryLight == veryLight && m_presentationDisplayScale == scale)
+     return;
+   m_presentationVeryLight = veryLight;
+   m_presentationDisplayScale = scale;
++  // Also update immediate consumers; PrepareForRender recomputes these from
++  // the native preferences, never from an already-multiplied previous value.
++  SetScaleFactorExp(GetOCPNChartScaleFactor_Plugin());
++  m_SoundingsScaleFactor = ((m_nSoundingFactor * .1) + 1) * scale;
++  m_TextScaleFactor = exp(m_nTextFactor * (log(2.0) / 5.0)) * scale;
+   // Native state-hash consumers invalidate retained chart/text caches; glyph
+   // caches also key their rendered size. Do not delete GL resources here.
+   ClearTextList();
+   GenerateStateHash();
+ }
+@@ -3091,10 +3099,84 @@
+ //
+ //      Render Raster Symbol
+ //      Symbol is instantiated as a bitmap the first time it is needed
+ //      and re-built on color scheme change
+ //
++#ifdef OPENNAV_X
++
++bool s52plib::RenderPresentationSymbol(ObjRazRules *rzRules, Rule *prule,
++                                      const wxPoint &r, double scale) {
++  if (!m_presentationLightSymbols) return false;
++  const auto scheme = m_ColorScheme.ToUTF8();
++  const auto *svg = opennav::integration::ChartSymbolSvg(
++      true, prule->name.SYNM, scheme.data());
++  scale *= opennav::integration::ChartAidScale(svg);
++  wxRect logical;
++  m_chartSymbols.GetGLTextureRect(logical, prule->name.SYNM);
++  const auto *black = getColor("CHBLK"), *gray = getColor("CHGRD");
++  const auto *raster = m_presentationSymbolRasters.Get(
++      true, prule->name.SYNM, scheme.data(), logical.width, logical.height, scale,
++      m_presentationVeryLight, {black->R, black->G, black->B},
++      {gray->R, gray->G, gray->B},
++      [&] { return m_chartSymbols.GetImage(prule->name.SYNM); });
++  if (!raster) return false;
++  const int width = raster->image.GetWidth(), height = raster->image.GetHeight();
++  // Identical native anchor and geographic bounds, now using final pixels.
++  const int pivot_x = prule->pos.line.pivot_x.SYCL * scale;
++  const int pivot_y = prule->pos.line.pivot_y.SYRW * scale;
++  double latmin, lonmin, latmax, lonmax;
++  if (!m_pdc && fabs(vp_plib.rotation) > .01) {
++    const float cx = vp_plib.pix_width / 2., cy = vp_plib.pix_height / 2.;
++    const float c = cosf(vp_plib.rotation), s = sinf(vp_plib.rotation);
++    float x = r.x - pivot_x - cx, y = r.y - pivot_y + height - cy;
++    GetPixPointSingle(x*c-y*s+cx, x*s+y*c+cy, &latmin, &lonmin);
++    x = r.x - pivot_x + width - cx; y = r.y - pivot_y - cy;
++    GetPixPointSingle(x*c-y*s+cx, x*s+y*c+cy, &latmax, &lonmax);
++  } else {
++    GetPixPointSingle(r.x-pivot_x, r.y-pivot_y+height, &latmin, &lonmin);
++    GetPixPointSingle(r.x-pivot_x+width, r.y-pivot_y, &latmax, &lonmax);
++  }
++  LLBBox bounds; bounds.Set(latmin, lonmin, latmax, lonmax);
++  if (rzRules->obj->Primitive_type == GEO_AREA &&
++      !rzRules->obj->BBObj.IntersectIn(bounds)) return true;
++  bool submitted = false;
++  if (m_pdc) {
++    m_pdc->DrawBitmap(raster->bitmap, r.x-pivot_x, r.y-pivot_y, true);
++    submitted = true;
++  }
++#ifdef ocpnUSE_GL
++  else {
++    // Borrow the existing bounded RGBA uploader: no GL object survives this
++    // draw, and every changed GL state/uniform is restored. Retain the native
++    // symbol MV and counter-rotation so Course/Heading Up do not rotate aids.
++    if (S52texture_2D_shader_program &&
++        glIsProgram(S52texture_2D_shader_program)) {
++      const GLint mv = glGetUniformLocation(S52texture_2D_shader_program, "MVMatrix");
++      if (mv >= 0) {
++        GLfloat projection[16];
++        glGetUniformfv(S52texture_2D_shader_program, mv, projection);
++        mat4x4 I, Q; mat4x4_identity(I);
++        mat4x4_translate_in_place(I, r.x, r.y, 0);
++        if (abs(vp_plib.rotation) > 0) mat4x4_rotate_Z(Q, I, -vp_plib.rotation);
++        else mat4x4_dup(Q, I);
++        mat4x4_translate_in_place(Q, -pivot_x, -pivot_y, 0);
++        opennav::integration::CaFanTile tile;
++        tile.image = raster->image; tile.bounds = wxRect(0, 0, width, height);
++        submitted = opennav::integration::DrawCaFanGL(
++            tile, S52texture_2D_shader_program, vp_plib.pix_width,
++            vp_plib.pix_height, projection, (GLfloat *)Q);
++      }
++    }
++  }
++#endif
++  if (!submitted) return false; // Keep the stock renderer as safe fallback.
++  m_presentationRasterSubmitted = true;
++  if (rzRules->obj->Primitive_type == GEO_POINT) rzRules->obj->BBObj.Expand(bounds);
++  return true;
++}
++#endif
++
+ bool s52plib::RenderRasterSymbol(ObjRazRules *rzRules, Rule *prule, wxPoint &r,
+                                  float rot_angle) {
+ 
+ #ifdef OPENNAV_X
+   m_presentationRasterSubmitted = false;
+@@ -3166,10 +3248,14 @@
+     xscale = wxMin(xscale, 1.0);
+     xscale = wxMax(.2, xscale);
+ 
+     scale_factor *= xscale;
+   }
++
++#ifdef OPENNAV_X
++  if (RenderPresentationSymbol(rzRules, prule, r, scale_factor)) return true;
++#endif
+ 
+   int pivot_x = prule->pos.line.pivot_x.SYCL;
+   int pivot_y = prule->pos.line.pivot_y.SYRW;
+ 
+   pivot_x *= scale_factor;
+@@ -3200,11 +3286,16 @@
+ 
+     // If the requested scaled symbol size is not the same as is currently
+     // cached, we have to dump the cache
+     wxRect trect;
+     m_chartSymbols.GetGLTextureRect(trect, prule->name.SYNM);
+-    if (prule->parm2 != (int)(trect.width * scale_factor)) b_dump_cache = true;
++    // Cache the actual integer raster dimensions (including one-pixel marks).
++    // Comparing an integer width with 125/150% fractional pixels rebuilt the
++    // private atlas tile on every paint; height changes must invalidate too.
++    if (prule->parm2 != wxMax(1, (int)(trect.width * scale_factor)) ||
++        prule->parm3 != wxMax(1, (int)(trect.height * scale_factor)))
++      b_dump_cache = true;
+ 
+     wxBitmap *pbm = NULL;
+ 
+     // Instantiate the symbol if necessary
+     if ((prule->pixelPtr == NULL) || (prule->parm1 != m_colortable_index) ||
