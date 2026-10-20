@@ -1,0 +1,120 @@
+{
+  "schema": 1,
+  "productCommit": "bf4896833fda8389cfb03924cde7d6c89de5e5e6",
+  "productVersion": "0.4.0-beta2.6",
+  "helperCommit": "069cefb629e27a2f87966edf1237cb1264cc0424",
+  "originalBoatInspection": {
+    "status": "failed-before-input",
+    "receiptSha256": "4007c645b8488141a00881f3a49d5d29bcad14cedc0235fb06ece7d642e5d1a2",
+    "cause": "Historical installed helper accepted only stock OpenCPN/native Button/htmlWindow; current product has source-defined SKAGER/custom actions/readonly Edit notice."
+  },
+  "correction": {
+    "scope": "Installed warning helper only; exact reviewed product/executable and --xnav",
+    "stockHelperChanged": false,
+    "applicationRebuilt": false,
+    "guardsRetained": [
+      "exact process/start/session/source/runtime identity",
+      "input-only profile and plugin quarantine",
+      "complete readonly navigation safety text",
+      "separate reviewed image and geometry",
+      "one-use intent and guarded one-click pointer dispatch",
+      "uncertain delivery cannot retry"
+    ]
+  },
+  "focusedNative": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/39344442470",
+    "attempt": 1,
+    "status": "passed",
+    "jobId": 118373550133,
+    "artifactId": 12230945899,
+    "artifactSha256": "33128fa2b18f2c8c5b8be1369d7a62c4efe13d6dd46841742df47b27ccaef9e4",
+    "helperFileCount": 170,
+    "powerShell": "5.1.20348.5622",
+    "processBits": 64,
+    "modernChecks": 166,
+    "installedPolicyChecks": 98,
+    "installedRuntimeChecks": 29,
+    "dispatcherChecks": 33,
+    "probe": {
+      "status": "passed",
+      "syntheticNativeHierarchy": true,
+      "realNativeEdit": true,
+      "actualAgreeInput": true,
+      "agreeCount": 1,
+      "cancelCount": 0,
+      "modalDismissed": true,
+      "ownerEnabled": true
+    }
+  },
+  "limitations": [
+    "Native pointer fixture is a disposable synthetic HWND hierarchy; actual XNavButton previously exercised by frozen product installer CI.",
+    "This helper pass does not establish boat startup, chart content or physical hardware acceptance.",
+    "Installed SKAGER selector is deliberately exact bf product/executable; another candidate requires explicit source/provenance review.",
+    "Normal SKAGER floating chart-control windows caused the subsequent full-frame capture guard to refuse. This capture result remains attention, not pass.",
+    "A misencoded decorative separator remains in the notice subtitle; the complete English safety body and actions were correct. No cosmetic rebuild requested."
+  ],
+  "boatAcceptance": "actual notice inspection passed, one acknowledgement and modal dismissal confirmed; post-ack frame capture refused. Separate unchanged passive startup observer passed.",
+  "independentSourceReview": {
+    "status": "no remaining concrete blockers found",
+    "scope": "Final 069cefb6 notice boundary, serialization, native input, one-use intent and inert fixture; not boat acceptance"
+  },
+  "boatInspection": {
+    "status": "failed-before-input",
+    "receiptSha256": "557e90223d0cee667b64116c4b3b1e9b8d5797a69dda8bc2dedd1d41bd271321",
+    "cause": "Exact five-child rule refused source-defined wxWidgets resize grip omitted by synthetic fixture. Actual sixth child: direct ScrollBar, ID 0, empty text, style 0x5400001c, exstyle 0.",
+    "productChanged": false,
+    "replacementHelper": "5fe284e838437ebe81f7459b733d85853fd078dd"
+  },
+  "replacement": {
+    "helperCommit": "5fe284e838437ebe81f7459b733d85853fd078dd",
+    "scope": "Exact source-defined sixth resize grip only; five semantic children and unknown-child refusal retained",
+    "independentSourceReview": "no concrete blocker found",
+    "portableChecks": 221,
+    "focusedNative": {
+      "url": "https://github.com/ThereptileII/Work/actions/runs/39346082798",
+      "runId": 39346082798,
+      "attempt": 1,
+      "jobId": 118378901150,
+      "artifactId": 12230203489,
+      "artifactSha256": "e4a5e5cea0a83c07251d35758509ed74a8a7e457b8adfdabd5ce4abe6c467644",
+      "fileCount": 170,
+      "powershell": "5.1.20348.5622",
+      "processBits": 64,
+      "modernNativeCount": 228,
+      "nativeProbe": {
+        "status": "passed",
+        "syntheticNativeHierarchy": true,
+        "realNativeEdit": true,
+        "realNativeResizeGrip": true,
+        "gripperStyle": 1409286172,
+        "actualAgreeInput": true,
+        "agreeCount": 1,
+        "cancelCount": 0,
+        "modalDismissed": true,
+        "ownerEnabled": true
+      }
+    },
+    "installedPolicyChecks": 98,
+    "installedRuntimeChecks": 29,
+    "dispatcherChecks": 33,
+    "boatInspection": {
+      "status": "passed",
+      "reviewSha256": "bc56a2a20d701cb463ec52546b1eb3e75f2eb03e83bbb8906791e418dc8e76a3",
+      "imageSha256": "8f3911ecea02a8022d01f94329c1409dd180366c90ef24d9e193e5121dfd30b6",
+      "completeSafetyTextVisuallyReviewed": true,
+      "dpi": 120,
+      "acknowledgementSentDuringInspection": false
+    },
+    "applicationRebuilt": false,
+    "boatAcknowledgement": {
+      "status": "attention-after-confirmed-dismissal",
+      "receiptSha256": "4916c4dab9a69694d186d00fc75120ca2619d5ad46289add67631cb77cae0905",
+      "intentSha256": "1223df069292cf547dd57f47ec262f6ca8b14f9d254b5ccea0743867cf793c78",
+      "acknowledgementSent": true,
+      "modalDismissalConfirmed": true,
+      "capture": "refused: another window obscures capture",
+      "acknowledgementRetried": false
+    },
+    "passiveStartupReceiptSha256": "34829bb2c1f4636808ea7919fd8030bd28dcec6920299cb6bf4094f673852b93"
+  }
+}

@@ -65,7 +65,7 @@
     ],
     "independentSemanticValidation": "passed; actual frozen payload binding remains the composition gate"
   },
-  "boatInstallation": "pending",
+  "boatInstallation": "installed-passive-startup-observed; exact bf489683 candidate left running, separate staging-delivery.json evidence",
   "physicalCommands": false,
   "designReview": "not requested",
   "endurance": "skipped",

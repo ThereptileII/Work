@@ -321,6 +321,29 @@ Authenticate those original results and bytes before creating the separate flat
 tool archive. This focused scope neither launches the application nor qualifies
 an actual modal, chart, hardware interface or complete boat-tool matrix.
 
+The modern SKAGER navigation notice is a different native surface from the stock
+OpenCPN warning: custom `wxWindowNR` Agree/Cancel actions and a complete read-only
+`Edit` body. Do not add a title alias to the stock HTML/native-button helper or
+use `BM_CLICK` for its custom buttons. The separate installed-only SKAGER helper
+selects the exact reviewed product/executable and `--xnav`, retaining the full
+runtime, source, profile and quarantine proof. It checks the complete safety
+body, reviews captured pixels, journals one intent, dispatches one guarded
+pointer action and separately verifies dismissal. An uncertain action is never
+retried. Stock/Legacy/Safe handling stays unchanged.
+
+The pinned wxWidgets `wxRESIZE_BORDER` notice also creates one native resize
+handle: a direct, empty `ScrollBar` child with ID zero, style `0x5400001c` and
+extended style zero. The native fixture must reproduce this sixth child; a
+plain dialog with a resize border alone does not create it. Validate its exact
+identity and retain it in the captured geometry without accepting arbitrary
+extra controls. Preserve the original five-child refusal as failed boat evidence.
+
+[The Beta 2.6 helper evidence](evidence/source-batch-20261019/installed-warning-helper.json)
+records the original refusal and focused native qualification. Its 170-file
+review copy is separate from the older 166-file launch copy; use each copy's
+actual manifest/completion hash. Another candidate requires explicit notice
+source/provenance review; a matching visible caption alone grants nothing.
+
 Ordinary guarded Launch, startup-launcher Launch and installed-warning actions
 now allow twelve minutes for their interactive proof and fifteen minutes for the
 scheduled task. Explicit caller deadlines remain explicit. The application still

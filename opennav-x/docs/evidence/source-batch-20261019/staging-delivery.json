@@ -1,0 +1,118 @@
+{
+  "schema": 1,
+  "product": {
+    "version": "0.4.0-beta2.6",
+    "commit": "bf4896833fda8389cfb03924cde7d6c89de5e5e6",
+    "channel": "Staging",
+    "abi": "Win32 on Windows x64",
+    "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+  },
+  "qualification": {
+    "buildRun": "https://github.com/ThereptileII/Work/actions/runs/39320631961",
+    "originalRuntimeGate": "failed; preserved",
+    "linuxUnitCasesPerVariant": 160,
+    "windowsUnitCasesPerVariant": 152,
+    "variants": [
+      "fixtures",
+      "fixture-free"
+    ],
+    "retainedFullRun": "https://github.com/ThereptileII/Work/actions/runs/39331651669",
+    "retainedFullStatus": "passed",
+    "helperCommit": "43a088a2d15fc33f3fd13956dcc61f0e52754b8c",
+    "validatedRuntimeReports": 29,
+    "compositionRun": "https://github.com/ThereptileII/Work/actions/runs/39334786735",
+    "compositionStatus": "passed",
+    "applicationRebuiltDuringRetestOrComposition": false
+  },
+  "release": {
+    "id": 417816873,
+    "draft": true,
+    "prerelease": true,
+    "url": "https://github.com/ThereptileII/Work/releases/tag/untagged-9e4fbb9fff1aa101b81e",
+    "assetCount": 11,
+    "authenticatedFetch": "passed",
+    "setupSha256": "e2b7cfc453cd6398ebeadf842c8f9bc0ec0e3812240ceb841da2053204accafc",
+    "recoverySha256": "2cdece0f500a2f2a32d80eb461bd06dd2fcc9daee279e4199b81fefeec1989d8",
+    "sourceSha256": "6b5dbaa7228bd7ad074af7f166b5739176b62bc49c2a6b76a4c96bfc98bd2e89"
+  },
+  "boat": {
+    "status": "installed-passive-startup-observed",
+    "startup": "passed: visible responsive Navigation, fresh advancing diagnostics, new healthy startup marker; left running",
+    "profileBackup": "verified before update",
+    "physicalCommandsSent": false,
+    "installer": "passed",
+    "installedCommit": "bf4896833fda8389cfb03924cde7d6c89de5e5e6",
+    "stockSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+    "profileUnchangedAfterUpdate": true,
+    "completedInstallReceiptSha256": "d39b5f247c93f95819d52a2fce826e2e4263fef4d6fa089e8bab60c0493f8c66",
+    "rtlRestoredAfterInstaller": true,
+    "passivePreparation": {
+      "status": "applied",
+      "connectionMode": "input-only",
+      "controlEnabled": false,
+      "quarantinedPlugins": 4,
+      "reversible": true,
+      "profileUnchangedAfterPassivePreparation": false,
+      "preparedReceiptSha256": "e515a87efb307fc4130ca6e255bd045c283404599ab06c9e645e400337521b02",
+      "appliedReceiptSha256": "802c9fa72ad56ce322e8ad2e0f92551cce1bcb18e814c1316c9e58e2dd1b1d8d"
+    },
+    "launch": {
+      "status": "passed",
+      "meaning": "Exact installed process and visible window; not runtime health",
+      "receiptSha256": "fdbeaf11bdf5195c1b69f27282818580feb7db5ad37adb7f7ae8cc6703cf5f51",
+      "observedStartupBlocker": "Navigation safety notice"
+    },
+    "startupTooling": {
+      "originalInspection": "failed before input: historical helper accepts only stock OpenCPN notice",
+      "originalInspectionReceiptSha256": "4007c645b8488141a00881f3a49d5d29bcad14cedc0235fb06ece7d642e5d1a2",
+      "observedNotice": "Current SKAGER notice with complete upstream safety text and custom Agree/Cancel controls",
+      "repair": "5fe284e8 passed native39346082798 and actual notice inspection. One guarded acknowledgement confirmed modal dismissal; subsequent full-frame capture refused normal SKAGER floating overlays. No second acknowledgement. Separate unchanged passive observer passed.",
+      "applicationRebuilt": false,
+      "evidence": "installed-warning-helper.json"
+    },
+    "welcomeAcknowledgement": {
+      "status": "attention-after-confirmed-dismissal",
+      "receiptSha256": "4916c4dab9a69694d186d00fc75120ca2619d5ad46289add67631cb77cae0905",
+      "intentSha256": "1223df069292cf547dd57f47ec262f6ca8b14f9d254b5ccea0743867cf793c78",
+      "acknowledgementSent": true,
+      "modalDismissalConfirmed": true,
+      "capture": "refused: another window obscures capture",
+      "acknowledgementRetried": false
+    },
+    "passiveStartup": {
+      "status": "observed-passive-startup",
+      "utc": "2026-10-20T00:34:01.0634111Z",
+      "receiptSha256": "34829bb2c1f4636808ea7919fd8030bd28dcec6920299cb6bf4094f673852b93",
+      "checks": [
+        "exact-singleton-process-start-image-session",
+        "visible-enabled-responding-SKAGER-window",
+        "fresh-fixture-free-live-diagnostics",
+        "two-progressing-ui-and-publication-samples",
+        "pilot-control-and-serial-session-OFF",
+        "fresh-explicit-NoActiveRoute",
+        "new-healthy-startup-marker",
+        "final-identity-unchanged"
+      ],
+      "uiTicks": [
+        576,
+        585
+      ],
+      "healthyMarkersAdded": 1,
+      "noApplicationRestart": true,
+      "leftRunning": true,
+      "scope": "Exact already-running installed product; passive UI/model liveness and startup checkpoint only",
+      "notChartOrHardwareAcceptance": true,
+      "initialObserver": {
+        "status": "refused-at-first-diagnostics",
+        "receiptSha256": "9fc4023ead865175012c5fcbb509582c2ada6b79a38a416453f8e26c05ace947",
+        "cause": "not established; later fresh scalar observation justified one unchanged passive observer run which passed"
+      }
+    }
+  },
+  "limits": [
+    "No new design sweep or endurance run requested/performed",
+    "No controller flashing or physical TRACK/WIND commissioning",
+    "No claim of reproduced no-route flicker or identified northern lighthouse",
+    "No Production promotion or public opening"
+  ]
+}

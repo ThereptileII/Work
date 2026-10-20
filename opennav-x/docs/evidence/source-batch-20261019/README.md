@@ -12,6 +12,17 @@ record reports only completed source review and the bounded checks below. It
 does **not** assert that a replacement Staging package was built, installed or
 accepted on the boat. No new design review or endurance run was performed.
 
+Later candidate/package qualification is recorded separately in
+[Staging delivery](staging-delivery.json) and
+[the retained Windows synchronization correction](waypoint-save-synchronization.json).
+Those records preserve this source-audit snapshot and the original failed runs.
+The separately qualified [installed-warning helper](installed-warning-helper.json)
+handles the modern notice without rebuilding the application. On 20 October the
+exact candidate was installed and its passive startup was observed successfully;
+it remains open for user testing. The original source-audit limits below are
+historical. Current installed/read-only status and retained failed helper evidence
+are in `staging-delivery.json`; this does not add physical feature/design acceptance.
+
 ## Reports, source response and evidence
 
 | User report / Jira | Source response reviewed | Evidence and limit |

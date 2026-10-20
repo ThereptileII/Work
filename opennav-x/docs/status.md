@@ -15,16 +15,37 @@ newer diagnostic tick after both Saves, retaining native field ownership,
 visibility, enabled-state and value assertions. Delete-cancellation checks are
 unchanged. Its 14 focused helper cases and 27 surface/policy checks pass.
 Full retained native run `39331651669/1` passed against the **same** sealed
-`bf489683` package. No application rebuild occurred; replacement boat installation
-remains pending. [The exact correction record](evidence/source-batch-20261019/waypoint-save-synchronization.json)
+`bf489683` package. No application rebuild occurred. The exact candidate is installed on the boat;
+the installer preserved the profile hash and restored the stock RTL plugin.
+Subsequent, separately reviewed passive preparation changed COM8 to input-only
+and reversibly quarantined four output-capable plugins. SKAGER control remains
+off. The source-defined navigation notice was inspected and acknowledged once;
+modal dismissal was confirmed. Its later full-frame capture refused the normal
+SKAGER floating chart-control windows, so that capture is not a pass. A separate,
+unchanged passive observer then passed at `2026-10-20T00:34:01Z`: the exact
+process remained visible/responding in Navigation, UI ticks advanced 576→585,
+fresh fixture-free diagnostics agreed with the installed revision, and a new
+30-second healthy-startup marker was verified against the original log history.
+The first passive observation had refused at diagnostics; its cause is not
+established and the failed evidence is retained. SKAGER is **left running**.
+No chart interaction, design sweep or physical control test was added. [The exact correction record](evidence/source-batch-20261019/waypoint-save-synchronization.json)
 preserves the original failure and separates product from helper identity.
 
 The bounded composed-delivery extension requires every runtime gate from that
 fresh full run, the original successful build/dependency jobs and same-run native
 restart proof. It cannot promote the failed prefix or change package/source
 bytes. Its 40 composition, 15 composed-delivery and 20 release-delivery tests
-pass; the authenticated composed draft Release remains pending. No new
-design review, endurance run, physical command or Production promotion applies.
+pass. Composed run `39334786735/1` passed and created draft Release
+`417816873` for the exact `bf489683` product. All 11 assets were downloaded
+and authenticated with the maintained release-delivery tool. Setup SHA-256:
+`e2b7cfc453cd6398ebeadf842c8f9bc0ec0e3812240ceb841da2053204accafc`.
+[Boat delivery evidence](evidence/source-batch-20261019/staging-delivery.json)
+records installation and passive startup separately. The exact installed-warning
+helper correction `5fe284e8` passed native run `39346082798/1` (228 modern,
+127 installed and 33 dispatcher checks); no application rebuild was needed.
+No new design review, endurance run, physical command or Production promotion
+applies. Specific lighthouse identification, physical flicker confirmation,
+TRACK/WIND firmware commissioning and new chart/GPU acceptance remain open.
 
 ## 19 October — audited Staging 0.4.0-beta2.6 preparation
 
