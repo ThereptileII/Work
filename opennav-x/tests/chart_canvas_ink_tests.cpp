@@ -73,5 +73,49 @@ int main() {
   check(faint.R==150 && faint.G==50 && faint.B==100 && faint.identity==7);
   const auto pale=integration::FaintDepthContour(Color{0,0,0,1},Color{255,255,255,2});
   check(pale.R==128 && pale.G==128 && pale.B==128);
+
+  // Very Light ordinary object ink must not leak into classified navigation
+  // aids, isolated-danger magenta, depth digits or the night palette.
+  using integration::SymbolInkRgb;
+  using integration::VeryLightObjectSymbol;
+  using integration::RecolorVeryLightObjectPixel;
+  for (const char* object : {"UWTROC03", "UWTROC04", "WRECKS01", "WRECKS04",
+                            "WRECKS05", "WRECKS07", "OBSTRN01", "OBSTRN02",
+                            "OBSTRN03", "OBSTRN11", "OBSTRN18", "DANGER01",
+                            "DANGER02", "DANGER03", "DANGER51", "DANGER52",
+                            "PILPNT02", "MORFAC03", "MORFAC04"}) {
+    check(VeryLightObjectSymbol(true, "DAY", object));
+    check(VeryLightObjectSymbol(true, "DAY_BRIGHT", object));
+    check(!VeryLightObjectSymbol(false, "DAY_BRIGHT", object));
+    check(!VeryLightObjectSymbol(true, "NIGHT", object));
+    check(!VeryLightObjectSymbol(true, "DUSK", object));
+  }
+  for (const char* preserved : {"ISODGR51", "SOUNDS01", "SOUNDG01", "BOYLAT01",
+                                "BCNCAR01", "LIGHTS13", "XNLIT013", "UNKNOWN1",
+                                "", "UWTROC", static_cast<const char*>(nullptr)})
+    check(!VeryLightObjectSymbol(true, "DAY_BRIGHT", preserved));
+  check(!VeryLightObjectSymbol(true, nullptr, "UWTROC03"));
+  check(!VeryLightObjectSymbol(true, "", "UWTROC03"));
+  const char fixedSymbol[8]={'U','W','T','R','O','C','0','3'};
+  check(VeryLightObjectSymbol(true, "DAY", fixedSymbol));
+  const SymbolInkRgb black{83,100,95}, gray{83,100,95};
+  for (auto pixel : {black, SymbolInkRgb{104,123,122}, SymbolInkRgb{7,7,7},
+                    SymbolInkRgb{125,137,140}}) {
+    // The fourth byte represents alpha and must remain byte-identical.
+    for (unsigned alpha : {0,1,127,254,255}) {
+      unsigned char rgba[]{pixel[0],pixel[1],pixel[2],static_cast<unsigned char>(alpha)};
+      check(RecolorVeryLightObjectPixel(rgba,black,gray));
+      check(rgba[0]==89 && rgba[1]==89 && rgba[2]==89 && rgba[3]==alpha);
+    }
+  }
+  for (auto pixel : {SymbolInkRgb{197,218,220}, SymbolInkRgb{181,201,171},
+                    SymbolInkRgb{182,110,108}, SymbolInkRgb{80,141,120},
+                    SymbolInkRgb{172,141,76}, SymbolInkRgb{255,0,255},
+                    SymbolInkRgb{104,123,121}}) {
+    const auto original=pixel;
+    check(!RecolorVeryLightObjectPixel(pixel.data(),black,gray));
+    check(pixel==original);
+  }
+  check(!RecolorVeryLightObjectPixel(nullptr,black,gray));
   std::cout<<checks<<" chart paint policy checks passed\n";
 }

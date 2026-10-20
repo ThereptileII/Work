@@ -1,5 +1,6 @@
 #pragma once
 
+#include <array>
 #include <cstring>
 #include <initializer_list>
 
@@ -37,5 +38,46 @@ inline Color FaintDepthContour(Color contour, const Color& water) {
   contour.G = (contour.G + water.G + 1) / 2;
   contour.B = (contour.B + water.B + 1) / 2;
   return contour;
+}
+
+// Fixed native symbol identities, not a feature-wide filter: several of these
+// objects can instead select the magenta isolated-danger symbol or SOUND digits.
+// Those independently selected marks must never inherit this neutral paint.
+inline bool VeryLightObjectSymbol(bool enabled, const char* scheme,
+                                  const char* symbol) {
+  if (!enabled || !scheme || !symbol ||
+      (std::strcmp(scheme, "DAY") && std::strcmp(scheme, "DAY_BRIGHT")))
+    return false;
+  for (const char* name : {
+           "UWTROC03", "UWTROC04", "WRECKS01", "WRECKS04", "WRECKS05",
+           "WRECKS07", "OBSTRN01", "OBSTRN02", "OBSTRN03", "OBSTRN11",
+           "OBSTRN18", "DANGER01", "DANGER02", "DANGER03", "DANGER51",
+           "DANGER52", "PILPNT02", "MORFAC03", "MORFAC04"})
+    if (!std::strncmp(symbol, name, 8)) return true;
+  return false;
+}
+
+using SymbolInkRgb = std::array<unsigned char, 3>;
+
+// The owner's 65%-black Day ink: 35% white = #595959, keeping alpha coverage
+// intact. Dusk/Night are intentionally excluded above to retain visible ink.
+inline constexpr SymbolInkRgb kVeryLightObjectInk{89, 89, 89};
+
+inline bool RecolorVeryLightObjectPixel(unsigned char* rgb,
+                                       const SymbolInkRgb& black,
+                                       const SymbolInkRgb& gray) {
+  if (!rgb) return false;
+  const SymbolInkRgb pixel{rgb[0], rgb[1], rgb[2]};
+  // Exact palette matches only. The supplied rock/wreck artwork uses chart-text
+  // ink; older native tiles retain exact stock black/gray. Never infer a role
+  // from an RGB tolerance: depth/intertidal fills and chromatic ink stay intact.
+  if (pixel != black && pixel != gray &&
+      pixel != SymbolInkRgb{104, 123, 122} &&
+      pixel != SymbolInkRgb{7, 7, 7} && pixel != SymbolInkRgb{125, 137, 140})
+    return false;
+  rgb[0] = kVeryLightObjectInk[0];
+  rgb[1] = kVeryLightObjectInk[1];
+  rgb[2] = kVeryLightObjectInk[2];
+  return true;
 }
 }  // namespace opennav::integration
