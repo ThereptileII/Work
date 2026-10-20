@@ -2,6 +2,30 @@
 
 ## 20 October — chart-tool feedback, awaiting the next candidate
 
+The subsequent SCRUM-375 feedback extends Measure's rounded SKAGER readout to
+route plotting and replaces both tools' native pencil with a cyan precision
+reticle. Upstream text, bearings, distances, units and point placement remain
+owned by OpenCPN. The cursor covers activation, placement and movement on
+software/GL canvases; plugin cursors and Legacy/Safe retain their stock path.
+The Windows reticle stays within native cursor dimensions to preserve its
+center hotspot without wxMSW resampling.
+
+SCRUM-378 now specifies a 50% ordinary-contour ink/water blend in Very Light,
+in core and private o-charts. Native line-shaped DEPARE contours were omitted
+by the earlier DEPCNT-only selector and now participate. Safety contours,
+drying areas and hazard roles remain distinct. This closes a source-policy
+gap; the particular black outline on the boat has not been identified.
+
+Focused follow-up checks pass: the combined 21-patch stack applies and
+reconstructs, both changed native translation units pass Linux syntax checks,
+and actual canvas input/cursor methods pass 261 checks per integrated/stock
+variant. Original upstream methods reproduce exactly 20 expected edge/pencil
+failures. Contour checks pass 837 shared paint-policy assertions plus 139 actual
+native conditional/color-selector checks per core/private renderer; the old
+selector/policy reproduce eight expected failures in each. The private patch
+stack applies to pinned sources. No full build, Windows cursor rendering or
+boat verification is claimed for this follow-up.
+
 Owner feedback is implemented in source under SCRUM-377/378: the permanent
 Record header button is replaced by a compact recording icon beside Measure
 and Waypoint. Its drawer retains explicit Start/Stop and saved tracks, and the

@@ -5,7 +5,7 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
  static void RouteLegInfo(ocpnDC &dc, wxPoint ref_point, const wxString &first,
 -                         const wxString &second) {
 +                         const wxString &second,
-+                         ChartCanvas *measure_canvas = nullptr) {
++                         ChartCanvas *tool_canvas = nullptr) {
    wxFont *dFont = FontMgr::Get().GetFont(_("RouteLegInfoRollover"));
 @@ -11130,3 +11131,17 @@
        false, dFont->GetFaceName());
@@ -15,13 +15,13 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 +  const auto old_ink = dc.GetTextForeground();
 +  const auto old_pen = dc.GetPen();
 +  const auto old_brush = dc.GetBrush();
-+  opennav::integration::MeasureLabelStyle measure_style;
-+  const bool themed_measure = measure_canvas &&
-+      opennav::integration::ChartMeasureLabelStyle(
-+          *measure_canvas, *psRLI_font, measure_style);
-+  if (themed_measure) psRLI_font = &measure_style.font;
++  opennav::integration::ChartToolLabelStyle tool_style;
++  const bool themed_tool = tool_canvas &&
++      opennav::integration::ChartPlottingLabelStyle(
++          *tool_canvas, *psRLI_font, tool_style);
++  if (themed_tool) psRLI_font = &tool_style.font;
 +#else
-+  (void)measure_canvas;
++  (void)tool_canvas;
 +#endif
 +
    dc.SetFont(*psRLI_font);
@@ -34,17 +34,17 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 -  dc.SetPen(wxPen(GetGlobalColor(_T ( "UBLCK" ))));
 -  dc.SetTextForeground(GetGlobalColor(_T ( "UBLCK" )));
 +#ifdef OPENNAV_X
-+  if (themed_measure) {
++  if (themed_tool) {
 +    // Same upstream text coordinates; only the floating surface gains padding.
 +    // ocpnDC supplies the same rounded primitive for software and OpenGL.
-+    const int pad = measure_style.padding;
-+    dc.SetPen(wxPen(measure_style.border, measure_canvas->FromDIP(1)));
-+    dc.SetBrush(wxBrush(measure_style.surface));
++    const int pad = tool_style.padding;
++    dc.SetPen(wxPen(tool_style.border, tool_canvas->FromDIP(1)));
++    dc.SetBrush(wxBrush(tool_style.surface));
 +    dc.DrawRoundedRectangle(xp - pad, yp - pad, w + 2 * pad, h + 2 * pad,
-+                            measure_style.radius);
++                            tool_style.radius);
 +    dc.CalcBoundingBox(xp - pad - 1, yp - pad - 1);
 +    dc.CalcBoundingBox(xp + w + pad + 1, yp + h + pad + 1);
-+    dc.SetTextForeground(measure_style.ink);
++    dc.SetTextForeground(tool_style.ink);
 +  } else
 +#endif
 +  {
@@ -56,7 +56,7 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
    dc.DrawText(first, xp, yp);
    if (second.Len()) dc.DrawText(second, xp, yp + h1);
 +#ifdef OPENNAV_X
-+  if (themed_measure) {
++  if (themed_tool) {
 +    dc.SetFont(old_font);
 +    dc.SetTextForeground(old_ink);
 +    dc.SetPen(old_pen);
@@ -64,9 +64,8 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
 +  }
 +#endif
  }
-@@ -11349,3 +11387,4 @@
+@@ -11349,3 +11387,3 @@
 -  RouteLegInfo(dc, r_rband, routeInfo, s0);
-+  RouteLegInfo(dc, r_rband, routeInfo, s0,
-+               route == m_pMeasureRoute ? this : nullptr);
++  RouteLegInfo(dc, r_rband, routeInfo, s0, this);
  
    m_brepaint_piano = true;

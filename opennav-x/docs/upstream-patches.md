@@ -6,7 +6,8 @@ The 20 October extension to `opencpn-5.12.4-chart-tool-input.patch` suppresses
 the stock directional edge cursor and edge-click panning in XNav. The existing
 cursor-region classification remains intact, so an edge click cannot become a
 click-to-center action. Ordinary drag panning, center-click recentering, wheel
-zoom, plugin cursors and route/measurement pencil cursors retain their behavior.
+zoom and plugin cursors retain their behavior. The later SCRUM-375 follow-up
+below changes only the appearance of XNav's route/measurement pencil.
 `CheckEdgePan` and its route-creation, measurement and route-point-drag callers
 are unchanged. Legacy/Safe and builds without `OPENNAV_X` retain stock behavior.
 The existing patch is already in preparation, corresponding-source and
@@ -20,6 +21,23 @@ and cursor methods with inert movement/cursor sinks: 219 checks passed with
 XNav failures (cursor and click at each edge). The two preparation helper tests
 also passed. These are source/input-dispatch checks, not native wx event delivery,
 cursor rendering, a full application build, or installed/boat acceptance.
+
+## Route plotting label and reticle — SCRUM-375
+
+The 20 October follow-up extends `opencpn-5.12.4-measure-label.patch` to pass
+canvas context for both native route and measurement labels. The same rounded
+surface/typeface is used without changing computed text, units or geometry.
+Legacy/Safe stay stock, including in a build without `OPENNAV_X`.
+The existing chart-tool input patch substitutes a SKAGER precision reticle only
+at `ChartCanvas::SetCursor` for the native pencil in XNav, excluding an active
+plugin cursor. This covers activation, point placement and movement on both
+software and GL child canvases without public class-layout changes.
+
+The updated combined 21-patch stack applies and reconstructs. Actual native input
+and cursor methods pass 261 checks per integrated/stock-build variant. The
+unmodified upstream methods produce exactly 20 expected failures (the original
+eight edge failures plus twelve route/measurement pencil failures). Cursor image
+creation, native Windows scaling and installed visual acceptance remain pending.
 
 ## 19 October integrated audit — persistence, listener lifetime and composition
 
@@ -112,8 +130,9 @@ application and tests are explicitly unperformed. See [sailing tracks](track-rec
 Three source-only patches follow the chart-presentation/route-hit patches:
 
 - `opencpn-5.12.4-measure-label.patch`: the shared `RouteLegInfo` helper accepts
-  measurement context for SKAGER typography/surface colors. Upstream computed
-  text and placement remain intact; route creation and Legacy/Safe are stock.
+  chart context for SKAGER typography/surface colors, originally for measurement
+  and extended to route creation on 20 October. Upstream computed text and
+  placement remain intact; Legacy/Safe are stock.
 - `opencpn-5.12.4-chart-tool-input.patch`: native chart pointer classification
   can consume one explicitly armed waypoint tap before object editing/selection.
   It passes coordinates and a mode generation to the shell, preserving pan and
@@ -125,8 +144,8 @@ Three source-only patches follow the chart-presentation/route-hit patches:
   pending/accepted receipts. No plugin/error/recovery dialog is suppressed.
 
 Build/source/receipt inventories include the patches. Exact dependency consumer
-compatibility hashes have not been silently relaxed. All execution qualification
-remains pending under the user's source-only instruction. See
+compatibility hashes have not been silently relaxed. Initial source-only status,
+subsequent Beta 2.6 qualification and the unbuilt follow-up remain separate. See
 [chart tools and first start](chart-tools-and-first-start.md).
 
 ## Explicit route arrival and passage overlay — SCRUM-373

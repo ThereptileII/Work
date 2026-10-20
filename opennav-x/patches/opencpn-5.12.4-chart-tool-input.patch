@@ -157,3 +157,24 @@ diff --git a/gui/src/chcanv.cpp b/gui/src/chcanv.cpp
        if (cursor_region == MID_RIGHT) {
          ptarget_cursor = pCursorRight;
        } else if (cursor_region == MID_LEFT) {
+@@ -12347,8 +12421,18 @@
+ bool ChartCanvas::SetCursor(const wxCursor &c) {
++  const wxCursor *display_cursor = &c;
++#ifdef OPENNAV_X
++  wxCursor plotting_cursor;
++  // Cover tool activation, point placement and motion through one native
++  // boundary, including the GL child. Plugin cursors retain their identity.
++  if (opennav::IsXNav() && !pPlugIn_Cursor && &c == pCursorPencil) {
++    plotting_cursor = opennav::integration::ChartPlottingCursor(*this);
++    if (plotting_cursor.IsOk()) display_cursor = &plotting_cursor;
++  }
++#endif
+ #ifdef ocpnUSE_GL
+   if (g_bopengl && m_glcc)
+-    return m_glcc->SetCursor(c);
++    return m_glcc->SetCursor(*display_cursor);
+   else
+ #endif
+-    return wxWindow::SetCursor(c);
++    return wxWindow::SetCursor(*display_cursor);
+ }

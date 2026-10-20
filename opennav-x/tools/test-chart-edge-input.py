@@ -34,9 +34,9 @@ Mode mode = Mode::XNav;
 bool IsXNav() { return mode == Mode::XNav; }
 }
 struct wxPoint { int x = 0, y = 0; };
-struct wxCursor { int id; };
+struct wxCursor { int id = -1; bool IsOk() const { return id >= 0; } };
 wxCursor arrow{0}, right_cursor{1}, left_cursor{2}, down_cursor{3},
-    up_cursor{4}, pencil{5}, plugin{6};
+    up_cursor{4}, pencil{5}, plugin{6}, reticle{7};
 struct wxMouseEvent {
   enum Kind { Move, Down, Up, Drag } kind = Move;
   int x = 100, y = 120, wheel = 0;
@@ -59,8 +59,20 @@ double g_mouse_zoom_sensitivity = 2;
 int canvas_count = 1;
 int GetCanvasCount() { return canvas_count; }
 class ChartCanvas;
+namespace opennav::integration {
+bool cursor_available = true;
+wxCursor ChartPlottingCursor(ChartCanvas&) {
+  return cursor_available ? reticle : wxCursor{};
+}
+}
+class wxWindow {
+ public:
+  int cursor = -1;
+  bool SetCursor(const wxCursor& value) { cursor = value.id; return true; }
+};
+bool g_bopengl = false;
 ChartCanvas* g_focusCanvas = nullptr;
-class ChartCanvas {
+class ChartCanvas : public wxWindow {
  public:
   double m_displayScale = 1;
   Region cursor_region = CENTER;
@@ -80,7 +92,8 @@ class ChartCanvas {
   struct Viewport { int pix_width = 1000, pix_height = 600; } vp;
   Viewport& GetVP() { return vp; }
   std::vector<std::pair<int, int>> pans;
-  int starts = 0, stops = 0, cursor = -1;
+  int starts = 0, stops = 0;
+  wxWindow* m_glcc = nullptr;
   std::vector<double> zooms;
   void PanCanvas(int x, int y) { pans.emplace_back(x, y); }
   void StartTimedMovement() { ++starts; }
@@ -90,7 +103,7 @@ class ChartCanvas {
       *pCursorLeft = &left_cursor, *pCursorDown = &down_cursor,
       *pCursorUp = &up_cursor, *pCursorPencil = &pencil,
       *pPlugIn_Cursor = nullptr;
-  void SetCursor(const wxCursor& value) { cursor = value.id; }
+  bool SetCursor(const wxCursor& value);
   bool MouseEventProcessCanvas(wxMouseEvent&);
   void SetCanvasCursor(wxMouseEvent&);
 };
@@ -141,11 +154,11 @@ int main() {
 
       canvas.m_routeState = 2;
       canvas.SetCanvasCursor(event);
-      Check(canvas.cursor == pencil.id, "route-pencil");
+      Check(canvas.cursor == (native_click ? pencil.id : reticle.id), "route-tool-cursor");
       canvas.m_routeState = 0;
       canvas.m_bMeasure_Active = true;
       canvas.SetCanvasCursor(event);
-      Check(canvas.cursor == pencil.id, "measure-pencil");
+      Check(canvas.cursor == (native_click ? pencil.id : reticle.id), "measure-tool-cursor");
       Click(canvas);
       Check(canvas.pans.empty(), "measure-click");
       canvas.pPlugIn_Cursor = &plugin;
@@ -186,6 +199,31 @@ int main() {
       }
       g_btouch = false;
     }
+    for (bool gl : {false, true}) {
+      g_bopengl = gl;
+      ChartCanvas target;
+      wxWindow gl_child;
+      target.m_glcc = &gl_child;
+      const auto shown = [&] { return gl ? gl_child.cursor : target.cursor; };
+      context = std::string(name) + (gl ? "/gl/" : "/software/");
+      Check(target.SetCursor(*target.pCursorPencil), "set-result");
+      Check(shown() == (native_click ? pencil.id : reticle.id), "activation-cursor");
+      Check((gl ? target.cursor : gl_child.cursor) == -1, "only-active-renderer");
+      target.SetCursor(*target.pCursorArrow);
+      Check(shown() == arrow.id, "tool-exit-cursor");
+      target.pPlugIn_Cursor = &plugin;
+      target.SetCursor(*target.pCursorPencil);
+      Check(shown() == pencil.id, "registered-plugin-preserved");
+      target.pPlugIn_Cursor = nullptr;
+      opennav::integration::cursor_available = false;
+      target.SetCursor(*target.pCursorPencil);
+      Check(shown() == pencil.id, "invalid-cursor-fallback");
+      opennav::integration::cursor_available = true;
+      wxCursor other_pencil = pencil;
+      target.SetCursor(other_pencil);
+      Check(shown() == pencil.id, "only-native-pencil-request");
+    }
+    g_bopengl = false;
     ChartCanvas canvas;
     context = std::string(name) + "/";
     wxMouseEvent event;
@@ -233,7 +271,8 @@ def main():
         "cursorRegion": hashlib.sha256(region(current).encode()).hexdigest(),
     }
     signatures = ("bool ChartCanvas::MouseEventProcessCanvas(",
-                  "void ChartCanvas::SetCanvasCursor(")
+                  "void ChartCanvas::SetCanvasCursor(",
+                  "bool ChartCanvas::SetCursor(")
     results = []
     for label, source, integrated in (
             ("patched-xnav", current, True),
@@ -245,7 +284,7 @@ def main():
         (directory / "methods.inc").write_text(methods)
         (directory / "fixture.cpp").write_text(FIXTURE)
         # The stock cursor method does not use its wx event parameter.
-        command = [args.cxx, "-std=c++17", "-Wall", "-Wextra", "-Werror",
+        command = [args.cxx, "-DocpnUSE_GL", "-std=c++17", "-Wall", "-Wextra", "-Werror",
                    "-Wno-unused-parameter",
                    str(directory / "fixture.cpp"), "-o", str(directory / "test")]
         if integrated:
@@ -259,6 +298,11 @@ def main():
         if label == "original-regression":
             expected = {f"FAIL xnav/{n}/{kind}"
                         for n in range(1, 5) for kind in ("cursor", "click")}
+            expected.update(f"FAIL xnav/{n}/{kind}"
+                            for n in range(5)
+                            for kind in ("route-tool-cursor", "measure-tool-cursor"))
+            expected.update(f"FAIL xnav/{renderer}/activation-cursor"
+                            for renderer in ("gl", "software"))
             actual = {line for line in run.stdout.splitlines() if line.startswith("FAIL ")}
             assert run.returncode == 1 and actual == expected, run.stdout + run.stderr
         else:

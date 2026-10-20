@@ -1,18 +1,36 @@
 # Chart tools and first-start presentation
 
-Source-only feedback increment, 2026-10-17: SCRUM-375 and the first-start portion
-of SCRUM-341. No build, test, patch-application check, CI run or boat deployment
-has been performed for these changes. Previously installed bytes are unchanged.
+Initial source-only feedback increment, 2026-10-17: SCRUM-375 and the first-start
+portion of SCRUM-341. No execution was performed at that initial source-only
+checkpoint. Subsequent integrated and installed Beta 2.6 evidence is recorded in
+[status](status.md); it does not qualify the 20 October follow-up below.
 
 ## Chart tools
 
 OpenCPN still owns measurement points, bearings, distances, units and rendering
-positions. `ChartCanvas::RouteLegInfo` gets an optional measurement-only style
-from `ChartPresentation`: SKAGER typeface, themed rounded surface and text. The
+positions. `RouteLegInfo` gets an optional chart-tool style from
+`ChartPresentation`: SKAGER typeface, themed rounded surface and text. The
 existing computed strings and placement formulas are retained. The native
-`ocpnDC` primitive serves software and OpenGL; route-creation labels and
-Legacy/Safe retain their stock path. XNav's Standard chart style still uses
-native SKAGER tool presentation.
+`ocpnDC` primitive serves software and OpenGL. The 20 October follow-up extends
+the same label to route creation; Legacy/Safe retain their stock path.
+XNav's Standard chart style still uses native SKAGER tool presentation.
+
+Route and Measure placement now request a cached cyan precision reticle with a
+dark keyline instead of OpenCPN's pencil. The click hotspot stays at its center.
+The native `ChartCanvas::SetCursor` boundary covers activation, placement and
+movement, forwarding to either the software canvas or GL child. It substitutes
+only the native pencil in XNav, without an active plugin cursor. Other cursors,
+Legacy/Safe, point coordinates and route/measurement edge scrolling are unchanged.
+The reticle follows the display preference within native Windows cursor capacity;
+an odd image extent below the system dimensions lets wxMSW pad artwork and hotspot
+together rather than resize them. A native crosshair is the fallback.
+
+The combined 21-patch stack applies and reconstructs against pinned OpenCPN.
+Actual canvas input/cursor methods pass 261 focused checks with `OPENNAV_X` and
+261 without it; stock methods reproduce 20 expected edge/pencil regressions.
+These inert-sink checks cover mode, tool, plugin, fallback and GL-child dispatch,
+not native cursor rasterization or visual acceptance. The follow-up has no new
+application build, Windows/CI result or boat installation.
 
 The shell reads copied native tool state on the application thread. It never
 infers successful activation from pressing Measure. The fixed horizon area
@@ -58,18 +76,22 @@ Plugin, recovery and error dialogs are not blanket-suppressed.
 
 Windows Search/jump-list identity is outside this scoped SCRUM-341 correction.
 
-## Qualification still required after the source-only pause
+## Native qualification scenarios
 
-Perform focused checks once the user authorizes execution:
+Preserve these checks when qualifying a candidate. The earlier Beta 2.6 results
+in the delivery evidence apply only to its exact bytes; the new route label and
+reticle still need native Windows qualification in a subsequent candidate:
 
 1. Apply the maintained patch series to the pinned source. Check the three new
    patch inventories and corresponding-source inclusion. The changed dependency
    receipt helper also requires reviewed exact consumer-hash policy refresh
    before SDK reuse; do not bypass its existing fail-closed policy.
-2. On native Windows, exercise Measure first/next point, Done, Escape and F4;
+2. On native Windows, exercise Measure first/next point, Done, Escape and F4,
+   and route first/next point, Finish and Cancel;
    confirm original units/bearings, reverse first-leg text and rounded
    Day/Dusk/Night labels under software and OpenGL. Check Standard chart style
-   and Legacy/Safe as separate paths.
+   and Legacy/Safe as separate paths. Confirm the reticle click hotspot at
+   100/125/150% Windows scaling, restoration on exit and plugin cursor precedence.
 3. Exercise Waypoint tap → naming → Save/Cancel on blank chart and over existing
    marks/routes/AIS, using mouse and touch. Verify stored coordinates equal the
    selected chart position, no existing object moves, dragging pans without
@@ -85,5 +107,4 @@ Perform focused checks once the user authorizes execution:
    Verify explicit stock wizard, Legacy/Safe and settings access, without
    accepting consent automatically or editing acceptance profile keys.
 
-These are outstanding checks, not completed evidence. No physical hardware
-command is needed for this batch.
+This list is not completed evidence. No physical hardware command is needed.

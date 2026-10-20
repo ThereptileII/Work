@@ -5,6 +5,9 @@
 #include "integration/ChartTextFace.h"
 #include "integration/ChartLightLabel.h"
 #include "ui/Controls.h" // Before GL/X11 headers which define None.
+#include <wx/bmpbndl.h>
+#include <wx/app.h>
+#include <wx/settings.h>
 #include "XNavChartResources.h"
 #include "model/base_platform.h"
 #include "picosha2.h"
@@ -616,8 +619,8 @@ bool DrawChartOverzoomWarning(ocpnDC &dc, ChartCanvas &canvas, int x, int y) {
   dc.DrawText(label, x + padx, y + pady);
   return true;
 }
-bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
-                            MeasureLabelStyle &style) {
+bool ChartPlottingLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
+                            ChartToolLabelStyle &style) {
   if (!wxIsMainThread() || !xnav_mode || !upstream_font.IsOk()) return false;
   const auto face = ScaleChartFont(ui::UiFontWeight(canvas, 12, 500));
   if (!face.IsOk()) return false;
@@ -639,6 +642,69 @@ bool ChartMeasureLabelStyle(ChartCanvas &canvas, const wxFont &upstream_font,
   style.padding = static_cast<int>(std::lround(canvas.FromDIP(6) * ChartDisplayScale()));
   style.radius = style.padding;
   return true;
+}
+wxCursor ChartPlottingCursor(ChartCanvas &canvas) {
+  if (!wxIsMainThread() || !xnav_mode) return {};
+  const auto mode = canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_NIGHT
+      ? ui::LightMode::Night : canvas.GetColorScheme() == GLOBAL_COLOR_SCHEME_DUSK
+      ? ui::LightMode::Dusk : ui::LightMode::Day;
+  // An odd bitmap size puts the exact click hotspot in the center pixel.
+  int half = std::clamp(ChartDisplayPixels(canvas, 16), 12, 48);
+  int native_width = 0, native_height = 0;
+#ifdef __WXMSW__
+  // wxMSW 3.2 pads smaller images but resizes larger/mismatched ones to these
+  // exact system metrics, truncating a rescaled hotspot. Stay strictly inside
+  // both dimensions so its padding translates the image and hotspot together.
+  auto *top = wxApp::GetMainTopWindow();
+  native_width = wxSystemSettings::GetMetric(wxSYS_CURSOR_X, top);
+  native_height = wxSystemSettings::GetMetric(wxSYS_CURSOR_Y, top);
+  const int native_half = ((std::min)(native_width, native_height) - 2) / 2;
+  if (native_half < 8) return wxCursor(wxCURSOR_CROSS);
+  half = (std::min)(half, native_half);
+#endif
+  const int size = 2 * half + 1;
+  static wxCursor cursor;
+  static int cached_size = 0;
+  static int cached_native_width = 0, cached_native_height = 0;
+  static ui::LightMode cached_mode = ui::LightMode::Day;
+  if (cursor.IsOk() && cached_size == size && cached_mode == mode &&
+      cached_native_width == native_width && cached_native_height == native_height)
+    return cursor;
+
+  // Restrained cyan reticle with a dark keyline: readable over both light water
+  // and dark chart features, without the stock pencil obscuring the chosen fix.
+  const auto svg = wxString::Format(
+      "<svg xmlns=\"http://www.w3.org/2000/svg\" width=\"32\" height=\"32\" viewBox=\"0 0 32 32\">"
+      "<g fill=\"none\" stroke-linecap=\"round\">"
+      "<g stroke=\"#%06x\" stroke-width=\"3.5\">"
+      "<circle cx=\"16\" cy=\"16\" r=\"6\"/>"
+      "<path d=\"M16 3v5M16 24v5M3 16h5M24 16h5M15 16h2M16 15v2\"/>"
+      "</g><g stroke=\"#%06x\" stroke-width=\"1.5\">"
+      "<circle cx=\"16\" cy=\"16\" r=\"6\"/>"
+      "<path d=\"M16 3v5M16 24v5M3 16h5M24 16h5M15 16h2M16 15v2\"/>"
+      "</g></g></svg>",
+      ui::Theme(mode).background, ui::NavigationContextInk(mode));
+  const auto bundle = wxBitmapBundle::FromSVG(svg.utf8_str(), wxSize(size, size));
+  wxCursor replacement;
+  if (bundle.IsOk()) {
+    const auto bitmap = bundle.GetBitmap(wxSize(size, size));
+    if (bitmap.IsOk()) {
+      auto image = bitmap.ConvertToImage();
+      if (image.IsOk()) {
+        image.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_X, half);
+        image.SetOption(wxIMAGE_OPTION_CUR_HOTSPOT_Y, half);
+        replacement = wxCursor(image);
+      }
+    }
+  }
+  // A native crosshair still indicates the exact point if SVG/cursor creation
+  // is unavailable. Do not retry a failed SVG conversion on every mouse move.
+  cursor = replacement.IsOk() ? replacement : wxCursor(wxCURSOR_CROSS);
+  cached_size = size;
+  cached_native_width = native_width;
+  cached_native_height = native_height;
+  cached_mode = mode;
+  return cursor;
 }
 std::string ChartPresentationStatus() {
   return status + "; " + OChartsPresentationStatus();
