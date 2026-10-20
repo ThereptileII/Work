@@ -1,0 +1,1225 @@
+{
+  "issue": "SCRUM-378",
+  "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "sourceXmlSha256": "84f93522576ed5872b24865cf6161872ed0b4b634f77c64ca697a04d3568e886",
+  "parser": "docs/design/prototype/symbol-library.mjs",
+  "parserSha256": "714a02b262165481f92ce466bb2855d40cde0ffe77d98904deb4f832cbd863d2",
+  "note": "Native geometry and categorical roles; original logical bitmap size and pivot. No selector edits. Stock atlas remains the SVG-unavailable fallback.",
+  "symbols": {
+    "BCNCAR01": {
+      "description": "cardinal beacon, north, simplified",
+      "effectiveRcid": "1232",
+      "sourceNodeSha256": "253ce2610b46b4d429fea6df7b1fe944284737a6a122748d0c96a37f6dc08c10",
+      "colorRoles": [
+        "OUTLW",
+        "CHYLW"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 19,
+        "pivot": {
+          "x": 6,
+          "y": 9
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          516.34,
+          411.34,
+          469.32,
+          679.32
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M750 780L552 1052L950 1057L750 780",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M750 445L952 720L555 720L750 445",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M750 445L550 720L950 720L750 445",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M550 1055L950 1055L750 780L550 1055",
+            "color": "OUTLW",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "BCNCAR02": {
+      "description": "cardinal beacon, east, simplified",
+      "effectiveRcid": "1233",
+      "sourceNodeSha256": "240405876c6fb65fb01b31ff84bca74c35a08a2e421405966803d7fe8d1e6785",
+      "colorRoles": [
+        "OUTLW",
+        "CHYLW"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 20,
+        "pivot": {
+          "x": 6,
+          "y": 10
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          513.7,
+          383.7,
+          472.6,
+          732.6
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M750 420L947 695L552 692L750 420",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M585 805L947 805L750 1080L552 805",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M750 420L550 695L950 695L750 420",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M550 805L950 805L750 1080L550 805",
+            "color": "OUTLW",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "BCNCAR03": {
+      "description": "cardinal beacon, south, simplified",
+      "effectiveRcid": "1234",
+      "sourceNodeSha256": "4c974758a6508e9c2a5f01e5509a5496b911650f904c805f0a816144040e6e64",
+      "colorRoles": [
+        "OUTLW",
+        "CHYLW"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 19,
+        "pivot": {
+          "x": 6,
+          "y": 9
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          516.45,
+          411.45,
+          467.1,
+          677.1
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M585 445L947 447L750 720L555 445",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M585 780L947 780L750 1055L552 780",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M750 720L550 445L950 445L750 720",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M550 780L950 780L750 1055L550 780",
+            "color": "OUTLW",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "BCNCAR04": {
+      "description": "cardinal beacon, west, simplified",
+      "effectiveRcid": "1235",
+      "sourceNodeSha256": "acf0131a4300ee11d982c42fbbc3bad599b424059714adb13ee1c5669f4e250f",
+      "colorRoles": [
+        "OUTLW",
+        "CHYLW"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 19,
+        "pivot": {
+          "x": 6,
+          "y": 9
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          516.45,
+          411.45,
+          467.1,
+          677.1
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M750 780L552 1055L947 1055L750 780",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M585 445L947 445L750 720L550 445",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M550 1055L950 1055L750 780L550 1055",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M750 720L550 445L950 445L750 720",
+            "color": "OUTLW",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "BCNISD21": {
+      "description": "isolated danger beacon, simplified",
+      "effectiveRcid": "2041",
+      "sourceNodeSha256": "fa0ed220975453361ad964faa1ecefc24f64d3b3c2292fc595a2193471cb9fb2",
+      "colorRoles": [
+        "OUTLW",
+        "CHRED"
+      ],
+      "bitmap": {
+        "width": 8,
+        "height": 17,
+        "pivot": {
+          "x": 3,
+          "y": 8
+        }
+      },
+      "nativePivot": {
+        "x": 1493,
+        "y": 623
+      },
+      "geometry": {
+        "viewBox": [
+          1351.08,
+          324.08,
+          281.84000000000003,
+          603.84
+        ],
+        "shapes": [
+          {
+            "type": "circle",
+            "cx": 1493,
+            "cy": 464,
+            "r": 110,
+            "color": "CHRED",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "circle",
+            "cx": 1491,
+            "cy": 788,
+            "r": 110,
+            "color": "CHRED",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "circle",
+            "cx": 1493,
+            "cy": 464,
+            "r": 110,
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1491,
+            "cy": 788,
+            "r": 110,
+            "color": "OUTLW",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "BCNLAT15": {
+      "description": "major lateral beacon, red, simplified",
+      "effectiveRcid": "1253",
+      "sourceNodeSha256": "b16ce3478ec3ad1e08bb139dd49beb6e0ebc2d8b3c32ff3629227975b20109d2",
+      "colorRoles": [
+        "CHRED",
+        "OUTLW"
+      ],
+      "bitmap": {
+        "width": 7,
+        "height": 13,
+        "pivot": {
+          "x": 3,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 600,
+        "y": 850
+      },
+      "geometry": {
+        "viewBox": [
+          478,
+          628,
+          244,
+          444
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M500 1050L700 1050L700 650L500 650L500 1050",
+            "color": "CHRED",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M500 1050L700 1050L700 650L500 650L500 1050",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 600,
+            "cy": 850,
+            "r": 15,
+            "color": "OUTLW",
+            "width": 1,
+            "fill": true
+          }
+        ]
+      }
+    },
+    "BCNLAT16": {
+      "description": "major lateral beacon, green, simplified",
+      "effectiveRcid": "1254",
+      "sourceNodeSha256": "b0b2c85f3cdcbc9f560117d2bbf627393f0ac10b18dac6705ed32347dff05fc4",
+      "colorRoles": [
+        "CHGRN",
+        "OUTLW"
+      ],
+      "bitmap": {
+        "width": 7,
+        "height": 13,
+        "pivot": {
+          "x": 3,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          628,
+          528,
+          244,
+          444
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "CHGRN",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 750,
+            "cy": 750,
+            "r": 15,
+            "color": "OUTLW",
+            "width": 1,
+            "fill": true
+          }
+        ]
+      }
+    },
+    "BCNSAW13": {
+      "description": "major safe water beacon, simplified",
+      "effectiveRcid": "1260",
+      "sourceNodeSha256": "0045a21b45913c7fa157a4b4a716fcfb6ab3f711093a33462c6e402cf96ddfd9",
+      "colorRoles": [
+        "CHBLK",
+        "OUTLW",
+        "DEPVS"
+      ],
+      "bitmap": {
+        "width": 7,
+        "height": 13,
+        "pivot": {
+          "x": 3,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          628,
+          528,
+          244,
+          444
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "CHBLK",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 750,
+            "cy": 750,
+            "r": 15,
+            "color": "DEPVS",
+            "width": 1,
+            "fill": true
+          }
+        ]
+      }
+    },
+    "BCNSPP13": {
+      "description": "major special purpose beacon, simplified",
+      "effectiveRcid": "1265",
+      "sourceNodeSha256": "1b686f0193b3e41aa565af90cce23bceaa01683516c7e97069682012c13bcfd9",
+      "colorRoles": [
+        "CHYLW",
+        "OUTLW"
+      ],
+      "bitmap": {
+        "width": 7,
+        "height": 13,
+        "pivot": {
+          "x": 3,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          628,
+          528,
+          244,
+          444
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "CHYLW",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M650 950L850 950L850 550L650 550L650 950",
+            "color": "OUTLW",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 750,
+            "cy": 750,
+            "r": 15,
+            "color": "OUTLW",
+            "width": 1,
+            "fill": true
+          }
+        ]
+      }
+    },
+    "OBSTRN01": {
+      "description": "obstruction, depth not stated",
+      "effectiveRcid": "2248",
+      "sourceNodeSha256": "915eedc4b035ae11a2f61e23739891a0c0ffa16f3a161a92d69560d78be5a330",
+      "colorRoles": [
+        "DEPVS",
+        "CHBLK"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 13,
+        "pivot": {
+          "x": 6,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 1500,
+        "y": 1500
+      },
+      "geometry": {
+        "viewBox": [
+          1272.45,
+          1272.45,
+          455.1,
+          455.1
+        ],
+        "shapes": [
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1500,
+            "r": 205,
+            "color": "DEPVS",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1300,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1700,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1700,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1300,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1580,
+            "cy": 1310,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1360,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1685,
+            "cy": 1425,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1675,
+            "cy": 1585,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1640,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1575,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1360,
+            "cy": 1635,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1315,
+            "cy": 1570,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1320,
+            "cy": 1420,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1355,
+            "cy": 1355,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1315,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "OBSTRN02": {
+      "description": "obstruction in the intertidal area",
+      "effectiveRcid": "3130",
+      "sourceNodeSha256": "bfb629313089c6d6effc7dc6862101aad49a74e676a046b572ae332e4a876caa",
+      "colorRoles": [
+        "CHBLK"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 13,
+        "pivot": {
+          "x": 6,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 1500,
+        "y": 1500
+      },
+      "geometry": {
+        "viewBox": [
+          1278,
+          1278,
+          444,
+          444
+        ],
+        "shapes": [
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1300,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1700,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1700,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1300,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1580,
+            "cy": 1310,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1360,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1685,
+            "cy": 1425,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1675,
+            "cy": 1585,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1640,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1575,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1360,
+            "cy": 1635,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1315,
+            "cy": 1570,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1320,
+            "cy": 1420,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1355,
+            "cy": 1355,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1315,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "OBSTRN03": {
+      "description": "obstruction which covers and uncovers",
+      "effectiveRcid": "3611",
+      "sourceNodeSha256": "59351c00f9ed67606e03ecff47912e2faaa770aa30c359b9440ef288d891c5a7",
+      "colorRoles": [
+        "DEPIT",
+        "CHBLK"
+      ],
+      "bitmap": {
+        "width": 13,
+        "height": 13,
+        "pivot": {
+          "x": 6,
+          "y": 6
+        }
+      },
+      "nativePivot": {
+        "x": 1500,
+        "y": 1500
+      },
+      "geometry": {
+        "viewBox": [
+          1272.45,
+          1272.45,
+          455.1,
+          455.1
+        ],
+        "shapes": [
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1500,
+            "r": 205,
+            "color": "DEPIT",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1300,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1500,
+            "cy": 1700,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1700,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1300,
+            "cy": 1500,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1580,
+            "cy": 1310,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1360,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1685,
+            "cy": 1425,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1675,
+            "cy": 1585,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1640,
+            "cy": 1640,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1575,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1680,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1360,
+            "cy": 1635,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1315,
+            "cy": 1570,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1320,
+            "cy": 1420,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1355,
+            "cy": 1355,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "circle",
+            "cx": 1420,
+            "cy": 1315,
+            "r": 5,
+            "fill": true,
+            "color": "CHBLK",
+            "width": 1
+          }
+        ]
+      }
+    },
+    "OBSTRN18": {
+      "description": "obstruction in the water which is always above water level",
+      "effectiveRcid": "3131",
+      "sourceNodeSha256": "f72eca915b93c8b23d4ad90ba91ec8b4beb00ea63329771ad23dd9cf315e60cc",
+      "colorRoles": [
+        "CSTLN",
+        "LANDA"
+      ],
+      "bitmap": {
+        "width": 7,
+        "height": 7,
+        "pivot": {
+          "x": 3,
+          "y": 3
+        }
+      },
+      "nativePivot": {
+        "x": 698,
+        "y": 773
+      },
+      "geometry": {
+        "viewBox": [
+          587,
+          661,
+          222,
+          222
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M598 672L598 872L798 872L797 672L598 672",
+            "color": "LANDA",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "path",
+            "d": "M598 672L598 872L798 872L797 672L598 672",
+            "color": "CSTLN",
+            "width": 2
+          }
+        ]
+      }
+    },
+    "WRECKS01": {
+      "description": "wreck showing any portion of hull or superstructure at level of chart datum",
+      "effectiveRcid": "1641",
+      "sourceNodeSha256": "96983898da8782194d5e71cd4affe0f1bcf98f66c371139fb9ce9411c20ff953",
+      "colorRoles": [
+        "CHGRD"
+      ],
+      "bitmap": {
+        "width": 20,
+        "height": 11,
+        "pivot": {
+          "x": 10,
+          "y": 9
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          364.25,
+          414.25,
+          721.5,
+          421.5
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M550 750L400 550L1050 750L800 750L800 740L795 730L790 720L780 710L770 700L760 700L745 700L735 700L720 705L705 720L700 735L700 740L700 750L550 750L550 750",
+            "color": "CHGRD",
+            "width": 1,
+            "fill": true
+          },
+          {
+            "type": "circle",
+            "cx": 750,
+            "cy": 750,
+            "r": 50,
+            "color": "CHGRD",
+            "width": 3
+          },
+          {
+            "type": "path",
+            "d": "M400 750L700 750",
+            "color": "CHGRD",
+            "width": 3
+          },
+          {
+            "type": "path",
+            "d": "M800 750L1050 750",
+            "color": "CHGRD",
+            "width": 3
+          },
+          {
+            "type": "path",
+            "d": "M740 650L800 450",
+            "color": "CHGRD",
+            "width": 3
+          }
+        ]
+      }
+    },
+    "WRECKS04": {
+      "description": "non-dangerous wreck, depth unknown",
+      "effectiveRcid": "1642",
+      "sourceNodeSha256": "e92ba06178a9146951531bcde813919a5d3e3ffff897e54289d080c50d98069e",
+      "colorRoles": [
+        "CHBLK"
+      ],
+      "bitmap": {
+        "width": 15,
+        "height": 10,
+        "pivot": {
+          "x": 8,
+          "y": 5
+        }
+      },
+      "nativePivot": {
+        "x": 750,
+        "y": 750
+      },
+      "geometry": {
+        "viewBox": [
+          472.5,
+          572.5,
+          555,
+          355
+        ],
+        "shapes": [
+          {
+            "type": "path",
+            "d": "M750 900L750 900",
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M600 650L600 850",
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M900 650L900 850",
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M500 750L1000 750",
+            "color": "CHBLK",
+            "width": 1
+          },
+          {
+            "type": "path",
+            "d": "M750 600L750 900",
+            "color": "CHBLK",
+            "width": 1
+          }
+        ]
+      }
+    }
+  }
+}

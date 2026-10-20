@@ -7,6 +7,8 @@ sprite-ink mask, isolated anchor/service/cardinal artwork, eleven classified
 marine/light tiles with sixteen exact alias redirects, one construction hatch,
 one exact generic-building point alias, cable/ferry paint roles, and the
 Night-only chromatic navigation-aid inks (SCRUM-323) may change. Original inputs are never modified.
+The generated header also embeds reviewed, source-locked scalable point SVGs
+and bounded native geometry redraws (SCRUM-378); their source atlas is retained.
 """
 import argparse
 import hashlib
@@ -31,6 +33,7 @@ import chart_building_point
 import chart_light_tower
 import chart_fishing_pattern
 import chart_night_aids
+import chart_symbol_svg
 
 ROOT=Path(__file__).resolve().parents[1]
 ALLOWED={'LANDA','CSTLN','DEPDW','DEPMD','DEPMS','DEPVS','DEPIT','DEPCN','DEPSC','SNDG1','SNDG2','CHBLK','CHGRD'}
@@ -256,6 +259,7 @@ def generate(source, output):
     def write(path,content):
         if not path.exists() or path.read_bytes()!=content:path.write_bytes(content)
     for name,content in result.items():write(output/name,content)
+    symbol_svgs = chart_symbol_svg.entries(original['chartsymbols.xml'], xml)
     metadata={'version':definition['version'],'upstreamCommit':lock['upstreamCommit'],
               'prototypeSha256':definition['prototypeSha256'],'palette':colors,
               'neutralRasterInk':raster_ink, 'dayNeutralRasterInk':day_ink,
@@ -274,6 +278,10 @@ def generate(source, output):
               'buildingPointArtwork':building_point,
               'lightTowerArtwork':light_tower,
               'fishingPatternArtwork':fishing_pattern,
+              'scalablePointArtwork':[
+                  {**{key:value for key,value in item.items() if key != 'svg'},
+                   'svgSha256':hashlib.sha256(item['svg'].encode()).hexdigest()}
+                  for item in symbol_svgs],
               'geographicNameLookups':geography_count,
               'structuralAreaPaint':{'color':'XNSTR','lookupIds':sorted(chart_structure_paint.RULES),
                                      'outlineColor':'XNSHR','outlineLookupIds':sorted(chart_structure_paint.OUTLINE_RULES),
@@ -297,7 +305,8 @@ def generate(source, output):
     for key in ['DAY_BRIGHT','DUSK','NIGHT']:
         def color(name):return '0x'+''.join(f'{v:02x}' for v in colors[key][name])
         header.append('  {%s, %s},'%(color('LANDA'),color('DEPDW')))
-    header+=['};','} // namespace opennav::chart_style::generated','']
+    header+=['};']+chart_symbol_svg.header_lines(symbol_svgs)
+    header+=['} // namespace opennav::chart_style::generated','']
     write(output/'XNavChartResources.h','\n'.join(header).encode())
     return metadata
 
