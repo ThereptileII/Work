@@ -5,7 +5,8 @@
 #include <wx/stattext.h>
 
 namespace opennav::ui {
-// Fixed header footprint: the optional GPS warning uses a second text line.
+// Compact chart-tool entry; actual recorder/GPS state supplies the icon ink
+// and accessible hint. The drawer retains the explicit Start/Stop controls.
 // The inherited button retains touch, keyboard and accessibility behavior.
 class XNavTrackRecordButton final : public XNavButton {
 public:

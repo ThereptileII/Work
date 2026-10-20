@@ -96,13 +96,14 @@ recovery paths; no physical control command belongs to this flow.
 
 ## Sailing-track recording — source-only SCRUM-377
 
-- Start from the chart: **Record → Start recording** (two actions). Missing or
-  stale position disables starting with an explanation. The header reflects
+- Start from the chart: **Track recording icon beside Measure/Waypoint → Start
+  recording** (two actions). Missing or stale position disables starting with an
+  explanation. The compact chart-tool indicator reflects
   actual OpenCPN state. No naming dialog blocks the first valid fix.
-- Stop: **Recording → Stop recording** (two actions). Closing/Escape dismisses
+- Stop: **Track recording icon → Stop recording** (two actions). Closing/Escape dismisses
   the drawer without stopping. OpenCPN may discard an empty/short recording or
   merge a daily track; report the actual outcome rather than promise a new row.
-- Browse: **Record/Recording → Saved tracks**. Routes and Waypoints link to the
+- Browse: **Track recording icon → Saved tracks**. Routes and Waypoints link to the
   same library; Settings → Navigation also provides Saved tracks. Select a row
   for fit-to-chart, visibility and inline rename. Back returns to saved tracks;
   canceling the name field preserves the stored name.

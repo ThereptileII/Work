@@ -25,8 +25,8 @@ wxString Elapsed(const std::optional<application::TrackSummary> &track) {
 }
 
 XNavTrackRecordButton::XNavTrackRecordButton(wxWindow *parent)
-    : XNavButton(parent, wxID_ANY, "Record", "Open track recording") {
-  SetMinSize(FromDIP(wxSize(120, 48)));
+    : XNavButton(parent, wxID_ANY, "Tracks", "Open track recording") {
+  SetMinSize(FromDIP(wxSize(48, 48)));
   Bind(wxEVT_PAINT, &XNavTrackRecordButton::Paint, this);
 }
 void XNavTrackRecordButton::Update(const application::TrackRecordingState &state, LightMode mode) {
@@ -39,31 +39,41 @@ void XNavTrackRecordButton::Update(const application::TrackRecordingState &state
   pending_ = state.pending_start;
   gps_warning_ = gps_warning;
   reason_ = state.reason;
-  const wxString title = recording_ ? "Recording" : pending_ ? "Starting" : "Record";
+  const wxString title = recording_ ? "Recording" : pending_ ? "Starting" : "Tracks";
   SetLabel(title + (gps_warning_ ? " / GPS unavailable" : ""));
   SetName("Open track recording: " + GetLabel());
-  SetHint(!state.reason.empty() ? W(state.reason) : "Open track recording and saved tracks");
+  SetHint("Track recording: " + GetLabel() +
+      (state.reason.empty() ? wxString(" / Open recording and saved tracks")
+                            : wxString(" / ") + W(state.reason)));
   SetLightMode(mode);
   Refresh(false);
 }
 void XNavTrackRecordButton::Paint(wxPaintEvent &) {
   wxAutoBufferedPaintDC dc(this);
-  XNavPainter p(*this, dc, light_);
-  dc.SetBackground(wxBrush(Colour(p.c.background)));
+  const auto c = Theme(light_);
+  const auto floating = FloatingTheme(light_);
+  dc.SetBackground(wxBrush(Colour(floating.surface)));
   dc.Clear();
   const auto size = GetClientSize();
-  dc.SetPen(HasKeyboardFocus() ? wxPen(Colour(p.c.accent), FromDIP(2)) : *wxTRANSPARENT_PEN);
-  dc.SetBrush(wxBrush(Colour(IsHovered() ? p.c.selected : p.c.surface)));
+  const bool highlighted = IsHovered() || HasKeyboardFocus() ||
+      recording_ || pending_ || gps_warning_;
+  dc.SetPen(HasKeyboardFocus() ? wxPen(Colour(c.accent), FromDIP(2)) : *wxTRANSPARENT_PEN);
+  dc.SetBrush(wxBrush(Colour(highlighted ? c.selected : floating.surface)));
   dc.DrawRoundedRectangle(FromDIP(2), FromDIP(2), size.x - FromDIP(4),
       size.y - FromDIP(4), FromDIP(9));
-  const int y = gps_warning_ ? 9 : 16;
+  // A steady recording glyph, without the old wide header label. Amber means
+  // the recorder is pending or cannot currently collect fresh positions.
+  const auto ink = !IsEnabled() ? floating.secondary
+      : (gps_warning_ || pending_) ? c.attention
+      : recording_ ? c.healthy : highlighted ? c.primary : floating.primary;
+  const wxPoint center(size.x / 2, size.y / 2);
+  dc.SetPen(wxPen(Colour(ink), FromDIP(2)));
+  dc.SetBrush(*wxTRANSPARENT_BRUSH);
+  dc.DrawCircle(center, FromDIP(10));
   dc.SetPen(*wxTRANSPARENT_PEN);
-  dc.SetBrush(wxBrush(Colour(recording_ ? p.c.healthy : p.c.muted)));
-  dc.DrawCircle(FromDIP(15), FromDIP(y + 7), FromDIP(4));
-  p.Text(recording_ ? "Recording" : pending_ ? "Starting" : "Record", 26, y,
-      12, p.c.primary, false, ToDIP(size.x) - 32);
-  if (gps_warning_) p.Text("GPS unavailable", 10, 29, 10, p.c.attention,
-      false, ToDIP(size.x) - 20);
+  dc.SetBrush(wxBrush(Colour(ink)));
+  if (recording_ || pending_)
+    dc.DrawCircle(center, FromDIP(5));
 }
 
 XNavTrackDrawer::XNavTrackDrawer(wxWindow &owner, application::NavigationActions actions)

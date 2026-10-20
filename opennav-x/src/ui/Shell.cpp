@@ -171,11 +171,6 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
       ShowProduct(ProductPage::Routes);
   });
   row->Add(route_summary_, 1, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
-  track_record_ = new XNavTrackRecordButton(top);
-  track_record_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
-    CallAfter([this] { ShowTrackRecording(); });
-  });
-  row->Add(track_record_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
   row->Add(source_, 0, wxALIGN_CENTER_VERTICAL | wxLEFT | wxRIGHT, gap * 2);
   row->Add(clock_, 0, wxALIGN_CENTER_VERTICAL | wxRIGHT, gap);
   page_up_ = Button(top, "Up", "Scroll page up", [this] {
@@ -297,6 +292,11 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
                               [this] { ToggleMeasure(); });
   waypoint_button_ = map_button(XNavIcon::Pin,"Waypoint","Place a waypoint on the chart",
                                [this] { BeginWaypointPlacement(); });
+  track_record_ = new XNavTrackRecordButton(chart_tools_);
+  track_record_->Bind(wxEVT_BUTTON, [this](wxCommandEvent &) {
+    CallAfter([this] { ShowTrackRecording(); });
+  });
+  map_tools->Add(track_record_, 0, wxALIGN_CENTER_VERTICAL);
   chart_tools_->Bind(wxEVT_CHAR_HOOK, &Shell::OnChartToolKey, this);
   map_tools->AddSpacer(frame_.FromDIP(5));
   map_button(XNavIcon::Plus,"+","Zoom chart in",actions_.zoom_in);
@@ -1024,8 +1024,8 @@ void Shell::ApplyOwnedScale() {
   if(product_)product_->SetInterfaceScale(percent);
   if(rail_personalise_)rail_personalise_->SetInterfaceScale(percent);
   for(const auto &value:rail_values_)value.second->SetInterfaceScale(percent);
-  // Header status retains its fixed 48 DIP touch target, like the other
-  // header controls; it never grows the top pane or steals chart height.
+  // Chart tools retain fixed touch targets; display scaling does not grow
+  // the floating toolbar into the chart.
   if(track_record_)track_record_->SetInterfaceScale(percent);
   for(auto *drawer:{static_cast<XNavDrawer *>(ais_drawer_),
                     static_cast<XNavDrawer *>(passage_drawer_),
@@ -2293,6 +2293,16 @@ void Shell::PlaceChartControls() {
     else if(overlay==chart_layers_)position={chart.x+chart.width-size.x-frame_.FromDIP(34),chart.y+frame_.FromDIP(122)};
     else if(overlay==chart_turn_)position={chart.x+frame_.FromDIP(28),chart.y+frame_.FromDIP(24)};
     else position={chart.x+frame_.FromDIP(28),chart.y+chart.height-size.y-frame_.FromDIP(37)};
+    if (overlay==chart_follow_) {
+      const auto tools_size=chart_tools_->GetSize();
+      wxRect tools(chart.x+chart.width-tools_size.x-frame_.FromDIP(22),
+                   chart.y+chart.height-tools_size.y-frame_.FromDIP(37),
+                   tools_size.x,tools_size.y);
+      tools.Inflate(frame_.FromDIP(8));
+      // Keep Follow reachable when the chart is too narrow for both groups.
+      if (tools.Intersects(wxRect(position,size)))
+        position.y=tools.y-size.y;
+    }
     if (overlay==chart_layers_) {
       const auto tools_size=chart_tools_->GetSize();
       wxRect tools(chart.x+chart.width-tools_size.x-frame_.FromDIP(22),

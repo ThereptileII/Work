@@ -1,15 +1,19 @@
 # Sailing tracks in SKAGER
 
 Work item: [SCRUM-377](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-377).
-Implementation is source-only. The user explicitly requested no builds; the
-batch also retains its no-test restriction. No compilation, patch application,
-runtime, Windows or boat acceptance is claimed.
+The original recorder shipped with the Beta 2.6 candidate; see the exact
+[delivery evidence](status.md). The 20 October entry-point refinement below is
+source-only and is not installed on the boat. Native interaction acceptance of
+the revised control remains pending.
 
 ## User flow
 
-The compact **Record** button beside the route summary opens **Track recording**.
-**Start recording** starts the native OpenCPN recorder; the header then shows a
-steady recording indicator. Tap the indicator and **Stop recording** to stop.
+The circular **Track recording** icon in the chart tools, beside **Measure** and
+**Waypoint**, opens **Track recording**. There is no permanent Record header
+button. **Start recording** starts the native OpenCPN recorder; the tool then
+shows a steady filled green indicator. Amber indicates a pending start or
+unavailable fresh position; the accessible hint and drawer explain the state.
+Tap the icon and **Stop recording** to stop.
 Closing the drawer does not stop recording. The drawer reports the current
 recorder, position availability, start time, elapsed time and recorded distance
 where available. Commands read back the actual recorder state.
@@ -83,7 +87,9 @@ updated where relevant but not executed. At the next authorized build, perform
 focused Linux/native Windows checks for recording and replay gates, GPS
 loss/recovery/final sample, short/stationary recordings, daily merge, carryover,
 storage failure/rollback, rename persistence and visibility independence. Check software/OpenGL filtering,
-header/drawer interaction and Legacy sharing in the resulting candidate.
+tool/drawer interaction and Legacy sharing in the resulting candidate.
 
-Boat delivery remains separate and must resolve the startup issue SCRUM-376.
-This source change neither replaces nor qualifies the installed Beta 2.5 build.
+Those original source-batch checks must be read alongside the subsequent exact
+candidate evidence in `status.md`, not as a claim that later builds did not run.
+The 20 October control relocation neither replaces nor requalifies the installed
+Beta 2.6 executable.

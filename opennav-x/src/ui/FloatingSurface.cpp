@@ -95,8 +95,9 @@ void XNavFloatingSurface::PaintChartTools(wxPaintEvent &) {
   gc.reset(); // Finish graphics rendering before returning to the native DC.
   dc.SetPen(*wxTRANSPARENT_PEN);
   dc.SetBrush(wxBrush(composite(0x688377, 0x30)));
-  // The existing 5px spacer is 2px margin + 1px rule + 2px margin.
-  dc.DrawRectangle(FromDIP(4+2*44+2), (size.y-FromDIP(18))/2, FromDIP(1), FromDIP(18));
+  // After Measure, Waypoint and the 48 DIP recording tool, the 5px spacer
+  // is 2px margin + 1px rule + 2px margin, before Zoom.
+  dc.DrawRectangle(FromDIP(4+2*44+48+2), (size.y-FromDIP(18))/2, FromDIP(1), FromDIP(18));
 }
 
 void XNavFloatingSurface::Shape() {
