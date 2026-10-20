@@ -1,0 +1,50 @@
+{
+  "sourceSha256": "94214f9e688851ca4991c2fabb016b571f862bd6279c9809fb2ff5ae46634635",
+  "patchSha256": "4c2547186219b19d17fb0c676425adc358206fca9c7ce8bd19669c8f497c5b64",
+  "methods": {
+    "void s57_DrawExtendedLightSectors(": "95dc6910a4068dd03e1dda93e0ac0110867f167a9e9e1ec9c976feb315e9a4c0",
+    "void s57_DrawExtendedLightSectorsGL(": "4e18c81f6b28a1d53f3c1a15e7bf4384964120bfbd9fa2cdbbe43783e317b7ee"
+  },
+  "nativeProcessorUnchanged": true,
+  "helpers": {
+    "ChartCaFan.h": "2a95bb94f533706f800fb89539612a98dc0ec567ffe24412329fefdcae2ea1be",
+    "ChartLightHover.h": "8de80066e4369a942f158224c6a51b710a3715f467e8bf64d1ecd9e03473f2f0",
+    "ChartLightSymbol.h": "da7732485b4749bd3d649a373bcf703af7bb24bbf7db6842c670409f832d9c4c"
+  },
+  "command": [
+    "c++",
+    "-std=c++17",
+    "-O2",
+    "-Wall",
+    "-Wextra",
+    "-Wno-unused-parameter",
+    "-DOPENNAV_X",
+    "-DocpnUSE_GL",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib/wx/include/gtk3-unicode-3.2",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include/wx-3.2",
+    "-DWXUSINGDLL",
+    "-D__WXGTK3__",
+    "-D__WXGTK__",
+    "-D_FILE_OFFSET_BITS=64",
+    "-I/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/include",
+    "-I/home/standard/Projects/X-nav-worktrees/light-sectors-20261020/opennav-x/src",
+    "-I/home/standard/Projects/X-nav-worktrees/light-sectors-20261020/opennav-x/build/light-sector-review/final2",
+    "-I/home/standard/Projects/X-nav-worktrees/very-light-contours-20261020/opennav-x/build/contour-input/prepared-product/upstream/OpenCPN/libs/s52plib/src",
+    "-I/home/standard/Projects/X-nav-worktrees/very-light-contours-20261020/opennav-x/build/contour-input/prepared-product/upstream/OpenCPN/libs/geoprim/src",
+    "-I/home/standard/Projects/X-nav-worktrees/very-light-contours-20261020/opennav-x/build/contour-input/prepared-product/upstream/OpenCPN/libs/pugixml",
+    "-I/home/standard/Projects/X-nav-worktrees/very-light-contours-20261020/opennav-x/build/contour-input/prepared-product/upstream/OpenCPN/libs/glu",
+    "-I/home/standard/Projects/X-nav-worktrees/very-light-contours-20261020/opennav-x/build/contour-input/prepared-product/upstream/OpenCPN/gui/include/gui",
+    "/home/standard/Projects/X-nav-worktrees/light-sectors-20261020/opennav-x/tests/chart_light_expanded_test.cpp",
+    "-L/home/standard/Projects/X-nav-worktrees/scrum259-linux-6dafd29/.local/sysroot/usr/lib",
+    "-lwx_gtk3u_core-3.2",
+    "-lwx_baseu-3.2",
+    "-lwx_gtk3u_gl-3.2",
+    "-lGL",
+    "-lGLEW",
+    "-o",
+    "/home/standard/Projects/X-nav-worktrees/light-sectors-20261020/opennav-x/build/light-sector-review/final2/expanded-test"
+  ],
+  "exit": 0,
+  "stdout": "renderer=llvmpipe (LLVM 22.1.8, 256 bits)\nchecks=158 actual software/GL methods and bounded overlay passed\n",
+  "scope": "Actual sector methods and software/desktop GL paint; projection fixture, not chart/navigation or Windows acceptance."
+}

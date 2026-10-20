@@ -1,0 +1,42 @@
+{
+  "generatedSha256": "11065bbfb0bb82bc642697d183819152471240dc1a9f046b5472a0c9d4096836",
+  "results": [
+    {
+      "renderer": "core",
+      "command": [
+        "/usr/bin/python3",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tools/test-chart-symbol-raster.py",
+        "--source",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/.tmp/symbol-refinement-20261020/prepared-product/build/integration-source",
+        "--generated",
+        "/home/standard/Projects/X-nav-worktrees/symbol-coverage-20261020/opennav-x/build/symbol-coverage/final-check",
+        "--wx-prefix",
+        "/home/standard/Projects/X-nav/.local/sysroot/usr",
+        "--output",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/.tmp/symbol-refinement-20261020/raster-core"
+      ],
+      "exit": 0,
+      "output": "62 native wx raster and actual renderer checks passed\n",
+      "sourceSha256": "2ab3404205d3e0c0e38ee12f8b26a7d5421c95cc8ab548d99d975b43cbeeb414"
+    },
+    {
+      "renderer": "private",
+      "command": [
+        "/usr/bin/python3",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/opennav-x/tools/test-chart-symbol-raster.py",
+        "--source",
+        "/home/standard/Projects/X-nav-worktrees/symbol-scale-20261020/.tmp/symbol-render/private-sequence",
+        "--generated",
+        "/home/standard/Projects/X-nav-worktrees/symbol-coverage-20261020/opennav-x/build/symbol-coverage/final-check",
+        "--wx-prefix",
+        "/home/standard/Projects/X-nav/.local/sysroot/usr",
+        "--output",
+        "/home/standard/Projects/X-nav-worktrees/source-batch-20261011/.tmp/symbol-refinement-20261020/raster-private",
+        "--private"
+      ],
+      "exit": 0,
+      "output": "62 native wx raster and actual renderer checks passed\n",
+      "sourceSha256": "fa7e168dec28328e6d8a677832ba32d0da249b7dd8405855c6b8bd4a3f975367"
+    }
+  ]
+}

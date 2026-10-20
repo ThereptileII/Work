@@ -1,5 +1,36 @@
 # SKAGER status — 2026-10-20
 
+## 20 October — symbol coverage, sharpness and light sectors (source batch)
+
+SCRUM-378's latest owner feedback adds a full pinned symbol inventory and
+scalable SKAGER artwork. Forty-three point glyphs now have final-size SVG paint,
+including fifteen additional native-geometry beacon/hazard variants. Specialized
+stock symbols remain explicitly inventoried; this does not claim all OpenCPN
+symbols have been replaced. The audit preserves native selectors, shapes,
+anchors and hazard fill distinctions. Four minor beacons retain stock artwork
+because fitting the replacement into their native anchor rectangle would
+materially shrink it. [Coverage and source checks](design/symbol-coverage.md).
+
+Very Light Day uses `#595959` (65% black) for reviewed ordinary
+rock/wreck/obstruction ink, retaining safety-magenta and depth/drying fills.
+Reviewed aids gain 12% size and richer chromatic ink. Owned SVGs are rasterized
+at their final display dimensions instead of enlarging small atlas tiles.
+Core/private renderers share a bounded CPU cache and preserve Standard fallback.
+The fractional private tile-cache defect is fixed. Display percentage survives
+immediate scale setters as well as normal render preparation; the reported
+ineffective menu setting itself still requires an installed reproduction.
+
+Expanded lighthouse sectors now use prototype-style wash, thin dashed rays and
+outer arcs, with unchanged OpenCPN bearings/ranges, leading cones and sector
+processing. Shared colors retain Day/Dusk/Night distinctions and a Night
+brightness ceiling. [Sector evidence](design/reviews/scrum378-light-sector-treatment.md).
+
+Focused source/component checks and combined patch preparation are recorded in
+[the batch evidence](evidence/symbol-refinement-20261020/README.md). Native Windows,
+real chart rendering, private DLL loading and boat visual/performance acceptance
+remain pending. No full application build, CI, package or boat operation was
+performed for this batch. Installed `bf489683` / Beta 2.6 is unchanged.
+
 ## 20 October — chart-tool feedback, awaiting the next candidate
 
 The subsequent SCRUM-375 feedback extends Measure's rounded SKAGER readout to

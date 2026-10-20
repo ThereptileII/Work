@@ -1,0 +1,12 @@
+{
+  "pointNames": 43,
+  "schemeEntries": 129,
+  "catalogueEffectiveEntries": 1105,
+  "shadowedPointDefinitions": 75,
+  "nativeSourceGeometryReproduced": 15,
+  "nativeAnchorsAndUnclippedBounds": 15,
+  "headerSyntax": "pass",
+  "renderedCssEquivalencePairs": 210,
+  "renderedFinalSizePoints": 387,
+  "renderLimit": "librsvg source render only; native wx/NanoSVG and GL acceptance remain separate."
+}

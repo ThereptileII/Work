@@ -1,5 +1,39 @@
 # Direct OpenCPN Upstream Modifications
 
+## Scalable symbols and expanded light sectors — SCRUM-378, 20 October
+
+The existing core/private chart-display patches now render reviewed owned SVGs
+at final pixel dimensions in `s52plib::RenderRasterSymbol`. They preserve native
+classification, conditional selection, scale inputs, pivots and geographic bounds.
+The software branch draws the final bitmap; GL uses the existing state-restoring
+bounded RGBA uploader, without retaining GL handles. Unsupported resources,
+dimensions or GL contexts retain the native fallback. Reviewed aid artwork adds
+12% size; it does not change chart coordinates or real-world ranges.
+
+The display percentage now also survives immediate `SetScaleFactorExp` calls;
+normal `PrepareForRender` still derives each factor from native preferences,
+without cumulative multiplication. The private renderer's old integer-versus-
+fractional-width cache comparison rebuilt tiles every paint at fractional sizes.
+Both renderers now compare actual integer width and height. The new CPU raster
+cache is bounded and cleared with native symbol caches. This fixes identified
+source defects; a disconnected menu setting has not been reproduced.
+
+`ChartSymbolRaster.h` is added to the private adapter's explicit input inventory.
+The existing generated `XNavChartResources.h` carries the reviewed SVG table.
+Generator inputs are also registered for CMake reconfiguration and native
+Windows changed-unit provenance. `ChartPresentationPolicy.h` limits 65%-black
+ink to exact ordinary object symbols in Very Light Day. Safety-magenta marks,
+chromatic marks, depth/drying fills and Dusk/Night remain distinct.
+
+The existing chart-presentation patch's `s57chart.cpp` hooks add prototype-style
+expanded light-sector wash, thin dashed rays and outer arcs. The original
+sector processor is unchanged; native geometry, leading cones and visibility
+remain authoritative. Private sectors use that same core painter. See the
+[symbol inventory](design/symbol-coverage.md) and
+[sector implementation/evidence](design/reviews/scrum378-light-sector-treatment.md).
+Source/component results do not qualify native Windows, the private DLL or the
+installed boat display.
+
 ## Chart-edge cursor and click removal — SCRUM-378
 
 The 20 October extension to `opencpn-5.12.4-chart-tool-input.patch` suppresses
@@ -76,7 +110,7 @@ and `status.md`.
 `opencpn-5.12.4-chart-display.patch` follows track presentation. It adds a
 display-only S-52 policy after native conditional symbology has chosen its role:
 DEPARE/DRGARE water fills use the theme's DEPDW in Very Light; ordinary DEPCNT
-DEPCN lines blend 35% contour ink with 65% water. Drying DEPIT, patterns, hazards,
+DEPCN lines blend 50% contour ink with 50% water (20 October refinement). Drying DEPIT, patterns, hazards,
 soundings and safety contour DEPSC retain their meaning and existing policy.
 The presentation state hash includes the policy/scale for cache invalidation.
 The existing native symbol, text and sounding scale factors include the explicit
@@ -94,8 +128,9 @@ retain their physical meaning. The core/private patch lists, corresponding
 source lists and isolated painter fixture declarations have been maintained.
 Only the selected dependency-consumer helper hashes change for its application
 patch list; this is not proof of new native dependency reuse. The private
-adapter must be rebuilt for its changed inputs. **No patch application, build or
-test was executed** under the current source-only instruction. See
+adapter must be rebuilt for its changed inputs. The original 18 October edit
+was source-only; subsequent focused patch/component evidence is recorded in
+`status.md`. No new application package or boat acceptance follows from it. See
 [the presentation contract](design/xnav-chart-style.md#very-light-and-display-scale--scrum-378)
 and [review](design/reviews/scrum378-source-refinement.md).
 

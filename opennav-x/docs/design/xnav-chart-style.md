@@ -569,6 +569,29 @@ strokes use matching display sizes. A dimension-scaled ship hull and all
 geographic distances stay unchanged. The preference participates in the native
 presentation hash so retained text/paint does not keep a previous size.
 
+The 20 October symbol refinement renders reviewed SVG artwork at its final
+pixel dimensions, replacing enlarged low-resolution atlas tiles for those
+symbols. The same bounded CPU raster feeds software and GL, with native fallback
+for unsupported cases. Reviewed buoys, beacons and light aliases gain 12% size.
+Their chromatic ink gains 20% HLS saturation, with a Night weighted-brightness
+ceiling. Original prototype files remain unchanged. This is an explicit owner
+refinement, not a claim of identical prototype pixels.
+
+In Very Light Day, ordinary rock/wreck/obstruction ink uses 65% black (`#595959`).
+Exact symbol and ink-role selection preserves colored depth/drying fills,
+isolated-danger magenta, soundings, aids and night readability. It is not a
+global grayscale filter. Expanded light sectors use the prototype's thin
+dashed rays, translucent wash and outer arc while keeping OpenCPN bearings,
+ranges, leading cones and obscured-sector processing. See the
+[complete coverage audit](symbol-coverage.md) and
+[sector treatment](reviews/scrum378-light-sector-treatment.md).
+
+Focused core/private raster dispatch checks exercise 100→125→150→100% and
+verify cache reuse, dimensions and pivots. The fractional private cache mismatch
+is corrected, but the owner's ineffective-setting observation still needs
+verification in the next installed build. No Windows, boat or performance
+acceptance is inferred from these source/component checks.
+
 No new lighthouse classification is inferred from a display label. Existing
 LIGHTS and qualified light-support aliases remain authoritative until the
 reported object's class, attributes and effective renderer rule are observed.

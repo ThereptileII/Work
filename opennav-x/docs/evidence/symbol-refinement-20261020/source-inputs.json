@@ -1,0 +1,32 @@
+{
+  "base": "3959aeb745f186aae906166b9b385b34109de7d4",
+  "upstream": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7",
+  "scope": "source/component checks only; no application package, native Windows or boat qualification",
+  "sha256": {
+    "opennav-x/patches/ocharts-chart-display.patch": "cce3a5bc45e4539e7f35e5b67f4bf91d781ab7a789b10b4b7cdbd621ed5dcd05",
+    "opennav-x/patches/opencpn-5.12.4-chart-display.patch": "d655334a695861d4fb90dfa32c786dc669b5daea6f6d923c949e4a374468984c",
+    "opennav-x/patches/opencpn-5.12.4-chart-presentation.patch": "4c2547186219b19d17fb0c676425adc358206fca9c7ce8bd19669c8f497c5b64",
+    "opennav-x/resources/chart-style/v1/native-points.json": "7b06eced10335d0df22556763ca0e7bf4893419c25670827c9598438d8bbbd14",
+    "opennav-x/resources/chart-style/v1/symbol-coverage.json": "cd20486b8f0e8c1150f53a9592b737a4d6decbbac9e095846dc439bfb6ebbc92",
+    "opennav-x/src/integration/ChartCaFan.h": "2a95bb94f533706f800fb89539612a98dc0ec567ffe24412329fefdcae2ea1be",
+    "opennav-x/src/integration/ChartLightHover.h": "8de80066e4369a942f158224c6a51b710a3715f467e8bf64d1ecd9e03473f2f0",
+    "opennav-x/src/integration/ChartLightSymbol.h": "da7732485b4749bd3d649a373bcf703af7bb24bbf7db6842c670409f832d9c4c",
+    "opennav-x/src/integration/ChartPresentationPolicy.h": "f4be35a521edfd054c8a9780a40084b0cba6897e0e6718853099f2446f367308",
+    "opennav-x/src/integration/ChartSymbolRaster.h": "7f0cb62c38f141291c3c8fe38492843af80dca4a37cf78b0e24cd2ae487dd5bd",
+    "opennav-x/src/integration/OpenCPN.cmake": "aa84f80f73c7839d43b1de0d976e69554237ff0bb6ff26db6e3bb94bc6a3ea75",
+    "opennav-x/tests/chart_ca_fan_test.cpp": "028b0df6032d781549177d92ac1706e2fa2e807d8a3785a53119bde2f1a562d7",
+    "opennav-x/tests/chart_canvas_ink_tests.cpp": "4c9a001fcd2dd8a281acb760886a4fba8aef34b18eff2d9ff49827ae0bd9069c",
+    "opennav-x/tests/chart_light_expanded_test.cpp": "92457dfd07d8b9cdbf773364c1aaedad9388f84fd2068e7e1c27353508c20d8e",
+    "opennav-x/tests/chart_light_hover_tests.cpp": "e205f7db649705b1073f6a932f3445da6f7d12a968cd252a45a70de68badb64d",
+    "opennav-x/tests/chart_symbol_raster_test.cpp": "c8b91057e0931ca75943663f0392dc7c29e85a9c3b057fc481545025b09752ef",
+    "opennav-x/tools/audit-chart-symbol-coverage.py": "c7e782bd5e2ffb0abfecf5136c0f4e03c607a3c86d3c33607acf20ad0c571b9e",
+    "opennav-x/tools/chart_symbol_svg.py": "0867a0aa34674006e31bf56a4f43bca28566aa831e5ca58f5c6202570473f476",
+    "opennav-x/tools/derive-native-point-art.py": "ed8d3efe65ca3600fc8472293e9f266414724e374d8e46da74e6ab5a7ea135c0",
+    "opennav-x/tools/generate-xnav-chart-style.py": "02d83b7762e8ec80680860b313008e93e395b60c948ad44c537dcf541176b737",
+    "opennav-x/tools/prepare-ocharts-adapter.py": "5b63466debe823501e3e512306e5de63e8e153a1a7a21a905337112d76706619",
+    "opennav-x/tools/test-chart-symbol-raster.py": "911e34175d14552b5a69a9086bc940fd0a70c9abf42bc024ce938fda58234eb3",
+    "opennav-x/tools/test-chart-symbol-svg.py": "24c29508da84b5e298f3e816296593c7d840c9f1fe47e9fbe84005bdaff6f81b",
+    "opennav-x/tools/test-extended-light-sectors.py": "3f393fc06ba035012ce503aa44ce2c23946f32c89d7b08a321288e57264bd038",
+    "opennav-x/tools/windows_chart_units.py": "0e721acb8b8f5f5f3b046487284af204c3cdfa0f8592daaa0f74d39bc93cd946"
+  }
+}

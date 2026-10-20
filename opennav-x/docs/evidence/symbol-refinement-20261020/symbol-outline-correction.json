@@ -1,0 +1,15 @@
+{
+  "symbol": "OBSTRN18",
+  "actualPaintedExtentsChecked": 15,
+  "reRenderedSchemes": [
+    "DAY_BRIGHT",
+    "DUSK",
+    "NIGHT"
+  ],
+  "reRenderedPercentages": [
+    100,
+    125,
+    150
+  ],
+  "note": "Regenerated final source render after reserving actual 0.8px stroke extent around unchanged pivot."
+}
