@@ -3694,7 +3694,20 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
  /***************************************************************************
   *
   * Project:  OpenCPN
-@@ -6339,8 +6343,14 @@
+@@ -87,6 +91,12 @@
+ #include "shaders.h"
+ #endif
+ #include "chart_ctx_factory.h"
++#ifdef OPENNAV_X
++#include "integration/ChartCaFan.h"
++#ifdef ocpnUSE_GL
++extern GLint S52texture_2D_shader_program;
++#endif
++#endif
+ 
+ #ifdef __MSVC__
+ #define strncasecmp(x, y, z) _strnicmp(x, y, z)
+@@ -6331,8 +6341,14 @@
        penWidth = wxMin(20, penWidth);
        penWidth = wxMax(5, penWidth);
  
@@ -3710,7 +3723,42 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
                                                      penWidth, wxPENSTYLE_SOLID);
        arcpen->SetCap(wxCAP_BUTT);
        dc.SetPen(*arcpen);
-@@ -6373,7 +6383,7 @@
+@@ -6343,6 +6359,34 @@
+       if (angle1 > angle2) {
+         angle2 += 360.0;
+       }
++#ifdef OPENNAV_X
++      // Use the original projected geometry and duplicate-ray ownership. Native
++      // leading cones, unsupported paint and refused tiles take the old path.
++      if (skagerLight && !(sectorlegs[i].isleading && angle2-angle1<60)) {
++        const wxColour native=sectorlegs[i].color;
++        const unsigned color=native==wxColour(255,0,0,native.Alpha())?3:
++            native==wxColour(0,255,0,native.Alpha())?4:
++            native==wxColour(255,255,0,native.Alpha())?1:0;
++        opennav::integration::CaFanPaint paint;
++        int sec1=int(sectorlegs[i].sector1),sec2=int(sectorlegs[i].sector2);
++        if(sec1>360)sec1-=360;
++        if(sec2>360)sec2-=360;
++        const bool ray1=std::find(sectorangles.begin(),sectorangles.end(),sec1)==sectorangles.end();
++        const bool ray2=std::find(sectorangles.begin(),sectorangles.end(),sec2)==sectorangles.end();
++        opennav::integration::CaFanTile tile;
++        if (!(sec1==0 && sec2==360) &&
++            opennav::integration::CaFanColors(color,skagerScheme,paint) &&
++            opennav::integration::BuildExtendedLightSectorTile(tile,
++                {lightPos,end1,end2,rangePx,-angle2+90.,-angle1+90.,1},paint,
++                viewport.pix_width,viewport.pix_height,sectorInk.Alpha(),
++                color==1,skagerScheme=="NIGHT",ray1,ray2) &&
++            dc.GetDC() && tile.Draw(*dc.GetDC())) {
++          if(ray1)sectorangles.push_back(sec1);
++          if(ray2)sectorangles.push_back(sec2);
++          continue;
++        }
++      }
++#endif
+       int lpx = lightPos.x;
+       int lpy = lightPos.y;
+       int npoints = 0;
+@@ -6365,7 +6408,7 @@
          arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
                                                 wxPENSTYLE_SOLID);
          dc.SetPen(*arcpen);
@@ -3719,7 +3767,7 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
          c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
          dc.SetBrush(wxBrush(c));
          dc.StrokePolygon(3, yellowCone, 0, 0);
-@@ -6390,7 +6400,11 @@
+@@ -6382,7 +6425,11 @@
          legOpacity = 128;
        }
  
@@ -3732,7 +3780,7 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
                                               wxPENSTYLE_SOLID);
        dc.SetPen(*arcpen);
  
-@@ -6467,6 +6481,12 @@
+@@ -6459,6 +6506,12 @@
        arcw = wxMin(20, arcw);
        arcw = wxMax(5, arcw);
  
@@ -3745,7 +3793,43 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
        int legOpacity;
  
        float angle1, angle2;
-@@ -6486,7 +6506,7 @@
+@@ -6467,6 +6520,35 @@
+       if (angle1 > angle2) {
+         angle2 += 360.0;
+       }
++#ifdef OPENNAV_X
++      // Use the original projected geometry and duplicate-ray ownership. Native
++      // leading cones, unsupported paint and refused tiles take the old path.
++      if (skagerLight && !(sectorlegs[i].isleading && angle2-angle1<60)) {
++        const wxColour native=sectorlegs[i].color;
++        const unsigned color=native==wxColour(255,0,0,native.Alpha())?3:
++            native==wxColour(0,255,0,native.Alpha())?4:
++            native==wxColour(255,255,0,native.Alpha())?1:0;
++        opennav::integration::CaFanPaint paint;
++        int sec1=int(sectorlegs[i].sector1),sec2=int(sectorlegs[i].sector2);
++        if(sec1>360)sec1-=360;
++        if(sec2>360)sec2-=360;
++        const bool ray1=std::find(sectorangles.begin(),sectorangles.end(),sec1)==sectorangles.end();
++        const bool ray2=std::find(sectorangles.begin(),sectorangles.end(),sec2)==sectorangles.end();
++        opennav::integration::CaFanTile tile;
++        if (!(sec1==0 && sec2==360) &&
++            opennav::integration::CaFanColors(color,skagerScheme,paint) &&
++            opennav::integration::BuildExtendedLightSectorTile(tile,
++                {lightPos,end1,end2,rangePx,-angle2+90.,-angle1+90.,1},paint,
++                viewport.pix_width,viewport.pix_height,sectorInk.Alpha(),
++                color==1,skagerScheme=="NIGHT",ray1,ray2) &&
++            opennav::integration::DrawCaFanGL(tile,S52texture_2D_shader_program,
++                viewport.pix_width,viewport.pix_height)) {
++          if(ray1)sectorangles.push_back(sec1);
++          if(ray2)sectorangles.push_back(sec2);
++          continue;
++        }
++      }
++#endif
+       int lpx = lightPos.x;
+       int lpy = lightPos.y;
+ 
+@@ -6478,7 +6559,7 @@
          wxPen *arcpen = wxThePenList->FindOrCreatePen(wxColor(0, 0, 0, 0), 1,
                                                        wxPENSTYLE_SOLID);
          dc.SetPen(*arcpen);
@@ -3754,7 +3838,7 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
          c.Set(c.Red(), c.Green(), c.Blue(), 0.6 * c.Alpha());
          dc.SetBrush(wxBrush(c));
          dc.StrokePolygon(3, yellowCone, 0, 0);
-@@ -6543,7 +6563,7 @@
+@@ -6535,7 +6616,7 @@
          glUniform2fv(centerloc, 1, ctrv);
  
          //  Circle color
@@ -3763,7 +3847,7 @@ diff --git a/gui/src/s57chart.cpp b/gui/src/s57chart.cpp
          float colorv[4];
          colorv[0] = colorb.Red() / float(256);
          colorv[1] = colorb.Green() / float(256);
-@@ -6630,7 +6650,11 @@
+@@ -6622,7 +6703,11 @@
  
  #if 1
  

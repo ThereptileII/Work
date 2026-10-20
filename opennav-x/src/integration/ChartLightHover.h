@@ -1,5 +1,6 @@
 #pragma once
 #include "integration/ChartCanvasInk.h"
+#include "integration/ChartLightSymbol.h"
 #include <wx/colour.h>
 #include <wx/string.h>
 
@@ -21,7 +22,7 @@ inline wxColour ExtendedLightSectorInk(bool enabled, const wxColour &stock,
       : green ? (day ? 0x508d78 : dusk ? 0x8fbaa2 : 0x789d84)
               : (day ? 0xa1976a : dusk ? 0xc5bc92 : 0x9d987a);
   const auto mode = night ? ui::LightMode::Night : dusk ? ui::LightMode::Dusk : ui::LightMode::Day;
-  ink = ChartCanvasInk(mode, ink);
+  ink = RicherLightSectorInk(red ? 3 : green ? 4 : 1, ChartCanvasInk(mode, ink), night);
   // Retain the pinned renderer's per-theme opacity levels, but resolve them at
   // paint time so a retained hover selection cannot keep the previous theme.
   const unsigned opacity = day ? 100 : dusk ? 50 : 20;

@@ -10,6 +10,7 @@
 #include <sys/resource.h>
 #endif
 #include "integration/ChartCaFan.h"
+#include "integration/ChartCaAllRound.h"
 #include "linmath.h"
 using namespace opennav::integration;
 constexpr double PI=3.14159265358979323846;

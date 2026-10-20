@@ -1,4 +1,5 @@
 #pragma once
+#include "integration/ChartLightSymbol.h"
 #include "s52s57.h"
 #include <cmath>
 #include <cstring>
@@ -7,6 +8,7 @@
 #include <wx/dcmemory.h>
 #include <algorithm>
 #include <memory>
+#include <utility>
 #include <vector>
 
 namespace opennav::integration {
@@ -78,7 +80,7 @@ inline bool CaFanColors(unsigned color, const wxString& scheme, CaFanPaint& out)
   } else return false;
   const auto mode=night?ui::LightMode::Night:dusk?ui::LightMode::Dusk:ui::LightMode::Day;
   const auto ink=[&](std::uint32_t rgb) {
-    rgb=ChartCanvasInk(mode,rgb);
+    rgb=RicherLightSectorInk(color,ChartCanvasInk(mode,rgb),night);
     return wxColour((rgb>>16)&255,(rgb>>8)&255,rgb&255);
   };
   out={ink(fill),ink(stroke)};return true;
@@ -206,6 +208,111 @@ class CaFanTile {
     dc.DrawBitmap(bitmap,bounds.x,bounds.y,true);return true;
   }
 };
+
+// Expanded sectors retain the native projected centre, endpoints, radius and
+// angles. Only raster work is clipped to the viewport. Build before painting so
+// refusal can take the complete original renderer, never a partial overlay.
+inline bool BuildExtendedLightSectorTile(
+    CaFanTile& tile,const CaFanGeometry& g,const CaFanPaint& paint,
+    int width,int height,unsigned nativeOpacity,bool white,bool night,
+    bool ray1,bool ray2) {
+  tile.image.Destroy();tile.bounds={};
+  constexpr size_t maxPixels=4*1024*1024;
+  const auto coordinate=[](int n){return n>=-10000000 && n<=10000000;};
+  if(width<=0 || height<=0 || width>8192 || height>8192 ||
+     !std::isfinite(g.radius) || g.radius<=0 || g.radius>32768 ||
+     !std::isfinite(g.start) || !std::isfinite(g.end) ||
+     std::abs(g.start)>1440 || std::abs(g.end)>1440 ||
+     !coordinate(g.center.x)||!coordinate(g.center.y)||
+     !coordinate(g.leg1.x)||!coordinate(g.leg1.y)||
+     !coordinate(g.leg2.x)||!coordinate(g.leg2.y) ||
+     nativeOpacity>255)return false;
+  double start=g.start,end=g.end;if(end<=start)end+=360;
+  if(end-start<.3 || end-start>=360)return false;
+  double left=g.center.x-g.radius-2,top=g.center.y-g.radius-2;
+  double right=g.center.x+g.radius+2,bottom=g.center.y+g.radius+2;
+  for(const auto& ray : {std::pair<bool,wxPoint>{ray1,g.leg1},{ray2,g.leg2}})
+    if(ray.first) {
+      left=std::min(left,double(ray.second.x)-2);top=std::min(top,double(ray.second.y)-2);
+      right=std::max(right,double(ray.second.x)+2);bottom=std::max(bottom,double(ray.second.y)+2);
+    }
+  const int x=std::max(0,int(std::floor(left))),y=std::max(0,int(std::floor(top)));
+  const int w=std::min(width,int(std::ceil(right))+1)-x;
+  const int h=std::min(height,int(std::ceil(bottom))+1)-y;
+  if(w<=0 || h<=0 || size_t(w)*h>maxPixels)return false;
+  try {
+    wxImage built(w,h,true);if(!built.IsOk())return false;
+    built.InitAlpha();if(!built.GetData() || !built.GetAlpha())return false;
+    std::memset(built.GetAlpha(),0,size_t(w)*h);
+    const double pi=3.14159265358979323846;
+    const double a=(start-90)*pi/180,b=(end-90)*pi/180;
+    for(unsigned layer=0;layer<3;++layer) {
+      wxImage mask(w,h,true);if(!mask.IsOk())return false;
+      mask.InitAlpha();if(!mask.GetData() || !mask.GetAlpha())return false;
+      std::memset(mask.GetAlpha(),0,size_t(w)*h);
+      {
+        std::unique_ptr<wxGraphicsContext> gc(wxGraphicsContext::Create(mask));
+        if(!gc || !gc->SetCompositionMode(wxCOMPOSITION_OVER))return false;
+        gc->SetAntialiasMode(wxANTIALIAS_DEFAULT);gc->Translate(-x,-y);
+        auto path=gc->CreatePath();
+        if(layer==0) {
+          path.MoveToPoint(g.center.x,g.center.y);
+          path.AddLineToPoint(g.center.x+g.radius*std::cos(a),g.center.y+g.radius*std::sin(a));
+          path.AddArc(g.center.x,g.center.y,g.radius,a,b,true);path.CloseSubpath();
+          gc->SetBrush(*wxWHITE_BRUSH);gc->FillPath(path);
+        } else if(layer==2) {
+          path.AddArc(g.center.x,g.center.y,g.radius,a,b,true);
+          gc->SetPen(gc->CreatePen(wxGraphicsPenInfo(*wxWHITE).Width(1).Cap(wxCAP_BUTT)));
+          gc->StrokePath(path);
+        } else {
+          // Explicit 3px/4px dashes keep the prototype phase at the light.
+          // Clip the parameter interval first: distant endpoints cannot cause
+          // unbounded work, and panning never restarts the dash phase.
+          const auto dash=[&](wxPoint endPoint) {
+            const double dx=double(endPoint.x)-g.center.x,dy=double(endPoint.y)-g.center.y;
+            const double length=std::hypot(dx,dy);if(length<=0)return;
+            double lo=0,hi=1;
+            const auto clip=[&](double p,double q) {
+              if(p==0)return q>=0;
+              const double r=q/p;
+              if(p<0){if(r>hi)return false;lo=std::max(lo,r);}
+              else {if(r<lo)return false;hi=std::min(hi,r);}
+              return true;
+            };
+            if(!clip(-dx,g.center.x-x+2)||!clip(dx,x+w+2-g.center.x)||
+               !clip(-dy,g.center.y-y+2)||!clip(dy,y+h+2-g.center.y))return;
+            const long first=std::max(0L,long(std::floor(lo*length/7)));
+            const long last=long(std::floor(hi*length/7));
+            for(long k=first;k<=last;++k) {
+              const double from=k*7.0,to=std::min(length,from+3);
+              if(to<=from)continue;
+              path.MoveToPoint(g.center.x+dx*from/length,g.center.y+dy*from/length);
+              path.AddLineToPoint(g.center.x+dx*to/length,g.center.y+dy*to/length);
+            }
+          };
+          if(ray1)dash(g.leg1);
+          if(ray2)dash(g.leg2);
+          gc->SetPen(gc->CreatePen(wxGraphicsPenInfo(*wxWHITE).Width(.65).Cap(wxCAP_BUTT)));
+          gc->StrokePath(path);
+        }
+      }
+      const wxColour color=layer?paint.stroke:paint.fill;
+      const unsigned ink[]={color.Red(),color.Green(),color.Blue()};
+      const double requested=layer==0?(white?.24:night?.10:.07):layer==1?.65:.7;
+      const double opacity=std::min(requested,nativeOpacity/255.0);
+      auto* rgb=built.GetData();auto* alpha=built.GetAlpha();const auto* coverage=mask.GetAlpha();
+      for(size_t i=0;i<size_t(w)*h;++i) {
+        if(!coverage[i] || opacity==0)continue;
+        const double source=coverage[i]/255.0*opacity,behind=alpha[i]/255.0*(1-source),combined=source+behind;
+        for(unsigned channel=0;channel<3;++channel)
+          rgb[i*3+channel]=static_cast<unsigned char>(std::lround((ink[channel]*source+rgb[i*3+channel]*behind)/combined));
+        // Overlapping wash/arc/rays must not exceed the native sector opacity.
+        alpha[i]=static_cast<unsigned char>(std::min(nativeOpacity,unsigned(std::lround(combined*255))));
+      }
+    }
+    tile.image=built;tile.bounds=wxRect(x,y,w,h);return true;
+  } catch(const std::bad_alloc&) {return false;}
+}
 
 #ifdef ocpnUSE_GL
 // No program or texture persists. The existing texture shader is borrowed with
