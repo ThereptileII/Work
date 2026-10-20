@@ -45,7 +45,7 @@
    for (int i = 0; i < S52_MAR_NUM; i++) {
      if ((offset + sizeof(double)) < sizeof(state_buffer)) {
        double t = S52_getMarinerParam((S52_MAR_param_t)i);
-@@ -1401,6 +1409,33 @@
+@@ -1401,6 +1409,35 @@
    m_ColorScheme = scheme;
  }
  
@@ -65,10 +65,12 @@
 +S52color *s52plib::PresentationColor(ObjRazRules *object, const char *name,
 +                                     bool area) {
 +  const char *feature = object && object->obj ? object->obj->FeatureName : nullptr;
++  const bool linePrimitive =
++      object && object->obj && object->obj->Primitive_type == GEO_LINE;
 +  if (area) return getColor(opennav::integration::VeryLightAreaColor(
 +      m_presentationVeryLight, feature, name));
 +  if (opennav::integration::VeryLightOrdinaryContour(
-+          m_presentationVeryLight, feature, name)) {
++          m_presentationVeryLight, feature, name, linePrimitive)) {
 +    m_presentationContourColor = opennav::integration::FaintDepthContour(
 +        *getColor(name), *getColor("DEPDW"));
 +    return &m_presentationContourColor;

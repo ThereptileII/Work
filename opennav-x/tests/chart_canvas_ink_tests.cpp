@@ -41,6 +41,10 @@ int main() {
   check(VeryLightOrdinaryContour(true,"DEPCNT","DEPCN)"));
   check(!VeryLightOrdinaryContour(false,"DEPCNT","DEPCN"));
   check(!VeryLightOrdinaryContour(true,"DEPCNT","DEPSC"));
+  check(VeryLightOrdinaryContour(true,"DEPARE","DEPCN",true));
+  check(!VeryLightOrdinaryContour(true,"DEPARE","DEPCN",false));
+  check(!VeryLightOrdinaryContour(true,"DEPARE","DEPSC",true));
+  check(!VeryLightOrdinaryContour(false,"DEPARE","DEPCN",true));
   for (const char* feature : {"DEPARE", "DRGARE", "COALNE", "LNDARE", "LIGHTS"})
     check(!VeryLightOrdinaryContour(true,feature,"DEPCN"));
 
@@ -66,8 +70,8 @@ int main() {
   // preserves equal channels and unrelated native color metadata.
   struct Color { unsigned char R,G,B; int identity; };
   const auto faint=integration::FaintDepthContour(Color{200,0,100,7},Color{100,100,100,9});
-  check(faint.R==135 && faint.G==65 && faint.B==100 && faint.identity==7);
+  check(faint.R==150 && faint.G==50 && faint.B==100 && faint.identity==7);
   const auto pale=integration::FaintDepthContour(Color{0,0,0,1},Color{255,255,255,2});
-  check(pale.R==166 && pale.G==166 && pale.B==166);
+  check(pale.R==128 && pale.G==128 && pale.B==128);
   std::cout<<checks<<" chart paint policy checks passed\n";
 }

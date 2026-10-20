@@ -541,11 +541,26 @@ independent. Standard restores stock presentation resources. Raster image
 pixels are not recolored.
 
 Very Light uses the existing prototype-derived DEPDW water role for all normal
-DEPARE/DRGARE depth fills. Ordinary DEPCNT/DEPCN contour ink is an opaque
-35% contour / 65% water blend, identical in software and GL color paths.
+DEPARE/DRGARE depth fills. Ordinary DEPCN contour ink is an opaque
+50% contour / 50% water blend, equivalent to 50% opacity over that water role
+in software and GL color paths. This covers DEPCNT and the line-shaped DEPARE
+objects which native `DEPCNT02` also classifies as contours. Area-shaped DEPARE
+boundaries keep their selected native line role.
 Drying areas, dredged patterns, safety contours, hazard fills outside these depth
 objects and sounding values are not flattened. This is an explicitly selected
 presentation variant; it changes no depth attributes or safety settings.
+
+The 20 October source review found all five core and private o-charts simple-line
+paths already use `PresentationColor`, including GL/VBO and dashed lines. The
+previous DEPCNT-only predicate missed ordinary line-shaped DEPARE contours;
+the native primitive check now admits those without changing DEPSC. This
+identifies a source-policy gap, not the cause of the reported black boat-chart
+outlines: the displayed objects and effective rules have not been observed.
+Focused checks passed: 837 shared paint-policy assertions and 139 actual
+`DEPCNT02`/`PresentationColor` checks per renderer. The prior selector and policy
+reproduced eight expected color failures in each renderer. Both patch stacks
+applied to pinned source. This does not qualify native wx/GL rendering, the
+private DLL, or the boat display.
 
 The interface/chart percentage is an additional 100/125/150% preference.
 Native and verified private o-charts presentation use it for symbols, text and
