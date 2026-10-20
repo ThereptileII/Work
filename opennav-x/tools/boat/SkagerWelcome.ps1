@@ -27,6 +27,7 @@ function Assert-SkagerWelcomeWindow($Info,[int]$ProcessId) {
      $Info.FrameTitle -cne 'SKAGER / OpenCPN' -or $Info.ModalClass -cne '#32770' -or
      $Info.AgreeText -cne 'Agree' -or $Info.CancelText -cne 'Cancel' -or $Info.AgreeId -ne 5100 -or $Info.CancelId -ne 5101 -or
      $Info.AgreeClass -cne 'wxWindowNR' -or $Info.CancelClass -cne 'wxWindowNR' -or
+     $Info.GripperClass -cne 'ScrollBar' -or $Info.GripperId -ne 0 -or $Info.GripperStyle -ne 0x5400001c -or $Info.GripperExStyle -ne 0 -or
      $Info.BodyClass -cne 'Edit' -or ($Info.BodyStyle -band 0x0804) -ne 0x0804 -or
      $Info.BodyText -cne $field.GetRawConstantValue()) { throw 'Captured notice differs from the exact reviewed SKAGER safety notice.' }
 }
@@ -34,7 +35,7 @@ function Convert-SkagerWelcomeWindow($Info) {
   # JSON includes C# Rect's read-only Width/Height. Rebuild only writable fields,
   # and prove the serialized derived dimensions instead of discarding them.
   Initialize-SkagerWelcomeNative
-  $names=@('Frame','Modal','Agree','Cancel','Body','ProcessId','AgreeId','CancelId','Dpi','Bounds','Title','ModalClass','BodyClass','BodyText','AgreeText','CancelText','BodyStyle','FrameTitle','AgreeClass','CancelClass','AgreeBounds')
+  $names=@('Frame','Modal','Agree','Cancel','Body','ProcessId','AgreeId','CancelId','Dpi','Bounds','Title','ModalClass','BodyClass','BodyText','AgreeText','CancelText','BodyStyle','FrameTitle','AgreeClass','CancelClass','AgreeBounds','Gripper','GripperId','GripperStyle','GripperExStyle','GripperClass','GripperBounds')
   if ($null -eq $Info -or ((@($Info.PSObject.Properties.Name | Sort-Object) -join '|') -cne (($names | Sort-Object) -join '|'))) { throw 'Captured warning field schema differs.' }
   function Integer($Value,[long]$Minimum,[long]$Maximum) {
     if (($Value -isnot [int] -and $Value -isnot [long] -and $Value -isnot [uint32]) -or $Value -lt $Minimum -or $Value -gt $Maximum) { throw 'Captured notice integer type or bounds differ.' }
@@ -49,11 +50,15 @@ function Convert-SkagerWelcomeWindow($Info) {
     return $rectangle
   }
   $result=New-Object OpenNavX.SkagerWelcomeNative+NoticeInfo
-  foreach($name in @('Frame','Modal','Agree','Cancel','Body')) { $result.$name=Integer $Info.$name 1 ([long]::MaxValue) }
+  foreach($name in @('Frame','Modal','Agree','Cancel','Body','Gripper')) { $result.$name=Integer $Info.$name 1 ([long]::MaxValue) }
   foreach($name in @('ProcessId','AgreeId','CancelId')) { $result.$name=[int](Integer $Info.$name 1 ([int]::MaxValue)) }
   $result.Dpi=[uint32](Integer $Info.Dpi 72 384);$result.Bounds=Rectangle $Info.Bounds;$result.AgreeBounds=Rectangle $Info.AgreeBounds
+  $result.GripperBounds=Rectangle $Info.GripperBounds
+  $result.GripperId=[int](Integer $Info.GripperId 0 0)
+  $result.GripperExStyle=[int](Integer $Info.GripperExStyle 0 0)
+  $result.GripperStyle=[int](Integer $Info.GripperStyle 0 ([int]::MaxValue))
   $result.BodyStyle=[int](Integer $Info.BodyStyle ([int]::MinValue) ([int]::MaxValue))
-  foreach($name in @('Title','ModalClass','BodyClass','BodyText','AgreeText','CancelText','FrameTitle','AgreeClass','CancelClass')) {
+  foreach($name in @('Title','ModalClass','BodyClass','BodyText','AgreeText','CancelText','FrameTitle','AgreeClass','CancelClass','GripperClass')) {
     if ($Info.$name -isnot [string]) { throw 'Captured warning text type differs.' };$result.$name=$Info.$name
   }
   Assert-SkagerWelcomeWindow $result $result.ProcessId

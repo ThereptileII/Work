@@ -43,6 +43,9 @@ public sealed class SkagerWelcomeFixture : IDisposable {
   [DllImport("user32.dll")] private static extern IntPtr SetCapture(IntPtr window);
   [DllImport("user32.dll")] private static extern bool ReleaseCapture();
   [DllImport("user32.dll")] private static extern bool GetClientRect(IntPtr window,out Rect rectangle);
+  [DllImport("user32.dll")] private static extern int GetSystemMetrics(int index);
+  [DllImport("user32.dll")] private static extern int GetWindowLongW(IntPtr window,int index);
+  [DllImport("user32.dll")] private static extern int SetWindowLongW(IntPtr window,int index,int value);
   [DllImport("user32.dll")] private static extern bool SetWindowPos(IntPtr window,IntPtr after,int x,int y,int width,int height,uint flags);
   [DllImport("user32.dll",SetLastError=true)] private static extern bool PostThreadMessageW(uint thread,uint message,UIntPtr wParam,IntPtr lParam);
   [DllImport("user32.dll",EntryPoint="SendMessageTimeoutW",CharSet=CharSet.Unicode,SetLastError=true)]
@@ -55,13 +58,14 @@ public sealed class SkagerWelcomeFixture : IDisposable {
   private readonly Thread thread;
   private readonly string notice;
   private readonly Procedure frameProcedure,actionProcedure;
-  private IntPtr frame,modal,body,agree,pressed;
+  private IntPtr frame,modal,body,agree,gripper,pressed;
   private uint threadId;
   private Exception failure;
   private int agreeCount,cancelCount;
   public IntPtr Frame { get { return frame; } }
   public IntPtr Modal { get { return modal; } }
   public IntPtr Body { get { return body; } }
+  public IntPtr Gripper { get { return gripper; } }
   public int AgreeCount { get { return Interlocked.CompareExchange(ref agreeCount,0,0); } }
   public int CancelCount { get { return Interlocked.CompareExchange(ref cancelCount,0,0); } }
   public bool ModalPresent { get { return IsWindow(modal); } }
@@ -91,11 +95,19 @@ public sealed class SkagerWelcomeFixture : IDisposable {
       Register("wxWindowNR",actionProcedure,module);actionClass=true;
       frame=Create("SkagerWelcomeFixtureFrame","SKAGER / OpenCPN",0x00cf0000,40,40,760,660,IntPtr.Zero,0,module);
       modal=Create("#32770","Welcome to SKAGER",0x80cc0000,60,60,700,600,frame,0,module);
+      // wxWidgets 3.2.8 creates this child explicitly for wxRESIZE_BORDER;
+      // WS_THICKFRAME alone does not create it in a plain Win32 dialog.
+      gripper=Create("SCROLLBAR","",0x4400001c,0,0,0,0,modal,0,module);
       Create("Static","Welcome to SKAGER",0x50000000,20,20,640,30,modal,100,module);
       Create("Static","Navigation safety notice \u00b7 OpenCPN",0x50000000,20,60,640,25,modal,101,module);
       body=Create("Edit",notice,0x50000804,20,100,640,350,modal,102,module);
       Create("wxWindowNR","Cancel",0x50000000,360,470,140,48,modal,5101,module);
       agree=Create("wxWindowNR","Agree",0x50000000,520,470,140,48,modal,5100,module);
+      Rect client;int gripWidth=GetSystemMetrics(2),gripHeight=GetSystemMetrics(3);
+      if(!GetClientRect(modal,out client)||gripWidth<=0||gripHeight<=0||
+         !SetWindowPos(gripper,new IntPtr(1),client.Right-gripWidth,client.Bottom-gripHeight,gripWidth,gripHeight,0x0010))
+        throw new InvalidOperationException("Native fixture resize-grip placement failed");
+      ShowWindow(gripper,5);
       ShowWindow(frame,5);EnableWindow(frame,false);ShowWindow(modal,5);SetForegroundWindow(modal);
       ready.Set();Message message;int result;
       while((result=GetMessageW(out message,IntPtr.Zero,0,0))>0){TranslateMessage(ref message);DispatchMessageW(ref message);}
@@ -109,6 +121,7 @@ public sealed class SkagerWelcomeFixture : IDisposable {
   }
   private IntPtr FrameProcedure(IntPtr window,uint message,IntPtr wParam,IntPtr lParam){
     if(message==0x8001)return SetWindowPos(agree,IntPtr.Zero,520+wParam.ToInt32(),470,0,0,0x0015)?new IntPtr(1):IntPtr.Zero;
+    if(message==0x8002){SetWindowLongW(gripper,-16,wParam.ToInt32());return GetWindowLongW(gripper,-16)==wParam.ToInt32()?new IntPtr(1):IntPtr.Zero;}
     return DefWindowProcW(window,message,wParam,lParam);
   }
   private IntPtr ActionProcedure(IntPtr window,uint message,IntPtr wParam,IntPtr lParam){
@@ -133,6 +146,10 @@ public sealed class SkagerWelcomeFixture : IDisposable {
   public void MoveAgree(int delta){
     UIntPtr result;if(SendMessageTimeoutW(frame,0x8001,new IntPtr(delta),IntPtr.Zero,3,5000,out result)==IntPtr.Zero||result==UIntPtr.Zero)
       throw new InvalidOperationException("Native fixture geometry update failed");
+  }
+  public void SetGripperStyle(int style){
+    UIntPtr result;if(SendMessageTimeoutW(frame,0x8002,new IntPtr(style),IntPtr.Zero,3,5000,out result)==IntPtr.Zero||result==UIntPtr.Zero)
+      throw new InvalidOperationException("Native fixture resize-grip style update failed");
   }
   public void Dispose(){
     if(thread.IsAlive&&!PostThreadMessageW(threadId,0x0012,UIntPtr.Zero,IntPtr.Zero))throw new Win32Exception(Marshal.GetLastWin32Error());

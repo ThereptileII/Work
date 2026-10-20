@@ -36,7 +36,7 @@ if($null -eq $validate -or $null -eq $same -or $null -eq $changed){throw 'Requir
 function NewControl([long]$Handle,[int]$Id,[string]$Class,[string]$Text,[int]$Style=0){
   $value=New-Object OpenNavX.SkagerWelcomeNative+ControlInfo
   $value.Handle=$Handle;$value.Parent=456;$value.ProcessId=42;$value.Id=$Id
-  $value.Class=$Class;$value.Text=$Text;$value.Style=$Style
+  $value.Class=$Class;$value.Text=$Text;$value.Style=$Style;$value.ExStyle=0
   $value.Visible=$true;$value.Enabled=$true
   return $value
 }
@@ -46,18 +46,19 @@ function NewControls {
   NewControl 791 -1 'Edit' $noticeText 0x0804
   NewControl 792 -1 'Static' 'Welcome to SKAGER'
   NewControl 793 -1 'Static' ('Navigation safety notice '+[char]0x00b7+' OpenCPN')
+  NewControl 794 0 'ScrollBar' '' 0x5400001c
 }
 function ValidateControls($Controls,[int]$ProcessId=42,[long]$Modal=456){
   $typed=[OpenNavX.SkagerWelcomeNative+ControlInfo[]]@($Controls)
   $null=$validate.Invoke($null,[object[]]@($ProcessId,$Modal,$typed))
 }
-Pass 'Actual five direct SKAGER children and full notice accepted' {ValidateControls (NewControls)}
+Pass 'Five semantic SKAGER controls plus the exact native resize grip accepted' {ValidateControls (NewControls)}
 Pass 'Native Edit CRLF representation preserves exact full notice' {
   $value=@(NewControls);$value[2].Text=$noticeText.Replace("`n","`r`n");ValidateControls $value
 }
 foreach($processId in @(0,-1,43)){Refuse "Invalid or different process $processId" {ValidateControls (NewControls) $processId}}
 foreach($modal in @(0,457)){Refuse "Invalid or different modal $modal" {ValidateControls (NewControls) 42 $modal}}
-foreach($index in 0..4){
+foreach($index in 0..5){
   Refuse "Missing required child $index" {$value=@(NewControls);ValidateControls @(for($other=0;$other -lt $value.Count;$other++){if($other -ne $index){$value[$other]}})}
   foreach($field in @('ProcessId','Parent','Handle','Visible')){
     Refuse "Child $index changed $field" {
@@ -72,11 +73,24 @@ foreach($index in 0..4){
     }
   }
 }
-foreach($index in 0..4){Refuse "Disabled notice child $index" {$value=@(NewControls);$value[$index].Enabled=$false;ValidateControls $value}}
+foreach($index in 0..5){Refuse "Disabled notice child $index" {$value=@(NewControls);$value[$index].Enabled=$false;ValidateControls $value}}
 Refuse 'Duplicate nonzero native handles' {$value=@(NewControls);$value[1].Handle=$value[0].Handle;ValidateControls $value}
-Refuse 'Extra action cannot accompany the notice' {ValidateControls (@(NewControls)+(NewControl 794 5102 'wxWindowNR' 'Other'))}
-Refuse 'Extra content cannot accompany the notice' {ValidateControls (@(NewControls)+(NewControl 794 -1 'Static' 'Other'))}
-Refuse 'Additional readonly notice is ambiguous' {ValidateControls (@(NewControls)+(NewControl 794 -1 'Edit' $noticeText 0x0804))}
+Refuse 'Extra action cannot accompany the notice' {ValidateControls (@(NewControls)+(NewControl 795 5102 'wxWindowNR' 'Other'))}
+Refuse 'Extra content cannot accompany the notice' {ValidateControls (@(NewControls)+(NewControl 795 -1 'Static' 'Other'))}
+Refuse 'Additional readonly notice is ambiguous' {ValidateControls (@(NewControls)+(NewControl 795 -1 'Edit' $noticeText 0x0804))}
+Refuse 'Second resize grip is not an arbitrary-extra-child allowance' {ValidateControls (@(NewControls)+(NewControl 795 0 'ScrollBar' '' 0x5400001c))}
+Refuse 'A duplicate grip cannot replace a semantic static control' {$value=@(NewControls);$value[4]=NewControl 793 0 'ScrollBar' '' 0x5400001c;ValidateControls $value}
+Refuse 'Resize grip cannot reuse an action handle' {$value=@(NewControls);$value[5].Handle=$value[0].Handle;ValidateControls $value}
+Refuse 'Resize grip cannot claim the modal handle' {$value=@(NewControls);$value[5].Handle=456;ValidateControls $value}
+foreach($class in @('SCROLLBAR','Button','wxWindowNR','Static')){Refuse "Resize grip class must be exact: $class" {$value=@(NewControls);$value[5].Class=$class;ValidateControls $value}}
+foreach($text in @('Agree','Resize',' ')){Refuse 'Resize grip must have empty text' {$value=@(NewControls);$value[5].Text=$text;ValidateControls $value}}
+foreach($id in @(-1,1,5100,5101)){Refuse "Resize grip cannot carry action or other ID $id" {$value=@(NewControls);$value[5].Id=$id;ValidateControls $value}}
+foreach($style in @(0,0x54000000,0x54000010,0x54000018,0x5400001d,0x5000001c,0x4400001c)){
+  Refuse "Resize grip cannot be an ordinary, hidden or changed scrollbar: $style" {$value=@(NewControls);$value[5].Style=$style;ValidateControls $value}
+}
+foreach($style in @(1,0x00000020,0x00000200)){
+  Refuse "Resize grip must preserve observed zero extended style: $style" {$value=@(NewControls);$value[5].ExStyle=$style;ValidateControls $value}
+}
 foreach($index in @(0,1)){
   foreach($class in @('Button','Static','Edit')){Refuse "Action $index cannot become $class" {$value=@(NewControls);$value[$index].Class=$class;ValidateControls $value}}
   foreach($label in @('Agree ','agree','Acceptera','Avbryt','Purchase charts')){Refuse "Action $index requires its exact English label: $label" {$value=@(NewControls);$value[$index].Text=$label;ValidateControls $value}}
@@ -95,8 +109,10 @@ Refuse 'Stock HTML surface cannot substitute for native readonly notice' {$value
 
 $observation=[pscustomobject]@{
   Frame=123;Modal=456;Agree=789;Cancel=790;Body=791;ProcessId=42;AgreeId=5100;CancelId=5101;Dpi=96
+  Gripper=794;GripperId=0;GripperStyle=0x5400001c;GripperExStyle=0;GripperClass='ScrollBar'
   Bounds=[pscustomobject]@{Left=100;Top=100;Right=800;Bottom=700;Width=700;Height=600}
   AgreeBounds=[pscustomobject]@{Left=600;Top=620;Right=760;Bottom=668;Width=160;Height=48}
+  GripperBounds=[pscustomobject]@{Left=782;Top=682;Right=798;Bottom=698;Width=16;Height=16}
   Title='Welcome to SKAGER';FrameTitle='SKAGER / OpenCPN';ModalClass='#32770'
   BodyClass='Edit';BodyText=$noticeText;BodyStyle=0x0804
   AgreeClass='wxWindowNR';CancelClass='wxWindowNR';AgreeText='Agree';CancelText='Cancel'
@@ -106,7 +122,7 @@ $typed=(Convert-SkagerWelcomeWindow $observation).PSObject.BaseObject
 Pass 'Actual C# JSON reconstructs every captured field and derived dimension' {
   $serialized=$typed | ConvertTo-Json -Depth 8 | ConvertFrom-Json
   $restored=(Convert-SkagerWelcomeWindow $serialized).PSObject.BaseObject
-  if($serialized.Bounds.Width -ne 700 -or $serialized.AgreeBounds.Height -ne 48 -or -not $same.Invoke($null,[object[]]@($typed,$restored))){throw 'Native evidence roundtrip changed identity or geometry'}
+  if($serialized.Bounds.Width -ne 700 -or $serialized.AgreeBounds.Height -ne 48 -or $serialized.GripperBounds.Width -ne 16 -or $restored.GripperId -ne 0 -or $restored.GripperExStyle -ne 0 -or -not $same.Invoke($null,[object[]]@($typed,$restored))){throw 'Native evidence roundtrip changed identity or geometry'}
 }
 Pass 'Identical observations produce no mismatch fields' {
   if(-not $same.Invoke($null,[object[]]@($typed,$typed)) -or $changed.Invoke($null,[object[]]@($typed,$typed)) -cne ''){throw 'Identical observation differs'}
@@ -114,13 +130,13 @@ Pass 'Identical observations produce no mismatch fields' {
 foreach($field in $typed.GetType().GetFields()){
   Pass ('Every native field invalidates previous observation: '+$field.Name) {
     $other=(Convert-SkagerWelcomeWindow (CopyValue $observation)).PSObject.BaseObject
-    if($field.Name -in @('Bounds','AgreeBounds')){$rectangle=$field.GetValue($other);$rectangle.Left++;$field.SetValue($other,$rectangle)}
+    if($field.Name -in @('Bounds','AgreeBounds','GripperBounds')){$rectangle=$field.GetValue($other);$rectangle.Left++;$field.SetValue($other,$rectangle)}
     elseif($field.FieldType -eq [string]){$field.SetValue($other,'changed')}
     else{$field.SetValue($other,[Convert]::ChangeType(99,$field.FieldType))}
     if($same.Invoke($null,[object[]]@($typed,$other)) -or $changed.Invoke($null,[object[]]@($typed,$other)) -cne $field.Name){throw ('Unchecked or misreported captured field '+$field.Name)}
   }
 }
-foreach($rectangle in @('Bounds','AgreeBounds')){
+foreach($rectangle in @('Bounds','AgreeBounds','GripperBounds')){
   foreach($field in @('Left','Top','Right','Bottom','Width','Height')){
     Refuse "Inconsistent serialized $rectangle.$field" {$value=CopyValue $observation;$value.$rectangle.$field++;Convert-SkagerWelcomeWindow $value}
   }
@@ -129,8 +145,15 @@ foreach($rectangle in @('Bounds','AgreeBounds')){
   }
   Refuse "Missing derived $rectangle.Width cannot be inferred" {$value=CopyValue $observation;$value.$rectangle.PSObject.Properties.Remove('Width');Convert-SkagerWelcomeWindow $value}
 }
-foreach($field in @('Title','FrameTitle','ModalClass','BodyClass','BodyText','AgreeClass','CancelClass','AgreeText','CancelText')){
+foreach($field in @('Title','FrameTitle','ModalClass','BodyClass','BodyText','AgreeClass','CancelClass','AgreeText','CancelText','GripperClass')){
   Refuse "Different native warning $field" {$value=CopyValue $observation;$value.$field='changed';Convert-SkagerWelcomeWindow $value}
+}
+foreach($id in @($null,'0',0.5,-1,1,5100)){
+  Refuse 'Serialized zero gripper ID must be exact and integer typed' {$value=CopyValue $observation;$value.GripperId=$id;Convert-SkagerWelcomeWindow $value}
+}
+Refuse 'Serialized ordinary scrollbar style is not the observed resize grip' {$value=CopyValue $observation;$value.GripperStyle=0x54000000;Convert-SkagerWelcomeWindow $value}
+foreach($style in @($null,'0',0.5,-1,1)){
+  Refuse 'Serialized zero grip extended style must be exact and integer typed' {$value=CopyValue $observation;$value.GripperExStyle=$style;Convert-SkagerWelcomeWindow $value}
 }
 Refuse 'Stock title is not a SKAGER title alias' {$value=CopyValue $observation;$value.Title='Welcome to OpenCPN';Convert-SkagerWelcomeWindow $value}
 Refuse 'Changed warning PID' {Assert-SkagerWelcomeWindow $observation 43}
@@ -253,8 +276,13 @@ if([Environment]::OSVersion.Platform -eq 'Win32NT'){
     }
     $info=[OpenNavX.SkagerWelcomeNative]::Inspect($PID)
     Pass 'Actual native hierarchy matches the exact disabled-owner modal contract' {
-      if($info.Frame -ne $fixture.Frame.ToInt64() -or $info.Modal -ne $fixture.Modal.ToInt64() -or $fixture.OwnerEnabled -or -not $fixture.ModalPresent){throw 'Native fixture identity differs'}
+      if($info.Frame -ne $fixture.Frame.ToInt64() -or $info.Modal -ne $fixture.Modal.ToInt64() -or $fixture.OwnerEnabled -or -not $fixture.ModalPresent -or
+         $info.Gripper -ne $fixture.Gripper.ToInt64() -or $info.GripperId -ne 0 -or $info.GripperClass -cne 'ScrollBar' -or $info.GripperStyle -ne 0x5400001c -or $info.GripperExStyle -ne 0){throw 'Native fixture identity differs'}
     }
+    $fixture.SetGripperStyle(0x54000000)
+    Refuse 'Actual ordinary scrollbar style cannot substitute for the resize grip' {[OpenNavX.SkagerWelcomeNative]::Agree($PID,$info)}
+    if($fixture.AgreeCount -or $fixture.CancelCount -or -not $fixture.ModalPresent){throw 'Changed grip style sent or completed input'}
+    $fixture.SetGripperStyle(0x5400001c)
     $fixture.SetBody('Changed navigation instruction')
     Refuse 'Changed real Edit content prevents actual native Agree' {[OpenNavX.SkagerWelcomeNative]::Agree($PID,$info)}
     if($fixture.AgreeCount -or $fixture.CancelCount -or -not $fixture.ModalPresent){throw 'Changed text sent or completed input'}
@@ -272,7 +300,7 @@ if([Environment]::OSVersion.Platform -eq 'Win32NT'){
       while(($fixture.ModalPresent -or -not $fixture.OwnerEnabled) -and $watch.ElapsedMilliseconds -lt 5000){Start-Sleep -Milliseconds 20}
       if($fixture.ModalPresent -or -not $fixture.OwnerEnabled -or $fixture.AgreeCount -ne 1 -or $fixture.CancelCount -ne 0){throw 'Native submission did not complete exactly one Agree and release its owner'}
     }
-    $nativeReadback=[pscustomobject]@{status='passed';syntheticNativeHierarchy=$true;realNativeEdit=$true;actualAgreeInput=$true;agreeCount=$fixture.AgreeCount;cancelCount=$fixture.CancelCount;modalDismissed=$true;ownerEnabled=$true}
+    $nativeReadback=[pscustomobject]@{status='passed';syntheticNativeHierarchy=$true;realNativeEdit=$true;realNativeResizeGrip=$true;gripperStyle=$info.GripperStyle;actualAgreeInput=$true;agreeCount=$fixture.AgreeCount;cancelCount=$fixture.CancelCount;modalDismissed=$true;ownerEnabled=$true}
   }finally{
     try{if($null -ne $fixture){$fixture.Dispose()}}finally{[SkagerWelcomeFixture]::RestoreDpiAwareness($previousDpi)}
   }

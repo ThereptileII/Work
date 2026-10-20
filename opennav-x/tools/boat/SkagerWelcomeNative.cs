@@ -16,11 +16,11 @@ namespace OpenNavX {
     }
     [StructLayout(LayoutKind.Sequential)] private struct MonitorInfo { public uint Size;public Rect Monitor,Work;public uint Flags; }
     public sealed class NoticeInfo {
-      public long Frame,Modal,Agree,Cancel,Body;
+      public long Frame,Modal,Agree,Cancel,Body,Gripper;
       public int ProcessId,AgreeId,CancelId;
-      public int BodyStyle;
-      public string FrameTitle,AgreeClass,CancelClass;
-      public Rect AgreeBounds;
+      public int BodyStyle,GripperId,GripperStyle,GripperExStyle;
+      public string FrameTitle,AgreeClass,CancelClass,GripperClass;
+      public Rect AgreeBounds,GripperBounds;
       public uint Dpi;
       public Rect Bounds;
       public string Title,ModalClass,BodyClass,BodyText,AgreeText,CancelText;
@@ -156,7 +156,7 @@ namespace OpenNavX {
     }
     public sealed class ControlInfo {
       public long Handle,Parent;
-      public int ProcessId,Id,Style;
+      public int ProcessId,Id,Style,ExStyle;
       public string Class,Text;
       public bool Visible,Enabled;
     }
@@ -171,8 +171,8 @@ namespace OpenNavX {
       return text.ToString();
     }
     private static void ValidateControls(int pid,long modal,ControlInfo[] controls){
-      if(pid<=0||modal<=0||controls==null||controls.Length!=5)throw new InvalidOperationException("Exact SKAGER notice children required.");
-      var handles=new HashSet<long>();int agree=0,cancel=0,body=0,labels=0;
+      if(pid<=0||modal<=0||controls==null||controls.Length!=6)throw new InvalidOperationException("Exact SKAGER notice children required.");
+      var handles=new HashSet<long>();int agree=0,cancel=0,body=0,labels=0,gripper=0;
       foreach(var c in controls){
         if(c==null||c.Handle<=0||c.Handle==modal||!handles.Add(c.Handle)||c.ProcessId!=pid||c.Parent!=modal||!c.Visible||!c.Enabled)
           throw new InvalidOperationException("Notice child identity or availability differs.");
@@ -182,12 +182,18 @@ namespace OpenNavX {
         // Decorative static labels are not consent text. Match the qualified
         // installer contract: exact dialog title, complete Edit body and actions.
         else if(c.Class=="Static")labels++;
+        // wxWidgets 3.2.8, commit 8aef5f40, src/msw/dialog.cpp:200-219:
+        // wxRESIZE_BORDER creates this sixth direct native child explicitly.
+        // Full normal-state style: WS_CHILD|WS_CLIPSIBLINGS|WS_VISIBLE|
+        // SBS_SIZEGRIP|SBS_SIZEBOX|SBS_SIZEBOXBOTTOMRIGHTALIGN. No generic
+        // scrollbar/unknown child is accepted as this framework-owned grip.
+        else if(c.Class=="ScrollBar"&&c.Id==0&&c.Text==""&&c.Style==0x5400001c&&c.ExStyle==0)gripper++;
         else throw new InvalidOperationException("Unreviewed SKAGER notice content or action.");
       }
-      if(agree!=1||cancel!=1||body!=1||labels!=2)throw new InvalidOperationException("Ambiguous SKAGER notice hierarchy.");
+      if(agree!=1||cancel!=1||body!=1||labels!=2||gripper!=1)throw new InvalidOperationException("Ambiguous SKAGER notice hierarchy.");
     }
     private static bool SameNotice(NoticeInfo a,NoticeInfo b){
-      return a!=null&&b!=null&&a.Frame==b.Frame&&a.Modal==b.Modal&&a.Agree==b.Agree&&a.Cancel==b.Cancel&&a.Body==b.Body&&
+      return a!=null&&b!=null&&a.Frame==b.Frame&&a.Modal==b.Modal&&a.Agree==b.Agree&&a.Cancel==b.Cancel&&a.Body==b.Body&&a.Gripper==b.Gripper&&a.GripperId==b.GripperId&&a.GripperStyle==b.GripperStyle&&a.GripperExStyle==b.GripperExStyle&&a.GripperClass==b.GripperClass&&Same(a.GripperBounds,b.GripperBounds)&&
         a.ProcessId==b.ProcessId&&a.AgreeId==b.AgreeId&&a.CancelId==b.CancelId&&a.Dpi==b.Dpi&&Same(a.Bounds,b.Bounds)&&
         a.BodyStyle==b.BodyStyle&&a.FrameTitle==b.FrameTitle&&a.AgreeClass==b.AgreeClass&&a.CancelClass==b.CancelClass&&Same(a.AgreeBounds,b.AgreeBounds)&&a.Title==b.Title&&a.ModalClass==b.ModalClass&&a.BodyClass==b.BodyClass&&a.BodyText==b.BodyText&&a.AgreeText==b.AgreeText&&a.CancelText==b.CancelText;
     }
@@ -199,6 +205,12 @@ namespace OpenNavX {
       if(a.Agree!=b.Agree)fields.Add("Agree");
       if(a.Cancel!=b.Cancel)fields.Add("Cancel");
       if(a.Body!=b.Body)fields.Add("Body");
+      if(a.Gripper!=b.Gripper)fields.Add("Gripper");
+      if(a.GripperId!=b.GripperId)fields.Add("GripperId");
+      if(a.GripperStyle!=b.GripperStyle)fields.Add("GripperStyle");
+      if(a.GripperExStyle!=b.GripperExStyle)fields.Add("GripperExStyle");
+      if(a.GripperClass!=b.GripperClass)fields.Add("GripperClass");
+      if(!Same(a.GripperBounds,b.GripperBounds))fields.Add("GripperBounds");
       if(a.ProcessId!=b.ProcessId)fields.Add("ProcessId");
       if(a.AgreeId!=b.AgreeId)fields.Add("AgreeId");
       if(a.CancelId!=b.CancelId)fields.Add("CancelId");
@@ -228,23 +240,24 @@ namespace OpenNavX {
       if(frame==IntPtr.Zero||Pid(frame)!=(uint)pid||GetWindow(frame,4)!=IntPtr.Zero||Text(frame)!="SKAGER / OpenCPN"||
          !IsWindowVisible(frame)||IsWindowEnabled(frame)||IsIconic(frame))throw new InvalidOperationException("Notice must own the exact disabled SKAGER main frame.");
       foreach(var h in windows)if(Pid(h)==(uint)pid&&IsWindowVisible(h)&&h!=modal&&h!=frame)throw new InvalidOperationException("Unexpected additional visible application window.");
-      var controls=new List<ControlInfo>();IntPtr agree=IntPtr.Zero,cancel=IntPtr.Zero,html=IntPtr.Zero;string bodyText=null;int bodyStyle=0;
+      var controls=new List<ControlInfo>();IntPtr agree=IntPtr.Zero,cancel=IntPtr.Zero,html=IntPtr.Zero,gripper=IntPtr.Zero;string bodyText=null;int bodyStyle=0,gripperStyle=0,gripperExStyle=0;
       var children=Windows(modal);
-      if(children.Count!=5)throw new InvalidOperationException("Exact bounded SKAGER child inventory required.");
+      if(children.Count!=6)throw new InvalidOperationException("Exact bounded SKAGER child inventory required.");
       foreach(var h in children){
         if(Pid(h)!=(uint)pid||GetParent(h)!=modal)throw new InvalidOperationException("Unexpected notice child owner.");
-        var c=new ControlInfo{Handle=h.ToInt64(),Parent=GetParent(h).ToInt64(),ProcessId=(int)Pid(h),Id=GetDlgCtrlID(h),Style=GetWindowLongW(h,-16),Class=Class(h),Text=ControlText(h),Visible=IsWindowVisible(h),Enabled=IsWindowEnabled(h)};
+        var c=new ControlInfo{Handle=h.ToInt64(),Parent=GetParent(h).ToInt64(),ProcessId=(int)Pid(h),Id=GetDlgCtrlID(h),Style=GetWindowLongW(h,-16),ExStyle=GetWindowLongW(h,-20),Class=Class(h),Text=ControlText(h),Visible=IsWindowVisible(h),Enabled=IsWindowEnabled(h)};
         controls.Add(c);
         if(c.Class=="wxWindowNR"&&c.Id==5100)agree=h;
         if(c.Class=="wxWindowNR"&&c.Id==5101)cancel=h;
+        if(c.Class=="ScrollBar"){gripper=h;gripperStyle=c.Style;gripperExStyle=c.ExStyle;}
         if(c.Class=="Edit"){html=h;bodyText=c.Text.Replace("\r\n","\n");bodyStyle=c.Style;}
       }
       ValidateControls(pid,modal.ToInt64(),controls.ToArray());
       var bounds=Bounds(modal);var monitor=new MonitorInfo();monitor.Size=(uint)Marshal.SizeOf(typeof(MonitorInfo));
       if(bounds.Width<200||bounds.Height<150||bounds.Width>3840||bounds.Height>2160||!GetMonitorInfoW(MonitorFromWindow(modal,2),ref monitor)||!Contains(monitor.Monitor,bounds))throw new InvalidOperationException("Complete warning must be visible on the current monitor.");
-      foreach(var h in new[]{agree,cancel,html})if(!Contains(bounds,Bounds(h)))throw new InvalidOperationException("Warning content is clipped.");
+      foreach(var h in new[]{agree,cancel,html,gripper})if(!Contains(bounds,Bounds(h)))throw new InvalidOperationException("Warning content is clipped.");
       var dpi=GetDpiForWindow(modal);if(dpi<72||dpi>384)throw new InvalidOperationException("Unexpected warning DPI.");
-      return new NoticeInfo{Frame=frame.ToInt64(),Modal=modal.ToInt64(),Agree=agree.ToInt64(),Cancel=cancel.ToInt64(),Body=html.ToInt64(),ProcessId=pid,AgreeId=5100,CancelId=5101,Dpi=dpi,Bounds=bounds,Title=Text(modal),ModalClass=Class(modal),BodyClass=Class(html),BodyText=bodyText,BodyStyle=bodyStyle,FrameTitle=Text(frame),AgreeClass=Class(agree),CancelClass=Class(cancel),AgreeBounds=Bounds(agree),AgreeText=Text(agree),CancelText=Text(cancel)};
+      return new NoticeInfo{Frame=frame.ToInt64(),Modal=modal.ToInt64(),Agree=agree.ToInt64(),Cancel=cancel.ToInt64(),Body=html.ToInt64(),Gripper=gripper.ToInt64(),GripperId=GetDlgCtrlID(gripper),GripperClass=Class(gripper),GripperStyle=gripperStyle,GripperExStyle=gripperExStyle,GripperBounds=Bounds(gripper),ProcessId=pid,AgreeId=5100,CancelId=5101,Dpi=dpi,Bounds=bounds,Title=Text(modal),ModalClass=Class(modal),BodyClass=Class(html),BodyText=bodyText,BodyStyle=bodyStyle,FrameTitle=Text(frame),AgreeClass=Class(agree),CancelClass=Class(cancel),AgreeBounds=Bounds(agree),AgreeText=Text(agree),CancelText=Text(cancel)};
     }
     // Fixed warning title-bar focus only. There is no public point, HWND,
     // caption, input event or message selector. Agreement remains separate.
