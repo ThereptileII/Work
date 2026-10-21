@@ -1,0 +1,18 @@
+{
+  "schema": 1,
+  "observedDate": "2026-10-14",
+  "issue": "SCRUM-42",
+  "webSourceBeforeAdaptation": "53296906",
+  "provider": "Cloudflare R2",
+  "activation": "owner reported and dashboard verified",
+  "bucket": "skager-private-releases",
+  "storageClass": "Standard",
+  "placement": "Eastern Europe (automatic)",
+  "publicAccess": "disabled",
+  "objects": 0,
+  "credentials": "owner reports saved; names verified in Supabase Edge Secrets; values excluded",
+  "runtimeDeployed": true,
+  "artifactUploaded": false,
+  "liveDownloadAccepted": false,
+  "publicLaunchAuthorized": false
+}

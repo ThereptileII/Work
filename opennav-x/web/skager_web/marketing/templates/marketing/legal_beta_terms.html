@@ -1,0 +1,34 @@
+{% extends 'marketing/legal_base.html' %}
+{% block title %}Beta terms and safety — SKAGER{% endblock %}
+{% block description %}What the SKAGER public beta means, and how to use SKAGER safely: your responsibility at the helm, data quality, advisory features and autopilot control.{% endblock %}
+{% block doc_name %}Beta terms &amp; safety{% endblock %}
+{% block doc_heading %}Beta terms and safety notice{% endblock %}
+{% block doc_lead %}SKAGER is an aid to navigation. Good seamanship stays with you. This notice forms part of our Terms of Service.{% endblock %}
+{% block doc_body %}
+<section class="page-section" id="beta"><h2>1. What the public beta means</h2>
+<p>SKAGER is complete enough to use and still improving. Features may change, and you may meet bugs. Each release comes with release notes and a list of known limitations; please read them, and tell us what you find.</p></section>
+
+<section class="page-section" id="responsibility"><h2>2. You are in command</h2>
+<p>The skipper is responsible for the safe navigation of the vessel. Whatever system you use:</p>
+<ul>
+<li>keep a proper lookout by sight and hearing at all times;</li>
+<li>carry an independent means of navigation, and current official charts for your area;</li>
+<li>cross-check your position and the information you rely on;</li>
+<li>never rely on a single electronic system, including SKAGER.</li>
+</ul></section>
+
+<section class="page-section" id="data"><h2>3. Data quality</h2>
+<p>SKAGER shows information from your charts, instruments, AIS and optional online services. It is only as good as those sources. SKAGER shows each value's source and age, and marks missing, stale or estimated data. Treat such data accordingly, and remember that an empty area on a chart is missing data, not clear water.</p></section>
+
+<section class="page-section" id="advisory"><h2>4. Advisory features</h2>
+<p>SmartNav, energy estimates and forecast overlays give advice. They never steer the vessel, and they cannot account for hazards, traffic or conditions that are not in your charts, instruments or forecasts. Online AIS is supplementary: it can be delayed or incomplete, is never used for collision alarms, and does not replace onboard AIS, radar or lookout.</p></section>
+
+<section class="page-section" id="autopilot"><h2>5. Autopilot control</h2>
+<p>Autopilot control is off until you enable it and confirm. It works only with supported pilots, and each command waits for the pilot's own feedback. Know how to take the helm by hand, keep Standby within reach, and never leave the helm unattended near hazards, traffic or in poor visibility.</p></section>
+
+<section class="page-section" id="install"><h2>6. Installing and updating</h2>
+<p>Install, update and troubleshoot while the boat is safely moored, with another means of navigation available. Keep a backup of your OpenCPN profile and charts. Legacy and Safe Mode give you a way back if something does not work.</p></section>
+
+<section class="page-section" id="feedback"><h2>7. Feedback</h2>
+<p>Bug reports and ideas make SKAGER better. When you send diagnostics, review them first and leave out anything you do not want to share. See <a href="{% url 'marketing:article' 'diagnostics-and-privacy' %}">how to send a useful, private problem report</a>.</p></section>
+{% endblock %}

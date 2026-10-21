@@ -506,6 +506,7 @@ Shell::Shell(wxFrame &frame, wxAuiManager &manager, ShellActions actions,
   product_actions.theme = [this](LightMode mode) { SetLight(mode); };
   product_actions.save_settings = actions_.save_settings;
   product_actions.weather = actions_.weather;
+  product_actions.cloud = actions_.cloud;
   product_actions.chart = [this] { ShowNavigation(); };
   product_actions.preferences = [this] { ShowSettings(); };
   product_actions.source_health = [this] { ShowHealth(); };

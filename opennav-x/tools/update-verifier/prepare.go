@@ -23,6 +23,9 @@ type PrepareConfig struct {
 	ArtifactDirectory string
 	Installed         releasepolicy.Installed
 	OpenCpnAllowlist  []releasepolicy.OpenCpn
+	// AccessToken is the optional SKAGER Cloud device token. It is sent only to
+	// the metadata and artifact origins and never changes what is trusted.
+	AccessToken string
 }
 
 // ConsentIdentity binds a user's selected offer to the entire parsed policy.
@@ -162,11 +165,7 @@ func prepareUpdateSet(ctx context.Context, config PrepareConfig, observed releas
 	if !set.RecoveryIdentity.LifecycleManifestAvailable {
 		return nil, errors.New("authenticated recovery lacks the exact Lifecycle manifest sidecar")
 	}
-	if client == nil {
-		set.Installer, err = DownloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory)
-	} else {
-		set.Installer, err = downloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory, client)
-	}
+	set.Installer, err = acquireArtifact(ctx, candidate.Policy.Installer, config, client)
 	if err != nil {
 		return nil, err
 	}
@@ -199,7 +198,8 @@ func checkUpdate(ctx context.Context, config PrepareConfig, observed releasepoli
 	if base == nil {
 		base = http.DefaultTransport
 	}
-	client.Transport = prepareContextTransport{parent: ctx, base: base}
+	// The metadata origin may require a SKAGER Cloud device token (SCRUM-44).
+	client.Transport = prepareContextTransport{parent: ctx, base: withAccess(base, metadataOrigin(config.Trust.MetadataURL), config.AccessToken)}
 	policy, err := verifyReleaseInState(config.StateDirectory, config.Trust, client)
 	if err != nil {
 		return empty, downloadError(ctx, "protected signed update check rejected")
@@ -236,11 +236,7 @@ func prepareUpdate(ctx context.Context, config PrepareConfig, observed releasepo
 		return nil, errors.New("confirmed update policy changed; new confirmation required")
 	}
 	var artifact *VerifiedArtifact
-	if injected == nil {
-		artifact, err = DownloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory)
-	} else {
-		artifact, err = downloadArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, config.ArtifactDirectory, injected)
-	}
+	artifact, err = acquireArtifact(ctx, candidate.Policy.Installer, config, injected)
 	if err != nil {
 		return nil, err
 	}

@@ -1,0 +1,26 @@
+{% extends 'marketing/base.html' %}
+{% block content %}
+<div class="content-shell container legal-doc">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:legal' %}">Legal</a> <span aria-hidden="true">/</span> <span aria-current="page">{% block doc_name %}{% endblock %}</span></nav>
+  <header class="page-intro">
+    <p class="eyebrow">Legal</p>
+    <h1>{% block doc_heading %}{% endblock %}</h1>
+    <p class="lead">{% block doc_lead %}{% endblock %}</p>
+    <p class="doc-version">{{ legal_version }}</p>
+  </header>
+  <div class="article-layout">
+    <aside class="article-nav" aria-label="Legal documents">
+      <h2 class="section-heading">Legal documents</h2>
+      <ul>
+        <li><a href="{% url 'marketing:terms' %}"{% if nav_active == 'terms' %} aria-current="page"{% endif %}>Terms of Service</a></li>
+        <li><a href="{% url 'marketing:privacy' %}"{% if nav_active == 'privacy' %} aria-current="page"{% endif %}>Privacy Policy</a></li>
+        <li><a href="{% url 'marketing:refunds' %}"{% if nav_active == 'refunds' %} aria-current="page"{% endif %}>Refund Policy</a></li>
+        <li><a href="{% url 'marketing:beta_terms' %}"{% if nav_active == 'beta_terms' %} aria-current="page"{% endif %}>Beta terms &amp; safety</a></li>
+        <li><a href="{% url 'marketing:cookies' %}"{% if nav_active == 'cookies' %} aria-current="page"{% endif %}>Cookies</a></li>
+        <li><a href="{% url 'marketing:open_source' %}">Open source &amp; licences</a></li>
+      </ul>
+    </aside>
+    <article class="article-body prose">{% block doc_body %}{% endblock %}</article>
+  </div>
+</div>
+{% endblock %}

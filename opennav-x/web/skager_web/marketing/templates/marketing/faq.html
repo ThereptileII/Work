@@ -1,0 +1,26 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Frequently asked questions — SKAGER{% endblock %}
+{% block description %}Quick answers about SKAGER: price and refunds, Windows and OpenCPN requirements, charts, instruments, autopilot, safety and privacy.{% endblock %}
+{% block extra_head %}<script type="application/ld+json">{{ schema }}</script>{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:support' %}">Help centre</a> <span aria-hidden="true">/</span> <span aria-current="page">FAQ</span></nav>
+  <header class="page-intro">
+    <p class="eyebrow">FAQ</p>
+    <h1>Frequently asked questions.</h1>
+    <p class="lead">The short answers. For the full story, our <a href="{% url 'marketing:articles' %}">articles</a> go step by step.</p>
+  </header>
+  <nav class="jump-links" aria-label="FAQ topics">{% for group in groups %}<a href="#{{ group.name|slugify }}">{{ group.name }}</a>{% endfor %}</nav>
+  {% for group in groups %}
+  <section class="page-section faq-group" id="{{ group.name|slugify }}" aria-labelledby="{{ group.name|slugify }}-heading">
+    <h2 id="{{ group.name|slugify }}-heading">{{ group.name }}</h2>
+    <div class="faq-list">
+      {% for item in group.items %}
+      <details><summary>{{ item.question }}</summary><p>{{ item.answer }}</p>{% if item.href %}<p><a href="{{ item.href.url }}">{{ item.href.label }} →</a></p>{% endif %}</details>
+      {% endfor %}
+    </div>
+  </section>
+  {% endfor %}
+  <aside class="notice"><h2>Still wondering?</h2><p>Search the <a href="{% url 'marketing:support' %}">help centre</a>, or ask us from <a href="{% url 'marketing:account' %}">your account</a>.</p></aside>
+</div>
+{% endblock %}

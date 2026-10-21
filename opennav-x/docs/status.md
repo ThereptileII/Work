@@ -1967,6 +1967,338 @@ profile and hardware are untouched. Transport and component passes do not qualif
 installed no-update/Later/Now/offline behavior, full uninstall, or a replacement
 application package. The reviewed fixture fixes are integrated for one replacement
 B0 request; design review and endurance remain off. [Exact focused evidence](evidence/scrum311-native-prerequisites-20261013/focused-results.json).
+# SKAGER status — 2026-10-14
+
+## Stripe TEST key framing deployed; saved binding still refuses
+
+SCRUM-43 source `2c1511c4e8dc269fce0846e616af9b99675faca7` accepts bounded,
+opaque TEST secret/restricted Bearer keys while preserving their exact bytes and
+refusing LIVE/publishable keys, empty suffixes, whitespace and header injection.
+[CI 38613459842](https://github.com/ThereptileII/Work/actions/runs/38613459842)
+passes **208 tests** (88 Django / 120 Edge), plus migrations and disposable SQL.
+Original artifact hashes and ZIP CRCs verify. The retained 79,004-byte server
+bundle matches its build manifest. Frontend bytes remain identical to active
+Cloudflare `ac34d9d4`; no Cloudflare redeploy is needed.
+
+The exact server candidate is **deployed** with complete byte-identical editor
+readback before deployment and after reload. Chrome is reconnected. No frontend
+or secret changed. Earlier owner login was confirmed, but the session expired;
+a fresh code step is ready in the same browser.
+The deployed **version 24** log at 19:28:49Z still identifies
+`STRIPE_TEST_SECRET_KEY` as the rejected binding before Stripe I/O. The owner
+correction form is prepared with an empty value; no secret was read or changed.
+Actual key validity, TEST checkout, webhook/entitlement and customer download
+remain unproven. Public signup, public payments and downloads remain closed.
+[Exact package and sanitized evidence](evidence/scrum43-key-framing-20261014/README.md).
+
+## Invited sign-in and customer portal verified; TEST checkout configuration blocked
+
+The owner entered a fresh website invitation code and confirmed successful
+sign-in. The live portal now shows authenticated navigation, Sign out, no orders
+and correctly no active beta entitlement. `PORTAL_ENABLED=true` and
+`STRIPE_TEST_CHECKOUT_ENABLED=true` were enabled only for the existing owner-only
+private TEST window. Public signup remains OFF, the exact allowlist is unchanged,
+and downloads remain closed. No OTP, email body or credential was captured.
+
+The approved `SKAGERFRIENDS` attempt returns the exact generic `Unavailable`
+response, which the deployed handler emits when its configuration validation
+fails before Stripe I/O. A server-only static diagnostic now identifies
+`STRIPE_TEST_SECRET_KEY` as the first rejected binding. This proves a local
+format-check rejection, not a Stripe authentication response. The key value was
+not inspected; the owner correction form is prepared. Other nonsecret binding
+digests match their expected values.
+
+Exact diagnostic source `5be97309474a54e463119d65a92fed9a0838f9ac` passes
+[CI 38600049762](https://github.com/ThereptileII/Work/actions/runs/38600049762):
+**208 tests** (88 Django / 120 Edge), plus disposable SQL and migrations.
+The 78,865-byte server bundle has complete byte-identical editor readback before
+deployment and after reload. No frontend redeploy was needed: its bytes remain
+identical to active Cloudflare `ac34d9d4`. No order, payment, entitlement, refund
+or download success is claimed. [Evidence](evidence/scrum43-commerce-diagnostic-20261014/README.md).
+
+## Earlier checkpoint: frontend published; invited sign-in reached code verification
+
+The owner completed the whole-file upload of frontend source
+`8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`. Cloudflare deployment
+**`ac34d9d4` is Active / Latest**. The retained 504,268-byte upload has SHA-256
+`a42d54ba857209cc76cee87a66905ad34502e5d80fc79d1091e3c27931427f0e`.
+This used supported whole-file drag/drop, not a partial editor paste. Independent
+provider-source byte equality was not obtained and is not claimed.
+
+The real beta homepage renders; its Login entry opens the new sign-in page.
+The initial neutral login response concealed a provider `/otp` 422
+`signup_disabled`: the invited account was not yet email-confirmed. The existing
+**Create an account** invitation flow subsequently sent a fresh code, confirmed
+**delivered** by Resend. Public signup remains off. The code form is ready in the
+same browser; code entry and the authenticated session remain pending the owner.
+No OTP or email body was read. Direct browser
+navigation to the JSON provenance and health URLs was client-blocked, so no new
+health/provenance response is inferred from those attempts.
+
+The existing server remains `af986f7416bebb638c0e59dfbf98e58732a21157`;
+the new candidate's server bytes are identical and were not redeployed. The owner
+has now saved distinct Stripe TEST key/webhook bindings, and Resend previously
+confirmed successful invitation delivery. The administrative R2 probe still
+refuses authentication before R2 I/O. Checkout, portal/download qualification,
+refund/entitlement checks and actual signed-in use remain open. Public access
+remains closed. [Deployment evidence](evidence/scrum43-frontend-20261014/README.md).
+
+## Earlier checkpoint: private provider credential check
+
+The current frontend candidate `8a7adc9c923b5aad61fcd8ea9306b52e7cb29dde`
+passes [web CI 38553897564](https://github.com/ThereptileII/Work/actions/runs/38553897564)
+with **204 tests** (88 Django and 116 Edge), plus disposable SQL checks.
+Its frontend upload remains pending; active Cloudflare is still `f5508044`.
+Its server bundle is byte-identical to the already deployed `af986f74` bundle.
+
+Standalone administrative probe `f0178102cb7321f3e19e7c0f6695b86ffc807858`
+passes 19 focused tests and independent review. Exact deployed probe SHA-256:
+`33464cce2aa7195985a7f5bce88601eac9bb17fd833d34a7287a11d0f2f1b571`
+(19,460 bytes). Legacy JWT verification stays enabled. One dashboard GET returned
+**401 Administrative credential required**, before R2 I/O. This does not identify
+an R2 credential failure. No objects, permissions or product access flags changed.
+The existing credential field and clipboard were cleared after the test.
+[Investigation evidence](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-42?focusedCommentId=11649).
+
+SMTP host/port/user/sender were visually verified; the last actual send still
+failed with `535 Authentication credentials invalid`. The Stripe TEST server and
+webhook secret bindings are absent from Supabase. New/replacement credential entry
+requires owner handoff under the browser policy; the owner is currently away.
+No additional invitation or TEST payment was sent. Login, R2 authentication,
+checkout, entitlement and customer download acceptance remain pending.
+
+## Checkout returns repaired; private email still awaits owner credential entry
+
+Exact `af986f7416bebb638c0e59dfbf98e58732a21157` passes
+[web CI 38547971840](https://github.com/ThereptileII/Work/actions/runs/38547971840):
+**193 tests** (88 Django and 105 Edge), plus disposable SQL checks. The deployed
+server now returns TEST checkout success to the existing orders page and cancel
+to the existing portal, removing two unpublished/404 destinations. Return
+navigation does not grant entitlement. Full server readback before deployment
+and after reload matches the retained 77,896-byte bundle. Frontend bytes remain
+unchanged; no redundant frontend deployment occurred.
+[Deployment and verification](evidence/scrum36-checkout-returns-20261014/README.md).
+
+The owner is away and required SMTP credential entry remains pending after the
+observed Resend authentication refusal. No additional invitation was sent. Public
+signup, TEST checkout, portal access and downloads remain closed as previously
+configured; no payment or login completion is claimed.
+
+## Earlier checkpoint: private email header repaired
+
+Resend's separate `auth.skager.app` sender is verified with enforced TLS.
+The owner completed the credential handoff; custom SMTP is persisted enabled.
+Both code-only email templates were saved and fully read back. Exact frontend
+`a6a1768d01963388416d48ab1d51dd191d9288db` is active as Cloudflare `f5508044`;
+live `auth.js` matches the retained candidate. Its [CI 38531861920](https://github.com/ThereptileII/Work/actions/runs/38531861920)
+passes **191 tests** (88 Django and 103 Edge), plus disposable SQL checks.
+The new server bundle from exact `004a8472cc49e11c64bcd5ebffabe52afe791966`
+is deployed and was fully read back byte-for-byte. Its frontend is byte-identical
+to the active `f5508044` deployment; no redundant frontend replacement was made.
+[CI 38538024121](https://github.com/ThereptileII/Work/actions/runs/38538024121)
+passes **192 tests** (88 Django and 104 Edge), plus disposable SQL checks.
+
+Only the owner's explicitly authorized address is allowlisted for private
+auth testing. Checkout, portal and downloads remain off. First signup reached
+successful throttle RPCs but `/auth/v1/invite` returned 403; Auth reports a
+malformed token and Resend lists no sent email. The SDK-aligned correction uses
+the server identity in both admin-invitation headers, with **23 focused checks**
+passing. After deployment the live retry reached SMTP: Auth returned
+`535 Authentication credentials invalid` instead of the malformed-token error.
+The fallback OTP correctly refused creation with public signup disabled.
+No email delivery or login has passed; the owner is correcting the SMTP
+credential directly in Supabase. No credential or recipient address is retained
+in source/evidence. [Activation and failed-live-check receipt](evidence/scrum40-private-email-20261014/README.md).
+No public-access or paid-entitlement acceptance is claimed.
+
+## Earlier checkpoint: private login email preparation
+
+Source `a6a1768d01963388416d48ab1d51dd191d9288db` adds code-only Supabase
+Invitation/Magic Link templates and fixes optional trailing-slash auth routing.
+The focused portal checks pass **21 cases**; this newer frontend is not deployed.
+Resend account access is available and `auth.skager.app` is created but
+unverified. The three proposed DNS records await owner approval, and the custom
+SMTP form is prepared but unsaved. No new sending key, invitation or live login
+has been created. The [email deployment guide](../web/deploy/supabase/email/README.md)
+records the restricted sender setup and remaining live checks. Public access
+remains closed.
+
+## Private R2 adapter deployed; live customer flow remains closed
+
+Exact web source `1acc781ed1ba50d565201911c15cdab00c24a364` passes
+[web CI 38512040319](https://github.com/ThereptileII/Work/actions/runs/38512040319):
+**182 tests** (88 Django/PostgreSQL and 94 Edge), no failures or skips, plus
+disposable SQL and migration checks. The original evidence ZIP is authenticated
+against its provider digest/length and all ten CRCs. The runtime now signs
+60-second GET links for the exact private R2 bucket after existing account,
+entitlement and CSRF checks. The pinned signing SDK and MIT notice are included
+only in the server package.
+
+The owner activated R2, and `skager-private-releases` was created with public
+access disabled and no objects. The owner saved the read-only credential in
+Supabase Edge Secrets; the nonsecret R2 account/bucket/backend bindings are also
+saved. Both exact bundles are now deployed: Cloudflare `33f77360` is Active,
+and Supabase deployment 13 has a full byte-identical server readback. Direct
+backend health is 200/`ready:false`; downloads are 404/unavailable. The beta
+origin's later ordinary curl health request returned HTTP/2 200 with the expected
+private-beta JSON at 07:27:03 UTC. Earlier urllib 403/1010 and Chrome client-side
+blocking remain recorded separately; customer-flow acceptance is unproven.
+Download access stays OFF and the reviewed release catalog is
+empty. Live R2 authentication/custody/download/expiry tests and desktop package
+qualification remain pending. No public launch acceptance is claimed.
+[Exact source, package, CI and provider evidence](evidence/scrum42-r2-20261014/README.md).
+
+## Earlier checkpoint: private downloads integrated; provider storage limit remained
+
+Exact web source `76ddba17462fcfe6884be2465e88e0e80b79b265` passes
+[web CI 38464107015](https://github.com/ThereptileII/Work/actions/runs/38464107015):
+**175 tests** (88 Django/PostgreSQL and 87 Edge), zero failures or skips,
+plus disposable SQL/migration checks. The authenticated portal now lists only
+reviewed qualified Staging entries and requests a fresh, short-lived download
+link after current session/entitlement and CSRF checks. The default catalog is
+empty, all access flags remain OFF, and no release is made available.
+
+Both provider bundles are packaged but **not deployed**. Live Supabase remains
+`251c88be` and Cloudflare remains `e18a9fb4`. Browser inspection confirmed the
+current Supabase Free project has a fixed **50 MB per-object** upload limit,
+which cannot hold the required Windows recovery/source packages. Cloudflare R2
+is not enabled; its activation includes recurring usage billing and terms, so
+that final step was handed to the owner. No subscription, bucket, public access
+or credential was created. Downloads require a suitable authorized storage path
+and live custody/expiry checks in addition to native release qualification.
+[Exact package and CI evidence](evidence/web-provider-20261013/README.md).
+
+## Earlier packaged checkpoint: webhook ownership filtering
+
+Newest packaged web source `662c62478ded1ea75f5646b984d5670cda36525a` passes
+[web CI 38460214097](https://github.com/ThereptileII/Work/actions/runs/38460214097):
+**157 tests** (88 Django/PostgreSQL and 69 Edge), no failures or reported skips,
+plus disposable SQL/migration checks. Downloaded original evidence matches
+GitHub's digest/length and all ten ZIP CRCs. Independently reviewed ownership
+filtering precedes webhook ingestion; SQL is unchanged. The retained backend is
+**packaged, not deployed**: live Supabase remains `251c88be` / `09728b90…`, and
+the frontend is byte-identical to Cloudflare `e18a9fb4`. Auth/checkout/portal stay
+OFF. Credentials/SMTP, specific provider consent/configuration and live TEST
+qualification remain pending; shared Stripe payloads can still reach the handler
+before discard. No account/payment/end-to-end or public launch acceptance is
+inferred. [Exact evidence and remaining gates](evidence/web-provider-20261013/README.md).
+
+## Earlier deployed checkpoint: private website proxy and Stripe source repaired; live account/checkout gates pending
+
+Source `251c88bed6063fe5212339df73caa81c48cb931f` passes
+[web-only CI 38457534904](https://github.com/ThereptileII/Work/actions/runs/38457534904)
+with **147 tests** (88 Django/PostgreSQL and 59 Edge) plus disposable SQL and
+migration checks. Six offline checks in the actual Cloudflare runtime verify
+the session proxy and redirect refusal. The original HTTP 503 was reproduced
+and corrected without reducing authentication or redirect protections.
+
+Exact frontend bytes are deployed as Cloudflare `e18a9fb4` on `beta.skager.app`;
+the new reviewed Supabase server bundle was deployed with full pre/post-upload
+byte equality; its private schema is unchanged. Chrome now
+receives HTTP 200 from the session endpoint and renders login; an unauthenticated
+portal visit returns to login. Auth/checkout/portal flags remain off. No account,
+checkout, payment, refund or entitlement has been created through this flow.
+
+SMTP provider/cost choice and isolated Stripe test credentials/webhook remain
+pending. The SKAGER-only 100% test coupon is configured, and provider-schema,
+restricted TEST key, product-applicability and outgoing Checkout-form corrections
+are deployed under SCRUM-36/37. Historical completed redemption after coupon
+exhaustion/expiry is covered. Actual provider checkout/webhook/refund behavior is
+not yet qualified. Existing Stripe scope also contains
+unrelated products; a dedicated webhook secret alone cannot isolate their data.
+Public signup, payments and downloads remain closed. These web checks provide
+no native application or boat acceptance.
+[Exact hashes, failed observations and remaining gates](evidence/web-provider-20261013/README.md).
+
+The following website entries preserve earlier checkpoints, superseded by the
+provider observations above where explicitly stated.
+
+## Invited Staging website: Cloudflare frontend and Supabase Edge backend
+
+The owner selected a Cloudflare Free frontend at `beta.skager.app` with Supabase
+Auth, Edge Functions and private PostgreSQL, replacing the planned Django
+backend and declining the paid Containers option. The new [architecture decision](architecture/cloudflare-supabase-private-beta.md)
+defines current trust boundaries and supersedes earlier runtime selections while
+preserving their source, migrations and historical verification evidence.
+
+Exact combined web source `b730d2364430de9e706798041a2da48c544a44db` passes
+[web-only CI 38383036021](https://github.com/ThereptileII/Work/actions/runs/38383036021):
+**127 tests** (88 preserved Django/PostgreSQL and 39 Edge contract tests), plus
+real PostgreSQL commerce/security assertions, Django checks and migration
+forward/reverse/reapply. This is source/integration evidence in disposable CI,
+not evidence that the provider-backed website is deployed or works end to end.
+No native application qualification is inferred from these web checks.
+
+The implemented Edge flow supports allowlisted invitations and email OTP,
+bounded server sessions, owner-scoped portal data and test-only Stripe
+checkout/webhook settlement. A verified USD 20 TEST checkout and an approved
+100% coupon produce the same `active` **Staging** entitlement; both record zero
+real funds received. Redirects never grant access. Boat storage contains owner-scoped
+boat names only, and downloads remain unavailable. Public Supabase signups stay
+disabled; the friend allowlist and backend feature flags guard this increment.
+
+At this checkpoint, provider SQL/function/Worker deployment and beta-domain
+routing, secret bindings, code-email templates/delivery and live invited
+account/checkout/coupon/webhook/refund/portal checks remain pending. Passing CI
+and the earlier owner-private static preview do not complete those gates.
+Public accounts, live payments and downloads remain closed; no public-launch
+GO has been given. The exact build and backend contracts are under `web/edge/`
+and `web/tools/build_cloudflare_beta.py`.
+
+The entries below retain earlier evidence and its recorded limitations. The
+current website runtime decision and source qualification above supersede their
+older descriptions of the planned backend and unconnected source flow.
+
+## Owner-private web experience and Supabase/Stripe foundations
+
+Exact web source `52d07f404a7c6c6257382e46ea09bb38ae5cf9cc` passes
+[web-only CI 38355728110](https://github.com/ThereptileII/Work/actions/runs/38355728110):
+**88 tests** on PostgreSQL 18.6, Django checks, migration drift and fresh/reverse/
+reapply migrations. This adds the owner-requested cinematic homepage, default-off
+Supabase identity verification, test-only Stripe checkout/webhook verification
+and private owner-scoped Boat storage. It does not qualify a native application.
+
+The [owner-private preview](https://skager-beta-launch-preview.swedishcountrysideli.chatgpt.site)
+has been updated and verified after owner authentication. Desktop 1280×800 and
+mobile 390×844 local checks pass; day/night, pause, static fallback and menu/Escape
+were exercised. The scene is expressly illustrative, with no real boat telemetry.
+The owner's original web brief is retained unchanged. Future My Boat cloud work
+is captured in Jira SCRUM-369 and is not presented as delivered functionality.
+
+Supabase now has an empty private schema with anonymous/authenticated namespace
+access revoked; new public signups are disabled and email confirmation remains
+required. Application migrations, backend deployment and real account/session/
+recovery flows are not yet connected. Stripe sandbox contains a single SKAGER
+USD 20 one-time test product; no checkout/payment/refund or entitlement was
+created. No real keys were fetched, placed in Git or included in the static
+export. Local environment and web credential/key paths are ignored by Git.
+Public accounts, payments and downloads remain closed. No boat state or native
+package changed. Private updater HTTPS activation remains deferred by the owner.
+[Exact source, verification and limits](evidence/web-experience-20261013/README.md).
+
+## Website work resumed in parallel; owner-private preview available
+
+The owner's 2026-10-12 instruction supersedes the earlier software-first website
+hold. Isolated website implementation `c447e80e` adds product/features/pricing,
+installation, searchable help, OpenCPN/source information and review-draft beta
+and privacy pages within the existing Django architecture. Web-only CI
+[38306803251](https://github.com/ThereptileII/Work/actions/runs/38306803251)
+on `16934d4e` passes **38 PostgreSQL/authentication/page tests**, checks and
+migration forward/reverse/reapply. No native application rebuild was requested.
+
+The [owner-private preview](https://skager-beta-launch-preview.swedishcountrysideli.chatgpt.site)
+contains 20 generated informational pages. It requires owner ChatGPT sign-in;
+the local desktop/phone menu and search smoke passed, while deployed post-login
+owner review remains pending. Public payments/downloads, account collection and
+ticket uploads stay closed. The illustration is labelled; real release imagery,
+commerce/portal, deployment operations and qualified legal/security acceptance
+remain separate Jira work. [Exact source and evidence](evidence/web-private-preview-20261012/README.md).
+
+Concurrent updater test-helper `d01a2618` adds initial protected B0 admission
+observation with eight focused inert tests passing. This is not native admission
+or full updater acceptance; private HTTPS and independently approved disposable
+Windows inputs remain prerequisites. The component qualification below is
+unchanged, and no boat state was changed by this increment.
 
 ## Fresh same-commit Windows and Linux updater component gates pass
 

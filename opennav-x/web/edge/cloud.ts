@@ -1,0 +1,339 @@
+/** SKAGER Cloud. Two audiences:
+ *  - /api/device/*: the SKAGER app. Never cookies or CSRF: pairing uses a secret device
+ *    code, later requests a bearer device token. A browser Origin header is refused, so a
+ *    web page cannot drive these routes with a visitor's network position.
+ *  - /api/cloud/*: the logged-in customer (cookie session; the router checks CSRF).
+ * Tokens and device codes are stored only as SHA-256. Missing Cloud never blocks the
+ * app: it only withholds the update feed and telemetry storage. */
+export interface CloudContext {
+  env: Record<string, string | undefined>;
+  getAccount(request: Request): Promise<{ id: string; email?: string; passwordSet?: boolean } | null>;
+  rpc(name: string, args: Record<string, unknown>): Promise<unknown>;
+}
+type Json = Record<string, any>;
+
+export const LINK_URL = 'https://beta.skager.app/link/';
+const LINK_SECONDS = 600;
+const POLL_SECONDS = 5;
+const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
+const HEX64 = /^[a-f0-9]{64}$/;
+const TOKEN = /^skg1_[a-f0-9]{64}$/;
+const USER_CODE = /^[BCDFGHJKLMNPQRSTVWXZ2-9]{8}$/;
+const CODE_ALPHABET = 'BCDFGHJKLMNPQRSTVWXZ23456789';
+const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
+const QUALITIES = ['live', 'aging', 'stale', 'estimated', 'uncertain'];
+const MAX_TELEMETRY_BYTES = 16384;
+const SERIES_HOURS = [1, 6, 24, 72, 168, 720];
+
+/** Every value SKAGER may upload. Units are fixed here so the web never guesses. */
+export const TELEMETRY_KEYS: Record<string, { label: string; unit: string; min: number; max: number }> = {
+  'navigation.latitude': { label: 'Latitude', unit: 'deg', min: -90, max: 90 },
+  'navigation.longitude': { label: 'Longitude', unit: 'deg', min: -180, max: 180 },
+  'navigation.sog': { label: 'Speed over ground', unit: 'kn', min: 0, max: 100 },
+  'navigation.cog': { label: 'Course over ground', unit: 'deg', min: 0, max: 360 },
+  'navigation.heading': { label: 'Heading', unit: 'deg', min: 0, max: 360 },
+  'navigation.stw': { label: 'Speed through water', unit: 'kn', min: 0, max: 100 },
+  'wind.apparent_speed': { label: 'Apparent wind speed', unit: 'kn', min: 0, max: 200 },
+  'wind.apparent_angle': { label: 'Apparent wind angle', unit: 'deg', min: -180, max: 360 },
+  'wind.true_speed': { label: 'True wind speed', unit: 'kn', min: 0, max: 200 },
+  'wind.true_angle': { label: 'True wind angle', unit: 'deg', min: -180, max: 360 },
+  'environment.depth': { label: 'Depth below transducer', unit: 'm', min: 0, max: 12000 },
+  'environment.water_temperature': { label: 'Water temperature', unit: 'C', min: -5, max: 50 },
+  'environment.pressure': { label: 'Air pressure', unit: 'hPa', min: 800, max: 1100 },
+  'steering.rudder': { label: 'Rudder', unit: 'deg', min: -90, max: 90 },
+  'steering.heel': { label: 'Heel', unit: 'deg', min: -90, max: 90 },
+  'propulsion.electrical_power': { label: 'Motor power', unit: 'kW', min: -1000, max: 1000 },
+  'propulsion.shaft_power': { label: 'Shaft power', unit: 'kW', min: -1000, max: 1000 },
+  'propulsion.rpm': { label: 'Motor speed', unit: 'rpm', min: -20000, max: 20000 },
+  'propulsion.gear': { label: 'Gear', unit: 'code', min: 0, max: 2 },
+  'propulsion.regeneration': { label: 'Regeneration', unit: 'code', min: 0, max: 2 },
+  'propulsion.motor_temperature': { label: 'Motor temperature', unit: 'C', min: -50, max: 250 },
+  'propulsion.coolant_temperature': { label: 'Coolant temperature', unit: 'C', min: -50, max: 250 },
+  'battery.voltage': { label: 'Battery voltage', unit: 'V', min: 0, max: 1500 },
+  'battery.current': { label: 'Battery current', unit: 'A', min: -5000, max: 5000 },
+  'battery.soc': { label: 'State of charge', unit: '%', min: 0, max: 100 },
+  'battery.soh': { label: 'State of health', unit: '%', min: 0, max: 100 },
+  'battery.capacity': { label: 'Usable capacity', unit: 'kWh', min: 0, max: 10000 },
+  'battery.net_discharge': { label: 'Net discharge', unit: 'kW', min: -1000, max: 1000 },
+  'tanks.fresh_water': { label: 'Fresh water', unit: '%', min: 0, max: 100 },
+  'tanks.fuel': { label: 'Fuel', unit: '%', min: 0, max: 100 },
+  'tanks.waste': { label: 'Waste', unit: '%', min: 0, max: 100 },
+  'tanks.other': { label: 'Other tank', unit: '%', min: 0, max: 100 },
+  'connectivity.input_rate': { label: 'Instrument messages', unit: 'msg/s', min: 0, max: 100000 },
+};
+
+const encoder = new TextEncoder();
+const invalid = () => new Error('Invalid request');
+function requireValue(value: unknown): asserts value { if (!value) throw invalid(); }
+function reply(status: number, value: Json | null): Response {
+  return new Response(value === null ? null : JSON.stringify(value), { status, headers: {
+    'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store, max-age=0',
+    'X-Content-Type-Options': 'nosniff', 'Referrer-Policy': 'no-referrer' } });
+}
+async function sha256(value: string): Promise<string> {
+  return [...new Uint8Array(await crypto.subtle.digest('SHA-256', encoder.encode(value)))]
+    .map(byte => byte.toString(16).padStart(2, '0')).join('');
+}
+function randomHex(bytes: number): string {
+  return Array.from(crypto.getRandomValues(new Uint8Array(bytes)), b => b.toString(16).padStart(2, '0')).join('');
+}
+export function userCode(): string {
+  // Rejection sampling keeps every symbol equally likely (256 is not a multiple of 28).
+  let code = '';
+  while (code.length < 8) {
+    for (const byte of crypto.getRandomValues(new Uint8Array(16))) {
+      if (byte < 252 && code.length < 8) code += CODE_ALPHABET[byte % CODE_ALPHABET.length];
+    }
+  }
+  return code;
+}
+/** Accepts what a person types: any case, spaces or a dash ("bcdf-2345"). */
+export function normalizeUserCode(value: unknown): string | null {
+  if (typeof value !== 'string' || value.length > 20) return null;
+  const code = value.toUpperCase().replace(/[\s-]/g, '');
+  return USER_CODE.test(code) ? code : null;
+}
+async function body(req: Request, maximum = 2048): Promise<Json> {
+  requireValue(req.headers.get('Content-Type')?.split(';')[0].trim().toLowerCase() === 'application/json');
+  const declared = req.headers.get('Content-Length');
+  requireValue(!declared || Number(declared) <= maximum);
+  const bytes = new Uint8Array(await req.arrayBuffer());
+  requireValue(bytes.length <= maximum);
+  const value = JSON.parse(new TextDecoder('utf-8', { fatal: true }).decode(bytes));
+  requireValue(value && typeof value === 'object' && !Array.isArray(value));
+  return value;
+}
+function only(value: Json, keys: string[]): void {
+  requireValue(Object.keys(value).every(key => keys.includes(key)));
+}
+function object(value: unknown): Json {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) throw new Error('Invalid RPC response');
+  return value as Json;
+}
+const plainText = (value: unknown, max: number) => typeof value === 'string' && value.trim().length >= 1
+  && value.length <= max && !/[\u0000-\u001f\u007f]/.test(value);
+
+function publicCloud(value: unknown): Json {
+  const cloud = object(value);
+  return { active: cloud.active === true, status: cloud.status ?? null,
+    renewsAt: cloud.current_period_end ?? null, cancelAtPeriodEnd: cloud.cancel_at_period_end === true };
+}
+function publicDevice(value: unknown): Json {
+  const d = object(value);
+  requireValue(typeof d.id === 'string' && UUID.test(d.id));
+  return { id: d.id, name: d.name, platform: d.platform, appVersion: d.app_version,
+    telemetryEnabled: d.telemetry_enabled === true, createdAt: d.created_at, lastSeenAt: d.last_seen_at,
+    lastDataAt: d.last_data_at ?? null };
+}
+
+/** Validates an upload against TELEMETRY_KEYS. Unknown keys or values are refused whole. */
+export function validTelemetry(items: unknown): Json | null {
+  if (!items || typeof items !== 'object' || Array.isArray(items)) return null;
+  const entries = Object.entries(items as Json);
+  if (entries.length < 1 || entries.length > Object.keys(TELEMETRY_KEYS).length) return null;
+  const output: Json = {};
+  for (const [key, item] of entries) {
+    const spec = TELEMETRY_KEYS[key];
+    if (!spec || !item || typeof item !== 'object' || Array.isArray(item)) return null;
+    if (!Object.keys(item).every(k => ['v', 'age', 'q', 'src'].includes(k))) return null;
+    const { v, age, q, src } = item as Json;
+    if (typeof v !== 'number' || !Number.isFinite(v) || v < spec.min || v > spec.max) return null;
+    if (typeof age !== 'number' || !Number.isFinite(age) || age < 0 || age > 86400) return null;
+    if (!QUALITIES.includes(q)) return null;
+    if (src !== undefined && !(typeof src === 'string' && src.length <= 64 && !/[\u0000-\u001f\u007f]/.test(src))) return null;
+    output[key] = { v, age: Math.round(age * 10) / 10, q, ...(src ? { src } : {}) };
+  }
+  return output;
+}
+
+// ---------------------------------------------------------------- device routes
+async function throttled(ctx: CloudContext, keys: string[], limit: number, seconds: number): Promise<boolean> {
+  return await ctx.rpc('skager_auth_throttle', { p_keys: keys, p_limit: limit, p_seconds: seconds }) !== true;
+}
+
+async function linkStart(req: Request, ctx: CloudContext): Promise<Response> {
+  let input: Json;
+  try {
+    input = await body(req);
+    only(input, ['name', 'platform', 'version']);
+    requireValue(plainText(input.name, 60) && ['windows', 'linux'].includes(input.platform)
+      && typeof input.version === 'string' && VERSION.test(input.version));
+  } catch { return reply(400, { error: 'Invalid pairing request.' }); }
+  if (await throttled(ctx, ['cloud:link:start'], 100, 60)) return reply(429, { error: 'Too many requests. Try again in a minute.' });
+  for (let attempt = 0; attempt < 3; attempt++) {
+    const deviceCode = randomHex(32);
+    const code = userCode();
+    const started = object(await ctx.rpc('cloud_link_start', { p_device_hash: await sha256(deviceCode),
+      p_user_code: code, p_name: input.name.trim(), p_platform: input.platform, p_version: input.version }));
+    if (started.state === 'pending') {
+      return reply(200, { deviceCode, userCode: code, verificationUrl: LINK_URL,
+        expiresIn: LINK_SECONDS, interval: POLL_SECONDS });
+    }
+  }
+  return reply(503, { error: 'Pairing is temporarily unavailable.' });
+}
+
+async function linkPoll(req: Request, ctx: CloudContext): Promise<Response> {
+  let deviceCode: string;
+  try {
+    const input = await body(req);
+    only(input, ['deviceCode']);
+    requireValue(typeof input.deviceCode === 'string' && HEX64.test(input.deviceCode));
+    deviceCode = input.deviceCode;
+  } catch { return reply(400, { error: 'Invalid pairing poll.' }); }
+  const deviceHash = await sha256(deviceCode);
+  if (await throttled(ctx, ['cloud:poll:' + deviceHash.slice(0, 32)], 20, 60)) return reply(429, { state: 'slow_down' });
+  const token = 'skg1_' + randomHex(32);
+  const claimed = object(await ctx.rpc('cloud_link_claim', { p_device_hash: deviceHash, p_token_hash: await sha256(token) }));
+  if (claimed.state === 'approved' && typeof claimed.device_id === 'string' && UUID.test(claimed.device_id)) {
+    return reply(200, { state: 'approved', token, deviceId: claimed.device_id });
+  }
+  if (['pending', 'denied', 'expired'].includes(claimed.state)) return reply(200, { state: claimed.state });
+  throw new Error('Invalid claim');
+}
+
+type DeviceAuth = { deviceId: string; accountId: string; email: string; name: string; cloud: Json };
+/** Resolves the bearer device token; null for missing, malformed, revoked or unknown tokens. */
+export async function deviceAuth(req: Request, ctx: CloudContext): Promise<DeviceAuth | null> {
+  // The Worker moves the app's "Authorization: Bearer" here; the Supabase gateway
+  // never sees a non-JWT Authorization header.
+  const token = req.headers.get('X-Skager-Device') ?? '';
+  if (!TOKEN.test(token)) return null;
+  const version = req.headers.get('X-Skager-Version');
+  const found = object(await ctx.rpc('cloud_device_auth', { p_token_hash: await sha256(token),
+    p_version: version && VERSION.test(version) ? version : null }));
+  if (found.state !== 'active' || typeof found.device_id !== 'string' || !UUID.test(found.device_id)) return null;
+  return { deviceId: found.device_id, accountId: found.account_id, email: found.email, name: found.name,
+    cloud: publicCloud(found.cloud) };
+}
+
+async function deviceRoute(req: Request, ctx: CloudContext, path: string): Promise<Response> {
+  const device = await deviceAuth(req, ctx);
+  if (!device) return reply(401, { error: 'This SKAGER is not linked to an account.', linked: false });
+  if (path === '/api/device/status') {
+    if (req.method !== 'GET') return reply(405, { error: 'GET required' });
+    return reply(200, { linked: true, account: { email: device.email }, device: { id: device.deviceId, name: device.name },
+      cloud: device.cloud, services: { updates: device.cloud.active, telemetry: device.cloud.active } });
+  }
+  if (path === '/api/device/update-access') {
+    if (req.method !== 'GET') return reply(405, { error: 'GET required' });
+    return device.cloud.active ? reply(204, null)
+      : reply(402, { error: 'Automatic updates are part of SKAGER Cloud.', cloud: device.cloud });
+  }
+  if (req.method !== 'POST') return reply(405, { error: 'POST required' });
+  if (path === '/api/device/unlink') {
+    await ctx.rpc('cloud_device_forget', { p_device_id: device.deviceId });
+    return reply(200, { state: 'unlinked' });
+  }
+  if (path === '/api/device/telemetry/stop') {
+    await ctx.rpc('cloud_telemetry_stop', { p_device_id: device.deviceId });
+    return reply(200, { state: 'stopped' });
+  }
+  // /api/device/telemetry
+  if (!device.cloud.active) return reply(402, { error: 'Boat data needs SKAGER Cloud.', cloud: device.cloud });
+  let items: Json | null;
+  try {
+    const input = await body(req, MAX_TELEMETRY_BYTES);
+    only(input, ['items']);
+    items = validTelemetry(input.items);
+    requireValue(items);
+  } catch { return reply(400, { error: 'Invalid boat data.' }); }
+  const stored = object(await ctx.rpc('cloud_telemetry_put', { p_device_id: device.deviceId, p_items: items }));
+  if (stored.state === 'throttled') return reply(429, { state: 'throttled' });
+  return reply(202, { state: 'stored' });
+}
+
+// ---------------------------------------------------------------- customer routes
+async function customer(req: Request, ctx: CloudContext): Promise<{ id: string } | Response> {
+  const account = await ctx.getAccount(req);
+  if (!account || !UUID.test(account.id)) return reply(401, { error: 'Sign in required.' });
+  if (account.passwordSet === false) return reply(403, { error: 'Choose a password first.', setup: true });
+  return account;
+}
+
+async function customerRoute(req: Request, ctx: CloudContext, path: string): Promise<Response> {
+  const account = await customer(req, ctx);
+  if (account instanceof Response) return account;
+  if (path === '/api/cloud/overview') {
+    if (req.method !== 'GET') return reply(405, { error: 'GET required' });
+    const overview = object(await ctx.rpc('cloud_overview', { p_account_id: account.id }));
+    return reply(200, { cloud: overview.cloud ? publicCloud(overview.cloud) : null,
+      devices: (Array.isArray(overview.devices) ? overview.devices : []).map(publicDevice),
+      telemetryKeys: TELEMETRY_KEYS });
+  }
+  if (req.method !== 'POST') return reply(405, { error: 'POST required' });
+  let input: Json;
+  try { input = await body(req); } catch { return reply(400, { error: 'Invalid request.' }); }
+  if (path === '/api/cloud/link/find' || path === '/api/cloud/link/decide') {
+    const code = normalizeUserCode(input.code);
+    const decide = path.endsWith('/decide');
+    try {
+      only(input, decide ? ['code', 'approve'] : ['code']);
+      requireValue(code && (!decide || typeof input.approve === 'boolean'));
+    } catch { return reply(400, { error: 'Enter the 8-character code shown in SKAGER.' }); }
+    if (await throttled(ctx, ['cloud:code:' + account.id], 20, 600)) {
+      return reply(429, { error: 'Too many attempts. Wait a few minutes and try again.' });
+    }
+    const result = object(decide
+      ? await ctx.rpc('cloud_link_decide', { p_account_id: account.id, p_user_code: code, p_approve: input.approve })
+      : await ctx.rpc('cloud_link_find', { p_account_id: account.id, p_user_code: code }));
+    if (result.state === 'unknown') return reply(404, { error: 'That code is not valid or has expired. Check SKAGER for a new code.' });
+    return reply(200, { state: result.state, name: result.name, platform: result.platform ?? null,
+      appVersion: result.app_version ?? null, expiresAt: result.expires_at ?? null });
+  }
+  const deviceId = input.deviceId;
+  if (typeof deviceId !== 'string' || !UUID.test(deviceId)) return reply(400, { error: 'Invalid device.' });
+  if (path === '/api/cloud/devices/revoke') {
+    if (Object.keys(input).length !== 1) return reply(400, { error: 'Invalid request.' });
+    const result = object(await ctx.rpc('cloud_device_revoke', { p_account_id: account.id, p_device_id: deviceId }));
+    return result.state === 'revoked' ? reply(200, { state: 'revoked' }) : reply(404, { error: 'Device not found.' });
+  }
+  if (path === '/api/cloud/boat') {
+    if (Object.keys(input).length !== 1) return reply(400, { error: 'Invalid request.' });
+    const latest = object(await ctx.rpc('cloud_boat_latest', { p_account_id: account.id, p_device_id: deviceId }));
+    if (latest.state !== 'ok') return reply(404, { error: 'Boat not found.' });
+    // Values are re-validated on the way out as well: the page only ever renders known keys.
+    return reply(200, { device: publicDevice(latest.device), receivedAt: latest.received_at ?? null,
+      items: latest.items ? validTelemetry(latest.items) ?? {} : {} });
+  }
+  if (path === '/api/cloud/boat/series') {
+    try {
+      only(input, ['deviceId', 'keys', 'hours']);
+      requireValue(Array.isArray(input.keys) && input.keys.length >= 1 && input.keys.length <= 4
+        && input.keys.every((key: unknown) => typeof key === 'string' && key in TELEMETRY_KEYS)
+        && SERIES_HOURS.includes(input.hours));
+    } catch { return reply(400, { error: 'Invalid history request.' }); }
+    const series = object(await ctx.rpc('cloud_boat_series', { p_account_id: account.id, p_device_id: deviceId,
+      p_keys: input.keys, p_hours: input.hours }));
+    if (series.state !== 'ok') return reply(404, { error: 'Boat not found.' });
+    return reply(200, { bucketSeconds: series.bucket_seconds, series: series.series });
+  }
+  return reply(404, { error: 'Not found' });
+}
+
+const DEVICE_ROUTES = ['/api/device/link', '/api/device/link/poll', '/api/device/status', '/api/device/update-access',
+  '/api/device/telemetry', '/api/device/telemetry/stop', '/api/device/unlink'];
+const CUSTOMER_ROUTES = ['/api/cloud/overview', '/api/cloud/link/find', '/api/cloud/link/decide',
+  '/api/cloud/devices/revoke', '/api/cloud/boat', '/api/cloud/boat/series'];
+
+/** Device routes are exempt from the browser CSRF check; see the module comment. */
+export function isDeviceRoute(path: string): boolean { return DEVICE_ROUTES.includes(path); }
+
+export async function handleCloud(req: Request, ctx: CloudContext): Promise<Response | null> {
+  const path = new URL(req.url).pathname;
+  if (DEVICE_ROUTES.includes(path)) {
+    if (req.headers.has('Origin') || req.headers.has('Cookie')) return reply(403, { error: 'Request rejected' });
+    try {
+      if (path === '/api/device/link' || path === '/api/device/link/poll') {
+        if (req.method !== 'POST') return reply(405, { error: 'POST required' });
+        return path === '/api/device/link' ? await linkStart(req, ctx) : await linkPoll(req, ctx);
+      }
+      return await deviceRoute(req, ctx, path);
+    } catch { return reply(503, { error: 'SKAGER Cloud is temporarily unavailable.' }); }
+  }
+  if (CUSTOMER_ROUTES.includes(path)) {
+    try { return await customerRoute(req, ctx, path); }
+    catch { return reply(503, { error: 'SKAGER Cloud is temporarily unavailable.' }); }
+  }
+  return null;
+}

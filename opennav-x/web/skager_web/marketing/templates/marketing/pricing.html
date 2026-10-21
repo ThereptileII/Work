@@ -1,0 +1,56 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Pricing — SKAGER Public Beta Access{% endblock %}
+{% block description %}SKAGER Public Beta Access: one payment of USD 20, no subscription. Downloads, updates, support and your account included, with a 14-day full refund.{% endblock %}
+{% block page %}pricing{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="page-hero pricing-hero" aria-labelledby="pricing-title">
+  <div class="container">
+    <p class="kicker">Pricing</p>
+    <h1 id="pricing-title">One price.<br><span>Everything included.</span></h1>
+    <p class="page-hero-sub">Join the SKAGER public beta for a single payment. No subscription, no tiers, no surprises.</p>
+  </div>
+</section>
+
+<section class="plan-section" aria-label="Public Beta Access">
+  <div class="container plan-grid">
+    <article class="plan-card" data-reveal>
+      <p class="kicker">Public Beta Access</p>
+      <p class="plan-price"><span class="currency">USD</span><b>20</b></p>
+      <p class="plan-term">One-time payment</p>
+      <ul class="plan-includes">
+        <li>SKAGER for Windows, with every beta update to download</li>
+        <li>Your SKAGER account and downloads</li>
+        <li>Help centre, FAQ and guides</li>
+        <li>Support, bug reports and feature requests</li>
+        <li>Release notes and a say in what comes next</li>
+      </ul>
+      <a class="cta plan-cta" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a>
+      <p class="plan-note">Add the SKAGER GPS module at checkout.</p>
+      <p class="plan-small">Price in US dollars. Any applicable taxes are shown before you pay. Secure payment by Stripe.</p>
+    </article>
+    <div class="plan-side">
+      <div class="promise" data-reveal><h3>14-day full refund</h3><p>Not for you? Ask within 14 days and get every cent back.</p><a class="text-arrow" href="{% url 'marketing:refunds' %}">Refund policy →</a></div>
+      <div class="promise" data-reveal><h3>Your open-source rights stay</h3><p>You pay for our services, never for your freedoms under the GPL.</p><a class="text-arrow" href="{% url 'marketing:open_source' %}">Open source →</a></div>
+      <div class="promise" data-reveal><h3>Works with what you have</h3><p>Your OpenCPN charts, routes and instruments. A 64-bit Windows PC.</p><a class="text-arrow" href="{% url 'marketing:installation' %}">Requirements →</a></div>
+    </div>
+  </div>
+</section>
+
+<section class="faq-preview" aria-labelledby="pricing-faq">
+  <div class="container">
+    <h2 id="pricing-faq" data-reveal>Questions before<br><span>you buy.</span></h2>
+    <div class="faq-list" data-reveal>
+      <details><summary>Is there a subscription?</summary><p>No. Public Beta Access is a single payment of USD 20. SKAGER Cloud, for automatic updates and online services, is an optional extra at USD 2 a month.</p></details>
+      <details><summary>How do I get my account?</summary><p>It is created when you buy. You confirm your email with a code, choose a password and go straight to your download.</p></details>
+      <details><summary>Are charts included?</summary><p>No. SKAGER uses the charts you already have in OpenCPN. Buy and update charts from your chart provider.</p></details>
+      <details><summary>What do I need to run SKAGER?</summary><p>A 64-bit Windows PC and OpenCPN 5.12.4 for Windows, installed separately. A touch display of 1280 × 800 or larger is recommended at the helm.</p></details>
+      <details><summary>What if I change my mind?</summary><p>Choose Refund in your account within 14 days of purchase and you get the full amount back. No questions asked.</p></details>
+    </div>
+    <p data-reveal><a class="cta-ghost" href="{% url 'marketing:faq' %}">All questions <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+{% endblock %}

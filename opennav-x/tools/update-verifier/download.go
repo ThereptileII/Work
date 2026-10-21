@@ -109,7 +109,13 @@ func (a *VerifiedArtifact) Close() error {
 // partial files. The closed writer is reopened read-only, its identity and bytes
 // verified again, and that handle is returned positioned at the beginning.
 func DownloadArtifact(ctx context.Context, artifact releasepolicy.Artifact, approvedOrigin, protectedDir string) (*VerifiedArtifact, error) {
-	transport := &http.Transport{
+	transport := newArtifactTransport()
+	defer transport.CloseIdleConnections()
+	return downloadArtifact(ctx, artifact, approvedOrigin, protectedDir, &http.Client{Transport: transport})
+}
+
+func newArtifactTransport() *http.Transport {
+	return &http.Transport{
 		Proxy:                  http.ProxyFromEnvironment,
 		TLSHandshakeTimeout:    10 * time.Second,
 		ResponseHeaderTimeout:  30 * time.Second,
@@ -117,8 +123,6 @@ func DownloadArtifact(ctx context.Context, artifact releasepolicy.Artifact, appr
 		DisableCompression:     true,
 		DisableKeepAlives:      true,
 	}
-	defer transport.CloseIdleConnections()
-	return downloadArtifact(ctx, artifact, approvedOrigin, protectedDir, &http.Client{Transport: transport})
 }
 
 // Only package tests inject a client for the local HTTPS test certificate.

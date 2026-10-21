@@ -61,6 +61,8 @@ struct ShellActions {
   // (vessel, active route, chart viewport). The tick never blocks on network.
   application::WeatherActions weather;
   std::function<void(bool)> weather_tick;
+  // SCRUM-44/369: SKAGER Cloud pairing, automatic-update entitlement, boat data.
+  application::CloudActions cloud;
   std::function<bool()> route_creating;
   // The new-route action bar excludes native extension of an existing route.
   std::function<bool()> new_route_creating;

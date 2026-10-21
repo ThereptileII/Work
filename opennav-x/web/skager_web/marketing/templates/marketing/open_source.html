@@ -1,0 +1,43 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Open source and licences — SKAGER{% endblock %}
+{% block description %}SKAGER builds on OpenCPN. Our credit to the OpenCPN project, your rights under the GPL, source code for every release and third-party notices.{% endblock %}
+{% block content %}
+<div class="content-shell container legal-doc">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:legal' %}">Legal</a> <span aria-hidden="true">/</span> <span aria-current="page">Open source &amp; licences</span></nav>
+  <header class="page-intro">
+    <p class="eyebrow">Open source</p>
+    <h1>Built on shared work.</h1>
+    <p class="lead">SKAGER builds on OpenCPN and the work of its many contributors. We credit it openly, publish our source, and keep your open-source rights intact.</p>
+  </header>
+  <div class="article-layout">
+    <aside class="article-nav" aria-label="On this page">
+      <h2 class="section-heading">On this page</h2>
+      <ol><li><a href="#opencpn">Thank you, OpenCPN</a></li><li><a href="#rights">Your rights</a></li><li><a href="#source">Source code</a></li><li><a href="#notices">Third-party notices</a></li></ol>
+    </aside>
+    <article class="article-body prose">
+      <section class="page-section" id="opencpn"><h2>Thank you, OpenCPN</h2>
+        <p><a href="https://opencpn.org/">OpenCPN</a> is the free, open-source chart plotter and navigation software at the heart of SKAGER. It is developed by volunteers and installed separately from SKAGER. SKAGER is an independent product: it is not affiliated with, and not endorsed by, the OpenCPN project.</p>
+        <p>Explore the official <a href="https://github.com/OpenCPN/OpenCPN">OpenCPN source repository</a> the <a href="https://github.com/OpenCPN/OpenCPN/releases/tag/Release_5.12.4">OpenCPN 5.12.4 release</a> that SKAGER is built for, and the exact <a href="https://github.com/OpenCPN/OpenCPN/tree/37fd0cddb7334fe489e9f18aa163977a9c5c84f7">source baseline</a> we build against.</p></section>
+      <section class="page-section" id="rights"><h2>Your rights</h2>
+        <p>SKAGER includes software licensed under the GNU General Public License (GPL) and other open-source licences. Those licences give you the right to run, study, change and share that software, and to receive its source code.</p>
+        <p>When you buy Public Beta Access, you pay for our services: tested builds, updates, support and your account. Nothing in our terms limits the rights the open-source licences give you. Chart licences from your chart provider are separate.</p></section>
+      <section class="page-section" id="source"><h2>Source code</h2>
+        <p>Each SKAGER release has a matching source package and licence notices, published here and linked from About in the application. You do not need an account to get them.</p>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Release</th><th scope="col">Source</th><th scope="col">Notices</th></tr></thead>
+        <tbody>{% if public_access_open %}<tr><td colspan="3">See the release page for each version.</td></tr>{% else %}<tr><td colspan="3">The first public release and its source package will be listed here.</td></tr>{% endif %}</tbody></table></div></section>
+      <section class="page-section" id="notices"><h2>Third-party notices</h2>
+        <p>The complete licence texts and notices for the SKAGER application are included with every release and shown under About › Licences. Major components include:</p>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Component</th><th scope="col">Licence</th></tr></thead><tbody>
+          <tr><td>OpenCPN (separately installed prerequisite)</td><td>GNU GPL version 2 or later</td></tr>
+          <tr><td>wxWidgets</td><td>wxWindows Library Licence 3.1</td></tr>
+        </tbody></table></div>
+        <h3>This website</h3>
+        <div class="table-wrap"><table><thead><tr><th scope="col">Component</th><th scope="col">Licence</th></tr></thead><tbody>
+          <tr><td>Inter typeface 4.1, © 2016 The Inter Project Authors (Latin subset)</td><td>SIL Open Font License 1.1 · <a href="{% static 'marketing/fonts/Inter-OFL.txt' %}">licence text</a> · <a href="https://github.com/rsms/inter">project</a></td></tr>
+          <tr><td>aws4fetch 1.0.20 (server side)</td><td>MIT License</td></tr>
+        </tbody></table></div></section>
+    </article>
+  </div>
+</div>
+{% endblock %}

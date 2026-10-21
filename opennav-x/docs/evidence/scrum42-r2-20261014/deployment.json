@@ -1,0 +1,72 @@
+{
+  "schema": 1,
+  "observedDate": "2026-10-14",
+  "issue": "SCRUM-42",
+  "sourceCommit": "1acc781ed1ba50d565201911c15cdab00c24a364",
+  "cloudflare": {
+    "worker": "skager-beta-web",
+    "version": "33f77360",
+    "previousVersion": "e18a9fb4",
+    "status": "Active / Latest",
+    "host": "beta.skager.app",
+    "uploadBytes": 503100,
+    "fullEditorEqualityBeforeDeploy": true,
+    "sha256": "54fbec6bf5c2df46b2d7586c3ecd82fddfa4340fafa396bbd7e9b4eceaa58430"
+  },
+  "supabase": {
+    "project": "kelwgubkuvditalsbqpr",
+    "function": "skager-web",
+    "deploymentCountObserved": 13,
+    "fullFreshCodeEqualityAfterDeploy": true,
+    "bytes": 77857,
+    "sha256": "1f53a3500be48fe6646da8a5b00abc672b6e6e30904b8c548f77617d381c8e7d"
+  },
+  "serverBindingNamesVerified": [
+    "R2_ACCESS_KEY_ID",
+    "R2_SECRET_ACCESS_KEY",
+    "SKAGER_DOWNLOAD_BACKEND",
+    "R2_ACCOUNT_ID",
+    "R2_DOWNLOAD_BUCKET"
+  ],
+  "nonsecretBindings": {
+    "SKAGER_DOWNLOAD_BACKEND": "r2",
+    "R2_ACCOUNT_ID": "7869adcf376c630b175c94729321e016",
+    "R2_DOWNLOAD_BUCKET": "skager-private-releases"
+  },
+  "directBackendHealth": {
+    "status": 200,
+    "ready": false
+  },
+  "directBackendDownloads": {
+    "status": 404,
+    "error": "Downloads unavailable."
+  },
+  "liveR2AuthenticationAccepted": false,
+  "liveDownloadAccepted": false,
+  "publicAccessEnabled": false,
+  "qualifiedReleaseCatalogEntries": 0,
+  "betaOriginHealthEarlierUrllib": {
+    "status": 403,
+    "contentType": "text/plain; charset=UTF-8",
+    "providerError": 1010,
+    "applicationResponse": false,
+    "client": "Python urllib"
+  },
+  "betaOriginHealthLatestCurl": {
+    "receipt": "curl-health.json",
+    "observedAtUtc": "2026-10-14T07:27:03.856085+00:00",
+    "client": "curl 8.22.0",
+    "userAgentSelection": "unmodified curl default",
+    "status": 200,
+    "contentType": "application/json; charset=utf-8",
+    "server": "cloudflare",
+    "cfRay": "a4a4dbfff978bd27-ARN",
+    "applicationResponse": true,
+    "ready": false
+  },
+  "browserPreview": {
+    "client": "Chrome UI preview",
+    "error": "ERR_BLOCKED_BY_CLIENT",
+    "observedHttpResponse": false
+  }
+}

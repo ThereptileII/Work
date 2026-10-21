@@ -1,0 +1,42 @@
+{% extends 'marketing/base.html' %}
+{% block title %}Help centre — SKAGER{% endblock %}
+{% block description %}Answers and guides for SKAGER and OpenCPN: installation, charts, AIS, instruments, autopilot, weather and energy.{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">Help centre</p>
+    <h1>How can we help?</h1>
+    <p class="lead">Quick answers, step-by-step how-tos and in-depth guides for SKAGER, OpenCPN and your boat's systems.</p>
+    <form class="support-search" method="get" action="{% url 'marketing:support' %}" role="search">
+      <label class="visually-hidden" for="support-query">Search the help centre</label>
+      <input id="support-query" type="search" name="q" value="{{ query }}" maxlength="120" placeholder="Search: AIS, charts, autopilot…">
+      <button class="button" type="submit">Search</button>
+    </form>
+  </header>
+
+  {% if query %}
+  <section class="page-section" aria-labelledby="results-heading">
+    <h2 id="results-heading" class="section-heading" role="status">{{ result_count }} result{{ result_count|pluralize }} for “{{ query }}”</h2>
+    {% if faqs %}<div class="faq-list compact">{% for item in faqs %}<details><summary>{{ item.question }}</summary><p>{{ item.answer }}</p>{% if item.href %}<p><a href="{{ item.href.url }}">{{ item.href.label }} →</a></p>{% endif %}</details>{% endfor %}</div>{% endif %}
+    <div class="article-cards">
+      {% for article in articles %}{% include 'marketing/includes/article_card.html' %}{% endfor %}
+    </div>
+    {% if not articles and not faqs %}<div class="notice"><h3>No matching articles</h3><p>Try a shorter word such as “charts”, “AIS” or “install”, or browse <a href="{% url 'marketing:articles' %}">all articles</a>.</p></div>{% endif %}
+    <p><a href="{% url 'marketing:support' %}">Clear search</a></p>
+  </section>
+  {% else %}
+  <section class="support-doors" aria-label="Help centre sections">
+    <a class="door" href="{% url 'marketing:faq' %}"><span class="eyebrow">FAQ</span><h2>Quick answers</h2><p>Buying, compatibility, safety and privacy, in a sentence or two.</p></a>
+    <a class="door" href="{% url 'marketing:articles' %}"><span class="eyebrow">Articles</span><h2>Guides &amp; how-tos</h2><p>Install, connect, plan and recover, step by step and in depth.</p></a>
+    <a class="door" href="{% url 'marketing:account' %}"><span class="eyebrow">Your account</span><h2>Contact support</h2><p>Report a bug, request a feature or ask us directly from your account.</p></a>
+  </section>
+  <section class="page-section" aria-labelledby="popular-heading">
+    <h2 id="popular-heading" class="section-heading">Popular articles</h2>
+    <div class="article-cards">
+      {% for article in featured %}{% include 'marketing/includes/article_card.html' %}{% endfor %}
+    </div>
+    <p><a class="text-arrow" href="{% url 'marketing:articles' %}">All articles →</a></p>
+  </section>
+  {% endif %}
+</div>
+{% endblock %}

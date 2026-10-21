@@ -1,0 +1,20 @@
+{% extends 'marketing/base.html' %}
+{% block title %}{% if destination == 'downloads' %}Downloads{% else %}Your account{% endif %} — SKAGER{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <header class="page-intro">
+    <p class="eyebrow">{% if destination == 'downloads' %}Downloads{% else %}Your account{% endif %}</p>
+    <h1>{% if destination == 'downloads' %}Downloads live in your account.{% else %}Sign in to your account.{% endif %}</h1>
+    <p class="lead">{% if destination == 'downloads' %}After purchase, you download SKAGER and every update from your account.{% else %}Your account is where you download SKAGER, get updates and contact support.{% endif %}</p>
+  </header>
+  {% if not public_access_open %}
+  <div class="notice"><h2>Opening with the public beta</h2><p>Checkout and downloads open with the public beta.</p></div>
+  {% endif %}
+  <p class="hero-actions"><a class="cta" href="/auth/login/">Log in <span aria-hidden="true">→</span></a> <a class="cta-ghost" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a></p>
+  <div class="card-grid">
+    <a class="info-card" href="{% url 'marketing:installation' %}"><h2>Requirements</h2><p>What you need before you install.</p></a>
+    <a class="info-card" href="{% url 'marketing:pricing' %}"><h2>Pricing</h2><p>USD 20, one-time, with a 14-day refund.</p></a>
+    <a class="info-card" href="{% url 'marketing:support' %}"><h2>Help centre</h2><p>Answers, guides and how-tos.</p></a>
+  </div>
+</div>
+{% endblock %}

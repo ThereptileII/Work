@@ -1,0 +1,43 @@
+{% extends 'marketing/base.html' %}
+{% block title %}{{ article.title }} — SKAGER{% endblock %}
+{% block description %}{{ article.summary }}{% endblock %}
+{% block og_type %}article{% endblock %}
+{% block extra_head %}<meta property="og:title" content="{{ article.title }}">
+  <meta property="og:description" content="{{ article.summary }}">
+  <script type="application/ld+json">{{ schema }}</script>{% endblock %}
+{% block content %}
+<div class="content-shell container">
+  <nav class="breadcrumbs" aria-label="Breadcrumb"><a href="{% url 'marketing:support' %}">Help centre</a> <span aria-hidden="true">/</span> <a href="{% url 'marketing:articles' %}">Articles</a> <span aria-hidden="true">/</span> <span aria-current="page">{{ article.title }}</span></nav>
+  <header class="page-intro article-intro">
+    <p class="eyebrow"><span class="kind kind-{{ article.kind|slugify }}">{{ article.kind }}</span> · {{ article.category }}</p>
+    <h1>{{ article.title }}</h1>
+    <p class="lead">{{ article.summary }}</p>
+    <p class="meta">Updated <time datetime="{{ article.updated }}">{{ article.updated }}</time> · {{ article.minutes }} min read{% if article.applies_to %} · {{ article.applies_to }}{% endif %}</p>
+  </header>
+  <div class="article-layout">
+    <aside class="article-nav" aria-label="In this article">
+      <h2 class="section-heading">In this article</h2>
+      <ol>{% for section in article.sections %}<li><a href="#s{{ forloop.counter }}">{{ section.title }}</a></li>{% endfor %}</ol>
+    </aside>
+    <article class="article-body prose">
+      {% for section in article.sections %}
+      <section class="page-section" id="s{{ forloop.counter }}">
+        <h2>{{ section.title }}</h2>
+        {% for paragraph in section.paragraphs %}<p>{{ paragraph }}</p>{% endfor %}
+        {% if section.bullets %}<ul>{% for bullet in section.bullets %}<li>{{ bullet }}</li>{% endfor %}</ul>{% endif %}
+      </section>
+      {% endfor %}
+    </article>
+  </div>
+  {% if related %}
+  <section class="page-section" aria-labelledby="related-heading">
+    <h2 id="related-heading" class="section-heading">More on {{ article.category|lower }}</h2>
+    <div class="article-cards">{% for article in related %}{% include 'marketing/includes/article_card.html' %}{% endfor %}</div>
+  </section>
+  {% endif %}
+  <aside class="cta-panel">
+    <div><h2>See it at your helm.</h2><p>SKAGER brings charts, traffic, instruments and autopilot together on one calm screen.</p></div>
+    <a class="button" href="{% url 'marketing:features' %}">Explore SKAGER</a>
+  </aside>
+</div>
+{% endblock %}

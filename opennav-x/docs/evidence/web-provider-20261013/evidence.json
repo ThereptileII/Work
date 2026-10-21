@@ -1,0 +1,344 @@
+{
+  "schema": 1,
+  "date": "2026-10-13",
+  "issue": "SCRUM-40",
+  "scope": "private-invited-beta-web-provider-observation",
+  "sourceCommit": "c51836f29901cba1c6c221db734a316174a53bac",
+  "ci": {
+    "run": "https://github.com/ThereptileII/Work/actions/runs/38451243615",
+    "conclusion": "success",
+    "artifactId": 11840810685,
+    "artifactSha256": "b4c435a7a4becfa1d155bbcf5e271d7c15736e78745baddf8e18e1d5ea25c01b",
+    "django": {
+      "passed": 88,
+      "failed": 0
+    },
+    "edge": {
+      "passed": 45,
+      "failed": 0,
+      "skipped": 0
+    },
+    "postgresSqlAndMigrations": "passed"
+  },
+  "providers": {
+    "supabaseEdge": {
+      "sourceSha256": "0492c12db66726e0699750a00c164de99d2b0e57d0948a9329fd20dbd88a7664",
+      "sourceBytes": 47842,
+      "fullPredeployByteEquality": "verified by operator",
+      "deploymentUi": "success",
+      "previousSourceSha256": "c27a5c890e40525bc0e4418c5e5bbf0abbe28b7f87b0dc5792b6824b5e8cf2fc",
+      "previousDeploymentAvailableForRollback": true,
+      "directHealth": {
+        "httpStatus": 200,
+        "ready": false
+      },
+      "directSession": {
+        "httpStatus": 200,
+        "account": null,
+        "csrfPresent": true
+      }
+    },
+    "cloudflareFrontend": {
+      "sourceSha256": "86ff2ae9ce56fa94f80999edc172327545daff1b08c2667662d85af75a63cc66",
+      "sourceBytes": 492495,
+      "activeDeploymentIdentifier": "07a6061a",
+      "activeTrafficPercent": 100,
+      "runtimeDate": "2026-10-13",
+      "betaOriginHttpStatus": 200,
+      "loginHttpStatus": 200,
+      "betaOriginSessionHttpStatus": 503
+    },
+    "stripeTestMode": {
+      "productAndUsd20Price": "verified",
+      "fullDiscountCoupon": {
+        "verified": true,
+        "code": "SKAGERFRIENDS",
+        "couponId": "xecg4vnM",
+        "promotionId": "promo_1UQB86IqaIVnHG13BVLPyLWW",
+        "discountPercent": 100,
+        "duration": "once",
+        "productRestriction": "SKAGER only",
+        "maximumUses": 25,
+        "configurationOnlyNoEntitlementGranted": true
+      },
+      "liveCheckoutOrPaymentTested": false
+    }
+  },
+  "catalog": {
+    "sourceSqlUnchangedFrom": "0e1ce6b356028e643edc8abb409d5c4ef1fd84b5",
+    "functionsMatched": 21,
+    "columnsMatched": 70,
+    "structuralConstraintsMatched": 25,
+    "checkAndDefaultExpressions": "semantically consistent with source SQL",
+    "comparisonQueryFalsePositives": {
+      "count": 25,
+      "cause": "connoinherit=true on 11 primary-key, 11 foreign-key, and 3 unique constraints"
+    },
+    "privateRlsTables": 11,
+    "publicServiceRpcs": 17,
+    "privateFunctions": 4,
+    "policies": 0,
+    "triggers": 7,
+    "providerUiExposedApiSchemas": [
+      "public",
+      "graphql_public"
+    ],
+    "providerUiPrivateSchemaUnchecked": true,
+    "liveApiSessionSchemasEstablishedByCatalog": false
+  },
+  "followUpDeployment": {
+    "sourceCommit": "3d87570441cb8d9375f73f2763033291c26b022e",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38453173061",
+      "conclusion": "success",
+      "artifactId": 11841632190,
+      "artifactSha256": "ca4f51f8d8aa68c50f79f714338869c4c2ffd964f0968c6bbd2ae7a2421b83db",
+      "django": {
+        "passed": 88,
+        "failed": 0
+      },
+      "edge": {
+        "passed": 51,
+        "failed": 0,
+        "skipped": 0
+      },
+      "postgresSqlAndMigrations": "passed"
+    },
+    "cloudflareFrontend": {
+      "deploymentIdentifier": "99f572ea",
+      "status": "Active Latest",
+      "sourceSha256": "0b5887f161fdb500bedb760bd78381032efb45dd24151480d8a65b01f62cc898",
+      "sourceBytes": 492638
+    },
+    "supabaseEdgeSourceSha256": "0492c12db66726e0699750a00c164de99d2b0e57d0948a9329fd20dbd88a7664"
+  },
+  "remaining": {
+    "betaOriginSessionHttp503": "resolved by proxyCorrection; historical failure retained",
+    "authenticationFlags": "explicitly off",
+    "credentials": "unset",
+    "customSmtp": "required; owner choice pending",
+    "isolatedStripeTestScope": "required before webhook configuration; current scope contains unrelated products",
+    "restrictedTestKeysAndCouponProviderSchema": "corrected and deployed in commerceCorrection; live provider qualification pending",
+    "liveCheckoutPaymentAndDownload": "not tested",
+    "publicSignupPaymentAndDownloads": "closed",
+    "webhookOwnershipFilter": "source reviewed and CI passed in webhookOwnershipCandidate; packaged but not deployed; provider transport/consent and live acceptance remain open"
+  },
+  "proxyCorrection": {
+    "sourceCommit": "839ea17f76dc631b46a4a70d9b164e1f70d26b69",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38454462943",
+      "conclusion": "success",
+      "artifactId": 11840734310,
+      "artifactBytes": 5478,
+      "artifactSha256": "3652722b2a706b86cb4682f710e8f9acaa8294a17d4c586de99571a6fec6722d",
+      "djangoPassed": 88,
+      "edgePassed": 56,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "workerd": {
+      "version": "1.20261013.1",
+      "binarySha256": "707605d9b34230f74656edd05d59e1a055ed9abd33786b8b9cc9e45e8ab8b704",
+      "offlineGroupsPassed": 6,
+      "original503Reproduced": true,
+      "cause": "unsupported redirect:error option",
+      "fix": "manual mode with explicit all-3xx refusal"
+    },
+    "cloudflareFrontend": {
+      "deploymentIdentifier": "e18a9fb4",
+      "status": "Active Latest",
+      "sourceBytes": 492723,
+      "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2",
+      "fullPredeployByteEquality": true
+    },
+    "supabaseBundleUnchanged": true,
+    "browserSessionStatus": 200,
+    "loginFormRendered": true,
+    "unauthenticatedPortalReturnedToLogin": true,
+    "commandLineHttpProbe": {
+      "status": 403,
+      "json": false,
+      "applicationBehaviorProven": false
+    },
+    "nonSecretSettingsSaved": 8,
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "secretsEntered": false,
+    "invitationEmailsEntered": false,
+    "realLoginOrCheckoutPassed": false
+  },
+  "commerceCorrection": {
+    "sourceCommit": "251c88bed6063fe5212339df73caa81c48cb931f",
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38457534904",
+      "conclusion": "success",
+      "artifactId": 11845055319,
+      "artifactBytes": 5638,
+      "artifactSha256": "69c4e40ccead4b3abb4da674cc50fea90848ee244d2b6faa2e8cbf228db783da",
+      "djangoPassed": 88,
+      "edgePassed": 59,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "independentReview": "completed; conflicting promotion-entry flag fixed before integration; live provider limitations retained",
+    "supabaseEdge": {
+      "sourceBytes": 50491,
+      "sourceSha256": "09728b9034eade3c3cae57b1021a28c47776c8d9f6303fd791b30c84c049898b",
+      "fullPredeployByteEquality": true,
+      "fullPostdeployCodeReadbackEquality": true,
+      "deploymentUi": "recent successful update; no opaque identifier exposed",
+      "legacyGatewayJwtRequired": false
+    },
+    "cloudflareFrontend": {
+      "unchanged": true,
+      "redeployed": false,
+      "deploymentIdentifier": "e18a9fb4",
+      "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2"
+    },
+    "sqlChanged": false,
+    "browserSessionStatus": 200,
+    "loginFormRendered": true,
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "secretsEntered": false,
+    "invitationEmailsEntered": false,
+    "realLoginOrCheckoutPassed": false,
+    "dedicatedStripeSandbox": "create/manage controls disabled; no live activation or unrelated product changes",
+    "sharedSandboxFilter": "read-only design reviewed; not implemented or accepted"
+  },
+  "webhookOwnershipCandidate": {
+    "issue": "SCRUM-36",
+    "sourceCommit": "662c62478ded1ea75f5646b984d5670cda36525a",
+    "integratedImplementationCommits": [
+      "cff85841",
+      "662c62478ded1ea75f5646b984d5670cda36525a"
+    ],
+    "independentReview": {
+      "conclusion": "passed",
+      "reviewedIsolatedCommits": [
+        "5eb5f0e06a8fc3b51fadaa2620865592bf7eafc7",
+        "0497c63ec560e1e22ddf269a65502a83292a4872"
+      ],
+      "scope": "pre-ingestion ownership, retry/no-write preflight, historical bound price and unchanged atomic SQL boundaries"
+    },
+    "ci": {
+      "run": "https://github.com/ThereptileII/Work/actions/runs/38460214097",
+      "runId": 38460214097,
+      "runAttempt": 1,
+      "workflow": ".github/workflows/skager-web.yml",
+      "headSha": "662c62478ded1ea75f5646b984d5670cda36525a",
+      "status": "completed",
+      "conclusion": "success",
+      "producerJobId": 115513126793,
+      "producerJobName": "postgres-integrity",
+      "producerJobConclusion": "success",
+      "artifactId": 11844724305,
+      "artifactName": "skager-web-postgresql-662c62478ded1ea75f5646b984d5670cda36525a",
+      "artifactBytes": 6086,
+      "artifactSha256": "a9d063db3d8d787191d1904fd18297fa630e7581c2151d611b655f604548e85e",
+      "githubDigestMatched": true,
+      "zipCrc": "all 10 members passed",
+      "artifactScope": "CI logs; candidate bundles are separately retained",
+      "djangoPassed": 88,
+      "edgePassed": 69,
+      "totalPassed": 157,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "behavior": {
+      "ownershipBeforeReceipt": true,
+      "completionProviderPreflightBeforeReceipt": true,
+      "checkoutBinding": "immutable local order/session; rejected means unowned-or-mismatched, ignored without receipt or effect",
+      "refundBinding": "authenticated Charge -> exact PaymentIntent-filtered unique TEST paid Checkout Session -> immutable local order/session binding",
+      "preflightUncertainty": "503 with no receipt/effect attempted; empty, multiple or paginated lookup is retryable",
+      "sqlChanged": false,
+      "atomicRefundFirstAndIdempotencyBoundary": "unchanged",
+      "providerTransportIsolated": false,
+      "unrelatedTestPayloadsCanReachHandler": true,
+      "rawPayloadLoggingAdded": false
+    },
+    "retainedPackage": {
+      "sourceCommit": "662c62478ded1ea75f5646b984d5670cda36525a",
+      "packaged": true,
+      "deployed": false,
+      "cloudflareFrontend": {
+        "sourceBytes": 492723,
+        "sourceSha256": "0a71e211d4cf3aca04162838abc1dccdffde3cb8c2a29d795f5dd9469a72aac2",
+        "byteIdenticalToDeployment": "e18a9fb4",
+        "redeployed": false
+      },
+      "supabaseEdge": {
+        "sourceBytes": 52899,
+        "sourceSha256": "345b14d49db6fb9a214a66e8294f4cbb0e8e5a0bb15c1f4cdd636bf8b61149dc",
+        "status": "packaged; not deployed"
+      }
+    },
+    "currentLiveSupabaseEdge": {
+      "sourceCommit": "251c88bed6063fe5212339df73caa81c48cb931f",
+      "sourceBytes": 50491,
+      "sourceSha256": "09728b9034eade3c3cae57b1021a28c47776c8d9f6303fd791b30c84c049898b",
+      "authority": "previous operator deployment/readback; no new provider action in this evidence follow-up"
+    },
+    "featureFlags": {
+      "auth": false,
+      "checkout": false,
+      "portal": false
+    },
+    "credentialHandoff": "pending",
+    "providerConsentAndConfiguration": "specific shared TEST event delivery still requires separate consent/configuration; dedicated scope and actual live qualification gates remain open",
+    "realAccountPaymentOrEndToEndAcceptance": false,
+    "publicSignupPaymentAndDownloads": "closed"
+  },
+  "privateDownloadsCandidate": {
+    "issue": "SCRUM-42",
+    "sourceCommit": "76ddba17462fcfe6884be2465e88e0e80b79b265",
+    "independentReview": "bounded backend and root integration reviewed; no source blocker found; no provider qualification",
+    "ci": {
+      "run": 38464107015,
+      "job": 115526476136,
+      "conclusion": "success",
+      "artifactId": 11848100752,
+      "artifactBytes": 6857,
+      "artifactSha256": "900622a65ec0ffc06db54b0fee66981b3ef15c2edfb930180a024f2ef0c59e69",
+      "zipMembersCrcPassed": 10,
+      "djangoPassed": 88,
+      "edgePassed": 87,
+      "failed": 0,
+      "skipped": 0,
+      "postgresSqlAndMigrations": "passed"
+    },
+    "retainedPackage": {
+      "cloudflare": {
+        "bytes": 501588,
+        "sha256": "fc2dea75860d3a4745ac489cd2cd76cb9eac885a7e3dfd1187a4ce540ebd2d6a"
+      },
+      "supabase": {
+        "bytes": 65191,
+        "sha256": "68bc5db0554fd98f18c7e8d572724c06cfa48a1402bf6fb17eb9c5335b8cc0c2"
+      },
+      "deployed": false
+    },
+    "actualStorageObservation": {
+      "supabasePlan": "Free",
+      "maximumObjectUploadMB": 50,
+      "requiredRecoveryAndSourceFit": false,
+      "bucketsCreated": 0,
+      "r2SubscriptionEnabled": false,
+      "r2OwnerActivationHandoff": "pending; recurring usage billing and terms",
+      "storageAdaptation": "pending authorized provider choice"
+    },
+    "catalogEntries": 0,
+    "accessFlags": "OFF",
+    "liveSupabaseSource": "251c88bed6063fe5212339df73caa81c48cb931f",
+    "liveCloudflareDeployment": "e18a9fb4",
+    "liveDownloadOrAccountPaymentAcceptance": false,
+    "publicAccess": "closed"
+  }
+}

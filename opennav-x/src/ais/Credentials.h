@@ -49,6 +49,11 @@ std::unique_ptr<IAisCredentials> CreateAisCredentials();
 // rules: Windows Credential Manager target "OpenNavX/GRIBstream/v1";
 // Linux development reads SKAGER_GRIBSTREAM_TOKEN only and never writes.
 std::unique_ptr<IAisCredentials> CreateWeatherCredentials();
+// SKAGER Cloud device token from app pairing (SCRUM-44). Windows: Credential
+// Manager target "SKAGER/Cloud/v1", also read by the installed update launcher.
+// Linux development: kept in memory for the process only, seeded from
+// SKAGER_CLOUD_TOKEN; never written to a file.
+std::unique_ptr<IAisCredentials> CreateCloudCredentials();
 #ifdef OPENNAV_CREDENTIAL_TEST_SCOPE
 // This factory exists only in the dedicated test library/executable. It cannot
 // address the product entry or any unrelated Windows credential.

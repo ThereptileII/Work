@@ -56,6 +56,8 @@ type services struct {
 	platform platform
 	check    func(context.Context, verifier.PrepareConfig, releasepolicy.OpenCpn) (verifier.UpdateCandidate, error)
 	prepare  func(context.Context, verifier.PrepareConfig, releasepolicy.OpenCpn, verifier.ConsentIdentity) (preparation, error)
+	// access returns the SKAGER Cloud device token, or "" when SKAGER is not linked.
+	access func() string
 }
 
 // Run starts only the current generation selected by the owned installation.
@@ -96,7 +98,7 @@ func Run(ctx context.Context, arguments []string) error {
 	if err != nil {
 		return err
 	}
-	return run(ctx, arguments, services{platform: p, check: verifier.CheckUpdate, prepare: func(ctx context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, i verifier.ConsentIdentity) (preparation, error) {
+	return run(ctx, arguments, services{platform: p, check: verifier.CheckUpdate, access: readCloudToken, prepare: func(ctx context.Context, c verifier.PrepareConfig, o releasepolicy.OpenCpn, i verifier.ConsentIdentity) (preparation, error) {
 		v, err := verifier.PrepareUpdateSet(ctx, c, o, i)
 		if err != nil {
 			return nil, err
@@ -290,6 +292,16 @@ func run(ctx context.Context, args []string, s services) (resultErr error) {
 		return ordinary(ctx, s.platform, g, state.Stock, mode)
 	}
 	config := preparationConfig(l, g.owned, trust)
+	// Automatic updates are a SKAGER Cloud service (SCRUM-44). Without a linked
+	// account there is no update check at all; startup is otherwise unchanged and
+	// the installed version keeps working. The feed refuses tokens without Cloud.
+	if s.access == nil {
+		return ordinary(ctx, s.platform, g, state.Stock, mode)
+	}
+	config.AccessToken = s.access()
+	if !verifier.AccessTokenPattern.MatchString(config.AccessToken) {
+		return ordinary(ctx, s.platform, g, state.Stock, mode)
+	}
 	checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	candidate, err := s.check(checkCtx, config, observed)
 	cancel()

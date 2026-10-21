@@ -79,6 +79,9 @@ std::unique_ptr<IAisCredentials> CreateWeatherCredentials() {
   return std::make_unique<WindowsCredentials>(L"OpenNavX/GRIBstream/v1",
                                               L"SKAGER GRIBstream");
 }
+std::unique_ptr<IAisCredentials> CreateCloudCredentials() {
+  return std::make_unique<WindowsCredentials>(L"SKAGER/Cloud/v1", L"SKAGER Cloud");
+}
 #ifdef OPENNAV_CREDENTIAL_TEST_SCOPE
 std::unique_ptr<IAisCredentials>
 CreateTestAisCredentials(const std::string &id) {

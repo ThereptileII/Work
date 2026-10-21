@@ -80,11 +80,7 @@ func prepareRecovery(ctx context.Context, config PrepareConfig, observed release
 func acquireRecovery(ctx context.Context, config PrepareConfig, candidate UpdateCandidate, client *http.Client) (_ *PreparedRecovery, resultErr error) {
 	var artifact *VerifiedArtifact
 	var err error
-	if client == nil {
-		artifact, err = DownloadArtifact(ctx, candidate.Policy.Recovery, config.ArtifactOrigin, config.ArtifactDirectory)
-	} else {
-		artifact, err = downloadArtifact(ctx, candidate.Policy.Recovery, config.ArtifactOrigin, config.ArtifactDirectory, client)
-	}
+	artifact, err = acquireArtifact(ctx, candidate.Policy.Recovery, config, client)
 	if err != nil {
 		return nil, err
 	}

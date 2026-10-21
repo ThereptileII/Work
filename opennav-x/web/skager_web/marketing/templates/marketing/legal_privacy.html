@@ -1,0 +1,85 @@
+{% extends 'marketing/legal_base.html' %}
+{% block title %}Privacy Policy — SKAGER{% endblock %}
+{% block description %}What personal data SKAGER collects, why, who processes it, how long we keep it and your rights.{% endblock %}
+{% block doc_name %}Privacy Policy{% endblock %}
+{% block doc_heading %}Privacy Policy{% endblock %}
+{% block doc_lead %}We collect only what we need to sell, deliver and support SKAGER. Your navigation data stays on your boat.{% endblock %}
+{% block doc_body %}
+<section class="page-section" id="summary"><h2>In short</h2>
+<ul>
+<li>We use your email address for your account, receipts and important service messages. No marketing email unless you ask for it.</li>
+<li>Payments go through Stripe. We never see your full card number.</li>
+<li>The website has no analytics, advertising or tracking cookies.</li>
+<li>Your positions, routes and instrument data stay on your PC. We never use them for analytics or marketing.</li>
+<li>You can see, correct, export or delete your data. Just ask.</li>
+</ul></section>
+
+<section class="page-section" id="controller"><h2>1. Who is responsible</h2>
+<p>{{ operator.name }}, organisation number {{ operator.org_number }}, {{ operator.address }}, is the controller for the personal data described here. Contact us about privacy at {{ operator.email }}.</p></section>
+
+<section class="page-section" id="what"><h2>2. What we collect and why</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Data</th><th scope="col">Why</th><th scope="col">Legal basis</th></tr></thead>
+<tbody>
+<tr><td>Account: email address, password (stored only as a secure hash by our sign-in provider), account status, log-in times</td><td>To set up the account that comes with your purchase and let you log in with your password and a one-time code</td><td>Contract</td></tr>
+<tr><td>Delivery: name and shipping address for hardware orders, tracking reference</td><td>To ship your order and handle returns</td><td>Contract</td></tr>
+<tr><td>SKAGER Cloud: subscription status and billing period</td><td>To provide and bill the subscription</td><td>Contract</td></tr>
+<tr><td>Orders: amount, currency, any discount code, and Stripe checkout and payment references. Stripe collects your card and billing details directly.</td><td>To take payment, grant access, send receipts and handle refunds</td><td>Contract; legal obligation (bookkeeping)</td></tr>
+<tr><td>Boats you add to your account: the boat's name</td><td>To organise your account, downloads and support around your boat</td><td>Contract</td></tr>
+<tr><td>Downloads: which release you downloaded and when</td><td>To deliver downloads to customers only and prevent abuse</td><td>Contract; legitimate interest (security)</td></tr>
+<tr><td>Support, bug reports and feature requests: what you send us, including any files you choose to attach</td><td>To help you and improve SKAGER</td><td>Contract; legitimate interest (product improvement)</td></tr>
+<tr><td>Security logs: IP address, browser information, request times</td><td>To protect our services against attacks and abuse</td><td>Legitimate interest (security)</td></tr>
+</tbody></table></div>
+<p>We do not use your data for profiling or automated decisions with legal effects, and we do not sell it.</p></section>
+
+<section class="page-section" id="app"><h2>3. In the SKAGER application</h2>
+<p>SKAGER runs on your PC. Your charts, routes, waypoints and tracks stay there. Positions and instrument data stay there too unless you switch on boat data sharing (below).</p>
+<ul>
+<li><strong>Forecast wind</strong> (optional): when you request a forecast, the forecast provider receives the area you asked about and your access token.</li>
+<li><strong>Online AIS</strong> (optional): the AIS provider receives the area you selected and your API key.</li>
+<li><strong>Linking SKAGER to your account</strong> (optional): SKAGER shows a code that you approve in your account. We then store the computer's name, platform and SKAGER version, and when it was last in contact. The link is kept on your PC in Windows Credential Manager. You can unlink it in SKAGER or in your account at any time.</li>
+<li><strong>Automatic updates</strong> (SKAGER Cloud): a linked SKAGER checks for updates with its link, so we can confirm your subscription. It sends the installed version and update channel.</li>
+<li><strong>Boat data</strong> (SKAGER Cloud, off until you switch it on): SKAGER sends your position, speed, course, heading, wind, depth, water temperature, air pressure, rudder and heel, battery, motor and tank readings, each with its age and source, every 15 seconds while it runs. Only you can see them in your account. Simulated and replayed data is never sent.</li>
+<li><strong>Diagnostic bundles</strong> are created on your PC and only reach us if you choose to send one.</li>
+</ul></section>
+
+<section class="page-section" id="processors"><h2>4. Who processes data for us</h2>
+<p>We use a small number of providers, each bound by a data processing agreement:</p>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Provider</th><th scope="col">Role</th></tr></thead>
+<tbody>
+<tr><td>Cloudflare</td><td>Website hosting, network security and download storage</td></tr>
+<tr><td>Supabase</td><td>Sign-in and our customer database</td></tr>
+<tr><td>Stripe</td><td>Payments. Stripe also acts as an independent controller for fraud prevention and its legal obligations.</td></tr>
+<tr><td>Resend</td><td>Sending sign-in codes, receipts and service emails</td></tr>
+<tr><td>Shipping carriers</td><td>Delivering hardware orders. They receive your name, address and the parcel details.</td></tr>
+</tbody></table></div>
+<p>Some of these providers are based in, or use services in, the United States. Where data leaves the EU/EEA, the transfer relies on the EU–US Data Privacy Framework or the European Commission's standard contractual clauses.</p></section>
+
+<section class="page-section" id="retention"><h2>5. How long we keep data</h2>
+<div class="table-wrap"><table>
+<thead><tr><th scope="col">Data</th><th scope="col">Kept for</th></tr></thead>
+<tbody>
+<tr><td>Account</td><td>While your account is active, then deleted within 30 days of your request</td></tr>
+<tr><td>Order and payment records</td><td>Seven years after the end of the financial year, as Swedish bookkeeping law requires</td></tr>
+<tr><td>Support conversations</td><td>24 months after the case is closed</td></tr>
+<tr><td>Download records</td><td>While your account is active</td></tr>
+<tr><td>Linked computers</td><td>Until you unlink them or your account closes</td></tr>
+<tr><td>Boat data</td><td>The latest reading until you switch sharing off or unlink; one reading a minute for 30 days. Unlinking a computer deletes its boat data at once.</td></tr>
+<tr><td>Security logs</td><td>Up to 30 days</td></tr>
+<tr><td>Sign-in codes</td><td>Minutes; they expire after use</td></tr>
+</tbody></table></div></section>
+
+<section class="page-section" id="rights"><h2>6. Your rights</h2>
+<p>You have the right to access your data, to have it corrected or deleted, to restrict or object to its use, and to receive it in a portable format. Email {{ operator.email }}, or use your account once the portal's self-service tools are available. We answer within one month.</p>
+<p>If you are unhappy with how we handle your data, you can complain to the Swedish Authority for Privacy Protection (Integritetsskyddsmyndigheten, IMY) or the data protection authority where you live.</p></section>
+
+<section class="page-section" id="cookies"><h2>7. Cookies</h2>
+<p>We only use cookies that are needed to sign in and to protect forms. See our <a href="{% url 'marketing:cookies' %}">Cookie notice</a>.</p></section>
+
+<section class="page-section" id="children"><h2>8. Children</h2>
+<p>SKAGER is not aimed at children, and we do not knowingly collect personal data from children.</p></section>
+
+<section class="page-section" id="changes"><h2>9. Changes</h2>
+<p>We update this policy when our services or providers change, and publish each version here with its date. We will tell you by email about significant changes.</p></section>
+{% endblock %}
