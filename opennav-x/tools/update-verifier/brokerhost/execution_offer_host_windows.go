@@ -72,12 +72,19 @@ func (e *engine) handleNativeOfferExecution(ctx context.Context, peer brokerpipe
 	if err = validate(); err != nil {
 		return err
 	}
+	// No linked account means no automatic offer, not a failure to navigate.
+	// Finish only after the same local custody validation as the online path.
+	if !q.CloudAccess.IsPresent() {
+		_, err = session.ExchangeCommand(ctx, brokerpipe.ExecutionDirective{Phase: brokerpipe.FinishExecution})
+		return err
+	}
 	state, artifacts, err := adapter.VerifierDirectories(peer.SID, r.Trust.Channel)
 	if err != nil {
 		return err
 	}
 	config := r.configuration(state, artifacts)
 	config.Installed = selected.installed()
+	config.AccessToken = q.CloudAccess.Token()
 	checkCtx, cancel := context.WithTimeout(ctx, 5*time.Second)
 	offer, checkErr := verifier.CheckUpdate(checkCtx, config, observed)
 	cancel()

@@ -99,7 +99,11 @@ func prepareBrokerUpdateSet(ctx context.Context, config PrepareConfig, observed 
 		return nil, err
 	}
 	set.Policy, set.Consent = candidate.Policy, candidate.Consent
-	set.Recovery, err = downloadBrokerArtifact(ctx, candidate.Policy.Recovery, config.ArtifactOrigin, lease, brokerstore.RecoverySlot, withAccessClient(client, config))
+	downloadClient := withAccessClient(client, config)
+	if client == nil && downloadClient != nil {
+		defer downloadClient.CloseIdleConnections()
+	}
+	set.Recovery, err = downloadBrokerArtifact(ctx, candidate.Policy.Recovery, config.ArtifactOrigin, lease, brokerstore.RecoverySlot, downloadClient)
 	if err != nil {
 		return nil, err
 	}
@@ -110,7 +114,7 @@ func prepareBrokerUpdateSet(ctx context.Context, config PrepareConfig, observed 
 	if !set.RecoveryIdentity.LifecycleManifestAvailable {
 		return nil, errors.New("authenticated recovery lacks the exact Lifecycle manifest sidecar")
 	}
-	set.Installer, err = downloadBrokerArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, lease, brokerstore.InstallerSlot, withAccessClient(client, config))
+	set.Installer, err = downloadBrokerArtifact(ctx, candidate.Policy.Installer, config.ArtifactOrigin, lease, brokerstore.InstallerSlot, downloadClient)
 	if err != nil {
 		return nil, err
 	}

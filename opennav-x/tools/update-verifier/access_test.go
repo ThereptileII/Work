@@ -53,6 +53,9 @@ func TestAccessTransportIsInertWithoutAWellFormedTokenOrHTTPSOrigin(t *testing.T
 		{"http://beta.skager.app", testAccessToken},
 		{"https://user@beta.skager.app", testAccessToken},
 		{"not a url", testAccessToken},
+		{"https://beta.skager.app/path", testAccessToken},
+		{"https://beta.skager.app?query", testAccessToken},
+		{"https://beta.skager.app#fragment", testAccessToken},
 	} {
 		if transport := withAccess(base, c.origin, c.token); transport != http.RoundTripper(base) {
 			t.Fatalf("token attached for %q/%q", c.origin, c.token)

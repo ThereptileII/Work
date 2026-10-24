@@ -5,19 +5,21 @@ import (
 	"errors"
 
 	verifier "example.com/opennav-update-verifier"
+	"example.com/opennav-update-verifier/brokerpipe"
 	"example.com/opennav-update-verifier/brokerstore"
 )
 
 // One handler owns one original stage-seal view. Revalidation never adopts a
 // replacement receipt or reinterprets a previous failed transaction as current.
 type nativeExecutionAuthorization struct {
-	store  *brokerstore.Store
-	target *brokerstore.ReopenedGeneration
-	seal   *brokerstore.GenerationStageSeal
+	store       *brokerstore.Store
+	target      *brokerstore.ReopenedGeneration
+	seal        *brokerstore.GenerationStageSeal
+	cloudAccess brokerpipe.CloudAccess
 }
 
-func nativeExecutionProviders(store *brokerstore.Store) (executionHostProviders, func() error) {
-	authorization := &nativeExecutionAuthorization{store: store}
+func nativeExecutionProviders(store *brokerstore.Store, access brokerpipe.CloudAccess) (executionHostProviders, func() error) {
+	authorization := &nativeExecutionAuthorization{store: store, cloudAccess: access}
 	return executionHostProviders{authorize: authorization.authorize,
 		capture: captureExecutionProfileProvider, commission: commissionExecutionProvider}, func() error {
 		if authorization.seal != nil {
@@ -63,7 +65,7 @@ func (a *nativeExecutionAuthorization) authorize(ctx context.Context, target *br
 		}
 		return target.Validate()
 	}
-	if target.Purpose() != brokerstore.GenerationPurposeSignedCandidate || selected == nil || selected.store != a.store || selected.closed {
+	if !a.cloudAccess.IsPresent() || target.Purpose() != brokerstore.GenerationPurposeSignedCandidate || selected == nil || selected.store != a.store || selected.closed {
 		return errExecutionAuthorization
 	}
 	candidate, err := target.Candidate()
@@ -109,6 +111,7 @@ func (a *nativeExecutionAuthorization) authorize(ctx context.Context, target *br
 	}
 	config := r.configuration(state, artifacts)
 	config.Installed = selected.installed()
+	config.AccessToken = a.cloudAccess.Token()
 	current, err := verifier.CheckUpdate(ctx, config, observed)
 	if err != nil {
 		return err

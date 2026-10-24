@@ -20,7 +20,7 @@ func runBrokerOfferNative(ctx context.Context, generation string) (resultErr err
 	if err != nil {
 		return err
 	}
-	return runBrokerUpdate(ctx, generation, brokerUpdateServices{conversation: brokerpipe.CallExecution, prompt: backend.promptUpdate, close: backend.close, stage: brokerpipe.Call, execute: runBrokerExecutionNative, current: runBrokerCurrentNative})
+	return runBrokerUpdate(ctx, generation, brokerUpdateServices{access: readCloudToken, conversation: brokerpipe.CallExecution, prompt: backend.promptUpdate, close: backend.close, stage: brokerpipe.Call, execute: runBrokerExecutionNative, current: runBrokerCurrentNative})
 }
 
 // The authenticated original selected-member pin comes only from OfferUpdate.

@@ -20,6 +20,7 @@ type brokerUpdateServices struct {
 	close            func() error
 	stage            func(context.Context, brokerpipe.Request) (brokerpipe.Result, error)
 	execute, current func(context.Context, string) error
+	access           func() string // Read only in the authenticated user context; never passed in args/env.
 }
 type brokerOfferActions struct {
 	mu                 sync.Mutex
@@ -96,11 +97,19 @@ func runBrokerUpdate(ctx context.Context, generation string, s brokerUpdateServi
 			resultErr = errors.Join(resultErr, s.close())
 		}
 	}()
+	access, accessErr := brokerUpdateAccess(s.access)
+	if accessErr != nil {
+		closed = true
+		if err := s.close(); err != nil {
+			return err
+		}
+		return s.current(ctx, generation)
+	}
 	nonce, err := brokerUpdateNonce()
 	if err != nil {
 		return err
 	}
-	a := &brokerOfferActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: "offer-current", RequestID: nonce, StageID: generation}, prompt: s.prompt}
+	a := &brokerOfferActions{request: brokerpipe.ExecutionRequest{Schema: 1, Operation: "offer-current", RequestID: nonce, StageID: generation, CloudAccess: access}, prompt: s.prompt}
 	err = s.conversation(ctx, a.request, a.handle)
 	// Drain the entire authenticated offer and native helper lifetime BEFORE opening
 	// a new staging/current conversation. An uncertain finish is never a retry.
@@ -116,7 +125,12 @@ func runBrokerUpdate(ctx context.Context, generation string, s brokerUpdateServi
 	if err != nil {
 		return err
 	}
-	request := brokerpipe.Request{Schema: 1, Operation: "prepare-and-stage", RequestID: nonce, Consent: a.consent}
+	// Pairing may have been revoked while the human considered the offer.
+	access, err = brokerUpdateAccess(s.access)
+	if err != nil {
+		return s.current(ctx, generation)
+	}
+	request := brokerpipe.Request{Schema: 1, Operation: "prepare-and-stage", RequestID: nonce, Consent: a.consent, CloudAccess: access}
 	staged, err := s.stage(ctx, request)
 	if err != nil {
 		return errors.Join(errBrokerExecutionUncertain, err)
@@ -131,4 +145,11 @@ func runBrokerUpdate(ctx context.Context, generation string, s brokerUpdateServi
 
 func consentFromBrokerOffer(c brokerpipe.ExecutionCommand) verifier.ConsentIdentity {
 	return verifier.ConsentIdentity{Version: c.OfferVersion, Commit: c.OfferCommit, PolicySHA256: c.OfferPolicySHA256}
+}
+
+func brokerUpdateAccess(read func() string) (brokerpipe.CloudAccess, error) {
+	if read == nil {
+		return brokerpipe.CloudAccess{}, errBrokerExecutionRefused
+	}
+	return brokerpipe.ParseCloudAccess(read())
 }

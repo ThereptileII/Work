@@ -95,7 +95,7 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 	}()
 	if ctx == nil || ctx.Err() != nil || e == nil || e.store == nil || e.observe == nil || e.prepare == nil ||
 		peer.SID == "" || peer.ProcessID == 0 || request.Schema != 1 || request.Operation != "prepare-and-stage" ||
-		!requestPattern.MatchString(request.RequestID) || !validConsent(request.Consent) {
+		!requestPattern.MatchString(request.RequestID) || !validConsent(request.Consent) || !request.CloudAccess.IsPresent() {
 		return brokerpipe.Result{}, errStageRefused
 	}
 	if !e.busy.TryLock() {
@@ -180,6 +180,7 @@ func (e *engine) handle(ctx context.Context, peer brokerpipe.Peer, request broke
 		return brokerpipe.Result{}, err
 	}
 	config := r.configuration(stateDir, artifactDir)
+	config.AccessToken = request.CloudAccess.Token()
 	config.Installed = installed
 	prepared, err := e.prepare(ctx, config, observed, request.Consent, stage)
 	if err != nil || prepared == nil {

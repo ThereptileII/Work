@@ -175,7 +175,7 @@ func (e *engine) handleNativeStartupExecution(ctx context.Context, peer brokerpi
 	// Pure inspection has fully drained. The initial-only qualifier MUST recheck
 	// exact empty original history under its own operation lock before any effect;
 	// the same start-selected intent is preserved, never rewritten as an update.
-	providers, closeProviders := nativeExecutionProviders(adapter.Store)
+	providers, closeProviders := nativeExecutionProviders(adapter.Store, brokerpipe.CloudAccess{})
 	defer func() { resultErr = errors.Join(resultErr, closeProviders()) }()
 	return e.handleNativeExecution(ctx, peer, request, session, providers)
 }

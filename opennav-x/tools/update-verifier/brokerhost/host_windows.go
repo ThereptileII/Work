@@ -214,7 +214,7 @@ func (e *engine) handleNativeExecutionRequest(ctx context.Context, peer brokerpi
 	case "offer-current":
 		return e.handleNativeOfferExecution(ctx, peer, request, session)
 	case "execute-session":
-		providers, closeProviders := nativeExecutionProviders(adapter.Store)
+		providers, closeProviders := nativeExecutionProviders(adapter.Store, request.CloudAccess)
 		defer func() { resultErr = errors.Join(resultErr, closeProviders()) }()
 		return e.handleNativeExecution(ctx, peer, request, session, providers)
 	case "start-current":

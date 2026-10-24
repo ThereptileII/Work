@@ -32,6 +32,12 @@ func (t accessTransport) RoundTrip(request *http.Request) (*http.Response, error
 	return t.base.RoundTrip(clone)
 }
 
+func (t accessTransport) CloseIdleConnections() {
+	if closer, ok := t.base.(interface{ CloseIdleConnections() }); ok {
+		closer.CloseIdleConnections()
+	}
+}
+
 // withAccess returns base unchanged unless token is a well-formed device token
 // and origin is a bare HTTPS scheme and authority.
 func withAccess(base http.RoundTripper, origin, token string) http.RoundTripper {
@@ -42,7 +48,7 @@ func withAccess(base http.RoundTripper, origin, token string) http.RoundTripper 
 		return base
 	}
 	parsed, err := url.Parse(origin)
-	if err != nil || parsed.Scheme != "https" || parsed.Host == "" || parsed.User != nil {
+	if err != nil || parsed.Scheme != "https" || parsed.Host == "" || parsed.User != nil || parsed.Path != "" || parsed.RawQuery != "" || parsed.Fragment != "" {
 		return base
 	}
 	return accessTransport{base: base, origin: parsed.Scheme + "://" + parsed.Host, token: token}

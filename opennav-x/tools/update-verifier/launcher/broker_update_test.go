@@ -10,6 +10,8 @@ import (
 	"testing"
 )
 
+const testBrokerCloudToken = "skg1_0123456789abcdef0123456789abcdef0123456789abcdef0123456789abcdef"
+
 func updateCommand(q brokerpipe.ExecutionRequest, p brokerpipe.ExecutionPhase) brokerpipe.ExecutionCommand {
 	c := brokerpipe.ExecutionCommand{Schema: 1, Kind: "command", RequestID: q.RequestID, StageID: q.StageID, Phase: p}
 	if p == brokerpipe.OfferUpdate {
@@ -39,9 +41,9 @@ func TestBrokerUpdateNowStagesAfterFinishAndDrain(t *testing.T) {
 	var order []string
 	var offerID string
 	consent := verifier.ConsentIdentity{Version: "2.0.0", Commit: strings.Repeat("c", 40), PolicySHA256: strings.Repeat("d", 64)}
-	s := brokerUpdateServices{conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+	s := brokerUpdateServices{access: func() string { return testBrokerCloudToken }, conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
 		offerID = q.RequestID
-		if q.Operation != "offer-current" {
+		if q.Operation != "offer-current" || q.CloudAccess.Token() != testBrokerCloudToken {
 			t.Fatal(q)
 		}
 		for _, p := range []brokerpipe.ExecutionPhase{brokerpipe.OfferUpdate, brokerpipe.FinishExecution} {
@@ -56,7 +58,7 @@ func TestBrokerUpdateNowStagesAfterFinishAndDrain(t *testing.T) {
 		return true, nil
 	}, close: func() error { order = append(order, "drain"); return nil }, stage: func(_ context.Context, q brokerpipe.Request) (brokerpipe.Result, error) {
 		order = append(order, "stage")
-		if q.Consent != consent || q.RequestID == offerID || !generationPattern.MatchString(q.RequestID) || q.Operation != "prepare-and-stage" {
+		if q.CloudAccess.Token() != testBrokerCloudToken || q.Consent != consent || q.RequestID == offerID || !generationPattern.MatchString(q.RequestID) || q.Operation != "prepare-and-stage" {
 			t.Fatal(q)
 		}
 		return brokerpipe.Result{Schema: 1, RequestID: q.RequestID, StageID: q.RequestID, State: brokerpipe.Staged, Version: q.Consent.Version, Commit: q.Consent.Commit}, nil
@@ -78,7 +80,7 @@ func TestBrokerUpdateLaterAndNoOfferUseProtectedCurrent(t *testing.T) {
 	for _, offer := range []bool{true, false} {
 		t.Run(map[bool]string{true: "later", false: "offline-or-no-upgrade"}[offer], func(t *testing.T) {
 			closes, prompts, currents := 0, 0, 0
-			s := brokerUpdateServices{conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+			s := brokerUpdateServices{access: func() string { return testBrokerCloudToken }, conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
 				if offer {
 					if _, err := h(ctx, updateCommand(q, brokerpipe.OfferUpdate)); err != nil {
 						return err
@@ -114,7 +116,7 @@ func TestBrokerUpdateFailuresNeverRetryOrStartCurrent(t *testing.T) {
 	for _, mode := range []string{"transport-before", "transport-after-now", "missing-finish", "prompt", "drain", "stage", "stage-mismatch", "execute"} {
 		t.Run(mode, func(t *testing.T) {
 			closes, stages, executes := 0, 0, 0
-			s := brokerUpdateServices{conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+			s := brokerUpdateServices{access: func() string { return testBrokerCloudToken }, conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
 				if mode == "transport-before" {
 					return fault
 				}
@@ -244,7 +246,7 @@ func TestBrokerUpdateCancellationAfterNowDoesNotStage(t *testing.T) {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 	closes := 0
-	s := brokerUpdateServices{conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+	s := brokerUpdateServices{access: func() string { return testBrokerCloudToken }, conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
 		_, err := h(ctx, updateCommand(q, brokerpipe.OfferUpdate))
 		return err
 	}, prompt: func(context.Context, brokerpipe.ExecutionCommand) (bool, error) { cancel(); return true, nil }, close: func() error { closes++; return nil }, stage: func(context.Context, brokerpipe.Request) (brokerpipe.Result, error) {
@@ -256,5 +258,69 @@ func TestBrokerUpdateCancellationAfterNowDoesNotStage(t *testing.T) {
 	}
 	if closes != 1 {
 		t.Fatal(closes)
+	}
+}
+
+func TestBrokerUnlinkedSkipsNetworkAndPreservesStartup(t *testing.T) {
+	for _, token := range []string{"", "malformed"} {
+		closed, started := 0, 0
+		s := brokerUpdateServices{
+			access: func() string { return token },
+			conversation: func(context.Context, brokerpipe.ExecutionRequest, brokerpipe.ExecutionClientHandler) error {
+				t.Fatal("unlinked account reached network offer")
+				return nil
+			},
+			prompt: func(context.Context, brokerpipe.ExecutionCommand) (bool, error) {
+				t.Fatal("prompt without account")
+				return false, nil
+			},
+			close: func() error { closed++; return nil },
+			stage: func(context.Context, brokerpipe.Request) (brokerpipe.Result, error) {
+				t.Fatal("stage without account")
+				return brokerpipe.Result{}, nil
+			},
+			execute: func(context.Context, string) error { t.Fatal("execute without account"); return nil },
+			current: func(context.Context, string) error {
+				if closed != 1 {
+					t.Fatal("startup before drain")
+				}
+				started++
+				return nil
+			},
+		}
+		if err := runBrokerUpdate(context.Background(), strings.Repeat("a", 32), s); err != nil || started != 1 || closed != 1 {
+			t.Fatal(err, started, closed)
+		}
+	}
+}
+
+func TestBrokerUnlinkedWhilePromptOpenDoesNotStage(t *testing.T) {
+	linked := true
+	starts := 0
+	s := brokerUpdateServices{
+		access: func() string {
+			if linked {
+				return testBrokerCloudToken
+			}
+			return ""
+		},
+		conversation: func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+			if _, err := h(ctx, updateCommand(q, brokerpipe.OfferUpdate)); err != nil {
+				return err
+			}
+			_, err := h(ctx, updateCommand(q, brokerpipe.FinishExecution))
+			return err
+		},
+		prompt: func(context.Context, brokerpipe.ExecutionCommand) (bool, error) { linked = false; return true, nil },
+		close:  func() error { return nil },
+		stage: func(context.Context, brokerpipe.Request) (brokerpipe.Result, error) {
+			t.Fatal("staged after unlink")
+			return brokerpipe.Result{}, nil
+		},
+		execute: func(context.Context, string) error { t.Fatal("executed after unlink"); return nil },
+		current: func(context.Context, string) error { starts++; return nil },
+	}
+	if err := runBrokerUpdate(context.Background(), strings.Repeat("a", 32), s); err != nil || starts != 1 {
+		t.Fatal(err, starts)
 	}
 }

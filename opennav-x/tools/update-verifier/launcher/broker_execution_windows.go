@@ -90,7 +90,20 @@ func runBrokerIntentNative(ctx context.Context, stage, operation string) (result
 		return err
 	}
 	defer func() { resultErr = errors.Join(resultErr, backend.close()) }()
-	return runBrokerExecutionModeIntent(ctx, generation, operation, mode, backend, brokerpipe.CallExecution)
+	// Re-read in this user's process for signed-candidate revalidation. Normal
+	// startup and recovery do not read, transmit or require an account token.
+	call := brokerpipe.CallExecution
+	if operation == "execute-session" {
+		access, err := brokerUpdateAccess(readCloudToken)
+		if err != nil {
+			return errBrokerExecutionRefused
+		}
+		call = func(ctx context.Context, q brokerpipe.ExecutionRequest, h brokerpipe.ExecutionClientHandler) error {
+			q.CloudAccess = access
+			return brokerpipe.CallExecution(ctx, q, h)
+		}
+	}
+	return runBrokerExecutionModeIntent(ctx, generation, operation, mode, backend, call)
 }
 func newNativeBrokerExecutionBackend(ctx context.Context) (result *nativeBrokerExecutionBackend, resultErr error) {
 	if ctx == nil || ctx.Err() != nil {

@@ -22,7 +22,8 @@ func testRegistration() []byte {
 	return testProtectedClientRegistration()
 }
 func testRequest() brokerpipe.Request {
-	return brokerpipe.Request{Schema: 1, Operation: "prepare-and-stage", RequestID: strings.Repeat("9", 32),
+	access, _ := brokerpipe.ParseCloudAccess("skg1_" + strings.Repeat("1", 64))
+	return brokerpipe.Request{Schema: 1, Operation: "prepare-and-stage", RequestID: strings.Repeat("9", 32), CloudAccess: access,
 		Consent: verifier.ConsentIdentity{Version: "0.2.0-beta.2", Commit: strings.Repeat("c", 40), PolicySHA256: strings.Repeat("d", 64)}}
 }
 func testRecovery(c verifier.ConsentIdentity) verifier.RecoveryIdentity {
@@ -193,7 +194,7 @@ func fixtureEngine(f *stageFixture) *engine {
 			if !ok || reserved.f != f {
 				return nil, errors.New("preparation did not receive reserved candidate")
 			}
-			if c.StateDirectory != "protected-state" || c.ArtifactDirectory != "protected-artifacts" || c.ArtifactOrigin != "https://updates.invalid" ||
+			if c.AccessToken != testRequest().CloudAccess.Token() || c.StateDirectory != "protected-state" || c.ArtifactDirectory != "protected-artifacts" || c.ArtifactOrigin != "https://updates.invalid" ||
 				c.Installed.Version != "0.2.0-beta.1" || !reflect.DeepEqual(c.OpenCpnAllowlist, []releasepolicy.OpenCpn{stockBaseline}) || o != stockBaseline {
 				return nil, errors.New("configuration not from protected registration")
 			}
@@ -430,4 +431,23 @@ func contains(events []string, want string) bool {
 		}
 	}
 	return false
+}
+
+func TestCloudAccessRequiredBeforeStagingMutation(t *testing.T) {
+	f := newFixture()
+	q := testRequest()
+	q.CloudAccess = brokerpipe.CloudAccess{}
+	if _, err := fixtureEngine(f).handle(context.Background(), testPeer(), q); err == nil || len(f.events) != 0 {
+		t.Fatal("unlinked staging touched protected storage", err, f.events)
+	}
+}
+func TestCloudAccessNeverPersistsInStagingReceipt(t *testing.T) {
+	f := newFixture()
+	q := testRequest()
+	if _, err := fixtureEngine(f).handle(context.Background(), testPeer(), q); err != nil {
+		t.Fatal(err)
+	}
+	if len(f.receipt) == 0 || strings.Contains(string(f.receipt), q.CloudAccess.Token()) || strings.Contains(string(f.receipt), "cloudAccess") {
+		t.Fatal("invalid credential-bearing receipt")
+	}
 }
