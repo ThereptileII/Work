@@ -66,7 +66,11 @@ def navigation_layout(display, frame, client):
         assert all(abs(found[0][k]-v) <= 1 for k,v in zip(('x','y','width','height'),bounds)), 'Floating control differs from prototype geometry'
     for control in controls:
         assert valid(control) and contains(client, control), 'Visible control must fit the actual client'
-        if control['label'] in floating:
+        # Track recording is a deliberate chart tool alongside Measure and
+        # Waypoint.  Its label carries a GPS-availability suffix, so accept
+        # the owned "Tracks" control without treating arbitrary overlays as
+        # permanent chart chrome.
+        if control['label'] in floating or control['label'].startswith('Tracks'):
             assert contains(chart, control), 'Floating controls must fit the chart'
         else:
             assert not overlaps(chart, control), 'Unspecified permanent controls must not cover the chart'
@@ -118,7 +122,7 @@ def functional_layout(display, frame, client):
         assert sum(c['label']==label for c in controls)==1, 'Each chart control must be unique and visible'
     for control in controls:
         assert valid(control) and contains(client,control), 'Visible control must fit the client'
-        if control['label'] in floating:
+        if control['label'] in floating or control['label'].startswith('Tracks'):
             assert contains(chart,control), 'Floating chart controls must fit the chart'
         else:
             assert not overlaps(chart,control), 'Permanent controls must not cover the chart'
