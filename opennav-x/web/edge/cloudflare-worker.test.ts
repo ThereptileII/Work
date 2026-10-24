@@ -224,17 +224,34 @@ test('the update feed is served only to a linked SKAGER whose account has SKAGER
   assert.equal(ok.headers.get('Content-Type'), 'application/json');
   assert.equal(ok.headers.get('Cache-Control'), 'private, no-store');
   assert.equal(checks.at(-1), 'https://kelwgubkuvditalsbqpr.supabase.co/functions/v1/skager-web/api/device/update-access ' + DEVICE_TOKEN);
-  // A positive answer is reused briefly so one update check costs one entitlement lookup.
+  // Every object request checks current access, including immediately after a grant.
   const before = checks.length;
   assert.equal((await handleWorker(get('/updates/beta/metadata/missing.json', DEVICE_TOKEN), edge(204), env)).status, 404);
-  assert.equal(checks.length, before);
+  assert.equal(checks.length, before + 1);
+  assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', DEVICE_TOKEN), edge(401), env)).status, 401);
+  assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', DEVICE_TOKEN), edge(402), env)).status, 402);
+  assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', DEVICE_TOKEN), edge(503), env)).status, 503);
 
-  for (const path of ['/updates/beta/../secret', '/updates/other/x.json', '/updates/beta//x', '/updates/beta/x.json?y=1', '/updates/beta/.hidden']) {
+  for (const path of ['/updates/beta/../secret', '/updates/stable/x.json', '/updates/other/x.json', '/updates/beta//x', '/updates/beta/x.json?y=1', '/updates/beta/.hidden']) {
     assert.equal((await handleWorker(get(path, DEVICE_TOKEN), edge(204), env)).status, 404, path);
   }
   const post = new Request('https://beta.skager.app/updates/beta/metadata/timestamp.json', { method: 'POST', headers: { Authorization: 'Bearer ' + DEVICE_TOKEN } });
   assert.equal((await handleWorker(post, edge(204), env)).status, 405);
   assert.equal((await handleWorker(get('/updates/beta/metadata/timestamp.json', 'skg1_' + 'd'.repeat(64)), edge(204), {})).status, 503);
+});
+test('signed artifact URLs use the bare origin and map only to immutable beta objects with current access', async () => {
+  const commit = 'a'.repeat(40);
+  const path = `/artifacts/${commit}/SKAGER-Beta1-Setup.exe`;
+  const env = updatesBucket({ ['beta' + path]: 'exe' });
+  const request = (method = 'GET', token = DEVICE_TOKEN) => new Request('https://beta.skager.app' + path,
+    { method, headers: { Authorization: 'Bearer ' + token } });
+  assert.equal((await handleWorker(request(), async () => new Response(null, { status: 204 }), env)).status, 200);
+  assert.deepEqual(env.reads, ['beta' + path]);
+  assert.equal((await handleWorker(request('HEAD'), async () => new Response(null, { status: 204 }), env)).status, 200);
+  assert.equal((await handleWorker(request(), async () => new Response(null, { status: 401 }), env)).status, 401);
+  for (const bad of ['/artifacts/x/file.exe', `/artifacts/${commit}/x/secret`, `/artifacts/${commit}/.hidden`, path + '?other=1']) {
+    assert.equal((await handleWorker(new Request('https://beta.skager.app' + bad), async () => assert.fail('no auth for invalid path'), env)).status, 404);
+  }
 });
 test('device API calls carry the bearer token under its own header, never to other routes', async () => {
   const seen: Headers[] = [];

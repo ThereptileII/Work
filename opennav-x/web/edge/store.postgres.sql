@@ -89,7 +89,8 @@ BEGIN
     'total_minor',200,'discount_minor',0,'subscription_id','sub_aaaaaaaaaaaa','subscription_status','active','current_period_end','2000000000'));
   IF public.store_portal_access(buyer)->'subscription'->>'status' <> 'active' THEN RAISE EXCEPTION 'Subscription not active'; END IF;
   PERFORM public.store_receive_event('evt_subdel000000',repeat('3',64),'customer.subscription.deleted');
-  PERFORM public.store_apply_subscription('evt_subdel000000','sub_aaaaaaaaaaaa','canceled',2000000000,false);
+  result := public.store_subscription_sync_begin('sub_aaaaaaaaaaaa');
+  PERFORM public.store_apply_subscription('sub_aaaaaaaaaaaa',(result->>'revision')::bigint,'canceled',2000000000,false);
   IF public.store_portal_access(buyer)->'subscription'->>'status' <> 'canceled' THEN RAISE EXCEPTION 'Subscription not cancelled'; END IF;
 
   -- A refund of the access order closes the account immediately.

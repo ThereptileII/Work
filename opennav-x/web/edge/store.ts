@@ -234,6 +234,48 @@ async function selfRefund(req: Request, ctx: StoreContext, config: Configuration
   return reply(200, { state: 'requested' });
 }
 
+/** Reserve the local revision before fetching Stripe, so overlapping requests cannot
+ * apply an older in-flight snapshot after a newer reconciliation. Unknown IDs cause
+ * no provider read; checkout settlement establishes their immutable local binding. */
+async function syncSubscription(ctx: StoreContext, config: Configuration, id: string, cancel = false): Promise<boolean> {
+  requireValue(SUBSCRIPTION.test(id));
+  const binding = await ctx.rpc('store_subscription_sync_begin', { p_subscription_id: id });
+  requireValue(object(binding));
+  if (binding.state === 'unknown') return false;
+  requireValue(binding.state === 'known' && integer(binding.revision) && binding.revision > 0
+    && typeof binding.customer_id === 'string' && CUSTOMER.test(binding.customer_id));
+  const valid = (sub: Json) => sub.object === 'subscription' && sub.id === id && sub.livemode === false
+    && sub.customer === binding.customer_id && SUB_STATUS.includes(sub.status);
+  let sub = await stripeRequest(ctx as CommerceContext, config, `subscriptions/${id}`, 'GET');
+  requireValue(valid(sub));
+  if (cancel && sub.status !== 'canceled') {
+    sub = await stripeRequest(ctx as CommerceContext, config, `subscriptions/${id}`, 'DELETE',
+      undefined, `skager-cancel-${id}`);
+    requireValue(valid(sub) && sub.status === 'canceled');
+  }
+  const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end;
+  requireValue(!LIVE_SUB.includes(sub.status) || (integer(periodEnd) && periodEnd > 0));
+  const result = await ctx.rpc('store_apply_subscription', { p_subscription_id: id, p_revision: binding.revision,
+    p_status: sub.status, p_period_end: integer(periodEnd) ? periodEnd : null,
+    p_cancel_at_period_end: sub.cancel_at_period_end === true });
+  // A superseded read retries through the original webhook. It never overwrites.
+  requireValue(object(result) && ['applied', 'terminal'].includes(result.state));
+  return true;
+}
+
+async function cancelClosedSubscriptions(ctx: StoreContext): Promise<{ completed: number; pending: number }> {
+  const due = await ctx.rpc('store_subscription_cancellations', {});
+  requireValue(Array.isArray(due) && due.length <= 10 && due.every(id => typeof id === 'string' && SUBSCRIPTION.test(id)));
+  if (!due.length) return { completed: 0, pending: 0 };
+  const config = configuration(ctx.env, false);
+  let completed = 0;
+  for (const id of due) {
+    try { requireValue(await syncSubscription(ctx, config, id, true)); completed++; }
+    catch { /* Durable revoked-customer rows stay eligible; no provider data is logged. */ }
+  }
+  return { completed, pending: due.length - completed };
+}
+
 // ---------------------------------------------------------------- webhook
 function sanitizeShipping(value: unknown): Json | null {
   if (!object(value)) return null;
@@ -298,7 +340,9 @@ async function confirmedPaid(ctx: StoreContext, config: Configuration, binding: 
     const sub = await stripeRequest(ctx as CommerceContext, config, `subscriptions/${session.subscription}`, 'GET');
     requireValue(sub.object === 'subscription' && sub.id === session.subscription && sub.livemode === false && SUB_STATUS.includes(sub.status));
     const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end;
-    Object.assign(paid, { subscription_id: sub.id, subscription_status: sub.status,
+    // Register the owned ID without granting access from a pre-settlement snapshot.
+    // The post-settlement read participates in the same revision protocol as webhooks.
+    Object.assign(paid, { subscription_id: sub.id, subscription_status: 'incomplete',
       current_period_end: integer(periodEnd) ? String(periodEnd) : '' });
   } else {
     requireValue(session.payment_status === 'paid' && typeof session.payment_intent === 'string' && INTENT.test(session.payment_intent));
@@ -334,7 +378,12 @@ async function webhook(req: Request, ctx: StoreContext, config: Configuration): 
       if (binding.state !== 'bound') return reply(200, { received: true });
       const state = await receive();
       if (state === 'conflict') return reply(400, { error: 'Webhook rejected' });
-      if (state !== 'received') return reply(200, { received: true });
+      if (state !== 'received') {
+        if (state === 'applied' && binding.kind === 'subscription' && SUBSCRIPTION.test(binding.subscription_id)) {
+          requireValue(await syncSubscription(ctx, config, binding.subscription_id));
+        }
+        return reply(200, { received: true });
+      }
       if (event.type.endsWith('.expired') || event.type.endsWith('.async_payment_failed')) {
         await ctx.rpc('store_apply_expired', { p_event_id: event.id, p_order_id: binding.id, p_session_id: item.id });
         return reply(200, { received: true });
@@ -346,6 +395,7 @@ async function webhook(req: Request, ctx: StoreContext, config: Configuration): 
       }
       const paid = await confirmedPaid(ctx, config, binding, item.id);
       await ctx.rpc('store_apply_paid', { p_event_id: event.id, p_order_id: binding.id, p_session_id: item.id, p_paid: paid });
+      if (paid.subscription_id) requireValue(await syncSubscription(ctx, config, paid.subscription_id));
       await sendDue(ctx, 5);
       return reply(200, { received: true });
     }
@@ -360,11 +410,12 @@ async function webhook(req: Request, ctx: StoreContext, config: Configuration): 
       if (state !== 'received') return reply(200, { received: true });
       const result = await ctx.rpc('store_apply_refund', { p_event_id: event.id, p_intent_id: charge.payment_intent,
         p_refunded_minor: charge.amount_refunded });
-      // Closing an account also ends its cloud subscription.
+      // Closing an account also ends its cloud subscription. The tick retries any
+      // failed cancellation from durable revoked-customer subscription rows.
       for (const id of Array.isArray(result?.cancel_subscriptions) ? result.cancel_subscriptions : []) {
         if (typeof id === 'string' && SUBSCRIPTION.test(id)) {
-          try { await stripeRequest(ctx as CommerceContext, config, `subscriptions/${id}`, 'DELETE', undefined, `skager-cancel-${id}`); }
-          catch { /* Stripe's own deletion event, or the admin, completes this. */ }
+          try { await syncSubscription(ctx, config, id, true); }
+          catch { /* The authenticated scheduled tick completes this. */ }
         }
       }
       await sendDue(ctx, 5);
@@ -375,10 +426,8 @@ async function webhook(req: Request, ctx: StoreContext, config: Configuration): 
       const state = await receive();
       if (state === 'conflict') return reply(400, { error: 'Webhook rejected' });
       if (state !== 'received') return reply(200, { received: true });
-      const periodEnd = item.current_period_end ?? item.items?.data?.[0]?.current_period_end;
-      await ctx.rpc('store_apply_subscription', { p_event_id: event.id, p_subscription_id: item.id,
-        p_status: event.type.endsWith('.deleted') ? 'canceled' : item.status,
-        p_period_end: integer(periodEnd) ? periodEnd : null, p_cancel_at_period_end: item.cancel_at_period_end === true });
+      await syncSubscription(ctx, config, item.id);
+      await ctx.rpc('store_mark_event', { p_event_id: event.id, p_state: 'applied' });
       await sendDue(ctx, 5);
       return reply(200, { received: true });
     }
@@ -403,8 +452,10 @@ async function tick(req: Request, ctx: StoreContext): Promise<Response> {
   const maintenance = await ctx.rpc('store_job_maintenance', {});
   // Cloud maintenance (expired pairings, 30-day history) must not hold back email.
   const cloud = await ctx.rpc('cloud_job_maintenance', {}).catch(() => null);
+  const cancellations = await cancelClosedSubscriptions(ctx).catch(() => ({ completed: 0, pending: null }));
   const email = await sendDue(ctx, 20);
-  return reply(200, { ok: true, maintenance, cloud, email });
+  const ok = cloud !== null && cancellations.pending === 0;
+  return reply(ok ? 200 : 503, { ok, maintenance, cloud, cancellations, email });
 }
 
 // ---------------------------------------------------------------- router
@@ -429,7 +480,7 @@ export async function handleStore(req: Request, ctx: StoreContext): Promise<Resp
   }
   if (req.method !== 'POST') return reply(405, { error: 'POST required' });
   let config: Configuration;
-  try { config = configuration(ctx.env); } catch { return reply(404, { error: 'Checkout is not available right now.' }); }
+  try { config = configuration(ctx.env, path !== '/api/stripe/webhook'); } catch { return reply(404, { error: 'Checkout is not available right now.' }); }
   if (path === '/api/stripe/webhook') return webhook(req, ctx, config);
   // The router checks CSRF; the exact Origin is enforced here as well for direct calls.
   if (req.headers.get('Origin') !== config.origin) return reply(403, { error: 'Request rejected' });

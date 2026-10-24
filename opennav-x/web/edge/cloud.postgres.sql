@@ -70,6 +70,17 @@ BEGIN
   IF NOT (public.cloud_device_auth(tok_a,NULL)->'cloud'->>'active')::boolean THEN RAISE EXCEPTION 'Past-due grace missing'; END IF;
   UPDATE skager_private.store_subscriptions SET current_period_end = now() - interval '8 days';
   IF (public.cloud_device_auth(tok_a,NULL)->'cloud'->>'active')::boolean THEN RAISE EXCEPTION 'Grace too long'; END IF;
+  UPDATE skager_private.store_subscriptions SET current_period_end = NULL;
+  IF (public.cloud_device_auth(tok_a,NULL)->'cloud'->>'active')::boolean IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'Unknown period granted unbounded grace';
+  END IF;
+  UPDATE skager_private.store_subscriptions SET status = 'active', current_period_end = now() - interval '1 second';
+  IF (public.cloud_device_auth(tok_a,NULL)->'cloud'->>'active')::boolean IS DISTINCT FROM false THEN
+    RAISE EXCEPTION 'Expired paid period granted access';
+  END IF;
+  IF public.cloud_telemetry_put(device,'{"navigation.sog":{"v":5,"age":0,"q":"live"}}')->>'state' <> 'inactive' THEN
+    RAISE EXCEPTION 'Expired subscription uploaded telemetry';
+  END IF;
   UPDATE skager_private.store_subscriptions SET status = 'canceled';
   IF (public.cloud_device_auth(tok_a,NULL)->'cloud'->>'active')::boolean THEN RAISE EXCEPTION 'Canceled Cloud active'; END IF;
   UPDATE skager_private.store_subscriptions SET status = 'active', current_period_end = now() + interval '20 days';
@@ -128,14 +139,22 @@ BEGIN
     OR EXISTS(SELECT 1 FROM skager_private.cloud_telemetry_history WHERE device_id = device) THEN
     RAISE EXCEPTION 'Revocation incomplete';
   END IF;
+  IF public.cloud_telemetry_put(device,'{"navigation.sog":{"v":5,"age":0,"q":"live"}}')->>'state' <> 'revoked'
+    OR EXISTS(SELECT 1 FROM skager_private.cloud_telemetry_latest WHERE device_id = device) THEN
+    RAISE EXCEPTION 'In-flight upload recreated unlinked telemetry';
+  END IF;
 
   -- Closing the account (refund) revokes every device.
   PERFORM public.cloud_link_start(dev_c,'BCDF2348','Second','windows','0.4.0');
   PERFORM public.cloud_link_decide(owner,'BCDF2348',true);
-  PERFORM public.cloud_link_claim(dev_c,tok_b);
+  result := public.cloud_link_claim(dev_c,tok_b);
+  device := (result->>'device_id')::uuid;
   IF public.cloud_device_auth(tok_b,NULL)->>'state' <> 'active' THEN RAISE EXCEPTION 'Second device inactive'; END IF;
   PERFORM skager_private.store_revoke('skipper@example.com');
   IF public.cloud_device_auth(tok_b,NULL)->>'state' <> 'unknown' THEN RAISE EXCEPTION 'Revoked customer device resolves'; END IF;
+  IF public.cloud_telemetry_put(device,'{"navigation.sog":{"v":5,"age":0,"q":"live"}}')->>'state' <> 'revoked' THEN
+    RAISE EXCEPTION 'Refunded customer uploaded telemetry';
+  END IF;
 
   -- Browser and anonymous roles have no access to tables or functions.
   IF has_table_privilege('service_role','skager_private.cloud_devices','SELECT')

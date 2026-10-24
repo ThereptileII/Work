@@ -50,8 +50,10 @@ function requireConfiguration(binding: ConfigurationBinding, condition: unknown)
   if (!condition) throw new ConfigurationError(binding);
 }
 
-export function configuration(env: CommerceContext['env']): Configuration {
-  requireConfiguration('STRIPE_TEST_CHECKOUT_ENABLED', env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
+export function configuration(env: CommerceContext['env'], requireCheckout = true): Configuration {
+  // Closing new sales must not disable signed settlement/refund events or the
+  // cancellation retry job for subscriptions that already exist.
+  if (requireCheckout) requireConfiguration('STRIPE_TEST_CHECKOUT_ENABLED', env.STRIPE_TEST_CHECKOUT_ENABLED === 'true');
   const key = env.STRIPE_TEST_SECRET_KEY ?? '';
   requireConfiguration('STRIPE_TEST_SECRET_KEY', key.length <= MAX_STRIPE_KEY_BYTES && TEST_BEARER_KEY.test(key));
   requireConfiguration('STRIPE_TEST_WEBHOOK_SECRET', /^whsec_[A-Za-z0-9]{16,256}$/.test(env.STRIPE_TEST_WEBHOOK_SECRET ?? ''));

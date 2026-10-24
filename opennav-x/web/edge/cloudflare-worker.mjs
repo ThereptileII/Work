@@ -44,28 +44,20 @@ async function readBounded(stream, limit = MAX_BODY) {
 const DEVICE_TOKEN = /^Bearer (skg1_[a-f0-9]{64})$/;
 const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
 // TUF metadata and signed artifacts for one channel; no traversal or empty segments.
-const UPDATE_KEY = /^(?:beta|stable)\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}(?:\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}){0,4}$/;
-const ACCESS_TTL_MS = 60000;
-const accessCache = new Map();
+const UPDATE_KEY = /^beta\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}(?:\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}){0,4}$/;
+const ARTIFACT_PATH = /^\/artifacts\/[a-f0-9]{40}\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}$/;
 
 function plain(status, body) {
   return finish(new Response(body, { status, headers: { 'Content-Type': 'text/plain; charset=utf-8', 'Cache-Control': 'no-store' } }));
 }
 
 async function updateAccess(token, transport) {
-  const cached = accessCache.get(token);
-  if (cached && cached.until > Date.now()) return cached.status;
   const response = await transport(EDGE + '/api/device/update-access', {
     method: 'GET', headers: { 'x-skager-device': token }, redirect: 'manual', signal: AbortSignal.timeout(10000),
   });
   await response.body?.cancel().catch(() => {});
   const status = response.status === 204 ? 204 : response.status === 401 || response.status === 402 ? response.status : 503;
-  // Only a grant is reused, so a new subscription works at once; a revoked device
-  // can read the (signed, integrity-checked) feed for at most ACCESS_TTL_MS more.
-  if (status === 204) {
-    if (accessCache.size >= 1000) accessCache.clear();
-    accessCache.set(token, { status, until: Date.now() + ACCESS_TTL_MS });
-  }
+  // No grants are cached: unlink, refund and cancellation affect the next request.
   return status;
 }
 
@@ -74,7 +66,11 @@ async function updateAccess(token, transport) {
  * may download. Objects come from the SKAGER_UPDATES R2 binding on this same origin. */
 async function serveUpdate(request, url, env, transport) {
   if (!['GET', 'HEAD'].includes(request.method)) return plain(405, 'GET required');
-  const key = url.pathname.slice('/updates/'.length);
+  // Signed artifacts use a bare HTTPS origin. This beta deployment maps their
+  // immutable commit paths into the same beta/ repository tree as metadata.
+  const artifact = url.pathname.startsWith('/artifacts/');
+  if (artifact && !ARTIFACT_PATH.test(url.pathname)) return plain(404, 'Not found');
+  const key = artifact ? 'beta' + url.pathname : url.pathname.slice('/updates/'.length);
   if (url.search || !UPDATE_KEY.test(key) || key.split('/').some(part => part === '.' || part === '..')) return plain(404, 'Not found');
   const match = DEVICE_TOKEN.exec(request.headers.get('authorization') || '');
   if (!match) return plain(401, 'Link SKAGER to your account to receive automatic updates.');
@@ -93,7 +89,7 @@ async function serveUpdate(request, url, env, transport) {
 export async function handleWorker(request, transport = fetch, env = undefined) {
   const url = new URL(request.url);
   if (url.origin !== ORIGIN) return finish(new Response('Use beta.skager.app', { status: 421 }));
-  if (url.pathname.startsWith('/updates/')) return serveUpdate(request, url, env, transport);
+  if (url.pathname.startsWith('/updates/') || url.pathname.startsWith('/artifacts/')) return serveUpdate(request, url, env, transport);
   if (url.pathname.startsWith('/api/')) {
     if (url.pathname === '/api/portal/downloads' && url.search) return finish(new Response('{"error":"Download query parameters are not supported."}', {
       status: 400, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },

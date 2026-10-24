@@ -60,6 +60,10 @@ function fixture(overrides: Record<string, any> = {}) {
       if (name === 'store_portal_access') return state.access ?? { entitlement: { status: 'active' }, stripe_customer_id: 'cus_customer0001', subscription: null };
       if (name === 'store_refund_request') return state.refund;
       if (name === 'store_apply_refund') return { known: true, kind: 'access', cancel_subscriptions: ['sub_cloud00000001'] };
+      if (name === 'store_subscription_sync_begin') return state.syncBinding ?? {
+        state: 'known', revision: 1, customer_id: 'cus_customer0001' };
+      if (name === 'store_apply_subscription') return state.syncResult ?? { state: 'applied' };
+      if (name === 'store_subscription_cancellations') return state.cancellations ?? [];
       if (name === 'store_email_claim') return state.outbox ?? [];
       if (name === 'store_job_maintenance') return { expired_orders: 0 };
       if (name === 'store_admin_overview') return { products: [], orders: [], customers: [] };
@@ -80,7 +84,9 @@ function fixture(overrides: Record<string, any> = {}) {
         return json({ object: 'charge', id: 'ch_refund000001', livemode: false, payment_intent: 'pi_paid00000001', amount: 8400, amount_refunded: 8400 });
       }
       if (url === 'https://api.stripe.com/v1/refunds') return json({ object: 'refund', livemode: false, payment_intent: body!.get('payment_intent') });
-      if (url.startsWith('https://api.stripe.com/v1/subscriptions/')) return json({ object: 'subscription', id: 'sub_cloud00000001', livemode: false, status: 'canceled' });
+      if (url.startsWith('https://api.stripe.com/v1/subscriptions/')) return json({ object: 'subscription', id: 'sub_cloud00000001',
+        livemode: false, customer: 'cus_customer0001', status: init?.method === 'DELETE' ? 'canceled' : 'active',
+        current_period_end: 1_900_000_000, ...state.subscription });
       if (url === 'https://api.stripe.com/v1/billing_portal/sessions') return json({ object: 'billing_portal.session', livemode: false, url: 'https://billing.stripe.com/p/session/x' });
       if (url === 'https://api.resend.com/emails') return json({ id: 'email-1' });
       throw new Error('unexpected ' + url);
@@ -225,17 +231,70 @@ test('a refund is applied from Stripe evidence and ends the cloud subscription',
   const charge = { object: 'charge', id: 'ch_refund000001', livemode: false };
   assert.equal((await handleStore(await signed(event('charge.refunded', charge)), f.ctx))!.status, 200);
   assert.deepEqual(f.calls.find(c => c.name === 'store_apply_refund')!.args.p_intent_id, 'pi_paid00000001');
-  const cancel = f.stripe.find(s => s.url.endsWith('/subscriptions/sub_cloud00000001'))!;
+  const cancel = f.stripe.find(s => s.url.endsWith('/subscriptions/sub_cloud00000001') && s.method === 'DELETE')!;
   assert.equal(cancel.method, 'DELETE');
 });
 
-test('subscription updates are recorded; deletion is recorded as cancelled', async () => {
-  const f = fixture();
+test('subscription updates use the current provider state rather than the event snapshot', async () => {
+  const f = fixture({ subscription: { status: 'canceled', current_period_end: 1_900_000_000 } });
   const sub = { object: 'subscription', id: 'sub_cloud00000001', status: 'active', cancel_at_period_end: true, items: { data: [{ current_period_end: 1_900_000_000 }] } };
   await handleStore(await signed(event('customer.subscription.deleted', sub)), f.ctx);
   const args = f.calls.find(c => c.name === 'store_apply_subscription')!.args;
   assert.equal(args.p_status, 'canceled');
   assert.equal(args.p_period_end, 1_900_000_000);
+  assert.equal(args.p_revision, 1);
+  assert.equal(f.stripe[0].method, 'GET');
+});
+
+test('delayed active events cannot restore a provider-canceled subscription; unknown IDs never reach Stripe', async () => {
+  const f = fixture({ subscription: { status: 'canceled' } });
+  const old = { object: 'subscription', id: 'sub_cloud00000001', status: 'active', current_period_end: 1_900_000_000 };
+  assert.equal((await handleStore(await signed(event('customer.subscription.updated', old)), f.ctx))!.status, 200);
+  assert.equal(f.calls.find(c => c.name === 'store_apply_subscription')!.args.p_status, 'canceled');
+  const foreign = fixture({ syncBinding: { state: 'unknown' } });
+  assert.equal((await handleStore(await signed(event('customer.subscription.updated', old)), foreign.ctx))!.status, 200);
+  assert.equal(foreign.stripe.length, 0);
+  assert.equal(foreign.calls.some(c => c.name === 'store_apply_subscription'), false);
+});
+
+test('uncertain, foreign-customer and superseded subscription reads retry without finalizing the event', async () => {
+  const sub = { object: 'subscription', id: 'sub_cloud00000001', status: 'active' };
+  for (const options of [{ subscription: { customer: 'cus_someoneelse01' } }, { subscription: { livemode: true } },
+    { subscription: { current_period_end: null } }, { syncResult: { state: 'superseded' } }]) {
+    const f = fixture(options);
+    assert.equal((await handleStore(await signed(event('customer.subscription.updated', sub)), f.ctx))!.status, 503);
+    assert.equal(f.calls.some(c => c.name === 'store_mark_event'), false);
+  }
+});
+
+test('a settled checkout retry finishes subscription sync without applying the order twice', async () => {
+  const f = fixture({ receipt: 'applied', binding: { state: 'bound', id: ORDER, kind: 'subscription', subscription_id: 'sub_cloud00000001' } });
+  assert.equal((await handleStore(await signed(event('checkout.session.completed', completedSession())), f.ctx))!.status, 200);
+  assert.equal(f.calls.some(c => c.name === 'store_apply_paid'), false);
+  assert.equal(f.calls.some(c => c.name === 'store_apply_subscription'), true);
+  assert.equal(f.stripe.length, 1);
+});
+
+test('closed checkout still processes signed subscription events and retries refund cancellation from the job', async () => {
+  const f = fixture({ env: { STRIPE_TEST_CHECKOUT_ENABLED: 'false' }, cancellations: ['sub_cloud00000001'] });
+  const original = f.ctx.fetch!;
+  let failing = true;
+  f.ctx.fetch = async (url: any, init?: any) => {
+    if (init?.method === 'DELETE' && failing) throw new Error('synthetic provider outage');
+    return original(url, init);
+  };
+  const job = () => new Request('https://beta.skager.app/api/jobs/tick', { method: 'POST', headers: { 'x-skager-job': 'j'.repeat(40) } });
+  const first = await handleStore(job(), f.ctx);
+  assert.equal(first!.status, 503);
+  assert.equal((await first!.json()).cancellations.pending, 1);
+  failing = false;
+  const retry = await handleStore(job(), f.ctx);
+  assert.equal(retry!.status, 200);
+  assert.equal((await retry!.json()).cancellations.completed, 1);
+  assert.equal(f.calls.filter(c => c.name === 'store_apply_subscription').length, 1);
+  assert.equal((await handleStore(post('/api/store/cloud', {}), f.ctx))!.status, 404);
+  const sub = { object: 'subscription', id: 'sub_cloud00000001', status: 'active' };
+  assert.equal((await handleStore(await signed(event('customer.subscription.updated', sub)), f.ctx))!.status, 200);
 });
 
 test('self-service refund: zero total closes now and logs out; paid orders ask Stripe', async () => {

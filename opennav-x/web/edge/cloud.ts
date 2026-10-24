@@ -133,7 +133,7 @@ export function validTelemetry(items: unknown): Json | null {
   if (entries.length < 1 || entries.length > Object.keys(TELEMETRY_KEYS).length) return null;
   const output: Json = {};
   for (const [key, item] of entries) {
-    const spec = TELEMETRY_KEYS[key];
+    const spec = Object.hasOwn(TELEMETRY_KEYS, key) ? TELEMETRY_KEYS[key] : null;
     if (!spec || !item || typeof item !== 'object' || Array.isArray(item)) return null;
     if (!Object.keys(item).every(k => ['v', 'age', 'q', 'src'].includes(k))) return null;
     const { v, age, q, src } = item as Json;
@@ -239,7 +239,11 @@ async function deviceRoute(req: Request, ctx: CloudContext, path: string): Promi
     requireValue(items);
   } catch { return reply(400, { error: 'Invalid boat data.' }); }
   const stored = object(await ctx.rpc('cloud_telemetry_put', { p_device_id: device.deviceId, p_items: items }));
+  // Authorization is checked again while holding the database rows used by revocation.
+  if (stored.state === 'revoked') return reply(401, { error: 'This SKAGER is no longer linked.', linked: false });
+  if (stored.state === 'inactive') return reply(402, { error: 'Boat data needs SKAGER Cloud.' });
   if (stored.state === 'throttled') return reply(429, { state: 'throttled' });
+  if (stored.state !== 'stored') throw new Error('Invalid telemetry result');
   return reply(202, { state: 'stored' });
 }
 
@@ -300,7 +304,7 @@ async function customerRoute(req: Request, ctx: CloudContext, path: string): Pro
     try {
       only(input, ['deviceId', 'keys', 'hours']);
       requireValue(Array.isArray(input.keys) && input.keys.length >= 1 && input.keys.length <= 4
-        && input.keys.every((key: unknown) => typeof key === 'string' && key in TELEMETRY_KEYS)
+        && input.keys.every((key: unknown) => typeof key === 'string' && Object.hasOwn(TELEMETRY_KEYS, key))
         && SERIES_HOURS.includes(input.hours));
     } catch { return reply(400, { error: 'Invalid history request.' }); }
     const series = object(await ctx.rpc('cloud_boat_series', { p_account_id: account.id, p_device_id: deviceId,

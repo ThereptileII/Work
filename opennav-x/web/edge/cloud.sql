@@ -62,8 +62,8 @@ alter table skager_private.cloud_telemetry_history enable row level security;
 create function skager_private.cloud_status(p_email text) returns jsonb
 language sql stable set search_path = '' as $$
   select coalesce((select jsonb_build_object(
-      'active', s.status in ('active','trialing')
-        or (s.status = 'past_due' and coalesce(s.current_period_end, now()) > now() - interval '7 days'),
+      'active', coalesce((s.status in ('active','trialing') and s.current_period_end > now())
+        or (s.status = 'past_due' and s.current_period_end > now() - interval '7 days'), false),
       'status', s.status, 'current_period_end', s.current_period_end, 'cancel_at_period_end', s.cancel_at_period_end)
     from skager_private.store_subscriptions s where s.email = p_email
     order by (s.status in ('active','trialing','past_due')) desc, s.updated_at desc limit 1),
@@ -171,13 +171,28 @@ language sql security definer set search_path = '' as $$
   delete from skager_private.cloud_telemetry_history where device_id = p_device_id;
 $$;
 
--- Called only after cloud_device_auth reported an active subscription. One upload per
--- 5 s per device; the first usable sample of each minute also enters the history.
+-- Recheck authorization in the write transaction. Lock order is user -> customer ->
+-- subscriptions -> device, so refund's customer lock and unlink's device lock are
+-- serialized with the write. A pre-authenticated upload cannot recreate deleted data.
 create function public.cloud_telemetry_put(p_device_id uuid, p_items jsonb) returns jsonb
 language plpgsql security definer set search_path = '' as $$
-declare v_last timestamptz; v_values jsonb;
+declare v_last timestamptz; v_values jsonb; v_account uuid; v_email text;
 begin
   if p_items is null or jsonb_typeof(p_items) <> 'object' then raise exception 'Invalid telemetry'; end if;
+  select account_id into v_account from skager_private.cloud_devices where id = p_device_id;
+  perform 1 from auth.users where id = v_account and deleted_at is null
+    and (banned_until is null or banned_until <= now()) for share;
+  if not found then return jsonb_build_object('state', 'revoked'); end if;
+  select email into v_email from skager_private.store_customers
+    where account_id = v_account and status = 'active' for share;
+  if v_email is null then return jsonb_build_object('state', 'revoked'); end if;
+  perform 1 from skager_private.store_subscriptions where email = v_email
+    order by subscription_id for share;
+  if not coalesce((skager_private.cloud_status(v_email)->>'active')::boolean, false) then
+    return jsonb_build_object('state', 'inactive');
+  end if;
+  perform 1 from skager_private.cloud_devices where id = p_device_id and revoked_at is null for update;
+  if not found then return jsonb_build_object('state', 'revoked'); end if;
   select received_at into v_last from skager_private.cloud_telemetry_latest where device_id = p_device_id for update;
   if v_last is not null and v_last > now() - interval '5 seconds' then
     return jsonb_build_object('state', 'throttled');

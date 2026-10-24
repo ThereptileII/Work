@@ -15,7 +15,7 @@ function backend(options: { cloudActive?: boolean } = {}) {
   const calls: { name: string; args: Record<string, unknown> }[] = [];
   let throttleCount = 0;
   const state = { links, devices, calls, cloudActive: options.cloudActive ?? true, telemetry: null as unknown,
-    throttleLimit: Infinity };
+    throttleLimit: Infinity, telemetryResult: 'stored' };
   const rpc = async (name: string, args: Record<string, any>) => {
     calls.push({ name, args });
     switch (name) {
@@ -47,7 +47,8 @@ function backend(options: { cloudActive?: boolean } = {}) {
         return device ? { state: 'active', device_id: device.id, account_id: device.account, email: 'skipper@example.test',
           name: 'Aurora helm', cloud: { active: state.cloudActive, status: state.cloudActive ? 'active' : null } } : { state: 'unknown' };
       }
-      case 'cloud_telemetry_put': state.telemetry = args.p_items; return { state: 'stored' };
+      case 'cloud_telemetry_put': if (state.telemetryResult === 'stored') state.telemetry = args.p_items;
+        return { state: state.telemetryResult };
       case 'cloud_device_forget': for (const [k, d] of devices) if (d.id === args.p_device_id) devices.delete(k); return null;
       case 'cloud_overview': return { cloud: { active: state.cloudActive, status: 'active' },
         devices: [{ id: DEVICE, name: 'Aurora helm', platform: 'windows', app_version: '0.4.0', token_hash: 'never returned' }] };
@@ -170,10 +171,22 @@ test('update access and telemetry need an active SKAGER Cloud subscription', asy
 test('telemetry validation refuses unknown keys, impossible values and extra fields as a whole', () => {
   const ok = { v: 1, age: 0, q: 'live' };
   assert.ok(validTelemetry({ 'navigation.sog': ok }));
-  for (const items of [{}, [], null, { 'navigation.unknown': ok }, { 'navigation.sog': { ...ok, v: Number.NaN } },
+  for (const items of [{}, [], null, { 'navigation.unknown': ok }, { constructor: ok }, { toString: ok },
+    JSON.parse('{"__proto__":{"v":1,"age":0,"q":"live"}}'), { 'navigation.sog': { ...ok, v: Number.NaN } },
     { 'navigation.latitude': { ...ok, v: 91 } }, { 'navigation.sog': { ...ok, age: -1 } }, { 'navigation.sog': { ...ok, q: 'fresh' } },
     { 'navigation.sog': { ...ok, extra: true } }, { 'navigation.sog': { ...ok, src: 'a\u0000b' } }, { 'navigation.sog': { ...ok, v: '5' } }]) {
     assert.equal(validTelemetry(items), null, JSON.stringify(items));
+  }
+});
+
+test('write-time revocation and cancellation are propagated even after successful request authentication', async () => {
+  for (const [state, expected] of [['revoked', 401], ['inactive', 402], ['unexpected', 503]] as const) {
+    const on = await linked(true);
+    on.state.telemetryResult = state;
+    const response = await call(on.ctx, app('/api/device/telemetry', { token: on.token,
+      body: { items: { 'navigation.sog': { v: 5, age: 0, q: 'live', src: 'GPS' } } } }));
+    assert.equal(response.status, expected);
+    assert.equal(on.state.telemetry, null);
   }
 });
 
@@ -193,7 +206,8 @@ test('customer routes come from the session and never return secrets or unknown 
   assert.deepEqual(Object.keys(boat.data.items), []);  // one unknown key spoils the stored snapshot as a whole
   const series = await call(ctx, app('/api/cloud/boat/series', { body: { deviceId: DEVICE, keys: ['navigation.sog'], hours: 24 } }));
   assert.deepEqual(series.data.series['navigation.sog'], [[1, 5.2]]);
-  for (const body of [{ deviceId: DEVICE, keys: ['nope'], hours: 24 }, { deviceId: DEVICE, keys: ['navigation.sog'], hours: 5 },
+  for (const body of [{ deviceId: DEVICE, keys: ['nope'], hours: 24 }, { deviceId: DEVICE, keys: ['constructor'], hours: 24 },
+    { deviceId: DEVICE, keys: ['__proto__'], hours: 24 }, { deviceId: DEVICE, keys: ['navigation.sog'], hours: 5 },
     { deviceId: 'x', keys: ['navigation.sog'], hours: 24 }]) {
     assert.equal((await call(ctx, app('/api/cloud/boat/series', { body }))).status, 400);
   }
