@@ -90,7 +90,9 @@ void protocol() {
 
 class MemoryCredentials final : public ais::IAisCredentials {
 public:
-  explicit MemoryCredentials(std::shared_ptr<std::string> value) : value_(std::move(value)) {}
+  explicit MemoryCredentials(std::shared_ptr<std::string> value,
+                             std::shared_ptr<std::atomic<bool>> fail_remove = {})
+      : value_(std::move(value)), fail_remove_(std::move(fail_remove)) {}
   ais::CredentialResult Read() const override {
     ais::CredentialResult r;
     if (!value_->empty() && r.key.Assign(*value_)) r.status = ais::CredentialStatus::Ready;
@@ -101,12 +103,14 @@ public:
     return ais::CredentialStatus::Ready;
   }
   ais::CredentialStatus Remove() override {
+    if (fail_remove_ && *fail_remove_) return ais::CredentialStatus::Unavailable;
     value_->clear();
     return ais::CredentialStatus::Removed;
   }
 
 private:
   std::shared_ptr<std::string> value_;
+  std::shared_ptr<std::atomic<bool>> fail_remove_;
 };
 
 // A minimal stand-in for /api/device/*. The handler runs on the worker thread.
@@ -126,7 +130,8 @@ struct FakeService {
     const bool authorized = std::string(token.View()) == kToken && !revoked;
     if (path == "/api/device/link")
       return {true, 200, R"({"deviceCode":")" + std::string(64, 'c') +
-                             R"(","userCode":"BCDF2345","verificationUrl":"https://beta.skager.app/link/","expiresIn":600,"interval":5})"};
+                             R"(","userCode":")" + (count[path] == 1 ? "BCDF2345" : "GHJK6789") +
+                             R"(","verificationUrl":"https://beta.skager.app/link/","expiresIn":600,"interval":5})"};
     if (path == "/api/device/link/poll")
       return {true, 200, approved ? R"({"state":"approved","token":")" + kToken + R"("})" : R"({"state":"pending"})"};
     if (!authorized) return {true, 401, R"({"linked":false})"};
@@ -138,6 +143,7 @@ struct FakeService {
       last_upload = body;
       return {true, 202, R"({"state":"stored"})"};
     }
+    if (path == "/api/device/telemetry/stop") last_upload.clear();
     return {true, 200, "{}"};
   }
 };
@@ -151,6 +157,35 @@ public:
 private:
   std::shared_ptr<FakeService> s_;
 };
+
+// Hold one completed response so tests exercise actions while a request is in
+// flight, without real network access or timing-dependent service behavior.
+struct ResponseGate {
+  explicit ResponseGate(std::string p) : path(std::move(p)) {}
+  std::string path;
+  std::atomic<bool> entered{false}, released{false};
+};
+class GatedTransport final : public ICloudTransport {
+public:
+  GatedTransport(std::shared_ptr<FakeService> service, std::shared_ptr<ResponseGate> gate)
+      : service_(std::move(service)), gate_(std::move(gate)) {}
+  HttpResult Request(const std::string &m, const std::string &p, const std::string &b,
+                     const ais::Secret &t) override {
+    auto result = service_->Handle(m, p, b, t);
+    if (p == gate_->path && !gate_->entered.exchange(true))
+      while (!gate_->released) std::this_thread::sleep_for(1ms);
+    return result;
+  }
+  void Cancel() override { gate_->released = true; }
+private:
+  std::shared_ptr<FakeService> service_;
+  std::shared_ptr<ResponseGate> gate_;
+};
+
+int Count(const std::shared_ptr<FakeService> &service, const std::string &path) {
+  std::lock_guard<std::mutex> lock(service->mutex);
+  return service->count[path];
+}
 
 bool WaitFor(const std::function<bool()> &condition) {
   for (int i = 0; i < 400; ++i) {
@@ -198,6 +233,8 @@ void service() {
     CHECK(WaitFor([&] { return cloud.Read().account.has_value(); }));
     CHECK(*stored == kToken);
     CHECK(cloud.Read().link == LinkState::Linked && cloud.Read().account->cloud_active);
+    CHECK(!cloud.Read().share_enabled);  // Pairing never inherits an earlier link's consent.
+    cloud.SetShareEnabled(true);
 
     // Sharing: the newest observation is uploaded with the token.
     state.navigation.sog_kn = Measured(5.5, vessel::Clock::now());
@@ -258,6 +295,111 @@ void service() {
     CHECK(cloud.Read().message.find("No connection") != std::string::npos);
   }
 }
+
+void service_edges() {
+  // A queued observation ages while status is blocked. The eventual upload
+  // must describe its actual age/quality, not the freshness at enqueue time.
+  {
+    auto fake = std::make_shared<FakeService>();
+    auto stored = std::make_shared<std::string>(kToken);
+    auto gate = std::make_shared<ResponseGate>("/api/device/status");
+    CloudService cloud(std::make_unique<MemoryCredentials>(stored),
+                       std::make_unique<GatedTransport>(fake, gate), FastOptions());
+    CHECK(WaitFor([&] { return gate->entered.load(); }));
+    cloud.SetShareEnabled(true);
+    vessel::VesselState state;
+    const auto observed = vessel::Clock::now();
+    state.navigation.sog_kn = Measured(5.0, observed);
+    state.navigation.sog_kn.freshness = {10ms, 20ms};
+    cloud.Observe(state, observed);
+    std::this_thread::sleep_for(120ms);
+    gate->released = true;
+    CHECK(WaitFor([&] { return cloud.Read().last_shared.has_value(); }));
+    std::lock_guard<std::mutex> lock(fake->mutex);
+    rapidjson::Document doc;
+    doc.Parse(fake->last_upload.c_str());
+    CHECK(doc["items"]["navigation.sog"]["age"].GetDouble() >= 0.1);
+    CHECK(std::string(doc["items"]["navigation.sog"]["q"].GetString()) == "stale");
+  }
+  // OFF is local immediately and keeps retrying remote cleanup after an outage.
+  {
+    auto fake = std::make_shared<FakeService>();
+    auto stored = std::make_shared<std::string>(kToken);
+    CloudService cloud(std::make_unique<MemoryCredentials>(stored),
+                       std::make_unique<FakeTransport>(fake), FastOptions());
+    CHECK(WaitFor([&] { return Count(fake, "/api/device/telemetry/stop") >= 1; }));
+    cloud.SetShareEnabled(true);
+    vessel::VesselState state;
+    state.navigation.sog_kn = Measured(4, vessel::Clock::now());
+    cloud.Observe(state, vessel::Clock::now());
+    CHECK(WaitFor([&] { return cloud.Read().last_shared.has_value(); }));
+    const auto before = Count(fake, "/api/device/telemetry/stop");
+    { std::lock_guard<std::mutex> lock(fake->mutex); fake->offline = true; }
+    cloud.SetShareEnabled(false);
+    CHECK(!cloud.Read().share_enabled);
+    CHECK(WaitFor([&] { return Count(fake, "/api/device/telemetry/stop") > before; }));
+    { std::lock_guard<std::mutex> lock(fake->mutex); fake->offline = false; }
+    CHECK(WaitFor([&] { std::lock_guard<std::mutex> lock(fake->mutex); return fake->last_upload.empty(); }));
+    CHECK(Count(fake, "/api/device/telemetry/stop") >= before + 2);
+  }
+  // Failed OS deletion cannot claim unlink success or permit further sharing.
+  // Once it recovers, a later account link still needs a new sharing choice.
+  {
+    auto fake = std::make_shared<FakeService>();
+    auto stored = std::make_shared<std::string>(kToken);
+    auto fail_remove = std::make_shared<std::atomic<bool>>(true);
+    CloudService cloud(std::make_unique<MemoryCredentials>(stored, fail_remove),
+                       std::make_unique<FakeTransport>(fake), FastOptions());
+    CHECK(WaitFor([&] { return cloud.Read().account.has_value(); }));
+    cloud.SetShareEnabled(true);
+    cloud.Unlink();
+    CHECK(WaitFor([&] { return cloud.Read().message.find("could not be removed") != std::string::npos; }));
+    CHECK(cloud.Read().unlink_pending && cloud.Read().link == LinkState::Linked);
+    CHECK(!cloud.Read().share_enabled && *stored == kToken);
+    cloud.SetShareEnabled(true);
+    CHECK(!cloud.Read().share_enabled);
+    *fail_remove = false;
+    CHECK(WaitFor([&] { return cloud.Read().link == LinkState::Unlinked; }));
+    CHECK(stored->empty() && !cloud.Read().unlink_pending);
+    { std::lock_guard<std::mutex> lock(fake->mutex); fake->approved = true; }
+    cloud.StartLink("Another account");
+    CHECK(WaitFor([&] { return cloud.Read().account.has_value(); }));
+    CHECK(!cloud.Read().share_enabled);
+    CHECK(Count(fake, "/api/device/telemetry") == 0);
+  }
+  // Cancelling and immediately starting another link must discard the first
+  // request's eventual response, even though the state is Starting again.
+  {
+    auto fake = std::make_shared<FakeService>();
+    auto stored = std::make_shared<std::string>();
+    auto gate = std::make_shared<ResponseGate>("/api/device/link");
+    CloudService cloud(std::make_unique<MemoryCredentials>(stored),
+                       std::make_unique<GatedTransport>(fake, gate), FastOptions());
+    cloud.StartLink("First");
+    CHECK(WaitFor([&] { return gate->entered.load(); }));
+    cloud.CancelLink();
+    cloud.StartLink("Second");
+    gate->released = true;
+    CHECK(WaitFor([&] { return cloud.Read().link == LinkState::WaitingForApproval; }));
+    CHECK(Count(fake, "/api/device/link") == 2);
+    CHECK(cloud.Read().user_code == "GHJK6789");
+  }
+  // Cancelling an approved poll also prevents the late token being persisted.
+  {
+    auto fake = std::make_shared<FakeService>();
+    fake->approved = true;
+    auto stored = std::make_shared<std::string>();
+    auto gate = std::make_shared<ResponseGate>("/api/device/link/poll");
+    CloudService cloud(std::make_unique<MemoryCredentials>(stored),
+                       std::make_unique<GatedTransport>(fake, gate), FastOptions());
+    cloud.StartLink("Cancelled");
+    CHECK(WaitFor([&] { return gate->entered.load(); }));
+    cloud.CancelLink();
+    gate->released = true;
+    CHECK(WaitFor([&] { return !cloud.Read().busy; }));
+    CHECK(cloud.Read().link == LinkState::Unlinked && stored->empty());
+  }
+}
 }  // namespace
 
 int main(int argc, char **argv) {
@@ -276,7 +418,7 @@ int main(int argc, char **argv) {
   }
   try {
     if (group == "protocol" || group == "all") protocol();
-    if (group == "service" || group == "all") service();
+    if (group == "service" || group == "all") { service(); service_edges(); }
   } catch (const std::exception &e) {
     std::cerr << e.what() << "\n";
     return 1;

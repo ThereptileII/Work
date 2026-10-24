@@ -40,6 +40,8 @@ struct CloudSnapshot {
   // Plain-language outcome of the latest action, for the settings page.
   std::string message;
   bool busy = false;  // A request is in flight.
+  bool initialized = false;  // Platform credential read has completed.
+  bool unlink_pending = false;  // A failed credential deletion is still retried.
 };
 
 struct CloudOptions {
@@ -65,7 +67,7 @@ public:
   void Unlink();
   void RefreshStatus();
   void SetShareEnabled(bool enabled);
-  // Application thread. Encodes at most once per telemetry interval and only
+  // Application thread. Copies at most once per telemetry interval and only
   // while linked with sharing on; the newest snapshot replaces an unsent one.
   void Observe(const vessel::VesselState &state, vessel::Time now);
   CloudSnapshot Read() const;

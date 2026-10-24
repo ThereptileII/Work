@@ -28,7 +28,10 @@ public:
 
   void StartLink(const std::string &name) {
     std::lock_guard<std::mutex> lock(mutex_);
-    if (snapshot_.link != LinkState::Unlinked) return;
+    if (snapshot_.link != LinkState::Unlinked || unlink_) return;
+    ++link_generation_;
+    snapshot_.share_enabled = false;  // Consent belongs to this link, never its successor.
+    payload_.reset();
     link_name_ = name;
     snapshot_.link = LinkState::Starting;
     snapshot_.message = "Requesting a pairing code...";
@@ -37,11 +40,13 @@ public:
   void CancelLink() {
     std::lock_guard<std::mutex> lock(mutex_);
     if (snapshot_.link != LinkState::Starting && snapshot_.link != LinkState::WaitingForApproval) return;
+    ++link_generation_;
     ClearLinkLocked("Pairing cancelled.");
+    cv_.notify_all();
   }
   void Unlink() {
     std::lock_guard<std::mutex> lock(mutex_);
-    unlink_ = true;
+    BeginUnlinkLocked(false);
     cv_.notify_all();
   }
   void RefreshStatus() {
@@ -51,28 +56,30 @@ public:
   }
   void SetShareEnabled(bool enabled) {
     std::lock_guard<std::mutex> lock(mutex_);
+    if (enabled && (unlink_ || (credentials_loaded_ && snapshot_.link != LinkState::Linked))) return;
     if (snapshot_.share_enabled == enabled) return;
     snapshot_.share_enabled = enabled;
     payload_.reset();
     last_encoded_ = {};
-    // Tell the service once so the web stops showing a live boat.
-    if (!enabled && snapshot_.link == LinkState::Linked) stop_sharing_ = true;
+    // Reconcile OFF with the service, retaining the request across outages.
+    if (!enabled && snapshot_.link == LinkState::Linked) {
+      stop_sharing_ = true;
+      stop_sharing_after_ = Steady::now();
+    }
+    if (enabled) stop_sharing_ = false;
     cv_.notify_all();
   }
   void Observe(const vessel::VesselState &state, vessel::Time now) {
-    {
-      std::lock_guard<std::mutex> lock(mutex_);
-      if (!snapshot_.share_enabled || snapshot_.link != LinkState::Linked ||
-          (snapshot_.account && !snapshot_.account->cloud_active))
-        return;
-      if (last_encoded_ != vessel::Time{} && now - last_encoded_ < options_.telemetry_interval) return;
-      last_encoded_ = now;
-    }
-    // Encoding is cheap and touches only the caller's copy of the state.
-    auto encoded = EncodeTelemetry(state, now);
-    if (!encoded) return;
     std::lock_guard<std::mutex> lock(mutex_);
-    payload_ = std::move(encoded);
+    if (!snapshot_.share_enabled || snapshot_.link != LinkState::Linked || unlink_ ||
+        state.simulated || state.replayed ||
+        (snapshot_.account && !snapshot_.account->cloud_active))
+      return;
+    if (last_encoded_ != vessel::Time{} && now - last_encoded_ < options_.telemetry_interval) return;
+    last_encoded_ = now;
+    // Retain owned observations, not JSON with frozen age/quality. Network or
+    // entitlement delays must never rejuvenate an old measurement.
+    payload_ = state;
     cv_.notify_all();
   }
   CloudSnapshot Read() const {
@@ -90,19 +97,26 @@ private:
     device_code_.clear();
     snapshot_.message = message;
   }
-  // Token rejected by the service: the device was unlinked in the account.
-  void ForgetLocked(const std::string &message) {
-    token_.Clear();
-    credentials_->Remove();
+  void BeginUnlinkLocked(bool remotely_revoked) {
+    ++link_generation_;
+    unlink_ = true;
+    snapshot_.unlink_pending = true;
+    unlink_after_ = Steady::now();
+    remote_unlinked_ = remotely_revoked;
+    snapshot_.share_enabled = false;
     snapshot_.account.reset();
     snapshot_.last_shared.reset();
     payload_.reset();
     stop_sharing_ = false;
-    ClearLinkLocked(message);
+    snapshot_.message = "Removing the saved account link; boat data sharing is off.";
   }
 
   Job NextLocked(Steady::time_point now, Steady::time_point &wake) {
-    if (unlink_) return Job::Unlink;
+    if (unlink_) {
+      if (now >= unlink_after_) return Job::Unlink;
+      wake = std::min(wake, unlink_after_);
+      return Job::None;
+    }
     if (snapshot_.link == LinkState::Starting) return Job::StartLink;
     if (snapshot_.link == LinkState::WaitingForApproval) {
       if (std::chrono::system_clock::now() >= snapshot_.code_expires) {
@@ -116,7 +130,10 @@ private:
     if (snapshot_.link != LinkState::Linked) return Job::None;
     if (now >= status_due_) return Job::Status;
     wake = std::min(wake, status_due_);
-    if (stop_sharing_) return Job::StopSharing;
+    if (stop_sharing_) {
+      if (now >= stop_sharing_after_) return Job::StopSharing;
+      wake = std::min(wake, stop_sharing_after_);
+    }
     if (payload_ && snapshot_.share_enabled && snapshot_.account && snapshot_.account->cloud_active) {
       if (now >= upload_after_) return Job::Upload;
       wake = std::min(wake, upload_after_);
@@ -129,10 +146,16 @@ private:
       // Startup: a stored token means this SKAGER is already linked.
       auto stored = credentials_->Read();
       std::lock_guard<std::mutex> lock(mutex_);
+      credentials_loaded_ = true;
+      snapshot_.initialized = true;
       if (stored.status == ais::CredentialStatus::Ready && ValidToken(stored.key.View())) {
         token_ = std::move(stored.key);
         snapshot_.link = LinkState::Linked;
         status_due_ = Steady::now();
+        // Reconcile OFF after a prior process/network failure as well.
+        if (!snapshot_.share_enabled) stop_sharing_ = true;
+      } else {
+        snapshot_.share_enabled = false;
       }
     }
     std::unique_lock<std::mutex> lock(mutex_);
@@ -165,18 +188,30 @@ private:
   void Execute(Job job, std::unique_lock<std::mutex> &lock) {
     switch (job) {
     case Job::Unlink: {
-      unlink_ = false;
-      if (snapshot_.link == LinkState::Linked) {
+      if (!remote_unlinked_ && !token_.Empty()) {
         // Best effort: the local credential is removed even when offline.
-        Call(lock, "POST", "/api/device/unlink", "{}", true);
+        const auto result = Call(lock, "POST", "/api/device/unlink", "{}", true);
+        remote_unlinked_ = result.transport_ok && (result.status == 200 || result.status == 401);
       }
-      ForgetLocked("This SKAGER is no longer linked to an account.");
+      if (credentials_->Remove() != ais::CredentialStatus::Removed) {
+        unlink_after_ = Steady::now() + options_.retry;
+        snapshot_.message = "The saved account link could not be removed. Sharing is off; removal will retry. "
+                            "Unlink this computer in your account to revoke its token.";
+        return;
+      }
+      token_.Clear();
+      unlink_ = false;
+      snapshot_.unlink_pending = false;
+      ClearLinkLocked(remote_unlinked_
+          ? "This SKAGER is no longer linked to an account."
+          : "The local link was removed. Cloud could not be reached; unlink this computer in your account to remove its data.");
       return;
     }
     case Job::StartLink: {
       const auto body = EncodeLinkRequest(link_name_, options_.platform, options_.version);
+      const auto generation = link_generation_;
       const auto result = Call(lock, "POST", "/api/device/link", body, false);
-      if (snapshot_.link != LinkState::Starting || stop_) return;  // Cancelled meanwhile.
+      if (generation != link_generation_ || snapshot_.link != LinkState::Starting || stop_) return;
       const auto offer = result.transport_ok && result.status == 200 ? ParseLinkOffer(result.body)
                                                                       : std::nullopt;
       if (!offer) {
@@ -195,8 +230,9 @@ private:
       return;
     }
     case Job::Poll: {
+      const auto generation = link_generation_;
       const auto result = Call(lock, "POST", "/api/device/link/poll", EncodePoll(device_code_), false);
-      if (snapshot_.link != LinkState::WaitingForApproval || stop_) return;
+      if (generation != link_generation_ || snapshot_.link != LinkState::WaitingForApproval || stop_) return;
       next_poll_ = Steady::now() + poll_interval_;
       if (!result.transport_ok) return;  // Retry until the code expires.
       const auto poll = result.status == 200 || result.status == 429 ? ParsePoll(result.body) : PollResult{};
@@ -225,11 +261,11 @@ private:
       return;
     }
     case Job::Status: {
-      status_due_ = Steady::now() + options_.retry;
       const auto result = Call(lock, "GET", "/api/device/status", {}, true);
+      status_due_ = Steady::now() + options_.retry;
       if (snapshot_.link != LinkState::Linked || stop_ || unlink_) return;
       if (result.transport_ok && result.status == 401) {
-        ForgetLocked("This SKAGER was unlinked from the account.");
+        BeginUnlinkLocked(true);
         return;
       }
       const auto status = result.transport_ok && result.status == 200 ? ParseStatus(result.body)
@@ -240,16 +276,25 @@ private:
       return;
     }
     case Job::StopSharing: {
-      stop_sharing_ = false;
-      Call(lock, "POST", "/api/device/telemetry/stop", "{}", true);
-      if (snapshot_.link == LinkState::Linked) snapshot_.message = "Boat data sharing is off.";
+      const auto result = Call(lock, "POST", "/api/device/telemetry/stop", "{}", true);
+      if (snapshot_.link != LinkState::Linked || snapshot_.share_enabled || unlink_ || stop_) return;
+      if (result.transport_ok && result.status == 401) {
+        BeginUnlinkLocked(true);
+        return;
+      }
+      stop_sharing_ = !(result.transport_ok && result.status == 200);
+      stop_sharing_after_ = Steady::now() + options_.retry;
+      snapshot_.message = stop_sharing_
+          ? "Sharing is off on this computer. Removing the latest Cloud data will retry when connected."
+          : "Boat data sharing is off.";
       return;
     }
     case Job::Upload: {
-      auto body = std::move(*payload_);
+      auto body = EncodeTelemetry(*payload_, vessel::Clock::now());
       payload_.reset();
-      const auto result = Call(lock, "POST", "/api/device/telemetry", body, true);
-      if (snapshot_.link != LinkState::Linked || stop_ || unlink_) return;
+      if (!body) return;
+      const auto result = Call(lock, "POST", "/api/device/telemetry", *body, true);
+      if (snapshot_.link != LinkState::Linked || stop_ || unlink_ || !snapshot_.share_enabled) return;
       if (!result.transport_ok) {
         upload_after_ = Steady::now() + options_.retry;
         snapshot_.message = "Boat data will be sent when the internet connection returns.";
@@ -259,7 +304,7 @@ private:
         snapshot_.last_shared = std::chrono::system_clock::now();
         snapshot_.message = "Sharing boat data with SKAGER Cloud.";
       } else if (result.status == 401) {
-        ForgetLocked("This SKAGER was unlinked from the account.");
+        BeginUnlinkLocked(true);
       } else if (result.status == 402) {
         if (snapshot_.account) snapshot_.account->cloud_active = false;
         snapshot_.message = "Boat data needs an active SKAGER Cloud subscription.";
@@ -283,10 +328,12 @@ private:
   ais::Secret token_;
   std::string link_name_, device_code_;
   std::chrono::milliseconds poll_interval_{5000};
-  Steady::time_point next_poll_{}, status_due_{}, upload_after_{};
-  std::optional<std::string> payload_;
+  Steady::time_point next_poll_{}, status_due_{}, upload_after_{}, unlink_after_{}, stop_sharing_after_{};
+  std::optional<vessel::VesselState> payload_;
   vessel::Time last_encoded_{};
   bool stop_ = false, unlink_ = false, stop_sharing_ = false;
+  bool credentials_loaded_ = false, remote_unlinked_ = false;
+  unsigned long long link_generation_ = 0;
   std::thread worker_;
 };
 

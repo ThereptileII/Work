@@ -1015,6 +1015,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       vessel::NormalizeBatteryPower(state,
                                     settings->Read().energy.battery_device_id,
                                     settings->Read().current, now);
+    // Called by the regular live UI tick, after all selected instrument inputs
+    // and battery sign normalization. Demo/replay never call live_state.
+    if (online_cloud && !restart && !(commissioning && commissioning->Replaying()))
+      online_cloud->Observe(state, now);
     return state;
   };
   actions.build_info = [&frame] {
@@ -1355,13 +1359,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   };
   shell = std::make_unique<ui::Shell>(frame, manager, std::move(actions), Light(), demo);
   navigation = std::make_unique<NavigationBridge>(
-      [](const vessel::VesselState &state) {
-        selected_navigation = state;
-        // Live boat data only; the cloud service also refuses simulated and
-        // replayed state and does nothing unless linked with sharing on.
-        if (online_cloud && !restart && !(commissioning && commissioning->Replaying()))
-          online_cloud->Observe(state, vessel::Clock::now());
-      });
+      [](const vessel::VesselState &state) { selected_navigation = state; });
   route_progress = std::make_unique<integration::RouteProgressInput>(
       "SKAGER session " + std::to_string(vessel::Clock::now().time_since_epoch().count()));
 #ifdef OPENNAV_ROUTE_TESTS

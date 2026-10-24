@@ -18,11 +18,12 @@ public:
   application::CommandResult Share(bool enabled);
   void Refresh() { service_->RefreshStatus(); }
   // Live, measured vessel state only; the service enforces cadence and gates.
-  void Observe(const vessel::VesselState &state, vessel::Time now) { service_->Observe(state, now); }
-  cloud::CloudSnapshot Read() const { return service_->Read(); }
+  void Observe(const vessel::VesselState &state, vessel::Time now);
+  cloud::CloudSnapshot Read();
 
 private:
   wxFileConfig &config_;
   std::unique_ptr<cloud::CloudService> service_;
+  bool saved_share_ = false;
 };
 }  // namespace opennav::integration
