@@ -1,5 +1,28 @@
 # SKAGER status — 2026-10-20
 
+## 24 October — Beta 1.0 Cloud/updater integration candidate
+
+The explicit Beta 1.0 production-readiness work is continuing from the accepted
+Beta 2 baseline. The next technical candidate is `0.4.0-beta2.7` (the existing
+package and installer naming remains Beta 2 until a separately qualified naming
+migration is approved). The prepared Cloud account, live telemetry and protected
+updater work is integrated on the Staging branch. Focused checks currently pass:
+159 web tests, the complete Go updater verifier packages, 77 Cloud checks under
+ThreadSanitizer and 22 wxFileConfig persistence checks. The native Windows build,
+installer qualification, exact release package and boat acceptance remain pending.
+
+Cloud telemetry is now fed from the normal live Vessel Data tick, retaining owned
+observations until dispatch so network delay cannot make stale data look fresh.
+Unlink/revocation clears sharing consent, retries failed credential removal and
+server-side telemetry writes recheck account/subscription/device state under row
+locks. Subscription webhooks reserve revisions and refresh Stripe state so delayed
+events cannot restore a canceled subscription. The protected updater carries a
+short-lived account token only over the authenticated local broker request and
+never stores it in receipts, logs, process arguments or ordinary startup paths.
+
+Public downloads and payments remain closed. No native Windows or boat acceptance
+is claimed by the focused Linux/web results.
+
 ## 20 October — symbol coverage, sharpness and light sectors (source batch)
 
 SCRUM-378's latest owner feedback adds a full pinned symbol inventory and
