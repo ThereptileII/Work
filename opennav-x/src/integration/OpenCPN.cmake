@@ -68,6 +68,11 @@ target_compile_definitions(${PACKAGE_NAME} PRIVATE OPENNAV_X=1)
 # The optional S-52 geographic-label painter is a bounded integration helper;
 # the standalone upstream library and all default presentation paths stay stock.
 target_compile_definitions(S52PLIB PRIVATE OPENNAV_X=1)
+# S52PLIB's OpenNAV chart-symbol hooks include the generated resource identity
+# header.  The header is emitted into the configure-time chart-style output,
+# so the library which compiles chartsymbols.cpp must see that directory too;
+# adding it only to the host executable leaves the integrated Linux build
+# without XNavChartResources.h.
 target_include_directories(S52PLIB PRIVATE "${OPENNAV_ROOT}/src")
 if(WIN32)
   target_link_libraries(S52PLIB PRIVATE opennav_chart_name_alpha)
@@ -506,6 +511,7 @@ target_sources(${PACKAGE_NAME} PRIVATE "${OPENNAV_ROOT}/src/integration/ChartPre
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlay.cpp"
   "${OPENNAV_ROOT}/src/integration/ChartRouteUnderlayGeometry.cpp")
 target_include_directories(${PACKAGE_NAME} PRIVATE "${xnav_chart_style}")
+target_include_directories(S52PLIB PRIVATE "${xnav_chart_style}")
 # The private o-charts adapter is optional until its exact source, native ABI
 # and chart lifecycle have qualified. A missing package preserves stock plugin
 # loading and is reported separately from core ENC presentation.
