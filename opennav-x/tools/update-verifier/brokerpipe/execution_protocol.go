@@ -91,6 +91,19 @@ type ExecutionRequest struct {
 	RequestID   string      `json:"requestId"`
 	StageID     string      `json:"stageId"`
 	StartupMode StartupMode `json:"startupMode,omitempty"`
+	CloudAccess CloudAccess `json:"-"`
+}
+
+// This private shape is the only JSON encoder allowed to disclose CloudAccess.
+// Execution commands, reports, acknowledgements and ordinary request JSON never
+// carry it. The native client authenticates the SCM server before writing bytes.
+type executionRequestWire struct {
+	Schema      int         `json:"schema"`
+	Operation   string      `json:"operation"`
+	RequestID   string      `json:"requestId"`
+	StageID     string      `json:"stageId"`
+	StartupMode StartupMode `json:"startupMode,omitempty"`
+	CloudAccess string      `json:"cloudAccess,omitempty"`
 }
 
 // ExecutionCommand is a finite server request. The session/challenge/sequence
@@ -192,13 +205,14 @@ type ExecutionHandler func(context.Context, Peer, ExecutionRequest, *ExecutionSe
 type ExecutionClientHandler func(context.Context, ExecutionCommand) (ExecutionObservation, error)
 
 func validExecutionRequest(q ExecutionRequest) bool {
-	return q.StartupMode.Valid() && ((q.Operation == "start-current" || q.Operation == "start-selected") || q.StartupMode == StartupXNav) && q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected" || q.Operation == "offer-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
+	return q.CloudAccess.valid() && (!q.CloudAccess.IsPresent() || q.Operation == "offer-current" || q.Operation == "execute-session") && q.StartupMode.Valid() && ((q.Operation == "start-current" || q.Operation == "start-selected") || q.StartupMode == StartupXNav) && q.Schema == 1 && (q.Operation == "execute-session" || q.Operation == "start-current" || q.Operation == "start-selected" || q.Operation == "offer-current") && id32.MatchString(q.RequestID) && id32.MatchString(q.StageID)
 }
 func encodeExecutionRequest(q ExecutionRequest) ([]byte, error) {
 	if !validExecutionRequest(q) {
 		return nil, ErrRefused
 	}
-	return json.Marshal(q)
+	return json.Marshal(executionRequestWire{Schema: q.Schema, Operation: q.Operation, RequestID: q.RequestID,
+		StageID: q.StageID, StartupMode: q.StartupMode, CloudAccess: q.CloudAccess.Token()})
 }
 func executionObject(raw []byte, keys []string) error {
 	if len(raw) == 0 || len(raw) > maxFrame || !utf8.Valid(raw) {
@@ -225,7 +239,25 @@ func executionObject(raw []byte, keys []string) error {
 }
 func decodeExecutionRequest(raw []byte) (ExecutionRequest, error) {
 	var q ExecutionRequest
-	if executionObject(raw, []string{"schema", "operation", "requestId", "stageId"}) != nil || json.Unmarshal(raw, &q) != nil || !validExecutionRequest(q) {
+	keys := []string{"schema", "operation", "requestId", "stageId"}
+	if executionObject(raw, keys) != nil {
+		if executionObject(raw, append(keys, "cloudAccess")) != nil {
+			return ExecutionRequest{}, ErrRefused
+		}
+		// Validate the raw credential before JSON decoding can accept escape aliases.
+		fields, err := exactObject(raw, append(keys, "cloudAccess"), false)
+		if err != nil {
+			fields, err = exactObject(raw, append(keys, "cloudAccess", "startupMode"), false)
+		}
+		if err != nil {
+			return ExecutionRequest{}, ErrRefused
+		}
+		q.CloudAccess, err = decodeCloudAccess(fields["cloudAccess"])
+		if err != nil {
+			return ExecutionRequest{}, ErrRefused
+		}
+	}
+	if json.Unmarshal(raw, &q) != nil || !validExecutionRequest(q) {
 		return ExecutionRequest{}, ErrRefused
 	}
 	return q, nil

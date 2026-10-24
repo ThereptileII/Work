@@ -133,6 +133,7 @@ func serveExecutionOne(parent context.Context, h windows.Handle, handler Executi
 		return
 	}
 	request, err := decodeExecutionRequest(raw)
+	clear(raw) // Do not retain the credential-bearing handshake frame.
 	if err != nil {
 		cancel()
 		return
@@ -209,6 +210,7 @@ func CallExecution(ctx context.Context, request ExecutionRequest, handler Execut
 	if err != nil {
 		return err
 	}
+	defer clear(raw) // Covers server-authentication and other pre-write failures.
 	ctx, cancel := context.WithTimeout(ctx, operationTimeout)
 	defer cancel()
 	open := openExecutionPipe
@@ -247,6 +249,7 @@ func CallExecution(ctx context.Context, request ExecutionRequest, handler Execut
 	defer joinWatcher()
 	handshake, stop := context.WithTimeout(ctx, handshakeTimeout)
 	err = writeFrame(pipeIO{handshake, h}, raw)
+	clear(raw)
 	stop()
 	if err != nil {
 		return errors.Join(ErrRefused, ctx.Err())

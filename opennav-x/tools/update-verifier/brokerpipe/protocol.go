@@ -37,10 +37,11 @@ var commit40 = regexp.MustCompile(`^[a-f0-9]{40}$`)
 // Consent identifies the offer, not proof of a human gesture. RequestID must be
 // a fresh cryptographically random 16-byte value, encoded as lowercase hex.
 type Request struct {
-	Schema    int
-	Operation string
-	RequestID string
-	Consent   verifier.ConsentIdentity
+	Schema      int
+	Operation   string
+	RequestID   string
+	Consent     verifier.ConsentIdentity
+	CloudAccess CloudAccess `json:"-"`
 }
 
 type Result struct {
@@ -77,15 +78,16 @@ type consentWire struct {
 	PolicySHA256 string `json:"policySha256"`
 }
 type requestWire struct {
-	Schema    int         `json:"schema"`
-	Operation string      `json:"operation"`
-	RequestID string      `json:"requestId"`
-	Consent   consentWire `json:"consent"`
+	Schema      int         `json:"schema"`
+	Operation   string      `json:"operation"`
+	RequestID   string      `json:"requestId"`
+	Consent     consentWire `json:"consent"`
+	CloudAccess string      `json:"cloudAccess,omitempty"`
 }
 
 func validRequest(r Request) bool {
 	_, err := releasepolicy.ParseSemVer(r.Consent.Version)
-	return r.Schema == 1 && r.Operation == "prepare-and-stage" && id32.MatchString(r.RequestID) && err == nil && len(r.Consent.Version) <= 128 && commit40.MatchString(r.Consent.Commit) && hex64.MatchString(r.Consent.PolicySHA256)
+	return r.CloudAccess.valid() && r.Schema == 1 && r.Operation == "prepare-and-stage" && id32.MatchString(r.RequestID) && err == nil && len(r.Consent.Version) <= 128 && commit40.MatchString(r.Consent.Commit) && hex64.MatchString(r.Consent.PolicySHA256)
 }
 func validResult(r Result, q Request) bool {
 	return r.Schema == 1 && r.RequestID == q.RequestID && r.State == Staged && r.StageID == q.RequestID && r.Version == q.Consent.Version && r.Commit == q.Consent.Commit
@@ -94,7 +96,8 @@ func encodeRequest(r Request) ([]byte, error) {
 	if !validRequest(r) {
 		return nil, ErrRefused
 	}
-	return json.Marshal(requestWire{r.Schema, r.Operation, r.RequestID, consentWire{r.Consent.Version, r.Consent.Commit, r.Consent.PolicySHA256}})
+	return json.Marshal(requestWire{Schema: r.Schema, Operation: r.Operation, RequestID: r.RequestID,
+		Consent: consentWire{r.Consent.Version, r.Consent.Commit, r.Consent.PolicySHA256}, CloudAccess: r.CloudAccess.Token()})
 }
 
 // Decode keys ourselves: encoding/json accepts duplicate keys and case aliases.
@@ -151,14 +154,27 @@ func decodeRequest(raw []byte) (Request, error) {
 	if len(raw) == 0 || len(raw) > maxFrame || !utf8.Valid(raw) {
 		return out, ErrRefused
 	}
-	if _, e := exactObject(raw, []string{"schema", "operation", "requestId", "consent"}, true); e != nil {
-		return out, e
+	keys := []string{"schema", "operation", "requestId", "consent"}
+	fields, e := exactObject(raw, keys, true)
+	if e != nil {
+		fields, e = exactObject(raw, append(keys, "cloudAccess"), true)
+		if e != nil {
+			return out, e
+		}
+	}
+	var access CloudAccess
+	if value, present := fields["cloudAccess"]; present {
+		access, e = decodeCloudAccess(value)
+		if e != nil {
+			return out, e
+		}
 	}
 	var w requestWire
 	if json.Unmarshal(raw, &w) != nil {
 		return out, ErrRefused
 	}
-	out = Request{w.Schema, w.Operation, w.RequestID, verifier.ConsentIdentity{Version: w.Consent.Version, Commit: w.Consent.Commit, PolicySHA256: w.Consent.PolicySHA256}}
+	out = Request{Schema: w.Schema, Operation: w.Operation, RequestID: w.RequestID,
+		Consent: verifier.ConsentIdentity{Version: w.Consent.Version, Commit: w.Consent.Commit, PolicySHA256: w.Consent.PolicySHA256}, CloudAccess: access}
 	if !validRequest(out) {
 		return Request{}, ErrRefused
 	}
@@ -212,6 +228,7 @@ func readFrame(r io.Reader) ([]byte, error) {
 	}
 	b := make([]byte, int(n))
 	if _, e := io.ReadFull(r, b); e != nil {
+		clear(b)
 		return nil, ErrRefused
 	}
 	return b, nil

@@ -168,6 +168,7 @@ func serveOne(parent context.Context, h windows.Handle, handler Handler, replay 
 		return
 	}
 	request, e := decodeRequest(raw)
+	clear(raw) // The decoded credential is scoped to this authenticated operation.
 	if e != nil {
 		cancel()
 		return
@@ -248,6 +249,7 @@ func Call(ctx context.Context, request Request) (Result, error) {
 	if e != nil {
 		return Result{}, e
 	}
+	defer clear(raw) // Also clear on pre-authentication/open failure.
 	ctx, cancel := context.WithTimeout(ctx, operationTimeout)
 	defer cancel()
 	h, e := openPipe(ctx)
@@ -266,6 +268,7 @@ func Call(ctx context.Context, request Request) (Result, error) {
 	defer server.close()
 	handshake, stop := context.WithTimeout(ctx, handshakeTimeout)
 	e = writeFrame(pipeIO{handshake, h}, raw)
+	clear(raw)
 	stop()
 	if e != nil {
 		return Result{}, ErrRefused
