@@ -35,6 +35,23 @@
         "artifactName": "windows-dependencies-bee5aafd7e78230afc40fece7d36051294aaae681389cc1908a949770e8c8048-run38735490052-attempt1",
         "artifactDigest": "sha256:b41dd68dee3ec29b10aa1cedbde93df258140624f5c127932d1cdecfc104a831"
       }
+    },
+    {
+      "runner": {
+        "ImageOS": "win22",
+        "ImageVersion": "20261022.344.1",
+        "RUNNER_ARCH": "X64",
+        "RUNNER_OS": "Windows"
+      },
+      "selection": {
+        "repository": "ThereptileII/Work",
+        "runId": "40137226017",
+        "runAttempt": "2",
+        "headSha": "42a53a347f198df0fe0e3093ba9e4f75d24e2e13",
+        "artifactId": "12580475371",
+        "artifactName": "windows-dependencies-dabbb8d5e033a1cf979770dfc5f1bed9b0d274c77b6ec55bf38b25bf44dc96d5-run40137226017-attempt2",
+        "artifactDigest": "sha256:9823741e79fa38b46a23854d5e15608f743aebc1b09d6792d158bd759bdd5be3"
+      }
     }
   ]
 }
