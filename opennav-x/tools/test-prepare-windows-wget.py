@@ -108,11 +108,14 @@ class PreparationTests(unittest.TestCase):
         download, probe, resolution = self.calls
         self.assertEqual(download[0][0], self.curl)
         for key, value in (('--proto', '=https'), ('--proto-redir', '=https'),
-                           ('--connect-timeout', '20'), ('--max-time', '120'),
+                           ('--retry', '4'), ('--retry-delay', '3'),
+                           ('--retry-max-time', '300'), ('--connect-timeout', '20'),
+                           ('--max-time', '300'),
                            ('--max-filesize', str(len(self.archive)))):
             self.assertEqual(download[0][download[0].index(key) + 1], value)
+        self.assertIn('--retry-all-errors', download[0])
         self.assertIn('--fail', download[0])
-        self.assertEqual(download[1], 150)
+        self.assertEqual(download[1], 360)
         self.assertEqual(probe[0], [self.target, '--version'])
         self.assertEqual(probe[1], 30)
         self.assertEqual(resolution[0], [self.where, 'wget'])
