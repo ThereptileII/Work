@@ -1,4 +1,12 @@
-# SKAGER status — 2026-10-20
+# SKAGER status — 2026-10-25
+
+## 25 October — Beta 1.0 exact-package production qualification
+
+The retained staging candidate `0.4.0-beta2.7-run40146693249-attempt1-1d71cdd115f4` is qualified without rebuilding. Staging run [40146693249](https://github.com/ThereptileII/Work/actions/runs/40146693249) passed all 29 jobs on product commit `1d71cdd115f438aab373e7795b17e69bd7fc704e`. The exact candidate was then qualified by production run [40153726621](https://github.com/ThereptileII/Work/actions/runs/40153726621): installer lifecycle, retained functional navigation/lifecycle checks, recovery/chart-content checks and package identity all passed.
+
+A draft Production Release was created as `skager-production-0.4.0-beta2.7-run40146693249-attempt1-1d71cdd115f4`. Its setup SHA-256 is `5c0253526256ba95f33a5804d1192e82ef77df07178a06782de9a215e3a909f1`; the portable recovery SHA-256 is `3ea4921839548afc2e2583d6fb1ec455b2483d77e7db64731c31b2001a8d7214`. The release remains draft and public payment/download access remains closed pending a human GO/NO-GO decision.
+
+The production workflow now has repository write visibility so authenticated Actions can inspect draft Staging releases; this is a delivery-helper permission fix only and does not alter product bytes. The helper-only staging follow-up [40159061665](https://github.com/ThereptileII/Work/actions/runs/40159061665) passed with product build jobs correctly skipped.
 
 ## 24 October — Beta 1.0 Cloud/updater integration candidate
 
