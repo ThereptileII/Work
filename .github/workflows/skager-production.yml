@@ -15,7 +15,9 @@ on:
         type: string
         required: true
 permissions:
-  contents: read
+  # Draft Staging releases are visible only to a token with repository write access;
+  # this job still performs no release write until the gated promote job.
+  contents: write
   actions: read
 concurrency:
   group: skager-production-${{ inputs.staging_release }}
