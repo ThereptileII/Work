@@ -238,7 +238,12 @@ def entries(original_xml, styled_xml):
             assert len(name) == 8 and name in effective
             source = path.read_text()
             # The provenance must explicitly cover the exact SVG being used.
-            assert str(path.relative_to(ROOT)) in proof['sources']
+            # Provenance keys are repository-relative POSIX paths.  Keep the
+            # generated metadata byte-stable on Windows as well as Linux;
+            # ``str(Path)`` uses backslashes on Windows and otherwise makes a
+            # verified SVG look missing from its proof.
+            source_path = path.relative_to(ROOT).as_posix()
+            assert source_path in proof['sources']
             for scheme in (themed,) if themed else SCHEMES:
                 svg = source
                 if not themed:
@@ -254,7 +259,7 @@ def entries(original_xml, styled_xml):
                 assert tree.get('viewBox') == f'0 0 {width} {height}'
                 assert float(tree.get('width')) == width and float(tree.get('height')) == height
                 result.append(dict(name=name, scheme=scheme, svg=normalized,
-                                   width=width, height=height, source=str(path.relative_to(ROOT)),
+                                   width=width, height=height, source=source_path,
                                    sourceSha256=digest(path.read_bytes().replace(b'\r\n', b'\n')),
                                    kind='prototype-art',
                                    chromaticSaturationGain=SATURATION_GAIN if family in CHROMATIC_FAMILIES else 1))
