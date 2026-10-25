@@ -61,6 +61,12 @@ class TrustTests(unittest.TestCase):
         self.assertEqual(original['state'], 'initialized-original-identity')
         self.assertTrue(helper.legacy_trust_preserved(original, helper.legacy_trust_observation(self.root, identity)))
 
+    def test_production_source_selection_is_approved_and_retained(self):
+        self.product['update_trust']['sourcePath'] = 'opennav-x/installer/windows/production-update-trust.json'
+        identity = helper.packaged_trust_identity(self.app, self.product)
+        self.assertEqual(identity['state'], 'packaged-public-trust')
+        self.assertEqual(identity['configSha256'], self.pin)
+
     def test_changed_missing_undeclared_mixed_commit_and_source_pins_refuse(self):
         for key, value in (('schema', True), ('productCommit', 'b' * 40), ('channel', 'stable'),
                            ('sourcePath', 'unreviewed.json'), ('sourceSha256', '0' * 64),
