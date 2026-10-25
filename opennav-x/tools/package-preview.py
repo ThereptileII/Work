@@ -41,7 +41,7 @@ parser.add_argument('--dependency-source-cache', type=Path, required=True,
 parser.add_argument('--wx-runtime-archive', type=Path, required=True,
                     help='Existing locked wx ReleaseDLL archive; no packaging downloads')
 parser.add_argument('--update-trust-config', type=Path,
-                    help='Explicit committed installer/windows/staging-update-trust.json selection')
+                    help='Explicit committed staging or production update-trust selection')
 parser.add_argument('--update-trust-validator', type=Path,
                     help='Trusted same-commit native skager-repository validator from producer CI')
 args = parser.parse_args()

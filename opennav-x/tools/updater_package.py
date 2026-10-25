@@ -26,7 +26,12 @@ MAX_BINARY_BYTES = 128 << 20
 MAX_ARCHIVE_BYTES = 256 << 20
 SHA256 = re.compile(r'[a-f0-9]{64}\Z')
 COMMIT = re.compile(r'[a-f0-9]{40}\Z')
+# Trust is selected explicitly by the workflow.  Keep the private staging
+# source for operator qualification, and allow the separately reviewed public
+# source only for the production publication candidate.
 TRUST_SOURCE = 'installer/windows/staging-update-trust.json'
+PRODUCTION_TRUST_SOURCE = 'installer/windows/production-update-trust.json'
+TRUST_SOURCES = (TRUST_SOURCE, PRODUCTION_TRUST_SOURCE)
 MAX_TRUST_BYTES = 576 << 10
 STOCK_SHA256 = '7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c'
 UPSTREAM_COMMIT = '37fd0cddb7334fe489e9f18aa163977a9c5c84f7'
@@ -42,7 +47,8 @@ class SelectedUpdateTrust:
     git_blob_sha256: str
 
     def provenance(self):
-        return {'schema': 1, 'productCommit': self.commit, 'sourcePath': 'opennav-x/' + TRUST_SOURCE,
+        source_path = self.git_path if self.git_path.startswith('opennav-x/') else 'opennav-x/' + self.git_path
+        return {'schema': 1, 'productCommit': self.commit, 'sourcePath': source_path,
                 'gitPath': self.git_path, 'gitBlob': self.git_blob, 'gitBlobSha256': self.git_blob_sha256,
                 'sourceSha256': hashlib.sha256(self.data).hexdigest(),
                 'configSha256': hashlib.sha256(self.data).hexdigest(), 'channel': 'beta'}
@@ -112,8 +118,14 @@ def select_update_trust(root, commit, source, validator):
     """
     root = _plain(root); source = _file(source, MAX_TRUST_BYTES)
     validator = _file(validator, MAX_BINARY_BYTES)
-    if source != root / TRUST_SOURCE or not isinstance(commit, str) or not COMMIT.fullmatch(commit):
-        raise ValueError('Only the explicitly selected committed staging trust file is supported')
+    if not isinstance(commit, str) or not COMMIT.fullmatch(commit):
+        raise ValueError('Only an explicitly selected committed trust file is supported')
+    try:
+        relative = source.relative_to(root).as_posix()
+    except ValueError as error:
+        raise ValueError('Selected trust file is outside the product source') from error
+    if relative not in TRUST_SOURCES:
+        raise ValueError('Only the explicitly selected staging or production trust file is supported')
     def git(*arguments):
         try:
             return subprocess.check_output(['git', '-C', str(root), *arguments], stderr=subprocess.PIPE)
@@ -122,7 +134,7 @@ def select_update_trust(root, commit, source, validator):
     if git('rev-parse', 'HEAD').decode().strip() != commit:
         raise ValueError('Trust source commit differs from product')
     prefix = git('rev-parse', '--show-prefix').decode().strip()
-    git_path = prefix + TRUST_SOURCE
+    git_path = prefix + relative
     entries = git('ls-tree', '--full-tree', '-z', commit, '--', git_path).split(b'\0')
     # ls-tree paths are repository-relative even when invoked below its root.
     if len(entries) != 2 or entries[1] or b'\t' not in entries[0]:
