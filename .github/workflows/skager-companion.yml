@@ -1,0 +1,165 @@
+name: SKAGER Companion (Android and iOS)
+
+# SCRUM-385/393. One web codebase (opennav-x/companion) packaged by Capacitor.
+# Tests run first, including the phone flow end to end against PostgreSQL; then an
+# installable Android debug APK and an unsigned iOS simulator build are produced.
+on:
+  push:
+    branches: ['claude/companion-*', staging]
+    paths:
+      - opennav-x/companion/**
+      - opennav-x/web/edge/**
+      - .github/workflows/skager-companion.yml
+  pull_request:
+    paths:
+      - opennav-x/companion/**
+      - opennav-x/web/edge/**
+      - .github/workflows/skager-companion.yml
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: skager-companion-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  test:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    services:
+      postgres:
+        image: postgres:18.6
+        env:
+          POSTGRES_DB: scrum94_schema
+          POSTGRES_USER: scrum94
+          POSTGRES_PASSWORD: scrum94-ci-only
+        ports:
+          - 127.0.0.1:55495:5432
+        options: >-
+          --health-cmd "pg_isready -U scrum94 -d scrum94_schema"
+          --health-interval 5s
+          --health-timeout 5s
+          --health-retries 12
+    env:
+      PGPASSWORD: scrum94-ci-only
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: opennav-x/companion/package-lock.json
+      - name: Install pinned app dependencies
+        working-directory: opennav-x/companion
+        run: npm ci --no-audit --no-fund
+      - name: Edge API, push and portal tests
+        working-directory: opennav-x/web/edge
+        run: node --test *.test.ts
+      - name: App type check and unit tests
+        working-directory: opennav-x/companion
+        run: |
+          npm run typecheck
+          npm test
+      - name: SKAGER Cloud and Companion SQL on real PostgreSQL
+        working-directory: opennav-x/web/edge
+        run: |
+          for script in bootstrap-test.sql auth.sql commerce.sql portal.sql store.sql store-steps.sql store-guide.sql store-cloud.sql cloud.sql companion.sql cloud.postgres.sql companion.postgres.sql; do
+            psql --set ON_ERROR_STOP=1 --host 127.0.0.1 --port 55495 --username scrum94 --dbname scrum94_schema --quiet --file "$script"
+          done
+      - name: Phone flow end to end (Worker, router, SQL, app API client)
+        working-directory: opennav-x/companion
+        env:
+          SKAGER_E2E_PSQL: --host 127.0.0.1 --port 55495 --username scrum94 --dbname scrum94_schema
+        run: node --test tests/e2e/*.e2e.test.ts
+
+  android:
+    needs: test
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: opennav-x/companion
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: opennav-x/companion/package-lock.json
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned app dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Firebase configuration (optional repository secret)
+        env:
+          GOOGLE_SERVICES_JSON: ${{ secrets.SKAGER_COMPANION_GOOGLE_SERVICES_JSON }}
+        run: |
+          if [ -n "$GOOGLE_SERVICES_JSON" ]; then
+            printf '%s' "$GOOGLE_SERVICES_JSON" > android/app/google-services.json
+            echo "Push notifications: Firebase configured"
+          else
+            echo "Push notifications: not configured in this build (no SKAGER_COMPANION_GOOGLE_SERVICES_JSON secret)"
+          fi
+      - name: Build web bundle and sync Android
+        run: |
+          npm run build
+          npx cap sync android
+      - name: Assemble debug APK
+        working-directory: opennav-x/companion/android
+        run: ./gradlew --no-daemon assembleDebug
+      - name: Name the APK by version and commit
+        id: apk
+        run: |
+          version=$(node -p "require('./package.json').version")
+          name="skager-companion-${version}-${GITHUB_SHA::8}-debug.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "$name"
+          sha256sum "$name" | tee "$name.sha256"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-companion-android-${{ github.sha }}
+          path: |
+            opennav-x/companion/${{ steps.apk.outputs.name }}
+            opennav-x/companion/${{ steps.apk.outputs.name }}.sha256
+          if-no-files-found: error
+
+  ios:
+    needs: test
+    runs-on: macos-15
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: opennav-x/companion
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: opennav-x/companion/package-lock.json
+      - name: Select the newest installed Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+      - name: Install pinned app dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build web bundle and sync iOS
+        run: |
+          npm run build
+          npx cap sync ios
+      - name: Build for the iOS Simulator (unsigned)
+        working-directory: opennav-x/companion/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          ditto -c -k --keepParent build/Build/Products/Debug-iphonesimulator/App.app "$GITHUB_WORKSPACE/skager-companion-ios-simulator.zip"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-companion-ios-simulator-${{ github.sha }}
+          path: skager-companion-ios-simulator.zip
+          if-no-files-found: error

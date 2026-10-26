@@ -1,0 +1,20 @@
+{
+  "appId": "app.skager.companion",
+  "appName": "SKAGER Companion",
+  "webDir": "dist",
+  "backgroundColor": "#152326",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "scheme": "SKAGER Companion",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": false },
+    "PushNotifications": { "presentationOptions": ["badge", "sound", "alert"] }
+  }
+}
