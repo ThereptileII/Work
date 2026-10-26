@@ -77,8 +77,13 @@ func TestWebRTCOfferAnswerAndInputAck(t *testing.T) {
 	if err != nil {
 		t.Fatal(err)
 	}
+	if _, err := peer.AddTransceiverFromKind(webrtc.RTPCodecTypeVideo); err != nil {
+		t.Fatal(err)
+	}
 	opened := make(chan struct{})
 	input.OnOpen(func() { close(opened) })
+	trackReceived := make(chan *webrtc.TrackRemote, 1)
+	peer.OnTrack(func(track *webrtc.TrackRemote, _ *webrtc.RTPReceiver) { trackReceived <- track })
 	answerReady := make(chan webrtc.SessionDescription, 1)
 	wsURL, _ := url.Parse(h.URL)
 	wsURL.Scheme = "ws"
@@ -121,6 +126,18 @@ func TestWebRTCOfferAnswerAndInputAck(t *testing.T) {
 	case <-opened:
 	case <-time.After(5 * time.Second):
 		t.Fatal("data channel did not open")
+	}
+	publisher := NewH264Publisher(s)
+	if err := publisher.PublishAccessUnit([][]byte{{0x65, 0, 0, 1, 2, 3}}, 90000); err != nil {
+		t.Fatal(err)
+	}
+	select {
+	case track := <-trackReceived:
+		if _, _, err := track.ReadRTP(); err != nil {
+			t.Fatal(err)
+		}
+	case <-time.After(5 * time.Second):
+		t.Fatal("timed out waiting for WebRTC video track")
 	}
 	if err := input.SendText(`{"type":"input","event":{"type":"pointer_down","x":0.5,"y":0.5,"sequence":1}}`); err != nil {
 		t.Fatal(err)

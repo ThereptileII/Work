@@ -36,6 +36,7 @@ document.querySelector('#pair').onclick = async () => {
     if (!pair.ok) throw new Error('Pairing refused');
     token = (await pair.json()).token; note('Paired; opening WebRTC');
     pc = new RTCPeerConnection({iceServers:[]});
+    pc.addTransceiver('video', {direction:'recvonly'});
     input = pc.createDataChannel('input', {ordered:false, maxRetransmits:0});
     pc.ontrack = e => { video.srcObject = e.streams[0]; note('Video track received'); };
     pc.onconnectionstatechange = () => note('WebRTC ' + pc.connectionState);

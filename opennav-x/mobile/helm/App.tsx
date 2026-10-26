@@ -59,6 +59,7 @@ export default function App() {
     setState('connecting');
     const peer = new RTCPeerConnection({iceServers: []});
     pc.current = peer;
+    peer.addTransceiver('video', {direction: 'recvonly'});
     peer.ontrack = (event: any) => {
       if (event.streams[0]) setStream(event.streams[0]);
     };
