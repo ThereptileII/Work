@@ -447,6 +447,7 @@ func TestScreenStreamInputAndSessionLifecycle(t *testing.T) {
 	case <-time.After(8 * time.Second):
 		t.Fatal("second phone did not connect")
 	}
+	eventually(t, "second phone hello", func() bool { return p2.control_("hello") != nil })
 	// Removing the phone in SKAGER ends its session at once.
 	h.server.Revoke(c2.deviceID)
 	eventually(t, "revoked", func() bool { b := p2.control_("bye"); return b != nil && b["reason"] == "revoked" })
