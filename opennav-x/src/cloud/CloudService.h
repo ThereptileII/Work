@@ -5,7 +5,10 @@
 // change navigation, and losing the network only delays sharing.
 #include "ais/Credentials.h"
 #include "cloud/CloudProtocol.h"
+#include <deque>
 #include <memory>
+#include <utility>
+#include <vector>
 
 namespace opennav::cloud {
 using WallTime = std::chrono::system_clock::time_point;
@@ -42,6 +45,8 @@ struct CloudSnapshot {
   bool busy = false;  // A request is in flight.
   bool initialized = false;  // Platform credential read has completed.
   bool unlink_pending = false;  // A failed credential deletion is still retried.
+  // Boat events (anchor alarm, critical alerts) waiting for the connection.
+  std::size_t pending_events = 0;
 };
 
 struct CloudOptions {
@@ -52,6 +57,8 @@ struct CloudOptions {
   // Tests shorten the server-supplied poll interval; production uses it.
   std::optional<std::chrono::milliseconds> poll_interval;
   std::chrono::milliseconds telemetry_interval{kTelemetryInterval};
+  // Retry for unsent boat events: an alarm should not wait a full minute.
+  std::chrono::milliseconds event_retry{std::chrono::seconds(15)};
 };
 
 class CloudService final {
@@ -70,6 +77,13 @@ public:
   // Application thread. Copies at most once per telemetry interval and only
   // while linked with sharing on; the newest snapshot replaces an unsent one.
   void Observe(const vessel::VesselState &state, vessel::Time now);
+  // Application thread, after every OpenCPN anchor-watch pass (SCRUM-387).
+  // The report rides with the next snapshot; a change of watch or alarm is
+  // sent at once as an event. Nothing is queued while sharing is off.
+  void ObserveAnchor(const AnchorReport &anchor, vessel::Time now);
+  // Currently active critical alerts as (id, title), excluding the anchor
+  // alarm. A new one, or one that ends, is sent as an event.
+  void ObserveAlerts(const std::vector<std::pair<std::string, std::string>> &critical, vessel::Time now);
   CloudSnapshot Read() const;
 
 private:

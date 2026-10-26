@@ -3,6 +3,8 @@
 #include "cloud/CloudProtocol.h"
 #include "cloud/CloudService.h"
 #include <rapidjson/document.h>
+#include <rapidjson/stringbuffer.h>
+#include <rapidjson/writer.h>
 #include <atomic>
 #include <condition_variable>
 #include <functional>
@@ -120,6 +122,7 @@ struct FakeService {
   std::map<std::string, int> count;
   bool approved = false, cloud = true, revoked = false, offline = false;
   std::string last_upload, last_token;
+  std::vector<std::string> event_bodies;
   HttpResult Handle(const std::string &method, const std::string &path, const std::string &body,
                     const ais::Secret &token) {
     std::lock_guard<std::mutex> lock(mutex);
@@ -142,6 +145,11 @@ struct FakeService {
       if (!cloud) return {true, 402, "{}"};
       last_upload = body;
       return {true, 202, R"({"state":"stored"})"};
+    }
+    if (path == "/api/device/events") {
+      if (!cloud) return {true, 402, "{}"};
+      event_bodies.push_back(body);
+      return {true, 202, R"({"state":"stored","new":1})"};
     }
     if (path == "/api/device/telemetry/stop") last_upload.clear();
     return {true, 200, "{}"};
@@ -202,6 +210,7 @@ CloudOptions FastOptions() {
   o.retry = 20ms;
   o.status_period = 10min;
   o.telemetry_interval = 0ms;
+  o.event_retry = 20ms;
   return o;
 }
 
@@ -400,6 +409,142 @@ void service_edges() {
     CHECK(cloud.Read().link == LinkState::Unlinked && stored->empty());
   }
 }
+// SCRUM-387: the anchor watch and boat events for SKAGER Companion.
+void anchor_protocol() {
+  const auto now = vessel::Clock::now();
+  vessel::VesselState state;
+  state.navigation.sog_kn = Measured(0.3, now - 1s);
+  AnchorReport anchor;
+  anchor.armed = true;
+  anchor.alarm = true;
+  anchor.latitude_deg = 59.312345678;
+  anchor.longitude_deg = 18.1;
+  anchor.radius_m = -45.0;  // OpenCPN: alarm when inside.
+  anchor.distance_m = 61.27;
+  anchor.distance_observed_at = now - 2s;
+  anchor.source = "GPS\n1";
+  const auto body = EncodeTelemetry(state, now, anchor);
+  CHECK(body);
+  rapidjson::Document doc;
+  doc.Parse(body->c_str());
+  const auto &a = doc["anchor"];
+  CHECK(a["armed"].GetBool() && a["alarm"].GetBool());
+  CHECK(a["lat"].GetDouble() == 59.312346 && a["radius_m"].GetDouble() == -45.0);
+  CHECK(a["distance_m"].GetDouble() == 61.3 && a["age"].GetDouble() == 2.0);
+  CHECK(std::string(a["src"].GetString()) == "GPS1");
+  // Without a current position there is no distance; nonsense values are left out.
+  anchor.distance_observed_at = {};
+  anchor.radius_m = 0.0;
+  anchor.latitude_deg = 123.0;
+  doc.Parse(EncodeTelemetry(state, now, anchor)->c_str());
+  CHECK(!doc["anchor"].HasMember("distance_m") && !doc["anchor"].HasMember("age"));
+  CHECK(!doc["anchor"].HasMember("radius_m") && !doc["anchor"].HasMember("lat") && !doc["anchor"].HasMember("lon"));
+  // Off is explicit; no report means the field is absent (unknown).
+  doc.Parse(EncodeTelemetry(state, now, AnchorReport{})->c_str());
+  CHECK(doc["anchor"].MemberCount() == 1 && !doc["anchor"]["armed"].GetBool());
+  doc.Parse(EncodeTelemetry(state, now)->c_str());
+  CHECK(!doc.HasMember("anchor"));
+  // Simulated state never leaves the boat, anchor or not.
+  state.simulated = true;
+  CHECK(!EncodeTelemetry(state, now, anchor));
+
+  std::vector<BoatEvent> events(3);
+  events[0] = {NewEventId(), EventKind::AnchorAlarm, now - 3s, "ignored", 61.0, 50.0};
+  events[1] = {NewEventId(), EventKind::AlertCritical, now, "GPS position lost", 10.0, {}};
+  events[2] = {NewEventId(), EventKind::AnchorArmed, now - std::chrono::hours(24 * 8), "", {}, {}};
+  CHECK(events[0].id.size() == 32 && events[0].id != events[1].id);
+  doc.Parse(EncodeEvents(events, now)->c_str());
+  const auto &list = doc["events"];
+  CHECK(list.Size() == 2);  // Older than 7 days: left out.
+  CHECK(std::string(list[0]["kind"].GetString()) == "anchor_alarm" && list[0]["age"].GetDouble() == 3.0);
+  CHECK(!list[0].HasMember("alert") && list[0]["data"]["distance_m"].GetDouble() == 61.0);
+  CHECK(std::string(list[1]["alert"].GetString()) == "GPS position lost" && !list[1].HasMember("data"));
+  CHECK(!EncodeEvents({events[2]}, now));
+}
+
+void anchor_service() {
+  auto fake = std::make_shared<FakeService>();
+  auto stored = std::make_shared<std::string>(kToken);
+  CloudService cloud(std::make_unique<MemoryCredentials>(stored), std::make_unique<FakeTransport>(fake), FastOptions());
+  CHECK(WaitFor([&] { return cloud.Read().account.has_value(); }));
+  // Every event sent so far, in order, whether batched or not.
+  const auto events = [&] {
+    std::lock_guard<std::mutex> l(fake->mutex);
+    std::vector<std::string> out;
+    for (const auto &body : fake->event_bodies) {
+      rapidjson::Document doc;
+      doc.Parse(body.c_str());
+      for (const auto &e : doc["events"].GetArray()) {
+        rapidjson::StringBuffer buffer;
+        rapidjson::Writer<rapidjson::StringBuffer> writer(buffer);
+        e.Accept(writer);
+        out.emplace_back(buffer.GetString());
+      }
+    }
+    return out;
+  };
+  AnchorReport anchor;
+  anchor.armed = true;
+  anchor.radius_m = 50.0;
+  // Sharing off: transitions are tracked but nothing is queued or sent.
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  anchor.alarm = true;
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  std::this_thread::sleep_for(30ms);
+  CHECK(events().empty() && cloud.Read().pending_events == 0);
+
+  cloud.SetShareEnabled(true);
+  anchor.alarm = false;
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());  // Alarm ended while not sharing:
+  anchor.distance_m = 64.0;                           // the next change is reported normally.
+  anchor.distance_observed_at = vessel::Clock::now();
+  anchor.alarm = true;
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  CHECK(WaitFor([&] { return events().size() == 2; }));
+  CHECK(events()[0].find("anchor_alarm_cleared") != std::string::npos);
+  CHECK(events()[1].find("\"kind\":\"anchor_alarm\"") != std::string::npos);
+  CHECK(events()[1].find("\"distance_m\":64") != std::string::npos);
+  // Repeating the same state is not news.
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  std::this_thread::sleep_for(30ms);
+  CHECK(events().size() == 2);
+
+  // Offline: the alarm waits in the queue and goes out when the connection returns.
+  { std::lock_guard<std::mutex> l(fake->mutex); fake->offline = true; }
+  anchor.armed = false;
+  anchor.alarm = false;
+  const int attempts = Count(fake, "/api/device/events");
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  CHECK(WaitFor([&] { return Count(fake, "/api/device/events") >= attempts + 2; }));  // retried
+  CHECK(cloud.Read().pending_events == 2);  // alarm cleared + watch off
+  { std::lock_guard<std::mutex> l(fake->mutex); fake->offline = false; }
+  CHECK(WaitFor([&] { return cloud.Read().pending_events == 0; }));
+  CHECK(events().size() == 4 && events()[2].find("anchor_alarm_cleared") != std::string::npos
+        && events()[3].find("anchor_disarmed") != std::string::npos);
+
+  // Critical alerts: a new one and its end are each reported once.
+  cloud.ObserveAlerts({{"position-lat", "GPS position lost"}}, vessel::Clock::now());
+  cloud.ObserveAlerts({{"position-lat", "GPS position lost"}}, vessel::Clock::now());
+  CHECK(WaitFor([&] { return events().size() == 5; }));
+  CHECK(events()[4].find("\"alert\":\"GPS position lost\"") != std::string::npos);
+  cloud.ObserveAlerts({}, vessel::Clock::now());
+  CHECK(WaitFor([&] { return events().size() == 6; }));
+  CHECK(events()[5].find("alert_cleared") != std::string::npos);
+
+  // The snapshot carries the anchor watch.
+  vessel::VesselState state;
+  state.navigation.sog_kn = Measured(0.2, vessel::Clock::now());
+  cloud.Observe(state, vessel::Clock::now());
+  CHECK(WaitFor([&] { std::lock_guard<std::mutex> l(fake->mutex); return fake->last_upload.find("\"anchor\":{\"armed\":false}") != std::string::npos; }));
+
+  // Switching sharing off discards anything unsent.
+  { std::lock_guard<std::mutex> l(fake->mutex); fake->offline = true; }
+  anchor.armed = true;
+  cloud.ObserveAnchor(anchor, vessel::Clock::now());
+  CHECK(WaitFor([&] { return cloud.Read().pending_events == 1; }));
+  cloud.SetShareEnabled(false);
+  CHECK(cloud.Read().pending_events == 0);
+}
 }  // namespace
 
 int main(int argc, char **argv) {
@@ -413,12 +558,28 @@ int main(int argc, char **argv) {
       auto &sample = const_cast<vessel::Sample &>(key.sample(state));
       sample = Measured(key.min + (key.max - key.min) * 0.25, now - 1s, "contract");
     }
-    std::cout << EncodeTelemetry(state, now).value_or("") << "\n";
+    AnchorReport anchor;
+    anchor.armed = anchor.alarm = true;
+    anchor.latitude_deg = 59.3;
+    anchor.longitude_deg = 18.1;
+    anchor.radius_m = 50.0;
+    anchor.distance_m = 61.5;
+    anchor.distance_observed_at = now - 1s;
+    anchor.source = "contract";
+    std::cout << EncodeTelemetry(state, now, anchor).value_or("") << "\n";
+    return 0;
+  }
+  if (group == "emit-events") {
+    const auto now = vessel::Clock::now();
+    std::vector<BoatEvent> events{{NewEventId(), EventKind::AnchorAlarm, now - 2s, "", 61.5, 50.0},
+                                  {NewEventId(), EventKind::AlertCritical, now - 1s, "GPS position lost", {}, {}}};
+    std::cout << EncodeEvents(events, now).value_or("") << "\n";
     return 0;
   }
   try {
     if (group == "protocol" || group == "all") protocol();
     if (group == "service" || group == "all") { service(); service_edges(); }
+    if (group == "anchor" || group == "all") { anchor_protocol(); anchor_service(); }
   } catch (const std::exception &e) {
     std::cerr << e.what() << "\n";
     return 1;

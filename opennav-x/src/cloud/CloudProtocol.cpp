@@ -2,8 +2,10 @@
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
+#include <algorithm>
 #include <cmath>
 #include <functional>
+#include <random>
 
 namespace opennav::cloud {
 namespace {
@@ -43,6 +45,32 @@ std::string String(const rapidjson::Value &object, const char *name, std::size_t
   const auto it = object.FindMember(name);
   if (it == object.MemberEnd() || !it->value.IsString() || it->value.GetStringLength() > max) return {};
   return {it->value.GetString(), it->value.GetStringLength()};
+}
+// Mirrors validAnchor in web/edge/cloud.ts: out-of-range parts are left out,
+// never clamped, and distance travels with the age of its position.
+void WriteAnchor(Writer &w, const AnchorReport &a, vessel::Time now) {
+  w.StartObject();
+  w.Key("armed"); w.Bool(a.armed);
+  if (a.armed) {
+    w.Key("alarm"); w.Bool(a.alarm);
+    if (a.latitude_deg && a.longitude_deg && std::isfinite(*a.latitude_deg) && std::isfinite(*a.longitude_deg)
+        && std::fabs(*a.latitude_deg) <= 90 && std::fabs(*a.longitude_deg) <= 180) {
+      w.Key("lat"); w.Double(std::round(*a.latitude_deg * 1e6) / 1e6);
+      w.Key("lon"); w.Double(std::round(*a.longitude_deg * 1e6) / 1e6);
+    }
+    if (a.radius_m && std::isfinite(*a.radius_m) && std::fabs(*a.radius_m) >= 1 && std::fabs(*a.radius_m) <= 10000) {
+      w.Key("radius_m"); w.Double(std::round(*a.radius_m * 10) / 10);
+    }
+    const double age = std::chrono::duration<double>(now - a.distance_observed_at).count();
+    if (a.distance_m && std::isfinite(*a.distance_m) && *a.distance_m >= 0 && *a.distance_m <= 100000
+        && a.distance_observed_at != vessel::Time{} && age >= 0 && age <= 86400) {
+      w.Key("distance_m"); w.Double(std::round(*a.distance_m * 10) / 10);
+      w.Key("age"); w.Double(std::round(age * 10) / 10);
+    }
+    const auto source = CleanSource(a.source);
+    if (source.find_first_not_of(' ') != std::string::npos) { w.Key("src"); w.String(source.c_str()); }
+  }
+  w.EndObject();
 }
 std::string Json(const std::function<void(Writer &)> &fill) {
   rapidjson::StringBuffer buffer;
@@ -108,7 +136,8 @@ const std::vector<TelemetryKey> &TelemetryKeys() {
   return keys;
 }
 
-std::optional<std::string> EncodeTelemetry(const VesselState &state, vessel::Time now) {
+std::optional<std::string> EncodeTelemetry(const VesselState &state, vessel::Time now,
+                                           const std::optional<AnchorReport> &anchor) {
   if (state.simulated || state.replayed) return {};
   rapidjson::StringBuffer buffer;
   Writer writer(buffer);
@@ -141,6 +170,67 @@ std::optional<std::string> EncodeTelemetry(const VesselState &state, vessel::Tim
     ++count;
   }
   writer.EndObject();
+  if (anchor) {
+    writer.Key("anchor");
+    WriteAnchor(writer, *anchor, now);
+  }
+  writer.EndObject();
+  if (!count) return {};
+  return std::string(buffer.GetString(), buffer.GetSize());
+}
+
+const char *EventKindName(EventKind kind) {
+  switch (kind) {
+  case EventKind::AnchorAlarm: return "anchor_alarm";
+  case EventKind::AnchorAlarmCleared: return "anchor_alarm_cleared";
+  case EventKind::AnchorArmed: return "anchor_armed";
+  case EventKind::AnchorDisarmed: return "anchor_disarmed";
+  case EventKind::AlertCritical: return "alert_critical";
+  case EventKind::AlertCleared: return "alert_cleared";
+  }
+  return "anchor_alarm";
+}
+
+std::string NewEventId() {
+  static thread_local std::mt19937_64 random{std::random_device{}()};
+  static const char *hex = "0123456789abcdef";
+  std::string id;
+  for (int i = 0; i < 32; ++i) id += hex[random() & 15];
+  return id;
+}
+
+std::optional<std::string> EncodeEvents(const std::vector<BoatEvent> &events, vessel::Time now) {
+  rapidjson::StringBuffer buffer;
+  Writer writer(buffer);
+  writer.StartObject();
+  writer.Key("events");
+  writer.StartArray();
+  int count = 0;
+  for (const auto &event : events) {
+    const double age = std::max(0.0, std::chrono::duration<double>(now - event.occurred_at).count());
+    if (count >= 20 || event.id.size() < 8 || event.id.size() > 64 || age > 7 * 86400.0) continue;
+    writer.StartObject();
+    writer.Key("id"); writer.String(event.id.c_str());
+    writer.Key("kind"); writer.String(EventKindName(event.kind));
+    writer.Key("age"); writer.Double(std::round(age * 10) / 10);
+    const bool alert_kind = event.kind == EventKind::AlertCritical || event.kind == EventKind::AlertCleared;
+    const auto alert = CleanSource(event.alert).substr(0, 80);
+    if (alert_kind && alert.find_first_not_of(' ') != std::string::npos) {
+      writer.Key("alert"); writer.String(alert.c_str());
+    }
+    const bool distance = event.distance_m && std::isfinite(*event.distance_m) && *event.distance_m >= 0 && *event.distance_m <= 100000;
+    const bool radius = event.radius_m && std::isfinite(*event.radius_m) && std::fabs(*event.radius_m) >= 1 && std::fabs(*event.radius_m) <= 10000;
+    if (!alert_kind && (distance || radius)) {
+      writer.Key("data");
+      writer.StartObject();
+      if (distance) { writer.Key("distance_m"); writer.Double(std::round(*event.distance_m * 10) / 10); }
+      if (radius) { writer.Key("radius_m"); writer.Double(std::round(*event.radius_m * 10) / 10); }
+      writer.EndObject();
+    }
+    writer.EndObject();
+    ++count;
+  }
+  writer.EndArray();
   writer.EndObject();
   if (!count) return {};
   return std::string(buffer.GetString(), buffer.GetSize());

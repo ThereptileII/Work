@@ -39,6 +39,30 @@ void OnlineCloud::Observe(const vessel::VesselState &state, vessel::Time now) {
   service_->Observe(state, now);
 }
 
+void OnlineCloud::ObserveAnchor(const application::AnchorState &anchor, vessel::Time now) {
+  cloud::AnchorReport report;
+  // A watch exists when OpenCPN has a watched mark with a (signed) radius.
+  report.armed = !anchor.waypoint_id.empty() && anchor.anchor && anchor.radius_m && *anchor.radius_m != 0;
+  if (report.armed) {
+    report.alarm = anchor.alarm;
+    report.latitude_deg = anchor.anchor->latitude_deg;
+    report.longitude_deg = anchor.anchor->longitude_deg;
+    report.radius_m = anchor.radius_m;
+    report.source = anchor.source;
+    // Distance only from a current position, with that position's receive time.
+    const auto assessed = vessel::Assess(anchor.distance_m, now);
+    if (assessed.value && (assessed.quality == vessel::Quality::Live || assessed.quality == vessel::Quality::Aging)) {
+      report.distance_m = *assessed.value;
+      report.distance_observed_at = anchor.distance_m.observed_at;
+    }
+  }
+  service_->ObserveAnchor(report, now);
+}
+
+void OnlineCloud::ObserveAlerts(const std::vector<std::pair<std::string, std::string>> &critical, vessel::Time now) {
+  service_->ObserveAlerts(critical, now);
+}
+
 application::CommandResult OnlineCloud::Link() {
   if (!wxIsMainThread()) return {false, "SKAGER Cloud unavailable"};
   const auto state = service_->Read().link;

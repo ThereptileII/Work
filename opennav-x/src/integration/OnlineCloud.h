@@ -19,6 +19,11 @@ public:
   void Refresh() { service_->RefreshStatus(); }
   // Live, measured vessel state only; the service enforces cadence and gates.
   void Observe(const vessel::VesselState &state, vessel::Time now);
+  // After each OpenCPN anchor-watch pass (SCRUM-387): OpenCPN's own watch and
+  // alarm, copied for SKAGER Companion. Live operation only.
+  void ObserveAnchor(const application::AnchorState &anchor, vessel::Time now);
+  // Active critical XNav alerts as (id, title), excluding the anchor alarm.
+  void ObserveAlerts(const std::vector<std::pair<std::string, std::string>> &critical, vessel::Time now);
   cloud::CloudSnapshot Read();
 
 private:

@@ -13,5 +13,8 @@ struct CloudActions {
   std::function<CommandResult()> unlink;        // Forget the account on this PC.
   std::function<CommandResult(bool)> share;     // Boat data sharing on/off.
   std::function<void()> refresh;                // Re-read account and Cloud status.
+  // Active critical alerts as (id, title) from the live alert tick, for
+  // SKAGER Companion notifications (SCRUM-387). Never called for demo/replay.
+  std::function<void(const std::vector<std::pair<std::string, std::string>> &)> alerts;
 };
 }  // namespace opennav::application

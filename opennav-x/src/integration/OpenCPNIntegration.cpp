@@ -689,6 +689,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return online_cloud ? online_cloud->Share(on) : cloud_unavailable();
   };
   actions.cloud.refresh = [] { if (online_cloud) online_cloud->Refresh(); };
+  actions.cloud.alerts = [](const std::vector<std::pair<std::string, std::string>> &critical) {
+    if (online_cloud && !demo && !restart && !(commissioning && commissioning->Replaying()))
+      online_cloud->ObserveAlerts(critical, vessel::Clock::now());
+  };
   actions.weather_tick = [&frame, last = std::chrono::steady_clock::time_point{}](bool live_allowed) mutable {
     if (!online_weather || !online_weather->Enabled() || restart) return;
     const auto steady = std::chrono::steady_clock::now();
@@ -1438,9 +1442,14 @@ void AfterAnchorWatch(){
     recovery->ObserveHealthy(g_bDeferredInitDone, now);
   }
   if(!navigation)return;
-  auto current=integration::ObserveAnchor(selected_navigation.navigation,vessel::Clock::now());
+  const auto now=vessel::Clock::now();
+  auto current=integration::ObserveAnchor(selected_navigation.navigation,now);
   application::RetainAnchorHistory(current,anchor_state);
   anchor_state=std::move(current);
+  // SKAGER Companion: OpenCPN's watch and alarm, live operation only. The
+  // alarm itself keeps sounding on board with or without a connection.
+  if (online_cloud && !demo && !restart && !(commissioning && commissioning->Replaying()))
+    online_cloud->ObserveAnchor(anchor_state, now);
 }
 bool ShowNavigationObjectCard(const std::string& id,bool route){if(!IsXNav()||!shell||!host)return false;host->CallAfter([id,route]{if(shell)shell->ShowObject(id,route);});return true;}
 bool PrepareRouteFinish(ChartCanvas &canvas) {

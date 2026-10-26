@@ -1191,6 +1191,14 @@ void Shell::Tick() {
     p.advice = smartnav::Advise(state_, energy, p.ais, now);
     alerts_.Observe({state_, p.ais, p.anchor, energy, p.pilot, now});
     p.alerts = alerts_.Current();
+    if (actions_.cloud.alerts && !simulation_ && !replay && !state_.simulated && !state_.replayed) {
+      // The anchor alarm reaches SKAGER Cloud from the watch itself.
+      std::vector<std::pair<std::string, std::string>> critical;
+      for (const auto &alert : p.alerts)
+        if (alert.level == application::AlertLevel::Critical && alert.area != application::AlertArea::Anchor)
+          critical.emplace_back(alert.id, alert.title);
+      actions_.cloud.alerts(critical);
+    }
     UpdateAlerts();
     if(alert_drawer_ && alert_drawer_->IsShown()) {
       alert_drawer_->Update(p.alerts,state_.replayed,mode_);

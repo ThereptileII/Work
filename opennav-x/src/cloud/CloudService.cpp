@@ -1,11 +1,14 @@
 #include "cloud/CloudService.h"
+#include <algorithm>
 #include <condition_variable>
+#include <map>
 #include <mutex>
 #include <thread>
 
 namespace opennav::cloud {
 namespace {
 using Steady = std::chrono::steady_clock;
+constexpr std::size_t kMaxEvents = 32;
 }
 
 class CloudService::Impl {
@@ -32,6 +35,7 @@ public:
     ++link_generation_;
     snapshot_.share_enabled = false;  // Consent belongs to this link, never its successor.
     payload_.reset();
+    ClearEventsLocked();
     link_name_ = name;
     snapshot_.link = LinkState::Starting;
     snapshot_.message = "Requesting a pairing code...";
@@ -61,6 +65,8 @@ public:
     snapshot_.share_enabled = enabled;
     payload_.reset();
     last_encoded_ = {};
+    // Events are part of the shared data: switching off discards unsent ones.
+    if (!enabled) ClearEventsLocked();
     // Reconcile OFF with the service, retaining the request across outages.
     if (!enabled && snapshot_.link == LinkState::Linked) {
       stop_sharing_ = true;
@@ -82,13 +88,79 @@ public:
     payload_ = state;
     cv_.notify_all();
   }
+  void ObserveAnchor(const AnchorReport &anchor, vessel::Time now) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    const bool first = !anchor_;
+    const AnchorReport previous = anchor_.value_or(AnchorReport{});
+    anchor_ = anchor;
+    if (!Sharing()) return;
+    // The first report after start only raises an alarm already in progress;
+    // a watch that was simply on is not news.
+    if (first) {
+      if (anchor.armed && anchor.alarm) QueueLocked(EventKind::AnchorAlarm, now, {}, anchor);
+      return;
+    }
+    if (anchor.armed != previous.armed) {
+      if (!anchor.armed && previous.alarm) QueueLocked(EventKind::AnchorAlarmCleared, now, {}, previous);
+      QueueLocked(anchor.armed ? EventKind::AnchorArmed : EventKind::AnchorDisarmed, now, {}, anchor);
+      if (anchor.armed && anchor.alarm) QueueLocked(EventKind::AnchorAlarm, now, {}, anchor);
+      return;
+    }
+    if (anchor.armed && anchor.alarm != previous.alarm)
+      QueueLocked(anchor.alarm ? EventKind::AnchorAlarm : EventKind::AnchorAlarmCleared, now, {}, anchor);
+  }
+  void ObserveAlerts(const std::vector<std::pair<std::string, std::string>> &critical, vessel::Time now) {
+    std::lock_guard<std::mutex> lock(mutex_);
+    std::map<std::string, std::string> current(critical.begin(), critical.end());
+    const bool first = !alerts_seen_;
+    alerts_seen_ = true;
+    if (Sharing()) {
+      for (const auto &[id, title] : current)
+        if (!alerts_.count(id)) QueueLocked(EventKind::AlertCritical, now, title, {});
+      if (!first)
+        for (const auto &[id, title] : alerts_)
+          if (!current.count(id)) QueueLocked(EventKind::AlertCleared, now, title, {});
+    }
+    alerts_ = std::move(current);
+  }
   CloudSnapshot Read() const {
     std::lock_guard<std::mutex> lock(mutex_);
     return snapshot_;
   }
 
 private:
-  enum class Job { None, Unlink, StartLink, Poll, Status, StopSharing, Upload };
+  enum class Job { None, Unlink, StartLink, Poll, Status, StopSharing, Events, Upload };
+
+  bool Sharing() const {
+    return snapshot_.share_enabled && snapshot_.link == LinkState::Linked && !unlink_ &&
+           !(snapshot_.account && !snapshot_.account->cloud_active);
+  }
+  void QueueLocked(EventKind kind, vessel::Time now, const std::string &alert, const std::optional<AnchorReport> &anchor) {
+    BoatEvent event;
+    event.id = NewEventId();
+    event.kind = kind;
+    event.occurred_at = now;
+    event.alert = alert;
+    if (anchor) {
+      event.radius_m = anchor->radius_m;
+      event.distance_m = anchor->distance_m;
+    }
+    if (events_.size() >= kMaxEvents) {
+      // Keep alarms: drop the oldest informational event, else the oldest one.
+      auto drop = std::find_if(events_.begin(), events_.end(), [](const BoatEvent &e) {
+        return e.kind != EventKind::AnchorAlarm && e.kind != EventKind::AlertCritical;
+      });
+      events_.erase(drop == events_.end() ? events_.begin() : drop);
+    }
+    events_.push_back(std::move(event));
+    snapshot_.pending_events = events_.size();
+    events_after_ = Steady::now();
+    cv_.notify_all();
+  }
+  void ClearEventsLocked() {
+    events_.clear();
+    snapshot_.pending_events = 0;
+  }
 
   void ClearLinkLocked(const std::string &message) {
     snapshot_.link = LinkState::Unlinked;
@@ -107,6 +179,7 @@ private:
     snapshot_.account.reset();
     snapshot_.last_shared.reset();
     payload_.reset();
+    ClearEventsLocked();
     stop_sharing_ = false;
     snapshot_.message = "Removing the saved account link; boat data sharing is off.";
   }
@@ -133,6 +206,10 @@ private:
     if (stop_sharing_) {
       if (now >= stop_sharing_after_) return Job::StopSharing;
       wake = std::min(wake, stop_sharing_after_);
+    }
+    if (!events_.empty() && snapshot_.share_enabled && snapshot_.account && snapshot_.account->cloud_active) {
+      if (now >= events_after_) return Job::Events;
+      wake = std::min(wake, events_after_);
     }
     if (payload_ && snapshot_.share_enabled && snapshot_.account && snapshot_.account->cloud_active) {
       if (now >= upload_after_) return Job::Upload;
@@ -289,8 +366,43 @@ private:
           : "Boat data sharing is off.";
       return;
     }
+    case Job::Events: {
+      const std::size_t count = std::min<std::size_t>(events_.size(), 20);
+      const std::vector<BoatEvent> batch(events_.begin(), events_.begin() + static_cast<std::ptrdiff_t>(count));
+      const auto body = EncodeEvents(batch, vessel::Clock::now());
+      if (!body) {
+        events_.erase(events_.begin(), events_.begin() + static_cast<std::ptrdiff_t>(count));
+        snapshot_.pending_events = events_.size();
+        return;
+      }
+      const auto result = Call(lock, "POST", "/api/device/events", *body, true);
+      if (snapshot_.link != LinkState::Linked || stop_ || unlink_ || !snapshot_.share_enabled) return;
+      // Only the sent batch is removed; anything queued meanwhile stays behind it.
+      auto drop_batch = [&] {
+        for (const auto &sent : batch) {
+          const auto it = std::find_if(events_.begin(), events_.end(), [&](const BoatEvent &e) { return e.id == sent.id; });
+          if (it != events_.end()) events_.erase(it);
+        }
+        snapshot_.pending_events = events_.size();
+      };
+      if (result.transport_ok && result.status == 202) {
+        drop_batch();
+      } else if (result.transport_ok && result.status == 401) {
+        BeginUnlinkLocked(true);
+      } else if (result.transport_ok && result.status == 402) {
+        if (snapshot_.account) snapshot_.account->cloud_active = false;
+        ClearEventsLocked();
+        status_due_ = Steady::now() + options_.retry;
+      } else if (result.transport_ok && result.status == 400) {
+        drop_batch();  // Never retry a batch the service refused as malformed.
+      } else {
+        events_after_ = Steady::now() + options_.event_retry;
+        snapshot_.message = "Boat alarms will be sent when the internet connection returns.";
+      }
+      return;
+    }
     case Job::Upload: {
-      auto body = EncodeTelemetry(*payload_, vessel::Clock::now());
+      auto body = EncodeTelemetry(*payload_, vessel::Clock::now(), anchor_);
       payload_.reset();
       if (!body) return;
       const auto result = Call(lock, "POST", "/api/device/telemetry", *body, true);
@@ -330,6 +442,11 @@ private:
   std::chrono::milliseconds poll_interval_{5000};
   Steady::time_point next_poll_{}, status_due_{}, upload_after_{}, unlink_after_{}, stop_sharing_after_{};
   std::optional<vessel::VesselState> payload_;
+  std::optional<AnchorReport> anchor_;
+  std::deque<BoatEvent> events_;
+  std::map<std::string, std::string> alerts_;
+  bool alerts_seen_ = false;
+  Steady::time_point events_after_{};
   vessel::Time last_encoded_{};
   bool stop_ = false, unlink_ = false, stop_sharing_ = false;
   bool credentials_loaded_ = false, remote_unlinked_ = false;
@@ -347,5 +464,9 @@ void CloudService::Unlink() { impl_->Unlink(); }
 void CloudService::RefreshStatus() { impl_->RefreshStatus(); }
 void CloudService::SetShareEnabled(bool enabled) { impl_->SetShareEnabled(enabled); }
 void CloudService::Observe(const vessel::VesselState &state, vessel::Time now) { impl_->Observe(state, now); }
+void CloudService::ObserveAnchor(const AnchorReport &anchor, vessel::Time now) { impl_->ObserveAnchor(anchor, now); }
+void CloudService::ObserveAlerts(const std::vector<std::pair<std::string, std::string>> &critical, vessel::Time now) {
+  impl_->ObserveAlerts(critical, now);
+}
 CloudSnapshot CloudService::Read() const { return impl_->Read(); }
 }  // namespace opennav::cloud
