@@ -1,31 +1,51 @@
-# Helm qualification plan
+# Helm qualification
 
-Qualification is performed against one frozen Staging candidate. A passing
-unit test is not a mobile, Windows or boat acceptance result.
+A passing unit test is not a phone, Windows or boat acceptance. Record each
+result below against an exact commit; never mark a pending item as passed.
 
-## Focused Linux checks
+## Automated (every push, `.github/workflows/skager-helm.yml`)
 
-From `opennav-x/tools/helm-server`:
+| Check | What it proves |
+|---|---|
+| `go test`, `go test -race`, `go vet` (Linux and Windows) | Pairing (window, attempts, expiry, reuse); signed connect (wrong key, replayed challenge, removed phone); CORS; full WebRTC session: frames, tap/text delivery, late input dropped, disallowed keys refused, held button released on takeover, busy/takeover, revoke ends the session; control channel; tile planner and flow control; Go/TypeScript crypto vectors |
+| App type check and unit tests | Protocol parsing, crypto vectors, gesture mapping (tap, drag, hold, pinch, magnifier, cancel releases), screen fit and mapping, escaping, pilot shown read-only |
+| App against the real server in Chromium (`tests/e2e`) | Pair by link → live screen with the right pixels; tap, drag, hold, pinch and keyboard reach the PC; pilot status; server restart → automatic reconnect; second phone busy → take over → first phone told, sends nothing; phone removed in SKAGER |
+| `helm_tests` (C++) | Server events, supervisor start/restart/give-up/stop, real child process with the built server |
+| Android `assembleDebug`, iOS simulator build | Native projects build |
 
-```text
-/home/standard/.local/share/mise/installs/go/1.27.1/bin/go test ./...
-/home/standard/.local/share/mise/installs/go/1.27.1/bin/go test -race ./...
-```
+## Done locally on Linux (2026-10-26, branch `claude/helm-20261026`)
 
-These checks cover pairing expiry, token revocation, disconnect input rejection,
-normalized coordinate bounds and media-policy validation.
+- All the automated checks above.
+- `helm_tests` under ThreadSanitizer: 5 clean runs.
+- **Real X11 screen**: an Xvfb display with a Chromium window as the target. The
+  server captured it with X11 GetImage, and the app (headless Chromium) showed
+  its pixels exactly. A tap arrived as a click at 640,400. Touch and hold arrived
+  as a right click. Text typed on the phone appeared in the window's text field
+  (XTEST).
+- `opennav_ui` with the Helm page builds, and `OpenCPNIntegration.cpp` compiles
+  with the full OpenCPN flags (syntax check).
 
-## Required platform evidence
+## Pending (owner/boat)
 
-1. Windows capture and H.264 hardware encoder on the supported OpenCPN/Win32
-   installation.
-2. Linux capture under the supported X11/Wayland path.
-3. Android and iOS native clients on local Wi-Fi.
-4. FPS, capture-to-send, decode and input-to-photon measurements at 1280x800;
-   the initial target is below 100 ms on suitable Wi-Fi.
-5. Packet loss, reconnect, pairing revocation, orientation and coordinate
-   mapping.
-6. No-Internet operation and no residual input after disconnect.
-
-The endurance suite remains a separate explicitly requested gate. Do not call a
-pending measurement a pass.
+1. **Windows**: native build with `-DSKAGER_BUILD_HELM_SERVER=ON`, or `skager-helm.exe`
+   from CI placed next to SKAGER.
+   - GDI capture of the SKAGER window at 100% and 200% scaling.
+   - SendInput mapping, and the autopilot guard: a tap on the pilot controls from
+     the phone must be refused and logged.
+   - The firewall prompt or rule for port 43872 on private networks.
+2. **Installer packaging**: ship `skager-helm.exe` in the payload, add the Windows
+   Firewall rule, third-party notices (Pion, gorilla, x/image, rsc.io/qr, jezek/xgb).
+   Update the PE/import and package-content qualification lists.
+3. **Phones**: Android and iPhone on the boat Wi-Fi.
+   - Pairing by in-app scan, by camera link and by key.
+   - Keystore and Keychain.
+   - Rotation, keyboard, background and return.
+   - Wi-Fi loss and return.
+   - iOS local-network permission and WKWebView WebRTC.
+4. **Measurements on the boat PC at 1920x1080**:
+   - Frame rate while panning.
+   - Capture and encode time per frame.
+   - Bandwidth: still screen and panning.
+   - Tap-to-photon latency (target below 100 ms on good Wi-Fi).
+   - Recovery after Wi-Fi loss.
+5. **Chart provider and licence review** of screen mirroring (SCRUM-384).

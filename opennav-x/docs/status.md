@@ -1,3 +1,24 @@
+# 26 October (later) — SKAGER Helm working end to end (Claude, branch claude/helm-20261026)
+
+The Helm slice is now a complete product path, built on Codex's server: pair a phone by
+QR code or key, see the SKAGER window live, and touch, drag, hold, pinch and type into it.
+- **Server** (`tools/helm-server`): real capture and input (Windows GDI + tagged SendInput,
+  X11 GetImage + XTEST), a changed-tile JPEG stream over WebRTC with flow control, and
+  pairing without TLS certificates (80-bit QR secret, per-phone HKDF keys, signed offers and
+  answers that bind the DTLS fingerprints). One phone at a time with takeover; stale input
+  dropped; held buttons released on disconnect.
+- **SKAGER**: Settings → System → SKAGER Helm (on/off, QR code, paired phones). The server is
+  supervised over stdin/stdout. Autopilot commands that come from Helm are refused and the
+  pilot status is shown read-only on the phone.
+- **App** (`mobile/helm`): rebuilt in Capacitor on SKAGER Companion's design system and icon.
+  React Native and the WebView shell are removed.
+
+Verified on Linux: Go tests (race), C++ host tests (TSan), app unit tests, the app against
+the real server in Chromium, and a real X11 window driven from the app. Not yet done: a
+Windows native run, installer packaging (the Go build is opt-in:
+`-DSKAGER_BUILD_HELM_SERVER=ON`), phones on the boat Wi-Fi, and latency measurements. See
+`docs/helm/qualification.md`.
+
 # 26 October — SKAGER Helm launch requirement and first LAN/WebRTC slice
 
 User testing promoted a local companion display to a public-beta launch
