@@ -40,3 +40,14 @@ The following are deliberately still open and must not be described as passed:
 
 Do not put pairing codes, bearer tokens or credentials in source, logs, issue
 comments or evidence.
+The repository now includes a native Android preview shell at
+`opennav-x/mobile/helm/android`. It is deliberately a thin WebView host for
+the authenticated Helm browser client: the PC still owns rendering,
+navigation state and all safety boundaries. GitHub Actions builds it as a
+debug APK using `.github/workflows/skager-helm-apk.yml`; the workflow emits a
+SHA-256 alongside the APK and never uses repository secrets.
+
+This is a testable Android preview, not the final signed public mobile release.
+It requires a reachable Helm server and pairing code, and it does not enable
+autopilot or other actuator commands. iOS packaging and measured on-device
+latency qualification remain open.
