@@ -364,6 +364,7 @@ async function boot(): Promise<void> {
     if (tab) state.tab = tab;
     const look = /[?&]theme=(day|dusk|night)\b/.exec(location.search)?.[1] as ThemeChoice | undefined;
     if (look) state.theme = look;
+    if (/[?&]settings=1\b/.test(location.search)) state.settings = true;
   }
   if (!await secrets.token()) { state.phase = 'signed-out'; render(); return; }
   // Show the last saved data at once, then refresh.

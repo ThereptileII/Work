@@ -1,5 +1,7 @@
 # SKAGER Cloud: account link, automatic updates and boat data
 
+The phone app built on this service is described in [skager-companion.md](skager-companion.md).
+
 SCRUM-44 (paid access to the update channel) and SCRUM-369 (My Boat telemetry),
 under epic SCRUM-13. Owner decisions of 2026-10-19:
 

@@ -40,9 +40,17 @@
 <li><strong>Linking SKAGER to your account</strong> (optional): SKAGER shows a code that you approve in your account. We then store the computer's name, platform and SKAGER version, and when it was last in contact. The link is kept on your PC in Windows Credential Manager. You can unlink it in SKAGER or in your account at any time.</li>
 <li><strong>Automatic updates</strong> (SKAGER Cloud): a linked SKAGER checks for updates with its link, so we can confirm your subscription. It sends the installed version and update channel.</li>
 <li><strong>Boat data</strong> (SKAGER Cloud, off until you switch it on): SKAGER sends your position, speed, course, heading, wind, depth, water temperature, air pressure, rudder and heel, battery, motor and tank readings, each with its age and source, every 15 seconds while it runs. Only you can see them in your account. Simulated and replayed data is never sent.</li>
+<li><strong>Anchor watch and alarms</strong> (with boat data sharing): SKAGER also sends whether its anchor watch is on, the anchor position, radius and distance, and when the anchor alarm or a critical alert starts or ends. If the anchor watch is on and the boat stops reporting for three minutes, we record that contact was lost.</li>
 <li><strong>Diagnostic bundles</strong> are created on your PC and only reach us if you choose to send one.</li>
 </ul></section>
 
+<section class="page-section" id="companion"><h2>3a. SKAGER Companion (phone app)</h2>
+<p>You sign in to SKAGER Companion with your SKAGER account in your phone's browser; the app never sees your password. We store the phone's name and system (Android or iOS), the app version and when it was last used. The app keeps its sign-in in the phone's secure storage and the latest boat data on the phone so it can show it without a connection.</p>
+<ul>
+<li><strong>Notifications</strong> (if you allow them): we store the phone's notification address and send alarms through Google Firebase Cloud Messaging (Android) or the Apple Push Notification service (iOS). A notification contains the boat's name and what happened, never its position.</li>
+<li><strong>Map</strong>: map images come from OpenFreeMap, which receives the area the map shows (not your account or the boat's name).</li>
+<li>Companion only shows your data. It cannot send anything to the boat. You can sign a phone out in the app or in your account at any time.</li>
+</ul></section>
 <section class="page-section" id="processors"><h2>4. Who processes data for us</h2>
 <p>We use a small number of providers, each bound by a data processing agreement:</p>
 <div class="table-wrap"><table>
@@ -51,6 +59,9 @@
 <tr><td>Cloudflare</td><td>Website hosting, network security and download storage</td></tr>
 <tr><td>Supabase</td><td>Sign-in and our customer database</td></tr>
 <tr><td>Stripe</td><td>Payments. Stripe also acts as an independent controller for fraud prevention and its legal obligations.</td></tr>
+<tr><td>Google (Firebase Cloud Messaging)</td><td>Delivering SKAGER Companion notifications to Android phones</td></tr>
+<tr><td>Apple (Apple Push Notification service)</td><td>Delivering SKAGER Companion notifications to iPhones</td></tr>
+<tr><td>OpenFreeMap</td><td>Map images in SKAGER Companion</td></tr>
 <tr><td>Resend</td><td>Sending sign-in codes, receipts and service emails</td></tr>
 <tr><td>Shipping carriers</td><td>Delivering hardware orders. They receive your name, address and the parcel details.</td></tr>
 </tbody></table></div>
@@ -66,6 +77,9 @@
 <tr><td>Download records</td><td>While your account is active</td></tr>
 <tr><td>Linked computers</td><td>Until you unlink them or your account closes</td></tr>
 <tr><td>Boat data</td><td>The latest reading until you switch sharing off or unlink; one reading a minute for 30 days. Unlinking a computer deletes its boat data at once.</td></tr>
+<tr><td>Track (positions from boat data)</td><td>7 days</td></tr>
+<tr><td>Alarm log (anchor alarms, lost contact, critical alerts)</td><td>90 days; unlinking a computer deletes its alarm log at once</td></tr>
+<tr><td>Phones signed in to SKAGER Companion</td><td>Until you sign the phone out, or 90 days without use</td></tr>
 <tr><td>Security logs</td><td>Up to 30 days</td></tr>
 <tr><td>Sign-in codes</td><td>Minutes; they expire after use</td></tr>
 </tbody></table></div></section>
