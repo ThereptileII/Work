@@ -460,6 +460,7 @@ void XNavSettingsDrawer::Build() {
       });
       Link("Installation & recovery","Installer unavailable; recovery controls below",XNavIcon::Download,{});
       Page("SKAGER Cloud","Account, automatic updates and boat data",XNavIcon::Refresh,ProductPage::Cloud);
+      Page("SKAGER Helm","SKAGER on phones and tablets on board",XNavIcon::Boat,ProductPage::Helm);
       Link("Export settings backup","Vessel, display, sources and calibration",XNavIcon::Shield,actions_.backup_export);
       Link("Import settings backup","Validate and review before restoring",XNavIcon::Shield,actions_.backup_import);
       Link("Diagnostics","Versions, data quality and source health",XNavIcon::Instruments,actions_.diagnostics);

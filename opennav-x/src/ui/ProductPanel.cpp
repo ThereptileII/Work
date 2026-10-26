@@ -105,6 +105,7 @@ void ProductPanel::Back() {
   case ProductPage::Instruments:
   case ProductPage::Weather:  // A rail destination now (SCRUM-353): back is the chart.
   case ProductPage::Cloud:  // Opened from Settings > System, like Weather.
+  case ProductPage::Helm:
   case ProductPage::Home: if (actions_.chart) actions_.chart(); return;
   case ProductPage::RouteDetail: parent = ProductPage::Routes; break;
   case ProductPage::WaypointDetail: parent = ProductPage::Waypoints; break;
@@ -289,6 +290,7 @@ std::string ProductPanel::PageTitle() const {
   case ProductPage::SourceHealth: return "Source health";
   case ProductPage::Weather: return "Weather";
   case ProductPage::Cloud: return "SKAGER Cloud";
+  case ProductPage::Helm: return "SKAGER Helm";
   case ProductPage::FieldReport:
     return "Field diagnostic bundle";
   case ProductPage::Home:
@@ -507,6 +509,8 @@ void ProductPanel::Update(const ProductState &state, LightMode mode) {
     rebuild_pending_ |= RefreshTrack();
   // Pairing approval, unlinking and Cloud changes arrive asynchronously.
   if (page_ == ProductPage::Cloud && IsShownOnScreen()) rebuild_pending_ |= RefreshCloud();
+  // Phones pair, connect and leave while the Helm page is open.
+  if (page_ == ProductPage::Helm && IsShownOnScreen()) rebuild_pending_ |= RefreshHelm();
   const bool name_editing = XNavNameEditor::PreserveDrafts(
       *this, mode_, !state_.vessel.simulated && !state_.vessel.replayed &&
           (page_ != ProductPage::TrackDetail || track_available_));
@@ -1138,6 +1142,8 @@ void ProductPanel::Build() {
     WeatherPage();
   } else if (page_ == ProductPage::Cloud) {
     CloudPage();
+  } else if (page_ == ProductPage::Helm) {
+    HelmPage();
   }
   else if (page_ == ProductPage::Pilot)
     Text("Autopilot controls are unavailable in this view.");

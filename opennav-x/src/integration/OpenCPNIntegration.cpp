@@ -38,6 +38,7 @@
 #include "weather/IxForecastTransport.h"
 #include "cloud/IxCloudTransport.h"
 #include "integration/OnlineCloud.h"
+#include "helm/HelmHost.h"
 #include "application/Version.h"
 #include "weather/QueryBuilder.h"
 #include "integration/AisViewport.h"
@@ -134,6 +135,9 @@ std::unique_ptr<integration::OnlineAis> online_ais;
 integration::OnlineAisOverlay online_chart;
 std::unique_ptr<integration::OnlineWeather> online_weather;
 std::unique_ptr<integration::OnlineCloud> online_cloud;
+// SCRUM-379: SKAGER Helm, the SKAGER screen on paired phones and tablets.
+std::unique_ptr<helm::HelmHost> helm_host;
+bool helm_missing = false;
 std::shared_ptr<diagnostics::Commissioning> commissioning;
 std::unique_ptr<NavigationBridge> navigation;
 std::unique_ptr<integration::MarineBridge> marine;
@@ -468,6 +472,82 @@ void RemoveSkagerTaskbarIdentity(MyFrame& frame) {
 }
 #endif
 
+
+// ---------------------------------------------------------------- SKAGER Helm (SCRUM-379)
+constexpr const char *kHelmEnabledKey = "/OpenNav/Helm/Enabled";
+
+std::string HelmExecutable() {
+  wxString overridden;
+  if (wxGetEnv("SKAGER_HELM_SERVER", &overridden) && !overridden.empty()) return overridden.ToStdString(wxConvUTF8);
+  wxFileName exe(wxStandardPaths::Get().GetExecutablePath());
+#ifdef __WXMSW__
+  exe.SetFullName("skager-helm.exe");
+#else
+  exe.SetFullName("skager-helm");
+#endif
+  return exe.GetFullPath().ToStdString(wxConvUTF8);
+}
+
+void StartHelm(MyFrame &frame) {
+  const auto executable = HelmExecutable();
+  helm_missing = !wxFileExists(wxString::FromUTF8(executable));
+  if (helm_missing) {
+    wxLogMessage("SKAGER Helm: %s not found; Helm is not part of this installation",
+                 wxString::FromUTF8(executable));
+    return;
+  }
+  if (!helm_host) helm_host = std::make_unique<helm::HelmHost>();
+  const wxFileName dir(g_BasePlatform->GetPrivateDataDir(), "");
+  wxFileName state(dir.GetPath(), "");
+  state.AppendDir("helm");
+  state.Mkdir(wxS_DIR_DEFAULT, wxPATH_MKDIR_FULL);
+  helm::HelmOptions options;
+  options.executable = executable;
+  options.state_dir = state.GetPath().ToStdString(wxConvUTF8);
+  options.log_file = wxFileName(state.GetPath(), "skager-helm.log").GetFullPath().ToStdString(wxConvUTF8);
+  const auto host_name = wxGetHostName().ToStdString(wxConvUTF8);
+  options.name = host_name.empty() ? "SKAGER" : "SKAGER on " + host_name;
+#ifdef __WXMSW__
+  // Helm shows (and takes touches for) the SKAGER window, never other programs.
+  options.window = wxString::Format("0x%llx", static_cast<unsigned long long>(
+      reinterpret_cast<std::uintptr_t>(frame.GetHandle()))).ToStdString();
+#else
+  (void)frame;  // X11: the primary screen, where SKAGER runs full screen.
+#endif
+  wxLogMessage("SKAGER Helm: starting %s", wxString::FromUTF8(executable));
+  helm_host->Start(options);
+}
+
+// Autopilot commands never come from SKAGER Helm: Helm marks the input it
+// injects on Windows, and every Helm touch is reported just before it lands.
+bool FromHelm() {
+#ifdef __WXMSW__
+  if (static_cast<std::uint64_t>(GetMessageExtraInfo()) == 0x534B484CULL) return true;  // "SKHL"
+#endif
+  return helm_host && helm_host->RecentInput(std::chrono::milliseconds(1500));
+}
+
+// The phone shows the pilot's state (read-only). Values are SKAGER's own
+// feedback; an old or missing reading is sent as unknown, never as current.
+std::string HelmPilotStatus(const adapters::PilotView &view) {
+  const char *state = "unavailable";
+  switch (view.feedback.mode) {
+  case adapters::PilotMode::Standby: state = "standby"; break;
+  case adapters::PilotMode::Auto: state = "auto"; break;
+  case adapters::PilotMode::Track: state = "track"; break;
+  case adapters::PilotMode::Wind: state = "wind"; break;
+  case adapters::PilotMode::Unavailable: break;
+  }
+  if (view.feedback.mode != adapters::PilotMode::Unavailable && !view.fresh) state = "unknown";
+  std::string json = std::string("{\"state\":\"") + state + "\"";
+  const auto &heading = view.feedback.mode == adapters::PilotMode::Auto && view.feedback.locked_heading_magnetic_deg.value
+                            ? view.feedback.locked_heading_magnetic_deg : view.feedback.heading_magnetic_deg;
+  if (view.fresh && heading.value && std::isfinite(*heading.value))
+    json += ",\"heading\":" + std::to_string(static_cast<long>(std::lround(*heading.value))) + ",\"reference\":\"magnetic\"";
+  json += ",\"message\":\"Status from SKAGER on board.\"}";
+  return json;
+}
+
 void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   host = &frame;
   if(preview_paths && !config.ReadBool("/OpenNav/PreviewWindowPlaced",false)) {
@@ -693,6 +773,23 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (online_cloud && !demo && !restart && !(commissioning && commissioning->Replaying()))
       online_cloud->ObserveAlerts(critical, vessel::Clock::now());
   };
+  // SCRUM-379: SKAGER Helm. Off until the owner switches it on in this profile.
+  actions.helm.enabled = [cfg = &config] { return cfg->ReadBool(kHelmEnabledKey, false); };
+  actions.helm.enable = [cfg = &config, f = &frame](bool on) {
+    cfg->Write(kHelmEnabledKey, on);
+    cfg->Flush();
+    if (on) StartHelm(*f);
+    else if (helm_host) helm_host->Stop();
+  };
+  actions.helm.read = [] {
+    if (helm_missing) return helm::HelmSnapshot{helm::HostState::Missing};
+    return helm_host ? helm_host->Read() : helm::HelmSnapshot{};
+  };
+  actions.helm.pair = [] { if (helm_host) helm_host->Pair(); };
+  actions.helm.cancel_pair = [] { if (helm_host) helm_host->CancelPair(); };
+  actions.helm.revoke = [](const std::string &id) { if (helm_host) helm_host->Revoke(id); };
+  actions.helm.disconnect = [] { if (helm_host) helm_host->Disconnect(); };
+  if (!restart && config.ReadBool(kHelmEnabledKey, false)) StartHelm(frame);
   actions.weather_tick = [&frame, last = std::chrono::steady_clock::time_point{}](bool live_allowed) mutable {
     if (!online_weather || !online_weather->Enabled() || restart) return;
     const auto steady = std::chrono::steady_clock::now();
@@ -971,6 +1068,7 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     if (!simulated && !view.output_unavailable)
       view.control_blocker = pilots->hardware.ControlBlocker();
     if (!simulated) view.track_blocker = pilots->hardware.NavigationBlocker();
+    if (helm_host) helm_host->SetPilot(HelmPilotStatus(view));
     if (before != view.command.state)
       wxLogMessage("SKAGER manual pilot %llu: %s / %s",
                    static_cast<unsigned long long>(view.command.request.id),
@@ -982,6 +1080,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
   actions.pilot_command = [](bool simulated, auto action, double delta) {
     if (commissioning && !commissioning->AllowsHardwareControl())
       return;
+    if (FromHelm()) {
+      wxLogMessage("SKAGER manual autopilot: command refused, it came from SKAGER Helm");
+      return;
+    }
     auto c =
         pilots->Select(simulated).Request(action, delta, vessel::Clock::now());
     wxLogMessage("SKAGER manual autopilot [%s] request %llu: %s / %s",
@@ -991,6 +1093,10 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
                  wxString::FromUTF8(c.detail));
   };
   actions.pilot_enable = [](bool simulated, bool enabled) {
+    if (enabled && FromHelm()) {  // Switching control off stays allowed from anywhere.
+      wxLogMessage("SKAGER manual autopilot: enabling control refused, it came from SKAGER Helm");
+      return;
+    }
     if (enabled && !simulated && !pilots->hardware.Capabilities().manual_control)
       return;
     if (enabled && commissioning && !commissioning->AllowsHardwareControl())
@@ -1646,6 +1752,8 @@ bool PrepareClose(wxFileConfig& config) {
   integration::SetWeatherSource({});
   online_weather.reset(); // Cancels any request and joins the worker.
   online_cloud.reset(); // Cancels any request and joins the worker.
+  helm_host.reset(); // Closes the Helm Server's stdin: phones are told SKAGER stopped.
+  helm_missing = false;
   commissioning.reset();
   settings.reset();
   pilots.reset();anchor_state={};

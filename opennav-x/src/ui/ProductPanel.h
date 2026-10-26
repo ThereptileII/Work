@@ -13,6 +13,7 @@
 #include "ui/RadarPanel.h"
 #include "weather/Weather.h"
 #include "cloud/CloudActions.h"
+#include "helm/HelmActions.h"
 #include <wx/scrolwin.h>
 #include <wx/sizer.h>
 #include <wx/stattext.h>
@@ -50,6 +51,7 @@ enum class ProductPage {
   SourceHealth,
   Weather,  // SCRUM-325/327/329: forecast wind and GRIBstream settings
   Cloud,    // SCRUM-44/369: SKAGER Cloud account, automatic updates, boat data
+  Helm,     // SCRUM-379: SKAGER Helm, the SKAGER screen on phones and tablets on board
   AlarmSettings,
   Tracks,
   TrackDetail
@@ -97,6 +99,7 @@ struct ProductActions {
       save_settings;
   application::WeatherActions weather;  // SCRUM-324/325 GRIBstream settings.
   application::CloudActions cloud;  // SCRUM-44/369 SKAGER Cloud account and boat data.
+  application::HelmActions helm;    // SCRUM-379 SKAGER Helm pairing and phones.
 };
 struct ProductGeometry {
   std::string label;
@@ -169,6 +172,8 @@ private:
   bool RefreshWeather(bool force = false);
   void CloudPage();
   bool RefreshCloud();
+  void HelmPage();
+  bool RefreshHelm();
   ProductActions actions_;
   XNavInstrumentPanel *instruments_ = nullptr;
   XNavRadarPanel *radar_ = nullptr;
@@ -191,6 +196,8 @@ private:
   wxString weather_message_;
   cloud::CloudSnapshot cloud_;
   int cloud_shape_ = -1;
+  helm::HelmSnapshot helm_;
+  std::string helm_shape_;
   vessel::Quantity source_quantity_ = vessel::Quantity::Depth;
   wxBoxSizer *body_ = nullptr;
   wxGridSizer *grid_ = nullptr;

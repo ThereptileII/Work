@@ -63,6 +63,7 @@ struct ShellActions {
   std::function<void(bool)> weather_tick;
   // SCRUM-44/369: SKAGER Cloud pairing, automatic-update entitlement, boat data.
   application::CloudActions cloud;
+  application::HelmActions helm;  // SCRUM-379 SKAGER Helm.
   std::function<bool()> route_creating;
   // The new-route action bar excludes native extension of an existing route.
   std::function<bool()> new_route_creating;

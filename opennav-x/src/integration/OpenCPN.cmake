@@ -267,6 +267,31 @@ add_library(opennav_weather_runtime "${OPENNAV_ROOT}/src/weather/IxForecastTrans
 target_link_libraries(opennav_weather_runtime PUBLIC opennav_weather PRIVATE ocpn::ixwebsocket)
 target_compile_features(opennav_weather_runtime PUBLIC cxx_std_17)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_weather_runtime)
+# SCRUM-379: SKAGER Helm. The host (opennav_helm) is always linked; the Helm
+# Server itself is a Go program (tools/helm-server). Building it into the
+# product is opt-in until installer packaging, the Windows firewall rule and
+# the third-party notices are qualified (see docs/helm/README.md).
+target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_helm)
+option(SKAGER_BUILD_HELM_SERVER "Build skager-helm (Go) next to the SKAGER executable" OFF)
+if(SKAGER_BUILD_HELM_SERVER)
+  find_program(SKAGER_GO go REQUIRED)
+  set(helm_server "${CMAKE_CURRENT_BINARY_DIR}/skager-helm${CMAKE_EXECUTABLE_SUFFIX}")
+  set(helm_ldflags "-s -w")
+  if(WIN32)
+    set(helm_ldflags "-s -w -H=windowsgui")
+  endif()
+  add_custom_command(OUTPUT "${helm_server}"
+    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOFLAGS=-mod=readonly
+      ${SKAGER_GO} build -trimpath "-ldflags=${helm_ldflags}" -o "${helm_server}" ./cmd/helm-server
+    WORKING_DIRECTORY "${OPENNAV_ROOT}/tools/helm-server"
+    DEPENDS "${OPENNAV_ROOT}/tools/helm-server/go.mod" "${OPENNAV_ROOT}/tools/helm-server/go.sum"
+    COMMENT "Building the SKAGER Helm Server" VERBATIM)
+  add_custom_target(skager-helm-server ALL DEPENDS "${helm_server}")
+  add_custom_command(TARGET ${PACKAGE_NAME} POST_BUILD
+    COMMAND ${CMAKE_COMMAND} -E copy_if_different "${helm_server}" $<TARGET_FILE_DIR:${PACKAGE_NAME}>)
+  add_dependencies(${PACKAGE_NAME} skager-helm-server)
+  install(PROGRAMS "${helm_server}" DESTINATION .)
+endif()
 # SCRUM-44/369: SKAGER Cloud HTTPS transport, same IX library and CA policy.
 add_library(opennav_cloud_runtime "${OPENNAV_ROOT}/src/cloud/IxCloudTransport.cpp")
 target_link_libraries(opennav_cloud_runtime PUBLIC opennav_cloud PRIVATE ocpn::ixwebsocket)
