@@ -6,3 +6,4 @@ __pycache__/
 mobile/helm/node_modules/
 /OpenNavX_Codex_Starter.zip
 /OpenNavX_Design_Mockups.zip
+tools/helm-server/dist/
