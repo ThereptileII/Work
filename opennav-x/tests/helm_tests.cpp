@@ -35,7 +35,7 @@ template <class F> bool Eventually(F f, std::chrono::milliseconds limit = 5s) {
 }
 
 const char *kPairing =
-    R"({"event":"pairing","key":"ABCD-EFGH-JKLM-NPQR","link":"app.skager.helm://pair?v=1&k=x","expires":"2026-10-26T21:30:00+01:00",)"
+    R"({"event":"pairing","key":"AAAA-BBBB-CCCC-DDDD","link":"app.skager.helm://pair?v=1&k=x","expires":"2026-10-26T21:30:00+01:00",)"
     R"("addresses":["192.168.1.20:43872"],"qr":{"size":21,"rows":[)";
 
 std::string PairingLine() {
@@ -51,7 +51,7 @@ void Events() {
   CHECK(ApplyEvent(s, R"({"event":"ready","port":43872,"addresses":["192.168.1.20:43872","10.0.0.5:43872"]})", now));
   CHECK(s.state == HostState::Ready && s.port == 43872 && s.addresses.size() == 2);
   CHECK(ApplyEvent(s, PairingLine(), now));
-  CHECK(s.pairing && s.pairing->key == "ABCD-EFGH-JKLM-NPQR" && s.pairing->qr_size == 21 && s.pairing->qr_rows.size() == 21);
+  CHECK(s.pairing && s.pairing->key == "AAAA-BBBB-CCCC-DDDD" && s.pairing->qr_size == 21 && s.pairing->qr_rows.size() == 21);
   // 21:30 at +01:00 is 20:30 UTC.
   CHECK(std::chrono::duration_cast<std::chrono::seconds>(s.pairing->expires.time_since_epoch()).count() == 1793046600);
   CHECK(ApplyEvent(s, R"({"event":"paired","device":{"id":"d1","name":"Kristoffer's iPhone"}})", now));

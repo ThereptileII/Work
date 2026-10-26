@@ -25,18 +25,18 @@ func TestCrossImplementationVectors(t *testing.T) {
 		t.Fatal(err)
 	}
 	vectors := map[string]string{
-		"device key": hex.EncodeToString(key),
-		"pair":       MAC(secret, pairMessage("srv-id-123", b64(cn), "Kristoffer's iPhone")),
-		"paired":     MAC(key, pairedMessage("dev-id-456", b64(cn), b64(sn))),
-		"offer":      MAC(key, OfferMessage("dev-id-456", "chal", b64(cn), "v=0\r\no=- 1 2 IN IP4 0.0.0.0\r\n", true)),
-		"answer":     MAC(key, AnswerMessage("dev-id-456", "chal", b64(cn), "v=0\r\n")),
+		"hkdf":   hex.EncodeToString(key),
+		"pair":   MAC(secret, pairMessage("srv-id-123", b64(cn), "Kristoffer's iPhone")),
+		"paired": MAC(key, pairedMessage("dev-id-456", b64(cn), b64(sn))),
+		"offer":  MAC(key, OfferMessage("dev-id-456", "chal", b64(cn), "v=0\r\no=- 1 2 IN IP4 0.0.0.0\r\n", true)),
+		"answer": MAC(key, AnswerMessage("dev-id-456", "chal", b64(cn), "v=0\r\n")),
 	}
 	want := map[string]string{
-		"device key": "f09c0dbb89b09fb48068dfb70e0b9ee7c50f61f7f8abd6f6419633d54e4273df",
-		"pair":       "I3rNCSABtAlm1yCr1h-ZYq-i0Kh44ruXuNyzn8XTgaY",
-		"paired":     "AisXu2TQiz_G5mFCPGey6yBWZuocJqaK94uZrsEsAB8",
-		"offer":      "u-0UVbiCISaOHcH3s7Fm_0l2N9an9gNqBFFhB-9Q3ZE",
-		"answer":     "0JUoQoVOUgZbNCxh13Wr2DbLjqgTe89magcsLpveGTw",
+		"hkdf":   "f09c0dbb89b09fb48068dfb70e0b9ee7c50f61f7f8abd6f6419633d54e4273df",
+		"pair":   "I3rNCSABtAlm1yCr1h-ZYq-i0Kh44ruXuNyzn8XTgaY",
+		"paired": "AisXu2TQiz_G5mFCPGey6yBWZuocJqaK94uZrsEsAB8",
+		"offer":  "u-0UVbiCISaOHcH3s7Fm_0l2N9an9gNqBFFhB-9Q3ZE",
+		"answer": "0JUoQoVOUgZbNCxh13Wr2DbLjqgTe89magcsLpveGTw",
 	}
 	for k, v := range vectors {
 		if want[k] != v {
