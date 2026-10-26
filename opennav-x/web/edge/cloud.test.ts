@@ -15,7 +15,7 @@ function backend(options: { cloudActive?: boolean } = {}) {
   const calls: { name: string; args: Record<string, unknown> }[] = [];
   let throttleCount = 0;
   const state = { links, devices, calls, cloudActive: options.cloudActive ?? true, telemetry: null as unknown,
-    throttleLimit: Infinity, telemetryResult: 'stored' };
+    throttleLimit: Infinity, telemetryResult: 'stored', anchor: undefined as unknown };
   const rpc = async (name: string, args: Record<string, any>) => {
     calls.push({ name, args });
     switch (name) {
@@ -49,6 +49,8 @@ function backend(options: { cloudActive?: boolean } = {}) {
       }
       case 'cloud_telemetry_put': if (state.telemetryResult === 'stored') state.telemetry = args.p_items;
         return { state: state.telemetryResult };
+      case 'cloud_anchor_put': state.anchor = args.p_anchor; return { state: 'stored', restored: false };
+      case 'companion_phones': return [];
       case 'cloud_device_forget': for (const [k, d] of devices) if (d.id === args.p_device_id) devices.delete(k); return null;
       case 'cloud_overview': return { cloud: { active: state.cloudActive, status: 'active' },
         devices: [{ id: DEVICE, name: 'Aurora helm', platform: 'windows', app_version: '0.4.0', token_hash: 'never returned' }] };

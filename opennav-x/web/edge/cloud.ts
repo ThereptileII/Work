@@ -5,10 +5,14 @@
  *  - /api/cloud/*: the logged-in customer (cookie session; the router checks CSRF).
  * Tokens and device codes are stored only as SHA-256. Missing Cloud never blocks the
  * app: it only withholds the update feed and telemetry storage. */
+import { dispatchPush, inBackground } from './push.ts';
+
 export interface CloudContext {
   env: Record<string, string | undefined>;
   getAccount(request: Request): Promise<{ id: string; email?: string; passwordSet?: boolean } | null>;
   rpc(name: string, args: Record<string, unknown>): Promise<unknown>;
+  /** Outbound HTTPS for push notifications (SKAGER Companion). */
+  fetch?: typeof fetch;
 }
 type Json = Record<string, any>;
 
@@ -23,6 +27,12 @@ const CODE_ALPHABET = 'BCDFGHJKLMNPQRSTVWXZ23456789';
 const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
 const QUALITIES = ['live', 'aging', 'stale', 'estimated', 'uncertain'];
 const MAX_TELEMETRY_BYTES = 16384;
+const EVENT_ID = /^[A-Za-z0-9-]{8,64}$/;
+const PKCE_CHALLENGE = /^[A-Za-z0-9_-]{43}$/;
+const APP_STATE = /^[A-Za-z0-9_-]{16,64}$/;
+/** What the boat may report; notification wording is fixed on the server. */
+export const DEVICE_EVENT_KINDS = ['anchor_alarm', 'anchor_alarm_cleared', 'anchor_armed', 'anchor_disarmed',
+  'alert_critical', 'alert_cleared'];
 const SERIES_HOURS = [1, 6, 24, 72, 168, 720];
 
 /** Every value SKAGER may upload. Units are fixed here so the web never guesses. */
@@ -118,6 +128,12 @@ function publicCloud(value: unknown): Json {
   return { active: cloud.active === true, status: cloud.status ?? null,
     renewsAt: cloud.current_period_end ?? null, cancelAtPeriodEnd: cloud.cancel_at_period_end === true };
 }
+function publicPhone(value: unknown): Json {
+  const p = object(value);
+  requireValue(typeof p.id === 'string' && UUID.test(p.id));
+  return { id: p.id, name: p.name, platform: p.platform, appVersion: p.app_version, createdAt: p.created_at,
+    lastSeenAt: p.last_seen_at, push: p.push === true };
+}
 function publicDevice(value: unknown): Json {
   const d = object(value);
   requireValue(typeof d.id === 'string' && UUID.test(d.id));
@@ -144,6 +160,60 @@ export function validTelemetry(items: unknown): Json | null {
     output[key] = { v, age: Math.round(age * 10) / 10, q, ...(src ? { src } : {}) };
   }
   return output;
+}
+
+const finite = (value: unknown, min: number, max: number) =>
+  typeof value === 'number' && Number.isFinite(value) && value >= min && value <= max;
+
+/** The anchor watch as OpenCPN reports it on the boat. The alarm is OpenCPN's own decision,
+ * copied, never recalculated. A negative radius is OpenCPN's "alarm when inside" watch.
+ * Returns null for anything malformed; {armed:false} when no watch is set. */
+export function validAnchor(value: unknown): Json | null {
+  if (!value || typeof value !== 'object' || Array.isArray(value)) return null;
+  const a = value as Json;
+  if (!Object.keys(a).every(k => ['armed', 'alarm', 'lat', 'lon', 'radius_m', 'distance_m', 'age', 'src'].includes(k))) return null;
+  if (typeof a.armed !== 'boolean') return null;
+  if (!a.armed) return Object.keys(a).length === 1 ? { armed: false } : null;
+  if (typeof a.alarm !== 'boolean') return null;
+  if ((a.lat === undefined) !== (a.lon === undefined)) return null;
+  if (a.lat !== undefined && !(finite(a.lat, -90, 90) && finite(a.lon, -180, 180))) return null;
+  if (a.radius_m !== undefined && !(finite(Math.abs(a.radius_m), 1, 10000))) return null;
+  if (a.distance_m !== undefined && !finite(a.distance_m, 0, 100000)) return null;
+  if (a.age !== undefined && !finite(a.age, 0, 86400)) return null;
+  if (a.src !== undefined && !plainText(a.src, 64)) return null;
+  if ((a.distance_m === undefined) !== (a.age === undefined)) return null;
+  const out: Json = { armed: true, alarm: a.alarm };
+  if (a.lat !== undefined) { out.lat = a.lat; out.lon = a.lon; }
+  if (a.radius_m !== undefined) out.radius_m = a.radius_m;
+  if (a.distance_m !== undefined) { out.distance_m = Math.round(a.distance_m * 10) / 10; out.age = Math.round(a.age * 10) / 10; }
+  if (a.src !== undefined) out.src = a.src;
+  return out;
+}
+
+/** Up to 20 events from the boat. Each carries the boat's own id so a retry is stored once. */
+export function validEvents(value: unknown): Json[] | null {
+  if (!Array.isArray(value) || value.length < 1 || value.length > 20) return null;
+  const out: Json[] = [];
+  for (const item of value) {
+    if (!item || typeof item !== 'object' || Array.isArray(item)) return null;
+    const e = item as Json;
+    if (!Object.keys(e).every(k => ['id', 'kind', 'age', 'alert', 'data'].includes(k))) return null;
+    if (typeof e.id !== 'string' || !EVENT_ID.test(e.id) || !DEVICE_EVENT_KINDS.includes(e.kind)) return null;
+    if (!finite(e.age, 0, 7 * 86400)) return null;
+    const alertKind = e.kind === 'alert_critical' || e.kind === 'alert_cleared';
+    if (e.alert !== undefined && !(alertKind && plainText(e.alert, 80))) return null;
+    const event: Json = { id: e.id, kind: e.kind, age: Math.round(e.age * 10) / 10 };
+    if (e.alert !== undefined) event.alert = e.alert.trim();
+    if (e.data !== undefined) {
+      if (!e.data || typeof e.data !== 'object' || Array.isArray(e.data)) return null;
+      if (!Object.keys(e.data).every(k => ['distance_m', 'radius_m'].includes(k))) return null;
+      if (e.data.distance_m !== undefined && !finite(e.data.distance_m, 0, 100000)) return null;
+      if (e.data.radius_m !== undefined && !finite(Math.abs(e.data.radius_m), 1, 10000)) return null;
+      event.data = { ...e.data };
+    }
+    out.push(event);
+  }
+  return new Set(out.map(e => e.id)).size === out.length ? out : null;
 }
 
 // ---------------------------------------------------------------- device routes
@@ -229,14 +299,35 @@ async function deviceRoute(req: Request, ctx: CloudContext, path: string): Promi
     await ctx.rpc('cloud_telemetry_stop', { p_device_id: device.deviceId });
     return reply(200, { state: 'stopped' });
   }
-  // /api/device/telemetry
   if (!device.cloud.active) return reply(402, { error: 'Boat data needs SKAGER Cloud.', cloud: device.cloud });
+  if (path === '/api/device/events') {
+    let events: Json[] | null;
+    try {
+      const input = await body(req, 8192);
+      only(input, ['events']);
+      events = validEvents(input.events);
+      requireValue(events);
+    } catch { return reply(400, { error: 'Invalid events.' }); }
+    const stored = object(await ctx.rpc('cloud_event_put', { p_device_id: device.deviceId, p_events: events }));
+    if (stored.state === 'revoked') return reply(401, { error: 'This SKAGER is no longer linked.', linked: false });
+    if (stored.state === 'inactive') return reply(402, { error: 'Boat events need SKAGER Cloud.' });
+    if (stored.state !== 'stored') throw new Error('Invalid event result');
+    // Notifications go out after the boat has its answer; the scheduled job retries.
+    if (Number(stored.new) > 0) await inBackground(dispatchPush(ctx));
+    return reply(202, { state: 'stored', new: Number(stored.new) || 0 });
+  }
+  // /api/device/telemetry
   let items: Json | null;
+  let anchor: Json | null = null;
   try {
     const input = await body(req, MAX_TELEMETRY_BYTES);
-    only(input, ['items']);
+    only(input, ['items', 'anchor']);
     items = validTelemetry(input.items);
     requireValue(items);
+    if (input.anchor !== undefined) {
+      anchor = validAnchor(input.anchor);
+      requireValue(anchor);
+    }
   } catch { return reply(400, { error: 'Invalid boat data.' }); }
   const stored = object(await ctx.rpc('cloud_telemetry_put', { p_device_id: device.deviceId, p_items: items }));
   // Authorization is checked again while holding the database rows used by revocation.
@@ -244,6 +335,9 @@ async function deviceRoute(req: Request, ctx: CloudContext, path: string): Promi
   if (stored.state === 'inactive') return reply(402, { error: 'Boat data needs SKAGER Cloud.' });
   if (stored.state === 'throttled') return reply(429, { state: 'throttled' });
   if (stored.state !== 'stored') throw new Error('Invalid telemetry result');
+  // Older SKAGER versions send no anchor field: stored as unknown, never as "off".
+  const extra = object(await ctx.rpc('cloud_anchor_put', { p_device_id: device.deviceId, p_anchor: anchor }));
+  if (extra.restored === true) await inBackground(dispatchPush(ctx));
   return reply(202, { state: 'stored' });
 }
 
@@ -261,13 +355,37 @@ async function customerRoute(req: Request, ctx: CloudContext, path: string): Pro
   if (path === '/api/cloud/overview') {
     if (req.method !== 'GET') return reply(405, { error: 'GET required' });
     const overview = object(await ctx.rpc('cloud_overview', { p_account_id: account.id }));
+    const phones = await ctx.rpc('companion_phones', { p_account_id: account.id });
     return reply(200, { cloud: overview.cloud ? publicCloud(overview.cloud) : null,
       devices: (Array.isArray(overview.devices) ? overview.devices : []).map(publicDevice),
+      phones: (Array.isArray(phones) ? phones : []).map(publicPhone),
       telemetryKeys: TELEMETRY_KEYS });
   }
   if (req.method !== 'POST') return reply(405, { error: 'POST required' });
   let input: Json;
   try { input = await body(req); } catch { return reply(400, { error: 'Invalid request.' }); }
+  if (path === '/api/cloud/companion/authorize') {
+    // The signed-in page hands SKAGER Companion a one-time code bound to the app's
+    // PKCE challenge; the app redeems it with its verifier (companion.ts).
+    try {
+      only(input, ['challenge']);
+      requireValue(typeof input.challenge === 'string' && PKCE_CHALLENGE.test(input.challenge));
+    } catch { return reply(400, { error: 'This sign-in link is not valid. Start again in the app.' }); }
+    const code = randomHex(32);
+    const created = object(await ctx.rpc('companion_grant_create', { p_account_id: account.id,
+      p_code_hash: await sha256(code), p_challenge: input.challenge }));
+    if (created.state === 'throttled') return reply(429, { error: 'Too many sign-in attempts. Wait two minutes and try again.' });
+    if (created.state !== 'ok') return reply(403, { error: 'This account cannot use SKAGER Companion.' });
+    return reply(200, { code });
+  }
+  if (path === '/api/cloud/phones/revoke') {
+    try {
+      only(input, ['phoneId']);
+      requireValue(typeof input.phoneId === 'string' && UUID.test(input.phoneId));
+    } catch { return reply(400, { error: 'Invalid phone.' }); }
+    const result = object(await ctx.rpc('companion_phone_revoke', { p_account_id: account.id, p_session_id: input.phoneId }));
+    return result.state === 'revoked' ? reply(200, { state: 'revoked' }) : reply(404, { error: 'Phone not found.' });
+  }
   if (path === '/api/cloud/link/find' || path === '/api/cloud/link/decide') {
     const code = normalizeUserCode(input.code);
     const decide = path.endsWith('/decide');
@@ -316,9 +434,10 @@ async function customerRoute(req: Request, ctx: CloudContext, path: string): Pro
 }
 
 const DEVICE_ROUTES = ['/api/device/link', '/api/device/link/poll', '/api/device/status', '/api/device/update-access',
-  '/api/device/telemetry', '/api/device/telemetry/stop', '/api/device/unlink'];
+  '/api/device/telemetry', '/api/device/telemetry/stop', '/api/device/unlink', '/api/device/events'];
 const CUSTOMER_ROUTES = ['/api/cloud/overview', '/api/cloud/link/find', '/api/cloud/link/decide',
-  '/api/cloud/devices/revoke', '/api/cloud/boat', '/api/cloud/boat/series'];
+  '/api/cloud/devices/revoke', '/api/cloud/boat', '/api/cloud/boat/series', '/api/cloud/companion/authorize',
+  '/api/cloud/phones/revoke'];
 
 /** Device routes are exempt from the browser CSRF check; see the module comment. */
 export function isDeviceRoute(path: string): boolean { return DEVICE_ROUTES.includes(path); }
@@ -341,3 +460,6 @@ export async function handleCloud(req: Request, ctx: CloudContext): Promise<Resp
   }
   return null;
 }
+
+// Shared with the SKAGER Companion phone API (companion.ts).
+export { APP_STATE, publicCloud, publicDevice, reply, sha256, randomHex, object, body as jsonBody, only };

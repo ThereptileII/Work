@@ -42,6 +42,22 @@ async function readBounded(stream, limit = MAX_BODY) {
 
 // The SKAGER app and its updater authenticate with a device token, never a cookie.
 const DEVICE_TOKEN = /^Bearer (skg1_[a-f0-9]{64})$/;
+// SKAGER Companion (phone) token; the app's WebView origins may call /api/companion/*.
+const PHONE_TOKEN = /^Bearer (skc1_[a-f0-9]{64})$/;
+const APP_ORIGINS = ['capacitor://localhost', 'https://localhost'];
+const ETAG = /^"[a-f0-9]{32}"$/;
+const QUERY = /^\?[A-Za-z0-9=&,._-]{1,400}$/;
+
+/** CORS for the packaged app only. Bearer tokens are never ambient, so no credentials mode. */
+function appCors(request, response) {
+  const origin = request.headers.get('origin');
+  if (!origin || !APP_ORIGINS.includes(origin)) return response;
+  const headers = new Headers(response.headers);
+  headers.set('Access-Control-Allow-Origin', origin);
+  headers.set('Access-Control-Expose-Headers', 'ETag');
+  headers.set('Vary', 'Origin');
+  return new Response(response.body, { status: response.status, headers });
+}
 const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
 // TUF metadata and signed artifacts for one channel; no traversal or empty segments.
 const UPDATE_KEY = /^beta\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}(?:\/[A-Za-z0-9][A-Za-z0-9._-]{0,199}){0,4}$/;
@@ -90,7 +106,18 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
   const url = new URL(request.url);
   if (url.origin !== ORIGIN) return finish(new Response('Use beta.skager.app', { status: 421 }));
   if (url.pathname.startsWith('/updates/') || url.pathname.startsWith('/artifacts/')) return serveUpdate(request, url, env, transport);
+  if (url.pathname.startsWith('/api/companion/') && request.method === 'OPTIONS') {
+    const origin = request.headers.get('origin');
+    if (!origin || !APP_ORIGINS.includes(origin)) return finish(new Response(null, { status: 403 }));
+    return finish(new Response(null, { status: 204, headers: { 'Access-Control-Allow-Origin': origin,
+      'Access-Control-Allow-Methods': 'GET, POST', 'Access-Control-Max-Age': '600', Vary: 'Origin',
+      'Access-Control-Allow-Headers': 'authorization, content-type, if-none-match, x-skager-version' } }));
+  }
   if (url.pathname.startsWith('/api/')) {
+    const phone = url.pathname.startsWith('/api/companion/');
+    if (phone && url.search && !(request.method === 'GET' && QUERY.test(url.search))) {
+      return finish(new Response('{"error":"Invalid request."}', { status: 400, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' } }));
+    }
     if (url.pathname === '/api/portal/downloads' && url.search) return finish(new Response('{"error":"Download query parameters are not supported."}', {
       status: 400, headers: { 'Content-Type': 'application/json', 'Cache-Control': 'no-store' },
     }));
@@ -108,6 +135,14 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
       const version = request.headers.get('x-skager-version');
       if (version && VERSION.test(version)) headers.set('x-skager-version', version);
     }
+    if (phone) {
+      const token = PHONE_TOKEN.exec(request.headers.get('authorization') || '');
+      if (token) headers.set('x-skager-companion', token[1]);
+      const version = request.headers.get('x-skager-version');
+      if (version && VERSION.test(version)) headers.set('x-skager-version', version);
+      const tag = request.headers.get('if-none-match');
+      if (tag && ETAG.test(tag)) headers.set('if-none-match', tag);
+    }
     let body;
     try { if (request.method === 'POST') body = await readBounded(request.body, url.pathname === IMAGE_ROUTE ? IMAGE_BODY : MAX_BODY); }
     catch { return finish(new Response('Request too large', { status: 413 })); }
@@ -115,12 +150,13 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
     try {
       const signal = AbortSignal.timeout(20000);
       failurePhase = 'upstream-request';
-      const response = await transport(EDGE + url.pathname, {
+      const response = await transport(EDGE + url.pathname + (phone ? url.search : ''), {
         // workerd supports manual/follow; explicitly refuse redirects below.
         method: request.method, headers, body, redirect: 'manual',
         signal,
       });
-      if (response.status >= 300 && response.status < 400) {
+      // Redirects are refused; 304 is the phone API's "unchanged" answer.
+      if (response.status >= 300 && response.status < 400 && !(phone && response.status === 304)) {
         await response.body?.cancel().catch(() => {});
         throw new Error();
       }
@@ -129,10 +165,13 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
       const media = url.pathname.startsWith('/api/media/') && response.ok;
       const outputHeaders = new Headers({ 'Cache-Control': media ? 'public, max-age=86400' : 'no-store' });
       outputHeaders.set('Content-Type', response.headers.get('content-type') || 'application/json');
+      const etag = response.headers.get('etag');
+      if (phone && etag && ETAG.test(etag)) { outputHeaders.set('ETag', etag); outputHeaders.set('Cache-Control', 'private, no-cache'); }
       failurePhase = 'cookie-copy';
       for (const value of response.headers.getSetCookie()) outputHeaders.append('Set-Cookie', value);
       failurePhase = 'response-build';
-      return finish(new Response(response.body, { status: response.status, headers: outputHeaders }));
+      const output = new Response(response.status === 304 ? null : response.body, { status: response.status, headers: outputHeaders });
+      return finish(phone ? appCors(request, output) : output);
     } catch {
       // Only these static phases reach logs; never log the exception or request.
       console.warn(`skager-worker:${failurePhase}`);
@@ -146,7 +185,8 @@ export async function handleWorker(request, transport = fetch, env = undefined) 
     return finish(new Response(null, { status: 303, headers: { Location: '/auth/login/', 'Cache-Control': 'no-store' } }));
   }
   let path = url.pathname;
-  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path) || /^\/link\/?$/.test(path)) path = '/portal.html';
+  if (/^\/portal(?:\/(?:downloads|shop|cloud|orders|account|boats))?\/?$/.test(path) || /^\/link\/?$/.test(path)
+      || /^\/app\/authorize\/?$/.test(path)) path = '/portal.html';
   else if (/^\/auth\/(?:login|forgot|verify)\/?$/.test(path)) path = '/auth.html';
   else if (/^\/admin(?:\/(?:steps|orders|customers|settings))?\/?$/.test(path)) path = '/admin.html';
   else if (path.endsWith('/')) path += 'index.html';

@@ -272,3 +272,51 @@ test('the SKAGER pairing page uses the member shell', async () => {
     assert.equal(response.status, 200, path);
   }
 });
+
+test('SKAGER Companion: phone token, query, ETag and CORS reach only the phone API', async () => {
+  const PHONE = 'skc1_' + 'c'.repeat(64);
+  const seen: { url: string; headers: Headers }[] = [];
+  const edge = async (url: string, init: RequestInit) => {
+    seen.push({ url, headers: new Headers(init.headers) });
+    return url.includes('/boat?') && new Headers(init.headers).get('if-none-match') === '"' + 'a'.repeat(32) + '"'
+      ? new Response(null, { status: 304, headers: { ETag: '"' + 'a'.repeat(32) + '"' } })
+      : new Response('{"ok":true}', { headers: { 'content-type': 'application/json', ETag: '"' + 'a'.repeat(32) + '"' } });
+  };
+  const call = (path: string, init: RequestInit = {}) => handleWorker(new Request('https://beta.skager.app' + path, init), edge);
+  const device = '22222222-2222-4222-8222-222222222222';
+  const ok = await call(`/api/companion/boat?device=${device}`, { headers: { authorization: 'Bearer ' + PHONE,
+    origin: 'capacitor://localhost', 'x-skager-version': '1.0.0', cookie: 'leak=1' } });
+  assert.equal(ok.status, 200);
+  assert.equal(ok.headers.get('ETag'), '"' + 'a'.repeat(32) + '"');
+  assert.equal(ok.headers.get('Access-Control-Allow-Origin'), 'capacitor://localhost');
+  assert.match(seen[0].url, /\/skager-web\/api\/companion\/boat\?device=2222/);
+  assert.equal(seen[0].headers.get('x-skager-companion'), PHONE);
+  assert.equal(seen[0].headers.has('authorization'), false);
+  const unchanged = await call(`/api/companion/boat?device=${device}`, { headers: { authorization: 'Bearer ' + PHONE,
+    'if-none-match': '"' + 'a'.repeat(32) + '"' } });
+  assert.equal(unchanged.status, 304);
+  assert.equal(await unchanged.text(), '');
+  // Other origins get no CORS grant; preflight is answered only for the app.
+  const other = await call('/api/companion/boats', { headers: { authorization: 'Bearer ' + PHONE, origin: 'https://evil.example' } });
+  assert.equal(other.headers.has('Access-Control-Allow-Origin'), false);
+  const preflight = await call('/api/companion/boats', { method: 'OPTIONS', headers: { origin: 'https://localhost' } });
+  assert.equal(preflight.status, 204);
+  assert.match(preflight.headers.get('Access-Control-Allow-Headers')!, /authorization/);
+  assert.equal((await call('/api/companion/boats', { method: 'OPTIONS', headers: { origin: 'https://evil.example' } })).status, 403);
+  // A device token is not a phone token, and a phone token never reaches other routes.
+  seen.length = 0;
+  await call('/api/companion/boats', { headers: { authorization: 'Bearer skg1_' + 'd'.repeat(64) } });
+  assert.equal(seen[0].headers.has('x-skager-companion'), false);
+  await call('/api/cloud/overview?x=1', { headers: { authorization: 'Bearer ' + PHONE } });
+  assert.equal(seen[1].headers.has('x-skager-companion'), false);
+  assert.doesNotMatch(seen[1].url, /\?/);
+  assert.equal((await call('/api/companion/boats?x=<script>')).status, 400);
+  assert.equal((await call('/api/companion/push?x=1', { method: 'POST', body: '{}' })).status, 400);
+});
+
+test('the Companion sign-in page uses the member shell', async () => {
+  const response = await handleWorker(new Request('https://beta.skager.app/app/authorize/?challenge=' + 'a'.repeat(43) + '&state=' + 'b'.repeat(20)),
+    async () => assert.fail('a page load needs no backend'));
+  assert.equal(response.status, 200);
+  assert.equal(await response.text(), readFileSync(new URL('./static/portal.html', import.meta.url), 'utf8'));
+});

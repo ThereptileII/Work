@@ -8,6 +8,7 @@ import {
   requireValue, strictJson, stripeRequest, verifiedSignature, type CommerceContext, type Configuration,
 } from './commerce.ts';
 import { sendDue } from './email.ts';
+import { dispatchPush } from './push.ts';
 import { getImage } from './media.ts';
 import { PUBLIC_ORIGIN } from './platform.ts';
 
@@ -452,10 +453,13 @@ async function tick(req: Request, ctx: StoreContext): Promise<Response> {
   const maintenance = await ctx.rpc('store_job_maintenance', {});
   // Cloud maintenance (expired pairings, 30-day history) must not hold back email.
   const cloud = await ctx.rpc('cloud_job_maintenance', {}).catch(() => null);
+  // Companion: prune, raise "no contact" for silent anchored boats, retry notifications.
+  const companion = await ctx.rpc('companion_job_maintenance', {}).catch(() => null);
+  const push = await dispatchPush({ env: ctx.env, rpc: ctx.rpc, fetch: ctx.fetch }, 50).catch(() => null);
   const cancellations = await cancelClosedSubscriptions(ctx).catch(() => ({ completed: 0, pending: null }));
   const email = await sendDue(ctx, 20);
-  const ok = cloud !== null && cancellations.pending === 0;
-  return reply(ok ? 200 : 503, { ok, maintenance, cloud, cancellations, email });
+  const ok = cloud !== null && companion !== null && push !== null && cancellations.pending === 0;
+  return reply(ok ? 200 : 503, { ok, maintenance, cloud, companion, push, cancellations, email });
 }
 
 // ---------------------------------------------------------------- router

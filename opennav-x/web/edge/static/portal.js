@@ -10,7 +10,23 @@ const date = value => {
   const parsed = new Date(value);
   return Number.isNaN(parsed.getTime()) ? "—" : parsed.toLocaleDateString("en-GB", { timeZone: "UTC", day: "numeric", month: "short", year: "numeric" });
 };
-export const PAGES = { dashboard: "/portal/", downloads: "/portal/downloads/", shop: "/portal/shop/", cloud: "/portal/cloud/", orders: "/portal/orders/", account: "/portal/account/", link: "/link/" };
+export const PAGES = { dashboard: "/portal/", downloads: "/portal/downloads/", shop: "/portal/shop/", cloud: "/portal/cloud/", orders: "/portal/orders/", account: "/portal/account/", link: "/link/", app: "/app/authorize/" };
+/** SKAGER Companion's deep-link scheme (its application id). */
+export const APP_SCHEME = "app.skager.companion";
+/** The sign-in request SKAGER Companion opened this page with, or null if malformed. */
+export function appRequest(search) {
+  const text = String(search || "");
+  if (!/^\?[A-Za-z0-9=&_-]{1,200}$/.test(text)) return null;
+  const pairs = text.slice(1).split("&").map(part => part.split("="));
+  if (pairs.length !== 2 || pairs.some(pair => pair.length !== 2)) return null;
+  const values = Object.fromEntries(pairs);
+  return /^[A-Za-z0-9_-]{43}$/.test(values.challenge || "") && /^[A-Za-z0-9_-]{16,64}$/.test(values.state || "")
+    ? { challenge: values.challenge, state: values.state } : null;
+}
+/** Where the browser returns to the app: the one-time code, or that the person declined. */
+export function appReturnUrl(request, code) {
+  return `${APP_SCHEME}://auth?${code ? `code=${code}` : "error=access_denied"}&state=${request.state}`;
+}
 /** Placeholder cards shown while a tab's data is on its way (same markup as portal.html). */
 export const SKELETON = '<div class="skeleton-grid" aria-hidden="true"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card wide"></div></div>';
 /** Portal page for a path; /portal/boats/ is kept as an alias for the account page. */
@@ -175,6 +191,7 @@ const CLOUD_FEATURES = [
   ["Boat data", "Your instruments, battery and position, with 30 days of history.", true],
   ["Online dashboard", "See your boat from anywhere: battery, bilge, shore power and more."],
   ["Web route planning", "Plan routes in your browser and send them to the boat."],
+  ["SKAGER Companion", "Your boat on your phone: live data, anchor watch and alarm notifications.", true],
   ["Health and alerts", "Get notified when something on board needs attention."],
   ["Backup and sync", "Routes, waypoints and settings, safe and in sync."],
   ["Voyage log", "Every passage recorded, with tracks and statistics."],
@@ -247,6 +264,32 @@ export function renderDevices(cloud, boat, now = Date.now()) {
       ${selected ? renderBoat(boat, cloud.telemetryKeys, now) : ""}</section>`;
   }).join("")}</div>`;
 }
+/** Phones signed in to SKAGER Companion, each with Sign out. */
+export function renderPhones(cloud, now = Date.now()) {
+  const phones = Array.isArray(cloud?.phones) ? cloud.phones : [];
+  if (!phones.length) return "";
+  return `<h2 class="section-title">Phones with SKAGER Companion</h2><div class="grid">${phones.map(phone => {
+    const seen = since(phone.lastSeenAt, now);
+    return `<section class="card"><div class="order-head"><div><h3>${esc(phone.name)}</h3><p class="note">${esc(phone.platform === "ios" ? "iPhone" : "Android")} · Companion ${esc(phone.appVersion)}${seen === null ? "" : ` · used ${esc(ago(seen))}`}</p></div>
+      <div>${badge(phone.push ? ["Notifications on", "ok"] : ["Notifications off", "off"])}</div></div>
+      <div class="actions"><button class="button button-danger" type="button" data-phone-revoke="${esc(phone.id)}">Sign out this phone</button></div></section>`;
+  }).join("")}</div>`;
+}
+/** The page SKAGER Companion opens in the phone's browser: approve this phone, return to the app. */
+export function renderAppAuthorize(state = {}) {
+  if (!state.request) {
+    return `<section class="card feature narrow"><p class="eyebrow">SKAGER Companion</p><h2>This sign-in link is not valid.</h2>
+      <p class="note">Open SKAGER Companion on your phone and choose Sign in again.</p></section>`;
+  }
+  if (state.done) {
+    return `<section class="card feature narrow"><p class="eyebrow">SKAGER Companion</p><h2>Returning to the app…</h2>
+      <p class="note">If SKAGER Companion does not open by itself, use the button. The sign-in is valid for two minutes.</p>
+      <div class="actions"><a class="button" href="${esc(state.done)}">Open SKAGER Companion</a></div></section>`;
+  }
+  return `<section class="card feature narrow"><p class="eyebrow">SKAGER Companion</p><h2>Sign in on this phone?</h2>
+    <p class="note">SKAGER Companion will show your boats' data, anchor watch and alarms. It cannot control the boat. You can sign the phone out here under SKAGER Cloud at any time.</p>
+    <div class="actions"><button class="button" type="button" id="app-allow">Sign in SKAGER Companion</button><button class="button button-secondary" type="button" id="app-cancel">Cancel</button></div></section>`;
+}
 /** The page the SKAGER app sends people to: enter its code, check the computer, approve. */
 export function renderLink(state = {}) {
   if (state.done) {
@@ -278,6 +321,7 @@ export function renderCloud(data, catalog, cloud, boat) {
   return `<section class="card feature"><p class="eyebrow">SKAGER Cloud</p><h2>Your boat, wherever you are.</h2><div>${status}</div>
     <p class="note">One subscription for every cloud service. New services switch on for you as they launch. Cancel any time.</p><div class="actions">${action}${data.hasBilling && !live ? '<button class="button button-secondary" type="button" id="cloud-manage">Billing history</button>' : ""}</div></section>
     ${renderDevices(cloud, boat)}
+    ${renderPhones(cloud)}
     <h2 class="section-title">Included services</h2>
     <div class="feature-list">${CLOUD_FEATURES.map(([name, text, live]) => `<section class="card"><h3>${esc(name)}</h3><p class="note">${esc(text)}</p>${badge(live ? ["Available", "ok"] : ["Coming", "soon"])}</section>`).join("")}</div>`;
 }
@@ -321,6 +365,7 @@ export function renderDashboard(data, page = "dashboard", extra, setup, cloud) {
   if (page === "shop") return renderShop(extra);
   if (page === "cloud") return renderCloud(data, extra, cloud?.overview, cloud?.boat);
   if (page === "link") return renderLink(cloud?.link);
+  if (page === "app") return renderAppAuthorize(cloud?.app);
   if (page === "orders") return renderOrders(data);
   if (page === "account") return renderAccount(data, false);
   return renderOverview(data);
@@ -334,7 +379,7 @@ export function stripeUrl(value, host) {
 }
 
 // ---------------------------------------------------------------- browser
-const TITLES = { dashboard: "Welcome aboard.", downloads: "Downloads", shop: "Shop", cloud: "SKAGER Cloud", orders: "Orders", account: "Account", boats: "Account", link: "Link SKAGER" };
+const TITLES = { dashboard: "Welcome aboard.", downloads: "Downloads", shop: "Shop", cloud: "SKAGER Cloud", orders: "Orders", account: "Account", boats: "Account", link: "Link SKAGER", app: "SKAGER Companion" };
 if (typeof document !== "undefined" && document.getElementById("portal-content")) {
   let csrfToken;
   let sessionEnded = false;
@@ -353,7 +398,10 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
     $("logout").hidden = true;
     if ($("portal-nav")) $("portal-nav").hidden = true;
     tell(sessionMessage);
-    location.assign(page === "link" ? "/auth/login/?next=/link/" : "/auth/login/");
+    const request = page === "app" ? appRequest(location.search) : null;
+    location.assign(page === "link" ? "/auth/login/?next=/link/"
+      : request ? `/auth/login/?next=${encodeURIComponent(`/app/authorize/?challenge=${request.challenge}&state=${request.state}`)}`
+      : "/auth/login/");
   }
   let page = pageForPath(location.pathname);
   // Portal data lives in this page's memory only (never in browser storage), so
@@ -362,7 +410,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   // Where the customer is in the download steps; memory only, like the rest.
   const setup = { current: 0, used: [] };
   // SKAGER Cloud: linked devices, the boat being viewed, and the pairing page.
-  const cloudView = { overview: undefined, boat: null, link: {} };
+  const cloudView = { overview: undefined, boat: null, link: {}, app: { request: appRequest(location.search) } };
   const setupFor = p => p === "downloads" && cache.dashboard?.betaAccess === "active"
     ? { steps: downloadSteps(cache.catalog), guide: downloadSteps(cache.catalog, "guide"), current: setup.current, used: setup.used } : undefined;
   function mark() {
@@ -485,6 +533,36 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
         });
       }
     }
+    if (page === "app" && cloudView.app.request && !cloudView.app.done) {
+      const request = cloudView.app.request;
+      $("app-allow")?.addEventListener("click", async () => {
+        for (const id of ["app-allow", "app-cancel"]) if ($(id)) $(id).disabled = true;
+        try {
+          const result = await api("/api/cloud/companion/authorize", { challenge: request.challenge });
+          checkSession();
+          if (!/^[a-f0-9]{64}$/.test(result.code || "")) throw new Error("Sign-in could not be completed. Please try again.");
+          cloudView.app = { request, done: appReturnUrl(request, result.code) };
+          render();
+          location.assign(cloudView.app.done);
+        } catch (error) { for (const id of ["app-allow", "app-cancel"]) if ($(id)) $(id).disabled = false; tell(error.message, "error"); }
+      });
+      $("app-cancel")?.addEventListener("click", () => location.assign(appReturnUrl(request, null)));
+    }
+    if (page === "cloud") {
+      for (const button of content.querySelectorAll("[data-phone-revoke]")) {
+        button.addEventListener("click", async () => {
+          if (button.dataset.confirm !== "yes") { button.dataset.confirm = "yes"; button.textContent = "Press again to sign out"; return; }
+          button.disabled = true;
+          try {
+            await api("/api/cloud/phones/revoke", { phoneId: button.dataset.phoneRevoke });
+            cloudView.overview = await api("/api/cloud/overview");
+            checkSession();
+            render();
+            tell("The phone is signed out.", "ok");
+          } catch (error) { tell(error.message, "error"); button.disabled = false; }
+        });
+      }
+    }
     if (page === "link") {
       const decide = approve => async () => {
         for (const id of ["link-approve", "link-decline"]) if ($(id)) $(id).disabled = true;
@@ -554,7 +632,7 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   const cached = p => cache.dashboard !== undefined && extraFor(p) !== undefined && (p !== "cloud" || cloudView.overview !== undefined);
   // What the visible tab was last rendered from, so a refresh re-renders only on change.
   let rendered = null;
-  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page), setupFor(page), page === "cloud" || page === "link" ? cloudView : null]);
+  const shownFrom = () => JSON.stringify([page, cache.dashboard, extraFor(page), setupFor(page), page === "cloud" || page === "link" || page === "app" ? cloudView : null]);
   /** Fetch what page p shows into the cache. */
   async function refresh(p) {
     // The download steps are guidance: without the catalog the download itself still shows.

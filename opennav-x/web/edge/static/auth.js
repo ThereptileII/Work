@@ -26,7 +26,16 @@ function show() {
   codeInput.required = step === "code";
 }
 // Where to continue after signing in: the portal, or the SKAGER pairing page.
-const returnTo = /[?&]next=(?:\/|%2F)link(?:\/|%2F)(?:&|$)/i.test(String(location.search || "")) ? "/link/" : null;
+// Only two exact destinations are accepted, never an arbitrary URL.
+function returnPath(search) {
+  const match = /[?&]next=([^&]*)/.exec(String(search || ""));
+  if (!match) return null;
+  let next;
+  try { next = decodeURIComponent(match[1]); } catch { return null; }
+  if (next === "/link/") return next;
+  return /^\/app\/authorize\/\?challenge=[A-Za-z0-9_-]{43}&state=[A-Za-z0-9_-]{16,64}$/.test(next) ? next : null;
+}
+const returnTo = returnPath(typeof location === "undefined" ? "" : location.search);
 function say(text, kind = "") { message.textContent = text; message.className = `message ${kind}`.trim(); }
 async function post(path, payload) {
   const response = await fetch(path, { method: "POST", credentials: "same-origin", cache: "no-store",
