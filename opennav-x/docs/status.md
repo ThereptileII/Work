@@ -1,3 +1,19 @@
+# 26 October — SKAGER Helm launch requirement and first LAN/WebRTC slice
+
+User testing promoted a local companion display to a public-beta launch
+requirement. Jira Epic [SCRUM-379](https://swedishcountrysideliving.atlassian.net/browse/SCRUM-379)
+and child Features SCRUM-380 through SCRUM-384 track the work. SKAGER PC remains
+the navigation and rendering authority; Helm does not create a second chart or
+route engine.
+
+The first implementation is in `tools/helm-server`: Go/Pion WebRTC signalling,
+H.264 RTP publication boundary, explicit short-lived pairing/revocation,
+normalized input validation, disconnect cleanup and a browser transport probe.
+Focused Go tests pass locally. This is not yet a public-beta acceptance: native
+Android/iOS clients, Windows/Linux capture, TLS/discovery, real SKAGER frame
+publication and measured boat-PC latency/FPS remain open. Autopilot and other
+actuator commands are status-only and unavailable through Helm.
+
 # SKAGER status — 2026-10-25
 
 ## 25 October — Beta 1.0 exact-package production qualification

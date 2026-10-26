@@ -1,0 +1,52 @@
+<!doctype html>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no">
+<title>SKAGER Helm test client</title>
+<style>
+  :root { color-scheme: dark; font: 16px system-ui, sans-serif; background:#0d1012; color:#f5f7f8 }
+  body { margin:0; padding:16px; max-width:1000px; margin-inline:auto }
+  input,button { min-height:44px; border-radius:10px; border:1px solid #56636b; background:#20272c; color:inherit; padding:8px 12px; font-size:16px }
+  button { background:#18b7cf; color:#061014; font-weight:700; cursor:pointer }
+  #video { display:block; width:100%; max-height:75vh; background:#000; object-fit:contain; touch-action:none; border-radius:12px; margin-top:12px }
+  #state { color:#9caeb8; margin:12px 0 }
+  .row { display:flex; gap:8px; flex-wrap:wrap; align-items:center }
+  #log { white-space:pre-wrap; color:#9caeb8; font-size:12px; margin-top:10px }
+</style>
+<h1>SKAGER Helm</h1>
+<p>LAN transport probe. This page exercises the Helm WebRTC path; it is not the final mobile product.</p>
+<div class="row">
+  <input id="code" inputmode="numeric" autocomplete="one-time-code" placeholder="Pairing code" maxlength="12">
+  <input id="name" value="Helm browser" maxlength="80" aria-label="Client name">
+  <button id="pair">Pair</button>
+</div>
+<div id="state">Disconnected</div>
+<video id="video" autoplay playsinline muted></video>
+<pre id="log"></pre>
+<script>
+const state = document.querySelector('#state'), log = document.querySelector('#log'), video = document.querySelector('#video');
+let token = '', seq = 0, pc, input;
+const note = m => { state.textContent = m; log.textContent += m + '\n'; };
+const waitIce = pc => pc.iceGatheringState === 'complete' ? Promise.resolve() : new Promise(resolve => {
+  const t = setInterval(() => { if (pc.iceGatheringState === 'complete') { clearInterval(t); resolve(); } }, 50);
+});
+document.querySelector('#pair').onclick = async () => {
+  try {
+    const base = location.origin;
+    const pair = await fetch(base + '/helm/v1/pair', { method:'POST', headers:{'content-type':'application/json'}, body:JSON.stringify({pairing_code:document.querySelector('#code').value,client_name:document.querySelector('#name').value}) });
+    if (!pair.ok) throw new Error('Pairing refused');
+    token = (await pair.json()).token; note('Paired; opening WebRTC');
+    pc = new RTCPeerConnection({iceServers:[]});
+    input = pc.createDataChannel('input', {ordered:false, maxRetransmits:0});
+    pc.ontrack = e => { video.srcObject = e.streams[0]; note('Video track received'); };
+    pc.onconnectionstatechange = () => note('WebRTC ' + pc.connectionState);
+    const wsProto = location.protocol === 'https:' ? 'wss:' : 'ws:';
+    const ws = new WebSocket(wsProto + '//' + location.host + '/helm/v1/signal?token=' + encodeURIComponent(token));
+    const offer = await pc.createOffer(); await pc.setLocalDescription(offer); await waitIce(pc);
+    ws.onopen = () => ws.send(JSON.stringify({type:'offer',sdp:pc.localDescription.sdp}));
+    ws.onmessage = async e => { const msg = JSON.parse(e.data); if (msg.type === 'answer') { await pc.setRemoteDescription({type:'answer',sdp:msg.sdp}); note('Connected'); } };
+    ws.onclose = () => note('Signalling disconnected');
+  } catch (e) { note('Error: ' + e.message); }
+};
+video.addEventListener('pointerdown', e => { if (!input) return; const r=video.getBoundingClientRect(); input.send(JSON.stringify({type:'input',event:{type:'pointer_down',x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height,sequence:++seq,pointer_id:e.pointerId}})); });
+video.addEventListener('pointerup', e => { if (!input) return; const r=video.getBoundingClientRect(); input.send(JSON.stringify({type:'input',event:{type:'pointer_up',x:(e.clientX-r.left)/r.width,y:(e.clientY-r.top)/r.height,sequence:++seq,pointer_id:e.pointerId}})); });
+</script>
