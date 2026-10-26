@@ -1,6 +1,7 @@
+<?xml version='1.0' encoding='utf-8'?>
 <resources>
     <string name="app_name">SKAGER Helm</string>
-    <string name="connect">Open Helm</string>
-    <string name="host_hint">SKAGER PC address (http:// or https://)</string>
-    <string name="status_ready">Enter the address of the SKAGER PC on the local network.</string>
+    <string name="title_activity_main">SKAGER Helm</string>
+    <string name="package_name">app.skager.helm</string>
+    <string name="custom_url_scheme">app.skager.helm</string>
 </resources>

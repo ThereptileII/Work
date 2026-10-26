@@ -1,50 +1,175 @@
-name: SKAGER Helm
+name: SKAGER Helm (server, Android and iOS)
 
+# SCRUM-379. The Helm Server (Go, started by SKAGER on the boat PC) and the
+# SKAGER Helm app (one web codebase in opennav-x/mobile/helm, packaged by
+# Capacitor). Tests run first, including the app against the real server in
+# Chromium; then the server binaries, an installable Android debug APK and an
+# unsigned iOS simulator build are produced.
 on:
   push:
+    branches: ['claude/helm-*', staging]
     paths:
-      - 'opennav-x/tools/helm-server/**'
-      - 'opennav-x/mobile/helm/**'
-      - 'opennav-x/docs/helm/**'
-      - '.github/workflows/skager-helm.yml'
+      - opennav-x/tools/helm-server/**
+      - opennav-x/mobile/helm/**
+      - opennav-x/companion/src/tokens.css
+      - opennav-x/companion/src/theme.ts
+      - .github/workflows/skager-helm.yml
   pull_request:
     paths:
-      - 'opennav-x/tools/helm-server/**'
-      - 'opennav-x/mobile/helm/**'
-      - 'opennav-x/docs/helm/**'
-      - '.github/workflows/skager-helm.yml'
+      - opennav-x/tools/helm-server/**
+      - opennav-x/mobile/helm/**
+      - .github/workflows/skager-helm.yml
   workflow_dispatch:
 
 permissions:
   contents: read
 
+concurrency:
+  group: skager-helm-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
-  helm-server:
-    runs-on: ubuntu-latest
+  server:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: opennav-x/tools/helm-server
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-go@v5
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
-          go-version: '1.27.x'
+          go-version-file: opennav-x/tools/helm-server/go.mod
           cache-dependency-path: opennav-x/tools/helm-server/go.sum
-      - run: go test ./...
-      - run: go test -race ./...
-      - run: go vet ./...
+      - name: Vet (Linux and Windows)
+        run: |
+          go vet ./...
+          GOOS=windows go vet ./...
+      - name: Tests (pairing, signed connection, WebRTC screen stream, input safety)
+        run: |
+          go test -count=1 ./...
+          go test -race -count=2 ./...
+      - name: Build skager-helm for Windows and Linux
+        run: |
+          version="$(node -p "require('../../mobile/helm/package.json').version")+${GITHUB_SHA::8}"
+          mkdir -p dist
+          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w -H=windowsgui -X skager.app/helm.Version=$version" -o dist/skager-helm.exe ./cmd/helm-server
+          CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w -X skager.app/helm.Version=$version" -o dist/skager-helm ./cmd/helm-server
+          (cd dist && sha256sum skager-helm.exe skager-helm | tee SHA256SUMS.txt)
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-helm-server-${{ github.sha }}
+          path: opennav-x/tools/helm-server/dist/
+          if-no-files-found: error
 
-  mobile-contract:
-    runs-on: ubuntu-latest
+  app:
+    needs: server
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
     defaults:
       run:
         working-directory: opennav-x/mobile/helm
     steps:
-      - uses: actions/checkout@v4
-      - uses: actions/setup-node@v4
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
         with:
-          node-version: 22
+          node-version: '26'
           cache: npm
           cache-dependency-path: opennav-x/mobile/helm/package-lock.json
-      - run: npm ci
-      - run: npm run typecheck
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: skager-helm-server-${{ github.sha }}
+          path: ${{ runner.temp }}/helm-server
+      - name: Install pinned app dependencies
+        run: npm ci --no-audit --no-fund
+      - name: App type check and unit tests
+        run: |
+          npm run typecheck
+          npm test
+      - name: App against the real Helm Server in Chromium (pair, screen, touch, reconnect, takeover)
+        env:
+          SKAGER_HELM_SERVER: ${{ runner.temp }}/helm-server/skager-helm
+          CHROME: google-chrome
+        run: |
+          chmod +x "$SKAGER_HELM_SERVER"
+          node --test tests/e2e/*.e2e.test.ts
+
+  android:
+    needs: app
+    runs-on: ubuntu-24.04
+    timeout-minutes: 30
+    defaults:
+      run:
+        working-directory: opennav-x/mobile/helm
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: opennav-x/mobile/helm/package-lock.json
+      - uses: actions/setup-java@b843ebf9b913146b38da2eaa7aeddf76074ae1ad
+        with:
+          distribution: temurin
+          java-version: '21'
+      - name: Install pinned app dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build web bundle and sync Android
+        run: |
+          npm run build
+          npx cap sync android
+      - name: Assemble debug APK
+        working-directory: opennav-x/mobile/helm/android
+        run: ./gradlew --no-daemon assembleDebug
+      - name: Name the APK by version and commit
+        id: apk
+        run: |
+          version=$(node -p "require('./package.json').version")
+          name="skager-helm-${version}-${GITHUB_SHA::8}-debug.apk"
+          cp android/app/build/outputs/apk/debug/app-debug.apk "$name"
+          sha256sum "$name" | tee "$name.sha256"
+          echo "name=$name" >> "$GITHUB_OUTPUT"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-helm-android-${{ github.sha }}
+          path: |
+            opennav-x/mobile/helm/${{ steps.apk.outputs.name }}
+            opennav-x/mobile/helm/${{ steps.apk.outputs.name }}.sha256
+          if-no-files-found: error
+
+  ios:
+    needs: app
+    runs-on: macos-15
+    timeout-minutes: 40
+    defaults:
+      run:
+        working-directory: opennav-x/mobile/helm
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-node@249970729cb0ef3589644e2896645e5dc5ba9c38
+        with:
+          node-version: '26'
+          cache: npm
+          cache-dependency-path: opennav-x/mobile/helm/package-lock.json
+      - name: Select the newest installed Xcode
+        run: |
+          xcode=$(ls -d /Applications/Xcode_*.app | sort -V | tail -1)
+          sudo xcode-select -s "$xcode"
+          xcodebuild -version
+      - name: Install pinned app dependencies
+        run: npm ci --no-audit --no-fund
+      - name: Build web bundle and sync iOS
+        run: |
+          npm run build
+          npx cap sync ios
+      - name: Build for the iOS Simulator (unsigned)
+        working-directory: opennav-x/mobile/helm/ios/App
+        run: |
+          xcodebuild -project App.xcodeproj -scheme App -configuration Debug -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' -derivedDataPath build CODE_SIGNING_ALLOWED=NO build
+          ditto -c -k --keepParent build/Build/Products/Debug-iphonesimulator/App.app "$GITHUB_WORKSPACE/skager-helm-ios-simulator.zip"
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-helm-ios-simulator-${{ github.sha }}
+          path: skager-helm-ios-simulator.zip
+          if-no-files-found: error

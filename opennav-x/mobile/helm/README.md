@@ -1,34 +1,62 @@
-# SKAGER Helm mobile client
+# SKAGER Helm app
 
-This is the native Android/iOS client shell for Jira Epic SCRUM-379. It uses
-`react-native-webrtc`, stores the revocable session token in the platform
-keychain/keystore and keeps the PC as the only chart/navigation authority.
+The SKAGER screen on your phone or tablet, over the boat's own Wi-Fi (Jira
+SCRUM-379, feature SCRUM-382). One TypeScript web codebase packaged for Android
+and iOS with Capacitor 8. It shares the design tokens (`../../companion/src/tokens.css`),
+the theme logic, the font, the wordmark and the app icon with SKAGER Companion.
+Architecture, protocol and safety: [docs/helm](../../docs/helm/README.md).
 
-The checked-in source covers pairing, signalling, WebRTC playback and
-connection-state handling. `android/` is a small native Android preview shell
-which loads the Helm browser client from the LAN server and is built by
-`.github/workflows/skager-helm-apk.yml`. It intentionally contains no chart or
-navigation implementation of its own. The app is status-only for autopilot and
-must not be used to send actuator commands.
+## Screens
+
+- **Welcome / boats**: how to pair (3 steps), then the paired boats with Connect.
+  The last boat connects on start.
+- **Pair**: scan the QR code on the SKAGER screen (camera, jsQR), open the
+  `app.skager.helm://pair` link from the phone camera, or type address and key.
+- **Helm view**: the live SKAGER screen, letterboxed, with a toolbar. The
+  toolbar is at the side in landscape and at the top in portrait. It shows:
+  - the boat, connection quality and latency;
+  - keyboard and magnifier buttons;
+  - the read-only autopilot status;
+  - disconnect.
+  The menu shows latency, frame rate, data rate, Redraw, Gestures and Settings.
+- **States**:
+  - connecting
+  - reconnecting (picture dimmed, touches not sent)
+  - can't reach the boat
+  - another phone is using it (Take over)
+  - taken over by another phone (Take it back)
+  - this phone was removed (Pair again)
+  - stopped or disconnected on SKAGER
+  - SKAGER screen not available (minimized or locked)
+- **Settings**: paired boats (Forget), Auto/Day/Dusk/Night, keep the screen on,
+  connect on start, about.
+
+## Develop and test
+
+```sh
+npm ci
+npm run typecheck && npm test                       # unit tests
+SKAGER_PREVIEW=1 npm run build                      # browser preview (accepts #pair=<link>)
+(cd ../../tools/helm-server && go build -o /tmp/skager-helm ./cmd/helm-server)
+SKAGER_HELM_SERVER=/tmp/skager-helm node --test tests/e2e/*.e2e.test.ts   # app + real server in Chromium
+HELM_SCREENSHOTS=/tmp/shots SKAGER_HELM_SERVER=/tmp/skager-helm node --test tests/e2e/*.e2e.test.ts
+npm run sync                                        # build + copy into android/ and ios/
+```
 
 ## Download the APK
 
-Pushes touching the Android shell start the **SKAGER Helm Android APK** GitHub
-Actions workflow. Open the completed run, download the artifact named
-`SKAGER-Helm-Android-APK-<commit>`, and install the APK whose SHA-256 is listed
-in `SHA256SUMS.txt`. The workflow produces a debug preview APK; no signing key
-is stored in the repository.
+The **SKAGER Helm (server, Android and iOS)** workflow builds
+`skager-helm-<version>-<commit>-debug.apk` with a SHA-256 file, plus the server
+binaries (`skager-helm.exe`, `skager-helm`). Debug builds only: store releases
+need signing keys and listings.
 
-## Use the Android preview
+## Platform notes
 
-1. Start the Helm server on the SKAGER PC and put the phone on the same LAN.
-2. Open **SKAGER Helm** and enter the PC address, for example
-   `http://192.168.0.2:43872` (use the configured HTTPS address for a deployed
-   server).
-3. Tap **Open Helm**, enter the pairing code in the Helm page, and pair the
-   phone. The PC remains the sole chart/navigation authority.
-
-The preview allows LAN HTTP for development, but rejects invalid TLS
-certificates and does not grant camera, microphone or actuator permissions.
-Native iOS packaging, measured latency qualification and production signing
-remain separate acceptance work.
+- Android: the app talks to the PC by its local address over HTTP
+  (`network_security_config.xml`). Everything is authenticated with the device
+  key and carried in WebRTC's DTLS (see the protocol). Camera only for the QR
+  code.
+- iOS: `NSLocalNetworkUsageDescription`, `NSCameraUsageDescription`, ATS
+  `NSAllowsLocalNetworking`. WebRTC in WKWebView needs iOS 14.3+.
+- `CapacitorHttp` is on, so pairing and connect requests go through the
+  native HTTP stack (no WebView mixed-content or CORS limits on the phone).

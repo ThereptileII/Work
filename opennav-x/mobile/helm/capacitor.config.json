@@ -1,0 +1,19 @@
+{
+  "appId": "app.skager.helm",
+  "appName": "SKAGER Helm",
+  "webDir": "dist",
+  "backgroundColor": "#152326",
+  "android": {
+    "allowMixedContent": false,
+    "captureInput": false,
+    "webContentsDebuggingEnabled": false
+  },
+  "ios": {
+    "contentInset": "never",
+    "scheme": "SKAGER Helm",
+    "limitsNavigationsToAppBoundDomains": false
+  },
+  "plugins": {
+    "CapacitorHttp": { "enabled": true }
+  }
+}

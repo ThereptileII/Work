@@ -1,0 +1,19 @@
+/* SKAGER design tokens shared by SKAGER Companion and SKAGER Helm (docs/design/prototype/design-tokens.json):
+   dark graphite helm, sea-glass green for the vessel, amber to review, coral for critical. */
+@font-face { font-family: "Inter"; font-style: normal; font-weight: 100 900; font-display: swap; src: url("assets/InterVariable-latin.woff2") format("woff2"); }
+
+:root, [data-theme="day"] {
+  --bg: #152326; --surface: #1d2d31; --raised: #26393d; --line: #35464a; --text: #f3f5ee; --sec: #aabdbd; --muted: #7e9699;
+  --active: #b6efce; --instrument: #7bc8d7; --advisory: #ecc48c; --critical: #ec8f87; --ais: #cd8dac; --water: #d5e5e5;
+  --on-active: #0d2420;
+}
+[data-theme="dusk"] {
+  --bg: #1d282e; --surface: #25343b; --raised: #30444b; --line: #405059; --text: #e2e5db; --sec: #acb9b7; --muted: #819394;
+  --active: #9bc5b1; --instrument: #82b0c1; --advisory: #cfac84; --critical: #ec8f87; --ais: #cd8dac; --water: #344f59;
+  --on-active: #13241f;
+}
+[data-theme="night"] {
+  --bg: #0c1115; --surface: #141c21; --raised: #1d282f; --line: #29353b; --text: #b8b5a7; --sec: #91988e; --muted: #747d77;
+  --active: #85a995; --instrument: #78989c; --advisory: #aa9170; --critical: #b77569; --ais: #a77f8a; --water: #121e24;
+  --on-active: #0c1512;
+}

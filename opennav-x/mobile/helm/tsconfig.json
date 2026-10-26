@@ -1,12 +1,17 @@
 {
   "compilerOptions": {
     "target": "ES2022",
-    "module": "esnext",
-    "jsx": "react-native",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
     "strict": true,
     "noEmit": true,
-    "moduleResolution": "bundler",
-    "skipLibCheck": true
+    "allowImportingTsExtensions": true,
+    "allowJs": false,
+    "skipLibCheck": true,
+    "verbatimModuleSyntax": false,
+    "erasableSyntaxOnly": true,
+    "types": []
   },
-  "include": ["App.tsx"]
+  "include": ["src/**/*.ts"]
 }

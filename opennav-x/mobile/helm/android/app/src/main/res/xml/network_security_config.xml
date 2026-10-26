@@ -1,8 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
+<!-- SKAGER Helm talks to the SKAGER computer on the boat network by its local
+     address (for example http://192.168.1.20:43872), where no web certificate
+     exists. Requests are authenticated with the device key and the screen and
+     touches travel in WebRTC's DTLS, verified end to end (docs/helm/protocol.md).
+     User-added certificate authorities are not trusted. -->
 <network-security-config>
-    <!-- LAN HTTP is retained for the first Helm preview because the local
-         server may be started without TLS. Production deployments should use
-         the Helm server's TLS endpoint. Certificate errors are never bypassed. -->
     <base-config cleartextTrafficPermitted="true">
         <trust-anchors>
             <certificates src="system" />

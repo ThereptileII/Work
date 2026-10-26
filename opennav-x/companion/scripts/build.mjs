@@ -32,6 +32,7 @@ await build({
 const connect = [api, 'https://tiles.openfreemap.org'].join(' ');
 writeFileSync(join(out, 'index.html'), readFileSync(join(root, 'src/index.html'), 'utf8').replace('__CONNECT__', preview ? 'https://tiles.openfreemap.org' : connect));
 cpSync(join(root, 'src/app.css'), join(out, 'app.css'));
+cpSync(join(root, 'src/tokens.css'), join(out, 'tokens.css'));
 const maplibre = join(root, 'node_modules/maplibre-gl/dist');
 cpSync(join(maplibre, 'maplibre-gl.css'), join(out, 'vendor/maplibre-gl.css'));
 cpSync(join(maplibre, 'maplibre-gl-worker.mjs'), join(out, 'vendor/maplibre-gl-worker.mjs'));

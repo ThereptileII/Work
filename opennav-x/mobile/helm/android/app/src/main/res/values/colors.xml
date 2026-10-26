@@ -1,7 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="skager_background">#0d1012</color>
-    <color name="skager_surface">#20272c</color>
-    <color name="skager_text">#f5f7f8</color>
-    <color name="skager_muted">#9caeb8</color>
-    <color name="skager_cyan">#18b7cf</color>
+    <!-- SKAGER helm palette (docs/design/prototype/design-tokens.json, day). -->
+    <color name="colorPrimary">#152326</color>
+    <color name="colorPrimaryDark">#152326</color>
+    <color name="colorAccent">#B6EFCE</color>
 </resources>
