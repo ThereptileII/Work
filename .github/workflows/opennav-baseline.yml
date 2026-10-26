@@ -11,6 +11,10 @@ on:
         description: Select the committed private-Staging update trust for this candidate
         type: boolean
         default: false
+      public_update_trust:
+        description: Select the committed public beta update trust for this publication candidate
+        type: boolean
+        default: false
       extended_tests:
         description: Run additional functional scenarios for this staging candidate
         type: boolean
@@ -759,16 +763,18 @@ jobs:
       - name: Package fixture-free recovery before desktop qualification
         env:
           SKAGER_PRIVATE_STAGING_TRUST: ${{ github.event_name == 'workflow_dispatch' && inputs.private_staging_trust && 'true' || 'false' }}
+          SKAGER_PUBLIC_UPDATE_TRUST: ${{ github.event_name == 'workflow_dispatch' && inputs.public_update_trust && 'true' || 'false' }}
         run: |
           $ErrorActionPreference = 'Stop'
-          if ($env:SKAGER_PRIVATE_STAGING_TRUST -cnotin @('true', 'false')) { throw 'Invalid private-Staging trust selection' }
+          if ($env:SKAGER_PRIVATE_STAGING_TRUST -cnotin @('true', 'false') -or $env:SKAGER_PUBLIC_UPDATE_TRUST -cnotin @('true', 'false')) { throw 'Invalid update trust selection' }
+          if ($env:SKAGER_PRIVATE_STAGING_TRUST -ceq 'true' -and $env:SKAGER_PUBLIC_UPDATE_TRUST -ceq 'true') { throw 'Private and public update trust selections are mutually exclusive' }
           $TrustArguments = @{}
-          if ($env:SKAGER_PRIVATE_STAGING_TRUST -ceq 'true') {
-            $TrustConfig = 'opennav-x/installer/windows/staging-update-trust.json'
+          if ($env:SKAGER_PRIVATE_STAGING_TRUST -ceq 'true' -or $env:SKAGER_PUBLIC_UPDATE_TRUST -ceq 'true') {
+            $TrustConfig = if ($env:SKAGER_PUBLIC_UPDATE_TRUST -ceq 'true') { 'opennav-x/installer/windows/production-update-trust.json' } else { 'opennav-x/installer/windows/staging-update-trust.json' }
             $TrustValidator = 'opennav-x/build/updater-qualified/skager-repository.exe'
             $TrustRecord = 'opennav-x/build/updater-qualified/skager-repository.json'
             foreach ($Required in @($TrustConfig, $TrustValidator, $TrustRecord)) {
-              if (-not (Test-Path -LiteralPath $Required -PathType Leaf)) { throw ('Required private-Staging trust input missing: ' + $Required) }
+              if (-not (Test-Path -LiteralPath $Required -PathType Leaf)) { throw ('Required update trust input missing: ' + $Required) }
             }
             # The wrapper binds the validator record to this commit/hash;
             # select_update_trust binds committed public bytes and verifies them.

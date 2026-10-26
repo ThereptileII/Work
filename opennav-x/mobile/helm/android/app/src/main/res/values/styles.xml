@@ -1,0 +1,10 @@
+<resources>
+    <style name="Theme.SkagerHelm" parent="android:style/Theme.Material.NoActionBar">
+        <item name="android:fontFamily">sans</item>
+        <item name="android:colorAccent">@color/skager_cyan</item>
+        <item name="android:navigationBarColor">@color/skager_background</item>
+        <item name="android:statusBarColor">@color/skager_background</item>
+        <item name="android:windowLightStatusBar">false</item>
+        <item name="android:windowActionModeOverlay">true</item>
+    </style>
+</resources>

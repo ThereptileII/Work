@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<network-security-config>
+    <!-- LAN HTTP is retained for the first Helm preview because the local
+         server may be started without TLS. Production deployments should use
+         the Helm server's TLS endpoint. Certificate errors are never bypassed. -->
+    <base-config cleartextTrafficPermitted="true">
+        <trust-anchors>
+            <certificates src="system" />
+        </trust-anchors>
+    </base-config>
+</network-security-config>

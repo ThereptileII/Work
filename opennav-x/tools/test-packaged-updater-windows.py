@@ -215,6 +215,10 @@ def public_trust_identity(raw):
 
 def packaged_trust_identity(app, product):
     """Check the exact producer-selected trust without initializing or changing it."""
+    allowed_sources = {
+        'opennav-x/installer/windows/staging-update-trust.json',
+        'opennav-x/installer/windows/production-update-trust.json',
+    }
     path = app / 'update-trust.json'
     selected = product.get('update_trust')
     if selected is None:
@@ -222,7 +226,7 @@ def packaged_trust_identity(app, product):
         return {'state': 'unconfigured'}
     assert isinstance(selected, dict) and type(selected.get('schema')) is int and selected['schema'] == 1
     assert selected.get('productCommit') == product['commit'] and selected.get('channel') == 'beta'
-    assert selected.get('sourcePath') == 'opennav-x/installer/windows/staging-update-trust.json'
+    assert selected.get('sourcePath') in allowed_sources, 'Packaged trust must come from an approved committed source'
     expected = selected.get('configSha256')
     assert isinstance(expected, str) and re.fullmatch('[a-f0-9]{64}', expected)
     assert selected.get('sourceSha256') == expected, 'Packaged trust differs from committed source selection'

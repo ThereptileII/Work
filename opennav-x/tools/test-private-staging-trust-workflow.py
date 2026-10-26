@@ -15,9 +15,11 @@ import yaml
 ROOT = Path(__file__).resolve().parents[2]
 WORKFLOW = ROOT / '.github/workflows/opennav-baseline.yml'
 CONFIG = 'opennav-x/installer/windows/staging-update-trust.json'
+PUBLIC_CONFIG = 'opennav-x/installer/windows/production-update-trust.json'
 VALIDATOR = 'opennav-x/build/updater-qualified/skager-repository.exe'
 RECORD = 'opennav-x/build/updater-qualified/skager-repository.json'
 SELECTION = "${{ github.event_name == 'workflow_dispatch' && inputs.private_staging_trust && 'true' || 'false' }}"
+PUBLIC_SELECTION = "${{ github.event_name == 'workflow_dispatch' && inputs.public_update_trust && 'true' || 'false' }}"
 
 
 class StrictLoader(yaml.SafeLoader):
@@ -62,8 +64,12 @@ class WorkflowContracts(unittest.TestCase):
         selected = document['on']['workflow_dispatch']['inputs']['private_staging_trust']
         self.assertEqual(selected['type'], 'boolean')
         self.assertIs(selected['default'], False)
+        public = document['on']['workflow_dispatch']['inputs']['public_update_trust']
+        self.assertEqual(public['type'], 'boolean')
+        self.assertIs(public['default'], False)
         self.assertEqual(document['on']['push']['branches'], ['staging'])
-        self.assertEqual(package_step()['env'], {'SKAGER_PRIVATE_STAGING_TRUST': SELECTION})
+        self.assertEqual(package_step()['env'], {'SKAGER_PRIVATE_STAGING_TRUST': SELECTION,
+                                                   'SKAGER_PUBLIC_UPDATE_TRUST': PUBLIC_SELECTION})
 
     def test_duplicate_keys_are_refused_including_nested_inputs(self):
         for sample in ('on: {}\non: {}\n',
@@ -97,10 +103,10 @@ class WorkflowContracts(unittest.TestCase):
 
 @unittest.skipUnless(shutil.which('pwsh'), 'pwsh required for inert workflow-script execution')
 class PackageDataflow(unittest.TestCase):
-    def invoke(self, selection, missing=None, directory=False, exit_code=0):
+    def invoke(self, selection, missing=None, directory=False, exit_code=0, public_selection='false'):
         with tempfile.TemporaryDirectory(prefix='staging-trust-workflow-') as temporary:
             root = Path(temporary)
-            for name in (CONFIG, VALIDATOR, RECORD):
+            for name in (CONFIG, PUBLIC_CONFIG, VALIDATOR, RECORD):
                 path = root / name
                 path.parent.mkdir(parents=True, exist_ok=True)
                 if name == missing:
@@ -119,8 +125,10 @@ exit ([int]$env:FIXTURE_EXIT)
             script.write_text(package_step()['run'], encoding='utf-8')
             environment = dict(os.environ, FIXTURE_EXIT=str(exit_code))
             environment.pop('SKAGER_PRIVATE_STAGING_TRUST', None)
+            environment.pop('SKAGER_PUBLIC_UPDATE_TRUST', None)
             if selection is not None:
                 environment['SKAGER_PRIVATE_STAGING_TRUST'] = selection
+            environment['SKAGER_PUBLIC_UPDATE_TRUST'] = public_selection
             result = subprocess.run([shutil.which('pwsh'), '-NoProfile', '-NonInteractive',
                                      '-File', str(script)], cwd=root, env=environment,
                                     capture_output=True, text=True, timeout=30)
@@ -131,6 +139,11 @@ exit ([int]$env:FIXTURE_EXIT)
         result, called = self.invoke('true')
         self.assertEqual(result.returncode, 0, result.stderr)
         self.assertEqual(called, {'defer': True, 'config': CONFIG, 'validator': VALIDATOR})
+
+    def test_selected_public_inputs_reach_actual_package_arguments(self):
+        result, called = self.invoke('false', public_selection='true')
+        self.assertEqual(result.returncode, 0, result.stderr)
+        self.assertEqual(called, {'defer': True, 'config': PUBLIC_CONFIG, 'validator': VALIDATOR})
 
     def test_unselected_keeps_no_trust_arguments_even_if_file_is_missing(self):
         for missing in (None, CONFIG, VALIDATOR, RECORD):
@@ -145,8 +158,14 @@ exit ([int]$env:FIXTURE_EXIT)
                 with self.subTest(missing=missing, directory=directory):
                     result, called = self.invoke('true', missing, directory)
                     self.assertNotEqual(result.returncode, 0)
-                    self.assertIn('Required private-Staging trust input missing', result.stderr)
+                    self.assertIn('Required update trust input missing', result.stderr)
                     self.assertIsNone(called)
+
+    def test_private_and_public_selection_is_refused(self):
+        result, called = self.invoke('true', public_selection='true')
+        self.assertNotEqual(result.returncode, 0)
+        self.assertIn('mutually exclusive', result.stderr)
+        self.assertIsNone(called)
 
     def test_ambiguous_selection_denies_before_packaging(self):
         for selection in (None, '', 'True', '1'):

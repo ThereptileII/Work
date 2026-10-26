@@ -1,0 +1,50 @@
+name: SKAGER Helm
+
+on:
+  push:
+    paths:
+      - 'opennav-x/tools/helm-server/**'
+      - 'opennav-x/mobile/helm/**'
+      - 'opennav-x/docs/helm/**'
+      - '.github/workflows/skager-helm.yml'
+  pull_request:
+    paths:
+      - 'opennav-x/tools/helm-server/**'
+      - 'opennav-x/mobile/helm/**'
+      - 'opennav-x/docs/helm/**'
+      - '.github/workflows/skager-helm.yml'
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  helm-server:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opennav-x/tools/helm-server
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-go@v5
+        with:
+          go-version: '1.27.x'
+          cache-dependency-path: opennav-x/tools/helm-server/go.sum
+      - run: go test ./...
+      - run: go test -race ./...
+      - run: go vet ./...
+
+  mobile-contract:
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: opennav-x/mobile/helm
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22
+          cache: npm
+          cache-dependency-path: opennav-x/mobile/helm/package-lock.json
+      - run: npm ci
+      - run: npm run typecheck

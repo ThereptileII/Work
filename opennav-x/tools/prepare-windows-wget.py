@@ -123,9 +123,13 @@ def prepare(evidence):
             result, _ = native_tools.native([
                 curl, '--fail', '--location', '--silent', '--show-error',
                 '--proto', '=https', '--proto-redir', '=https',
-                '--connect-timeout', '20', '--max-time', '120',
+                # The vendor host occasionally closes a runner connection with
+                # HTTP 499.  Retry the complete download without weakening the
+                # byte/hash gate; a successful attempt is still verified below.
+                '--retry', '4', '--retry-all-errors', '--retry-delay', '3',
+                '--retry-max-time', '300', '--connect-timeout', '20', '--max-time', '300',
                 '--max-filesize', str(ARCHIVE['bytes']),
-                '--output', archive, URL], 150, evidence / 'download')
+                '--output', archive, URL], 360, evidence / 'download')
             state['download'] = result
             if result['exitCode'] != 0:
                 raise RuntimeError('Pinned Wget download failed')

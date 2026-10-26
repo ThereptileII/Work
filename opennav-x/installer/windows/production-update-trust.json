@@ -1,0 +1,85 @@
+{
+  "schema": 1,
+  "bootstrapRoot": {
+    "signatures": [
+      {
+        "keyid": "fb68f0639a4f3d23019d213cdf8dae948c79f1fd62cd5e73dd6e1729c6d23d3a",
+        "sig": "e7e3594a0d5f5ee2da1fae80906f887362f8b2d49989fcbbd28cbdfbb33769b51b99296477a3e7ebc645a15d0d721c216b1b5cf7914c2c2ddf798b662d07c209"
+      }
+    ],
+    "signed": {
+      "_type": "root",
+      "consistent_snapshot": true,
+      "expires": "2027-10-06T04:53:04.423001063Z",
+      "keys": {
+        "6a23ff77c9dac1ff43b6cb490f6cde14b70a55c94f68ee83337130f819da1cbd": {
+          "keytype": "ed25519",
+          "keyval": {
+            "public": "f88a33d7e311127fc5dfb6c5d857f902068d9e8dbca7e3ed8d8bf377c84c35c5"
+          },
+          "scheme": "ed25519"
+        },
+        "7e6c059ba6570870dc2328bec4edf1ae58df4dd4d0ccc80d2418edc61728d6f6": {
+          "keytype": "ed25519",
+          "keyval": {
+            "public": "5d2d945e3038459ff41a91c9e878b4c41d5de8184f7d5fc639282c7293cf257b"
+          },
+          "scheme": "ed25519"
+        },
+        "fb5189ec9f38c702df01d775eb18a6019122645ba5633f624505a860646cc918": {
+          "keytype": "ed25519",
+          "keyval": {
+            "public": "56623ec1728c6cd84c350f9053d72723dda94908b386b60528aa9081c0fa51f6"
+          },
+          "scheme": "ed25519"
+        },
+        "fb68f0639a4f3d23019d213cdf8dae948c79f1fd62cd5e73dd6e1729c6d23d3a": {
+          "keytype": "ed25519",
+          "keyval": {
+            "public": "3fc0b7d91359d6bfa81c3205f746ed7faa4165dd59d4c14323cb89bf90cfc3c8"
+          },
+          "scheme": "ed25519"
+        }
+      },
+      "roles": {
+        "root": {
+          "keyids": [
+            "fb68f0639a4f3d23019d213cdf8dae948c79f1fd62cd5e73dd6e1729c6d23d3a"
+          ],
+          "threshold": 1
+        },
+        "snapshot": {
+          "keyids": [
+            "fb5189ec9f38c702df01d775eb18a6019122645ba5633f624505a860646cc918"
+          ],
+          "threshold": 1
+        },
+        "targets": {
+          "keyids": [
+            "7e6c059ba6570870dc2328bec4edf1ae58df4dd4d0ccc80d2418edc61728d6f6"
+          ],
+          "threshold": 1
+        },
+        "timestamp": {
+          "keyids": [
+            "6a23ff77c9dac1ff43b6cb490f6cde14b70a55c94f68ee83337130f819da1cbd"
+          ],
+          "threshold": 1
+        }
+      },
+      "spec_version": "1.0.31",
+      "version": 1
+    }
+  },
+  "metadataUrl": "https://beta.skager.app/updates/beta",
+  "artifactOrigin": "https://beta.skager.app",
+  "channel": "beta",
+  "localCompatibilityAllowlist": [
+    {
+      "version": "5.12.4",
+      "arch": "x86",
+      "executableSha256": "7c6547562cca7954671eaab72833ca9d788710fd9808b6a699b6dc823852ae0c",
+      "upstreamCommit": "37fd0cddb7334fe489e9f18aa163977a9c5c84f7"
+    }
+  ]
+}
