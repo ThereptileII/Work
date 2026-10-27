@@ -85,29 +85,39 @@ type bitmapInfoHeader struct {
 	ClrImportant  uint32
 }
 
-// INPUT layout on 64-bit Windows: type, padding, then a 32-byte union.
+// INPUT is a DWORD type followed by a union aligned to the pointer size:
+// 40 bytes on 64-bit Windows, 28 on 32-bit (SKAGER ships as 32-bit x86).
+const (
+	ptrSize   = 4 << (^uintptr(0) >> 63)
+	inputPad  = ptrSize - 4 // after Type, so the union is pointer aligned
+	keyTail   = 8           // KEYBDINPUT is 8 bytes shorter than MOUSEINPUT
+	inputSize = 4 + inputPad + 20 + inputPad + ptrSize
+)
+
 type mouseInput struct {
 	Type      uint32
-	_         uint32
+	_         [inputPad]byte
 	Dx, Dy    int32
 	MouseData uint32
 	Flags     uint32
 	Time      uint32
-	_         uint32
-	ExtraInfo uint64
+	ExtraInfo uintptr // Go aligns this to the pointer size, as C does
 }
 
 type keyInput struct {
 	Type      uint32
-	_         uint32
+	_         [inputPad]byte
 	Vk        uint16
 	Scan      uint16
 	Flags     uint32
 	Time      uint32
-	_         uint32
-	ExtraInfo uint64
-	_         [8]byte
+	ExtraInfo uintptr
+	_         [keyTail]byte
 }
+
+// Fails to compile if a layout ever differs from Windows' INPUT.
+var _ = [1]struct{}{}[unsafe.Sizeof(mouseInput{})-inputSize]
+var _ = [1]struct{}{}[unsafe.Sizeof(keyInput{})-inputSize]
 
 var virtualKeys = map[string]struct {
 	vk       uint16

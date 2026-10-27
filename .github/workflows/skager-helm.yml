@@ -53,7 +53,7 @@ jobs:
         run: |
           version="$(node -p "require('../../mobile/helm/package.json').version")+${GITHUB_SHA::8}"
           mkdir -p dist
-          CGO_ENABLED=0 GOOS=windows GOARCH=amd64 go build -trimpath -ldflags "-s -w -H=windowsgui -X skager.app/helm.Version=$version" -o dist/skager-helm.exe ./cmd/helm-server
+          CGO_ENABLED=0 GOOS=windows GOARCH=386 go build -trimpath -ldflags "-s -w -H=windowsgui -X skager.app/helm.Version=$version" -o dist/skager-helm.exe ./cmd/helm-server
           CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -trimpath -ldflags "-s -w -X skager.app/helm.Version=$version" -o dist/skager-helm ./cmd/helm-server
           (cd dist && sha256sum skager-helm.exe skager-helm | tee SHA256SUMS.txt)
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
@@ -84,7 +84,10 @@ jobs:
           set -euo pipefail
           go test -count=1 -v -run "Windows" ./...
           go test -count=1 ./...
-          go build -o skager-helm.exe ./cmd/helm-server
+          # SKAGER ships as 32-bit x86: the same tests on the 386 build it uses.
+          GOARCH=386 go test -count=1 -v -run "Windows" ./...
+          GOARCH=386 go test -count=1 ./...
+          GOARCH=386 go build -o skager-helm.exe ./cmd/helm-server
       - name: SKAGER Helm host (C++, MSVC Win32) against the real server
         shell: pwsh
         run: |

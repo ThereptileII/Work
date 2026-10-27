@@ -290,11 +290,16 @@ if(SKAGER_BUILD_HELM_SERVER)
   file(STRINGS "${OPENNAV_ROOT}/src/application/Version.h" helm_version_line REGEX "Version\\[\\] = ")
   string(REGEX REPLACE ".*\"([^\"]+)\".*" "\\1" helm_version "${helm_version_line}")
   set(helm_ldflags "-s -w -X skager.app/helm.Version=${helm_version}")
+  # Same ABI as SKAGER: a 32-bit (x86) SKAGER ships a 32-bit Helm Server.
+  set(helm_goarch "")
   if(WIN32)
     set(helm_ldflags "${helm_ldflags} -H=windowsgui")
+    if(CMAKE_SIZEOF_VOID_P EQUAL 4)
+      set(helm_goarch GOARCH=386)
+    endif()
   endif()
   add_custom_command(OUTPUT "${helm_server}"
-    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOFLAGS=-mod=readonly GOTOOLCHAIN=local
+    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOFLAGS=-mod=readonly GOTOOLCHAIN=local ${helm_goarch}
       ${SKAGER_GO} build -trimpath "-ldflags=${helm_ldflags}" -o "${helm_server}" ./cmd/helm-server
     WORKING_DIRECTORY "${OPENNAV_ROOT}/tools/helm-server"
     DEPENDS ${helm_sources} "${OPENNAV_ROOT}/tools/helm-server/go.mod" "${OPENNAV_ROOT}/tools/helm-server/go.sum"
