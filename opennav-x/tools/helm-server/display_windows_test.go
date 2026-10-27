@@ -6,6 +6,7 @@ import (
 	"errors"
 	"os"
 	"testing"
+	"time"
 	"unsafe"
 )
 
@@ -54,8 +55,15 @@ func TestWindowsDesktopCaptureAndPointer(t *testing.T) {
 		if err := d.PointerMove(target[0], target[1]); err != nil {
 			t.Fatal(err)
 		}
+		// SendInput queues the move; the cursor follows once Windows processes it.
 		var p struct{ X, Y int32 }
-		getCursorPos.Call(uintptr(unsafe.Pointer(&p)))
+		for deadline := time.Now().Add(300 * time.Millisecond); ; {
+			getCursorPos.Call(uintptr(unsafe.Pointer(&p)))
+			if (abs(int(p.X)-target[0]) <= 1 && abs(int(p.Y)-target[1]) <= 1) || time.Now().After(deadline) {
+				break
+			}
+			time.Sleep(5 * time.Millisecond)
+		}
 		if abs(int(p.X)-target[0]) > 1 || abs(int(p.Y)-target[1]) > 1 {
 			t.Fatalf("SendInput moved the cursor to %d,%d, want %d,%d", p.X, p.Y, target[0], target[1])
 		}
