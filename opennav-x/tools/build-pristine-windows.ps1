@@ -354,11 +354,6 @@ try {
     if ($Integration) {
         $Fixtures = if ($Production) { 'OFF' } else { 'ON' }
         $OpenNavArgs = @("-DOPENNAV_ROOT=$Root", "-DOPENNAV_ENABLE_ROUTE_SCENARIO=$Fixtures", "-DXNAV_ENABLE_TEST_FIXTURES=$Fixtures", "-DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=$Fixtures", "-DSKAGER_OCHARTS_PACKAGE=$OChartsPackage")
-        # SCRUM-379/398: the SKAGER Helm Server ships next to SKAGER when Go is
-        # on PATH (the Staging workflow installs the pinned toolchain).
-        if (Get-Command go.exe -CommandType Application -ErrorAction SilentlyContinue) {
-            $OpenNavArgs += '-DSKAGER_BUILD_HELM_SERVER=ON'
-        }
     }
     Run cmake (@('-S', $Source, '-B', $Build, '-G', 'Visual Studio 17 2022',
         '-A', $Architecture, $PythonCMakeArgument, '-DCMAKE_POLICY_VERSION_MINIMUM=3.5', '-DCMAKE_BUILD_TYPE=Release',

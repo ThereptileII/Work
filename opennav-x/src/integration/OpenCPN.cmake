@@ -269,11 +269,16 @@ target_compile_features(opennav_weather_runtime PUBLIC cxx_std_17)
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_weather_runtime)
 # SCRUM-379/398: SKAGER Helm. The host (opennav_helm) is always linked; the
 # Helm Server itself is a Go program (tools/helm-server), built from this same
-# source when SKAGER_BUILD_HELM_SERVER is on (the Windows Staging build turns it
-# on when Go is installed) and installed next to the SKAGER executable with its
-# third-party notices.
+# source when SKAGER_BUILD_HELM_SERVER is on and installed next to the SKAGER
+# executable with its third-party notices.
 target_link_libraries(${PACKAGE_NAME} PRIVATE opennav_helm)
-option(SKAGER_BUILD_HELM_SERVER "Build skager-helm (Go) next to the SKAGER executable" OFF)
+# The Windows Staging job sets SKAGER_BUILD_HELM_SERVER=1 (with the pinned Go);
+# other builds keep it off unless asked.
+set(skager_helm_default OFF)
+if("$ENV{SKAGER_BUILD_HELM_SERVER}" STREQUAL "1")
+  set(skager_helm_default ON)
+endif()
+option(SKAGER_BUILD_HELM_SERVER "Build skager-helm (Go) next to the SKAGER executable" ${skager_helm_default})
 if(SKAGER_BUILD_HELM_SERVER)
   find_program(SKAGER_GO go REQUIRED)
   set(helm_server "${CMAKE_CURRENT_BINARY_DIR}/skager-helm${CMAKE_EXECUTABLE_SUFFIX}")

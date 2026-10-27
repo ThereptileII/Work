@@ -611,6 +611,9 @@ jobs:
     needs: [changes, contracts, native-restart-window, native-stock-welcome, native-private-chart-loader, updater-contracts, pilot-serial-contracts]
     runs-on: windows-2022
     timeout-minutes: 240
+    env:
+      # SCRUM-379/398: the product CMake build adds skager-helm.exe (Go, below).
+      SKAGER_BUILD_HELM_SERVER: '1'
     outputs:
       archive_sha256: ${{ steps.seal.outputs.archive_sha256 }}
       artifact_name: ${{ steps.identity.outputs.artifact_name }}

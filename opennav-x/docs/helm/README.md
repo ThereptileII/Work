@@ -110,8 +110,8 @@ Then use `tests/e2e/harness.ts` (it is what CI runs), or see
 
 In SKAGER: `-DSKAGER_BUILD_HELM_SERVER=ON` builds `skager-helm[.exe]` from the
 same source and installs it next to the SKAGER executable, with its licence
-notices in `opennav/third-party/helm/`. The Windows Staging build turns it on
-(the workflow installs the pinned Go). For development, `SKAGER_HELM_SERVER` can
+notices in `opennav/third-party/helm/`. The Windows Staging job turns it on
+(environment `SKAGER_BUILD_HELM_SERVER=1`, with the pinned Go). For development, `SKAGER_HELM_SERVER` can
 point at a server binary instead. Without one, the page says Helm is not part of
 the installation.
 
