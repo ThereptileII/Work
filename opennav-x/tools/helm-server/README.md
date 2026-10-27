@@ -22,3 +22,7 @@ CGO_ENABLED=0 GOOS=windows go build -ldflags "-s -w -H=windowsgui" -o skager-hel
 `-source test` is a synthetic screen labelled TEST PATTERN, for development and
 tests only; it is never SKAGER's picture. Pairing keys and device keys are never
 logged.
+
+`THIRD_PARTY_NOTICES.txt` lists the licenses of every linked module and is
+installed with the server (`opennav/third-party/helm/`). Regenerate it with
+`python3 gen-notices.py` after changing `go.mod`.

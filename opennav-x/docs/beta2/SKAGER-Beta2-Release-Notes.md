@@ -1,8 +1,20 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.6 · Staging candidate · qualification recorded with the release**
+**Version 0.4.0-beta2.8 · Staging candidate · qualification recorded with the release**
 
 ## This Staging increment
+
+- **SKAGER Helm**: see and use SKAGER from a phone or tablet anywhere on board,
+  over the boat's own Wi-Fi. Switch it on in Settings → System → SKAGER Helm,
+  tap Pair a phone or tablet and scan the code with the SKAGER Helm app. One
+  phone at a time; paired phones can be removed there. Autopilot commands are
+  refused when they come from a phone: the phone shows the pilot's status only.
+- **SKAGER Companion**: with SKAGER Cloud and boat data sharing on, the anchor
+  watch and critical alerts are sent to the Companion app at once, and are
+  queued while offline. The anchor alarm itself still sounds on board, with or
+  without internet.
+
+## Earlier in 0.4.0-beta2.6 and 0.4.0-beta2.7
 
 - Route creation suggests chart-based names for its points and route, with one
   inline name editor and visible Finish/Undo/Cancel actions. Arrival distance is

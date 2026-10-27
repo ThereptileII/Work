@@ -62,6 +62,40 @@ jobs:
           path: opennav-x/tools/helm-server/dist/
           if-no-files-found: error
 
+  windows:
+    # The Windows-only code on a real Windows desktop: GDI capture and SendInput
+    # (Go), and SKAGER's Helm host compiled with MSVC Win32 /W4 /WX, run against
+    # the real skager-helm.exe.
+    needs: server
+    runs-on: windows-2022
+    timeout-minutes: 30
+    steps:
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/helm-server/go.mod
+          cache-dependency-path: opennav-x/tools/helm-server/go.sum
+      - name: Go tests on Windows (real GDI capture and SendInput)
+        working-directory: opennav-x/tools/helm-server
+        env:
+          HELM_REQUIRE_DESKTOP: '1'
+        run: |
+          go test -count=1 -v -run "Windows" ./...
+          go test -count=1 ./...
+          go build -o skager-helm.exe ./cmd/helm-server
+      - name: SKAGER Helm host (C++, MSVC Win32) against the real server
+        shell: pwsh
+        run: |
+          cmake -S opennav-x -B build-helm -G "Visual Studio 17 2022" -A Win32 -DOPENNAV_BUILD_TESTS=ON
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          cmake --build build-helm --config Release --target helm_tests
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          $env:SKAGER_HELM_SERVER = (Resolve-Path opennav-x/tools/helm-server/skager-helm.exe).Path
+          foreach ($group in 'events', 'host', 'process') {
+            & build-helm/Release/helm_tests.exe $group
+            if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          }
+
   app:
     needs: server
     runs-on: ubuntu-24.04

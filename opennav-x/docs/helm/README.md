@@ -108,9 +108,15 @@ cd ../../mobile/helm && npm ci && SKAGER_PREVIEW=1 npm run build
 Then use `tests/e2e/harness.ts` (it is what CI runs), or see
 [mobile/helm/README.md](../../mobile/helm/README.md).
 
-In SKAGER: build with `-DSKAGER_BUILD_HELM_SERVER=ON` (needs Go), or put
-`skager-helm[.exe]` next to the SKAGER executable, or set `SKAGER_HELM_SERVER`
-to its path. Without it, the page says Helm is not part of the installation.
+In SKAGER: `-DSKAGER_BUILD_HELM_SERVER=ON` builds `skager-helm[.exe]` from the
+same source and installs it next to the SKAGER executable, with its licence
+notices in `opennav/third-party/helm/`. The Windows Staging build turns it on
+(the workflow installs the pinned Go). For development, `SKAGER_HELM_SERVER` can
+point at a server binary instead. Without one, the page says Helm is not part of
+the installation.
+
+Windows asks once, when Helm first listens, whether to allow it on the network
+(Windows Defender Firewall). Allow it on private networks.
 
 ## Open gates
 

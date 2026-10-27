@@ -11,6 +11,7 @@ result below against an exact commit; never mark a pending item as passed.
 | App type check and unit tests | Protocol parsing, crypto vectors, gesture mapping (tap, drag, hold, pinch, magnifier, cancel releases), screen fit and mapping, escaping, pilot shown read-only |
 | App against the real server in Chromium (`tests/e2e`) | Pair by link → live screen with the right pixels; tap, drag, hold, pinch and keyboard reach the PC; pilot status; server restart → automatic reconnect; second phone busy → take over → first phone told, sends nothing; phone removed in SKAGER |
 | `helm_tests` (C++) | Server events, supervisor start/restart/give-up/stop, real child process with the built server |
+| Windows job | Real GDI capture of the runner's desktop and SendInput cursor placement; `helm_tests` built with MSVC Win32 against `skager-helm.exe` |
 | Android `assembleDebug`, iOS simulator build | Native projects build |
 
 ## Done locally on Linux (2026-10-26, branch `claude/helm-20261026`)
@@ -33,9 +34,10 @@ result below against an exact commit; never mark a pending item as passed.
    - SendInput mapping, and the autopilot guard: a tap on the pilot controls from
      the phone must be refused and logged.
    - The firewall prompt or rule for port 43872 on private networks.
-2. **Installer packaging**: ship `skager-helm.exe` in the payload, add the Windows
-   Firewall rule, third-party notices (Pion, gorilla, x/image, rsc.io/qr, jezek/xgb).
-   Update the PE/import and package-content qualification lists.
+2. **Installer packaging**: `skager-helm.exe` and its third-party notices now ship in
+   the Windows Staging package (0.4.0-beta2.8). Still open: a firewall rule added by
+   the installer (today Windows asks once), and adding Helm to the component licence
+   inventory (it is listed as unresolved there).
 3. **Phones**: Android and iPhone on the boat Wi-Fi.
    - Pairing by in-app scan, by camera link and by key.
    - Keystore and Keychain.

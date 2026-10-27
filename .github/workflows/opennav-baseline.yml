@@ -617,6 +617,12 @@ jobs:
       producer_attempt: ${{ steps.identity.outputs.producer_attempt }}
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      # SCRUM-379/398: pinned Go for the SKAGER Helm Server (skager-helm.exe),
+      # built from this same commit by the product CMake build.
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/helm-server/go.mod
+          cache-dependency-path: opennav-x/tools/helm-server/go.sum
       - name: Authenticate immutable producer dependencies
         env:
           GH_TOKEN: ${{ github.token }}

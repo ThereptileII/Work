@@ -2,7 +2,6 @@
 #include <rapidjson/document.h>
 #include <rapidjson/stringbuffer.h>
 #include <rapidjson/writer.h>
-#include <cstdio>
 
 namespace opennav::helm {
 namespace {
@@ -12,23 +11,35 @@ std::string Str(const rapidjson::Value &v, const char *key) {
   return it != v.MemberEnd() && it->value.IsString() ? std::string(it->value.GetString(), it->value.GetStringLength()) : "";
 }
 
+// Reads `count` digits at `pos`, or -1.
+int Digits(const std::string &s, size_t pos, size_t count) {
+  if (pos + count > s.size()) return -1;
+  int value = 0;
+  for (size_t i = pos; i < pos + count; ++i) {
+    if (s[i] < '0' || s[i] > '9') return -1;
+    value = value * 10 + (s[i] - '0');
+  }
+  return value;
+}
+
 // "2026-10-26T21:14:05.123+01:00" → system_clock (seconds precision).
 std::optional<std::chrono::system_clock::time_point> ParseTime(const std::string &iso) {
-  int y, mo, d, h, mi, s;
-  if (iso.size() < 19 || std::sscanf(iso.c_str(), "%4d-%2d-%2dT%2d:%2d:%2d", &y, &mo, &d, &h, &mi, &s) != 6) return std::nullopt;
+  const int y = Digits(iso, 0, 4), mo = Digits(iso, 5, 2), d = Digits(iso, 8, 2);
+  const int h = Digits(iso, 11, 2), mi = Digits(iso, 14, 2), s = Digits(iso, 17, 2);
+  if (y < 0 || mo < 1 || mo > 12 || d < 1 || d > 31 || h < 0 || mi < 0 || s < 0 || iso[10] != 'T')
+    return std::nullopt;
   // Days from civil (Howard Hinnant), then apply the zone offset.
-  y -= mo <= 2;
-  const int era = (y >= 0 ? y : y - 399) / 400;
-  const unsigned yoe = static_cast<unsigned>(y - era * 400);
-  const unsigned doy = (153 * (mo + (mo > 2 ? -3 : 9)) + 2) / 5 + d - 1;
-  const unsigned doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
-  long long days = static_cast<long long>(era) * 146097 + static_cast<long long>(doe) - 719468;
-  long long secs = days * 86400 + h * 3600 + mi * 60 + s;
+  const long long yy = y - (mo <= 2 ? 1 : 0);
+  const long long era = (yy >= 0 ? yy : yy - 399) / 400;
+  const long long yoe = yy - era * 400;
+  const long long doy = (153LL * (mo + (mo > 2 ? -3 : 9)) + 2) / 5 + d - 1;
+  const long long doe = yoe * 365 + yoe / 4 - yoe / 100 + doy;
+  const long long days = era * 146097 + doe - 719468;
+  long long secs = days * 86400 + h * 3600LL + mi * 60LL + s;
   const auto zone = iso.find_first_of("Z+-", 19);
   if (zone != std::string::npos && iso[zone] != 'Z') {
-    int zh = 0, zm = 0;
-    if (std::sscanf(iso.c_str() + zone + 1, "%2d:%2d", &zh, &zm) == 2)
-      secs -= (iso[zone] == '-' ? -1 : 1) * (zh * 3600 + zm * 60);
+    const int zh = Digits(iso, zone + 1, 2), zm = Digits(iso, zone + 4, 2);
+    if (zh >= 0 && zm >= 0) secs -= (iso[zone] == '-' ? -1 : 1) * (zh * 3600LL + zm * 60LL);
   }
   return std::chrono::system_clock::time_point(std::chrono::seconds(secs));
 }

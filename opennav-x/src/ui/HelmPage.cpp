@@ -3,6 +3,7 @@
 // (QR code and key) only while the owner has the pairing window open.
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
+#include <algorithm>
 
 namespace opennav::ui {
 namespace {
