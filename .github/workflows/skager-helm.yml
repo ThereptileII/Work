@@ -77,9 +77,11 @@ jobs:
           cache-dependency-path: opennav-x/tools/helm-server/go.sum
       - name: Go tests on Windows (real GDI capture and SendInput)
         working-directory: opennav-x/tools/helm-server
+        shell: bash
         env:
           HELM_REQUIRE_DESKTOP: '1'
         run: |
+          set -euo pipefail
           go test -count=1 -v -run "Windows" ./...
           go test -count=1 ./...
           go build -o skager-helm.exe ./cmd/helm-server

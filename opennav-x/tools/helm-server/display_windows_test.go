@@ -38,6 +38,18 @@ func TestWindowsDesktopCaptureAndPointer(t *testing.T) {
 	t.Logf("captured the primary screen: %dx%d", w, h)
 
 	getCursorPos := user32.NewProc("GetCursorPos")
+	setCursorPos := user32.NewProc("SetCursorPos")
+	// A desktop without interactive input (a CI service session) ignores every
+	// cursor change; only then is the SendInput check skipped.
+	setCursorPos.Call(37, 41)
+	var probe struct{ X, Y int32 }
+	getCursorPos.Call(uintptr(unsafe.Pointer(&probe)))
+	if probe.X != 37 || probe.Y != 41 {
+		if os.Getenv("HELM_REQUIRE_INPUT") == "1" {
+			t.Fatalf("this desktop does not accept cursor changes (SetCursorPos gave %d,%d)", probe.X, probe.Y)
+		}
+		t.Skipf("capture verified; this desktop does not accept cursor changes, so SendInput cannot be checked here")
+	}
 	for _, target := range [][2]int{{100, 80}, {w / 2, h / 2}, {w - 1, h - 1}} {
 		if err := d.PointerMove(target[0], target[1]); err != nil {
 			t.Fatal(err)

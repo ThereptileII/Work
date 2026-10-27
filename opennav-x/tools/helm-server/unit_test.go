@@ -6,6 +6,7 @@ import (
 	"image/color"
 	"os"
 	"path/filepath"
+	"runtime"
 	"testing"
 	"time"
 )
@@ -81,8 +82,13 @@ func TestStorePersistsDevicesPrivately(t *testing.T) {
 	if err := s.save(); err != nil {
 		t.Fatal(err)
 	}
-	if info, err := os.Stat(path); err != nil || info.Mode().Perm() != 0o600 {
-		t.Fatalf("store file permissions: %v %v", info.Mode(), err)
+	info, err := os.Stat(path)
+	if err != nil {
+		t.Fatal(err)
+	}
+	// POSIX permissions; on Windows the profile folder's ACL protects the file.
+	if runtime.GOOS != "windows" && info.Mode().Perm() != 0o600 {
+		t.Fatalf("store file permissions: %v", info.Mode())
 	}
 	again, err := OpenStore(path)
 	if err != nil || again.ServerID() != s.ServerID() || len(again.Devices()) != 1 {
