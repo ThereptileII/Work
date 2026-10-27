@@ -280,7 +280,11 @@ if("$ENV{SKAGER_BUILD_HELM_SERVER}" STREQUAL "1")
 endif()
 option(SKAGER_BUILD_HELM_SERVER "Build skager-helm (Go) next to the SKAGER executable" ${skager_helm_default})
 if(SKAGER_BUILD_HELM_SERVER)
-  find_program(SKAGER_GO go REQUIRED)
+  if(DEFINED ENV{SKAGER_GO})
+    set(SKAGER_GO "$ENV{SKAGER_GO}")
+  else()
+    find_program(SKAGER_GO go REQUIRED)
+  endif()
   set(helm_server "${CMAKE_CURRENT_BINARY_DIR}/skager-helm${CMAKE_EXECUTABLE_SUFFIX}")
   file(GLOB_RECURSE helm_sources CONFIGURE_DEPENDS "${OPENNAV_ROOT}/tools/helm-server/*.go")
   file(STRINGS "${OPENNAV_ROOT}/src/application/Version.h" helm_version_line REGEX "Version\\[\\] = ")
@@ -290,7 +294,7 @@ if(SKAGER_BUILD_HELM_SERVER)
     set(helm_ldflags "${helm_ldflags} -H=windowsgui")
   endif()
   add_custom_command(OUTPUT "${helm_server}"
-    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOFLAGS=-mod=readonly
+    COMMAND ${CMAKE_COMMAND} -E env CGO_ENABLED=0 GOFLAGS=-mod=readonly GOTOOLCHAIN=local
       ${SKAGER_GO} build -trimpath "-ldflags=${helm_ldflags}" -o "${helm_server}" ./cmd/helm-server
     WORKING_DIRECTORY "${OPENNAV_ROOT}/tools/helm-server"
     DEPENDS ${helm_sources} "${OPENNAV_ROOT}/tools/helm-server/go.mod" "${OPENNAV_ROOT}/tools/helm-server/go.sum"

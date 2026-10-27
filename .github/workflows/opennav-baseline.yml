@@ -621,11 +621,22 @@ jobs:
     steps:
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
       # SCRUM-379/398: pinned Go for the SKAGER Helm Server (skager-helm.exe),
-      # built from this same commit by the product CMake build.
-      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
-        with:
-          go-version-file: opennav-x/tools/helm-server/go.mod
-          cache-dependency-path: opennav-x/tools/helm-server/go.sum
+      # built from this same commit by the product CMake build. Go is unpacked
+      # outside PATH (the native tool facts bind PATH) and passed as SKAGER_GO.
+      - name: Pinned Go for the SKAGER Helm Server
+        shell: pwsh
+        run: |
+          $ErrorActionPreference = 'Stop'
+          $Zip = Join-Path $env:RUNNER_TEMP 'go1.27.1.windows-amd64.zip'
+          Invoke-WebRequest -Uri 'https://go.dev/dl/go1.27.1.windows-amd64.zip' -OutFile $Zip
+          $Hash = (Get-FileHash -Algorithm SHA256 -LiteralPath $Zip).Hash.ToLowerInvariant()
+          if ($Hash -cne 'a3911b5e0e1b1053f25ed0675f4c1c6aad1e2bfcf253df2b9be4caabd2edd95d') { throw "Go archive hash differs: $Hash" }
+          $Root = Join-Path $env:RUNNER_TEMP 'skager-go'
+          Expand-Archive -LiteralPath $Zip -DestinationPath $Root
+          $Go = Join-Path $Root 'go/bin/go.exe'
+          & $Go version
+          if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+          "SKAGER_GO=$Go" | Out-File -FilePath $env:GITHUB_ENV -Encoding utf8 -Append
       - name: Authenticate immutable producer dependencies
         env:
           GH_TOKEN: ${{ github.token }}
