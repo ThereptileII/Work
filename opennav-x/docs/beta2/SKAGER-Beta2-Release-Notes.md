@@ -1,8 +1,14 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.8 · Staging candidate · qualification recorded with the release**
+**Version 0.4.0-beta2.9 · Staging candidate · qualification recorded with the release**
 
 ## This Staging increment
+
+- **SKAGER Helm**: a swipe on the phone now scrolls SKAGER's menus and lists
+  instead of clicking the row under the finger. The phone's finger reaches
+  SKAGER as a touch, exactly like the boat's own touchscreen.
+
+## Earlier in 0.4.0-beta2.8
 
 - **SKAGER Helm**: see and use SKAGER from a phone or tablet anywhere on board,
   over the boat's own Wi-Fi. Switch it on in Settings → System → SKAGER Helm,
