@@ -56,7 +56,7 @@
     {
       "runner": {
         "ImageOS": "win22",
-        "ImageVersion": "20261025.346.1",
+        "ImageVersion": "20261026.347.1",
         "RUNNER_ARCH": "X64",
         "RUNNER_OS": "Windows"
       },
