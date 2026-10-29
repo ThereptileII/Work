@@ -74,7 +74,7 @@ func TestWindowsDesktopCaptureAndPointer(t *testing.T) {
 }
 
 // Messages seen by the touch test window (its window procedure runs on the test thread).
-var touchSeen struct{ down, update, up, pan int }
+var touchSeen struct{ down, update, up, notify, gesture, pan int }
 
 // TestWindowsTouchSwipeScrolls injects a phone swipe into a window that asks for
 // vertical pan gestures, as SKAGER's scrolling lists do (wxTOUCH_VERTICAL_PAN_GESTURE).
@@ -106,6 +106,7 @@ func TestWindowsTouchSwipeScrolls(t *testing.T) {
 		wmPointerDown   = 0x0246
 		wmPointerUp     = 0x0247
 		wmGesture       = 0x0119
+		wmGestureNotify = 0x011A
 		gidPan          = 4
 	)
 	defWindowProc := user32.NewProc("DefWindowProcW")
@@ -118,7 +119,10 @@ func TestWindowsTouchSwipeScrolls(t *testing.T) {
 			touchSeen.update++
 		case wmPointerUp:
 			touchSeen.up++
+		case wmGestureNotify:
+			touchSeen.notify++
 		case wmGesture:
+			touchSeen.gesture++
 			// GESTUREINFO: cbSize, dwFlags, dwID, ... (40 + 2 pointers bytes).
 			var info [64]byte
 			*(*uint32)(unsafe.Pointer(&info[0])) = 40 + 2*ptrSize
@@ -193,9 +197,15 @@ func TestWindowsTouchSwipeScrolls(t *testing.T) {
 		t.Fatal(err)
 	}
 	pump(300 * time.Millisecond)
-	t.Logf("pointer down %d, update %d, up %d; pan gestures %d", touchSeen.down, touchSeen.update, touchSeen.up, touchSeen.pan)
+	t.Logf("pointer down %d, update %d, up %d; gesture notify %d, gestures %d, pan %d",
+		touchSeen.down, touchSeen.update, touchSeen.up, touchSeen.notify, touchSeen.gesture, touchSeen.pan)
 	if touchSeen.down != 1 || touchSeen.up != 1 || touchSeen.update < 12 {
 		t.Fatal("the window did not receive one touch contact")
+	}
+	// Windows Server without Ink and Handwriting Services has no gesture
+	// engine: the contact arrives, but no window is ever offered gestures.
+	if touchSeen.notify == 0 && os.Getenv("HELM_REQUIRE_GESTURES") != "1" {
+		t.Skip("touch contact verified; this Windows has no gesture engine, so the pan cannot be checked here")
 	}
 	if touchSeen.pan == 0 {
 		t.Fatal("Windows did not recognize the swipe as a pan gesture")
