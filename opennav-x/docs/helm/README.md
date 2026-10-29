@@ -33,15 +33,18 @@ and sends touches to it.
    connected and may take over. The first is told who took over.
 4. The phone gets changed 64-pixel tiles as JPEG over the WebRTC `screen` data
    channel (see [protocol.md](protocol.md)). Touches go back on the `input`
-   channel as normalized coordinates and are injected into the SKAGER window
-   (Windows `SendInput`, X11 `XTEST`).
+   channel as normalized coordinates and are injected into the SKAGER window.
+   On Windows a finger is a real touch contact (`InjectTouchInput`), so SKAGER
+   sees what its own touchscreen sends: a swipe in a menu scrolls it rather than
+   clicking the row under the finger. Secondary click, wheel and keys use
+   `SendInput`, as does a PC where touch injection is unavailable. X11 uses `XTEST`.
 
 ### Gestures on the phone
 
 | Gesture | On SKAGER |
 |---|---|
 | Tap | Click |
-| Drag | Press, move, release (pans the chart, moves sliders) |
+| Drag | A touch drag: scrolls menus and lists, pans the chart, moves sliders |
 | Touch and hold | Secondary click (context menu) |
 | Pinch | Mouse wheel at the pinch centre (chart zoom) |
 | Magnifier on + two fingers | Enlarges the phone's view only |
@@ -49,9 +52,10 @@ and sends touches to it.
 
 ## Safety boundary
 
-- **No autopilot commands from Helm.** Helm marks every input it injects on
-  Windows (`dwExtraInfo` = "SKHL", read with `GetMessageExtraInfo`) and reports
-  each touch to SKAGER just before injecting it. SKAGER's autopilot command and
+- **No autopilot commands from Helm.** Helm marks every mouse and keyboard
+  input it injects on Windows (`dwExtraInfo` = "SKHL", read with
+  `GetMessageExtraInfo`) and reports each touch, drag and release to SKAGER just
+  before injecting it (a touch contact cannot carry the mark; the report covers it). SKAGER's autopilot command and
   enable paths refuse a request that came from Helm or within 1.5 s of a Helm
   touch, and log it. Switching control off stays allowed. The phone shows the
   pilot's state (mode, heading) read-only. An old reading is shown as unknown.

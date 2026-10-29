@@ -13,7 +13,11 @@ Architecture, protocol and safety: [docs/helm](../../docs/helm/README.md).
 - **Pair**: scan the QR code on the SKAGER screen (camera, jsQR), open the
   `app.skager.helm://pair` link from the phone camera, or type address and key.
 - **Helm view**: the live SKAGER screen, letterboxed, with a toolbar. The
-  toolbar is at the side in landscape and at the top in portrait. It shows:
+  toolbar is at the side in landscape and at the top in portrait. In landscape
+  it slides over the screen's left edge and hides itself four seconds after it
+  was last used (at once when you touch the screen), so SKAGER gets the full
+  width; the tab at the left edge brings it back. It stays while the menu, a
+  sheet or a connection notice is open. It shows:
   - the boat, connection quality and latency;
   - keyboard and magnifier buttons;
   - the read-only autopilot status;

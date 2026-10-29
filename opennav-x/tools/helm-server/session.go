@@ -32,6 +32,7 @@ type Session struct {
 	pressed    map[int]bool
 	suppressed bool
 	lastSeq    uint64
+	notifiedAt time.Time
 	minOffset  float64
 	haveOffset bool
 	rate       bucket
@@ -285,6 +286,9 @@ func (s *Session) deliver(ev InputEvent) string {
 		if s.suppressed || stale {
 			return "stale"
 		}
+		if now.Sub(s.notifiedAt) > 250*time.Millisecond {
+			s.notifyInput()
+		}
 		if !at() {
 			return "no_screen"
 		}
@@ -293,6 +297,8 @@ func (s *Session) deliver(ev InputEvent) string {
 		if !s.pressed[ev.Button] {
 			return "not_pressed"
 		}
+		// A touch contact clicks when it lifts, so SKAGER hears of this too.
+		s.notifyInput()
 		if !stale {
 			at()
 		}
@@ -333,7 +339,11 @@ func (s *Session) deliver(ev InputEvent) string {
 
 // notifyInput tells SKAGER, before the event is injected, that the next input
 // comes from Helm (used to keep autopilot commands local to the helm).
-func (s *Session) notifyInput() { s.server.cfg.Events(Event{Event: "input"}) }
+// Caller holds s.mu.
+func (s *Session) notifyInput() {
+	s.notifiedAt = time.Now()
+	s.server.cfg.Events(Event{Event: "input"})
+}
 
 // releaseLocked lifts any button this session holds down. Caller holds s.mu.
 func (s *Session) releaseLocked() {

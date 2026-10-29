@@ -168,6 +168,11 @@ export function renderToolbar(s: ToolbarState): string {
     <button type="button" class="tool" data-action="disconnect" aria-label="Disconnect">${icon('power')}</button>`;
 }
 
+/** The tab at the screen edge that brings the hidden toolbar back. */
+export function renderBarHandle(q: Quality): string {
+  return `<span class="dot q-${q}"></span>${icon('chevron')}`;
+}
+
 export type Stats = { fps: number | null; kbps: number | null; rtt: number | null; width: number; height: number; software?: string };
 
 export function renderMenu(name: string, address: string, stats: Stats): string {

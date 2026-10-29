@@ -86,6 +86,14 @@ test('pair, see the screen, touch, type, reconnect, take over and remove', { tim
     step('wheel');
     await until('wheel', () => inputLines(helm).slice(pinch).some(l => l === 'wheel 1'));
 
+    // Touching the screen slid the toolbar away; the tab at the edge brings it back.
+    const bar = `document.querySelector('#stage').dataset.bar`, handle = `document.querySelector('#bar-handle')`;
+    step('toolbar hidden');
+    await until('toolbar hidden', () => b.eval(`${bar} === 'closed' && !${handle}.hidden`));
+    if (shots) await screenshot(b, join(shots, '04b-toolbar-hidden.png'));
+    await b.eval(`${handle}.click()`);
+    await until('toolbar shown', () => b.eval(`${bar} === 'open' && ${handle}.hidden`));
+
     // Keyboard: text and keys.
     await b.eval(`document.querySelector('[data-action="keyboard"]').click()`);
     step('keyboard');

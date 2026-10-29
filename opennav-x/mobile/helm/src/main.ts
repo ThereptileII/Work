@@ -11,7 +11,7 @@ import type { Settings } from './lib/platform.ts';
 import { APP_VERSION, PREVIEW, RECONNECT_DELAYS } from './lib/config.ts';
 import { resolveTheme } from '../../../companion/src/theme.ts';
 import { quality, renderBoats, renderHelp, renderKeyboard, renderManual, renderMenu, renderOverlay, renderPairing,
-  renderPilotInfo, renderRotateHint, renderScan, renderSettings, renderToolbar, renderWelcome } from './views.ts';
+  renderBarHandle, renderPilotInfo, renderRotateHint, renderScan, renderSettings, renderToolbar, renderWelcome } from './views.ts';
 import type { OverlayState, Stats } from './views.ts';
 
 type Phase = 'starting' | 'home' | 'scan' | 'manual' | 'pairing' | 'helm';
@@ -20,7 +20,7 @@ type Sheet = 'settings' | 'help' | 'pilot' | null;
 const $ = <T extends HTMLElement>(sel: string) => document.querySelector(sel) as T;
 const app = $('#app'), page = $('#page'), stage = $('#stage'), host = $('#screen-host'), canvas = $<HTMLCanvasElement>('#screen');
 const toolbar = $('#toolbar'), overlay = $('#overlay'), menuSlot = $('#menu-slot'), keyboardSlot = $('#keyboard-slot');
-const sheet = $('#sheet'), toast = $('#toast'), touches = $('#touches'), hint = $('#hint');
+const sheet = $('#sheet'), toast = $('#toast'), touches = $('#touches'), hint = $('#hint'), barHandle = $('#bar-handle');
 
 const state = {
   phase: 'starting' as Phase,
@@ -42,12 +42,15 @@ const state = {
   keyboard: false,
   magnifier: false,
   menu: false,
+  bar: true,
   sheet: null as Sheet,
   screenAvailable: true,
 };
 
 let scanner: Scanner | null = null;
 let toastTimer: ReturnType<typeof setTimeout> | undefined;
+let barTimer: ReturnType<typeof setTimeout> | undefined;
+const BAR_HIDE_MS = 4000;
 
 // ---------------------------------------------------------------- theme
 const dark = window.matchMedia('(prefers-color-scheme: dark)');
@@ -92,8 +95,14 @@ function renderHelm(): void {
   const name = state.current?.name ?? 'SKAGER';
   const live = !!state.conn?.live;
   stage.dataset.orientation = window.innerWidth > window.innerHeight ? 'landscape' : 'portrait';
-  toolbar.innerHTML = renderToolbar({ name, quality: live ? quality(state.stats.rtt) : 'none', rtt: live ? state.stats.rtt : null,
+  const q = live ? quality(state.stats.rtt) : 'none';
+  toolbar.innerHTML = renderToolbar({ name, quality: q, rtt: live ? state.stats.rtt : null,
     pilot: state.pilot, keyboard: state.keyboard, magnifier: state.magnifier, menu: state.menu, live });
+  const bar = state.bar || barPinned();
+  stage.dataset.bar = bar ? 'open' : 'closed';
+  toolbar.inert = !bar && stage.dataset.orientation === 'landscape';
+  barHandle.innerHTML = renderBarHandle(q);
+  barHandle.hidden = bar;
   menuSlot.innerHTML = state.menu && state.current ? renderMenu(name, state.conn?.address ?? '', state.stats) : '';
   const shown: OverlayState | null = state.overlay ?? (!state.screenAvailable && live ? { kind: 'screen', name } : null);
   overlay.innerHTML = shown ? renderOverlay(shown) : '';
@@ -110,6 +119,28 @@ function renderHelm(): void {
   } else if (!state.keyboard && keyboardSlot.firstElementChild) {
     keyboardSlot.innerHTML = '';
   }
+}
+
+// ---------------------------------------------------------------- the toolbar
+// In landscape the toolbar slides over the left edge of the screen and hides
+// itself, so SKAGER gets the whole width; a tab at the edge brings it back.
+// It stays while something it opened is showing or the screen is not live.
+function barPinned(): boolean {
+  return state.menu || !!state.sheet || !state.conn?.live || !!state.overlay;
+}
+
+function showBar(): void {
+  state.bar = true;
+  clearTimeout(barTimer);
+  barTimer = setTimeout(hideBar, BAR_HIDE_MS);
+}
+
+function hideBar(): void {
+  clearTimeout(barTimer);
+  if (barPinned()) { barTimer = setTimeout(hideBar, BAR_HIDE_MS); return; }
+  if (!state.bar) return;
+  state.bar = false;
+  if (state.phase === 'helm') renderHelm();
 }
 
 function renderSheet(): void {
@@ -236,6 +267,7 @@ function ripple(x: number, y: number, secondary: boolean): void {
 host.addEventListener('pointerdown', e => {
   if (!state.conn?.live || state.overlay) return;
   if (state.menu) { state.menu = false; renderHelm(); }
+  if (state.bar) hideBar();
   host.setPointerCapture(e.pointerId);
   if (e.pointerType === 'mouse' && e.button === 2) {
     const at = screen.map({ x: e.clientX, y: e.clientY });
@@ -254,6 +286,7 @@ host.addEventListener('wheel', e => {
   if (at && state.conn?.live) state.conn.send({ type: 'wheel', x: at.x, y: at.y, delta: e.deltaY < 0 ? 1 : -1 });
 }, { passive: false });
 window.addEventListener('resize', () => { if (state.phase === 'helm') renderHelm(); });
+toolbar.addEventListener('pointerdown', () => showBar());
 
 function onControl(msg: ControlMessage): void {
   switch (msg.type) {
@@ -349,6 +382,7 @@ async function openBoat(boat: Boat, opts: { takeover?: boolean; reconnect?: bool
     }, !!opts.takeover);
     state.conn = conn;
     state.attempt = 0;
+    showBar();
     if (!screen.hasFrame) state.overlay = { kind: 'connecting', name: boat.name };
     else state.overlay = null;
     const updated: Boat = { ...boat, lastAddress: conn.address, lastConnected: new Date().toISOString() };
@@ -387,6 +421,8 @@ function disconnect(toHome = true): void {
   gestures.cancel();
   state.overlay = null;
   state.keyboard = state.menu = state.magnifier = false;
+  state.bar = true;
+  clearTimeout(barTimer);
   gestures.magnifier = false;
   screen.resetView();
   keepAwake(false);
@@ -424,6 +460,7 @@ document.addEventListener('click', async e => {
     case 'takeover': if (state.current) openBoat(state.current, { takeover: true }); break;
     case 'leave': case 'disconnect': disconnect(); break;
     case 'menu': state.menu = !state.menu; renderHelm(); break;
+    case 'bar': showBar(); renderHelm(); break;
     case 'keyboard': state.keyboard = !state.keyboard; state.menu = false; renderHelm(); break;
     case 'magnifier':
       state.magnifier = gestures.magnifier = !state.magnifier;

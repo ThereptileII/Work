@@ -5,18 +5,24 @@ package helm
 import (
 	"errors"
 	"image"
+	"runtime"
 	"strconv"
 	"strings"
 	"sync"
+	"time"
 	"unicode/utf16"
 	"unsafe"
 
 	"golang.org/x/sys/windows"
 )
 
-// Windows display: GDI BitBlt of the SKAGER window (or the primary screen) and
-// SendInput for touches. The process is per-monitor DPI aware, so capture and
-// input use physical pixels on every scaling setting.
+// Windows display: GDI BitBlt of the SKAGER window (or the primary screen).
+// A finger on the phone becomes a touch contact on the PC (InjectTouchInput),
+// so SKAGER gets exactly what its own touchscreen sends: a swipe scrolls a list
+// instead of clicking the row under it. Secondary click, wheel and keys use
+// SendInput, as does a PC where touch injection is not available. The process
+// is per-monitor DPI aware, so capture and input use physical pixels on every
+// scaling setting.
 
 var (
 	user32 = windows.NewLazySystemDLL("user32.dll")
@@ -40,6 +46,8 @@ var (
 	procDeleteDC                      = gdi32.NewProc("DeleteDC")
 	procBitBlt                        = gdi32.NewProc("BitBlt")
 	procDwmGetWindowAttribute         = dwmapi.NewProc("DwmGetWindowAttribute")
+	procInitializeTouchInjection      = user32.NewProc("InitializeTouchInjection")
+	procInjectTouchInput              = user32.NewProc("InjectTouchInput")
 )
 
 const (
@@ -67,6 +75,20 @@ const (
 	keyExtended    = 0x0001
 	keyUp          = 0x0002
 	keyUnicode     = 0x0004
+
+	ptTouch            = 2
+	pointerInRange     = 0x00002
+	pointerInContact   = 0x00004
+	pointerDown        = 0x10000
+	pointerUpdate      = 0x20000
+	pointerUp          = 0x40000
+	touchMaskArea      = 0x1
+	touchMaskAngle     = 0x2
+	touchMaskPressure  = 0x4
+	touchFeedbackNone  = 3
+	touchContactRadius = 2
+	// A resting finger is re-sent so Windows does not time the contact out.
+	touchRefresh = 100 * time.Millisecond
 )
 
 type rect struct{ Left, Top, Right, Bottom int32 }
@@ -119,6 +141,46 @@ type keyInput struct {
 var _ = [1]struct{}{}[unsafe.Sizeof(mouseInput{})-inputSize]
 var _ = [1]struct{}{}[unsafe.Sizeof(keyInput{})-inputSize]
 
+type point struct{ X, Y int32 }
+
+// POINTER_INFO and POINTER_TOUCH_INFO: 96 and 144 bytes on 64-bit Windows, 88
+// and 136 on 32-bit. C pads POINTER_INFO to the 8-byte alignment of its UINT64;
+// Go on 386 aligns a uint64 to 4 bytes only, hence the explicit tail.
+type pointerInfo struct {
+	PointerType      uint32
+	PointerID        uint32
+	FrameID          uint32
+	PointerFlags     uint32
+	SourceDevice     uintptr
+	HwndTarget       uintptr
+	PixelLocation    point
+	HimetricLocation point
+	PixelRaw         point
+	HimetricRaw      point
+	Time             uint32
+	HistoryCount     uint32
+	InputData        int32
+	KeyStates        uint32
+	PerformanceCount uint64
+	ButtonChangeType int32
+	_                [4]byte
+}
+
+type pointerTouchInfo struct {
+	pointerInfo
+	TouchFlags  uint32
+	TouchMask   uint32
+	Contact     rect
+	ContactRaw  rect
+	Orientation uint32
+	Pressure    uint32
+}
+
+const pointerInfoSize = 80 + 2*ptrSize
+
+var _ = [1]struct{}{}[unsafe.Sizeof(pointerInfo{})-pointerInfoSize]
+var _ = [1]struct{}{}[unsafe.Sizeof(pointerTouchInfo{})-(pointerInfoSize+48)]
+
 var virtualKeys = map[string]struct {
 	vk       uint16
 	extended bool
@@ -131,7 +193,10 @@ var virtualKeys = map[string]struct {
 type windowsDisplay struct {
 	mu     sync.Mutex
 	hwnd   uintptr
-	origin image.Point // screen position of the last captured frame
+	touch  *touchInjector // nil: mouse only
+	at     point          // screen position of the last PointerMove
+	held   bool           // a touch contact is down
+	origin image.Point    // screen position of the last captured frame
 	size   image.Point
 	memDC  uintptr
 	bitmap uintptr
@@ -154,7 +219,95 @@ func openPlatformDisplay(target string) (Display, error) {
 		}
 		d.hwnd = uintptr(v)
 	}
+	d.touch = startTouch()
 	return d, nil
+}
+
+// touchInjector owns touch injection on one OS thread: it is initialized per
+// thread, and a resting contact is refreshed from there.
+type touchInjector struct {
+	ops  chan touchOp
+	quit chan struct{}
+}
+
+type touchOp struct {
+	flags uint32
+	at    point
+	done  chan error
+}
+
+// startTouch returns nil when this Windows cannot inject touch (before Windows 8).
+func startTouch() *touchInjector {
+	if procInitializeTouchInjection.Find() != nil || procInjectTouchInput.Find() != nil {
+		return nil
+	}
+	t := &touchInjector{ops: make(chan touchOp), quit: make(chan struct{})}
+	ready := make(chan bool)
+	go t.run(ready)
+	if !<-ready {
+		return nil
+	}
+	return t
+}
+
+func (t *touchInjector) run(ready chan<- bool) {
+	runtime.LockOSThread()
+	if ok, _, _ := procInitializeTouchInjection.Call(1, touchFeedbackNone); ok == 0 {
+		ready <- false
+		return
+	}
+	ready <- true
+	refresh := time.NewTicker(touchRefresh)
+	defer refresh.Stop()
+	var resting *pointerTouchInfo
+	for {
+		select {
+		case op := <-t.ops:
+			c := touchContact(op.flags, op.at)
+			err := injectTouch(&c)
+			if err == nil && op.flags&pointerUp == 0 {
+				c.PointerFlags = pointerUpdate | pointerInRange | pointerInContact
+				resting = &c
+			} else if op.flags&pointerUp != 0 {
+				resting = nil
+			}
+			op.done <- err
+		case <-refresh.C:
+			if resting != nil {
+				_ = injectTouch(resting)
+			}
+		case <-t.quit:
+			if resting != nil {
+				up := touchContact(pointerUp, resting.PixelLocation)
+				_ = injectTouch(&up)
+			}
+			return
+		}
+	}
+}
+
+func (t *touchInjector) send(flags uint32, at point) error {
+	done := make(chan error, 1)
+	select {
+	case t.ops <- touchOp{flags: flags, at: at, done: done}:
+		return <-done
+	case <-t.quit:
+		return ErrSurfaceUnavailable
+	}
+}
+
+func touchContact(flags uint32, at point) pointerTouchInfo {
+	c := pointerTouchInfo{TouchMask: touchMaskArea | touchMaskAngle | touchMaskPressure, Orientation: 90, Pressure: 32000}
+	c.PointerType, c.PointerFlags, c.PixelLocation = ptTouch, flags, at
+	c.Contact = rect{at.X - touchContactRadius, at.Y - touchContactRadius, at.X + touchContactRadius, at.Y + touchContactRadius}
+	return c
+}
+
+func injectTouch(c *pointerTouchInfo) error {
+	if ok, _, err := procInjectTouchInput.Call(1, uintptr(unsafe.Pointer(c))); ok == 0 {
+		return err
+	}
+	return nil
 }
 
 func base(s string) int {
@@ -279,7 +432,14 @@ func (d *windowsDisplay) PointerMove(x, y int) error {
 	if size.X == 0 {
 		return ErrSurfaceUnavailable
 	}
-	sx, sy := origin.X+clamp(x, 0, size.X-1), origin.Y+clamp(y, 0, size.Y-1)
+	at := point{int32(origin.X + clamp(x, 0, size.X-1)), int32(origin.Y + clamp(y, 0, size.Y-1))}
+	d.mu.Lock()
+	d.at = at
+	held := d.held
+	d.mu.Unlock()
+	if held {
+		return d.touch.send(pointerUpdate|pointerInRange|pointerInContact, at)
+	}
 	vx, _, _ := procGetSystemMetrics.Call(smXVirtualScreen)
 	vy, _, _ := procGetSystemMetrics.Call(smYVirtualScreen)
 	vw, _, _ := procGetSystemMetrics.Call(smCXVirtualScreen)
@@ -287,12 +447,33 @@ func (d *windowsDisplay) PointerMove(x, y int) error {
 	if int32(vw) < 2 || int32(vh) < 2 {
 		return errors.New("no virtual screen")
 	}
-	ax := int32((int64(sx-int(int32(vx)))*65535 + int64(int32(vw)-1)/2) / int64(int32(vw)-1))
-	ay := int32((int64(sy-int(int32(vy)))*65535 + int64(int32(vh)-1)/2) / int64(int32(vh)-1))
+	ax := int32((int64(at.X-int32(vx))*65535 + int64(int32(vw)-1)/2) / int64(int32(vw)-1))
+	ay := int32((int64(at.Y-int32(vy))*65535 + int64(int32(vh)-1)/2) / int64(int32(vh)-1))
 	return d.mouse(mouseMove|mouseAbsolute|mouseVirtual, ax, ay, 0)
 }
 
+// PointerButton presses or lifts. The primary button is a touch contact at the
+// last PointerMove position (the mouse where touch injection fails).
 func (d *windowsDisplay) PointerButton(button int, down bool) error {
+	if button != 2 && d.touch != nil {
+		d.mu.Lock()
+		at, held := d.at, d.held
+		d.mu.Unlock()
+		switch {
+		case down && !held:
+			if d.touch.send(pointerDown|pointerInRange|pointerInContact, at) == nil {
+				d.mu.Lock()
+				d.held = true
+				d.mu.Unlock()
+				return nil
+			}
+		case !down && held:
+			d.mu.Lock()
+			d.held = false
+			d.mu.Unlock()
+			return d.touch.send(pointerUp, at)
+		}
+	}
 	var flag uint32
 	switch {
 	case button == 2 && down:
@@ -342,6 +523,9 @@ func (d *windowsDisplay) Close() error {
 	d.mu.Lock()
 	defer d.mu.Unlock()
 	d.freeBitmap()
+	if d.touch != nil {
+		close(d.touch.quit) // lifts a contact that is still down
+	}
 	return nil
 }
 
