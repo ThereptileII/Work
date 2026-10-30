@@ -19,7 +19,7 @@ class Links(HTMLParser):
 
 
 class MarketingPages(SimpleTestCase):
-    pages = ("home", "features", "how_it_works", "pricing", "installation", "support", "faq", "articles",
+    pages = ("home", "features", "how_it_works", "pricing", "apps", "installation", "support", "faq", "articles",
              "open_source", "legal", "terms", "privacy", "refunds", "beta_terms", "cookies", "account", "downloads", "checkout", "welcome")
 
     def test_pages_and_article_links_resolve_without_database_or_vendors(self):

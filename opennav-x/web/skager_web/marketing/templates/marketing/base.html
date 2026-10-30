@@ -23,6 +23,7 @@
       <nav id="site-navigation" class="site-navigation" aria-label="Main navigation">
         <a href="{% url 'marketing:features' %}"{% if nav_active == 'features' %} aria-current="page"{% endif %}>Features</a>
         <a href="{% url 'marketing:how_it_works' %}"{% if nav_active == 'how_it_works' or nav_active == 'installation' %} aria-current="page"{% endif %}>How it works</a>
+        <a href="{% url 'marketing:apps' %}"{% if nav_active == 'apps' %} aria-current="page"{% endif %}>Apps</a>
         <a href="{% url 'marketing:pricing' %}"{% if nav_active == 'pricing' %} aria-current="page"{% endif %}>Pricing</a>
         <a href="{% url 'marketing:support' %}"{% if nav_active == 'support' %} aria-current="page"{% endif %}>Support</a>
         <a class="nav-login" href="/auth/login/">Log in</a>
@@ -34,7 +35,7 @@
   <footer class="site-footer">
     <div class="container footer-main">
       <div class="footer-brand"><a class="brand" href="{% url 'marketing:home' %}" aria-label="SKAGER home"><img src="{% static 'marketing/skager-wordmark.png' %}" width="680" height="214" alt="SKAGER App" loading="lazy"></a><p>Navigation. Reimagined.<br>Built around your boat.</p></div>
-      <nav aria-label="Product"><span class="eyebrow">Product</span><a href="{% url 'marketing:features' %}">Features</a><a href="{% url 'marketing:how_it_works' %}">How it works</a><a href="{% url 'marketing:pricing' %}">Pricing</a><a href="{% url 'marketing:installation' %}">Requirements</a><a href="{% url 'marketing:downloads' %}">Downloads</a></nav>
+      <nav aria-label="Product"><span class="eyebrow">Product</span><a href="{% url 'marketing:features' %}">Features</a><a href="{% url 'marketing:how_it_works' %}">How it works</a><a href="{% url 'marketing:pricing' %}">Pricing</a><a href="{% url 'marketing:apps' %}">Apps</a><a href="{% url 'marketing:installation' %}">Requirements</a><a href="{% url 'marketing:downloads' %}">Downloads</a></nav>
       <nav aria-label="Support"><span class="eyebrow">Support</span><a href="{% url 'marketing:support' %}">Help centre</a><a href="{% url 'marketing:faq' %}">FAQ</a><a href="{% url 'marketing:articles' %}">Articles</a><a href="/auth/login/">Log in</a></nav>
       <nav aria-label="Legal"><span class="eyebrow">Legal</span><a href="{% url 'marketing:terms' %}">Terms of Service</a><a href="{% url 'marketing:privacy' %}">Privacy Policy</a><a href="{% url 'marketing:refunds' %}">Refund Policy</a><a href="{% url 'marketing:beta_terms' %}">Beta terms &amp; safety</a><a href="{% url 'marketing:cookies' %}">Cookies</a><a href="{% url 'marketing:open_source' %}">Open source &amp; licences</a></nav>
     </div>

@@ -1,0 +1,89 @@
+{% extends 'marketing/base.html' %}
+{% load static %}
+{% block title %}Apps — SKAGER Helm and SKAGER Companion{% endblock %}
+{% block description %}SKAGER Helm puts your SKAGER screen on a phone or tablet in the cockpit. SKAGER Companion keeps your boat in your pocket, wherever you are.{% endblock %}
+{% block page %}apps{% endblock %}
+{% block body_class %}cinematic{% endblock %}
+{% block extra_head %}<link rel="stylesheet" href="{% static 'marketing/skager-screen.css' %}?v={{ marketing_screen_css_version }}">
+  <link rel="stylesheet" href="{% static 'marketing/home.css' %}?v={{ marketing_home_css_version }}">
+  <script src="{% static 'marketing/home.js' %}?v={{ marketing_home_js_version }}" defer></script>{% endblock %}
+{% block content %}
+<section class="page-hero" aria-labelledby="apps-title">
+  <div class="container">
+    <p class="kicker">Apps</p>
+    <h1 id="apps-title">SKAGER in your hand.<br><span>At the helm and ashore.</span></h1>
+    <p class="page-hero-sub">Two apps for iPhone, iPad and Android. SKAGER Helm brings your screen to the cockpit. SKAGER Companion keeps your boat in your pocket, wherever you are.</p>
+    <nav class="app-jump" aria-label="The apps">
+      <a href="#helm"><img src="{% static 'marketing/skager-app-icon.svg' %}" width="56" height="56" alt=""><span><b>SKAGER Helm</b><small>Included with SKAGER</small></span></a>
+      <a href="#companion"><img src="{% static 'marketing/skager-app-icon.svg' %}" width="56" height="56" alt=""><span><b>SKAGER Companion</b><small>With SKAGER Cloud</small></span></a>
+    </nav>
+  </div>
+</section>
+
+<section class="chapter" id="helm" aria-labelledby="helm-title">
+  <div class="container chapter-grid reverse apps-helm">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">SKAGER Helm · Included with SKAGER</p>
+      <h2 id="helm-title">Take the helm.<br><span>Anywhere on board.</span></h2>
+      <p>Your whole SKAGER screen on a phone or tablet, over the boat’s own Wi-Fi. Check the chart, the traffic and the next turn from the cockpit while the PC stays dry below.</p>
+      <ul class="feature-points"><li>Pair in seconds: scan the code on the SKAGER screen</li><li>Tap, swipe and type, just like at the chart table</li><li>Full-screen chart; the toolbar tucks away until you need it</li><li>Day, dusk and night, in step with SKAGER</li><li>Runs on the boat’s Wi-Fi, no internet needed</li></ul>
+    </div>
+    <div class="app-visual" data-reveal aria-hidden="true">
+      <div class="app-tablet">
+        <div class="fit" data-fit="1280x800"><div class="proto-screen fragment-full" data-theme="dusk" inert>
+{% include 'marketing/includes/skager_screen.html' %}
+        </div></div>
+        <span class="app-tablet-tab"></span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="chapter" id="companion" aria-labelledby="companion-title">
+  <div class="container chapter-grid">
+    <div class="chapter-copy" data-reveal>
+      <p class="kicker">SKAGER Companion · With SKAGER Cloud</p>
+      <h2 id="companion-title">Your boat.<br><span>In your pocket.</span></h2>
+      <p>Ashore, at work or asleep in the forepeak, Companion shows how your boat is doing and tells you the moment something needs you.</p>
+      <ul class="feature-points"><li>Position, battery and instruments at a glance</li><li>Anchor watch on a live map, with a notification if the alarm sounds on board</li><li>Your voyage track and 30 days of history</li><li>An alarm log, so you know what happened while you were away</li><li>Sign in once with your SKAGER account</li></ul>
+    </div>
+    <div class="chapter-visual visual-myboat" data-reveal aria-hidden="true">
+      <div class="phone">
+        <div class="phone-top"><small>Companion</small><b>Linnea</b><span><i></i>At anchor · Grinda</span></div>
+        <div class="phone-anchor"><svg viewBox="0 0 220 120"><circle class="ring" cx="110" cy="60" r="46"/><circle class="anchor" cx="110" cy="60" r="4"/><path class="swing" d="M96 34C118 26 138 44 132 62"/><circle class="boat" cx="132" cy="62" r="6"/></svg><span><b>Holding</b> 18 m from anchor · radius 40 m</span></div>
+        <div class="phone-grid">
+          <div><small>Battery</small><b>87%</b><span class="bar"><i></i></span></div>
+          <div><small>Wind</small><b>12 kt</b><span class="ok">SW</span></div>
+          <div><small>Depth</small><b>6.2 m</b><span class="ok">Steady</span></div>
+          <div><small>Bilge</small><b>Dry</b><span class="ok">All good</span></div>
+        </div>
+        <div class="phone-toast"><i></i>Anchor watch is on</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="apps-together" aria-labelledby="together-title">
+  <div class="container">
+    <p class="kicker" data-reveal>Better together</p>
+    <h2 id="together-title" data-reveal>A navigation station<br><span>from what you already own.</span></h2>
+    <ol class="together-steps" data-reveal>
+      <li><span class="beat-number">01</span><h3>A laptop below</h3><p>SKAGER runs on the laptop at the chart table, with your charts and routes.</p></li>
+      <li><span class="beat-number">02</span><h3>An old phone as GPS</h3><p>A spare phone sends its position to the laptop over Bluetooth, a cable or Wi-Fi.</p></li>
+      <li><span class="beat-number">03</span><h3>A tablet in the cockpit</h3><p>SKAGER Helm shows the same screen at the wheel, where you need it.</p></li>
+    </ol>
+    <p data-reveal><a class="cta-ghost" href="{% url 'marketing:article' 'phone-as-gps' %}">Use an old phone as your GPS <span aria-hidden="true">→</span></a></p>
+  </div>
+</section>
+
+<section class="finale" aria-labelledby="finale-title">
+  <svg class="finale-route" viewBox="0 0 1440 400" preserveAspectRatio="none" aria-hidden="true"><path d="M-20 340C220 330 330 220 560 210S900 150 1080 110 1320 40 1460 30"/></svg>
+  <div class="container finale-inner" data-reveal>
+    <h2 id="finale-title">Start with SKAGER.<br><span>Take it everywhere.</span></h2>
+    <div class="hero-actions">
+      <a class="cta" href="{% url 'marketing:checkout' %}">Get SKAGER <span aria-hidden="true">→</span></a>
+      <a class="cta-ghost" href="{% url 'marketing:pricing' %}#compare">Compare plans <span aria-hidden="true">→</span></a>
+    </div>
+  </div>
+</section>
+{% endblock %}

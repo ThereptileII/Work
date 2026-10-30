@@ -256,6 +256,74 @@ ARTICLES = (
     },
     # ------------------------------------------------------------------ Instruments & data
     {
+        "slug": "phone-as-gps",
+        "title": "Use an old phone as your boat's GPS",
+        "category": "Instruments & data",
+        "kind": "Guide",
+        "featured": True,
+        "summary": "A spare phone can feed its position to SKAGER over Bluetooth, a cable or Wi-Fi. Add a tablet with SKAGER Helm and you have a full navigation station.",
+        "updated": "2026-10-30",
+        "applies_to": APPLIES_TO,
+        "sections": (
+            {"title": "Why an old phone works so well", "body": (
+                "Every smartphone has a satellite receiver, and it keeps working without a SIM card or a phone plan. "
+                "That makes the phone in your drawer a capable GPS for a laptop that has none. A free app sends the "
+                "phone's position to the laptop in NMEA 0183, the standard language OpenCPN and SKAGER already understand.",
+                "Without mobile data the first fix can take a few minutes. After that, the phone tracks your position as well "
+                "as it does on land.",
+            )},
+            {"title": "The setup we like", "bullets": (
+                "A laptop at the chart table runs SKAGER, with your charts and routes.",
+                "An old phone near a window sends its position to the laptop.",
+                "A tablet in the cockpit runs SKAGER Helm and shows the same screen at the wheel.",
+                "The laptop and the tablet share a Wi-Fi network: the boat's router, or the hotspot of a phone.",
+            )},
+            {"title": "The app: Share GPS", "body": (
+                "We use Share GPS from Google Play or the App Store. It sends standard NMEA over Bluetooth, a USB cable or "
+                "Wi-Fi, keeps running with the screen off and has no ads. The free version holds one saved connection, which "
+                "is all you need here. Android phones can use all three connections; iPhones use Wi-Fi.",
+            )},
+            {"title": "Android over Bluetooth (recommended)", "bullets": (
+                "Install Share GPS on the phone and allow location and nearby devices.",
+                "In Share GPS, add an NMEA connection, choose Bluetooth and tap Connect. The phone now waits for the laptop.",
+                "Pair the phone with the laptop in Windows Settings, under Bluetooth & devices.",
+                "Open More Bluetooth settings, then COM Ports. Add an Outgoing port for the phone and note its number, for example COM5.",
+                "In OpenCPN, open Options, then Connections, and add a serial connection on that COM port with the NMEA 0183 protocol.",
+                "Within a minute SKAGER shows your position, and the instrument rail shows the new connection as its source.",
+            )},
+            {"title": "Android with a USB cable", "body": (
+                "A cable also charges the phone, which is handy on long passages. Windows reaches the phone through the "
+                "Android debug bridge, so this route suits the technically minded.",
+            ), "bullets": (
+                "On the phone, turn on Developer options and USB debugging, then connect the cable and allow the laptop.",
+                "In Share GPS, add an NMEA connection, choose USB and tap Connect. It uses port 10110 unless you change it.",
+                "On the laptop, install Android platform tools and run: adb forward tcp:10110 tcp:10110",
+                "In OpenCPN, add a network connection: TCP, address 127.0.0.1, port 10110.",
+                "Run the adb command again after the laptop restarts or the cable is reconnected.",
+            )},
+            {"title": "iPhone over Wi-Fi", "body": (
+                "iPhones do not offer a Bluetooth serial port, so they share their position over Wi-Fi instead. The iPhone "
+                "and the laptop must be on the same network, either the boat's Wi-Fi or the iPhone's own hotspot.",
+            ), "bullets": (
+                "In Share GPS, add an NMEA connection, choose Network, set the mode to Server and the port to 10110, then tap Start.",
+                "Allow Local Network access when the iPhone asks.",
+                "In OpenCPN, add a network connection: TCP, the iPhone's Wi-Fi address and port 10110.",
+            )},
+            {"title": "Add the tablet in the cockpit", "body": (
+                "Install SKAGER Helm on the tablet and join the same Wi-Fi as the laptop. In SKAGER, open Settings, System, "
+                "SKAGER Helm and choose Pair a phone or tablet, then scan the code with the tablet. From then on the tablet shows your SKAGER screen at the wheel, while the laptop "
+                "stays dry below.",
+            )},
+            {"title": "Keep it reliable", "bullets": (
+                "Keep the phone on a charger. A phone streaming its position all day uses far more battery than one in a pocket.",
+                "On Android, set Share GPS to Unrestricted under the app's battery settings, so the system never pauses it.",
+                "Place the phone where it sees the sky, by a window or under a hatch. Metal and carbon hulls block the signal.",
+                "Check the position against a known landmark before you rely on it, and watch its age in the instrument rail.",
+                "A phone is a fine everyday GPS. Keep an independent means of navigation on board, as always.",
+            )},
+        ),
+    },
+    {
         "slug": "nmea-0183-2000-signal-k",
         "title": "NMEA 0183, NMEA 2000 and Signal K explained",
         "category": "Instruments & data",
