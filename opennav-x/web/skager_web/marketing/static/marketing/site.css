@@ -86,6 +86,8 @@ a.info-card:hover{border-color:var(--mint)}
 }
 .article-nav .section-heading{font-size:11px;font-weight:650;letter-spacing:.14em;text-transform:uppercase;color:var(--secondary);margin:0 0 12px}
 .article-nav{align-self:start;position:sticky;top:24px;font-size:14px}
+.article-nav{max-height:calc(100vh - 48px);overflow-y:auto}
+@media (max-width:800px){.article-nav{position:static;max-height:none;overflow:visible;flex-direction:column;border-bottom:1px solid var(--line);padding-bottom:12px}}
 .article-body .page-section{padding-block:0;margin-top:40px;border-top:0}
 .article-body .page-section:first-child{margin-top:0}
 .article-body .page-section h2{margin-top:0;font-size:clamp(24px,2.4vw,30px)}
