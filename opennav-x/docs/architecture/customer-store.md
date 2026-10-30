@@ -91,6 +91,31 @@ inline where possible and by `POST /api/jobs/tick` every minute
 ([store-schedule.sql](../../web/deploy/supabase/store-schedule.sql)). Failed sends
 back off exponentially and stop after six attempts.
 
+## Discount codes
+
+A code works only if its promotion code and coupon IDs are in the two allowlists
+below, and it is checked with Stripe before the order exists (hosted code entry
+stays off). Where it applies depends on how the coupon is scoped in Stripe:
+
+- **SKAGER (Beta Access) code:** a coupon restricted to the Beta Access product.
+  It is accepted only on the guest checkout and discounts only the access line.
+- **SKAGER Cloud code:** a coupon with no product restriction, with any duration
+  (once, repeating for N months, forever). It is accepted only on the portal's
+  SKAGER Cloud subscription, where the order has the Cloud line and nothing else
+  (`store-discounts.sql`). A fully discounted first month settles as
+  `no_payment_required` and still starts the subscription.
+
+The two kinds never accept each other's coupons. To add a code: create the coupon
+and a promotion code in Stripe, then add both IDs to the allowlists.
+
+## Stripe Checkout styling
+
+Every session sets `branding_settings`: night background `#050f13`, cyan buttons
+`#6fe0ea`, Inter, rounded corners and the SKAGER wordmark from
+`/static/marketing/skager-wordmark.png`. If Stripe refuses the branded session,
+the server opens the standard page once instead (separate idempotency key), so
+styling never blocks a payment.
+
 ## Configuration (Supabase function secrets)
 
 | Key | Purpose |

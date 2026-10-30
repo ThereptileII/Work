@@ -80,7 +80,7 @@ jobs:
         run: |
           set -o pipefail
           export PGPASSWORD="$TEST_POSTGRES_PASSWORD"
-          for script in bootstrap-test.sql auth.sql commerce.sql portal.sql store.sql store-steps.sql store-guide.sql store-cloud.sql cloud.sql companion.sql commerce.postgres.sql security.postgres.sql store.postgres.sql store-steps.postgres.sql store-guide.postgres.sql store-cloud.postgres.sql cloud.postgres.sql companion.postgres.sql; do
+          for script in bootstrap-test.sql auth.sql commerce.sql portal.sql store.sql store-steps.sql store-guide.sql store-cloud.sql store-discounts.sql cloud.sql companion.sql commerce.postgres.sql security.postgres.sql store.postgres.sql store-steps.postgres.sql store-guide.postgres.sql store-cloud.postgres.sql store-discounts.postgres.sql cloud.postgres.sql companion.postgres.sql; do
             psql --set ON_ERROR_STOP=1 --host "$TEST_POSTGRES_HOST" --port "$TEST_POSTGRES_PORT" --username "$TEST_POSTGRES_USER" --dbname "$TEST_POSTGRES_DB" --file "edge/$script" 2>&1 | tee -a evidence/ci/edge-postgresql.log
           done
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02

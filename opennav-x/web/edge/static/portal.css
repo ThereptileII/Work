@@ -142,3 +142,9 @@ button.text-link{padding:0;border:0;background:none;cursor:pointer}
 .readings .meta{font-size:12px;color:var(--muted)}
 .spark{display:block;width:100%;height:auto;color:var(--cyan)}
 #link-code{font-size:24px;letter-spacing:.12em;text-transform:uppercase}
+.actions .discount{flex:0 0 100%}
+.discount input,.discount .note{max-width:420px}
+.discount summary{width:max-content;color:var(--cyan);font-size:14px;font-weight:600;cursor:pointer}
+.discount input{width:100%;min-height:48px;margin-top:10px;padding:10px 14px;border:1px solid var(--line);border-radius:10px;background:var(--panel2);color:var(--text);letter-spacing:.04em}
+.discount input:focus{outline:2px solid var(--mint);outline-offset:1px}
+.discount .note{margin:8px 0 0;font-size:13px}

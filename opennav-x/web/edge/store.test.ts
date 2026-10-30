@@ -137,8 +137,35 @@ test('guest checkout builds Stripe parameters from the catalog and binds the ses
   assert.equal(form.get('shipping_address_collection[allowed_countries][1]'), 'NO');
   assert.equal(form.get('allow_promotion_codes'), 'false');
   assert.equal(form.get('success_url'), 'https://beta.skager.app/welcome/?session_id={CHECKOUT_SESSION_ID}');
-  assert.equal(f.stripe[0].headers.get('Idempotency-Key'), `skager-store-v1-${ORDER}`);
+  assert.equal(f.stripe[0].headers.get('Idempotency-Key'), `skager-store-v2-${ORDER}`);
   assert.deepEqual(f.calls.find(c => c.name === 'store_bind_order')!.args.p_session_id, 'cs_test_session0001');
+});
+
+test('Stripe Checkout opens in SKAGER colours, and falls back to the standard page if Stripe refuses them', async () => {
+  const f = fixture();
+  assert.equal((await handleStore(post('/api/store/checkout', { email: 'b@example.com' }), f.ctx))!.status, 200);
+  const form = f.stripe[0].body!;
+  assert.equal(form.get('branding_settings[background_color]'), '#050f13');
+  assert.equal(form.get('branding_settings[button_color]'), '#6fe0ea');
+  assert.equal(form.get('branding_settings[font_family]'), 'inter');
+  assert.equal(form.get('branding_settings[logo][url]'), 'https://beta.skager.app/static/marketing/skager-wordmark.png');
+  const g = fixture();
+  const base = g.ctx.fetch;
+  let refused = 0;
+  g.ctx.fetch = async (input: any, init?: any) => {
+    if (String(input) === 'https://api.stripe.com/v1/checkout/sessions' && init?.body?.has('branding_settings[logo][url]')) {
+      refused++; g.stripe.push({ url: String(input), method: 'POST', body: init.body, headers: new Headers(init.headers) });
+      return json({ error: { type: 'invalid_request_error', param: 'branding_settings[logo][url]' } }, 400);
+    }
+    return base(input, init);
+  };
+  const response = await handleStore(post('/api/store/checkout', { email: 'b@example.com' }), g.ctx);
+  assert.equal(response!.status, 200);
+  assert.equal(refused, 1);
+  const retry = g.stripe[1];
+  assert.equal(retry.body!.get('branding_settings[background_color]'), null);
+  assert.notEqual(retry.headers.get('Idempotency-Key'), g.stripe[0].headers.get('Idempotency-Key'));
+  assert.equal(g.calls.filter(c => c.name === 'store_bind_order').length, 1);
 });
 
 test('existing, unfinished and closed customers are not charged again', async () => {
@@ -195,6 +222,83 @@ test('cloud subscription opens a monthly Checkout and refuses a second live subs
   assert.equal((await handleStore(post('/api/store/cloud', {}), g.ctx))!.status, 409);
   const billing = await handleStore(post('/api/store/billing', {}), g.ctx);
   assert.equal((await billing!.json()).url, 'https://billing.stripe.com/p/session/x');
+});
+
+const cloudItems = [{ product_id: CLOUD, kind: 'subscription', name: 'SKAGER Cloud', slug: 'skager-cloud', quantity: 1, unit_minor: 200, interval: 'month' }];
+function promotionFor(coupon: string, id = 'promo_free10000') {
+  return { object: 'promotion_code', id, code: 'SAIL50', active: true, livemode: false, customer: null, customer_account: null,
+    expires_at: null, max_redemptions: null, times_redeemed: 3, restrictions: { first_time_transaction: false, minimum_amount: null },
+    promotion: { type: 'coupon', coupon } };
+}
+function couponWith(appliesTo: unknown, extra: Record<string, any> = {}) {
+  return { object: 'coupon', id: 'FREE100', livemode: false, valid: true, percent_off: 50, amount_off: null, duration: 'repeating',
+    duration_in_months: 3, redeem_by: null, max_redemptions: null, times_redeemed: 0, applies_to: appliesTo, ...extra };
+}
+/** Stripe answers for promotion and coupon reads; everything else goes to the fixture. */
+function withCoupon(f: ReturnType<typeof fixture>, coupon: Record<string, any>) {
+  const base = f.ctx.fetch;
+  f.ctx.fetch = async (input: any, init?: any) => {
+    const url = String(input instanceof Request ? input.url : input);
+    if (url.startsWith('https://api.stripe.com/v1/promotion_codes?')) return json({ object: 'list', has_more: false, data: [promotionFor('FREE100')] });
+    if (url === 'https://api.stripe.com/v1/promotion_codes/promo_free10000') return json(promotionFor('FREE100'));
+    if (url.startsWith('https://api.stripe.com/v1/coupons/FREE100')) return json(coupon);
+    if (url === 'https://api.stripe.com/v1/prices/price_access0001') return json({ object: 'price', id: 'price_access0001', active: true,
+      product: 'prod_access0001', livemode: false, currency: 'usd', unit_amount: 2000, type: 'one_time', recurring: null });
+    return base(input, init);
+  };
+  return f;
+}
+
+test('cloud accepts only product-free discount codes and binds them to the subscription order', async () => {
+  const member = { id: ACCOUNT, email: 'b@example.com', passwordSet: true };
+  const cloudOrder = { state: 'created', order_id: ORDER, items: cloudItems, subtotal_minor: 200, shipping_minor: 0, stripe_customer_id: 'cus_customer0001' };
+  for (const appliesTo of [{ products: [] }, null]) {
+    const f = withCoupon(fixture({ account: member, order: cloudOrder }), couponWith(appliesTo));
+    assert.equal((await handleStore(post('/api/store/cloud', { discountCode: 'sail50' }), f.ctx))!.status, 200);
+    const order = f.calls.find(c => c.name === 'store_create_order')!.args;
+    assert.equal(order.p_kind, 'subscription');
+    assert.equal(order.p_promotion_id, 'promo_free10000');
+    assert.equal(order.p_coupon_id, 'FREE100');
+    const form = f.stripe.find(call => call.url === 'https://api.stripe.com/v1/checkout/sessions')!.body!;
+    assert.equal(form.get('discounts[0][promotion_code]'), 'promo_free10000');
+    assert.equal(form.get('allow_promotion_codes'), null);
+  }
+  // An access-only coupon never discounts Cloud, and a product-free coupon never discounts access.
+  const scoped = withCoupon(fixture({ account: member, order: cloudOrder }), couponWith({ products: ['prod_access0001'] }));
+  assert.equal((await handleStore(post('/api/store/cloud', { discountCode: 'SAIL50' }), scoped.ctx))!.status, 400);
+  assert.equal(scoped.calls.some(c => c.name === 'store_create_order'), false);
+  const guest = withCoupon(fixture(), couponWith({ products: [] }));
+  assert.equal((await handleStore(post('/api/store/checkout', { email: 'b@example.com', discountCode: 'SAIL50' }), guest.ctx))!.status, 400);
+  assert.equal(guest.calls.some(c => c.name === 'store_create_order'), false);
+  // Extra fields and malformed codes stop before Stripe.
+  for (const data of [{ discountCode: 'no spaces' }, { discountCode: 'X', price: 1 }]) {
+    const f = fixture({ account: member, order: cloudOrder });
+    assert.equal((await handleStore(post('/api/store/cloud', data), f.ctx))!.status, 400);
+    assert.equal(f.stripe.length, 0);
+  }
+});
+
+test('a discounted or free first Cloud month settles against the re-read coupon', async () => {
+  const binding = { state: 'bound', id: ORDER, kind: 'subscription', items: cloudItems, subtotal_minor: 200, shipping_minor: 0,
+    promotion_id: 'promo_free10000', coupon_id: 'FREE100', account_id: ACCOUNT };
+  const cloudSession = (discount: number) => completedSession({ mode: 'subscription', subscription: 'sub_cloud00000001', payment_intent: null,
+    amount_subtotal: 200, amount_total: 200 - discount, payment_status: discount === 200 ? 'no_payment_required' : 'paid',
+    total_details: { amount_discount: discount, amount_tax: 0, amount_shipping: 0 },
+    discounts: [{ promotion_code: 'promo_free10000', coupon: null }], collected_information: null,
+    line_items: { object: 'list', has_more: false, data: [{ quantity: 1, amount_subtotal: 200, price: { id: 'price_cloud0001', livemode: false,
+      currency: 'usd', unit_amount: 200, type: 'recurring', recurring: { interval: 'month' }, product: 'prod_cloud00001' } }] } });
+  for (const [percent, discount] of [[50, 100], [100, 200]]) {
+    const f = withCoupon(fixture({ binding, session: cloudSession(discount) }), couponWith({ products: [] }, { percent_off: percent }));
+    assert.equal((await handleStore(await signed(event('checkout.session.completed', cloudSession(discount))), f.ctx))!.status, 200);
+    const paid = f.calls.find(c => c.name === 'store_apply_paid')!.args.p_paid;
+    assert.equal(paid.discount_minor, discount);
+    assert.equal(paid.total_minor, 200 - discount);
+    assert.equal(paid.subscription_id, 'sub_cloud00000001');
+  }
+  // A discount Stripe applied beyond the bound coupon is refused.
+  const f = withCoupon(fixture({ binding, session: cloudSession(200) }), couponWith({ products: [] }, { percent_off: 50 }));
+  assert.equal((await handleStore(await signed(event('checkout.session.completed', cloudSession(200))), f.ctx))!.status === 200
+    && f.calls.some(c => c.name === 'store_apply_paid'), false);
 });
 
 test('a signed completed session is re-fetched, verified line by line and settled once', async () => {

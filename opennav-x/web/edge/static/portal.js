@@ -316,7 +316,8 @@ export function renderCloud(data, catalog, cloud, boat) {
   const action = live
     ? '<button class="button button-secondary" type="button" id="cloud-manage">Manage or cancel</button>'
     : data.betaAccess === "active" && product
-      ? `<button class="button" type="button" id="cloud-subscribe">Start SKAGER Cloud · ${esc(money(product.priceMinor))}/month</button>`
+      ? `<button class="button" type="button" id="cloud-subscribe">Start SKAGER Cloud · ${esc(money(product.priceMinor))}/month</button>
+        <details class="discount"><summary>Have a discount code?</summary><label class="visually-hidden" for="cloud-discount">Discount code</label><input id="cloud-discount" maxlength="64" autocomplete="off" autocapitalize="characters" spellcheck="false" placeholder="Discount code"><p class="note">Your discount is shown on the secure payment page before you pay.</p></details>`
       : '<p class="note">SKAGER Cloud needs an active SKAGER Beta Access.</p>';
   return `<section class="card feature"><p class="eyebrow">SKAGER Cloud</p><h2>Your boat, wherever you are.</h2><div>${status}</div>
     <p class="note">One subscription for every cloud service. New services switch on for you as they launch. Cancel any time.</p><div class="actions">${action}${data.hasBilling && !live ? '<button class="button button-secondary" type="button" id="cloud-manage">Billing history</button>' : ""}</div></section>
@@ -437,8 +438,9 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   async function stripe(url, host, button) {
     button.disabled = true; tell("Opening secure Stripe page…");
     try {
+      const code = button.id === "cloud-subscribe" ? $("cloud-discount")?.value.trim() : "";
       const target = stripeUrl((await api(url, button.dataset.buy ? { items: [{ productId: button.dataset.buy,
-        quantity: Number(content.querySelector(`[data-qty="${button.dataset.buy}"]`)?.value || 1) }] } : {})).url, host);
+        quantity: Number(content.querySelector(`[data-qty="${button.dataset.buy}"]`)?.value || 1) }] } : code ? { discountCode: code } : {})).url, host);
       if (!target) throw new Error("Stripe could not be opened. Please try again.");
       checkSession();
       location.assign(target);

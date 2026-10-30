@@ -65,7 +65,7 @@ jobs:
       - name: SKAGER Cloud and Companion SQL on real PostgreSQL
         working-directory: opennav-x/web/edge
         run: |
-          for script in bootstrap-test.sql auth.sql commerce.sql portal.sql store.sql store-steps.sql store-guide.sql store-cloud.sql cloud.sql companion.sql cloud.postgres.sql companion.postgres.sql; do
+          for script in bootstrap-test.sql auth.sql commerce.sql portal.sql store.sql store-steps.sql store-guide.sql store-cloud.sql store-discounts.sql cloud.sql companion.sql cloud.postgres.sql companion.postgres.sql; do
             psql --set ON_ERROR_STOP=1 --host 127.0.0.1 --port 55495 --username scrum94 --dbname scrum94_schema --quiet --file "$script"
           done
       - name: Phone flow end to end (Worker, router, SQL, app API client)

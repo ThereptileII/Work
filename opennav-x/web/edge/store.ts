@@ -4,7 +4,7 @@
  * browser can choose products and quantities, never amounts. Fulfilment happens only
  * from a signature-verified webhook after re-fetching the session from Stripe. */
 import {
-  applicableCoupon, approvedPromotion, boundedBytes, checkoutUrl, configuration, integer, object,
+  applicableCoupon, approvedPromotion, BoundaryError, boundedBytes, checkoutUrl, configuration, integer, object,
   requireValue, strictJson, stripeRequest, verifiedSignature, type CommerceContext, type Configuration,
 } from './commerce.ts';
 import { sendDue } from './email.ts';
@@ -29,6 +29,16 @@ const SUB_STATUS = ['incomplete', 'incomplete_expired', 'trialing', 'active', 'p
 const LIVE_SUB = ['trialing', 'active', 'past_due'];
 const MAX_WEBHOOK_BYTES = 256 * 1024;
 const encoder = new TextEncoder();
+// Stripe's hosted page in SKAGER colours: the site's night background, cyan buttons, Inter and the wordmark.
+const BRANDING: [string, string][] = [
+  ['branding_settings[display_name]', 'SKAGER'],
+  ['branding_settings[background_color]', '#050f13'],
+  ['branding_settings[button_color]', '#6fe0ea'],
+  ['branding_settings[border_style]', 'rounded'],
+  ['branding_settings[font_family]', 'inter'],
+  ['branding_settings[logo][type]', 'url'],
+  ['branding_settings[logo][url]', PUBLIC_ORIGIN + '/static/marketing/skager-wordmark.png'],
+];
 
 const reply = (status: number, value: Json) => new Response(JSON.stringify(value), { status, headers: {
   'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store, max-age=0',
@@ -96,8 +106,18 @@ async function openSession(ctx: StoreContext, config: Configuration, order: Json
   if (options.promotion) form.set('discounts[0][promotion_code]', options.promotion.promotion_id);
   // Hosted code entry stays off: discounts are validated here before the session exists.
   else form.set('allow_promotion_codes', 'false');
-  const session = await stripeRequest(ctx as CommerceContext, config, 'checkout/sessions', 'POST', form,
-    `skager-store-v1-${order.order_id}`);
+  // Styling never blocks a payment: if Stripe refuses the branded page, open the standard one.
+  const plain = new URLSearchParams(form);
+  BRANDING.forEach(([key, value]) => form.set(key, value));
+  let session: Json;
+  try {
+    session = await stripeRequest(ctx as CommerceContext, config, 'checkout/sessions', 'POST', form,
+      `skager-store-v2-${order.order_id}`);
+  } catch (error) {
+    if (!(error instanceof BoundaryError)) throw error;
+    session = await stripeRequest(ctx as CommerceContext, config, 'checkout/sessions', 'POST', plain,
+      `skager-store-v1-${order.order_id}`);
+  }
   requireValue(session.object === 'checkout.session' && session.livemode === false && SESSION.test(session.id)
     && session.client_reference_id === order.order_id && session.mode === options.mode && session.status === 'open');
   const url = checkoutUrl(session.url, session.id);
@@ -180,7 +200,13 @@ async function portalAccess(ctx: StoreContext, account: StoreAccount): Promise<J
   return access;
 }
 
-async function cloudCheckout(ctx: StoreContext, config: Configuration, account: StoreAccount): Promise<Response> {
+async function cloudCheckout(req: Request, ctx: StoreContext, config: Configuration, account: StoreAccount): Promise<Response> {
+  let input: Json;
+  try {
+    input = await body(req);
+    only(input, ['discountCode']);
+    requireValue(input.discountCode === undefined || input.discountCode === '' || (typeof input.discountCode === 'string' && CODE.test(input.discountCode)));
+  } catch { return reply(400, { error: 'Check the discount code and try again.' }); }
   const access = await portalAccess(ctx, account);
   if (!access.entitlement) return reply(403, { error: 'SKAGER Beta Access is required.' });
   if (access.subscription && LIVE_SUB.includes(access.subscription.status)) {
@@ -188,11 +214,14 @@ async function cloudCheckout(ctx: StoreContext, config: Configuration, account: 
   }
   const cloud = (await catalog(ctx)).products.find((product: Json) => product.kind === 'subscription');
   if (!cloud) return reply(404, { error: 'SKAGER Cloud is not available right now.' });
+  const promotion = input.discountCode ? await approvedPromotion(ctx as CommerceContext, config, input.discountCode, 'cloud') : null;
+  if (input.discountCode && !promotion) return reply(400, { error: 'That discount code is not valid.' });
   const order = await ctx.rpc('store_create_order', { p_kind: 'subscription', p_email: account.email, p_account_id: account.id,
-    p_items: [{ product_id: cloud.id, quantity: 1 }], p_promotion_id: null, p_coupon_id: null });
+    p_items: [{ product_id: cloud.id, quantity: 1 }], p_promotion_id: promotion?.promotion_id ?? null,
+    p_coupon_id: promotion?.coupon_id ?? null });
   requireValue(order.state === 'created');
   const url = await openSession(ctx, config, order, { mode: 'subscription', email: account.email!,
-    customerId: order.stripe_customer_id, successPath: '/portal/cloud/?activated=1', cancelPath: '/portal/cloud/' });
+    customerId: order.stripe_customer_id, successPath: '/portal/cloud/?activated=1', cancelPath: '/portal/cloud/', promotion });
   return reply(200, { url });
 }
 
@@ -316,16 +345,18 @@ async function confirmedPaid(ctx: StoreContext, config: Configuration, binding: 
     && (totals.amount_shipping ?? 0) === binding.shipping_minor);
   let discount = 0;
   if (binding.coupon_id) {
-    // The bound promotion and its product-scoped coupon are re-read; embedded fields never decide.
+    // The bound promotion and its scoped coupon are re-read; embedded fields never decide.
     requireValue(typeof binding.promotion_id === 'string' && PROMOTION.test(binding.promotion_id)
       && config.coupons.includes(binding.coupon_id) && config.promotions.includes(binding.promotion_id));
     const bound = { ...config, coupons: [binding.coupon_id], selectedPromotion: binding.promotion_id };
     const promotion = await stripeRequest(ctx as CommerceContext, bound, `promotion_codes/${binding.promotion_id}`, 'GET');
     requireValue(promotion.object === 'promotion_code' && promotion.id === binding.promotion_id && promotion.livemode === false
       && object(promotion.promotion) && promotion.promotion.coupon === binding.coupon_id);
-    const coupon = await applicableCoupon(ctx as CommerceContext, bound, binding.coupon_id, false);
-    requireValue(coupon && coupon.applies_to.products[0] === accessProduct);
-    discount = typeof coupon!.percent_off === 'number' ? Math.round(2000 * coupon!.percent_off / 100) : Math.min(2000, coupon!.amount_off);
+    // Access coupons discount only the access line; a cloud order is its single Cloud line.
+    const coupon = await applicableCoupon(ctx as CommerceContext, bound, binding.coupon_id, false, subscription ? 'cloud' : 'access');
+    requireValue(coupon && (subscription || coupon.applies_to.products[0] === accessProduct));
+    const base = subscription ? binding.subtotal_minor : 2000;
+    discount = typeof coupon!.percent_off === 'number' ? Math.round(base * coupon!.percent_off / 100) : Math.min(base, coupon!.amount_off);
     requireValue(Array.isArray(session.discounts) && session.discounts.length === 1
       && session.discounts[0]?.promotion_code === binding.promotion_id);
   } else requireValue(!Array.isArray(session.discounts) || session.discounts.length === 0);
@@ -334,10 +365,12 @@ async function confirmedPaid(ctx: StoreContext, config: Configuration, binding: 
   const paid: Json = { total_minor: session.amount_total, discount_minor: discount, shipping_minor: binding.shipping_minor,
     customer_id: typeof session.customer === 'string' && CUSTOMER.test(session.customer) ? session.customer : null,
     shipping: binding.shipping_minor > 0 ? sanitizeShipping(session.collected_information?.shipping_details ?? session.shipping_details) : null };
-  if (session.amount_total === 0) {
-    requireValue(session.payment_status === 'no_payment_required' && !subscription && session.payment_intent === null);
+  if (session.amount_total === 0 && !subscription) {
+    requireValue(session.payment_status === 'no_payment_required' && session.payment_intent === null);
   } else if (subscription) {
-    requireValue(session.payment_status === 'paid' && typeof session.subscription === 'string' && SUBSCRIPTION.test(session.subscription));
+    // A fully discounted first month settles as no_payment_required; the card is still collected.
+    requireValue((session.payment_status === 'paid' || (session.amount_total === 0 && session.payment_status === 'no_payment_required'))
+      && typeof session.subscription === 'string' && SUBSCRIPTION.test(session.subscription));
     const sub = await stripeRequest(ctx as CommerceContext, config, `subscriptions/${session.subscription}`, 'GET');
     requireValue(sub.object === 'subscription' && sub.id === session.subscription && sub.livemode === false && SUB_STATUS.includes(sub.status));
     const periodEnd = sub.current_period_end ?? sub.items?.data?.[0]?.current_period_end;
@@ -493,7 +526,7 @@ export async function handleStore(req: Request, ctx: StoreContext): Promise<Resp
     const account = await member(req, ctx);
     if (account instanceof Response) return account;
     if (path === '/api/store/shop') return await shopCheckout(req, ctx, config, account);
-    if (path === '/api/store/cloud') return await cloudCheckout(ctx, config, account);
+    if (path === '/api/store/cloud') return await cloudCheckout(req, ctx, config, account);
     if (path === '/api/store/billing') return await billingPortal(ctx, config, account);
     return await selfRefund(req, ctx, config, account);
   } catch { return reply(503, { error: 'Checkout is temporarily unavailable. Please try again.' }); }

@@ -95,7 +95,13 @@ async function discountCode(req: Request): Promise<string | null> {
   return body.discountCode;
 }
 
-export async function approvedPromotion(ctx: CommerceContext, config: Configuration, code: string): Promise<Json | null> {
+/** 'access' coupons name exactly the Beta Access product. 'cloud' coupons name no product: a SKAGER
+ * Cloud session holds only the Cloud line item, so the order itself scopes the discount. The two
+ * scopes never accept each other's coupons. */
+export type CouponScope = 'access' | 'cloud';
+
+export async function approvedPromotion(ctx: CommerceContext, config: Configuration, code: string,
+                                        scope: CouponScope = 'access'): Promise<Json | null> {
   const query = new URLSearchParams({ code, active: 'true', limit: '10' });
   const list = await stripeRequest(ctx, config, `promotion_codes?${query}`, 'GET');
   requireValue(list.object === 'list' && list.has_more === false && Array.isArray(list.data)
@@ -117,25 +123,33 @@ export async function approvedPromotion(ctx: CommerceContext, config: Configurat
     || (promotion.expires_at !== null && (!integer(promotion.expires_at) || promotion.expires_at <= now))
     || (promotion.max_redemptions !== null && (!integer(promotion.max_redemptions)
       || !integer(promotion.times_redeemed) || promotion.times_redeemed >= promotion.max_redemptions))) return null;
-  const coupon = await applicableCoupon(ctx, config, promotion.promotion.coupon, true);
+  const coupon = await applicableCoupon(ctx, config, promotion.promotion.coupon, true, scope);
   if (!coupon) return null;
   return { promotion_id: promotion.id, coupon_id: coupon.id };
 }
 
-export async function applicableCoupon(ctx: CommerceContext, config: Configuration,
-                                couponId: string, available: boolean): Promise<Json | null> {
+export async function applicableCoupon(ctx: CommerceContext, config: Configuration, couponId: string,
+                                       available: boolean, scope: CouponScope = 'access'): Promise<Json | null> {
   requireValue(config.coupons.includes(couponId) && /^[A-Za-z0-9_-]{1,128}$/.test(couponId));
-  requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(config.price));
-  const price = await stripeRequest(ctx, config, `prices/${config.price}`, 'GET');
-  if (price.object !== 'price' || price.id !== config.price || price.livemode !== false
-    || price.currency !== 'usd' || price.unit_amount !== 2000 || price.type !== 'one_time'
-    || price.recurring !== null || typeof price.product !== 'string' || !/^prod_[A-Za-z0-9]{8,128}$/.test(price.product)
-    || (available && price.active !== true)) return null;
-  // applies_to is includable. Absence never establishes product applicability.
+  let product: string | null = null;
+  if (scope === 'access') {
+    requireValue(/^price_[A-Za-z0-9]{8,128}$/.test(config.price));
+    const price = await stripeRequest(ctx, config, `prices/${config.price}`, 'GET');
+    if (price.object !== 'price' || price.id !== config.price || price.livemode !== false
+      || price.currency !== 'usd' || price.unit_amount !== 2000 || price.type !== 'one_time'
+      || price.recurring !== null || typeof price.product !== 'string' || !/^prod_[A-Za-z0-9]{8,128}$/.test(price.product)
+      || (available && price.active !== true)) return null;
+    product = price.product;
+  } else requireValue(scope === 'cloud');
+  // applies_to is includable and is always requested. Absence never establishes product
+  // applicability for access. A cloud coupon must name no product at all.
   const coupon = await stripeRequest(ctx, config, `coupons/${couponId}?expand%5B%5D=applies_to`, 'GET');
-  if (coupon.object !== 'coupon' || coupon.id !== couponId || coupon.livemode !== false
-    || !object(coupon.applies_to) || !Array.isArray(coupon.applies_to.products)
-    || coupon.applies_to.products.length !== 1 || coupon.applies_to.products[0] !== price.product) return null;
+  if (coupon.object !== 'coupon' || coupon.id !== couponId || coupon.livemode !== false) return null;
+  const products = object(coupon.applies_to) ? coupon.applies_to.products : undefined;
+  if (scope === 'access' && (!Array.isArray(products) || products.length !== 1 || products[0] !== product)) return null;
+  if (scope === 'cloud' && (!(coupon.applies_to === null || coupon.applies_to === undefined
+      || (Array.isArray(products) && products.length === 0))
+    || !['once', 'repeating', 'forever'].includes(coupon.duration))) return null;
   const now = Math.floor((ctx.now?.() ?? Date.now()) / 1000);
   // Redemption availability belongs to creation, not historical settlement.
   if (available && (coupon.valid !== true
