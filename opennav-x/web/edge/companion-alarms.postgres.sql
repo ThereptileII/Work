@@ -64,9 +64,12 @@ BEGIN
   PERFORM public.companion_alarm_put(owner,device,rule,'battery.soc','State of charge','%','below',30,2,false);
   UPDATE skager_private.cloud_telemetry_latest SET items = '{"battery.soc":{"v":10,"age":1,"q":"live"}}' WHERE device_id = device;
   IF public.cloud_alarm_check(device) <> 0 THEN RAISE EXCEPTION 'Disabled alarm raised'; END IF;
+  -- Saving checks at once: a limit already passed alarms immediately, once.
   result := public.companion_alarm_put(owner,device,rule,'battery.soc','State of charge','%','below',30,2,true);
-  IF result->'alarm'->>'state' <> 'unknown' THEN RAISE EXCEPTION 'Change kept the old state'; END IF;
-  IF public.cloud_alarm_check(device) <> 1 THEN RAISE EXCEPTION 'Re-enabled alarm not raised'; END IF;
+  IF result->'alarm'->>'state' <> 'alarm' OR (result->>'raised')::int <> 1 THEN
+    RAISE EXCEPTION 'Saved alarm not checked at once: %', result;
+  END IF;
+  IF public.cloud_alarm_check(device) <> 0 THEN RAISE EXCEPTION 'Alarm raised twice after saving'; END IF;
 
   -- "Above" alarms, and at most 20 per boat.
   PERFORM public.companion_alarm_put(owner,device,null,'wind.true_speed','True wind speed','kn','above',25,1,true);

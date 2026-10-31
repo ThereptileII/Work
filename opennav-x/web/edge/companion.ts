@@ -6,6 +6,7 @@
  * Cookies are refused, so a browser session can never be used here and these routes need no
  * CSRF check. Tokens are stored only as SHA-256. */
 import type { CloudContext } from './cloud.ts';
+import { dispatchPush, inBackground } from './push.ts';
 import { APP_STATE, TELEMETRY_KEYS, jsonBody, object, only, publicCloud, publicDevice, randomHex, reply, sha256,
   validAnchor, validTelemetry } from './cloud.ts';
 
@@ -160,6 +161,8 @@ async function route(req: Request, ctx: CloudContext, path: string, phone: Phone
       p_threshold: rule.threshold, p_margin: rule.margin, p_enabled: rule.enabled }));
     if (result.state === 'limit') return reply(409, { error: 'A boat can have up to 20 alarms.' });
     if (result.state !== 'ok') return reply(404, { error: 'Alarm not found.' });
+    // A limit that is already passed alarms at once, and is delivered like any other.
+    if (Number(result.raised) > 0) await inBackground(dispatchPush(ctx));
     return reply(200, { alarm: publicAlarm(result.alarm) });
   }
   if (path === '/api/companion/alarm/delete') {

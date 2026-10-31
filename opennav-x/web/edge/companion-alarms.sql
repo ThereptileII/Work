@@ -117,7 +117,7 @@ create function public.companion_alarm_put(p_account_id uuid, p_device_id uuid, 
   p_label text, p_unit text, p_direction text, p_threshold double precision, p_margin double precision,
   p_enabled boolean) returns jsonb
 language plpgsql security definer set search_path = '' as $$
-declare r skager_private.cloud_alarm_rules;
+declare r skager_private.cloud_alarm_rules; v_raised integer;
 begin
   if not skager_private.companion_owns_boat(p_account_id, p_device_id) then
     return jsonb_build_object('state', 'unknown');
@@ -140,7 +140,10 @@ begin
       returning * into r;
     if r.id is null then return jsonb_build_object('state', 'unknown'); end if;
   end if;
-  return jsonb_build_object('state', 'ok', 'alarm', skager_private.cloud_alarm_json(r));
+  -- Checked at once against the latest boat data: a limit already passed alarms now.
+  v_raised := public.cloud_alarm_check(p_device_id);
+  select * into r from skager_private.cloud_alarm_rules where id = r.id;
+  return jsonb_build_object('state', 'ok', 'alarm', skager_private.cloud_alarm_json(r), 'raised', v_raised);
 end $$;
 
 create function public.companion_alarm_delete(p_account_id uuid, p_id bigint) returns jsonb
