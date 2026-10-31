@@ -9,6 +9,11 @@
   the apparent wind and the GPS speed over ground. It is the wind over the
   ground, so a current does not distort it, and it is marked as calculated.
   True wind sent by an instrument is still used first.
+- **SKAGER Cloud**: linking shows a QR code. Scan it with your phone's camera,
+  sign in and approve; the pairing code is filled in for you.
+- **SKAGER Helm**: the phone shows and controls only SKAGER, including its own
+  menus and dialogs. Other programs on the PC are never shown on the phone, and
+  a touch never reaches them; SKAGER is brought to the front instead.
 
 ## Earlier in 0.4.0-beta2.9
 
