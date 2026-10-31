@@ -6,8 +6,9 @@ name: SKAGER release (update feed, account download, public source)
 #   2. the download in the account portal at beta.skager.app;
 #   3. a release in the public repository ThereptileII/SKAGER with the corresponding
 #      source, notices, release notes and checksums (not the installer).
-# The feed's signature lasts 24 hours; the schedule renews it (schedules run only
-# from the default branch, so 'renew' can also be started by hand).
+# The feed's signature lasts 24 hours; the schedule renews it. Schedules and manual
+# runs need this file on the default branch (main); the tools come from the release
+# branch named by the repository variable SKAGER_RELEASE_REF.
 #
 # Secrets (owner-entered): SKAGER_UPDATE_TARGETS_KEY, SKAGER_UPDATE_SNAPSHOT_KEY,
 # SKAGER_UPDATE_TIMESTAMP_KEY (never the root key), R2_RELEASE_ACCESS_KEY_ID,
@@ -77,6 +78,9 @@ jobs:
           fi
       - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
         with:
+          # A schedule runs from main, which does not carry the release tools: it uses the
+          # branch releases are built from (repository variable SKAGER_RELEASE_REF).
+          ref: ${{ github.event_name == 'schedule' && vars.SKAGER_RELEASE_REF || github.sha }}
           persist-credentials: false
       - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
         with:
