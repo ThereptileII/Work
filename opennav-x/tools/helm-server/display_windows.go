@@ -16,7 +16,8 @@ import (
 	"golang.org/x/sys/windows"
 )
 
-// Windows display: GDI BitBlt of the SKAGER window (or the primary screen).
+// Windows display: SKAGER's own windows, drawn from their content (see
+// display_windows_owned.go), or the primary screen when no window is given.
 // A finger on the phone becomes a touch contact on the PC (InjectTouchInput),
 // so SKAGER gets exactly what its own touchscreen sends: a swipe scrolls a list
 // instead of clicking the row under it. Secondary click, wheel and keys use
@@ -193,6 +194,7 @@ var virtualKeys = map[string]struct {
 type windowsDisplay struct {
 	mu     sync.Mutex
 	hwnd   uintptr
+	pid    uint32         // SKAGER's process: only its windows are shown and touched
 	touch  *touchInjector // nil: mouse only
 	at     point          // screen position of the last PointerMove
 	held   bool           // a touch contact is down
@@ -218,6 +220,9 @@ func openPlatformDisplay(target string) (Display, error) {
 			return nil, errors.New("invalid window handle")
 		}
 		d.hwnd = uintptr(v)
+		if d.pid = windowProcess(d.hwnd); d.pid == 0 {
+			return nil, errors.New("window not found")
+		}
 	}
 	d.touch = startTouch()
 	return d, nil
@@ -393,9 +398,16 @@ func (d *windowsDisplay) Capture(dst *image.RGBA) (*image.RGBA, error) {
 	if err := d.ensureBitmap(w, h); err != nil {
 		return dst, err
 	}
-	screen, _, _ := procGetDC.Call(0)
-	ok, _, _ := procBitBlt.Call(d.memDC, 0, 0, uintptr(w), uintptr(h), screen, uintptr(r.Min.X), uintptr(r.Min.Y), srcCopy|captureBlt)
-	procReleaseDC.Call(0, screen)
+	var ok uintptr
+	if d.hwnd != 0 {
+		if composeOwned(d.memDC, d.hwnd, d.pid, r) {
+			ok = 1
+		}
+	} else {
+		screen, _, _ := procGetDC.Call(0)
+		ok, _, _ = procBitBlt.Call(d.memDC, 0, 0, uintptr(w), uintptr(h), screen, uintptr(r.Min.X), uintptr(r.Min.Y), srcCopy|captureBlt)
+		procReleaseDC.Call(0, screen)
+	}
 	if ok == 0 {
 		// The secure desktop (lock screen, UAC prompt) cannot be captured.
 		return dst, ErrSurfaceUnavailable
@@ -439,6 +451,12 @@ func (d *windowsDisplay) PointerMove(x, y int) error {
 	d.mu.Unlock()
 	if held {
 		return d.touch.send(pointerUpdate|pointerInRange|pointerInContact, at)
+	}
+	// Another program in front of SKAGER never gets Helm's touches: bring
+	// SKAGER forward instead, and the next touch reaches it.
+	if d.hwnd != 0 && !ownsPoint(d.pid, at) {
+		raise(d.hwnd)
+		return ErrSurfaceUnavailable
 	}
 	vx, _, _ := procGetSystemMetrics.Call(smXVirtualScreen)
 	vy, _, _ := procGetSystemMetrics.Call(smYVirtualScreen)
@@ -492,10 +510,22 @@ func (d *windowsDisplay) Wheel(notches float64) error {
 	return d.mouse(mouseWheel, 0, 0, uint32(int32(notches*120)))
 }
 
+// typingTarget refuses keys while another program has the keyboard.
+func (d *windowsDisplay) typingTarget() error {
+	if d.hwnd != 0 && !ownsForeground(d.pid) {
+		raise(d.hwnd)
+		return ErrSurfaceUnavailable
+	}
+	return nil
+}
+
 func (d *windowsDisplay) Key(name string) error {
 	k, ok := virtualKeys[name]
 	if !ok {
 		return errInvalidInput
+	}
+	if err := d.typingTarget(); err != nil {
+		return err
 	}
 	var flags uint32
 	if k.extended {
@@ -515,6 +545,9 @@ func (d *windowsDisplay) Text(text string) error {
 	}
 	if len(in) == 0 {
 		return nil
+	}
+	if err := d.typingTarget(); err != nil {
+		return err
 	}
 	return d.send(unsafe.Pointer(&in[0]), len(in), unsafe.Sizeof(in[0]))
 }
