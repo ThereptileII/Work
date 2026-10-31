@@ -137,6 +137,9 @@ jobs:
             mkdir -p out staging
             $R2 get operator/beta/policy.json out/policy.json
             $R2 get operator/beta/selection.json out/selection.json
+            # The selection pins the build's release manifest and qualification by hash.
+            $R2 get operator/beta/RELEASE.json staging/RELEASE.json
+            $R2 get operator/beta/QUALIFICATION.json staging/QUALIFICATION.json
             commit=$(python3 -c "import json;print(json.load(open('out/policy.json'))['commit'])")
             echo "COMMIT=$commit" >> "$GITHUB_ENV"
             for name in $(python3 -c "import json,os;p=json.load(open('out/policy.json'));print(' '.join(os.path.basename(p[k]['path']) for k in ('releaseNotes','installer','recovery','correspondingSource','notices')))"); do
@@ -166,6 +169,8 @@ jobs:
           for f in "$n.targets.json" "$n.snapshot.json" timestamp.json; do $R2 verify "repo/public/$f" "beta/$f"; done
           $R2 put out/policy.json operator/beta/policy.json
           $R2 put out/selection.json operator/beta/selection.json
+          $R2 put staging/RELEASE.json operator/beta/RELEASE.json
+          $R2 put staging/QUALIFICATION.json operator/beta/QUALIFICATION.json
           python3 -c "import json;print('feed version', $n, 'expires', json.load(open('repo/public/timestamp.json'))['signed']['expires'])"
 
       - name: Offer the build for download in the account portal
