@@ -84,6 +84,9 @@ bool ApplyEvent(HelmSnapshot &snapshot, const std::string &line,
                 std::atomic<std::int64_t> *input_at = nullptr);
 
 // The command lines SKAGER sends.
+// `skager-helm -qr` output: {"size":N,"rows":["0101…",…]}. False unless every row is
+// exactly N characters of '0'/'1' and 21 <= N <= 177.
+bool ParseQrMatrix(const std::string &json, int &size, std::vector<std::string> &rows);
 std::string PairCommand();
 std::string CancelPairCommand();
 std::string RevokeCommand(const std::string &device_id);

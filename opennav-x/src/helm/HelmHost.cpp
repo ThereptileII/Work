@@ -136,6 +136,27 @@ bool ApplyEvent(HelmSnapshot &s, const std::string &line, std::chrono::steady_cl
   return true;
 }
 
+bool ParseQrMatrix(const std::string &json, int &size, std::vector<std::string> &rows) {
+  size = 0;
+  rows.clear();
+  rapidjson::Document doc;
+  if (doc.Parse(json.c_str()).HasParseError() || !doc.IsObject() || !doc.HasMember("size") || !doc["size"].IsInt() ||
+      !doc.HasMember("rows") || !doc["rows"].IsArray())
+    return false;
+  const int n = doc["size"].GetInt();
+  if (n < 21 || n > 177 || static_cast<int>(doc["rows"].Size()) != n) return false;
+  std::vector<std::string> out;
+  for (const auto &row : doc["rows"].GetArray()) {
+    if (!row.IsString() || static_cast<int>(row.GetStringLength()) != n) return false;
+    std::string text = row.GetString();
+    if (text.find_first_not_of("01") != std::string::npos) return false;
+    out.push_back(std::move(text));
+  }
+  size = n;
+  rows = std::move(out);
+  return true;
+}
+
 std::string PairCommand() { return R"({"cmd":"pair"})"; }
 std::string CancelPairCommand() { return R"({"cmd":"pair_cancel"})"; }
 std::string RevokeCommand(const std::string &id) { return R"({"cmd":"revoke","device":)" + Quote(id) + "}"; }

@@ -85,7 +85,6 @@ extern s52plib *ps52plib;
 #include <wx/filefn.h>
 #include <wx/filename.h>
 #include <wx/utils.h>
-#include <rapidjson/document.h>
 #include "diagnostics/TestEarlyStartupTrace.h"
 #include "ocpn_plugin.h"
 #ifdef __WXMSW__
@@ -785,21 +784,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     wxArrayString output, errors;
     const long status = wxExecute("\"" + executable + "\" -qr " + wxString::FromUTF8(url), output, errors,
                                   wxEXEC_SYNC | wxEXEC_NOEVENTS | wxEXEC_HIDE_CONSOLE);
-    if (status != 0 || output.size() != 1) return qr;
-    rapidjson::Document doc;
-    const auto json = output[0].ToStdString(wxConvUTF8);
-    if (doc.Parse(json.c_str()).HasParseError() || !doc.IsObject() || !doc.HasMember("size") ||
-        !doc["size"].IsInt() || !doc.HasMember("rows") || !doc["rows"].IsArray())
-      return qr;
-    const int size = doc["size"].GetInt();
-    if (size < 21 || size > 177 || static_cast<int>(doc["rows"].Size()) != size) return qr;
-    for (const auto &row : doc["rows"].GetArray()) {
-      if (!row.IsString() || static_cast<int>(row.GetStringLength()) != size) return application::CloudQr{};
-      std::string text = row.GetString();
-      if (text.find_first_not_of("01") != std::string::npos) return application::CloudQr{};
-      qr.rows.push_back(std::move(text));
-    }
-    qr.size = size;
+    if (status != 0 || output.size() != 1 ||
+        !helm::ParseQrMatrix(output[0].ToStdString(wxConvUTF8), qr.size, qr.rows))
+      return application::CloudQr{};
     return qr;
   };
   actions.cloud.alerts = [](const std::vector<std::pair<std::string, std::string>> &critical) {

@@ -44,7 +44,25 @@ std::string PairingLine() {
   return line + "]}}";
 }
 
+void QrMatrix() {
+  // The Cloud pairing QR code comes from skager-helm -qr; anything malformed is dropped.
+  const std::string row(21, '1'), zero(21, '0');
+  std::string json = R"({"size":21,"rows":[)";
+  for (int i = 0; i < 21; ++i) json += std::string(i ? "," : "") + "\"" + (i % 2 ? row : zero) + "\"";
+  json += "]}";
+  int size = 0;
+  std::vector<std::string> rows;
+  CHECK(ParseQrMatrix(json, size, rows) && size == 21 && rows.size() == 21 && rows[1] == row);
+  CHECK(!ParseQrMatrix(R"({"size":21,"rows":["0101"]})", size, rows) && size == 0 && rows.empty());
+  std::string bad = json;
+  bad[bad.find('1')] = '2';
+  CHECK(!ParseQrMatrix(bad, size, rows));
+  CHECK(!ParseQrMatrix("not json", size, rows));
+  CHECK(!ParseQrMatrix(R"({"size":5,"rows":[]})", size, rows));
+}
+
 void Events() {
+  QrMatrix();
   HelmSnapshot s;
   const auto now = std::chrono::steady_clock::now();
   std::atomic<std::int64_t> input{0};
