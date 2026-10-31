@@ -67,9 +67,11 @@ jobs:
     steps:
       - name: Release secrets are configured
         env:
-          HAVE: ${{ secrets.SKAGER_UPDATE_TARGETS_KEY != '' && secrets.SKAGER_UPDATE_SNAPSHOT_KEY != '' && secrets.SKAGER_UPDATE_TIMESTAMP_KEY != '' && secrets.R2_RELEASE_ACCESS_KEY_ID != '' && secrets.R2_RELEASE_SECRET_ACCESS_KEY != '' && secrets.SKAGER_PUBLIC_REPO_TOKEN != '' }}
+          HAVE: ${{ secrets.SKAGER_UPDATE_TARGETS_KEY != '' && secrets.SKAGER_UPDATE_SNAPSHOT_KEY != '' && secrets.SKAGER_UPDATE_TIMESTAMP_KEY != '' && secrets.R2_RELEASE_ACCESS_KEY_ID != '' && secrets.R2_RELEASE_SECRET_ACCESS_KEY != '' }}
+          PUBLIC: ${{ secrets.SKAGER_PUBLIC_REPO_TOKEN != '' }}
         run: |
-          if [ "$HAVE" != true ]; then
+          # Renewing the signature needs only the feed and storage secrets.
+          if [ "$HAVE" != true ] || { [ "$MODE" = release ] && [ "$PUBLIC" != true ]; }; then
             echo "::error::Release secrets are missing (see the header of skager-release.yml); nothing was published."
             exit 1
           fi
