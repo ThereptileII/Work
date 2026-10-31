@@ -195,6 +195,8 @@ private:
   std::chrono::steady_clock::time_point weather_refreshed_at_{};
   wxString weather_message_;
   cloud::CloudSnapshot cloud_;
+  std::string cloud_qr_code_;          // The pairing code cloud_qr_ was made for.
+  application::CloudQr cloud_qr_;
   int cloud_shape_ = -1;
   helm::HelmSnapshot helm_;
   std::string helm_shape_;

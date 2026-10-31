@@ -36,6 +36,7 @@
 #include "integration/WeatherOverlay.h"
 #include "weather/GribStream.h"
 #include "weather/IxForecastTransport.h"
+#include "cloud/CloudProtocol.h"
 #include "cloud/IxCloudTransport.h"
 #include "integration/OnlineCloud.h"
 #include "helm/HelmHost.h"
@@ -84,6 +85,7 @@ extern s52plib *ps52plib;
 #include <wx/filefn.h>
 #include <wx/filename.h>
 #include <wx/utils.h>
+#include <rapidjson/document.h>
 #include "diagnostics/TestEarlyStartupTrace.h"
 #include "ocpn_plugin.h"
 #ifdef __WXMSW__
@@ -95,6 +97,7 @@ extern s52plib *ps52plib;
 #endif
 
 #include <algorithm>
+#include <cctype>
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -769,6 +772,36 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
     return online_cloud ? online_cloud->Share(on) : cloud_unavailable();
   };
   actions.cloud.refresh = [] { if (online_cloud) online_cloud->Refresh(); };
+  // skager-helm already carries a QR encoder (and its notices); ask it for the
+  // matrix of the link page with the code filled in. No Helm server is started.
+  actions.cloud.qr = [](const std::string &user_code) {
+    application::CloudQr qr;
+    if (user_code.size() != 8 ||
+        !std::all_of(user_code.begin(), user_code.end(), [](unsigned char c) { return std::isalnum(c); }))
+      return qr;
+    const auto executable = wxString::FromUTF8(HelmExecutable());
+    if (!wxFileExists(executable)) return qr;
+    const auto url = std::string(cloud::kOrigin) + "/link/?code=" + cloud::FormatUserCode(user_code);
+    wxArrayString output, errors;
+    const long status = wxExecute("\"" + executable + "\" -qr " + wxString::FromUTF8(url), output, errors,
+                                  wxEXEC_SYNC | wxEXEC_NOEVENTS | wxEXEC_HIDE_CONSOLE);
+    if (status != 0 || output.size() != 1) return qr;
+    rapidjson::Document doc;
+    const auto json = output[0].ToStdString(wxConvUTF8);
+    if (doc.Parse(json.c_str()).HasParseError() || !doc.IsObject() || !doc.HasMember("size") ||
+        !doc["size"].IsInt() || !doc.HasMember("rows") || !doc["rows"].IsArray())
+      return qr;
+    const int size = doc["size"].GetInt();
+    if (size < 21 || size > 177 || static_cast<int>(doc["rows"].Size()) != size) return qr;
+    for (const auto &row : doc["rows"].GetArray()) {
+      if (!row.IsString() || static_cast<int>(row.GetStringLength()) != size) return application::CloudQr{};
+      std::string text = row.GetString();
+      if (text.find_first_not_of("01") != std::string::npos) return application::CloudQr{};
+      qr.rows.push_back(std::move(text));
+    }
+    qr.size = size;
+    return qr;
+  };
   actions.cloud.alerts = [](const std::vector<std::pair<std::string, std::string>> &critical) {
     if (online_cloud && !demo && !restart && !(commissioning && commissioning->Replaying()))
       online_cloud->ObserveAlerts(critical, vessel::Clock::now());

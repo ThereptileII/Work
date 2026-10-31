@@ -4,6 +4,7 @@
 #include "ui/ProductPanel.h"
 #include "ui/Sheet.h"
 #include <wx/datetime.h>
+#include <algorithm>
 
 namespace opennav::ui {
 namespace {
@@ -79,12 +80,42 @@ void ProductPanel::CloudPage() {
     return;
   }
   case cloud::LinkState::WaitingForApproval: {
-    Visual("Pairing code", 196, [this](XNavPainter &p, wxDC &, int width) {
-      p.Card(0, 0, width, 192, "PAIRING CODE");
-      p.TextWeight(W(cloud::FormatUserCode(cloud_.user_code)), 24, 44, 40, p.c.primary, 700, width - 48);
-      p.Wrapped("On your phone or computer, open " + LinkAddress(cloud_) +
-                ", sign in and enter this code.", 24, 108, 14, 21, width - 48, p.c.secondary, 3);
-    });
+    if (cloud_qr_code_ != cloud_.user_code) {
+      cloud_qr_code_ = cloud_.user_code;
+      cloud_qr_ = actions_.cloud.qr ? actions_.cloud.qr(cloud_.user_code) : application::CloudQr{};
+    }
+    if (cloud_qr_.size) {
+      const auto qr = cloud_qr_;
+      const int side = 236;
+      Visual("Pairing code", side + 112, [this, qr, side](XNavPainter &p, wxDC &dc, int width) {
+        p.Card(0, 0, width, side + 108, "LINK TO YOUR ACCOUNT");
+        // Dark modules on light, with the quiet zone, in every light mode: cameras need contrast.
+        const int modules = qr.size + 8;
+        const int cell = std::max(2, p.D(side - 24) / modules);
+        const int x0 = p.D(20), y0 = p.D(48);
+        dc.SetPen(*wxTRANSPARENT_PEN);
+        dc.SetBrush(wxBrush(wxColour(255, 255, 255)));
+        dc.DrawRectangle(x0, y0, cell * modules, cell * modules);
+        dc.SetBrush(wxBrush(wxColour(0, 0, 0)));
+        for (int y = 0; y < qr.size; ++y)
+          for (int x = 0; x < qr.size; ++x)
+            if (qr.rows[static_cast<size_t>(y)][static_cast<size_t>(x)] == '1')
+              dc.DrawRectangle(x0 + (x + 4) * cell, y0 + (y + 4) * cell, cell, cell);
+        const int text_x = side + 12, text_width = width - text_x - 20;
+        if (text_width < 160) return;
+        p.Wrapped("Scan with your phone's camera and sign in. Or open " + LinkAddress(cloud_) +
+                  " and enter the code.", text_x, 52, 14, 21, text_width, p.c.secondary, 4);
+        p.Text("PAIRING CODE", text_x, 150, 11, p.c.muted, true);
+        p.TextWeight(W(cloud::FormatUserCode(cloud_.user_code)), text_x, 168, 30, p.c.primary, 700, text_width);
+      });
+    } else {
+      Visual("Pairing code", 196, [this](XNavPainter &p, wxDC &, int width) {
+        p.Card(0, 0, width, 192, "PAIRING CODE");
+        p.TextWeight(W(cloud::FormatUserCode(cloud_.user_code)), 24, 44, 40, p.c.primary, 700, width - 48);
+        p.Wrapped("On your phone or computer, open " + LinkAddress(cloud_) +
+                  ", sign in and enter this code.", 24, 108, 14, 21, width - 48, p.c.secondary, 3);
+      });
+    }
     LiveText([this](const ProductState &) {
       const auto left = std::chrono::duration_cast<std::chrono::seconds>(
           cloud_.code_expires - std::chrono::system_clock::now()).count();

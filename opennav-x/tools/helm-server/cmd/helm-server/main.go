@@ -4,6 +4,7 @@ package main
 
 import (
 	"context"
+	"encoding/json"
 	"flag"
 	"fmt"
 	"log"
@@ -27,10 +28,14 @@ func main() {
 	pair := flag.Bool("pair", false, "open a pairing window at start and print it (development)")
 	inputLog := flag.String("input-log", "", "test pattern only: append received input to this file")
 	version := flag.Bool("version", false, "print the version")
+	qrText := flag.String("qr", "", "print this text as a QR matrix (JSON) and exit; SKAGER uses it for the Cloud pairing code")
 	flag.Parse()
 	if *version {
 		fmt.Println("skager-helm", helm.Version)
 		return
+	}
+	if *qrText != "" {
+		os.Exit(printQR(*qrText))
 	}
 	logger := log.New(os.Stderr, "skager-helm: ", log.LstdFlags)
 	if *stateDir == "" {
@@ -156,4 +161,22 @@ func module(rows []string, x, y int) bool {
 		return false
 	}
 	return rows[y][x] == '1'
+}
+
+// printQR writes one QR matrix as JSON on stdout. Only short printable text is
+// accepted; nothing is read from or written to the network or the profile.
+func printQR(text string) int {
+	if len(text) > 256 || strings.IndexFunc(text, func(r rune) bool { return r < 0x20 || r > 0x7e }) >= 0 {
+		fmt.Fprintln(os.Stderr, "skager-helm: -qr takes up to 256 printable ASCII characters")
+		return 2
+	}
+	m, err := helm.EncodeQR(text)
+	if err != nil {
+		fmt.Fprintln(os.Stderr, "skager-helm: qr:", err)
+		return 1
+	}
+	if err := json.NewEncoder(os.Stdout).Encode(m); err != nil {
+		return 1
+	}
+	return 0
 }
