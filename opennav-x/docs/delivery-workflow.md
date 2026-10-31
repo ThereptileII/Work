@@ -54,6 +54,30 @@ source/license compliance. Native Windows and relevant boat functional evidence
 remain authoritative. Public launch also retains its legal, commercial and
 human GO/NO-GO requirements; promotion is not permission to open public access.
 
+## Every passed Staging build is released to three places
+
+User decision 2026-10-31. A Staging build that passes every gate is released by the
+`release` job at the end of `opennav-baseline.yml` (`.github/workflows/skager-release.yml`,
+`tools/release/`). Nothing is released from a failed or partial run.
+
+1. **Update feed (beta channel):** CI signs the feed with the targets, snapshot and
+   timestamp keys held as GitHub secrets. The root key never leaves the owner. The
+   operator state (trust configuration, version counter, current policy and selection)
+   lives in R2 under `operator/beta/`. The reserved version is stored before any metadata,
+   and the timestamp is uploaded last. A schedule renews the 24-hour timestamp every
+   8 hours. Schedules run only from the default branch; `mode: renew` starts it by hand.
+2. **Account download at beta.skager.app:** the job writes `portal/beta-releases.json`
+   (newest first, at most 16). The portal validates it like its reviewed catalog and
+   serves the feed's own files. If the list is missing or invalid, the reviewed catalog
+   in `web/edge/downloads.ts` is used.
+3. **Public repository ThereptileII/SKAGER:** a prerelease `v<version>` with the
+   corresponding source, its notices, the release notes and `SHA256SUMS.txt` (which also
+   lists the installer). The ready-to-install setup is distributed only through the
+   account download and the update feed. This user decision replaces "keep releases
+   draft while public access is closed" for these source releases. The internal Staging
+   GitHub Release stays a draft. Opening public sales and downloads still needs the
+   launch GO.
+
 ## Design validation is explicit opt-in
 
 Do not initiate or require design validation during promotion unless the user

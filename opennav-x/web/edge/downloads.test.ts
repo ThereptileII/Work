@@ -283,3 +283,28 @@ test('only selected signing consumes its verified account quota; denial and unce
     assert.deepEqual(calls.signer, []);
   }
 });
+
+test('a published list (written after a build passed Staging) replaces the reviewed catalog; feed files are signed', async () => {
+  const feed = { ...release, id: 'v0-4-0-beta2-10', version: '0.4.0-beta2.10', sourceCommit: 'd'.repeat(40), location: 'feed' as const,
+    qualification: { record: 'actions/runs/41239557637', sha256: 'b'.repeat(64) } };
+  let reads = 0;
+  const handle = createDownloadHandler([release], async () => { reads++; return [feed]; });
+  const { ctx, calls } = fixture();
+  const listed = await (await handle(request('GET'), ctx))!.json();
+  assert.deepEqual(listed.releases.map((r: any) => r.version), ['0.4.0-beta2.10']);
+  assert.ok(!JSON.stringify(listed).includes('actions/runs'), 'qualification references stay server-side');
+  const response = await handle(request('POST', JSON.stringify({ releaseId: feed.id, artifactId: 'installer' })), ctx);
+  assert.equal(response?.status, 200);
+  assert.equal(new URL(calls.signer[0][0].url).pathname, `/${DOWNLOAD_BUCKET}/beta/artifacts/${feed.sourceCommit}/Setup.exe`);
+  assert.equal(reads, 1, 'the list is cached between requests');
+});
+
+test('a missing, unreadable or invalid published list never removes the reviewed catalog', async () => {
+  for (const loader of [async () => null, async () => { throw Error(secret); }, async () => [{ ...release, channel: 'production' }],
+    async () => [{ ...release, location: 'elsewhere' }], async () => [{ ...release, qualification: { record: 'https://x', sha256: 'b'.repeat(64) } }]]) {
+    const handle = createDownloadHandler([release], loader as any);
+    const { ctx } = fixture();
+    const listed = await (await handle(request('GET'), ctx))!.json();
+    assert.deepEqual(listed.releases.map((r: any) => r.id), [release.id]);
+  }
+});

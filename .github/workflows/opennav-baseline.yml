@@ -948,3 +948,14 @@ jobs:
           path: staging-release
           if-no-files-found: error
           retention-days: 90
+
+  release:
+    # Owner decision 2026-10-31: a build that passed every gate above goes to the update
+    # feed, the account download and the public source repository (skager-release.yml).
+    name: Release to update feed, account download and public source
+    needs: publish-staging
+    uses: ./.github/workflows/skager-release.yml
+    with:
+      run_id: ${{ github.run_id }}
+      from_staging: true
+    secrets: inherit

@@ -1,6 +1,6 @@
 /** SCRUM-42: private staging downloads. No release is enabled by default. */
 import { csrfValid } from './platform.ts';
-import { signR2Download } from './r2-downloads.ts';
+import { readPublishedReleases, signR2Download } from './r2-downloads.ts';
 export { DOWNLOAD_BUCKET, DOWNLOAD_TTL_SECONDS } from './r2-downloads.ts';
 import type { Context } from './platform.ts';
 import { strictJson } from './commerce.ts';
@@ -14,6 +14,8 @@ type ArtifactId = typeof KINDS[number];
 export type DownloadArtifact = { id: ArtifactId; name: string; bytes: number; sha256: string };
 export type DownloadRelease = {
   id: string; sourceCommit: string; version: string; channel: 'staging';
+  // 'feed': the files are the update feed's own objects, beta/artifacts/<commit>/<name>.
+  location?: 'feed';
   qualification: { record: string; sha256: string };
   artifacts: readonly DownloadArtifact[];
 };
@@ -42,9 +44,11 @@ function snapshot(catalog: readonly DownloadRelease[]): readonly DownloadRelease
     ids.add(release.id);
     requireValue(typeof release.sourceCommit === 'string' && /^[0-9a-f]{40}$/.test(release.sourceCommit)
       && typeof release.version === 'string' && /^[0-9A-Za-z][0-9A-Za-z.+_-]{0,63}$/.test(release.version)
-      && release.channel === 'staging' && object(release.qualification)
+      && release.channel === 'staging' && (release.location === undefined || release.location === 'feed')
+      && object(release.qualification)
       && typeof release.qualification.record === 'string' && release.qualification.record.length <= 256
-      && /^docs\/evidence\/[a-z0-9_/-]+\.(?:json|md)$/.test(release.qualification.record)
+      && (/^docs\/evidence\/[a-z0-9_/-]+\.(?:json|md)$/.test(release.qualification.record)
+        || /^actions\/runs\/[1-9][0-9]{0,19}$/.test(release.qualification.record))
       && !release.qualification.record.includes('//') && typeof release.qualification.sha256 === 'string'
       && SHA256.test(release.qualification.sha256)
       && Array.isArray(release.artifacts) && release.artifacts.length === KINDS.length);
@@ -62,11 +66,12 @@ function snapshot(catalog: readonly DownloadRelease[]): readonly DownloadRelease
       return Object.freeze({ id: artifact.id, name: artifact.name, bytes: artifact.bytes, sha256: artifact.sha256 });
     });
     return Object.freeze({ id: release.id, version: release.version, sourceCommit: release.sourceCommit,
-      channel: release.channel, qualification: Object.freeze({ record: release.qualification.record,
+      channel: release.channel, ...(release.location ? { location: release.location } : {}), qualification: Object.freeze({ record: release.qualification.record,
         sha256: release.qualification.sha256 }), artifacts: Object.freeze(artifacts) });
   }));
 }
 function objectName(release: DownloadRelease, artifact: DownloadArtifact): string {
+  if (release.location === 'feed') return `beta/artifacts/${release.sourceCommit}/${artifact.name}`;
   return `${release.channel}/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`;
 }
 
@@ -127,8 +132,25 @@ async function sign(ctx: DownloadContext, release: DownloadRelease, artifact: Do
   return deadline(() => signR2Download(ctx.env, objectName(release, artifact), artifact.name), 8000);
 }
 
-export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[]) {
-  const catalog = snapshot(reviewedCatalog);
+type Published = (ctx: DownloadContext) => Promise<unknown | null>;
+const PUBLISHED_TTL_MS = 60_000;
+
+/** The reviewed catalog, or the list the release workflow published after a build passed all
+ * Staging gates (same validation; the feed's files). An unreadable list falls back to the reviewed one. */
+export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[], published?: Published) {
+  const reviewed = snapshot(reviewedCatalog);
+  let cached: { at: number; catalog: readonly DownloadRelease[] } | null = null;
+  async function current(ctx: DownloadContext): Promise<readonly DownloadRelease[]> {
+    if (!published) return reviewed;
+    if (cached && Date.now() - cached.at < PUBLISHED_TTL_MS) return cached.catalog;
+    let catalog = reviewed;
+    try {
+      const list = await deadline(() => published(ctx), 4000);
+      if (list !== null) catalog = snapshot(list as DownloadRelease[]);
+    } catch { catalog = reviewed; }
+    cached = { at: Date.now(), catalog };
+    return catalog;
+  }
   return async function handle(request: Request, ctx: DownloadContext): Promise<Response | null> {
     const url = new URL(request.url);
     if (url.pathname !== PATH) return null;
@@ -140,6 +162,7 @@ export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[
       if (request.method === 'POST' && !await csrfValid(request)) return reply({ error: 'Request rejected.' }, 403);
       const denied = await access(request, ctx);
       if (typeof denied !== 'string') return reply({ error: denied === 401 ? 'Sign in required.' : 'Active beta access required.' }, denied);
+      const catalog = await current(ctx);
       if (request.method === 'GET') return reply({ available: catalog.length > 0,
         reason: catalog.length ? null : 'Release qualification and secure download delivery are pending.',
         releases: catalog.map(({ qualification: _qualification, ...release }) => release) });
@@ -189,4 +212,5 @@ export const RELEASES: readonly DownloadRelease[] = [{
     { id: 'release-notes', name: 'SKAGER-Beta2-Release-Notes.md', bytes: 8545, sha256: '9c079184900911f9aaacdc31cde742dbd7c8232ca66d11e7f99f1999020166d8' },
   ],
 }];
-export const handleDownloads = createDownloadHandler(RELEASES);
+export const handleDownloads = createDownloadHandler(RELEASES,
+  ctx => readPublishedReleases(ctx.env, signed => ctx.fetch(signed)));

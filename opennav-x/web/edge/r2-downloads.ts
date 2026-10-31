@@ -7,7 +7,10 @@ export const R2_ACCOUNT_ID = '7869adcf376c630b175c94729321e016';
 export const R2_DOWNLOAD_ORIGIN = `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage.com`;
 const QUERY = ['response-content-disposition', 'X-Amz-Expires', 'X-Amz-Date', 'X-Amz-Algorithm',
   'X-Amz-Credential', 'X-Amz-SignedHeaders', 'X-Amz-Signature'];
-const OBJECT = /^staging\/[0-9a-f]{40}\/[a-z0-9][a-z0-9_-]{0,63}\/(?:installer|recovery|checksums|source|release-notes)\/[0-9a-f]{64}\/([A-Za-z0-9][A-Za-z0-9._-]{0,127})$/;
+// Reviewed-catalog objects, or the update feed's own release files (artifacts/<commit>/<name>).
+const OBJECT = /^(?:staging\/[0-9a-f]{40}\/[a-z0-9][a-z0-9_-]{0,63}\/(?:installer|recovery|checksums|source|release-notes)\/[0-9a-f]{64}|beta\/artifacts\/[0-9a-f]{40})\/([A-Za-z0-9][A-Za-z0-9._-]{0,127})$/;
+/** The download list the release workflow writes after a build passed (tools/release). */
+export const PUBLISHED_RELEASES_OBJECT = 'portal/beta-releases.json';
 const unavailable = () => new Error('Download unavailable');
 function requireValue(value: unknown): asserts value { if (!value) throw unavailable(); }
 
@@ -51,4 +54,23 @@ export async function signR2Download(env: Record<string, string | undefined>, ob
     return { url: url.href, expiresAt: new Date(expires).toISOString() };
   } catch { /* Never propagate an SDK exception containing credentials or bearer URLs. */ }
   throw unavailable();
+}
+
+/** Reads the published download list. Null when it does not exist yet; throws on anything else. */
+export async function readPublishedReleases(env: Record<string, string | undefined>,
+  transport: (request: Request) => Promise<Response>): Promise<unknown | null> {
+  requireValue(env.SKAGER_DOWNLOAD_BACKEND === 'r2' && env.R2_ACCOUNT_ID === R2_ACCOUNT_ID
+    && env.R2_DOWNLOAD_BUCKET === DOWNLOAD_BUCKET && /^[0-9a-f]{32}$/.test(env.R2_ACCESS_KEY_ID ?? '')
+    && /^[0-9a-f]{64}$/.test(env.R2_SECRET_ACCESS_KEY ?? ''));
+  const client = new AwsClient({ accessKeyId: env.R2_ACCESS_KEY_ID!, secretAccessKey: env.R2_SECRET_ACCESS_KEY!,
+    service: 's3', region: 'auto', retries: 0 });
+  const signed = await client.sign(new Request(`${R2_DOWNLOAD_ORIGIN}/${DOWNLOAD_BUCKET}/${PUBLISHED_RELEASES_OBJECT}`,
+    { method: 'GET' }));
+  let response: Response;
+  try { response = await transport(signed); } catch { throw unavailable(); }
+  if (response.status === 404) return null;
+  requireValue(response.ok);
+  const text = await response.text();
+  requireValue(text.length <= 64 * 1024);
+  return JSON.parse(text);
 }
