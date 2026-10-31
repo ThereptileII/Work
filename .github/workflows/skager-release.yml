@@ -1,0 +1,194 @@
+name: SKAGER release (update feed, account download, public source)
+
+# Every build that passed all SKAGER Staging gates goes to three places
+# (owner decision 2026-10-31, docs/delivery-workflow.md):
+#   1. the beta update feed, so SKAGER updates itself (signed here);
+#   2. the download in the account portal at beta.skager.app;
+#   3. a release in the public repository ThereptileII/SKAGER with the corresponding
+#      source, notices, release notes and checksums (not the installer).
+# The feed's signature lasts 24 hours; the schedule renews it. Schedules and manual
+# runs need this file on the default branch (main); the tools come from the release
+# branch named by the repository variable SKAGER_RELEASE_REF.
+#
+# Secrets (owner-entered): SKAGER_UPDATE_TARGETS_KEY, SKAGER_UPDATE_SNAPSHOT_KEY,
+# SKAGER_UPDATE_TIMESTAMP_KEY (never the root key), R2_RELEASE_ACCESS_KEY_ID,
+# R2_RELEASE_SECRET_ACCESS_KEY, SKAGER_PUBLIC_REPO_TOKEN (contents: write on
+# ThereptileII/SKAGER only).
+on:
+  workflow_call:
+    inputs:
+      run_id:
+        description: Staging run whose qualified build is released
+        type: string
+        required: true
+      from_staging:
+        description: called as the last job of that Staging run (after every gate passed)
+        type: boolean
+        default: false
+    secrets:
+      SKAGER_UPDATE_TARGETS_KEY: { required: false }
+      SKAGER_UPDATE_SNAPSHOT_KEY: { required: false }
+      SKAGER_UPDATE_TIMESTAMP_KEY: { required: false }
+      R2_RELEASE_ACCESS_KEY_ID: { required: false }
+      R2_RELEASE_SECRET_ACCESS_KEY: { required: false }
+      SKAGER_PUBLIC_REPO_TOKEN: { required: false }
+  workflow_dispatch:
+    inputs:
+      mode:
+        description: release a passed Staging run, or renew the feed signature
+        type: choice
+        options: [release, renew]
+        default: release
+      run_id:
+        description: Staging run id (release only)
+        type: string
+        required: false
+  schedule:
+    - cron: '17 */8 * * *'
+
+permissions:
+  contents: read
+  actions: read
+
+# One writer of the feed at a time: its version counter must only move forward.
+concurrency:
+  group: skager-update-feed
+  cancel-in-progress: false
+
+jobs:
+  feed:
+    runs-on: ubuntu-24.04
+    timeout-minutes: 60
+    env:
+      MODE: ${{ (github.event_name == 'schedule' || inputs.mode == 'renew') && 'renew' || 'release' }}
+      RUN_ID: ${{ inputs.run_id }}
+      R2_RELEASE_ACCESS_KEY_ID: ${{ secrets.R2_RELEASE_ACCESS_KEY_ID }}
+      R2_RELEASE_SECRET_ACCESS_KEY: ${{ secrets.R2_RELEASE_SECRET_ACCESS_KEY }}
+      GH_TOKEN: ${{ github.token }}
+    steps:
+      - name: Release secrets are configured
+        env:
+          HAVE: ${{ secrets.SKAGER_UPDATE_TARGETS_KEY != '' && secrets.SKAGER_UPDATE_SNAPSHOT_KEY != '' && secrets.SKAGER_UPDATE_TIMESTAMP_KEY != '' && secrets.R2_RELEASE_ACCESS_KEY_ID != '' && secrets.R2_RELEASE_SECRET_ACCESS_KEY != '' }}
+          PUBLIC: ${{ secrets.SKAGER_PUBLIC_REPO_TOKEN != '' }}
+        run: |
+          # Renewing the signature needs only the feed and storage secrets.
+          if [ "$HAVE" != true ] || { [ "$MODE" = release ] && [ "$PUBLIC" != true ]; }; then
+            echo "::error::Release secrets are missing (see the header of skager-release.yml); nothing was published."
+            exit 1
+          fi
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+        with:
+          # A schedule runs from main, which does not carry the release tools: it uses the
+          # branch releases are built from (repository variable SKAGER_RELEASE_REF).
+          ref: ${{ github.event_name == 'schedule' && vars.SKAGER_RELEASE_REF || github.sha }}
+          persist-credentials: false
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/update-verifier/go.mod
+          cache-dependency-path: opennav-x/tools/update-verifier/go.sum
+      - name: Release tool self-test
+        run: python3 -m unittest -q opennav-x/tools/release/test_skager_release.py
+      - name: Build the feed signer
+        working-directory: opennav-x/tools/update-verifier
+        run: go build -trimpath -o "$RUNNER_TEMP/skager-repository" ./cmd/skager-repository
+
+      - name: Identify the qualified build of the passed Staging run
+        id: build
+        if: env.MODE == 'release'
+        env:
+          FROM_STAGING: ${{ inputs.from_staging && 'true' || 'false' }}
+        run: |
+          set -euo pipefail
+          [[ "$RUN_ID" =~ ^[1-9][0-9]{0,19}$ ]] || { echo "::error::A Staging run id is required"; exit 1; }
+          read -r name conclusion sha attempt < <(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" \
+            --jq '[.name, (.conclusion // "running"), .head_sha, .run_attempt] | @tsv')
+          [ "$name" = "SKAGER Staging" ] || { echo "::error::Run $RUN_ID is '$name', not SKAGER Staging"; exit 1; }
+          # Called as that run's last job, every gate has passed (it needs publish-staging);
+          # a run released by hand must have succeeded as a whole.
+          if [ "$FROM_STAGING" != true ] && [ "$conclusion" != success ]; then
+            echo "::error::Run $RUN_ID did not succeed ($conclusion)"; exit 1
+          fi
+          echo "artifact=staging-release-$sha-attempt$attempt" >> "$GITHUB_OUTPUT"
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        if: env.MODE == 'release'
+        with:
+          name: ${{ steps.build.outputs.artifact }}
+          run-id: ${{ env.RUN_ID }}
+          github-token: ${{ github.token }}
+          path: staging
+      - name: Verify the build and prepare the release
+        if: env.MODE == 'release'
+        run: |
+          set -euo pipefail
+          python3 opennav-x/tools/release/skager_release.py prepare --staging staging --out out --run-id "$RUN_ID"
+          cat out/release.env >> "$GITHUB_ENV"
+
+      - name: Rebuild the feed operator folder from R2
+        run: |
+          set -euo pipefail
+          umask 077
+          R2="node opennav-x/tools/release/r2.mjs"
+          mkdir -p repo/public/targets/releases
+          $R2 get operator/beta/update-trust.json repo/update-trust.json
+          $R2 get operator/beta/state.json repo/state.json
+          $R2 get beta/1.root.json repo/public/1.root.json
+          if [ "$MODE" = renew ]; then
+            # The current release, signed again with a fresh 24-hour timestamp.
+            mkdir -p out staging
+            $R2 get operator/beta/policy.json out/policy.json
+            $R2 get operator/beta/selection.json out/selection.json
+            commit=$(python3 -c "import json;print(json.load(open('out/policy.json'))['commit'])")
+            echo "COMMIT=$commit" >> "$GITHUB_ENV"
+            for name in $(python3 -c "import json,os;p=json.load(open('out/policy.json'));print(' '.join(os.path.basename(p[k]['path']) for k in ('releaseNotes','installer','recovery','correspondingSource','notices')))"); do
+              $R2 get "beta/artifacts/$commit/$name" "staging/$name"
+            done
+          fi
+
+      - name: Sign the update feed
+        env:
+          SKAGER_UPDATE_TARGETS_KEY: ${{ secrets.SKAGER_UPDATE_TARGETS_KEY }}
+          SKAGER_UPDATE_SNAPSHOT_KEY: ${{ secrets.SKAGER_UPDATE_SNAPSHOT_KEY }}
+          SKAGER_UPDATE_TIMESTAMP_KEY: ${{ secrets.SKAGER_UPDATE_TIMESTAMP_KEY }}
+        run: python3 opennav-x/tools/release/skager_release.py publish --repository repo --assets staging --out out --tool "$RUNNER_TEMP/skager-repository"
+
+      - name: Publish the update feed
+        run: |
+          set -euo pipefail
+          R2="node opennav-x/tools/release/r2.mjs"
+          n=$(python3 -c "import json;print(json.load(open('repo/state.json'))['version'])")
+          # The reserved version first, so a later failure can never reuse it.
+          $R2 put repo/state.json operator/beta/state.json
+          (cd repo/public && find artifacts targets -type f) | while read -r f; do $R2 put "repo/public/$f" "beta/$f"; done
+          $R2 put "repo/public/$n.targets.json" "beta/$n.targets.json"
+          $R2 put "repo/public/$n.snapshot.json" "beta/$n.snapshot.json"
+          # The timestamp is the switch: only now do clients see the new metadata.
+          $R2 put repo/public/timestamp.json beta/timestamp.json
+          for f in "$n.targets.json" "$n.snapshot.json" timestamp.json; do $R2 verify "repo/public/$f" "beta/$f"; done
+          $R2 put out/policy.json operator/beta/policy.json
+          $R2 put out/selection.json operator/beta/selection.json
+          python3 -c "import json;print('feed version', $n, 'expires', json.load(open('repo/public/timestamp.json'))['signed']['expires'])"
+
+      - name: Offer the build for download in the account portal
+        if: env.MODE == 'release'
+        run: |
+          set -euo pipefail
+          R2="node opennav-x/tools/release/r2.mjs"
+          $R2 put staging/SHA256SUMS.txt "beta/artifacts/$COMMIT/SHA256SUMS.txt"
+          $R2 get portal/beta-releases.json current.json || [ $? -eq 3 ]
+          python3 opennav-x/tools/release/skager_release.py portal --current current.json --entry out/portal-entry.json --out portal.json
+          $R2 put portal.json portal/beta-releases.json
+
+      - name: Publish the source release in the public repository
+        if: env.MODE == 'release'
+        env:
+          GH_TOKEN: ${{ secrets.SKAGER_PUBLIC_REPO_TOKEN }}
+        run: |
+          set -euo pipefail
+          if gh release view "$TAG" -R ThereptileII/SKAGER >/dev/null 2>&1; then
+            echo "Release $TAG already exists in the public repository"; exit 0
+          fi
+          gh release create "$TAG" -R ThereptileII/SKAGER --prerelease --title "SKAGER $VERSION" \
+            --notes-file out/public-notes.md \
+            staging/SKAGER-Beta2-source.zip staging/SOURCE_AND_LICENSES.md \
+            staging/SKAGER-Beta2-Release-Notes.md staging/SHA256SUMS.txt
+          echo "Public release: https://github.com/ThereptileII/SKAGER/releases/tag/$TAG"
