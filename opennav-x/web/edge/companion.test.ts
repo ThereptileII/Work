@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { handleCloud, validAnchor, validEvents } from './cloud.ts';
 import type { CloudContext } from './cloud.ts';
-import { handleCompanion, isCompanionRoute, pkceChallenge } from './companion.ts';
+import { alarmRule, handleCompanion, isCompanionRoute, pkceChallenge } from './companion.ts';
 import { dispatchPush, pushMessage, resetPushCaches, sendApns, sendFcm, signJwt } from './push.ts';
 import { appRequest, appReturnUrl, renderAppAuthorize, renderPhones } from './static/portal.js';
 
@@ -170,6 +170,55 @@ test('the boat sends events and anchor state through the device API; new events 
   assert.equal((await device('/api/device/telemetry', { items, anchor: { armed: true, alarm: false, radius_m: 50 } }))!.status, 202);
   assert.deepEqual(anchor, { armed: true, alarm: false, radius_m: 50 });
   assert.equal((await device('/api/device/telemetry', { items, anchor: { armed: true } }))!.status, 400);
+});
+
+test('an upload checks the owner\'s alarms; a new alarm is delivered at once', async () => {
+  const { ctx, calls } = fake({
+    cloud_telemetry_put: () => ({ state: 'stored' }),
+    cloud_anchor_put: () => ({ state: 'stored', restored: false }),
+    cloud_alarm_check: () => 1,
+  });
+  const response = await handleCloud(new Request('https://beta.skager.app/api/device/telemetry', { method: 'POST',
+    headers: { 'X-Skager-Device': DEVICE_TOKEN, 'Content-Type': 'application/json' },
+    body: JSON.stringify({ items: { 'battery.soc': { v: 24, age: 1, q: 'live' } } }) }), ctx);
+  assert.equal(response!.status, 202);
+  assert.equal(calls.find(c => c.name === 'cloud_alarm_check')!.args.p_device_id, DEVICE);
+  assert.ok(calls.some(c => c.name === 'cloud_push_claim'), 'delivery attempted at once');
+});
+
+test('alarms: a data type, above or below and a value in range; wording is the service\'s own', async () => {
+  const rule = alarmRule({ device: DEVICE, key: 'battery.soc', direction: 'below', threshold: 30 });
+  assert.deepEqual(rule, { device: DEVICE, id: null, key: 'battery.soc', label: 'State of charge', unit: '%',
+    direction: 'below', threshold: 30, margin: 2, enabled: true });
+  for (const bad of [{ key: 'navigation.latitude' }, { key: 'battery.soc', threshold: 120 }, { direction: 'near' },
+    { threshold: '30' }, { label: '<b>' }, { id: 0 }, { device: 'x' }, { enabled: 'yes' }]) {
+    assert.equal(alarmRule({ device: DEVICE, key: 'battery.soc', direction: 'below', threshold: 30, ...bad }), null, JSON.stringify(bad));
+  }
+  const stored = { id: 7, device_id: DEVICE, key: 'battery.soc', label: 'State of charge', unit: '%', direction: 'below',
+    threshold: 30, enabled: true, state: 'unknown', value: null, changed_at: null };
+  const { ctx, calls } = fake({
+    companion_alarms: () => ({ state: 'ok', alarms: [stored] }),
+    companion_alarm_put: () => ({ state: 'ok', alarm: stored }),
+    companion_alarm_delete: args => ({ state: args.p_id === 7 ? 'ok' : 'unknown' }),
+  });
+  const list = await handleCompanion(phone('/api/companion/alarms?device=' + DEVICE), ctx);
+  const listed = await list!.json();
+  assert.equal(listed.alarms[0].label, 'State of charge');
+  assert.equal(listed.keys['battery.soc'].unit, '%');
+  assert.ok(!('navigation.latitude' in listed.keys));
+  const put = await handleCompanion(phone('/api/companion/alarm', { method: 'POST',
+    body: JSON.stringify({ device: DEVICE, key: 'battery.soc', direction: 'below', threshold: 30 }) }), ctx);
+  assert.equal(put!.status, 200);
+  const args = calls.find(c => c.name === 'companion_alarm_put')!.args;
+  assert.equal(args.p_account_id, OWNER);
+  assert.equal(args.p_label, 'State of charge');
+  const refused = await handleCompanion(phone('/api/companion/alarm', { method: 'POST',
+    body: JSON.stringify({ device: DEVICE, key: 'battery.soc', direction: 'below', threshold: 30, label: 'x' }) }), ctx);
+  assert.equal(refused!.status, 400);
+  assert.equal((await handleCompanion(phone('/api/companion/alarm/delete', { method: 'POST', body: JSON.stringify({ id: 7 }) }), ctx))!.status, 200);
+  assert.equal((await handleCompanion(phone('/api/companion/alarm/delete', { method: 'POST', body: JSON.stringify({ id: 8 }) }), ctx))!.status, 404);
+  assert.equal((await handleCompanion(phone('/api/companion/alarm'), ctx))!.status, 405);
+  assert.ok(isCompanionRoute('/api/companion/alarms'));
 });
 
 test('the signed-in page issues a code bound to the PKCE challenge; phones can be signed out', async () => {

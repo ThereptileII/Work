@@ -76,6 +76,25 @@ and the Apple Team ID.
   shows Online until 45 s, then Delayed, then Offline after 2 min. Requested values
   the boat never sent are listed as *Not reported*.
 
+## Your own alarms
+
+The owner sets alarms in the app's Alarms tab: a data type, above or below, and a value.
+- **Data types:** measurements with a meaningful limit (`ALARM_KEYS` in `companion.ts`):
+  speed, wind speed, depth, temperatures, air pressure, heel, motor power and speed,
+  battery voltage, current and charge, and tanks. Position, angles and gear are excluded.
+- **Checking:** SKAGER Cloud checks the rules after every accepted upload
+  (`cloud_alarm_check`, `companion-alarms.sql`). Only live, aging or estimated readings
+  count; a missing or stale reading never raises or clears an alarm.
+- **One alarm, one all-clear:** an alarm is raised once when the value crosses the limit.
+  It clears only when the value is back past the limit by a fixed step per data type
+  (for example 2 % for charge, 1 kn for wind), so it never flaps.
+- **Delivery:** both go to the alarm log; the alarm is pushed on the alarm channel, the
+  all-clear as an ordinary notification. The wording is the service's own.
+- **Limits:** at most 20 alarms per boat. Changing an alarm starts it afresh: the next
+  upload decides whether it is in alarm.
+- **Needs boat data:** alarms need boat data sharing on and internet on board. They are
+  not an on-board alarm; SKAGER's own alarms still sound on board.
+
 ## Notifications
 
 Queue: `cloud_events.push_state` (pending → sending → sent, failed, unconfigured or

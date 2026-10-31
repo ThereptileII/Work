@@ -339,7 +339,10 @@ async function deviceRoute(req: Request, ctx: CloudContext, path: string): Promi
   if (stored.state !== 'stored') throw new Error('Invalid telemetry result');
   // Older SKAGER versions send no anchor field: stored as unknown, never as "off".
   const extra = object(await ctx.rpc('cloud_anchor_put', { p_device_id: device.deviceId, p_anchor: anchor }));
-  if (extra.restored === true) await inBackground(dispatchPush(ctx));
+  // The owner's own alarms on boat data (companion-alarms.sql); until that is applied, none.
+  let alarms = 0;
+  try { alarms = Number(await ctx.rpc('cloud_alarm_check', { p_device_id: device.deviceId })) || 0; } catch { alarms = 0; }
+  if (extra.restored === true || alarms > 0) await inBackground(dispatchPush(ctx));
   return reply(202, { state: 'stored' });
 }
 

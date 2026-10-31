@@ -18,6 +18,43 @@ const VERSION = /^[0-9A-Za-z][0-9A-Za-z.+-]{0,39}$/;
 const PUSH_TOKEN = { fcm: /^[A-Za-z0-9_:.-]{20,4096}$/, apns: /^[0-9a-f]{64,200}$/ } as const;
 const SERIES_HOURS = [1, 6, 24, 72, 168, 720];
 const TRACK_HOURS = [1, 6, 24, 72, 168];
+/** Data an owner can set an alarm on: measurements with a meaningful limit. The step is
+ * how far the value must come back before the alarm clears, so it never flaps. */
+export const ALARM_KEYS: Record<string, { unit: string; step: number }> = {
+  'navigation.sog': { unit: 'kn', step: 0.5 }, 'navigation.stw': { unit: 'kn', step: 0.5 },
+  'wind.true_speed': { unit: 'kn', step: 1 }, 'wind.apparent_speed': { unit: 'kn', step: 1 },
+  'environment.depth': { unit: 'm', step: 0.2 }, 'environment.water_temperature': { unit: '°C', step: 0.5 },
+  'environment.pressure': { unit: 'hPa', step: 1 }, 'steering.heel': { unit: '°', step: 2 },
+  'propulsion.electrical_power': { unit: 'kW', step: 0.2 }, 'propulsion.shaft_power': { unit: 'kW', step: 0.2 },
+  'propulsion.rpm': { unit: 'rpm', step: 50 }, 'propulsion.motor_temperature': { unit: '°C', step: 2 },
+  'propulsion.coolant_temperature': { unit: '°C', step: 2 }, 'battery.voltage': { unit: 'V', step: 0.1 },
+  'battery.current': { unit: 'A', step: 1 }, 'battery.soc': { unit: '%', step: 2 },
+  'battery.net_discharge': { unit: 'kW', step: 0.2 }, 'tanks.fresh_water': { unit: '%', step: 2 },
+  'tanks.fuel': { unit: '%', step: 2 }, 'tanks.waste': { unit: '%', step: 2 },
+};
+const ALARM_ID = /^[1-9][0-9]{0,15}$/;
+
+/** A validated alarm rule from the phone, with the fixed wording added by the service. */
+export function alarmRule(input: Json): Json | null {
+  if (!input || typeof input !== 'object' || Array.isArray(input)) return null;
+  if (!Object.keys(input).every(k => ['device', 'id', 'key', 'direction', 'threshold', 'enabled'].includes(k))) return null;
+  const { device, id, key, direction, threshold, enabled } = input;
+  if (typeof device !== 'string' || !UUID.test(device)) return null;
+  if (id !== undefined && id !== null && !(typeof id === 'number' && ALARM_ID.test(String(id)))) return null;
+  if (typeof key !== 'string' || !Object.hasOwn(ALARM_KEYS, key) || !Object.hasOwn(TELEMETRY_KEYS, key)) return null;
+  if (direction !== 'above' && direction !== 'below') return null;
+  const spec = TELEMETRY_KEYS[key];
+  if (typeof threshold !== 'number' || !Number.isFinite(threshold) || threshold < spec.min || threshold > spec.max) return null;
+  if (enabled !== undefined && typeof enabled !== 'boolean') return null;
+  return { device, id: id ?? null, key, label: spec.label, unit: ALARM_KEYS[key].unit, direction,
+    threshold: Math.round(threshold * 100) / 100, margin: ALARM_KEYS[key].step, enabled: enabled ?? true };
+}
+function publicAlarm(a: Json): Json {
+  return { id: Number(a.id), deviceId: a.device_id, key: a.key, label: a.label, unit: a.unit, direction: a.direction,
+    threshold: Number(a.threshold), enabled: a.enabled === true, state: a.state,
+    value: typeof a.value === 'number' ? a.value : null, changedAt: a.changed_at ?? null };
+}
+
 /** WebView origins of the packaged app. A request may carry one of these or none. */
 export const APP_ORIGINS = ['capacitor://localhost', 'https://localhost'];
 /** Name shown in the app and the portal; also used for the deep link. */
@@ -113,6 +150,31 @@ async function route(req: Request, ctx: CloudContext, path: string, phone: Phone
       p_service: input.token === null ? null : input.service, p_token: input.token });
     return reply(200, { push: input.token !== null });
   }
+  if (path === '/api/companion/alarm') {
+    if (req.method !== 'POST') return reply(405, { error: 'POST required' });
+    let rule: Json | null;
+    try { rule = alarmRule(await jsonBody(req, 4096)); } catch { rule = null; }
+    if (!rule) return reply(400, { error: 'Choose a data type, above or below, and a value in range.' });
+    const result = object(await ctx.rpc('companion_alarm_put', { p_account_id: phone.accountId, p_device_id: rule.device,
+      p_id: rule.id, p_key: rule.key, p_label: rule.label, p_unit: rule.unit, p_direction: rule.direction,
+      p_threshold: rule.threshold, p_margin: rule.margin, p_enabled: rule.enabled }));
+    if (result.state === 'limit') return reply(409, { error: 'A boat can have up to 20 alarms.' });
+    if (result.state !== 'ok') return reply(404, { error: 'Alarm not found.' });
+    return reply(200, { alarm: publicAlarm(result.alarm) });
+  }
+  if (path === '/api/companion/alarm/delete') {
+    if (req.method !== 'POST') return reply(405, { error: 'POST required' });
+    let id: unknown;
+    try {
+      const input = await jsonBody(req, 1024);
+      only(input, ['id']);
+      id = input.id;
+      if (!(typeof id === 'number' && ALARM_ID.test(String(id)))) throw new Error();
+    } catch { return reply(400, { error: 'Invalid alarm.' }); }
+    const result = object(await ctx.rpc('companion_alarm_delete', { p_account_id: phone.accountId, p_id: id }));
+    if (result.state !== 'ok') return reply(404, { error: 'Alarm not found.' });
+    return reply(200, { state: 'deleted' });
+  }
   if (req.method !== 'GET') return reply(405, { error: 'GET required' });
   if (path === '/api/companion/session') {
     if (!onlyParams(req, [])) return reply(400, { error: 'Invalid request.' });
@@ -167,6 +229,14 @@ async function route(req: Request, ctx: CloudContext, path: string, phone: Phone
     if (series.state !== 'ok') return reply(404, { error: 'Boat not found.' });
     return reply(200, { bucketSeconds: series.bucket_seconds, series: series.series });
   }
+  if (path === '/api/companion/alarms') {
+    if (!device || !onlyParams(req, ['device'])) return reply(400, { error: 'Invalid request.' });
+    const result = object(await ctx.rpc('companion_alarms', { p_account_id: phone.accountId, p_device_id: device }));
+    if (result.state !== 'ok') return reply(404, { error: 'Boat not found.' });
+    return reply(200, { alarms: (Array.isArray(result.alarms) ? result.alarms : []).map(publicAlarm),
+      keys: Object.fromEntries(Object.entries(ALARM_KEYS).map(([key, a]) => [key,
+        { label: TELEMETRY_KEYS[key].label, unit: a.unit, min: TELEMETRY_KEYS[key].min, max: TELEMETRY_KEYS[key].max }])) });
+  }
   if (path === '/api/companion/track') {
     const hours = Number(query(req).get('hours'));
     if (!device || !onlyParams(req, ['device', 'hours']) || !TRACK_HOURS.includes(hours)) {
@@ -180,7 +250,8 @@ async function route(req: Request, ctx: CloudContext, path: string, phone: Phone
 }
 
 const ROUTES = ['/api/companion/token', '/api/companion/session', '/api/companion/signout', '/api/companion/push',
-  '/api/companion/boats', '/api/companion/boat', '/api/companion/series', '/api/companion/track', '/api/companion/events'];
+  '/api/companion/boats', '/api/companion/boat', '/api/companion/series', '/api/companion/track', '/api/companion/events',
+  '/api/companion/alarms', '/api/companion/alarm', '/api/companion/alarm/delete'];
 /** Phone routes use a bearer token and refuse cookies; they are exempt from the CSRF check. */
 export function isCompanionRoute(path: string): boolean { return ROUTES.includes(path); }
 
