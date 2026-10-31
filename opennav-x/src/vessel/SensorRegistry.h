@@ -126,4 +126,17 @@ enum class CurrentConvention {
 void NormalizePropulsionStates(VesselState &state);
 void NormalizeBatteryPower(VesselState &state, const std::string &device,
                            CurrentConvention convention, Time now);
+
+// Provenance of the true wind SKAGER calculates itself (see DeriveTrueWind).
+inline constexpr const char *kCalculatedTrueWindSource =
+    "SKAGER calculated: apparent wind and GPS speed over ground";
+// Below this GPS speed, course over ground is noise and never orients the wind.
+inline constexpr double kGpsCourseMinimumSpeedKn = 1.0;
+// Wind over ground from the apparent wind and GPS speed over ground, with the
+// boat taken to move along its GPS course (no compass leeway/drift correction),
+// so a current never distorts it. Masthead sensors measure apparent wind only;
+// an instrument's own true wind, when usable, is always kept instead. Runs only
+// on fresh measured inputs: one apparent-wind message and a GPS speed observed
+// within two seconds of it. The result is Estimated, never Measured.
+void DeriveTrueWind(VesselState &state, Time now);
 } // namespace opennav::vessel

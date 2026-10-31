@@ -1,5 +1,6 @@
 #include "application/InstrumentView.h"
 #include "application/Settings.h"
+#include "vessel/SensorRegistry.h"
 #include <cmath>
 #include <iostream>
 #include <limits>
@@ -152,6 +153,28 @@ int RunInstrumentChecks() {
     Check(view.tiles.size() == 1 && !view.heading.selected &&
               !view.heading.value && !view.wind_bearing_true_deg,
           "selection deduplicates and suppresses hidden fields");
+    // SKAGER's own true wind is oriented by the GPS course, not the compass.
+    s = Fixture();
+    s.navigation.cog_deg = Sample(100);
+    s.navigation.sog_kn = Sample(5);
+    s.wind.true_angle_deg.source = vessel::kCalculatedTrueWindSource;
+    s.wind.true_speed_kn.source = vessel::kCalculatedTrueWindSource;
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && view.wind_bearing_true_deg == 28,
+          "calculated true wind uses GPS course for north-up direction");
+    s.navigation.heading_true_deg = {};
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && view.wind_bearing_true_deg == 28,
+          "calculated true wind needs no compass");
+    s.navigation.sog_kn = Sample(0.4);
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(!view.wind_is_apparent && !view.wind_bearing_true_deg &&
+              view.true_angle.value == -72,
+          "slow GPS course never orients wind; no compass, no direction");
+    s.navigation.heading_true_deg = Sample(41);
+    view = application::PresentInstruments(s, keys, stamp);
+    Check(view.wind_bearing_true_deg == 329,
+          "slow boat falls back to compass heading for the direction");
     s = Fixture();
     view = application::PresentInstruments(s, keys, stamp);
     s = {};

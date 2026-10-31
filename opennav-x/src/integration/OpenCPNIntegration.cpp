@@ -1125,6 +1125,9 @@ void Attach(MyFrame& frame, wxAuiManager& manager, wxFileConfig& config) {
       vessel::NormalizeBatteryPower(state,
                                     settings->Read().energy.battery_device_id,
                                     settings->Read().current, now);
+    // Masthead sensors measure apparent wind; calculate true wind when no
+    // instrument supplies it (before Cloud, so Companion sees the same value).
+    vessel::DeriveTrueWind(state, now);
     // Called by the regular live UI tick, after all selected instrument inputs
     // and battery sign normalization. Demo/replay never call live_state.
     if (online_cloud && !restart && !(commissioning && commissioning->Replaying()))

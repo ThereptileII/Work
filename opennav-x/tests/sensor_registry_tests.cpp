@@ -218,6 +218,76 @@ void TestHealth() {
             !r.Merge({}, t + 9s).propulsion.gear.value,
         "Fractional or unknown gear must not select Forward");
 }
+void TestTrueWind() {
+  const auto measured = [](double v, const char *source, Time at) {
+    return Sample{v, source, at, Validity::Measured};
+  };
+  const auto sailing = [&](double aws, double awa, double sog, Time wind_at = t,
+                           Time gps_at = t) {
+    VesselState s;
+    s.wind.apparent_speed_kn = measured(aws, "N2K 130306 / apparent", wind_at);
+    s.wind.apparent_angle_deg = measured(awa, "N2K 130306 / apparent", wind_at);
+    s.navigation.sog_kn = measured(sog, "GNSS RMC", gps_at);
+    return s;
+  };
+  const auto near = [](const Sample &x, double v) {
+    return x.value && std::abs(*x.value - v) < 0.01;
+  };
+  auto s = sailing(10, 90, 5);
+  DeriveTrueWind(s, t);
+  Check(near(s.wind.true_speed_kn, std::sqrt(125.0)) && near(s.wind.true_angle_deg, 116.565),
+        "Beam reach: true wind is stronger and further aft than apparent");
+  Check(s.wind.true_speed_kn.validity == Validity::Estimated &&
+            s.wind.true_angle_deg.source == kCalculatedTrueWindSource,
+        "Calculated true wind is labelled, never Measured");
+  s = sailing(12, -45, 6);
+  DeriveTrueWind(s, t);
+  Check(near(s.wind.true_speed_kn, 8.842) && near(s.wind.true_angle_deg, -73.67),
+        "Port side stays negative");
+  s = sailing(4, 180, 6);
+  DeriveTrueWind(s, t);
+  Check(near(s.wind.true_speed_kn, 10) && near(s.wind.true_angle_deg, 180),
+        "Running: following wind adds boat speed");
+  // Owner's case: 2 kn apparent headwind, 2 kn over ground with a 2 kn following
+  // current (through-water speed 0). Over ground the air is still.
+  s = sailing(2, 0, 2);
+  s.navigation.stw_kn = measured(0, "N2K 128259", t);
+  DeriveTrueWind(s, t);
+  Check(near(s.wind.true_speed_kn, 0) && !s.wind.true_angle_deg.value &&
+            s.wind.true_angle_deg.validity == Validity::Invalid,
+        "Uses GPS speed over ground, and a calm has no invented direction");
+  s = sailing(10, 90, 5);
+  s.wind.true_speed_kn = measured(9, "N2K 130306 / true", t);
+  s.wind.true_angle_deg = measured(100, "N2K 130306 / true", t);
+  DeriveTrueWind(s, t);
+  Check(s.wind.true_speed_kn.value == 9 && s.wind.true_angle_deg.value == 100,
+        "An instrument's own true wind is kept");
+  s = sailing(10, 90, 5);
+  s.wind.true_speed_kn = measured(9, "N2K 130306 / true", t - 6s);
+  s.wind.true_angle_deg = measured(100, "N2K 130306 / true", t - 6s);
+  DeriveTrueWind(s, t);
+  Check(near(s.wind.true_speed_kn, std::sqrt(125.0)),
+        "A stale instrument true wind is replaced");
+  s = sailing(10, 90, 5, t, t - 3s);
+  DeriveTrueWind(s, t);
+  Check(!s.wind.true_speed_kn.value && !s.wind.true_angle_deg.value,
+        "GPS speed more than two seconds from the wind is not combined");
+  s = sailing(10, 90, 5, t, t - 1500ms);
+  DeriveTrueWind(s, t);
+  Check(s.wind.true_speed_kn.observed_at == t - 1500ms,
+        "Result is as old as its oldest input");
+  s = sailing(10, 90, 5);
+  s.wind.apparent_angle_deg.source = "another wind sensor";
+  DeriveTrueWind(s, t);
+  Check(!s.wind.true_speed_kn.value, "Speed and angle must come from one sensor");
+  s = sailing(10, 90, 5);
+  s.navigation.sog_kn = {};
+  DeriveTrueWind(s, t);
+  Check(!s.wind.true_speed_kn.value, "No GPS speed, no true wind");
+  s = sailing(10, 90, 5, t - 6s, t - 6s);
+  DeriveTrueWind(s, t);
+  Check(!s.wind.true_speed_kn.value, "Stale inputs never produce true wind");
+}
 int main(int argc, char **argv) {
   try {
     Check(argc == 2, "Choose test group");
@@ -230,6 +300,8 @@ int main(int argc, char **argv) {
       TestHealth();
     else if (group == "battery")
       TestBattery();
+    else if (group == "truewind")
+      TestTrueWind();
     else
       throw std::runtime_error("Unknown group");
     std::cout << group << " passed\n";

@@ -311,4 +311,48 @@ void NormalizeBatteryPower(VesselState &s, const std::string &device,
   net.source += " / V x I, includes all loads at configured pack shunt";
   s.battery.net_discharge_kw = std::move(net);
 }
+
+void DeriveTrueWind(VesselState &s, Time now) {
+  const auto usable = [&](const Sample &x, bool estimated_ok) {
+    const auto a = Assess(x, now);
+    return a.value && (a.quality == Quality::Live || a.quality == Quality::Aging ||
+                       (estimated_ok && a.quality == Quality::Estimated));
+  };
+  if (usable(s.wind.true_speed_kn, true) && usable(s.wind.true_angle_deg, true))
+    return;
+  const auto &aws = s.wind.apparent_speed_kn, &awa = s.wind.apparent_angle_deg;
+  const auto &sog = s.navigation.sog_kn;
+  const auto apart = [](Time a, Time b) { return a > b ? a - b : b - a; };
+  if (!usable(aws, false) || !usable(awa, false) || !usable(sog, false) ||
+      aws.source != awa.source ||
+      apart(aws.observed_at, awa.observed_at) > std::chrono::seconds(1) ||
+      apart(aws.observed_at, sog.observed_at) > std::chrono::seconds(2))
+    return;
+  const double apparent = *aws.value, boat = *sog.value;
+  if (apparent < 0 || boat < 0 || std::abs(*awa.value) > 180)
+    return;
+  // Angles are relative to the bow, positive to starboard. The apparent wind is
+  // the true wind minus the boat's own motion along its course.
+  constexpr double pi = 3.14159265358979323846;
+  const double angle = *awa.value * pi / 180.0;
+  const double ahead = apparent * std::cos(angle) - boat,
+               across = apparent * std::sin(angle);
+  const double speed = std::hypot(ahead, across);
+  if (!std::isfinite(speed) || speed > 250)
+    return;
+  Sample out{{}, kCalculatedTrueWindSource, std::min(aws.observed_at, sog.observed_at),
+             Validity::Estimated, aws.freshness};
+  s.wind.true_speed_kn = out;
+  s.wind.true_speed_kn.value = speed;
+  s.wind.true_angle_deg = out;
+  // In (near) calm the direction is undefined; never invent one.
+  if (speed >= 0.05) {
+    double degrees = std::atan2(across, ahead) * 180.0 / pi;
+    if (degrees <= -180.0)
+      degrees = 180.0;
+    s.wind.true_angle_deg.value = degrees;
+  } else {
+    s.wind.true_angle_deg.validity = Validity::Invalid;
+  }
+}
 } // namespace opennav::vessel

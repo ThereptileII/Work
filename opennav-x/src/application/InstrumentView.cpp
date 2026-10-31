@@ -1,5 +1,6 @@
 #include "application/InstrumentView.h"
 #include "vessel/DisplayItems.h"
+#include "vessel/SensorRegistry.h"
 #include <algorithm>
 #include <cmath>
 
@@ -95,8 +96,10 @@ InstrumentView PresentInstruments(const vessel::VesselState &s,
   const auto coherent = [](vessel::Time a, vessel::Time b) {
     return (a > b ? a - b : b - a) <= std::chrono::seconds(2);
   };
+  // SKAGER's own true wind is relative to the GPS course, not the compass.
+  const bool calculated = s.wind.true_angle_deg.source == vessel::kCalculatedTrueWindSource;
   const bool true_direction = v.true_angle.value &&
-      coherent(heading_at, s.wind.true_angle_deg.observed_at);
+      (calculated || coherent(heading_at, s.wind.true_angle_deg.observed_at));
   const auto apparent_speed = read("aws"), apparent_angle = read("awa");
   const auto measured = [](const InstrumentReading &reading) {
     return reading.value && (reading.quality == vessel::Quality::Live ||
@@ -112,7 +115,17 @@ InstrumentView PresentInstruments(const vessel::VesselState &s,
   }
   const auto wind_at = v.wind_is_apparent ? s.wind.apparent_angle_deg.observed_at
                                          : s.wind.true_angle_deg.observed_at;
-  if (v.heading.value && v.wind_angle.value && coherent(heading_at, wind_at))
+  const auto course = vessel::Assess(s.navigation.cog_deg, now),
+             speed = vessel::Assess(s.navigation.sog_kn, now);
+  const auto current = [](const vessel::Assessment &a) {
+    return a.value && (a.quality == vessel::Quality::Live || a.quality == vessel::Quality::Aging);
+  };
+  if (calculated && !v.wind_is_apparent && v.wind_angle.value && current(course) &&
+      current(speed) && *speed.value >= vessel::kGpsCourseMinimumSpeedKn &&
+      *course.value >= 0 && *course.value < 360 &&
+      coherent(s.navigation.cog_deg.observed_at, wind_at))
+    v.wind_bearing_true_deg = std::fmod(*course.value + *v.wind_angle.value + 360., 360.);
+  else if (v.heading.value && v.wind_angle.value && coherent(heading_at, wind_at))
     v.wind_bearing_true_deg =
         std::fmod(*v.heading.value + *v.wind_angle.value + 360., 360.);
   else if (!v.heading.value)
