@@ -1,7 +1,9 @@
 /** SKAGER Cloud. Two audiences:
  *  - /api/device/*: the SKAGER app. Never cookies or CSRF: pairing uses a secret device
  *    code, later requests a bearer device token. A browser Origin header is refused, so a
- *    web page cannot drive these routes with a visitor's network position.
+ *    web page cannot drive these routes with a visitor's network position. The one Origin
+ *    accepted is the explicit-port form the app's HTTP client (IXWebSocket) always adds;
+ *    browsers serialise origins without a default port, so a page cannot send it.
  *  - /api/cloud/*: the logged-in customer (cookie session; the router checks CSRF).
  * Tokens and device codes are stored only as SHA-256. Missing Cloud never blocks the
  * app: it only withholds the update feed and telemetry storage. */
@@ -439,13 +441,17 @@ const CUSTOMER_ROUTES = ['/api/cloud/overview', '/api/cloud/link/find', '/api/cl
   '/api/cloud/devices/revoke', '/api/cloud/boat', '/api/cloud/boat/series', '/api/cloud/companion/authorize',
   '/api/cloud/phones/revoke'];
 
+/** IXWebSocket's HttpClient adds `Origin: <scheme>://<host>:<port>` unless told otherwise. */
+const APP_CLIENT_ORIGIN = 'https://beta.skager.app:443';
+
 /** Device routes are exempt from the browser CSRF check; see the module comment. */
 export function isDeviceRoute(path: string): boolean { return DEVICE_ROUTES.includes(path); }
 
 export async function handleCloud(req: Request, ctx: CloudContext): Promise<Response | null> {
   const path = new URL(req.url).pathname;
   if (DEVICE_ROUTES.includes(path)) {
-    if (req.headers.has('Origin') || req.headers.has('Cookie')) return reply(403, { error: 'Request rejected' });
+    const origin = req.headers.get('Origin');
+    if ((origin !== null && origin !== APP_CLIENT_ORIGIN) || req.headers.has('Cookie')) return reply(403, { error: 'Request rejected' });
     try {
       if (path === '/api/device/link' || path === '/api/device/link/poll') {
         if (req.method !== 'POST') return reply(405, { error: 'POST required' });

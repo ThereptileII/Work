@@ -117,9 +117,20 @@ test('pairing: the app starts, polls, the logged-in customer approves and the ap
   assert.equal(state.calls.at(-1)!.args.p_version, '0.4.0-beta2.7');
 });
 
+test('device routes accept the explicit-port Origin the SKAGER app client always sends', async () => {
+  // IXWebSocket's HttpClient adds `Origin: https://beta.skager.app:443`; browsers never send a default port.
+  const { ctx, state } = backend();
+  const response = await call(ctx, app('/api/device/link', { body: { name: 'x', platform: 'windows', version: '1' },
+    headers: { Origin: 'https://beta.skager.app:443' } }));
+  assert.equal(response.status, 200);
+  assert.ok(state.calls.some(c => c.name === 'cloud_link_start'));
+});
+
 test('device routes refuse browsers, cookies, bad bodies and unknown tokens', async () => {
   const { ctx, state } = backend();
-  for (const headers of [{ Origin: 'https://beta.skager.app' }, { Origin: 'https://evil.example' }, { Cookie: '__Host-skager_session=x' }]) {
+  for (const headers of [{ Origin: 'https://beta.skager.app' }, { Origin: 'https://evil.example' }, { Origin: 'null' },
+    { Origin: 'https://beta.skager.app:8443' }, { Cookie: '__Host-skager_session=x' },
+    { Origin: 'https://beta.skager.app:443', Cookie: '__Host-skager_session=x' }]) {
     const response = await call(ctx, app('/api/device/link', { body: { name: 'x', platform: 'windows', version: '1' }, headers }));
     assert.equal(response.status, 403);
   }
