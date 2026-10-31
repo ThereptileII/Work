@@ -1,6 +1,6 @@
 import assert from 'node:assert/strict';
 import test from 'node:test';
-import { formatReading, pageForPath, renderBoat, renderDashboard, renderDevices, renderLink, sparkline } from './static/portal.js';
+import { formatReading, linkCode, pageForPath, renderBoat, renderDashboard, renderDevices, renderLink, sparkline } from './static/portal.js';
 import { TELEMETRY_KEYS } from './cloud.ts';
 
 const NOW = Date.parse('2026-10-19T12:00:00Z');
@@ -19,6 +19,16 @@ test('the pairing page has its own route and asks only for the code', () => {
   assert.ok(!confirm.includes('<script>x'));
   assert.match(renderLink({ done: { name: 'SKAGER on HELM' } }), /SKAGER on HELM is linked/);
   assert.match(renderDashboard({}, 'link', null, undefined, { link: {} }), /link-form/);
+});
+
+test('a scanned QR code fills in the pairing code and nothing else', () => {
+  assert.equal(linkCode('?code=BCDF-2345'), 'BCDF-2345');
+  assert.equal(linkCode('?x=1&code=bcdf2345'), 'BCDF-2345');
+  for (const bad of ['', '?code=BCDF-234', '?code=BCDF-23456', '?code=BC"F-2345', '?code=BCDF-2345x']) assert.equal(linkCode(bad), null);
+  const form = renderLink({ prefill: 'BCDF-2345' });
+  assert.match(form, /value="BCDF-2345"/);
+  assert.ok(!renderLink({ prefill: '"><script>' }).includes('<script>'));
+  assert.ok(!renderLink().includes('value='));
 });
 
 test('readings keep their unit and never invent a value', () => {

@@ -30,6 +30,11 @@ export function appReturnUrl(request, code) {
 /** Placeholder cards shown while a tab's data is on its way (same markup as portal.html). */
 export const SKELETON = '<div class="skeleton-grid" aria-hidden="true"><div class="skeleton-card"></div><div class="skeleton-card"></div><div class="skeleton-card wide"></div></div>';
 /** Portal page for a path; /portal/boats/ is kept as an alias for the account page. */
+// The pairing code from SKAGER's QR code (/link/?code=BCDF-2345), normalised; else null.
+export function linkCode(search) {
+  const match = /[?&]code=([A-Za-z0-9]{4})-?([A-Za-z0-9]{4})(?:&|$)/.exec(String(search || ""));
+  return match ? `${match[1]}-${match[2]}`.toUpperCase() : null;
+}
 export function pageForPath(pathname) {
   const path = pathname.replace(/\/?$/, "/");
   return path === "/portal/boats/" ? "boats" : Object.keys(PAGES).find(key => PAGES[key] === path) || "dashboard";
@@ -303,8 +308,8 @@ export function renderLink(state = {}) {
       <div class="actions"><button class="button" type="button" id="link-approve">Link to my account</button><button class="button button-secondary" type="button" id="link-decline">This is not my computer</button></div></section>`;
   }
   return `<section class="card feature narrow"><p class="eyebrow">Link SKAGER</p><h2>Enter the code from SKAGER.</h2>
-    <p class="note">In SKAGER, open Settings → System → SKAGER Cloud and choose Link to my account. The 8-character code appears there.</p>
-    <form id="link-form" class="form"><label>Pairing code<input id="link-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" required placeholder="BCDF-2345"></label>
+    <p class="note">In SKAGER, open Settings → System → SKAGER Cloud and choose Link to my account. Scan the QR code with your phone, or type the 8-character code here.</p>
+    <form id="link-form" class="form"><label>Pairing code<input id="link-code" autocomplete="off" autocapitalize="characters" spellcheck="false" maxlength="9" required placeholder="BCDF-2345"${state.prefill ? ` value="${esc(state.prefill)}"` : ""}></label>
     <button class="button" type="submit">Continue</button></form></section>`;
 }
 
@@ -400,7 +405,8 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
     if ($("portal-nav")) $("portal-nav").hidden = true;
     tell(sessionMessage);
     const request = page === "app" ? appRequest(location.search) : null;
-    location.assign(page === "link" ? "/auth/login/?next=/link/"
+    const code = page === "link" ? linkCode(location.search) : null;
+    location.assign(page === "link" ? `/auth/login/?next=${encodeURIComponent(code ? `/link/?code=${code}` : "/link/")}`
       : request ? `/auth/login/?next=${encodeURIComponent(`/app/authorize/?challenge=${request.challenge}&state=${request.state}`)}`
       : "/auth/login/");
   }
@@ -411,7 +417,9 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
   // Where the customer is in the download steps; memory only, like the rest.
   const setup = { current: 0, used: [] };
   // SKAGER Cloud: linked devices, the boat being viewed, and the pairing page.
-  const cloudView = { overview: undefined, boat: null, link: {}, app: { request: appRequest(location.search) } };
+  const scanned = linkCode(location.search);
+  const cloudView = { overview: undefined, boat: null, link: scanned ? { prefill: scanned, lookup: true } : {},
+    app: { request: appRequest(location.search) } };
   const setupFor = p => p === "downloads" && cache.dashboard?.betaAccess === "active"
     ? { steps: downloadSteps(cache.catalog), guide: downloadSteps(cache.catalog, "guide"), current: setup.current, used: setup.used } : undefined;
   function mark() {
@@ -578,9 +586,9 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
       };
       $("link-approve")?.addEventListener("click", decide(true));
       $("link-decline")?.addEventListener("click", decide(false));
-      $("link-form")?.addEventListener("submit", async event => {
-        event.preventDefault();
-        const button = event.currentTarget.querySelector("button");
+      const form = $("link-form");
+      const find = async () => {
+        const button = form.querySelector("button");
         button.disabled = true;
         try {
           const code = $("link-code").value;
@@ -588,9 +596,12 @@ if (typeof document !== "undefined" && document.getElementById("portal-content")
           checkSession();
           cloudView.link = { code, found };
           render();
-        } catch (error) { tell(error.message, "error"); button.disabled = false; }
-      });
-      $("link-code")?.focus();
+        } catch (error) { cloudView.link = {}; tell(error.message, "error"); button.disabled = false; }
+      };
+      form?.addEventListener("submit", event => { event.preventDefault(); void find(); });
+      // A scanned QR code looks the code up at once; approving still takes a press.
+      if (form && cloudView.link.lookup) { cloudView.link.lookup = false; void find(); }
+      else $("link-code")?.focus();
     }
     if (page === "orders") {
       // A second press confirms; no browser dialogs.

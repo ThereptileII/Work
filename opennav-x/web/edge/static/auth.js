@@ -26,13 +26,13 @@ function show() {
   codeInput.required = step === "code";
 }
 // Where to continue after signing in: the portal, or the SKAGER pairing page.
-// Only two exact destinations are accepted, never an arbitrary URL.
+// Only these exact destinations are accepted, never an arbitrary URL.
 function returnPath(search) {
   const match = /[?&]next=([^&]*)/.exec(String(search || ""));
   if (!match) return null;
   let next;
   try { next = decodeURIComponent(match[1]); } catch { return null; }
-  if (next === "/link/") return next;
+  if (next === "/link/" || /^\/link\/\?code=[A-Z0-9]{4}-[A-Z0-9]{4}$/.test(next)) return next;
   return /^\/app\/authorize\/\?challenge=[A-Za-z0-9_-]{43}&state=[A-Za-z0-9_-]{16,64}$/.test(next) ? next : null;
 }
 const returnTo = returnPath(typeof location === "undefined" ? "" : location.search);
