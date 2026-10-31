@@ -9,7 +9,6 @@
   the apparent wind and the GPS speed over ground. It is the wind over the
   ground, so a current does not distort it, and it is marked as calculated.
   True wind sent by an instrument is still used first.
-- **SKAGER Cloud**: linking this computer to your account works again.
 
 ## Earlier in 0.4.0-beta2.9
 
