@@ -1,8 +1,17 @@
 # SKAGER Beta 2 — release notes
 
-**Version 0.4.0-beta2.9 · Staging candidate · qualification recorded with the release**
+**Version 0.4.0-beta2.10 · Staging candidate · qualification recorded with the release**
 
 ## This Staging increment
+
+- **True wind**: when your instruments send only apparent wind, which is what
+  a masthead sensor measures, SKAGER now calculates the true wind itself from
+  the apparent wind and the GPS speed over ground. It is the wind over the
+  ground, so a current does not distort it, and it is marked as calculated.
+  True wind sent by an instrument is still used first.
+- **SKAGER Cloud**: linking this computer to your account works again.
+
+## Earlier in 0.4.0-beta2.9
 
 - **SKAGER Helm**: a swipe on the phone now scrolls SKAGER's menus and lists
   instead of clicking the row under the finger. The phone's finger reaches
