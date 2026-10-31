@@ -17,6 +17,11 @@ export type BoatEvent = { id: number; deviceId: string; boat: string; kind: stri
   title: string; detail: string; data: Json; occurredAt: string; receivedAt: string };
 export type Series = { bucketSeconds: number; series: Record<string, [number, number][]> };
 export type TrackPoint = [number, number, number, number | null];
+/** An alarm the owner set on boat data; SKAGER Cloud checks it on every upload. */
+export type Alarm = { id: number; deviceId: string; key: string; label: string; unit: string; direction: 'above' | 'below';
+  threshold: number; enabled: boolean; state: 'unknown' | 'ok' | 'alarm'; value: number | null; changedAt: string | null };
+export type AlarmKey = { label: string; unit: string; min: number; max: number };
+export type AlarmInput = { device: string; id?: number; key: string; direction: 'above' | 'below'; threshold: number; enabled: boolean };
 
 /** The phone could not reach SKAGER Cloud (no network, timeout, server unreachable). */
 export class OfflineError extends Error {}
@@ -93,5 +98,12 @@ export class Api {
   async registerPush(service: 'fcm' | 'apns' | null, token: string | null): Promise<void> {
     await this.call('/api/companion/push', { method: 'POST', body: token ? { service, token } : { token: null } });
   }
+  async alarms(device: string): Promise<{ alarms: Alarm[]; keys: Record<string, AlarmKey> }> {
+    return (await this.call(`/api/companion/alarms?device=${encodeURIComponent(device)}`)).data as any;
+  }
+  async saveAlarm(alarm: AlarmInput): Promise<Alarm> {
+    return ((await this.call('/api/companion/alarm', { method: 'POST', body: alarm })).data as Json).alarm;
+  }
+  async deleteAlarm(id: number): Promise<void> { await this.call('/api/companion/alarm/delete', { method: 'POST', body: { id } }); }
   async signOut(): Promise<void> { await this.call('/api/companion/signout', { method: 'POST', body: {} }); }
 }

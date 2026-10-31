@@ -1,7 +1,7 @@
 // SKAGER Companion controller: sign-in, foreground-only refresh, offline cache,
 // notifications and navigation. Rendering is in views.ts, the map in map.ts.
 import { Api, OfflineError, SignedOutError } from './lib/api.ts';
-import type { Boat, BoatEvent, Boats, Cloud, Series, TrackPoint } from './lib/api.ts';
+import type { Alarm, AlarmKey, Boat, BoatEvent, Boats, Cloud, Series, TrackPoint } from './lib/api.ts';
 import { APP_VERSION, POLL_BOAT_MS, POLL_LIST_MS, PREVIEW } from './lib/config.ts';
 import { anchorView, classify, snapshotAgeNow, valueAge } from './lib/freshness.ts';
 import { authorizeUrl, newPending, readCallback } from './lib/pkce.ts';
@@ -14,7 +14,7 @@ import { BoatMap } from './map.ts';
 import { PALETTES, resolveTheme } from './theme.ts';
 import type { ThemeChoice } from './theme.ts';
 import * as view from './views.ts';
-import type { Tab } from './views.ts';
+import type { AlarmForm, Tab } from './views.ts';
 
 type State = {
   phase: 'starting' | 'signed-out' | 'ready';
@@ -27,13 +27,17 @@ type State = {
   events: BoatEvent[]; eventsMore: boolean; eventsLoading: boolean; seenEvent: number; highlight: number | null;
   track: { key: string; points: TrackPoint[] } | null; trackHours: number;
   history: { metric: string; hours: number; series: Series | null; loading: boolean; key: string };
+  // The Boat view's tiles, chosen on this phone (null: what the boat reports, default order).
+  layout: string[] | null; editingLayout: boolean;
+  alarms: { device: string | null; list: Alarm[] | null; keys: Record<string, AlarmKey>; form: AlarmForm | null; saving: boolean };
   toast: string | null;
 };
 const state: State = {
   phase: 'starting', signIn: {}, email: '', cloud: null, push: 'unconfigured', boats: null, selected: null, boat: null,
   etag: null, receivedLocal: 0, offline: null, tab: 'overview', settings: false, theme: 'auto', events: [], eventsMore: false,
   eventsLoading: false, seenEvent: 0, highlight: null, track: null, trackHours: 24,
-  history: { metric: METRICS[0].key, hours: 24, series: null, loading: false, key: '' }, toast: null,
+  history: { metric: METRICS[0].key, hours: 24, series: null, loading: false, key: '' },
+  layout: null, editingLayout: false, alarms: { device: null, list: null, keys: {}, form: null, saving: false }, toast: null,
 };
 const api = new Api(secrets);
 const map = new BoatMap();
@@ -71,9 +75,12 @@ function render(): void {
   $('banner').innerHTML = view.renderAlarmBanner(device(), anchor, a);
   const alarm = anchorView(anchor, a).state === 'alarm';
   $('tabs').innerHTML = view.renderTabs(state.tab, alarm, unread());
-  const scroll = $('view').scrollTop;
-  $('view').innerHTML = content(a);
-  $('view').scrollTop = scroll;
+  const typing = document.activeElement instanceof HTMLInputElement && $('view').contains(document.activeElement);
+  if (!typing) {
+    const scroll = $('view').scrollTop;
+    $('view').innerHTML = content(a);
+    $('view').scrollTop = scroll;
+  }
   $('view').dataset.tab = state.tab;
   $('sheet').innerHTML = state.settings ? view.renderSettings({ email: state.email, cloud: state.cloud, push: state.push,
     theme: state.theme, version: APP_VERSION, boats: state.boats?.devices ?? [] }) : '';
@@ -88,9 +95,13 @@ function content(a: number | null): string {
   if (state.cloud && !state.cloud.active) return view.renderNoCloud(state.cloud);
   if (state.boats && !state.boats.devices.length) return view.renderNoBoats();
   switch (state.tab) {
-    case 'overview': return top + view.renderStatus(state.boat, device(), a, state.offline)
-      + (state.push === 'prompt' ? '<section class="card notice"><p>Get the anchor alarm on this phone even when Companion is closed.</p><button type="button" class="button secondary" id="push-enable">Allow notifications</button></section>' : '')
-      + view.renderOverview(state.boat, keys, a);
+    case 'overview': {
+      const items = state.boat?.items ?? {};
+      if (state.editingLayout) return view.renderLayoutEditor(view.layoutKeys(state.layout, items, keys), items, keys);
+      return top + view.renderStatus(state.boat, device(), a, state.offline)
+        + (state.push === 'prompt' ? '<section class="card notice"><p>Get alarms on this phone even when Companion is closed.</p><button type="button" class="button secondary" id="push-enable">Allow notifications</button></section>' : '')
+        + view.renderOverview(state.boat, keys, a, state.layout);
+    }
     case 'map': return view.renderMapPanel(state.boat, a, state.trackHours, state.track?.points.length ?? 0);
     case 'anchor': return top + view.renderAnchor(device(), state.boat?.anchor ?? device()?.anchor, a, !!state.track?.points.length);
     case 'history': {
@@ -98,8 +109,9 @@ function content(a: number | null): string {
       return top + view.renderHistory(state.history.metric, state.history.hours, state.history.series, state.history.loading,
         available.size ? available : new Set(METRICS.map(m => m.key)), keys);
     }
-    case 'alarms': return view.renderAlarms(state.events, state.eventsMore, state.eventsLoading, state.highlight,
-      (state.boats?.devices.length ?? 0) > 1);
+    case 'alarms': return top + view.renderAlarmRules({ alarms: state.alarms.device === state.selected ? state.alarms.list : null,
+      keys: state.alarms.keys, form: state.alarms.form, saving: state.alarms.saving })
+      + view.renderAlarms(state.events, state.eventsMore, state.eventsLoading, state.highlight, (state.boats?.devices.length ?? 0) > 1);
   }
 }
 
@@ -184,6 +196,73 @@ async function loadHistory(): Promise<void> {
   if (h.key === key) { h.series = series ?? null; h.loading = false; }
 }
 
+async function loadAlarms(force = false): Promise<void> {
+  if (!state.selected || state.tab !== 'alarms' || state.alarms.form) return;
+  if (!force && state.alarms.device === state.selected && state.alarms.list) return;
+  const id = state.selected;
+  const result = await guarded(() => api.alarms(id));
+  if (result && id === state.selected) Object.assign(state.alarms, { device: id, list: result.alarms, keys: result.keys });
+}
+
+// ---------------------------------------------------------------- dashboard layout (this phone only)
+function editLayout(change: (shown: string[]) => string[]): void {
+  const keys = state.boats?.telemetryKeys ?? {};
+  state.layout = change(view.layoutKeys(state.layout, state.boat?.items ?? {}, keys));
+  void cache.write('layout', state.layout);
+  render();
+}
+function moveTile(spec: string): void {
+  const [key, step] = spec.split(':');
+  editLayout(shown => {
+    const i = shown.indexOf(key), j = i + Number(step);
+    if (i < 0 || j < 0 || j >= shown.length) return shown;
+    const next = [...shown];
+    [next[i], next[j]] = [next[j], next[i]];
+    return next;
+  });
+}
+
+// ---------------------------------------------------------------- your alarms
+function editAlarm(id: number | null): void {
+  const keys = Object.keys(state.alarms.keys);
+  const a = id === null ? null : state.alarms.list?.find(x => x.id === id);
+  state.alarms.form = a ? { id: a.id, key: a.key, direction: a.direction, threshold: String(a.threshold), enabled: a.enabled }
+    : { key: keys.includes('battery.soc') ? 'battery.soc' : keys[0] ?? '', direction: 'below', threshold: '', enabled: true };
+  render();
+}
+async function saveAlarm(): Promise<void> {
+  const f = state.alarms.form;
+  if (!f || !state.selected || state.alarms.saving) return;
+  const spec = state.alarms.keys[f.key];
+  const threshold = Number(f.threshold.replace(',', '.'));
+  if (!spec || f.threshold.trim() === '' || !Number.isFinite(threshold) || threshold < spec.min || threshold > spec.max) {
+    f.error = spec ? `Enter a value from ${spec.min} to ${spec.max}${spec.unit ? ` ${spec.unit}` : ''}.` : 'Choose what to watch.';
+    render();
+    return;
+  }
+  state.alarms.saving = true; f.error = undefined; render();
+  try {
+    await api.saveAlarm({ device: state.selected, ...(f.id ? { id: f.id } : {}), key: f.key, direction: f.direction, threshold, enabled: f.enabled });
+    state.alarms.form = null;
+    await loadAlarms(true);
+    refreshNow();  // a limit already passed is in the log at once
+  } catch (error) {
+    if (error instanceof SignedOutError || error instanceof OfflineError) await guarded(() => Promise.reject(error));
+    else f.error = error instanceof Error ? error.message : 'The alarm could not be saved.';
+  }
+  state.alarms.saving = false;
+  render();
+}
+async function deleteAlarm(): Promise<void> {
+  const f = state.alarms.form;
+  if (!f?.id || state.alarms.saving) return;
+  state.alarms.saving = true; render();
+  const done = await guarded(() => api.deleteAlarm(f.id!).then(() => true));
+  state.alarms.saving = false;
+  if (done) { state.alarms.form = null; await loadAlarms(true); }
+  render();
+}
+
 // ---------------------------------------------------------------- refresh loop (foreground only)
 let timer: ReturnType<typeof setTimeout> | null = null;
 let lastList = 0;
@@ -196,6 +275,7 @@ async function tick(): Promise<void> {
   await loadBoat();
   await loadTrack();
   await loadHistory();
+  await loadAlarms();
   failures = state.offline ? Math.min(failures + 1, 3) : 0;
   render();
   // Offline: 15 → 30 → 60 s. Nothing runs while the app is in the background.
@@ -246,7 +326,8 @@ async function signOutLocal(message?: string): Promise<void> {
   await secrets.clearToken();
   await cache.clear();
   Object.assign(state, { phase: 'signed-out', signIn: message ? { message } : {}, boats: null, boat: null, selected: null,
-    etag: null, events: [], track: null, settings: false, email: '', cloud: null });
+    etag: null, events: [], track: null, settings: false, email: '', cloud: null, layout: null, editingLayout: false });
+  Object.assign(state.alarms, { device: null, list: null, form: null });
   state.history.series = null; state.history.key = '';
   render();
 }
@@ -270,7 +351,8 @@ const pushHandlers = {
   failed: () => { state.push = 'failed'; render(); },
 };
 function toastFor(data: Record<string, string>): void {
-  toast(data.kind === 'anchor_alarm' ? 'Anchor alarm' : data.kind === 'connection_lost' ? 'No contact with the boat' : 'New boat event');
+  toast(data.kind === 'anchor_alarm' ? 'Anchor alarm' : data.kind === 'connection_lost' ? 'No contact with the boat'
+    : data.kind === 'threshold_alarm' ? 'Alarm' : 'New boat event');
 }
 let toastTimer: ReturnType<typeof setTimeout> | null = null;
 function toast(text: string): void {
@@ -288,6 +370,7 @@ async function setUpPush(ask: boolean): Promise<void> {
 function select(id: string): void {
   if (id === state.selected) return;
   state.selected = id; state.boat = null; state.etag = null; state.track = null; state.history.series = null; state.history.key = '';
+  state.alarms.form = null;
   void cache.write('selected', id);
   void (async () => {
     const saved = await cache.read<{ boat: Boat; receivedLocal: number }>(`boat.${id}`);
@@ -298,13 +381,14 @@ function select(id: string): void {
 }
 function open(tab: Tab): void {
   state.tab = tab;
+  state.editingLayout = false;
   if (tab === 'alarms') {
     state.seenEvent = Math.max(state.seenEvent, ...state.events.map(e => e.id));
     void cache.write('seen', state.seenEvent);
   }
   render();
   $('view').scrollTop = 0;
-  void (async () => { await loadTrack(true); await loadHistory(); render(); })();
+  void (async () => { await loadTrack(true); await loadHistory(); await loadAlarms(true); render(); })();
 }
 
 document.addEventListener('click', event => {
@@ -323,6 +407,35 @@ document.addEventListener('click', event => {
   else if (target.id === 'push-enable') void setUpPush(true);
   else if (target.id === 'sign-out') void signOut();
   else if (target.id === 'events-more') void moreEvents();
+  else if (target.id === 'layout-edit') { state.editingLayout = true; render(); $('view').scrollTop = 0; }
+  else if (target.id === 'layout-done') { state.editingLayout = false; render(); }
+  else if (target.id === 'layout-reset') { state.layout = null; void cache.write('layout', null); render(); }
+  else if (d.layoutMove) moveTile(d.layoutMove);
+  else if (d.layoutToggle) {
+    const key = d.layoutToggle;
+    editLayout(shown => shown.includes(key) ? shown.filter(k => k !== key) : [...shown, key]);
+  }
+  else if (target.id === 'alarm-add') editAlarm(null);
+  else if (d.alarmEdit) editAlarm(Number(d.alarmEdit));
+  else if (d.alarmDirection && state.alarms.form) { state.alarms.form.direction = d.alarmDirection as 'above' | 'below'; render(); }
+  else if (d.alarmEnabled && state.alarms.form) { state.alarms.form.enabled = d.alarmEnabled === 'true'; render(); }
+  else if (target.id === 'alarm-cancel') { state.alarms.form = null; render(); }
+  else if (target.id === 'alarm-delete') void deleteAlarm();
+});
+document.addEventListener('change', event => {
+  const target = event.target as HTMLSelectElement;
+  if (target.id === 'metric-select') { state.history.metric = target.value; state.history.series = null; void loadHistory().then(render); }
+  else if (target.id === 'alarm-key' && state.alarms.form) { state.alarms.form.key = target.value; render(); }
+});
+document.addEventListener('input', event => {
+  const target = event.target as HTMLInputElement;
+  if (target.id === 'alarm-threshold' && state.alarms.form) state.alarms.form.threshold = target.value;
+});
+document.addEventListener('submit', event => {
+  if ((event.target as HTMLElement).id !== 'alarm-form') return;
+  event.preventDefault();
+  (document.activeElement as HTMLElement | null)?.blur();
+  void saveAlarm();
 });
 document.addEventListener('keydown', event => { if (event.key === 'Escape' && state.settings) { state.settings = false; render(); } });
 
@@ -348,6 +461,7 @@ async function start(fromSignIn = false): Promise<void> {
 
 async function boot(): Promise<void> {
   state.theme = await cache.read<ThemeChoice>('theme') ?? 'auto';
+  state.layout = await cache.read<string[]>('layout');
   dark.addEventListener('change', () => render());
   onDeepLink(url => void finishSignIn(url));
   onForeground(isActive => {

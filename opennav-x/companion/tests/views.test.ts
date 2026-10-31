@@ -2,40 +2,62 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { TELEMETRY_KEYS } from '../../web/edge/cloud.ts';
 import type { Boat, BoatEvent, Device } from '../src/lib/api.ts';
-import { renderAlarmBanner, renderAlarms, renderAnchor, renderHistory, renderOverview, renderSettings, renderSignIn,
-  renderStatus, renderTabs } from '../src/views.ts';
+import { DEFAULT_LAYOUT, layoutKeys, renderAlarmBanner, renderAlarmRules, renderAlarms, renderAnchor, renderHistory,
+  renderLayoutEditor, renderNoBoats, renderOverview, renderSettings, renderSignIn, renderStatus, renderTabs } from '../src/views.ts';
 
 const DEVICE: Device = { id: '22222222-2222-4222-8222-222222222222', name: 'Aurora <helm>', platform: 'windows', appVersion: '0.4.0',
   telemetryEnabled: true, createdAt: '2026-10-20T10:00:00Z', lastSeenAt: '2026-10-26T10:00:00Z', lastDataAt: '2026-10-26T10:00:00Z' };
 const boat = (items: Boat['items'], anchor: Boat['anchor'] = null): Boat =>
   ({ device: DEVICE, receivedAt: '2026-10-26T10:00:00Z', items, anchor, snapshotAge: 5 });
 
-test('overview: values with unit and age; stale is marked; unknown keys are never shown; missing is explicit', () => {
-  const html = renderOverview(boat({
+test('overview: values with unit; only old or estimated values are flagged; unknown keys never shown', () => {
+  const items: Boat['items'] = {
     'navigation.sog': { v: 5.24, age: 1, q: 'live', src: 'GPS <1>' },
     'battery.soc': { v: 81.4, age: 2, q: 'live' },
     'battery.voltage': { v: 51.234, age: 400, q: 'live' },
+    'wind.true_speed': { v: 11.8, age: 1, q: 'estimated' },
     'navigation.latitude': { v: 59.3, age: 1, q: 'live' }, 'navigation.longitude': { v: 18.1, age: 1, q: 'live' },
     'evil.key': { v: 1, age: 0, q: 'live' } as any,
-  }), TELEMETRY_KEYS, 5);
-  assert.match(html, />5\.2<span class="unit">kn<\/span>/);
-  assert.match(html, /Current · 6 s ago · GPS &lt;1&gt;/);
+  };
+  const html = renderOverview(boat(items), TELEMETRY_KEYS, 5);
+  assert.match(html, /class="tile live hero"[\s\S]*?>5\.2<span class="unit">kn<\/span>/, 'the first tile leads');
+  assert.ok(!html.includes('GPS'), 'no source line on a current value');
+  assert.ok(!/Current ·/.test(html));
   assert.match(html, /class="tile stale[^"]*"[\s\S]*?51\.23[\s\S]*?Old · 7 min ago/);
+  assert.match(html, /True wind speed[\s\S]*?Estimated/);
   assert.match(html, /class="fill w16"/, 'SOC bar at 80 %');
   assert.match(html, /59° 18\.000′ N<br>18° 6\.000′ E/);
   assert.ok(!html.includes('evil'));
-  assert.ok(!html.includes('GPS <1>'));
-  // Required values the boat did not send are listed, not invented.
-  assert.match(html, /Not reported by this boat/);
-  assert.match(html, /Water temperature/);
-  assert.match(html, /Not for navigation/);
-  assert.match(renderOverview(null, TELEMETRY_KEYS, null), /Not reported by this boat/);
+  assert.ok(!html.includes('Not reported by this boat'), 'no list of what is missing');
+  assert.match(html, /id="layout-edit"/);
+  // Default order: only what the boat reports.
+  assert.deepEqual(layoutKeys(null, items, TELEMETRY_KEYS), ['navigation.sog', 'wind.true_speed', 'battery.soc', 'battery.voltage', 'navigation.latitude']);
+  assert.match(renderOverview(null, TELEMETRY_KEYS, null), /Waiting for boat data/);
+});
+
+test('dashboard: a saved layout decides tiles and order; the editor moves, hides and adds', () => {
+  const items: Boat['items'] = { 'navigation.sog': { v: 5, age: 1, q: 'live' }, 'battery.soc': { v: 80, age: 1, q: 'live' } };
+  const layout = ['battery.soc', 'environment.depth', 'nonsense'];
+  assert.deepEqual(layoutKeys(layout, items, TELEMETRY_KEYS), ['battery.soc', 'environment.depth']);
+  const html = renderOverview(boat(items), TELEMETRY_KEYS, 5, layout);
+  assert.ok(html.indexOf('State of charge') < html.indexOf('Depth below transducer'));
+  assert.ok(!html.includes('Speed over ground'), 'hidden tiles stay hidden');
+  assert.match(html, /Depth below transducer[\s\S]*?—/, 'a chosen value the boat does not send is shown as missing');
+  const editor = renderLayoutEditor(['battery.soc', 'environment.depth'], items, TELEMETRY_KEYS);
+  assert.match(editor, /data-layout-move="battery.soc:-1"[^>]*disabled/);
+  assert.match(editor, /Depth below transducer<span class="note"> · not reported/);
+  assert.match(editor, /data-layout-toggle="navigation.sog">Show/);
+  assert.match(editor, /id="layout-reset"/);
+  assert.ok(DEFAULT_LAYOUT.every(k => k in TELEMETRY_KEYS), 'every default tile is a known key');
 });
 
 test('connection status and the anchor alarm banner', () => {
-  assert.match(renderStatus(boat({}), DEVICE, 12, null), /Online[\s\S]*Last update 12 s ago/);
-  assert.match(renderStatus(boat({}), DEVICE, 900, { since: Date.parse('2026-10-26T10:00:00Z') }), /Offline[\s\S]*offline or not sharing[\s\S]*No connection · saved/);
-  assert.match(renderStatus(null, { ...DEVICE, telemetryEnabled: false, lastDataAt: null }, null, null), /Sharing off/);
+  const ok = renderStatus(boat({}), DEVICE, 12, null);
+  assert.match(ok, /class="updated"[\s\S]*Updated 12 s ago/);
+  assert.ok(!ok.includes('status-card'), 'all well: one quiet line, no card');
+  assert.match(renderStatus(boat({}), DEVICE, 900, { since: Date.parse('2026-10-26T10:00:00Z') }),
+    /status-card bad[\s\S]*Offline[\s\S]*No data for 15 min[\s\S]*This phone is offline · saved/);
+  assert.match(renderStatus(null, { ...DEVICE, telemetryEnabled: false, lastDataAt: null }, null, null), /Sharing off[\s\S]*Share boat data/);
   assert.ok(!renderStatus(boat({}), DEVICE, 12, null).includes('<helm>'));
   const alarm = renderAlarmBanner(DEVICE, { armed: true, alarm: true, distance_m: 61.5, radius_m: 50 }, 5);
   assert.match(alarm, /role="alert"[\s\S]*Anchor alarm[\s\S]*62 m from the anchor/);
@@ -60,8 +82,10 @@ test('history: only reported metrics, honest energy estimate, empty period state
   const now = Math.floor(Date.now() / 1000);
   const series = { bucketSeconds: 3600, series: { 'battery.net_discharge': [[now - 7200, 4], [now - 3600, 2]] as [number, number][] } };
   const html = renderHistory('battery.net_discharge', 24, series, false, new Set(['battery.net_discharge', 'battery.voltage']), TELEMETRY_KEYS);
-  assert.match(html, /data-metric="battery.voltage"/);
-  assert.ok(!html.includes('data-metric="wind.true_speed"'));
+  assert.match(html, /<h2 class="history-title">[\s\S]*<select id="metric-select" class="title-select">/, 'the heading is the chooser');
+  assert.match(html, /<option value="battery.net_discharge" selected>/);
+  assert.match(html, /<option value="battery.voltage">/);
+  assert.ok(!html.includes('value="wind.true_speed"'));
   assert.match(html, /Energy used <strong>6\.0 kWh<\/strong>[\s\S]*1-hour averages over 2\.0 h with data/);
   assert.match(html, /<path d="M/);
   assert.match(renderHistory('battery.voltage', 6, { bucketSeconds: 60, series: { 'battery.voltage': [] } }, false, new Set(['battery.voltage']), TELEMETRY_KEYS), /No data in this period/);
@@ -94,4 +118,35 @@ test('sign-in and settings say what Companion can and cannot do', () => {
   assert.match(settings, /class="active" data-theme-choice="night"/);
   assert.match(settings, /id="sign-out"/);
   assert.ok(settings.includes('Aurora &lt;helm&gt;'));
+});
+
+test('no boat yet: the real steps, including the QR code', () => {
+  const html = renderNoBoats();
+  assert.match(html, /Settings → System → SKAGER Cloud[\s\S]*Link to my account[\s\S]*QR code[\s\S]*Share boat data/);
+});
+
+test('your alarms: list with state, and a form that keeps what was typed', () => {
+  const keys = { 'battery.soc': { label: 'State of charge', unit: '%', min: 0, max: 100 },
+    'wind.true_speed': { label: 'True wind speed', unit: 'kn', min: 0, max: 200 } };
+  const alarms = [
+    { id: 1, deviceId: DEVICE.id, key: 'battery.soc', label: 'State of charge', unit: '%', direction: 'below' as const, threshold: 30,
+      enabled: true, state: 'alarm' as const, value: 24, changedAt: null },
+    { id: 2, deviceId: DEVICE.id, key: 'wind.true_speed', label: 'True wind <b>', unit: 'kn', direction: 'above' as const, threshold: 25,
+      enabled: false, state: 'unknown' as const, value: null, changedAt: null },
+  ];
+  const list = renderAlarmRules({ alarms, keys, form: null, saving: false });
+  assert.match(list, /class="rule alarm" data-alarm-edit="1"[\s\S]*Below 30 %[\s\S]*>Alarm</);
+  assert.match(list, /class="rule off"[\s\S]*Above 25 kn[\s\S]*>Off</);
+  assert.ok(list.includes('True wind &lt;b&gt;'));
+  assert.match(list, /id="alarm-add"/);
+  const form = renderAlarmRules({ alarms, keys, form: { id: 1, key: 'battery.soc', direction: 'below', threshold: '3"0', enabled: true,
+    error: 'Enter a value from 0 to 100 %.' }, saving: false });
+  assert.match(form, /id="alarm-form"[\s\S]*<option value="battery.soc" selected>/);
+  assert.match(form, /value="3&quot;0"/);
+  assert.match(form, /class="active" data-alarm-direction="below"/);
+  assert.match(form, /role="alert">Enter a value/);
+  assert.match(form, /id="alarm-delete"/);
+  assert.ok(!renderAlarmRules({ alarms, keys, form: { key: 'battery.soc', direction: 'above', threshold: '', enabled: true }, saving: false })
+    .includes('alarm-delete'), 'a new alarm has nothing to delete');
+  assert.match(renderAlarmRules({ alarms: [], keys, form: null, saving: false }), /above or below a limit you choose/);
 });

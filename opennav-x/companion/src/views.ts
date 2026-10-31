@@ -1,8 +1,8 @@
 // SKAGER Companion screens as pure HTML-string renderers (tested in Node).
 // Every value from SKAGER Cloud is escaped. Missing data is shown as missing,
 // and every value carries its age.
-import type { Anchor, Boat, BoatEvent, Boats, Cloud, Device, Item, TelemetryKey } from './lib/api.ts';
-import { anchorView, ago, classify, connection, CONNECTION_LABEL, FRESHNESS_LABEL, valueAge } from './lib/freshness.ts';
+import type { Alarm, AlarmKey, Anchor, Boat, BoatEvent, Boats, Cloud, Device, Item, TelemetryKey } from './lib/api.ts';
+import { anchorView, ago, classify, connection, CONNECTION_LABEL, valueAge } from './lib/freshness.ts';
 import type { Freshness } from './lib/freshness.ts';
 import { dayLabel, esc, formatDistance, formatReading, formatTime } from './lib/format.ts';
 import { chartPath, clean, energy, METRICS, niceDomain, RANGES, stats } from './lib/history.ts';
@@ -39,7 +39,7 @@ export function renderSignIn(state: { busy?: boolean; message?: string; error?: 
     <p class="lead">See your boat's position, battery, wind and anchor watch from your phone, and get an alarm when something needs attention.</p>
     <button class="button primary" type="button" id="sign-in" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Waiting for the browser…' : 'Sign in with your SKAGER account'}</button>
     ${state.message ? `<p class="message${state.error ? ' error' : ''}" role="status">${esc(state.message)}</p>` : ''}
-    <p class="note">Sign-in opens beta.skager.app. Companion needs SKAGER Cloud and boat data sharing switched on in SKAGER on board (Settings → System → SKAGER Cloud).</p>
+    <p class="note">Sign-in opens beta.skager.app. Companion needs SKAGER Cloud, and SKAGER on board linked to your account.</p>
     <p class="note fine">Companion shows what SKAGER reports. It is not for navigation and cannot control the boat.</p>
   </section>`;
 }
@@ -51,7 +51,13 @@ export function renderNoCloud(cloud: Cloud | null): string {
 
 export function renderNoBoats(): string {
   return `<section class="card empty-state"><p class="eyebrow">No boat yet</p><h2>Link SKAGER on board to your account.</h2>
-    <p class="note">In SKAGER on the boat computer, open Settings → System → SKAGER Cloud, choose Link, and switch on boat data sharing. Your boat appears here within a minute.</p></section>`;
+    <ol class="steps">
+      <li>On the boat computer, open SKAGER and go to <strong>Settings → System → SKAGER Cloud</strong>.</li>
+      <li>Tap <strong>Link to my account</strong>. A QR code and a pairing code appear.</li>
+      <li>Scan the QR code with this phone's camera, sign in and tap <strong>Link to my account</strong>. Or open beta.skager.app/link and type the code.</li>
+      <li>Back in SKAGER, switch <strong>Share boat data</strong> on.</li>
+    </ol>
+    <p class="note">Your boat appears here within a minute.</p></section>`;
 }
 
 export function renderBoatSwitch(boats: Boats | null, selected: string | null): string {
@@ -65,13 +71,15 @@ const STATUS_CLASS: Record<string, string> = { online: 'ok', delayed: 'wait', of
 
 export function renderStatus(boat: Boat | null, device: Device | undefined, age: number | null, offline: { since: number | null } | null): string {
   const state = connection(boat ?? (device ? { device, receivedAt: device.lastDataAt } : null), age);
-  const detail = state === 'sharing-off' ? 'Switch on boat data sharing in SKAGER on board.'
-    : state === 'no-data' ? 'No boat data received yet.'
-    : `Last update ${ago(age)}${state === 'offline' ? ' · SKAGER on board is offline or not sharing' : ''}`;
-  return `<section class="status-card ${STATUS_CLASS[state]}">
-    <div><p class="eyebrow">Connection</p><p class="status-line"><span class="dot ${STATUS_CLASS[state]}"></span>${CONNECTION_LABEL[state]}</p>
-    <p class="note">${esc(detail)}</p></div>
-    ${offline ? `<p class="offline-chip" role="status">No connection${offline.since ? ` · saved ${esc(formatTime(new Date(offline.since).toISOString()))}` : ''}</p>` : ''}
+  const phone = offline ? `<p class="offline-chip" role="status">This phone is offline${offline.since ? ` · saved ${esc(formatTime(new Date(offline.since).toISOString()))}` : ''}</p>` : '';
+  if (state === 'online') return `<div class="updated"><p class="note"><span class="dot ok"></span>Updated ${esc(ago(age))}</p>${phone}</div>`;
+  const detail = state === 'sharing-off' ? 'Switch on Share boat data in SKAGER on board.'
+    : state === 'no-data' ? 'No boat data yet.'
+    : state === 'offline' ? `No data for ${ago(age).replace(/ ago$/, '')}. Is SKAGER running and online on board?`
+    : `Last update ${ago(age)}.`;
+  return `<section class="status-card ${STATUS_CLASS[state]}" role="status">
+    <div><p class="status-line"><span class="dot ${STATUS_CLASS[state]}"></span>${CONNECTION_LABEL[state]}</p>
+    <p class="note">${esc(detail)}</p></div>${phone}
   </section>`;
 }
 
@@ -85,64 +93,79 @@ export function renderAlarmBanner(device: Device | undefined, anchor: Anchor | n
 }
 
 // ---------------------------------------------------------------- overview
-type Tile = { key: string; label?: string; wide?: boolean; hero?: boolean };
-const SECTIONS: { title: string; tiles: Tile[] }[] = [
-  { title: 'Position and motion', tiles: [{ key: 'navigation.sog', hero: true }, { key: 'navigation.cog' }, { key: 'navigation.heading' },
-    { key: 'navigation.stw' }, { key: 'navigation.latitude', label: 'Position', wide: true }] },
-  { title: 'Battery', tiles: [{ key: 'battery.soc', hero: true }, { key: 'battery.voltage' }, { key: 'battery.current' },
-    { key: 'battery.net_discharge', label: 'Battery power' }, { key: 'battery.soh' }, { key: 'battery.capacity' }] },
-  { title: 'Motor', tiles: [{ key: 'propulsion.electrical_power', hero: true }, { key: 'propulsion.rpm' },
-    { key: 'propulsion.motor_temperature' }, { key: 'propulsion.coolant_temperature' }, { key: 'propulsion.gear' },
-    { key: 'propulsion.shaft_power' }, { key: 'propulsion.regeneration' }] },
-  { title: 'Wind', tiles: [{ key: 'wind.true_speed', hero: true }, { key: 'wind.true_angle' }, { key: 'wind.apparent_speed' }, { key: 'wind.apparent_angle' }] },
-  { title: 'Water and weather', tiles: [{ key: 'environment.depth', hero: true }, { key: 'environment.water_temperature' }, { key: 'environment.pressure' }] },
-  { title: 'Tanks', tiles: [{ key: 'tanks.fresh_water' }, { key: 'tanks.fuel' }, { key: 'tanks.waste' }, { key: 'tanks.other' }] },
-  { title: 'Steering', tiles: [{ key: 'steering.rudder' }, { key: 'steering.heel' }] },
-];
-/** The values the owner asked for on the overview: always listed, reported or not. */
-export const REQUIRED = ['navigation.latitude', 'navigation.cog', 'navigation.sog', 'battery.soc', 'battery.voltage',
-  'battery.current', 'battery.net_discharge', 'propulsion.electrical_power', 'propulsion.motor_temperature', 'wind.true_speed',
-  'wind.true_angle', 'environment.depth', 'environment.water_temperature'];
+/** The Boat view's tiles, most useful first. Without a saved layout, only what the boat reports is shown. */
+export const DEFAULT_LAYOUT = ['navigation.sog', 'wind.true_speed', 'wind.true_angle', 'environment.depth', 'battery.soc',
+  'battery.voltage', 'battery.current', 'battery.net_discharge', 'navigation.latitude', 'navigation.cog', 'navigation.heading',
+  'navigation.stw', 'wind.apparent_speed', 'wind.apparent_angle', 'propulsion.electrical_power', 'propulsion.rpm',
+  'propulsion.motor_temperature', 'propulsion.coolant_temperature', 'propulsion.gear', 'propulsion.shaft_power',
+  'propulsion.regeneration', 'environment.water_temperature', 'environment.pressure', 'battery.soh', 'battery.capacity',
+  'tanks.fresh_water', 'tanks.fuel', 'tanks.waste', 'tanks.other', 'steering.rudder', 'steering.heel'];
+const TILE_LABEL: Record<string, string> = { 'navigation.latitude': 'Position', 'battery.net_discharge': 'Battery power' };
+const tileLabel = (key: string, keys: Record<string, TelemetryKey>) => TILE_LABEL[key] ?? keys[key]?.label ?? key;
+
+/** The tiles to show: the saved layout, or every reported value in the default order. */
+export function layoutKeys(layout: string[] | null, items: Record<string, Item>, keys: Record<string, TelemetryKey>): string[] {
+  const known = (key: string) => DEFAULT_LAYOUT.includes(key) && !!keys[key];
+  return layout ? layout.filter(known) : DEFAULT_LAYOUT.filter(key => known(key) && !!items[key]);
+}
 
 function split(text: string): [string, string] {
   const match = /^(-?[\d.,]+)\s?(.*)$/.exec(text);
   return match ? [match[1], match[2]] : [text, ''];
 }
-function tile(t: Tile, items: Record<string, Item>, keys: Record<string, TelemetryKey>, age: number | null): string {
-  const spec = keys[t.key];
+function tile(key: string, hero: boolean, items: Record<string, Item>, keys: Record<string, TelemetryKey>, age: number | null): string {
+  const spec = keys[key];
   if (!spec) return '';
-  const item = items[t.key];
+  const item = items[key];
   const itemAge = valueAge(item, age);
   const fresh: Freshness = classify(item, itemAge);
+  const position = key === 'navigation.latitude';
   let value: string, unit = '';
-  if (t.key === 'navigation.latitude') {
+  if (position) {
     const lon = items['navigation.longitude'];
     value = item && lon ? `${esc(formatReading('navigation.latitude', item.v, 'deg'))}<br>${esc(formatReading('navigation.longitude', lon.v, 'deg'))}` : '—';
   } else {
-    [value, unit] = item ? split(formatReading(t.key, item.v, spec.unit)) : ['—', ''];
+    [value, unit] = item ? split(formatReading(key, item.v, spec.unit)) : ['—', ''];
     value = esc(value);
   }
-  const bar = t.key === 'battery.soc' && item && fresh !== 'unavailable'
+  const bar = key === 'battery.soc' && item && fresh !== 'unavailable'
     ? `<span class="bar" aria-hidden="true"><span class="fill w${Math.max(0, Math.min(20, Math.round(item.v / 5)))}"></span></span>` : '';
-  return `<div class="tile ${fresh}${t.wide ? ' wide' : ''}${t.hero ? ' hero' : ''}">
-    <p class="tile-label">${esc(t.label ?? spec.label)}</p>
-    <p class="tile-value${t.key === 'navigation.latitude' ? ' position' : ''}">${value}${unit ? `<span class="unit${unit === '°' ? ' deg' : ''}">${esc(unit)}</span>` : ''}</p>${bar}
-    <p class="tile-age">${fresh === 'unavailable' ? 'Not reported' : `${FRESHNESS_LABEL[fresh]} · ${esc(ago(itemAge))}`}${item?.src ? ` · ${esc(item.src)}` : ''}</p>
+  // Only what needs attention: an old or estimated value. Current values carry no label.
+  const flag = fresh === 'stale' ? `Old · ${esc(ago(itemAge))}` : fresh === 'aging' ? esc(ago(itemAge))
+    : fresh === 'estimated' ? 'Estimated' : '';
+  return `<div class="tile ${fresh}${position ? ' wide' : ''}${hero && !position ? ' hero' : ''}">
+    <p class="tile-label">${esc(tileLabel(key, keys))}</p>
+    <p class="tile-value${position ? ' position' : ''}">${value}${unit ? `<span class="unit${unit === '°' ? ' deg' : ''}">${esc(unit)}</span>` : ''}</p>${bar}
+    ${flag ? `<p class="tile-age">${flag}</p>` : ''}
   </div>`;
 }
 
-export function renderOverview(boat: Boat | null, keys: Record<string, TelemetryKey>, age: number | null): string {
+export function renderOverview(boat: Boat | null, keys: Record<string, TelemetryKey>, age: number | null, layout: string[] | null = null): string {
   const items = boat?.items ?? {};
-  const sections = SECTIONS.map(section => {
-    const tiles = section.tiles.filter(t => items[t.key] || REQUIRED.includes(t.key));
-    if (!tiles.some(t => items[t.key])) return { section, html: '' };
-    return { section, html: `<h2 class="section-title">${esc(section.title)}</h2><div class="tiles">${tiles.map(t => tile(t, items, keys, age)).join('')}</div>` };
-  });
-  const missing = REQUIRED.filter(key => !items[key] && keys[key] && key !== 'navigation.longitude')
-    .filter(key => !sections.some(s => s.html && s.section.tiles.some(t => t.key === key)));
-  return `${sections.map(s => s.html).join('')}
-    ${missing.length ? `<section class="card muted-card"><p class="eyebrow">Not reported by this boat</p><p class="note">${missing.map(k => esc(k === 'navigation.latitude' ? 'Position' : keys[k].label)).join(' · ')}</p></section>` : ''}
-    <p class="note fine center">Values as SKAGER on board measured them. Not for navigation.</p>`;
+  const shown = layoutKeys(layout, items, keys);
+  const tiles = shown.length ? `<div class="tiles">${shown.map((key, i) => tile(key, i === 0, items, keys, age)).join('')}</div>`
+    : `<section class="card empty-state"><h2>No values to show.</h2><p class="note">${boat ? 'Choose what to show with Edit dashboard.' : 'Waiting for boat data.'}</p></section>`;
+  return `${tiles}<button type="button" class="button secondary wide-button" id="layout-edit">Edit dashboard</button>`;
+}
+
+/** Choose and order the Boat view's tiles. Saved on this phone only. */
+export function renderLayoutEditor(shown: string[], items: Record<string, Item>, keys: Record<string, TelemetryKey>): string {
+  const rest = DEFAULT_LAYOUT.filter(key => keys[key] && !shown.includes(key));
+  const missing = (key: string) => (key === 'navigation.latitude' ? !items[key] || !items['navigation.longitude'] : !items[key])
+    ? '<span class="note"> · not reported</span>' : '';
+  const row = (key: string, i: number) => `<li class="layout-row">
+      <span class="layout-name">${esc(tileLabel(key, keys))}${missing(key)}</span>
+      <button type="button" class="icon-button small" data-layout-move="${esc(key)}:-1" aria-label="Move ${esc(tileLabel(key, keys))} up" ${i === 0 ? 'disabled' : ''}>↑</button>
+      <button type="button" class="icon-button small" data-layout-move="${esc(key)}:1" aria-label="Move ${esc(tileLabel(key, keys))} down" ${i === shown.length - 1 ? 'disabled' : ''}>↓</button>
+      <button type="button" class="chip" data-layout-toggle="${esc(key)}">Hide</button></li>`;
+  return `<div class="editor-head"><h2>Edit dashboard</h2><button type="button" class="button primary" id="layout-done">Done</button></div>
+    <p class="note">Saved on this phone.</p>
+    <h3 class="section-title">Shown</h3>
+    ${shown.length ? `<ol class="layout-list">${shown.map(row).join('')}</ol>` : '<p class="note">Nothing yet. Add values below.</p>'}
+    ${rest.length ? `<h3 class="section-title">More</h3><ul class="layout-list">${rest.map(key => `<li class="layout-row">
+      <span class="layout-name">${esc(tileLabel(key, keys))}${missing(key)}</span>
+      <button type="button" class="chip" data-layout-toggle="${esc(key)}">Show</button></li>`).join('')}</ul>` : ''}
+    <button type="button" class="button secondary wide-button" id="layout-reset">Reset to default</button>`;
 }
 
 // ---------------------------------------------------------------- anchor
@@ -202,10 +225,10 @@ export function renderHistory(metric: string, hours: number, series: Series | nu
   const domain = points.length ? { t0: now - hours * 3600, t1: now, ...niceDomain(points) } : null;
   const path = domain && series ? chartPath(points, series.bucketSeconds, W, H, domain) : '';
   const used = selected.key === 'battery.net_discharge' && series ? energy(points, series.bucketSeconds) : null;
-  return `<div class="chips scroll" role="tablist" aria-label="Measurement">${metrics.map(m => `<button type="button" class="chip${m.key === selected.key ? ' active' : ''}" data-metric="${m.key}">${esc(m.label)}</button>`).join('')}</div>
+  // The heading is the chooser: what the graph shows, and the way to change it.
+  return `<h2 class="history-title"><label class="visually-hidden" for="metric-select">Show</label><select id="metric-select" class="title-select">${metrics.map(m => `<option value="${esc(m.key)}"${m.key === selected.key ? ' selected' : ''}>${esc(m.label)}</option>`).join('')}</select></h2>
     <div class="segmented" role="group" aria-label="Period">${RANGES.map(r => `<button type="button" class="${r.hours === hours ? 'active' : ''}" data-hours="${r.hours}">${r.label}</button>`).join('')}</div>
     <section class="card chart-card${loading ? ' loading' : ''}">
-      <p class="eyebrow">${esc(selected.label)}</p>
       ${s ? `<p class="chart-now">${esc(fmt(s.last))}<span class="note"> latest average</span></p>` : ''}
       ${path ? `<svg class="chart" viewBox="0 0 ${W} ${H}" preserveAspectRatio="none" role="img" aria-label="${esc(selected.label)} over ${RANGES.find(r => r.hours === hours)?.label}">
         <line x1="0" y1="${H}" x2="${W}" y2="${H}" class="axis"/><path d="${path}" class="line"/></svg>
@@ -214,17 +237,17 @@ export function renderHistory(metric: string, hours: number, series: Series | nu
         : `<p class="note">${loading ? 'Loading…' : 'No data in this period.'}</p>`}
       ${s ? `<dl class="stats"><div><dt>Min</dt><dd>${esc(fmt(s.min))}</dd></div><div><dt>Average</dt><dd>${esc(fmt(s.mean))}</dd></div><div><dt>Max</dt><dd>${esc(fmt(s.max))}</dd></div></dl>` : ''}
       ${used ? `<p class="energy">Energy used <strong>${used.used.toFixed(1)} kWh</strong>${used.charged > 0.05 ? ` · charged ${used.charged.toFixed(1)} kWh` : ''}<span class="note"> · estimated from ${series!.bucketSeconds >= 3600 ? `${Math.round(series!.bucketSeconds / 3600)}-hour` : `${Math.round(series!.bucketSeconds / 60)}-minute`} averages over ${used.coveredHours.toFixed(1)} h with data</span></p>` : ''}
-      <p class="note fine">Gaps mean SKAGER was not sharing. Values are averages, not every reading.</p>
+      <p class="note fine">Gaps: no boat data then.</p>
     </section>`;
 }
 
 // ---------------------------------------------------------------- alarm log
 const KIND_ICON: Record<string, string> = { anchor_alarm: 'anchor', anchor_alarm_cleared: 'anchor', anchor_armed: 'anchor',
-  anchor_disarmed: 'anchor', connection_lost: 'alarms', connection_restored: 'alarms', alert_critical: 'alarms', alert_cleared: 'alarms' };
+  anchor_disarmed: 'anchor', connection_lost: 'alarms', connection_restored: 'alarms', alert_critical: 'alarms', alert_cleared: 'alarms',
+  threshold_alarm: 'alarms', threshold_cleared: 'alarms' };
 export function renderAlarms(events: BoatEvent[], more: boolean, loading: boolean, highlight: number | null, multipleBoats: boolean): string {
   if (!events.length) {
-    return `<section class="card empty-state"><p class="eyebrow">Alarm log</p><h2>${loading ? 'Loading…' : 'Nothing has happened yet.'}</h2>
-      <p class="note">Anchor alarms, lost contact and critical alerts from SKAGER on board appear here, newest first, for 90 days.</p></section>`;
+    return `<h2 class="section-title">Log</h2><p class="note">${loading ? 'Loading…' : 'Nothing has happened yet.'}</p>`;
   }
   let day = '';
   // Newest first by when it happened; an event reported late still lands on its own day.
@@ -232,7 +255,7 @@ export function renderAlarms(events: BoatEvent[], more: boolean, loading: boolea
   const rows = ordered.map(e => {
     const heading = dayLabel(e.occurredAt);
     const late = Date.parse(e.receivedAt) - Date.parse(e.occurredAt) > 120_000;
-    const head = heading !== day ? `<h2 class="section-title">${esc(heading)}</h2>` : '';
+    const head = heading !== day ? `<h3 class="section-title">${esc(heading)}</h3>` : '';
     day = heading;
     return `${head}<article class="event ${esc(e.severity)}${e.id === highlight ? ' highlight' : ''}" data-event="${e.id}">
       <span class="event-icon">${icon(KIND_ICON[e.kind] ?? 'alarms')}</span>
@@ -242,7 +265,41 @@ export function renderAlarms(events: BoatEvent[], more: boolean, loading: boolea
       <time datetime="${esc(e.occurredAt)}">${esc(formatTime(e.occurredAt))}${late ? `<span class="note"> reported ${esc(formatTime(e.receivedAt))}</span>` : ''}</time>
     </article>`;
   }).join('');
-  return `${rows}${more ? `<button type="button" class="button secondary" id="events-more" ${loading ? 'disabled' : ''}>${loading ? 'Loading…' : 'Show older'}</button>` : ''}`;
+  return `<h2 class="section-title">Log</h2>${rows}${more ? `<button type="button" class="button secondary" id="events-more" ${loading ? 'disabled' : ''}>${loading ? 'Loading…' : 'Show older'}</button>` : ''}`;
+}
+
+// ---------------------------------------------------------------- your alarms
+export type AlarmForm = { id?: number; key: string; direction: 'above' | 'below'; threshold: string; enabled: boolean; error?: string };
+export type AlarmsView = { alarms: Alarm[] | null; keys: Record<string, AlarmKey>; form: AlarmForm | null; saving: boolean };
+const RULE_STATE: Record<Alarm['state'], string> = { alarm: 'Alarm', ok: 'OK', unknown: 'Waiting for data' };
+const number = (v: number) => String(Math.round(v * 100) / 100);
+
+function alarmForm(f: AlarmForm, keys: Record<string, AlarmKey>, saving: boolean): string {
+  const spec = keys[f.key];
+  return `<form class="card alarm-form" id="alarm-form" novalidate>
+    <h3>${f.id ? 'Change alarm' : 'New alarm'}</h3>
+    <label class="field"><span class="note">Data</span><select id="alarm-key">${Object.entries(keys)
+      .sort((a, b) => a[1].label.localeCompare(b[1].label))
+      .map(([key, k]) => `<option value="${esc(key)}"${key === f.key ? ' selected' : ''}>${esc(k.label)}</option>`).join('')}</select></label>
+    <div class="segmented" role="group" aria-label="When">${(['below', 'above'] as const).map(d => `<button type="button" class="${f.direction === d ? 'active' : ''}" data-alarm-direction="${d}">${d === 'below' ? 'Below' : 'Above'}</button>`).join('')}</div>
+    <label class="field"><span class="note">Value</span><span class="value-input"><input id="alarm-threshold" inputmode="decimal" autocomplete="off" value="${esc(f.threshold)}"${spec ? ` placeholder="${esc(number(spec.min))} to ${esc(number(spec.max))}"` : ''}><span class="unit">${esc(spec?.unit ?? '')}</span></span></label>
+    ${f.id ? `<div class="segmented" role="group" aria-label="Alarm">${[true, false].map(on => `<button type="button" class="${f.enabled === on ? 'active' : ''}" data-alarm-enabled="${on}">${on ? 'On' : 'Off'}</button>`).join('')}</div>` : ''}
+    ${f.error ? `<p class="message error" role="alert">${esc(f.error)}</p>` : ''}
+    <div class="form-actions"><button type="submit" class="button primary" ${saving ? 'disabled' : ''}>${saving ? 'Saving…' : 'Save'}</button>
+      <button type="button" class="button secondary" id="alarm-cancel">Cancel</button></div>
+    ${f.id ? `<button type="button" class="button danger" id="alarm-delete" ${saving ? 'disabled' : ''}>Delete alarm</button>` : ''}
+  </form>`;
+}
+
+export function renderAlarmRules(v: AlarmsView): string {
+  if (!v.alarms) return '<h2 class="section-title">Your alarms</h2><p class="note">Loading…</p>';
+  const rows = v.alarms.map(a => `<button type="button" class="rule ${a.enabled ? a.state : 'off'}" data-alarm-edit="${a.id}">
+      <span><span class="rule-title">${esc(a.label)}</span>
+      <span class="note">${a.direction === 'below' ? 'Below' : 'Above'} ${esc(number(a.threshold))}${a.unit ? ` ${esc(a.unit)}` : ''}</span></span>
+      <span class="rule-state">${a.enabled ? RULE_STATE[a.state] : 'Off'}</span></button>`).join('');
+  return `<h2 class="section-title">Your alarms</h2>
+    ${v.form && !v.form.id ? '' : rows || '<p class="note">Get a notification when a value goes above or below a limit you choose.</p>'}
+    ${v.form ? alarmForm(v.form, v.keys, v.saving) : `<button type="button" class="button secondary wide-button" id="alarm-add">Add alarm</button>`}`;
 }
 
 // ---------------------------------------------------------------- settings
