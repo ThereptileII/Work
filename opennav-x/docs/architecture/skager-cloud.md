@@ -100,8 +100,8 @@ retroactively canceled; each subsequent metadata or artifact request checks anew
 Order: SQL first, then the function, then the Worker.
 
 1. Apply `web/edge/store-cloud.sql` after `store-guide.sql`, then `web/edge/store-discounts.sql`
-   (Cloud discount codes), then `web/edge/cloud.sql`,
-   as owner. Each file is one transaction. The function deployment requires both.
+   (Cloud discount codes), then `web/edge/cloud.sql`, then `web/edge/cloud-series-directions.sql`
+   (History averages headings and wind angles on the circle), as owner. Each file is one transaction. The function deployment requires both.
 2. Redeploy the `skager-web` function (bundle from `build_cloudflare_beta.py`).
 3. Worker: add an R2 bucket binding named **`SKAGER_UPDATES`** (bucket name is the
    owner's choice, for example `skager-updates`), then upload the new

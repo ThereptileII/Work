@@ -252,6 +252,7 @@ $$;
 
 -- History for up to four keys, averaged into at most 240 buckets per key so a
 -- 30-day window still fits one bounded response: {"key": [[epoch_s, value], ...]}.
+-- Replaced by cloud-series-directions.sql, which averages directions on the circle.
 create function public.cloud_boat_series(p_account_id uuid, p_device_id uuid, p_keys text[], p_hours integer)
 returns jsonb
 language plpgsql stable security definer set search_path = '' as $$

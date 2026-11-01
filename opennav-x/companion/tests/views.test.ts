@@ -100,12 +100,13 @@ test('anchor screen: watching, alarm, no contact, off and unknown are distinct',
   assert.match(renderAnchor(DEVICE, null, 5, false), /No anchor watch report yet/);
 });
 
-test('history: every value the boat can chart, but no compass directions', () => {
+test('history: every value the boat can chart, directions included', () => {
   assert.ok(METRICS.every(m => m.key in TELEMETRY_KEYS), 'every metric is a value SKAGER uploads');
   for (const key of ['navigation.stw', 'tanks.fresh_water', 'tanks.waste', 'environment.pressure', 'steering.heel'])
     assert.ok(METRICS.some(m => m.key === key), key);
-  for (const key of ['navigation.heading', 'navigation.cog', 'wind.apparent_angle', 'wind.true_angle', 'navigation.latitude'])
-    assert.ok(!METRICS.some(m => m.key === key), `${key} cannot be averaged per bucket`);
+  for (const key of ['navigation.heading', 'navigation.cog', 'wind.apparent_angle', 'wind.true_angle'])
+    assert.ok(METRICS.some(m => m.key === key), `${key} (averaged on the circle by the server)`);
+  assert.ok(!METRICS.some(m => m.key === 'navigation.latitude'), 'position is the map, not a chart');
 });
 
 test('history: only reported metrics, honest energy estimate, empty period stated', () => {

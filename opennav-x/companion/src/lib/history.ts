@@ -3,8 +3,7 @@
 
 export type Metric = { key: string; label: string; unit: string };
 /** What the History tab offers, in order. Only metrics the boat has reported are shown.
- *  Directions (heading, course, wind angles) are left out: the server averages each bucket
- *  arithmetically, which is wrong across north (350° and 10° would give 180°). */
+ *  Directions are averaged on the circle by the server (web/edge/cloud-series-directions.sql). */
 export const METRICS: Metric[] = [
   { key: 'battery.voltage', label: 'Battery voltage', unit: 'V' },
   { key: 'battery.soc', label: 'State of charge', unit: '%' },
@@ -18,8 +17,12 @@ export const METRICS: Metric[] = [
   { key: 'propulsion.shaft_power', label: 'Shaft power', unit: 'kW' },
   { key: 'navigation.sog', label: 'Speed over ground', unit: 'kn' },
   { key: 'navigation.stw', label: 'Speed through water', unit: 'kn' },
+  { key: 'navigation.heading', label: 'Heading', unit: 'deg' },
+  { key: 'navigation.cog', label: 'Course over ground', unit: 'deg' },
   { key: 'wind.true_speed', label: 'True wind', unit: 'kn' },
+  { key: 'wind.true_angle', label: 'True wind angle', unit: 'deg' },
   { key: 'wind.apparent_speed', label: 'Apparent wind', unit: 'kn' },
+  { key: 'wind.apparent_angle', label: 'Apparent wind angle', unit: 'deg' },
   { key: 'environment.depth', label: 'Depth', unit: 'm' },
   { key: 'environment.water_temperature', label: 'Water temperature', unit: 'C' },
   { key: 'environment.pressure', label: 'Air pressure', unit: 'hPa' },
