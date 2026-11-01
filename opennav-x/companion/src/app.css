@@ -88,10 +88,8 @@ h2 { font-size: 21px; line-height: 1.25; }
 .tiles { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; }
 .tile { display: grid; align-content: start; gap: 4px; min-height: 104px; padding: 14px; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
 .tile.wide { grid-column: span 2; min-height: 0; }
-.tile.hero { grid-column: span 2; }
 .tile-label { font-size: 12px; font-weight: 600; letter-spacing: 0.04em; color: var(--sec); }
 .tile-value { font-size: 30px; font-weight: 330; letter-spacing: -0.02em; line-height: 1.1; font-variant-numeric: tabular-nums; }
-.tile.hero .tile-value { font-size: 44px; font-weight: 300; }
 .tile-value.position { font-size: 19px; font-weight: 400; letter-spacing: 0; line-height: 1.35; }
 .unit { margin-left: 4px; font-size: 15px; font-weight: 450; color: var(--sec); letter-spacing: 0; }
 .unit.deg { margin-left: 1px; }
@@ -247,5 +245,4 @@ h2 { font-size: 21px; line-height: 1.25; }
 @media (min-width: 640px) {
   #view { padding-inline: max(16px, calc((100vw - 620px) / 2)); }
   .tiles { grid-template-columns: repeat(3, minmax(0, 1fr)); }
-  .tile.hero { grid-column: span 1; }
 }

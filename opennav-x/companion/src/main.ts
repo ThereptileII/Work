@@ -435,7 +435,8 @@ function open(tab: Tab): void {
 
 document.addEventListener('click', event => {
   if (event.target === $('sheet') && state.picker) { state.picker = null; render(); return; }
-  const target = (event.target as Element).closest('button, [data-tab]') as HTMLElement | null;
+  // Buttons only: #view itself carries data-tab, so a wider match would take every tap in the view.
+  const target = (event.target as Element).closest('button') as HTMLElement | null;
   if (!target) return;
   // A field still focused would hold back the redraw this tap asks for (iOS keeps focus on button taps).
   const focused = document.activeElement;

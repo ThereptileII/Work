@@ -121,7 +121,7 @@ function split(text: string): [string, string] {
   const match = /^(-?[\d.,]+)\s?(.*)$/.exec(text);
   return match ? [match[1], match[2]] : [text, ''];
 }
-function tile(key: string, hero: boolean, items: Record<string, Item>, keys: Record<string, TelemetryKey>, age: number | null): string {
+function tile(key: string, items: Record<string, Item>, keys: Record<string, TelemetryKey>, age: number | null): string {
   const spec = keys[key];
   if (!spec) return '';
   const item = items[key];
@@ -141,7 +141,8 @@ function tile(key: string, hero: boolean, items: Record<string, Item>, keys: Rec
   // Only what needs attention: an old or estimated value. Current values carry no label.
   const flag = fresh === 'stale' ? `Old · ${esc(ago(itemAge))}` : fresh === 'aging' ? esc(ago(itemAge))
     : fresh === 'estimated' ? 'Estimated' : '';
-  return `<div class="tile ${fresh}${position ? ' wide' : ''}${hero && !position ? ' hero' : ''}">
+  // Half width unless the value needs the room (position: two lines of coordinates).
+  return `<div class="tile ${fresh}${position ? ' wide' : ''}">
     <p class="tile-label">${esc(tileLabel(key, keys))}</p>
     <p class="tile-value${position ? ' position' : ''}">${value}${unit ? `<span class="unit${unit === '°' ? ' deg' : ''}">${esc(unit)}</span>` : ''}</p>${bar}
     ${flag ? `<p class="tile-age">${flag}</p>` : ''}
@@ -150,7 +151,7 @@ function tile(key: string, hero: boolean, items: Record<string, Item>, keys: Rec
 
 export function renderOverview(boat: Boat | null, keys: Record<string, TelemetryKey>, age: number | null, layout: string[] | null = null): string {
   const items = boat?.items ?? {};
-  // Dividers split the tiles into sections; each section opens with a large tile.
+  // Dividers split the tiles into sections.
   const sections: { title: string | null; keys: string[] }[] = [{ title: null, keys: [] }];
   for (const entry of layoutKeys(layout, items, keys)) {
     if (isDivider(entry)) sections.push({ title: dividerTitle(entry), keys: [] });
@@ -158,7 +159,7 @@ export function renderOverview(boat: Boat | null, keys: Record<string, Telemetry
   }
   const filled = sections.filter(s => s.keys.length);
   const tiles = filled.length ? filled.map(s => `${s.title === null ? '' : s.title ? `<h2 class="section-title">${esc(s.title)}</h2>` : '<hr class="section-rule">'}
-    <div class="tiles">${s.keys.map((key, i) => tile(key, i === 0, items, keys, age)).join('')}</div>`).join('')
+    <div class="tiles">${s.keys.map(key => tile(key, items, keys, age)).join('')}</div>`).join('')
     : `<section class="card empty-state"><h2>No values to show.</h2><p class="note">${boat ? 'Choose what to show with Edit dashboard.' : 'Waiting for boat data.'}</p></section>`;
   return `${tiles}<button type="button" class="button secondary wide-button" id="layout-edit">Edit dashboard</button>`;
 }

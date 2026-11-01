@@ -20,7 +20,7 @@ test('overview: values with unit; only old or estimated values are flagged; unkn
     'evil.key': { v: 1, age: 0, q: 'live' } as any,
   };
   const html = renderOverview(boat(items), TELEMETRY_KEYS, 5);
-  assert.match(html, /class="tile live hero"[\s\S]*?>5\.2<span class="unit">kn<\/span>/, 'the first tile leads');
+  assert.match(html, /class="tile live"[\s\S]*?>5\.2<span class="unit">kn<\/span>/, 'the first tile is an ordinary tile');
   assert.ok(!html.includes('GPS'), 'no source line on a current value');
   assert.ok(!/Current ·/.test(html));
   assert.match(html, /class="tile stale[^"]*"[\s\S]*?51\.23[\s\S]*?Old · 7 min ago/);
@@ -59,7 +59,8 @@ test('dashboard: dividers start titled or plain sections; empty sections and bad
   assert.deepEqual(layoutKeys(layout, items, TELEMETRY_KEYS), layout.filter(e => e !== 'divider:BAD:x'));
   const html = renderOverview(boat(items), TELEMETRY_KEYS, 5, layout);
   assert.equal((html.match(/<div class="tiles">/g) ?? []).length, 3, 'one grid per section with tiles');
-  assert.match(html, /<h2 class="section-title">Battery &lt;b&gt;<\/h2>\s*<div class="tiles"><div class="tile live hero">/, 'a section opens with a large tile');
+  assert.match(html, /<h2 class="section-title">Battery &lt;b&gt;<\/h2>\s*<div class="tiles"><div class="tile live">/);
+  assert.ok(!html.includes('hero'), 'no tile is made wide just for being first');
   assert.ok(!html.includes('Empty'), 'a divider with nothing after it is not drawn');
   assert.ok(!html.includes('section-rule'), 'the untitled divider was followed by another divider, so it is dropped');
   assert.match(html, /<h2 class="section-title">Tail: kept<\/h2>/);
