@@ -4,4 +4,6 @@
     <color name="colorPrimary">#152326</color>
     <color name="colorPrimaryDark">#152326</color>
     <color name="colorAccent">#B6EFCE</color>
+    <!-- Tints the notification icon; darker than colorAccent so it reads on light and dark shades. -->
+    <color name="notificationAccent">#2B8C7E</color>
 </resources>

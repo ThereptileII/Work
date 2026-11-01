@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- Status-bar and notification icon: the SKAGER Companion "A" over a wave (resources/icon-foreground.svg),
+     cropped to the 20 dp live area of a 24 dp icon and drawn in white only, as Android requires (it tints it). Strokes are thicker
+     than the launcher artwork so they stay visible at status-bar size. -->
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="24dp"
+    android:height="24dp"
+    android:viewportWidth="680"
+    android:viewportHeight="680">
+    <group android:translateX="-172" android:translateY="-206.5">
+        <path
+            android:pathData="M322,700 L512,300 L702,700"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="76"
+            android:strokeLineCap="round"
+            android:strokeLineJoin="round" />
+        <path
+            android:pathData="M300,792 C370,758 442,758 512,792 S654,826 724,792"
+            android:strokeColor="#FFFFFFFF"
+            android:strokeWidth="44"
+            android:strokeLineCap="round" />
+    </group>
+</vector>
