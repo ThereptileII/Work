@@ -29,6 +29,8 @@ type State = {
   history: { metric: string; hours: number; series: Series | null; loading: boolean; key: string };
   // The Boat view's tiles, chosen on this phone (null: what the boat reports, default order).
   layout: string[] | null; editingLayout: boolean;
+  // An open choice list (bottom sheet): which value it chooses.
+  picker: 'metric' | 'alarm-key' | null;
   alarms: { device: string | null; list: Alarm[] | null; keys: Record<string, AlarmKey>; form: AlarmForm | null; saving: boolean };
   toast: string | null;
 };
@@ -37,7 +39,7 @@ const state: State = {
   etag: null, receivedLocal: 0, offline: null, tab: 'overview', settings: false, theme: 'auto', events: [], eventsMore: false,
   eventsLoading: false, seenEvent: 0, highlight: null, track: null, trackHours: 24,
   history: { metric: METRICS[0].key, hours: 24, series: null, loading: false, key: '' },
-  layout: null, editingLayout: false, alarms: { device: null, list: null, keys: {}, form: null, saving: false }, toast: null,
+  layout: null, editingLayout: false, picker: null, alarms: { device: null, list: null, keys: {}, form: null, saving: false }, toast: null,
 };
 const api = new Api(secrets);
 const map = new BoatMap();
@@ -56,13 +58,14 @@ const device = () => state.boats?.devices.find(d => d.id === state.selected);
 const age = () => state.boat ? snapshotAgeNow(state.boat, state.receivedLocal, Date.now()) : null;
 const unread = () => state.events.filter(e => e.id > state.seenEvent && e.severity !== 'info').length;
 
+let shownSheet = '';
 function render(): void {
   applyTheme();
   const app = $('app');
   app.dataset.phase = state.phase;
   if (state.phase !== 'ready') {
     $('view').innerHTML = state.phase === 'signed-out' ? view.renderSignIn(state.signIn) : '<div class="spinner" aria-label="Loading"></div>';
-    $('tabs').innerHTML = ''; $('banner').innerHTML = ''; $('top-title').textContent = ''; $('sheet').innerHTML = '';
+    $('tabs').innerHTML = ''; $('banner').innerHTML = ''; $('top-title').textContent = ''; $('sheet').innerHTML = ''; shownSheet = '';
     return;
   }
   const a = age();
@@ -82,8 +85,14 @@ function render(): void {
     $('view').scrollTop = scroll;
   }
   $('view').dataset.tab = state.tab;
-  $('sheet').innerHTML = state.settings ? view.renderSettings({ email: state.email, cloud: state.cloud, push: state.push,
-    theme: state.theme, version: APP_VERSION, boats: state.boats?.devices ?? [] }) : '';
+  // Redrawn only when it changes, so a refresh keeps an open list where it was scrolled.
+  const sheet = state.picker ? renderPicker() : state.settings ? view.renderSettings({ email: state.email, cloud: state.cloud,
+    push: state.push, theme: state.theme, version: APP_VERSION, boats: state.boats?.devices ?? [] }) : '';
+  if (sheet !== shownSheet) {
+    const opening = !!state.picker && !shownSheet;
+    $('sheet').innerHTML = sheet; shownSheet = sheet;
+    if (opening) document.querySelector('.picker-option.active')?.scrollIntoView({ block: 'center' });
+  }
   $('toast').textContent = state.toast ?? '';
   $('toast').hidden = !state.toast;
   placeMap(a);
@@ -104,15 +113,34 @@ function content(a: number | null): string {
     }
     case 'map': return view.renderMapPanel(state.boat, a, state.trackHours, state.track?.points.length ?? 0);
     case 'anchor': return top + view.renderAnchor(device(), state.boat?.anchor ?? device()?.anchor, a, !!state.track?.points.length);
-    case 'history': {
-      const available = new Set(Object.keys(state.boat?.items ?? {}).filter(k => METRICS.some(m => m.key === k)));
-      return top + view.renderHistory(state.history.metric, state.history.hours, state.history.series, state.history.loading,
-        available.size ? available : new Set(METRICS.map(m => m.key)), keys);
-    }
+    case 'history': return top + view.renderHistory(state.history.metric, state.history.hours, state.history.series,
+      state.history.loading, historyAvailable(), keys);
     case 'alarms': return top + view.renderAlarmRules({ alarms: state.alarms.device === state.selected ? state.alarms.list : null,
       keys: state.alarms.keys, form: state.alarms.form, saving: state.alarms.saving })
       + view.renderAlarms(state.events, state.eventsMore, state.eventsLoading, state.highlight, (state.boats?.devices.length ?? 0) > 1);
   }
+}
+
+/** History offers what the boat reports; before the first report, everything it could. */
+function historyAvailable(): Set<string> {
+  const available = new Set(Object.keys(state.boat?.items ?? {}).filter(k => METRICS.some(m => m.key === k)));
+  return available.size ? available : new Set(METRICS.map(m => m.key));
+}
+
+function renderPicker(): string {
+  if (state.picker === 'metric') {
+    const metrics = view.historyMetrics(historyAvailable(), state.boats?.telemetryKeys ?? {});
+    const shown = metrics.some(m => m.key === state.history.metric) ? state.history.metric : metrics[0]?.key ?? '';
+    return view.renderPicker('Show', metrics.map(m => ({ value: m.key, label: m.label })), shown);
+  }
+  return view.renderPicker('Data', view.alarmKeyOptions(state.alarms.keys), state.alarms.form?.key ?? '');
+}
+function pick(value: string): void {
+  if (state.picker === 'metric') {
+    if (value !== state.history.metric) { state.history.metric = value; state.history.series = null; void loadHistory().then(render); }
+  } else if (state.picker === 'alarm-key' && state.alarms.form && value in state.alarms.keys) state.alarms.form.key = value;
+  state.picker = null;
+  render();
 }
 
 function placeMap(a: number | null): void {
@@ -212,14 +240,28 @@ function editLayout(change: (shown: string[]) => string[]): void {
   render();
 }
 function moveTile(spec: string): void {
-  const [key, step] = spec.split(':');
+  const cut = spec.lastIndexOf(':');
+  const ref = spec.slice(0, cut), step = spec.slice(cut + 1);
   editLayout(shown => {
-    const i = shown.indexOf(key), j = i + Number(step);
+    const i = shown.findIndex(e => e === ref || (view.isDivider(e) && view.dividerRef(e) === ref)), j = i + Number(step);
     if (i < 0 || j < 0 || j >= shown.length) return shown;
     const next = [...shown];
     [next[i], next[j]] = [next[j], next[i]];
     return next;
   });
+}
+
+function addDivider(): void {
+  const ref = `divider:${Date.now().toString(36)}${Math.floor(Math.random() * 1296).toString(36)}`;
+  editLayout(shown => [...shown, `${ref}:`]);
+  const input = document.querySelector<HTMLInputElement>(`[data-divider="${ref}"]`);
+  input?.scrollIntoView({ block: 'center' });
+  input?.focus();
+}
+function renameDivider(ref: string, title: string): void {
+  if (!state.layout) return;
+  state.layout = state.layout.map(e => view.isDivider(e) && view.dividerRef(e) === ref ? `${ref}:${view.cleanDividerTitle(title)}` : e);
+  void cache.write('layout', state.layout);
 }
 
 // ---------------------------------------------------------------- your alarms
@@ -392,8 +434,12 @@ function open(tab: Tab): void {
 }
 
 document.addEventListener('click', event => {
+  if (event.target === $('sheet') && state.picker) { state.picker = null; render(); return; }
   const target = (event.target as Element).closest('button, [data-tab]') as HTMLElement | null;
   if (!target) return;
+  // A field still focused would hold back the redraw this tap asks for (iOS keeps focus on button taps).
+  const focused = document.activeElement;
+  if (focused instanceof HTMLInputElement && focused !== target) focused.blur();
   const d = target.dataset;
   if (target.id === 'sign-in') void beginSignIn();
   else if (d.tab) open(d.tab as Tab);
@@ -402,6 +448,9 @@ document.addEventListener('click', event => {
   else if (d.metric) { state.history.metric = d.metric; state.history.series = null; void loadHistory().then(render); }
   else if (d.hours) { state.history.hours = Number(d.hours); state.history.series = null; void loadHistory().then(render); }
   else if (d.themeChoice) { state.theme = d.themeChoice as ThemeChoice; void cache.write('theme', state.theme); render(); }
+  else if (d.picker) { state.picker = d.picker as State['picker']; render(); }
+  else if (d.pick !== undefined && state.picker) pick(d.pick);
+  else if (target.id === 'picker-close') { state.picker = null; render(); }
   else if (target.id === 'settings-open') { state.settings = true; render(); }
   else if (target.id === 'settings-close') { state.settings = false; render(); }
   else if (target.id === 'push-enable') void setUpPush(true);
@@ -411,6 +460,8 @@ document.addEventListener('click', event => {
   else if (target.id === 'layout-done') { state.editingLayout = false; render(); }
   else if (target.id === 'layout-reset') { state.layout = null; void cache.write('layout', null); render(); }
   else if (d.layoutMove) moveTile(d.layoutMove);
+  else if (target.id === 'layout-divider') addDivider();
+  else if (d.layoutRemove) { const ref = d.layoutRemove; editLayout(shown => shown.filter(e => !(view.isDivider(e) && view.dividerRef(e) === ref))); }
   else if (d.layoutToggle) {
     const key = d.layoutToggle;
     editLayout(shown => shown.includes(key) ? shown.filter(k => k !== key) : [...shown, key]);
@@ -422,14 +473,14 @@ document.addEventListener('click', event => {
   else if (target.id === 'alarm-cancel') { state.alarms.form = null; render(); }
   else if (target.id === 'alarm-delete') void deleteAlarm();
 });
-document.addEventListener('change', event => {
-  const target = event.target as HTMLSelectElement;
-  if (target.id === 'metric-select') { state.history.metric = target.value; state.history.series = null; void loadHistory().then(render); }
-  else if (target.id === 'alarm-key' && state.alarms.form) { state.alarms.form.key = target.value; render(); }
-});
 document.addEventListener('input', event => {
   const target = event.target as HTMLInputElement;
   if (target.id === 'alarm-threshold' && state.alarms.form) state.alarms.form.threshold = target.value;
+  else if (target.dataset.divider) renameDivider(target.dataset.divider, target.value);
+});
+document.addEventListener('keydown', event => {
+  const target = event.target as HTMLElement;
+  if (event.key === 'Enter' && target instanceof HTMLInputElement && target.dataset.divider) { event.preventDefault(); target.blur(); render(); }
 });
 document.addEventListener('submit', event => {
   if ((event.target as HTMLElement).id !== 'alarm-form') return;
@@ -437,7 +488,11 @@ document.addEventListener('submit', event => {
   (document.activeElement as HTMLElement | null)?.blur();
   void saveAlarm();
 });
-document.addEventListener('keydown', event => { if (event.key === 'Escape' && state.settings) { state.settings = false; render(); } });
+document.addEventListener('keydown', event => {
+  if (event.key !== 'Escape') return;
+  if (state.picker) { state.picker = null; render(); }
+  else if (state.settings) { state.settings = false; render(); }
+});
 
 async function moreEvents(): Promise<void> {
   const before = state.events.at(-1)?.id;

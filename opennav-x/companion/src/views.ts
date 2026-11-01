@@ -20,6 +20,7 @@ const ICON: Record<string, string> = {
   settings: '<circle cx="12" cy="12" r="3"/><path d="M12 2.8v2.4M12 18.8v2.4M2.8 12h2.4M18.8 12h2.4M5.5 5.5l1.7 1.7M16.8 16.8l1.7 1.7M5.5 18.5l1.7-1.7M16.8 7.2l1.7-1.7"/>',
   chevron: '<path d="m9 6 6 6-6 6"/>',
   close: '<path d="M6 6l12 12M18 6 6 18"/>',
+  check: '<path d="m5 12.5 4.5 4.5L19 7.5"/>',
 };
 export const icon = (name: string, label = '') =>
   `<svg class="icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round" ${label ? `role="img" aria-label="${esc(label)}"` : 'aria-hidden="true"'}>${ICON[name] ?? ''}</svg>`;
@@ -103,10 +104,17 @@ export const DEFAULT_LAYOUT = ['navigation.sog', 'wind.true_speed', 'wind.true_a
 const TILE_LABEL: Record<string, string> = { 'navigation.latitude': 'Position', 'battery.net_discharge': 'Battery power' };
 const tileLabel = (key: string, keys: Record<string, TelemetryKey>) => TILE_LABEL[key] ?? keys[key]?.label ?? key;
 
-/** The tiles to show: the saved layout, or every reported value in the default order. */
+/** A section divider in a saved layout: 'divider:<id>:<title>'; an empty title draws a plain line. */
+export const isDivider = (entry: string) => /^divider:[a-z0-9]{1,16}:/.test(entry);
+export const dividerRef = (entry: string) => entry.slice(0, entry.indexOf(':', 8));
+export const dividerTitle = (entry: string) => entry.slice(entry.indexOf(':', 8) + 1);
+export const DIVIDER_TITLE_MAX = 40;
+export const cleanDividerTitle = (title: string) => title.replace(/[\u0000-\u001f\u007f]/g, '').slice(0, DIVIDER_TITLE_MAX);
+
+/** The tiles and dividers to show: the saved layout, or every reported value in the default order. */
 export function layoutKeys(layout: string[] | null, items: Record<string, Item>, keys: Record<string, TelemetryKey>): string[] {
   const known = (key: string) => DEFAULT_LAYOUT.includes(key) && !!keys[key];
-  return layout ? layout.filter(known) : DEFAULT_LAYOUT.filter(key => known(key) && !!items[key]);
+  return layout ? layout.filter(e => isDivider(e) || known(e)) : DEFAULT_LAYOUT.filter(key => known(key) && !!items[key]);
 }
 
 function split(text: string): [string, string] {
@@ -142,8 +150,15 @@ function tile(key: string, hero: boolean, items: Record<string, Item>, keys: Rec
 
 export function renderOverview(boat: Boat | null, keys: Record<string, TelemetryKey>, age: number | null, layout: string[] | null = null): string {
   const items = boat?.items ?? {};
-  const shown = layoutKeys(layout, items, keys);
-  const tiles = shown.length ? `<div class="tiles">${shown.map((key, i) => tile(key, i === 0, items, keys, age)).join('')}</div>`
+  // Dividers split the tiles into sections; each section opens with a large tile.
+  const sections: { title: string | null; keys: string[] }[] = [{ title: null, keys: [] }];
+  for (const entry of layoutKeys(layout, items, keys)) {
+    if (isDivider(entry)) sections.push({ title: dividerTitle(entry), keys: [] });
+    else sections.at(-1)!.keys.push(entry);
+  }
+  const filled = sections.filter(s => s.keys.length);
+  const tiles = filled.length ? filled.map(s => `${s.title === null ? '' : s.title ? `<h2 class="section-title">${esc(s.title)}</h2>` : '<hr class="section-rule">'}
+    <div class="tiles">${s.keys.map((key, i) => tile(key, i === 0, items, keys, age)).join('')}</div>`).join('')
     : `<section class="card empty-state"><h2>No values to show.</h2><p class="note">${boat ? 'Choose what to show with Edit dashboard.' : 'Waiting for boat data.'}</p></section>`;
   return `${tiles}<button type="button" class="button secondary wide-button" id="layout-edit">Edit dashboard</button>`;
 }
@@ -153,15 +168,22 @@ export function renderLayoutEditor(shown: string[], items: Record<string, Item>,
   const rest = DEFAULT_LAYOUT.filter(key => keys[key] && !shown.includes(key));
   const missing = (key: string) => (key === 'navigation.latitude' ? !items[key] || !items['navigation.longitude'] : !items[key])
     ? '<span class="note"> · not reported</span>' : '';
-  const row = (key: string, i: number) => `<li class="layout-row">
-      <span class="layout-name">${esc(tileLabel(key, keys))}${missing(key)}</span>
-      <button type="button" class="icon-button small" data-layout-move="${esc(key)}:-1" aria-label="Move ${esc(tileLabel(key, keys))} up" ${i === 0 ? 'disabled' : ''}>↑</button>
-      <button type="button" class="icon-button small" data-layout-move="${esc(key)}:1" aria-label="Move ${esc(tileLabel(key, keys))} down" ${i === shown.length - 1 ? 'disabled' : ''}>↓</button>
+  const moves = (ref: string, name: string, i: number) => `
+      <button type="button" class="icon-button small" data-layout-move="${esc(ref)}:-1" aria-label="Move ${esc(name)} up" ${i === 0 ? 'disabled' : ''}>↑</button>
+      <button type="button" class="icon-button small" data-layout-move="${esc(ref)}:1" aria-label="Move ${esc(name)} down" ${i === shown.length - 1 ? 'disabled' : ''}>↓</button>`;
+  const row = (key: string, i: number) => isDivider(key) ? `<li class="layout-row divider-row">
+      <input class="divider-input" data-divider="${esc(dividerRef(key))}" value="${esc(dividerTitle(key))}" maxlength="${DIVIDER_TITLE_MAX}"
+        placeholder="Section title (optional)" aria-label="Section title" autocomplete="off" enterkeyhint="done">${moves(dividerRef(key), 'divider', i)}
+      <button type="button" class="chip" data-layout-remove="${esc(dividerRef(key))}">Remove</button></li>`
+    : `<li class="layout-row">
+      <span class="layout-name">${esc(tileLabel(key, keys))}${missing(key)}</span>${moves(key, tileLabel(key, keys), i)}
       <button type="button" class="chip" data-layout-toggle="${esc(key)}">Hide</button></li>`;
   return `<div class="editor-head"><h2>Edit dashboard</h2><button type="button" class="button primary" id="layout-done">Done</button></div>
     <p class="note">Saved on this phone.</p>
     <h3 class="section-title">Shown</h3>
     ${shown.length ? `<ol class="layout-list">${shown.map(row).join('')}</ol>` : '<p class="note">Nothing yet. Add values below.</p>'}
+    <button type="button" class="button secondary wide-button" id="layout-divider">Add section divider</button>
+    <p class="note">A divider starts a new section, with a title or as a plain line. Move it with the arrows.</p>
     ${rest.length ? `<h3 class="section-title">More</h3><ul class="layout-list">${rest.map(key => `<li class="layout-row">
       <span class="layout-name">${esc(tileLabel(key, keys))}${missing(key)}</span>
       <button type="button" class="chip" data-layout-toggle="${esc(key)}">Show</button></li>`).join('')}</ul>` : ''}
@@ -211,9 +233,13 @@ export function renderMapPanel(boat: Boat | null, age: number | null, hours: num
 }
 
 // ---------------------------------------------------------------- history
+/** The values History can show: what the boat reports and SKAGER Cloud knows. */
+export const historyMetrics = (available: Set<string>, keys: Record<string, TelemetryKey>) =>
+  METRICS.filter(m => keys[m.key] && available.has(m.key));
+
 export function renderHistory(metric: string, hours: number, series: Series | null, loading: boolean, available: Set<string>,
   keys: Record<string, TelemetryKey>): string {
-  const metrics = METRICS.filter(m => keys[m.key] && available.has(m.key));
+  const metrics = historyMetrics(available, keys);
   const selected = metrics.find(m => m.key === metric) ?? metrics[0];
   if (!selected) return `<section class="card empty-state"><p class="eyebrow">History</p><h2>No history yet.</h2><p class="note">History builds up from the boat data SKAGER shares, one sample a minute for 30 days.</p></section>`;
   const points = clean(series?.series[selected.key]);
@@ -226,7 +252,8 @@ export function renderHistory(metric: string, hours: number, series: Series | nu
   const path = domain && series ? chartPath(points, series.bucketSeconds, W, H, domain) : '';
   const used = selected.key === 'battery.net_discharge' && series ? energy(points, series.bucketSeconds) : null;
   // The heading is the chooser: what the graph shows, and the way to change it.
-  return `<h2 class="history-title"><label class="visually-hidden" for="metric-select">Show</label><select id="metric-select" class="title-select">${metrics.map(m => `<option value="${esc(m.key)}"${m.key === selected.key ? ' selected' : ''}>${esc(m.label)}</option>`).join('')}</select></h2>
+  // A sheet, not a native <select>: Android closes its picker when the screen refreshes.
+  return `<h2 class="history-title"><button type="button" class="title-select" data-picker="metric" aria-haspopup="dialog"${metrics.length < 2 ? ' disabled' : ''}>${esc(selected.label)}</button></h2>
     <div class="segmented" role="group" aria-label="Period">${RANGES.map(r => `<button type="button" class="${r.hours === hours ? 'active' : ''}" data-hours="${r.hours}">${r.label}</button>`).join('')}</div>
     <section class="card chart-card${loading ? ' loading' : ''}">
       ${s ? `<p class="chart-now">${esc(fmt(s.last))}<span class="note"> latest average</span></p>` : ''}
@@ -278,9 +305,8 @@ function alarmForm(f: AlarmForm, keys: Record<string, AlarmKey>, saving: boolean
   const spec = keys[f.key];
   return `<form class="card alarm-form" id="alarm-form" novalidate>
     <h3>${f.id ? 'Change alarm' : 'New alarm'}</h3>
-    <label class="field"><span class="note">Data</span><select id="alarm-key">${Object.entries(keys)
-      .sort((a, b) => a[1].label.localeCompare(b[1].label))
-      .map(([key, k]) => `<option value="${esc(key)}"${key === f.key ? ' selected' : ''}>${esc(k.label)}</option>`).join('')}</select></label>
+    <div class="field"><span class="note" id="alarm-key-label">Data</span><button type="button" class="select" data-picker="alarm-key"
+      aria-haspopup="dialog" aria-describedby="alarm-key-label">${esc(spec?.label ?? 'Choose')}</button></div>
     <div class="segmented" role="group" aria-label="When">${(['below', 'above'] as const).map(d => `<button type="button" class="${f.direction === d ? 'active' : ''}" data-alarm-direction="${d}">${d === 'below' ? 'Below' : 'Above'}</button>`).join('')}</div>
     <label class="field"><span class="note">Value</span><span class="value-input"><input id="alarm-threshold" inputmode="decimal" autocomplete="off" value="${esc(f.threshold)}"${spec ? ` placeholder="${esc(number(spec.min))} to ${esc(number(spec.max))}"` : ''}><span class="unit">${esc(spec?.unit ?? '')}</span></span></label>
     ${f.id ? `<div class="segmented" role="group" aria-label="Alarm">${[true, false].map(on => `<button type="button" class="${f.enabled === on ? 'active' : ''}" data-alarm-enabled="${on}">${on ? 'On' : 'Off'}</button>`).join('')}</div>` : ''}
@@ -291,6 +317,10 @@ function alarmForm(f: AlarmForm, keys: Record<string, AlarmKey>, saving: boolean
   </form>`;
 }
 
+/** What an alarm can watch, by name. */
+export const alarmKeyOptions = (keys: Record<string, AlarmKey>): PickerOption[] =>
+  Object.entries(keys).map(([value, k]) => ({ value, label: k.label })).sort((a, b) => a.label.localeCompare(b.label));
+
 export function renderAlarmRules(v: AlarmsView): string {
   if (!v.alarms) return '<h2 class="section-title">Your alarms</h2><p class="note">Loading…</p>';
   const rows = v.alarms.map(a => `<button type="button" class="rule ${a.enabled ? a.state : 'off'}" data-alarm-edit="${a.id}">
@@ -300,6 +330,16 @@ export function renderAlarmRules(v: AlarmsView): string {
   return `<h2 class="section-title">Your alarms</h2>
     ${v.form && !v.form.id ? '' : rows || '<p class="note">Get a notification when a value goes above or below a limit you choose.</p>'}
     ${v.form ? alarmForm(v.form, v.keys, v.saving) : `<button type="button" class="button secondary wide-button" id="alarm-add">Add alarm</button>`}`;
+}
+
+// ---------------------------------------------------------------- picker
+export type PickerOption = { value: string; label: string };
+/** A choice list as a bottom sheet (the app's own, so it survives refreshes and looks the same on Android and iOS). */
+export function renderPicker(title: string, options: PickerOption[], selected: string): string {
+  return `<div class="sheet picker" role="dialog" aria-modal="true" aria-labelledby="picker-title">
+    <div class="sheet-head"><h2 id="picker-title">${esc(title)}</h2><button type="button" class="icon-button" id="picker-close" aria-label="Close">${icon('close')}</button></div>
+    <div class="picker-list">${options.map(o => `<button type="button" class="picker-option${o.value === selected ? ' active' : ''}" aria-pressed="${o.value === selected}" data-pick="${esc(o.value)}">${esc(o.label)}${o.value === selected ? icon('check') : ''}</button>`).join('')}</div>
+  </div>`;
 }
 
 // ---------------------------------------------------------------- settings

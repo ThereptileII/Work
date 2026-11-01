@@ -2,7 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { TELEMETRY_KEYS } from '../../web/edge/cloud.ts';
 import type { Boat, BoatEvent, Device } from '../src/lib/api.ts';
-import { DEFAULT_LAYOUT, layoutKeys, renderAlarmBanner, renderAlarmRules, renderAlarms, renderAnchor, renderHistory,
+import { alarmKeyOptions, DEFAULT_LAYOUT, layoutKeys, renderPicker, renderAlarmBanner, renderAlarmRules, renderAlarms, renderAnchor, renderHistory,
   renderLayoutEditor, renderNoBoats, renderOverview, renderSettings, renderSignIn, renderStatus, renderTabs } from '../src/views.ts';
 
 const DEVICE: Device = { id: '22222222-2222-4222-8222-222222222222', name: 'Aurora <helm>', platform: 'windows', appVersion: '0.4.0',
@@ -51,6 +51,26 @@ test('dashboard: a saved layout decides tiles and order; the editor moves, hides
   assert.ok(DEFAULT_LAYOUT.every(k => k in TELEMETRY_KEYS), 'every default tile is a known key');
 });
 
+test('dashboard: dividers start titled or plain sections; empty sections and bad entries disappear', () => {
+  const items: Boat['items'] = { 'navigation.sog': { v: 5, age: 1, q: 'live' }, 'battery.soc': { v: 80, age: 1, q: 'live' },
+    'battery.voltage': { v: 13, age: 1, q: 'live' } };
+  const layout = ['navigation.sog', 'divider:a1:Battery <b>', 'battery.soc', 'battery.voltage', 'divider:b2:', 'divider:c3:Empty',
+    'divider:BAD:x', 'divider:d4:Tail: kept', 'environment.depth'];
+  assert.deepEqual(layoutKeys(layout, items, TELEMETRY_KEYS), layout.filter(e => e !== 'divider:BAD:x'));
+  const html = renderOverview(boat(items), TELEMETRY_KEYS, 5, layout);
+  assert.equal((html.match(/<div class="tiles">/g) ?? []).length, 3, 'one grid per section with tiles');
+  assert.match(html, /<h2 class="section-title">Battery &lt;b&gt;<\/h2>\s*<div class="tiles"><div class="tile live hero">/, 'a section opens with a large tile');
+  assert.ok(!html.includes('Empty'), 'a divider with nothing after it is not drawn');
+  assert.ok(!html.includes('section-rule'), 'the untitled divider was followed by another divider, so it is dropped');
+  assert.match(html, /<h2 class="section-title">Tail: kept<\/h2>/);
+  assert.ok(renderOverview(boat(items), TELEMETRY_KEYS, 5, ['navigation.sog', 'divider:x:', 'battery.soc']).includes('<hr class="section-rule">'));
+  const editor = renderLayoutEditor(layoutKeys(layout, items, TELEMETRY_KEYS), items, TELEMETRY_KEYS);
+  assert.match(editor, /class="divider-input" data-divider="divider:a1" value="Battery &lt;b&gt;"/);
+  assert.match(editor, /data-layout-move="divider:d4:1"/);
+  assert.match(editor, /data-layout-remove="divider:b2">Remove/);
+  assert.match(editor, /id="layout-divider"/);
+});
+
 test('connection status and the anchor alarm banner', () => {
   const ok = renderStatus(boat({}), DEVICE, 12, null);
   assert.match(ok, /class="updated"[\s\S]*Updated 12 s ago/);
@@ -82,10 +102,8 @@ test('history: only reported metrics, honest energy estimate, empty period state
   const now = Math.floor(Date.now() / 1000);
   const series = { bucketSeconds: 3600, series: { 'battery.net_discharge': [[now - 7200, 4], [now - 3600, 2]] as [number, number][] } };
   const html = renderHistory('battery.net_discharge', 24, series, false, new Set(['battery.net_discharge', 'battery.voltage']), TELEMETRY_KEYS);
-  assert.match(html, /<h2 class="history-title">[\s\S]*<select id="metric-select" class="title-select">/, 'the heading is the chooser');
-  assert.match(html, /<option value="battery.net_discharge" selected>/);
-  assert.match(html, /<option value="battery.voltage">/);
-  assert.ok(!html.includes('value="wind.true_speed"'));
+  assert.match(html, /<h2 class="history-title"><button type="button" class="title-select" data-picker="metric"[^>]*>Battery power/, 'the heading is the chooser');
+  assert.ok(!html.includes('<select'), 'no native dropdown (Android closes it on every refresh)');
   assert.match(html, /Energy used <strong>6\.0 kWh<\/strong>[\s\S]*1-hour averages over 2\.0 h with data/);
   assert.match(html, /<path d="M/);
   assert.match(renderHistory('battery.voltage', 6, { bucketSeconds: 60, series: { 'battery.voltage': [] } }, false, new Set(['battery.voltage']), TELEMETRY_KEYS), /No data in this period/);
@@ -141,7 +159,12 @@ test('your alarms: list with state, and a form that keeps what was typed', () =>
   assert.match(list, /id="alarm-add"/);
   const form = renderAlarmRules({ alarms, keys, form: { id: 1, key: 'battery.soc', direction: 'below', threshold: '3"0', enabled: true,
     error: 'Enter a value from 0 to 100 %.' }, saving: false });
-  assert.match(form, /id="alarm-form"[\s\S]*<option value="battery.soc" selected>/);
+  assert.match(form, /id="alarm-form"[\s\S]*data-picker="alarm-key"[^>]*>State of charge</);
+  const options = alarmKeyOptions(keys);
+  assert.deepEqual(options.map(o => o.label), [...options.map(o => o.label)].sort((a, b) => a.localeCompare(b)));
+  const picker = renderPicker('Data', options, 'battery.soc');
+  assert.match(picker, /class="picker-option active" aria-pressed="true" data-pick="battery.soc">/);
+  assert.ok(renderPicker('Data', [{ value: 'x"y', label: '<b>' }], '').includes('data-pick="x&quot;y">&lt;b&gt;'), 'values and labels are escaped');
   assert.match(form, /value="3&quot;0"/);
   assert.match(form, /class="active" data-alarm-direction="below"/);
   assert.match(form, /role="alert">Enter a value/);
