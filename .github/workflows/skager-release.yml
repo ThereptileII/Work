@@ -100,7 +100,7 @@ jobs:
         run: |
           set -euo pipefail
           [[ "$RUN_ID" =~ ^[1-9][0-9]{0,19}$ ]] || { echo "::error::A Staging run id is required"; exit 1; }
-          read -r name conclusion sha attempt < <(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" \
+          IFS=$'\t' read -r name conclusion sha attempt < <(gh api "repos/$GITHUB_REPOSITORY/actions/runs/$RUN_ID" \
             --jq '[.name, (.conclusion // "running"), .head_sha, .run_attempt] | @tsv')
           [ "$name" = "SKAGER Staging" ] || { echo "::error::Run $RUN_ID is '$name', not SKAGER Staging"; exit 1; }
           # Called as that run's last job, every gate has passed (it needs publish-staging);
