@@ -125,3 +125,25 @@ test('the get-going guide follows the SKAGER download, one numbered line per ste
   // Without download steps the guide still follows the download.
   assert.match(renderDashboard(account, 'downloads', validateDownloads(catalog), { steps: [], guide, current: 0, used: [] }), /Step 1 of 2[\s\S]*Next: get going/);
 });
+
+test('apps: their own cards next to Windows; the Windows card keeps the SKAGER release; feed files have their own path', () => {
+  const apk = { id: 'companion-android-13', version: '0.1.0+13', sourceCommit: 'd'.repeat(40), channel: 'staging', app: 'companion-android',
+    artifacts: [{ id: 'android', name: 'skager-companion-0.1.0-13.apk', bytes: 6000000, sha256: '7'.repeat(64) }] };
+  const pi = { ...apk, id: 'raspberry-pi-1', app: 'raspberry-pi', version: '0.4.0-beta2.10',
+    artifacts: [{ id: 'linux', name: 'skager_0.4.0-beta2.10-5bf11d30_arm64.deb', bytes: 90000000, sha256: '8'.repeat(64) }] };
+  const html = renderDashboard(account, 'downloads', validateDownloads({ available: true, releases: [apk, release, pi] }));
+  assert.match(html, /<h2>SKAGER 0\.4\.0-beta2\.5<\/h2>/);
+  assert.match(html, /SKAGER Companion 0\.1\.0\+13/);
+  assert.match(html, /data-release-id="companion-android-13" data-artifact-id="android"/);
+  assert.match(html, /sudo apt install \.\/skager_0\.4\.0-beta2\.10-5bf11d30_arm64\.deb/);
+  // Published, so no longer "coming".
+  assert.doesNotMatch(html, /Linux ARM64/);
+  assert.match(html, /macOS/);
+  assert.throws(() => validateDownloads({ available: true, releases: [{ ...apk, app: 'other' }] }));
+  // The update feed's files: beta/artifacts/<commit>/<name>.
+  const feed = { ...release, location: 'feed' };
+  const url = new URL(signed.url);
+  url.pathname = `/skager-private-releases/beta/artifacts/${release.sourceCommit}/${artifact.name}`;
+  assert.equal(downloadTarget({ ...signed, url: url.href }, feed, artifact, now), url.href);
+  assert.throws(() => downloadTarget(signed, feed, artifact, now));
+});

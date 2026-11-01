@@ -10,12 +10,17 @@ const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[1-8][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-
 const SHA256 = /^[0-9a-f]{64}$/;
 const ID = /^[a-z0-9][a-z0-9_-]{0,63}$/;
 const KINDS = ['installer', 'recovery', 'checksums', 'source', 'release-notes'] as const;
-type ArtifactId = typeof KINDS[number];
+// Apps next to SKAGER for Windows: the phone apps (APK) and SKAGER for Raspberry Pi (.deb).
+const APP_KINDS = ['android', 'linux'] as const;
+const APPS = { 'companion-android': 'android', 'helm-android': 'android', 'raspberry-pi': 'linux' } as const;
+type ArtifactId = typeof KINDS[number] | typeof APP_KINDS[number];
 export type DownloadArtifact = { id: ArtifactId; name: string; bytes: number; sha256: string };
 export type DownloadRelease = {
   id: string; sourceCommit: string; version: string; channel: 'staging';
   // 'feed': the files are the update feed's own objects, beta/artifacts/<commit>/<name>.
   location?: 'feed';
+  // An app rather than SKAGER for Windows: its file, and optionally checksums and notes.
+  app?: keyof typeof APPS;
   qualification: { record: string; sha256: string };
   artifacts: readonly DownloadArtifact[];
 };
@@ -51,22 +56,28 @@ function snapshot(catalog: readonly DownloadRelease[]): readonly DownloadRelease
         || /^actions\/runs\/[1-9][0-9]{0,19}$/.test(release.qualification.record))
       && !release.qualification.record.includes('//') && typeof release.qualification.sha256 === 'string'
       && SHA256.test(release.qualification.sha256)
-      && Array.isArray(release.artifacts) && release.artifacts.length === KINDS.length);
+      && (release.app === undefined || (Object.hasOwn(APPS, release.app) && release.location === undefined))
+      && Array.isArray(release.artifacts));
+    const app = release.app as keyof typeof APPS | undefined;
+    const allowed: readonly string[] = app ? [APPS[app], 'checksums', 'release-notes'] : KINDS;
+    requireValue(app ? release.artifacts.length >= 1 && release.artifacts.length <= allowed.length
+      && release.artifacts.some(artifact => object(artifact) && artifact.id === APPS[app])
+      : release.artifacts.length === KINDS.length);
     const kinds = new Set<string>();
     const artifacts = release.artifacts.map(artifact => {
-      requireValue(object(artifact) && KINDS.includes(artifact.id) && !kinds.has(artifact.id));
+      requireValue(object(artifact) && allowed.includes(artifact.id) && !kinds.has(artifact.id));
       kinds.add(artifact.id);
       requireValue(typeof artifact.name === 'string' && /^[A-Za-z0-9][A-Za-z0-9._-]{0,127}$/.test(artifact.name)
         && !artifact.name.includes('..') && !artifact.name.endsWith('.') && typeof artifact.sha256 === 'string'
         && SHA256.test(artifact.sha256)
         && Number.isSafeInteger(artifact.bytes) && artifact.bytes > 0 && artifact.bytes <= 16 * 1024 ** 3);
       const extension = { installer: /\.exe$/, recovery: /\.zip$/, checksums: /\.(?:sha256|txt)$/,
-        source: /\.(?:zip|tar\.gz)$/, 'release-notes': /\.(?:md|txt|pdf)$/ }[artifact.id];
+        source: /\.(?:zip|tar\.gz)$/, 'release-notes': /\.(?:md|txt|pdf)$/, android: /\.apk$/, linux: /\.deb$/ }[artifact.id as ArtifactId];
       requireValue(extension.test(artifact.name));
-      return Object.freeze({ id: artifact.id, name: artifact.name, bytes: artifact.bytes, sha256: artifact.sha256 });
+      return Object.freeze({ id: artifact.id as ArtifactId, name: artifact.name, bytes: artifact.bytes, sha256: artifact.sha256 });
     });
     return Object.freeze({ id: release.id, version: release.version, sourceCommit: release.sourceCommit,
-      channel: release.channel, ...(release.location ? { location: release.location } : {}), qualification: Object.freeze({ record: release.qualification.record,
+      channel: release.channel, ...(release.location ? { location: release.location } : {}), ...(app ? { app } : {}), qualification: Object.freeze({ record: release.qualification.record,
         sha256: release.qualification.sha256 }), artifacts: Object.freeze(artifacts) });
   }));
 }
@@ -172,7 +183,7 @@ export function createDownloadHandler(reviewedCatalog: readonly DownloadRelease[
       try { selection = await deadline(signal => readJson(new Response(request.body, { headers: request.headers }), 1024, signal), 1000); }
       catch { return reply({ error: 'Invalid download request.' }, 400); }
       if (Object.keys(selection).length !== 2 || typeof selection.releaseId !== 'string' || !ID.test(selection.releaseId)
-        || typeof selection.artifactId !== 'string' || !KINDS.includes(selection.artifactId))
+        || typeof selection.artifactId !== 'string' || ![...KINDS, ...APP_KINDS].includes(selection.artifactId))
         return reply({ error: 'Invalid download request.' }, 400);
       const release = catalog.find(item => item.id === selection.releaseId);
       const artifact = release?.artifacts.find(item => item.id === selection.artifactId);

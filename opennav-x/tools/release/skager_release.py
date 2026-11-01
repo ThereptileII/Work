@@ -175,9 +175,12 @@ def portal(args):
         if not isinstance(current, list):
             fail('portal list is not a list')
     entry = json.loads(Path(args.entry).read_text())
-    releases = [entry] + [r for r in current if r.get('id') != entry['id']]
-    Path(args.out).write_bytes(dump(releases[:16]))
-    print(f'portal list: {", ".join(r["version"] for r in releases[:16])}')
+    # Apps (tools/release/publish_apps.py) keep their place; older Windows releases make room.
+    apps = [r for r in current if 'app' in r]
+    windows = [entry] + [r for r in current if r.get('id') != entry['id'] and 'app' not in r]
+    releases = windows[:16 - len(apps)] + apps
+    Path(args.out).write_bytes(dump(releases))
+    print(f'portal list: {", ".join(r["version"] for r in releases)}')
 
 
 def main():

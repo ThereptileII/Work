@@ -308,3 +308,30 @@ test('a missing, unreadable or invalid published list never removes the reviewed
     assert.deepEqual(listed.releases.map((r: any) => r.id), [release.id]);
   }
 });
+
+test('apps: phone apps and SKAGER for Raspberry Pi list and sign next to SKAGER for Windows', async () => {
+  const apk: DownloadRelease = { id: 'companion-android-13', sourceCommit: 'd'.repeat(40), version: '0.1.0+13',
+    channel: 'staging', app: 'companion-android', qualification: { record: 'actions/runs/41327217365', sha256: 'b'.repeat(64) },
+    artifacts: [{ id: 'android', name: 'skager-companion-0.1.0-13.apk', bytes: 6000000, sha256: '7'.repeat(64) }] };
+  const pi: DownloadRelease = { ...apk, id: 'raspberry-pi-5bf11d30', app: 'raspberry-pi', version: '0.4.0-beta2.10',
+    artifacts: [{ id: 'linux', name: 'skager_0.4.0-beta2.10-5bf11d30_arm64.deb', bytes: 90000000, sha256: '8'.repeat(64) },
+      { id: 'checksums', name: 'SHA256SUMS.txt', bytes: 100, sha256: '9'.repeat(64) }] };
+  const handle = createDownloadHandler([release, apk, pi]);
+  const { ctx } = fixture();
+  const listed = await (await handle(request('GET'), ctx))!.json();
+  assert.deepEqual(listed.releases.map((r: any) => [r.id, r.app ?? null]), [[release.id, null], [apk.id, 'companion-android'], [pi.id, 'raspberry-pi']]);
+  for (const [item, artifact] of [[apk, apk.artifacts[0]], [pi, pi.artifacts[0]]] as const) {
+    const { ctx, calls } = fixture();
+    const response = await handle(request('POST', JSON.stringify({ releaseId: item.id, artifactId: artifact.id })), ctx);
+    assert.equal(response?.status, 200);
+    assert.equal(new URL(calls.signer[0][0].url).pathname,
+      `/${DOWNLOAD_BUCKET}/staging/${item.sourceCommit}/${item.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`);
+  }
+  // An app carries its own kind of file only; SKAGER for Windows keeps its complete set.
+  for (const bad of [{ ...apk, app: 'other' }, { ...apk, artifacts: [{ ...apk.artifacts[0], name: 'x.exe' }] },
+    { ...apk, artifacts: [{ ...apk.artifacts[0], id: 'linux', name: 'x.deb' }] }, { ...apk, location: 'feed' },
+    { ...apk, artifacts: [pi.artifacts[1]] }, { ...apk, artifacts: [...apk.artifacts, release.artifacts[0]] },
+    { ...release, artifacts: [...release.artifacts.slice(1), apk.artifacts[0]] }]) {
+    assert.throws(() => createDownloadHandler([bad as any]), JSON.stringify(bad.artifacts.map(a => a.id)));
+  }
+});

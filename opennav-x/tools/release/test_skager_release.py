@@ -85,6 +85,19 @@ class Release(unittest.TestCase):
             self.assertEqual(out[0]['version'], '0.3-new')
             self.assertEqual([r['id'] for r in out].count('v3'), 1)
 
+    def test_portal_list_keeps_the_apps_and_trims_older_windows_releases(self):
+        with tempfile.TemporaryDirectory() as d:
+            d = Path(d)
+            apps = [{'id': f'a{i}', 'version': '0.1.0', 'app': app} for i, app in enumerate(['companion-android', 'helm-android', 'raspberry-pi'])]
+            (d / 'cur.json').write_text(json.dumps([{'id': f'v{i}', 'version': f'0.{i}'} for i in range(15)] + apps))
+            (d / 'entry.json').write_text(json.dumps({'id': 'new', 'version': '1.0'}))
+            subprocess.run([sys.executable, TOOL, 'portal', '--current', d / 'cur.json', '--entry', d / 'entry.json',
+                            '--out', d / 'out.json'], check=True, capture_output=True)
+            out = json.loads((d / 'out.json').read_text())
+            self.assertEqual(len(out), 16)
+            self.assertEqual(out[0]['id'], 'new')
+            self.assertEqual(out[-3:], apps)
+
 
 if __name__ == '__main__':
     unittest.main()

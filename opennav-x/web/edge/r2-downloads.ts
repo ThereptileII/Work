@@ -8,7 +8,7 @@ export const R2_DOWNLOAD_ORIGIN = `https://${R2_ACCOUNT_ID}.r2.cloudflarestorage
 const QUERY = ['response-content-disposition', 'X-Amz-Expires', 'X-Amz-Date', 'X-Amz-Algorithm',
   'X-Amz-Credential', 'X-Amz-SignedHeaders', 'X-Amz-Signature'];
 // Reviewed-catalog objects, or the update feed's own release files (artifacts/<commit>/<name>).
-const OBJECT = /^(?:staging\/[0-9a-f]{40}\/[a-z0-9][a-z0-9_-]{0,63}\/(?:installer|recovery|checksums|source|release-notes)\/[0-9a-f]{64}|beta\/artifacts\/[0-9a-f]{40})\/([A-Za-z0-9][A-Za-z0-9._-]{0,127})$/;
+const OBJECT = /^(?:staging\/[0-9a-f]{40}\/[a-z0-9][a-z0-9_-]{0,63}\/(?:installer|recovery|checksums|source|release-notes|android|linux)\/[0-9a-f]{64}|beta\/artifacts\/[0-9a-f]{40})\/([A-Za-z0-9][A-Za-z0-9._-]{0,127})$/;
 /** The download list the release workflow writes after a build passed (tools/release). */
 export const PUBLISHED_RELEASES_OBJECT = 'portal/beta-releases.json';
 const unavailable = () => new Error('Download unavailable');

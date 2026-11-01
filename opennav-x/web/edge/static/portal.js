@@ -70,9 +70,29 @@ export function renderOverview(data) {
 const PLATFORMS = [
   ["Windows on ARM", "Surface and other ARM64 PCs", "WIN"],
   ["Linux x64", "AppImage and .deb for Ubuntu, Debian and Fedora", "LNX"],
-  ["Linux ARM64", "Raspberry Pi 5 and other ARM boards", "RPi"],
+  ["Linux ARM64", "Raspberry Pi 5 and other ARM boards", "RPi", "raspberry-pi"],
   ["macOS", "Apple silicon and Intel Macs", "MAC"],
 ];
+/** Apps published next to SKAGER for Windows (downloads.ts APPS): what each card says. */
+const APPS = {
+  "companion-android": { name: "SKAGER Companion", icon: "AND", eyebrow: "Android phone",
+    text: "Your boat on your phone: position, battery, wind, anchor watch and alarms. Sign in with this account." },
+  "helm-android": { name: "SKAGER Helm", icon: "AND", eyebrow: "Android phone and tablet",
+    text: "The SKAGER screen on your phone or tablet over the boat's Wi-Fi. Pair it in SKAGER under Settings → SKAGER Helm." },
+  "raspberry-pi": { name: "SKAGER", icon: "RPi", eyebrow: "Raspberry Pi OS · 64-bit",
+    text: "SKAGER for Raspberry Pi 4 and 5. Install it with <code>sudo apt install ./FILE</code> and start SKAGER from the menu." },
+};
+function artifactList(release) {
+  return `<ul class="artifact-list">${release.artifacts.map(artifact => `<li><div><strong>${esc(artifact.name)}</strong><div class="meta">${esc(artifact.bytes.toLocaleString("en-GB"))} bytes · SHA-256 <code>${esc(artifact.sha256)}</code></div></div><button class="button button-secondary portal-download" type="button" data-release-id="${esc(release.id)}" data-artifact-id="${esc(artifact.id)}">Download ↧<span class="visually-hidden"> ${esc(artifact.name)}</span></button></li>`).join("")}</ul>`;
+}
+function renderApp(release) {
+  const app = APPS[release.app];
+  const file = release.artifacts.find(artifact => artifact.id === "android" || artifact.id === "linux");
+  return `<section class="card"><div class="platform"><span class="platform-icon" aria-hidden="true">${app.icon}</span><div><p class="eyebrow">${esc(app.eyebrow)}</p><h3>${esc(app.name)} ${esc(release.version)}</h3></div></div>
+    <p class="note">${app.text.replace("FILE", esc(file.name))}</p>
+    <div class="actions"><button class="button portal-download" type="button" data-release-id="${esc(release.id)}" data-artifact-id="${esc(file.id)}">Download ↧<span class="visually-hidden"> ${esc(file.name)}</span></button></div>
+    <details><summary>File and checksum</summary>${artifactList(release)}</details></section>`;
+}
 const downloadUnavailable = "Downloads are being prepared. Please check back shortly.";
 /** Admin-defined steps of the download page: "download" steps (such as installing OpenCPN) come
  * before SKAGER, "guide" steps (such as setting up GRIBstream or AISstream) after it. */
@@ -114,23 +134,26 @@ export function renderSetup(downloads, steps = [], current = steps.length, used 
     ${back}</section>`;
 }
 export function renderDownloads(downloads) {
-  const coming = PLATFORMS.map(([name, detail, icon]) => `<section class="card disabled" aria-disabled="true"><div class="platform"><span class="platform-icon" aria-hidden="true">${icon}</span><div><h3>${esc(name)}</h3><p class="note">${esc(detail)}</p></div></div>${badge(["Coming", "soon"])}<div class="actions"><button class="button button-secondary" type="button" disabled>Coming</button></div></section>`).join("");
+  const releases = downloads?.available === true && Array.isArray(downloads.releases) ? downloads.releases : [];
+  const apps = releases.filter(release => APPS[release.app]);
+  const coming = PLATFORMS.filter(([, , , app]) => !apps.some(release => release.app === app)).map(([name, detail, icon]) => `<section class="card disabled" aria-disabled="true"><div class="platform"><span class="platform-icon" aria-hidden="true">${icon}</span><div><h3>${esc(name)}</h3><p class="note">${esc(detail)}</p></div></div>${badge(["Coming", "soon"])}<div class="actions"><button class="button button-secondary" type="button" disabled>Coming</button></div></section>`).join("");
   const links = '<a class="text-link" href="/install/">Installation guide ↗</a><a class="text-link" href="/open-source/">Open source &amp; licenses ↗</a>';
   let windows;
-  if (!downloads || downloads.available !== true || !Array.isArray(downloads.releases) || !downloads.releases.length) {
+  const release = releases.find(item => !item.app);
+  if (!release) {
     windows = `<section class="card feature"><div class="platform"><span class="platform-icon" aria-hidden="true">WIN</span><div><p class="eyebrow">Windows 11 · x64</p><h2>Release delivery is closed.</h2></div></div><p class="note">${esc(downloads?.reason || downloadUnavailable)}</p><div class="actions">${links}</div></section>`;
   } else {
     // The catalog never contains bearer URLs. Each press obtains a new, short-lived
     // link after the server checks the account and entitlement again.
-    const release = downloads.releases[0];
     const installer = release.artifacts.find(artifact => artifact.id === "installer");
     windows = `<section class="card feature"><div class="platform"><span class="platform-icon" aria-hidden="true">WIN</span><div><p class="eyebrow">Windows 11 · x64</p><h2>SKAGER ${esc(release.version)}</h2></div></div>
       <p class="note">OpenCPN is installed separately (5.12.4 for Windows). Read the installation guide before you install.</p>
       <div class="actions">${installer ? `<button class="button portal-download" type="button" data-release-id="${esc(release.id)}" data-artifact-id="${esc(installer.id)}">Download for Windows ↧</button>` : ""}${links}</div>
-      <details><summary>All files, checksums and source revision</summary><p class="note">Source revision <code>${esc(release.sourceCommit)}</code></p><ul class="artifact-list">${release.artifacts.map(artifact => `<li><div><strong>${esc(artifact.name)}</strong><div class="meta">${esc(artifact.bytes.toLocaleString("en-GB"))} bytes · SHA-256 <code>${esc(artifact.sha256)}</code></div></div><button class="button button-secondary portal-download" type="button" data-release-id="${esc(release.id)}" data-artifact-id="${esc(artifact.id)}">Download ↧<span class="visually-hidden"> ${esc(artifact.name)}</span></button></li>`).join("")}</ul></details>
+      <details><summary>All files, checksums and source revision</summary><p class="note">Source revision <code>${esc(release.sourceCommit)}</code></p>${artifactList(release)}</details>
       <p class="note">Download links expire after a minute. If one expires, choose Download again. Download access does not restrict your rights under the software’s open-source licenses.</p></section>`;
   }
-  return `<div class="grid">${windows}</div><h2 class="section-title">More platforms</h2><div class="grid grid-2">${coming}</div>`;
+  const appCards = apps.length ? `<h2 class="section-title">Apps and more platforms</h2><div class="grid grid-2">${apps.map(renderApp).join("")}</div>` : "";
+  return `<div class="grid">${windows}</div>${appCards}${coming ? `<h2 class="section-title">${apps.length ? "Coming" : "More platforms"}</h2><div class="grid grid-2">${coming}</div>` : ""}`;
 }
 
 export function validateDownloads(data) {
@@ -140,6 +163,7 @@ export function validateDownloads(data) {
   for (const release of data.releases) {
     if (!downloadId(release.id) || typeof release.version !== "string" || release.version.length > 80
       || !/^[a-f0-9]{40}$/.test(release.sourceCommit) || release.channel !== "staging"
+      || (release.app !== undefined && !Object.hasOwn(APPS, release.app))
       || !Array.isArray(release.artifacts) || release.artifacts.length < 1 || release.artifacts.length > 10) throw new Error("Release information is unavailable.");
     for (const artifact of release.artifacts) {
       if (!downloadId(artifact.id) || typeof artifact.name !== "string" || artifact.name.length > 160
@@ -159,7 +183,9 @@ export function downloadTarget(result, release, artifact, now = Date.now()) {
   if (!Number.isFinite(expiry) || expiry <= now || expiry > now + 60000) return failure();
   let url;
   try { url = new URL(result.url); } catch { return failure(); }
-  const path = `/skager-private-releases/${release.channel}/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`;
+  // Where downloads.ts objectName() keeps the file: the update feed's own objects, or the reviewed layout.
+  const path = release.location === "feed" ? `/skager-private-releases/beta/artifacts/${release.sourceCommit}/${artifact.name}`
+    : `/skager-private-releases/${release.channel}/${release.sourceCommit}/${release.id}/${artifact.id}/${artifact.sha256}/${artifact.name}`;
   const keys = ["response-content-disposition", "X-Amz-Expires", "X-Amz-Date", "X-Amz-Algorithm",
     "X-Amz-Credential", "X-Amz-SignedHeaders", "X-Amz-Signature"];
   const date = url.searchParams.get("X-Amz-Date") || "";
