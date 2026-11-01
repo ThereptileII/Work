@@ -121,3 +121,41 @@ test('theme: Auto follows the phone appearance', () => {
   assert.equal(resolveTheme('auto', false), 'day');
   assert.equal(resolveTheme('dusk', true), 'dusk');
 });
+
+test('demo: the simulated boats speak SKAGER Cloud’s language and stay in range', async () => {
+  const { TELEMETRY_KEYS } = await import('../../web/edge/cloud.ts');
+  const { ALARM_KEYS } = await import('../../web/edge/companion.ts');
+  const { DemoApi, DEMO_KEYS } = await import('../src/lib/demo.ts');
+  for (const [key, spec] of Object.entries(DEMO_KEYS)) assert.deepEqual(spec, TELEMETRY_KEYS[key], key);
+  const now = 1_793_000_000;
+  const demo = new DemoApi(() => now);
+  const { devices, telemetryKeys } = await demo.boats();
+  assert.deepEqual(devices.map(d => d.name), ['Aurora', 'Selma']);
+  for (const d of devices) {
+    const { boat } = await demo.boat(d.id);
+    for (const [key, item] of Object.entries(boat!.items)) {
+      const spec = telemetryKeys[key];
+      assert.ok(spec && item.v >= spec.min && item.v <= spec.max, `${d.name} ${key} ${item.v}`);
+    }
+    const series = await demo.series(d.id, ['battery.soc'], 24);
+    assert.ok(series.series['battery.soc'].length >= 90 && series.series['battery.soc'].every(([, v]) => v >= 0 && v <= 100));
+    assert.ok((await demo.track(d.id, 6)).length > 10);
+  }
+  const [aurora, selma] = devices;
+  const sog = (await demo.boat(aurora.id)).boat!.items['navigation.sog'].v;
+  assert.ok(sog > 4 && sog < 6, `sailing at ${sog} kn`);
+  // Selma swings at anchor inside the radius, as SKAGER on board would report it.
+  const anchor = (await demo.boat(selma.id)).boat!.anchor!;
+  assert.ok(anchor.armed && !anchor.alarm && anchor.distance_m! < anchor.radius_m!);
+  // Alarms: only keys SKAGER Cloud accepts; add, change, delete stay on this phone.
+  const { alarms, keys } = await demo.alarms(aurora.id);
+  for (const key of Object.keys(keys)) assert.ok(key in ALARM_KEYS, key);
+  const added = await demo.saveAlarm({ device: aurora.id, key: 'environment.depth', direction: 'below', threshold: 3, enabled: true });
+  await demo.saveAlarm({ device: aurora.id, id: added.id, key: 'environment.depth', direction: 'below', threshold: 4, enabled: false });
+  const changed = (await demo.alarms(aurora.id)).alarms.find(a => a.id === added.id)!;
+  assert.deepEqual([changed.threshold, changed.enabled, changed.state], [4, false, 'ok']);
+  await demo.deleteAlarm(added.id);
+  assert.equal((await demo.alarms(aurora.id)).alarms.length, alarms.length);
+  await assert.rejects(demo.saveAlarm({ device: aurora.id, key: 'battery.soc', direction: 'below', threshold: 120, enabled: true }));
+  assert.ok((await demo.events({ device: selma.id })).every(e => e.boat === 'Selma'));
+});

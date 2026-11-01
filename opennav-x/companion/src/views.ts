@@ -41,6 +41,8 @@ export function renderSignIn(state: { busy?: boolean; message?: string; error?: 
     <button class="button primary" type="button" id="sign-in" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Waiting for the browser…' : 'Sign in with your SKAGER account'}</button>
     ${state.message ? `<p class="message${state.error ? ' error' : ''}" role="status">${esc(state.message)}</p>` : ''}
     <p class="note">Sign-in opens beta.skager.app. Companion needs SKAGER Cloud, and SKAGER on board linked to your account.</p>
+    <button class="button secondary" type="button" id="demo">Try the demo</button>
+    <p class="note">No account needed: two simulated boats show what Companion does.</p>
     <p class="note fine">Companion shows what SKAGER reports. It is not for navigation and cannot control the boat.</p>
   </section>`;
 }
@@ -83,6 +85,10 @@ export function renderStatus(boat: Boat | null, device: Device | undefined, age:
     <p class="note">${esc(detail)}</p></div>${phone}
   </section>`;
 }
+
+/** Always on screen in the demo, so simulated boats are never mistaken for real ones. */
+export const renderDemoStrip = () =>
+  '<button type="button" class="demo-strip" data-open-settings="1"><strong>Demo</strong><span>Simulated boats · Leave in Settings</span></button>';
 
 export function renderAlarmBanner(device: Device | undefined, anchor: Anchor | null | undefined, age: number | null): string {
   const view = anchorView(anchor, age);
@@ -344,7 +350,7 @@ export function renderPicker(title: string, options: PickerOption[], selected: s
 }
 
 // ---------------------------------------------------------------- settings
-export type SettingsView = { email: string; cloud: Cloud | null; push: string; theme: string; version: string; boats: Device[] };
+export type SettingsView = { email: string; cloud: Cloud | null; push: string; theme: string; version: string; boats: Device[]; demo?: boolean };
 const PUSH_TEXT: Record<string, string> = {
   granted: 'On. Alarms reach this phone even when Companion is closed.',
   prompt: 'Not yet allowed.',
@@ -356,14 +362,15 @@ const PUSH_TEXT: Record<string, string> = {
 export function renderSettings(v: SettingsView): string {
   return `<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="settings-title">
     <div class="sheet-head"><h2 id="settings-title">Settings</h2><button type="button" class="icon-button" id="settings-close" aria-label="Close">${icon('close')}</button></div>
+    ${v.demo ? '<section class="card"><p class="eyebrow">Demo</p><p class="note">Two simulated boats, Aurora and Selma. Nothing is sent anywhere and nothing is kept when you leave the demo.</p></section>' : ''}
     <section class="card"><p class="eyebrow">Account</p><p>${esc(v.email)}</p>
       <p class="note">SKAGER Cloud: ${v.cloud?.active ? 'active' : 'not active'}${v.cloud?.renewsAt && v.cloud.active ? ` · ${v.cloud.cancelAtPeriodEnd ? 'ends' : 'renews'} ${esc(new Date(v.cloud.renewsAt).toLocaleDateString())}` : ''}</p></section>
-    <section class="card"><p class="eyebrow">Notifications</p><p class="note">${esc(PUSH_TEXT[v.push] ?? v.push)}</p>
+    <section class="card"><p class="eyebrow">Notifications</p><p class="note">${esc(v.demo ? 'Not used in the demo. Signed in, alarms reach this phone even when Companion is closed.' : PUSH_TEXT[v.push] ?? v.push)}</p>
       ${v.push === 'prompt' ? '<button type="button" class="button secondary" id="push-enable">Allow alarm notifications</button>' : ''}</section>
     <section class="card"><p class="eyebrow">Display</p><div class="segmented" role="group" aria-label="Display mode">${[['auto', 'Auto'], ['day', 'Day'], ['dusk', 'Dusk'], ['night', 'Night']].map(([k, l]) => `<button type="button" class="${v.theme === k ? 'active' : ''}" data-theme-choice="${k}">${l}</button>`).join('')}</div></section>
     <section class="card"><p class="eyebrow">Boats</p>${v.boats.length ? v.boats.map(b => `<p>${esc(b.name)} <span class="note">· SKAGER ${esc(b.appVersion)}</span></p>`).join('') : '<p class="note">No boat linked yet.</p>'}
       <p class="note">Boats and phones are managed at beta.skager.app under SKAGER Cloud.</p></section>
-    <button type="button" class="button danger" id="sign-out">Sign out of this phone</button>
+    <button type="button" class="button danger" id="sign-out">${v.demo ? 'Leave the demo' : 'Sign out of this phone'}</button>
     <p class="note fine center">SKAGER Companion ${esc(v.version)} · Not for navigation · Map data © OpenStreetMap contributors, OpenMapTiles, OpenFreeMap</p>
   </div>`;
 }

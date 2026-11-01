@@ -141,6 +141,17 @@ expired).
    - In Xcode, add the Push Notifications capability (entitlements) and set signing.
      Build with `SKAGER_PUSH=android,ios`.
 
+## Demo (app review)
+
+Store reviewers have no SKAGER account or boat, so the sign-in screen offers **Try the
+demo** (`src/lib/demo.ts`). Two simulated boats answer the same calls as SKAGER Cloud:
+Aurora sails a loop west of Marstrand (position, wind, depth, battery, motor, tanks)
+and Selma lies at anchor in Marstrandsfjorden with the anchor watch armed. History,
+the map track, the alarm log and your own alarms all work; changes stay in memory.
+A "Demo" strip is always on screen, there is no network traffic except map tiles and
+no push registration, and Settings → Leave the demo returns to sign-in. Reviewer
+note for the store listing: "Tap Try the demo on the first screen; no account needed."
+
 ## Deployment order (not yet done)
 
 1. Apply `web/edge/companion.sql` after `cloud.sql`, as owner, in one transaction.

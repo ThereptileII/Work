@@ -2,6 +2,7 @@
 // notifications and navigation. Rendering is in views.ts, the map in map.ts.
 import { Api, OfflineError, SignedOutError } from './lib/api.ts';
 import type { Alarm, AlarmKey, Boat, BoatEvent, Boats, Cloud, Series, TrackPoint } from './lib/api.ts';
+import { DemoApi } from './lib/demo.ts';
 import { APP_VERSION, POLL_BOAT_MS, POLL_LIST_MS, PREVIEW } from './lib/config.ts';
 import { anchorView, classify, snapshotAgeNow, valueAge } from './lib/freshness.ts';
 import { authorizeUrl, newPending, readCallback } from './lib/pkce.ts';
@@ -33,15 +34,20 @@ type State = {
   picker: 'metric' | 'alarm-key' | null;
   alarms: { device: string | null; list: Alarm[] | null; keys: Record<string, AlarmKey>; form: AlarmForm | null; saving: boolean };
   toast: string | null;
+  // The demo: simulated boats instead of SKAGER Cloud (lib/demo.ts).
+  demo: boolean;
 };
 const state: State = {
   phase: 'starting', signIn: {}, email: '', cloud: null, push: 'unconfigured', boats: null, selected: null, boat: null,
   etag: null, receivedLocal: 0, offline: null, tab: 'overview', settings: false, theme: 'auto', events: [], eventsMore: false,
   eventsLoading: false, seenEvent: 0, highlight: null, track: null, trackHours: 24,
   history: { metric: METRICS[0].key, hours: 24, series: null, loading: false, key: '' },
-  layout: null, editingLayout: false, picker: null, alarms: { device: null, list: null, keys: {}, form: null, saving: false }, toast: null,
+  layout: null, editingLayout: false, picker: null, alarms: { device: null, list: null, keys: {}, form: null, saving: false }, toast: null, demo: false,
 };
-const api = new Api(secrets);
+const cloudApi = new Api(secrets);
+type CompanionApi = Pick<Api, 'session' | 'boats' | 'boat' | 'series' | 'track' | 'events' | 'registerPush' | 'alarms'
+  | 'saveAlarm' | 'deleteAlarm' | 'signOut'>;
+let api: CompanionApi = cloudApi;
 const map = new BoatMap();
 const $ = (id: string) => document.getElementById(id)!;
 const dark = matchMedia('(prefers-color-scheme: dark)');
@@ -75,7 +81,7 @@ function render(): void {
     if (newest > state.seenEvent) { state.seenEvent = newest; void cache.write('seen', newest); }
   }
   $('top-title').textContent = device()?.name ?? 'SKAGER';
-  $('banner').innerHTML = view.renderAlarmBanner(device(), anchor, a);
+  $('banner').innerHTML = view.renderAlarmBanner(device(), anchor, a) + (state.demo ? view.renderDemoStrip() : '');
   const alarm = anchorView(anchor, a).state === 'alarm';
   $('tabs').innerHTML = view.renderTabs(state.tab, alarm, unread());
   const typing = document.activeElement instanceof HTMLInputElement && $('view').contains(document.activeElement);
@@ -87,7 +93,7 @@ function render(): void {
   $('view').dataset.tab = state.tab;
   // Redrawn only when it changes, so a refresh keeps an open list where it was scrolled.
   const sheet = state.picker ? renderPicker() : state.settings ? view.renderSettings({ email: state.email, cloud: state.cloud,
-    push: state.push, theme: state.theme, version: APP_VERSION, boats: state.boats?.devices ?? [] }) : '';
+    push: state.push, theme: state.theme, version: APP_VERSION, boats: state.boats?.devices ?? [], demo: state.demo }) : '';
   if (sheet !== shownSheet) {
     const opening = !!state.picker && !shownSheet;
     $('sheet').innerHTML = sheet; shownSheet = sheet;
@@ -352,7 +358,7 @@ async function finishSignIn(url: string): Promise<void> {
   }
   try {
     const os = platform() === 'ios' ? 'ios' : 'android';
-    const token = await api.exchange(result.code, pending!.verifier, await phoneName(), os);
+    const token = await cloudApi.exchange(result.code, pending!.verifier, await phoneName(), os);
     await secrets.setToken(token);
     state.signIn = {};
     await start(true);
@@ -375,9 +381,24 @@ async function signOutLocal(message?: string): Promise<void> {
 }
 
 async function signOut(): Promise<void> {
+  if (state.demo) { await leaveDemo(); return; }
   await guarded(() => api.registerPush(null, null));
   await guarded(() => api.signOut());
   await signOutLocal('Signed out.');
+}
+
+// ---------------------------------------------------------------- the demo (no account, nothing sent)
+async function startDemo(): Promise<void> {
+  api = new DemoApi();
+  state.demo = true;
+  state.push = 'unconfigured';
+  void cache.write('demo', true);
+  await start();
+}
+async function leaveDemo(): Promise<void> {
+  api = cloudApi;
+  state.demo = false;
+  await signOutLocal();
 }
 
 // ---------------------------------------------------------------- notifications
@@ -443,6 +464,7 @@ document.addEventListener('click', event => {
   if (focused instanceof HTMLInputElement && focused !== target) focused.blur();
   const d = target.dataset;
   if (target.id === 'sign-in') void beginSignIn();
+  else if (target.id === 'demo') void startDemo();
   else if (d.tab) open(d.tab as Tab);
   else if (d.boat) select(d.boat);
   else if (d.track) { state.trackHours = Number(d.track); state.track = null; void loadTrack(true).then(render); render(); }
@@ -452,7 +474,7 @@ document.addEventListener('click', event => {
   else if (d.picker) { state.picker = d.picker as State['picker']; render(); }
   else if (d.pick !== undefined && state.picker) pick(d.pick);
   else if (target.id === 'picker-close') { state.picker = null; render(); }
-  else if (target.id === 'settings-open') { state.settings = true; render(); }
+  else if (target.id === 'settings-open' || d.openSettings) { state.settings = true; render(); }
   else if (target.id === 'settings-close') { state.settings = false; render(); }
   else if (target.id === 'push-enable') void setUpPush(true);
   else if (target.id === 'sign-out') void signOut();
@@ -511,8 +533,8 @@ async function start(fromSignIn = false): Promise<void> {
   lastList = 0;
   await tick();
   // Ask for notification permission right after signing in, when the reason is obvious;
-  // later starts re-register silently (tokens can change).
-  void setUpPush(fromSignIn);
+  // later starts re-register silently (tokens can change). The demo has nothing to notify.
+  if (!state.demo) void setUpPush(fromSignIn);
 }
 
 async function boot(): Promise<void> {
@@ -536,6 +558,7 @@ async function boot(): Promise<void> {
     if (look) state.theme = look;
     if (/[?&]settings=1\b/.test(location.search)) state.settings = true;
   }
+  if (await cache.read<boolean>('demo')) { await startDemo(); return; }
   if (!await secrets.token()) { state.phase = 'signed-out'; render(); return; }
   // Show the last saved data at once, then refresh.
   state.boats = await cache.read<Boats>('boats');
