@@ -11,7 +11,8 @@ args=(-G Ninja -DCMAKE_BUILD_TYPE=Release -DCMAKE_POLICY_VERSION_MINIMUM=3.5
   -DOCPN_BUNDLE_TCDATA=ON -DOPENNAV_ROOT="$root"
   -DOPENNAV_ENABLE_ROUTE_SCENARIO=OFF -DXNAV_ENABLE_TEST_FIXTURES=OFF
   -DXNAV_ENABLE_PILOT_LOOPBACK_TESTS=OFF
-  -DCMAKE_INSTALL_PREFIX="$root/build/production-install")
+  # A package (tools/package-linux-deb.sh) builds for its final prefix and installs with DESTDIR.
+  -DCMAKE_INSTALL_PREFIX="${SKAGER_INSTALL_PREFIX:-$root/build/production-install}")
 if [[ -x .local/sysroot/usr/bin/wx-config ]]; then
   args+=(-DwxWidgets_CONFIG_EXECUTABLE="$root/tools/wx-config-local"
     -DCMAKE_PROJECT_INCLUDE="$root/tools/arch-gcc-compat.cmake" -DOCPN_USE_WEBVIEW=OFF)

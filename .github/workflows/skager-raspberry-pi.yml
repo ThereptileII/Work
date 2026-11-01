@@ -1,0 +1,83 @@
+name: SKAGER Raspberry Pi (Linux arm64)
+
+# SKAGER for Raspberry Pi OS (Debian 13 "trixie", 64-bit), built natively on an arm64
+# runner inside the target release, so the package's dependencies match the Pi.
+# The result is a Debian package that installs into /opt/skager (tools/package-linux-deb.sh),
+# with SKAGER Helm's server included. After packaging, the package is installed in a fresh
+# container and SKAGER's loader self-test runs from the installed files.
+on:
+  workflow_dispatch:
+  # Manual runs need this file on the default branch; until then a change to the Pi build runs it.
+  push:
+    branches: ['claude/web-launch-20261030']
+    paths:
+      - .github/workflows/skager-raspberry-pi.yml
+      - opennav-x/tools/package-linux-deb.sh
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-24.04-arm
+    container: debian:trixie
+    timeout-minutes: 300
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - name: Base tools
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends git ca-certificates python3 equivs devscripts ninja-build cmake \
+            locales dbus xvfb xauth file
+          sed -i 's/^# *\(sv_SE.UTF-8\|en_US.UTF-8\)/\1/' /etc/locale.gen && locale-gen
+      - uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262
+      - name: Pinned OpenCPN source and its build dependencies
+        run: |
+          git config --global --add safe.directory "$GITHUB_WORKSPACE"
+          git clone --depth 1 --branch Release_5.12.4 https://github.com/OpenCPN/OpenCPN.git opennav-x/upstream/OpenCPN
+          python3 opennav-x/tools/verify-upstream.py
+          mk-build-deps --install --remove --tool='apt-get -y --no-install-recommends' opennav-x/upstream/OpenCPN/ci/control
+      - uses: actions/setup-go@924ae3a1cded613372ab5595356fb5720e22ba16
+        with:
+          go-version-file: opennav-x/tools/helm-server/go.mod
+          cache-dependency-path: opennav-x/tools/helm-server/go.sum
+      - name: Build SKAGER for /opt/skager (with the Helm server)
+        env:
+          SKAGER_INSTALL_PREFIX: /opt/skager
+          SKAGER_BUILD_HELM_SERVER: '1'
+          OPENNAV_BUILD_JOBS: '4'
+        run: bash opennav-x/tools/build-production-linux.sh --build-only
+      - name: Package
+        run: bash opennav-x/tools/package-linux-deb.sh dist
+      - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
+        with:
+          name: skager-raspberry-pi-${{ github.sha }}
+          path: dist/
+          if-no-files-found: error
+
+  # The package alone, on a clean Raspberry Pi OS base: dependencies resolve and SKAGER starts.
+  install-check:
+    needs: build
+    runs-on: ubuntu-24.04-arm
+    container: debian:trixie
+    timeout-minutes: 30
+    env:
+      DEBIAN_FRONTEND: noninteractive
+    steps:
+      - uses: actions/download-artifact@d3f86a106a0bac45b974a628896c90dbdf5c8093
+        with:
+          name: skager-raspberry-pi-${{ github.sha }}
+          path: dist
+      - name: Install the package on a clean system
+        run: |
+          apt-get update
+          apt-get install -y --no-install-recommends ./dist/skager_*.deb xvfb xauth
+          test -x /usr/bin/skager && test -x /opt/skager/bin/skager-helm
+          dpkg -s skager | sed -n 's/^Version: //p'
+      - name: SKAGER loader self-test from the installed files
+        run: |
+          mkdir -p "$RUNNER_TEMP/profile"
+          xvfb-run -a /opt/skager/bin/opencpn --opennav-self-test "$RUNNER_TEMP/loader.json" --configdir "$RUNNER_TEMP/profile"
+          cat "$RUNNER_TEMP/loader.json"
+          /opt/skager/bin/skager-helm -version || /opt/skager/bin/skager-helm --help 2>&1 | head -3

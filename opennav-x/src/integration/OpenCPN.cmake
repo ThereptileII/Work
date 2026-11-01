@@ -308,7 +308,13 @@ if(SKAGER_BUILD_HELM_SERVER)
   add_custom_command(TARGET ${PACKAGE_NAME} POST_BUILD
     COMMAND ${CMAKE_COMMAND} -E copy_if_different "${helm_server}" $<TARGET_FILE_DIR:${PACKAGE_NAME}>)
   add_dependencies(${PACKAGE_NAME} skager-helm-server)
-  install(PROGRAMS "${helm_server}" DESTINATION .)
+  # Next to the SKAGER executable, where HelmExecutable() looks: the install root on
+  # Windows, bin/ on Linux.
+  if(WIN32)
+    install(PROGRAMS "${helm_server}" DESTINATION .)
+  else()
+    install(PROGRAMS "${helm_server}" DESTINATION bin)
+  endif()
   install(FILES "${OPENNAV_ROOT}/tools/helm-server/THIRD_PARTY_NOTICES.txt"
     DESTINATION opennav/third-party/helm)
 endif()
