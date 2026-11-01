@@ -159,3 +159,11 @@ test('demo: the simulated boats speak SKAGER Cloud’s language and stay in rang
   await assert.rejects(demo.saveAlarm({ device: aurora.id, key: 'battery.soc', direction: 'below', threshold: 120, enabled: true }));
   assert.ok((await demo.events({ device: selma.id })).every(e => e.boat === 'Selma'));
 });
+
+test('history: the chart range stays within what the value can be', () => {
+  const soc: [number, number][] = [[0, 21], [60, 97]];
+  const free = niceDomain(soc), kept = niceDomain(soc, { min: 0, max: 100 });
+  assert.ok(free.y1 > 100);
+  assert.ok(kept.y1 === 100 && kept.y0 < 21 && kept.y0 >= 0);
+  assert.deepEqual(niceDomain([[0, -3], [60, 5]], { min: -90, max: 90 }), niceDomain([[0, -3], [60, 5]]));
+});

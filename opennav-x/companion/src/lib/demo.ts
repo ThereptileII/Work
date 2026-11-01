@@ -62,12 +62,19 @@ function wind(t: number): { from: number; speed: number } {
     speed: Math.max(3, 9 + 5 * Math.sin(TAU * (hour - 9) / 24) + 1.5 * wave(t, 1200) + 0.8 * wave(t, 180, 2)) };
 }
 
-/** Battery that discharges by day and charges from shore power or solar overnight. */
-function battery(t: number, base: number, load: number): Record<string, number> {
-  const hour = (t / 3600 + 1) % 24;
-  const charging = hour < 7;
-  const soc = Math.min(98, Math.max(18, base + 22 * Math.cos(TAU * (hour - 6) / 24) + 2 * wave(t, 7 * 86400)));
-  const net = charging ? -(1.4 + 0.3 * wave(t, 1800)) : load;
+/** A repeatable 0..1 number per day, so no two days of the demo look alike. */
+const daily = (day: number, salt: number) => { const x = Math.sin(day * 12.9898 + salt * 78.233) * 43758.5453; return x - Math.floor(x); };
+const ease = (x: number) => { const c = Math.min(1, Math.max(0, x)); return c * c * (3 - 2 * c); };
+
+/** Battery that is used by day (more on some days than others) and charges overnight on shore power. */
+function battery(t: number, use: number, load: number): Record<string, number> {
+  const local = t / 3600 + 1;  // Swedish local time, near enough
+  const day = Math.floor(local / 24), hour = local - day * 24;
+  const top = (d: number) => 93 + 5 * daily(d, 1);
+  const low = (d: number) => top(d) - use * (0.45 + 0.75 * daily(d, 2));
+  const soc = hour < 7 ? low(day - 1) + (top(day) - low(day - 1)) * ease(hour / 7)
+    : hour < 21 ? top(day) - (top(day) - low(day)) * ease((hour - 7) / 14) : low(day);
+  const net = hour < 7 ? -(1.4 + 0.3 * wave(t, 1800)) : hour < 21 ? load : 0.12;
   const voltage = 48 + 4.6 * soc / 100 - net * 0.18;
   return { 'battery.soc': soc, 'battery.net_discharge': net, 'battery.voltage': voltage,
     'battery.current': -net * 1000 / voltage, 'battery.soh': 97 };
@@ -96,7 +103,7 @@ function sailing(t: number): Record<string, number> {
     'environment.pressure': 1014 + 6 * wave(t, 3.5 * 86400) + 0.4 * wave(t, 10800),
     'steering.rudder': 4 + 3 * wave(t, 40), 'steering.heel': -Math.sign(twa) * Math.min(22, w.speed * 0.9) * Math.abs(Math.sin(twa * Math.PI / 180)),
     'propulsion.electrical_power': motor, 'propulsion.rpm': 520 + 180 * motor, 'propulsion.motor_temperature': 36 + 4 * motor,
-    ...battery(t, 62, motor + 0.35),
+    ...battery(t, 60, motor + 0.35),
     'tanks.fresh_water': 70 - 25 * ((t / 86400) % 4) / 4, 'tanks.waste': 12 + 20 * ((t / 86400) % 4) / 4,
   };
 }
@@ -118,7 +125,7 @@ function anchored(t: number): Record<string, number> {
     'wind.true_speed': w.speed, 'wind.true_angle': awa,
     'environment.depth': 7.2 + 0.3 * wave(t, 12.4 * 3600), 'environment.water_temperature': 14.1 + 0.5 * wave(t, 86400),
     'environment.pressure': 1014 + 6 * wave(t, 3.5 * 86400) + 0.4 * wave(t, 10800),
-    ...battery(t, 74, 0.32 + 0.1 * wave(t, 3600)),
+    ...battery(t, 25, 0.32 + 0.1 * wave(t, 3600)),
     'tanks.fresh_water': 54, 'tanks.waste': 31,
   };
 }

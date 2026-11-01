@@ -255,7 +255,7 @@ export function renderHistory(metric: string, hours: number, series: Series | nu
   const fmt = (v: number) => formatReading(selected.key, v, unit);
   const W = 340, H = 170;
   const now = Date.now() / 1000;
-  const domain = points.length ? { t0: now - hours * 3600, t1: now, ...niceDomain(points) } : null;
+  const domain = points.length ? { t0: now - hours * 3600, t1: now, ...niceDomain(points, keys[selected.key]) } : null;
   const path = domain && series ? chartPath(points, series.bucketSeconds, W, H, domain) : '';
   const used = selected.key === 'battery.net_discharge' && series ? energy(points, series.bucketSeconds) : null;
   // The heading is the chooser: what the graph shows, and the way to change it.

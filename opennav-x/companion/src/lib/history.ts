@@ -83,11 +83,13 @@ export function chartPath(points: Point[], bucketSeconds: number, width: number,
 }
 
 /** A readable y-axis: rounded bounds with a little headroom; flat data gets a band. */
-export function niceDomain(points: Point[]): { y0: number; y1: number } {
+/** The chart's value range: the data plus a margin, never past what the value can be (no 102 %). */
+export function niceDomain(points: Point[], limits?: { min: number; max: number }): { y0: number; y1: number } {
   const ys = points.map(p => p[1]);
   let lo = Math.min(...ys), hi = Math.max(...ys);
   if (!Number.isFinite(lo)) return { y0: 0, y1: 1 };
   if (hi - lo < 1e-6) { lo -= Math.max(1, Math.abs(lo) * 0.05); hi += Math.max(1, Math.abs(hi) * 0.05); }
   const pad = (hi - lo) * 0.08;
-  return { y0: lo - pad, y1: hi + pad };
+  if (!limits) return { y0: lo - pad, y1: hi + pad };
+  return { y0: Math.max(lo - pad, Math.min(lo, limits.min)), y1: Math.min(hi + pad, Math.max(hi, limits.max)) };
 }
