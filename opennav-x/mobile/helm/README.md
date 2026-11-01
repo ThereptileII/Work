@@ -34,6 +34,12 @@ Architecture, protocol and safety: [docs/helm](../../docs/helm/README.md).
   - SKAGER screen not available (minimized or locked)
 - **Settings**: paired boats (Forget), Auto/Day/Dusk/Night, keep the screen on,
   connect on start, about.
+- **Demo** (Try the demo, on the welcome and boats pages): for app review and
+  for anyone without a SKAGER nearby. Sample SKAGER screens (`src/demo/`, captured
+  from SKAGER with the simulated boat in `scripts/demo-boat.py`) come through the
+  same screen view, toolbar and gestures; taps on Chart, Passage, Instruments,
+  Anchor, Settings and a panel's Close switch screens (`src/lib/demo.ts`). No
+  network, nothing stored, and the demo boat is never added to the paired boats.
 
 ## Develop and test
 

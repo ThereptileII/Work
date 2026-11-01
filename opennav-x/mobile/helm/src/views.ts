@@ -69,6 +69,7 @@ export function renderWelcome(message = ''): string {
       <button class="button primary" type="button" data-action="scan">${icon('scan')}<span>Scan pairing code</span></button>
       <button class="button secondary" type="button" data-action="manual">${icon('key')}<span>Enter pairing key</span></button>
     </div>
+    <button class="button ghost wide" type="button" data-action="demo">${icon('helm')}<span>Try the demo</span></button>
     ${message ? `<p class="message error" role="status">${esc(message)}</p>` : ''}
     <p class="note">${icon('wifi')}<span>Works over the boat's own Wi-Fi. No internet and no SKAGER account needed.</span></p>
   </section>`;
@@ -88,6 +89,7 @@ export function renderBoats(boats: Boat[], busy: string | null, message = ''): s
       ${message ? `<p class="message error" role="status">${esc(message)}</p>` : ''}
       <button class="button ghost wide" type="button" data-action="scan">${icon('plus')}<span>Pair another SKAGER</span></button>
       <p class="note center">Your phone needs to be on the same Wi-Fi as the SKAGER computer.</p>
+      <button class="button ghost wide" type="button" data-action="demo">${icon('helm')}<span>Try the demo</span></button>
     </section>`;
 }
 

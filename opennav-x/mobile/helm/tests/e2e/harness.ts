@@ -65,7 +65,7 @@ export function inputLines(helm: Helm): string[] {
 
 // ---------------------------------------------------------------- app preview
 const TYPES: Record<string, string> = { '.html': 'text/html', '.js': 'text/javascript', '.css': 'text/css', '.png': 'image/png',
-  '.woff2': 'font/woff2', '.txt': 'text/plain' };
+  '.woff2': 'font/woff2', '.txt': 'text/plain', '.jpg': 'image/jpeg' };
 
 export function serveApp(dist: string): Promise<{ server: Server; url: string }> {
   return new Promise(resolve => {

@@ -5,6 +5,7 @@ import { answerMessage, b64url, deviceKey, formatKeyInput, mac, normalizeAddress
 import { Gestures } from '../src/lib/gestures.ts';
 import type { Point } from '../src/lib/gestures.ts';
 import { clampPan, fitRect, toFrame } from '../src/lib/screen.ts';
+import { demoFrame, demoTarget } from '../src/lib/demo.ts';
 import type { InputEvent } from '../src/lib/client.ts';
 
 const hex = (b: Uint8Array) => Buffer.from(b).toString('hex');
@@ -124,4 +125,17 @@ test('a drag cut off by the system never leaves the button held', () => {
   g.move(1, { x: 50, y: 20 }, 10);
   g.cancel();
   assert.equal(out.at(-1)?.type, 'pointer_up');
+});
+
+test('demo: rail taps and Close switch the sample SKAGER screens; frames use the stream format', () => {
+  assert.equal(demoTarget('chart', 68 / 1600, 530 / 1000), 'instruments');
+  assert.equal(demoTarget('instruments', 68 / 1600, 615 / 1000), 'anchor');
+  assert.equal(demoTarget('anchor', 1150 / 1600, 210 / 1000), 'chart');
+  assert.equal(demoTarget('chart', 1150 / 1600, 210 / 1000), 'chart');
+  assert.equal(demoTarget('passage', 0.5, 0.5), 'passage');
+  const [begin, tile, end] = demoFrame(7, new Uint8Array([0xff, 0xd8, 0xff]));
+  assert.deepEqual(parseStreamMessage(begin), { kind: 'begin', frame: 7, width: 1600, height: 1000, full: true, tiles: 1 });
+  const t = parseStreamMessage(tile) as any;
+  assert.deepEqual([t.kind, t.frame, t.x, t.y, t.w, t.h, Array.from(t.data)], ['tile', 7, 0, 0, 1600, 1000, [0xff, 0xd8, 0xff]]);
+  assert.equal(parseStreamMessage(end)?.kind, 'end');
 });

@@ -1,6 +1,7 @@
 // SKAGER Helm controller: home, pairing and the live SKAGER screen.
 import { connect, HelmError, pairManually, pairWithLink } from './lib/client.ts';
 import type { Boat, Connection, ControlMessage, Pilot } from './lib/client.ts';
+import { DemoConnection, demoBoat, isDemo } from './lib/demo.ts';
 import { Gestures } from './lib/gestures.ts';
 import { formatKeyInput, parsePairingLink } from './lib/protocol.ts';
 import type { PairingLink } from './lib/protocol.ts';
@@ -31,7 +32,7 @@ const state = {
   manual: { address: '', key: '', busy: false, error: '' },
   pairing: { name: '', done: false, error: '' },
   current: null as Boat | null,
-  conn: null as Connection | null,
+  conn: null as Connection | DemoConnection | null,
   connecting: false,
   overlay: null as OverlayState | null,
   attempt: 0,
@@ -320,7 +321,7 @@ function onControl(msg: ControlMessage): void {
   if (state.phase === 'helm') renderHelm();
 }
 
-function onClosed(conn: Connection, reason: string): void {
+function onClosed(conn: Connection | DemoConnection, reason: string): void {
   if (state.conn !== conn) return;
   state.conn = null;
   gestures.cancel();
@@ -360,6 +361,7 @@ function scheduleReconnect(delay?: number): void {
 async function openBoat(boat: Boat, opts: { takeover?: boolean; reconnect?: boolean } = {}): Promise<void> {
   if (state.connecting) return;
   clearTimeout(state.retry);
+  if (isDemo(boat)) return openDemo(boat);
   const key = await store.key(boat.serverId);
   if (!key) {
     state.current = boat;
@@ -413,6 +415,34 @@ async function openBoat(boat: Boat, opts: { takeover?: boolean; reconnect?: bool
   renderHelm();
 }
 
+/** The demo: sample SKAGER screens through the real screen view, no boat and no network. */
+async function openDemo(boat: Boat): Promise<void> {
+  if (!isDemo(state.current)) { screen.clear(); state.pilot = null; state.attempt = 0; }
+  state.current = boat;
+  state.screenAvailable = true;
+  state.overlay = { kind: 'connecting', name: boat.name };
+  if (state.phase !== 'helm') go('helm'); else renderHelm();
+  const conn: DemoConnection = new DemoConnection({
+    screen: data => screen.handle(data),
+    control: onControl,
+    closed: reason => onClosed(conn, reason),
+  });
+  state.conn = conn;
+  try {
+    await conn.start();
+  } catch {
+    if (state.conn === conn) { state.conn = null; state.overlay = { kind: 'error', name: boat.name, message: 'The demo could not be loaded.' }; }
+    renderHelm();
+    return;
+  }
+  showBar();
+  if (state.settings.keepAwake) keepAwake(true);
+  immersive(true);
+  if (!state.settings.seenHelp) { state.settings.seenHelp = true; store.saveSettings(state.settings); state.sheet = 'help'; renderSheet(); }
+  showToast('Sample SKAGER screens: tap Chart, Passage, Instruments, Anchor or Settings on the SKAGER screen.');
+  renderHelm();
+}
+
 function disconnect(toHome = true): void {
   clearTimeout(state.retry);
   const conn = state.conn;
@@ -450,6 +480,7 @@ document.addEventListener('click', async e => {
   switch (target.dataset.action) {
     case 'scan': state.sheet = null; disconnect(false); state.current = null; go('scan'); break;
     case 'manual': state.manual.error = ''; go('manual'); break;
+    case 'demo': state.homeMessage = ''; openBoat(demoBoat()); break;
     case 'home': go('home'); break;
     case 'settings': state.menu = false; state.sheet = 'settings'; render(); break;
     case 'help': state.menu = false; state.sheet = 'help'; render(); break;
@@ -474,7 +505,8 @@ document.addEventListener('click', async e => {
       if (boat) await forget(boat.serverId);
       break;
     case 'forget-current':
-      if (state.current) await forget(state.current.serverId);
+      if (isDemo(state.current)) disconnect();
+      else if (state.current) await forget(state.current.serverId);
       break;
   }
 });

@@ -20,6 +20,8 @@ await build({
 });
 cpSync(join(root, 'src/index.html'), join(out, 'index.html'));
 cpSync(join(root, 'src/app.css'), join(out, 'app.css'));
+// Sample SKAGER screens for the demo (lib/demo.ts).
+cpSync(join(root, 'src/demo'), join(out, 'demo'), { recursive: true });
 // One design system: the SKAGER tokens, font and wordmark shared with Companion and the website.
 cpSync(join(repo, 'companion/src/tokens.css'), join(out, 'tokens.css'));
 const marketing = join(repo, 'web/skager_web/marketing/static/marketing');
