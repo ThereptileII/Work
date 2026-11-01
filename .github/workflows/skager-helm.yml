@@ -157,9 +157,11 @@ jobs:
         run: |
           npm run build
           npx cap sync android
-      - name: Assemble debug APK
+      - name: Assemble debug APK and the Google Play bundle
         working-directory: opennav-x/mobile/helm/android
-        run: ./gradlew --no-daemon assembleDebug
+        env:
+          SKAGER_VERSION_CODE: ${{ github.run_number }}
+        run: ./gradlew --no-daemon assembleDebug bundleRelease
       - name: Name the APK by version and commit
         id: apk
         run: |
@@ -168,12 +170,19 @@ jobs:
           cp android/app/build/outputs/apk/debug/app-debug.apk "$name"
           sha256sum "$name" | tee "$name.sha256"
           echo "name=$name" >> "$GITHUB_OUTPUT"
+          # Unsigned: the upload key stays with the owner, who signs before uploading to Google Play.
+          bundle="skager-helm-${version}-${GITHUB_RUN_NUMBER}-${GITHUB_SHA::8}-unsigned.aab"
+          cp android/app/build/outputs/bundle/release/app-release.aab "$bundle"
+          sha256sum "$bundle" | tee "$bundle.sha256"
+          echo "bundle=$bundle" >> "$GITHUB_OUTPUT"
       - uses: actions/upload-artifact@ea165f8d65b6e75b540449e92b4886f43607fa02
         with:
           name: skager-helm-android-${{ github.sha }}
           path: |
             opennav-x/mobile/helm/${{ steps.apk.outputs.name }}
             opennav-x/mobile/helm/${{ steps.apk.outputs.name }}.sha256
+            opennav-x/mobile/helm/${{ steps.apk.outputs.bundle }}
+            opennav-x/mobile/helm/${{ steps.apk.outputs.bundle }}.sha256
           if-no-files-found: error
 
   ios:
