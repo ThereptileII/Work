@@ -2,19 +2,33 @@
 // the server). Gaps stay gaps; nothing is interpolated across missing data.
 
 export type Metric = { key: string; label: string; unit: string };
-/** What the History tab offers, in order. Only metrics the boat has reported are shown. */
+/** What the History tab offers, in order. Only metrics the boat has reported are shown.
+ *  Directions (heading, course, wind angles) are left out: the server averages each bucket
+ *  arithmetically, which is wrong across north (350° and 10° would give 180°). */
 export const METRICS: Metric[] = [
   { key: 'battery.voltage', label: 'Battery voltage', unit: 'V' },
   { key: 'battery.soc', label: 'State of charge', unit: '%' },
   { key: 'battery.net_discharge', label: 'Battery power', unit: 'kW' },
   { key: 'battery.current', label: 'Battery current', unit: 'A' },
+  { key: 'battery.soh', label: 'Battery health', unit: '%' },
   { key: 'propulsion.electrical_power', label: 'Motor power', unit: 'kW' },
+  { key: 'propulsion.rpm', label: 'Motor speed', unit: 'rpm' },
   { key: 'propulsion.motor_temperature', label: 'Motor temperature', unit: 'C' },
+  { key: 'propulsion.coolant_temperature', label: 'Coolant temperature', unit: 'C' },
+  { key: 'propulsion.shaft_power', label: 'Shaft power', unit: 'kW' },
   { key: 'navigation.sog', label: 'Speed over ground', unit: 'kn' },
+  { key: 'navigation.stw', label: 'Speed through water', unit: 'kn' },
   { key: 'wind.true_speed', label: 'True wind', unit: 'kn' },
   { key: 'wind.apparent_speed', label: 'Apparent wind', unit: 'kn' },
   { key: 'environment.depth', label: 'Depth', unit: 'm' },
   { key: 'environment.water_temperature', label: 'Water temperature', unit: 'C' },
+  { key: 'environment.pressure', label: 'Air pressure', unit: 'hPa' },
+  { key: 'tanks.fresh_water', label: 'Fresh water', unit: '%' },
+  { key: 'tanks.fuel', label: 'Fuel', unit: '%' },
+  { key: 'tanks.waste', label: 'Waste', unit: '%' },
+  { key: 'tanks.other', label: 'Other tank', unit: '%' },
+  { key: 'steering.rudder', label: 'Rudder', unit: 'deg' },
+  { key: 'steering.heel', label: 'Heel', unit: 'deg' },
 ];
 export const RANGES = [{ hours: 6, label: '6 h' }, { hours: 24, label: '24 h' }, { hours: 72, label: '3 d' },
   { hours: 168, label: '7 d' }, { hours: 720, label: '30 d' }];

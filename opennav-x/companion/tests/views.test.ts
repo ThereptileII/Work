@@ -2,6 +2,7 @@ import assert from 'node:assert/strict';
 import test from 'node:test';
 import { TELEMETRY_KEYS } from '../../web/edge/cloud.ts';
 import type { Boat, BoatEvent, Device } from '../src/lib/api.ts';
+import { METRICS } from '../src/lib/history.ts';
 import { alarmKeyOptions, DEFAULT_LAYOUT, layoutKeys, renderPicker, renderAlarmBanner, renderAlarmRules, renderAlarms, renderAnchor, renderHistory,
   renderLayoutEditor, renderNoBoats, renderOverview, renderSettings, renderSignIn, renderStatus, renderTabs } from '../src/views.ts';
 
@@ -97,6 +98,14 @@ test('anchor screen: watching, alarm, no contact, off and unknown are distinct',
   assert.match(renderAnchor(DEVICE, { armed: true, alarm: false, radius_m: -40 }, 5, false), /keep-out radius[\s\S]*Distance unavailable/);
   assert.match(renderAnchor(DEVICE, { armed: false }, 5, false), /anchor watch is off[\s\S]*cannot start or stop it/);
   assert.match(renderAnchor(DEVICE, null, 5, false), /No anchor watch report yet/);
+});
+
+test('history: every value the boat can chart, but no compass directions', () => {
+  assert.ok(METRICS.every(m => m.key in TELEMETRY_KEYS), 'every metric is a value SKAGER uploads');
+  for (const key of ['navigation.stw', 'tanks.fresh_water', 'tanks.waste', 'environment.pressure', 'steering.heel'])
+    assert.ok(METRICS.some(m => m.key === key), key);
+  for (const key of ['navigation.heading', 'navigation.cog', 'wind.apparent_angle', 'wind.true_angle', 'navigation.latitude'])
+    assert.ok(!METRICS.some(m => m.key === key), `${key} cannot be averaged per bucket`);
 });
 
 test('history: only reported metrics, honest energy estimate, empty period stated', () => {
