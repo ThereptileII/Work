@@ -3,7 +3,7 @@
 
 A build reaches this script only after every Staging job passed. It is then:
   1. the update in SKAGER's auto-updater (signed update feed, beta channel),
-  2. the download in the account portal at beta.skager.app,
+  2. the download in the account portal at app.skager.app,
   3. a source release in the public repository (source, notes, checksums;
      the ready-to-install setup stays behind the account login).
 
@@ -25,6 +25,8 @@ import sys
 import zipfile
 from pathlib import Path
 
+# Signed artifacts stay on the address every installed SKAGER trusts for updates
+# (installer/windows/production-update-trust.json); customers use app.skager.app.
 ORIGIN = 'https://beta.skager.app'
 FEED_FILES = {  # policy role -> staging file name
     'releaseNotes': 'SKAGER-Beta2-Release-Notes.md',
@@ -140,7 +142,7 @@ def prepare(args):
         f'SKAGER {version} (beta), built from commit `{commit}` after passing every Staging check.\n\n'
         'This release carries the corresponding source, its licence notices and the release notes. '
         'The ready-to-install Windows setup is available with a SKAGER account at '
-        '[beta.skager.app](https://beta.skager.app/portal/downloads/) and through the update in SKAGER.\n\n'
+        '[app.skager.app](https://app.skager.app/portal/downloads/) and through the update in SKAGER.\n\n'
         f'SHA-256 of every file of this version, including the setup:\n\n```\n{sums.strip()}\n```\n\n---\n\n{notes}')
     (out / 'release.env').write_text(f'VERSION={version}\nCOMMIT={commit}\nTAG=v{version}\n')
     print(f'prepared {version} ({commit[:8]})')

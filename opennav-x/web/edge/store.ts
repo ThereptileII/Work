@@ -8,9 +8,9 @@ import {
   requireValue, strictJson, stripeRequest, verifiedSignature, type CommerceContext, type Configuration,
 } from './commerce.ts';
 import { sendDue } from './email.ts';
+import { WEB_ORIGINS } from './platform.ts';
 import { dispatchPush } from './push.ts';
 import { getImage } from './media.ts';
-import { PUBLIC_ORIGIN } from './platform.ts';
 
 type Json = Record<string, any>;
 export type StoreAccount = { id: string; email?: string; passwordSet?: boolean };
@@ -37,8 +37,8 @@ const BRANDING: [string, string][] = [
   ['branding_settings[border_style]', 'rounded'],
   ['branding_settings[font_family]', 'inter'],
   ['branding_settings[logo][type]', 'url'],
-  ['branding_settings[logo][url]', PUBLIC_ORIGIN + '/static/marketing/skager-wordmark.png'],
 ];
+const LOGO_PATH = '/static/marketing/skager-wordmark.png';
 
 const reply = (status: number, value: Json) => new Response(JSON.stringify(value), { status, headers: {
   'Content-Type': 'application/json; charset=utf-8', 'Cache-Control': 'private, no-store, max-age=0',
@@ -76,8 +76,8 @@ async function openSession(ctx: StoreContext, config: Configuration, order: Json
   promotion?: Json | null; countries?: string[];
 }): Promise<string> {
   const form = new URLSearchParams({ mode: options.mode, client_reference_id: order.order_id,
-    'metadata[order_id]': order.order_id, success_url: PUBLIC_ORIGIN + options.successPath,
-    cancel_url: PUBLIC_ORIGIN + options.cancelPath });
+    'metadata[order_id]': order.order_id, success_url: config.origin + options.successPath,
+    cancel_url: config.origin + options.cancelPath });
   if (options.customerId && CUSTOMER.test(options.customerId)) form.set('customer', options.customerId);
   else {
     form.set('customer_email', options.email);
@@ -109,6 +109,7 @@ async function openSession(ctx: StoreContext, config: Configuration, order: Json
   // Styling never blocks a payment: if Stripe refuses the branded page, open the standard one.
   const plain = new URLSearchParams(form);
   BRANDING.forEach(([key, value]) => form.set(key, value));
+  form.set('branding_settings[logo][url]', config.origin + LOGO_PATH);
   let session: Json;
   try {
     session = await stripeRequest(ctx as CommerceContext, config, 'checkout/sessions', 'POST', form,
@@ -230,7 +231,7 @@ async function billingPortal(ctx: StoreContext, config: Configuration, account: 
   if (typeof access.stripe_customer_id !== 'string' || !CUSTOMER.test(access.stripe_customer_id)) {
     return reply(404, { error: 'There is no billing account yet.' });
   }
-  const form = new URLSearchParams({ customer: access.stripe_customer_id, return_url: PUBLIC_ORIGIN + '/portal/cloud/' });
+  const form = new URLSearchParams({ customer: access.stripe_customer_id, return_url: config.origin + '/portal/cloud/' });
   const session = await stripeRequest(ctx as CommerceContext, config, 'billing_portal/sessions', 'POST', form,
     `skager-billing-${account.id}-${Math.floor(Date.now() / 60000)}`);
   requireValue(session.object === 'billing_portal.session' && session.livemode === false && typeof session.url === 'string');
@@ -519,8 +520,11 @@ export async function handleStore(req: Request, ctx: StoreContext): Promise<Resp
   let config: Configuration;
   try { config = configuration(ctx.env, path !== '/api/stripe/webhook'); } catch { return reply(404, { error: 'Checkout is not available right now.' }); }
   if (path === '/api/stripe/webhook') return webhook(req, ctx, config);
-  // The router checks CSRF; the exact Origin is enforced here as well for direct calls.
-  if (req.headers.get('Origin') !== config.origin) return reply(403, { error: 'Request rejected' });
+  // The router checks CSRF; the Origin is enforced here as well for direct calls. Stripe sends
+  // the buyer back to the address the purchase started on (app.skager.app, or beta.skager.app).
+  const origin = req.headers.get('Origin') ?? '';
+  if (!WEB_ORIGINS.includes(origin)) return reply(403, { error: 'Request rejected' });
+  config = { ...config, origin };
   try {
     if (path === '/api/store/checkout') return await guestCheckout(req, ctx, config);
     const account = await member(req, ctx);

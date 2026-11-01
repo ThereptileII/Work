@@ -1,5 +1,5 @@
 // Builds the web bundle that Capacitor copies into the Android and iOS apps.
-//   SKAGER_API          SKAGER Cloud origin (default https://beta.skager.app)
+//   SKAGER_API          SKAGER Cloud origin (default https://app.skager.app)
 //   SKAGER_PUSH         comma list of platforms with push set up, e.g. "android,ios".
 //                       Default: android when android/app/google-services.json exists.
 //   SKAGER_PREVIEW=1    browser preview against a local server (never for phones)
@@ -12,7 +12,7 @@ const root = join(dirname(fileURLToPath(import.meta.url)), '..');
 const repo = join(root, '..');
 const out = join(root, 'dist');
 const pkg = JSON.parse(readFileSync(join(root, 'package.json'), 'utf8'));
-const api = process.env.SKAGER_API || 'https://beta.skager.app';
+const api = process.env.SKAGER_API || 'https://app.skager.app';
 const preview = process.env.SKAGER_PREVIEW === '1';
 if (!/^https:\/\/[a-z0-9.-]+$/.test(api) && !(preview && /^http:\/\/(localhost|127\.0\.0\.1):\d+$/.test(api))) {
   throw new Error('SKAGER_API must be an https origin');

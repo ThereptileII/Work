@@ -26,7 +26,7 @@ ENTRY = '''import actual from './worker.mjs';
 export default { fetch(request, env) {
  const path = new URL(request.url).pathname;
  if (path === '/__fixture_count') return env.UPSTREAM.fetch('https://fixture.invalid/count');
- return actual.fetch(new Request('https://beta.skager.app' + path, request));
+ return actual.fetch(new Request('https://app.skager.app' + path, request));
 }};
 '''
 UPSTREAM = '''let calls = 0;

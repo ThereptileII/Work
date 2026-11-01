@@ -73,7 +73,7 @@ void protocol() {
   CHECK(FormatUserCode("BCDF2345") == "BCDF-2345");
 
   const auto offer = ParseLinkOffer(R"({"deviceCode":")" + std::string(64, 'c') +
-      R"(","userCode":"BCDF2345","verificationUrl":"https://beta.skager.app/link/","expiresIn":600,"interval":1})");
+      R"(","userCode":"BCDF2345","verificationUrl":"https://app.skager.app/link/","expiresIn":600,"interval":1})");
   CHECK(offer && offer->user_code == "BCDF2345" && offer->interval == 2s);
   CHECK(!ParseLinkOffer(R"({"deviceCode":")" + std::string(64, 'c') +
       R"(","userCode":"BCDF2345","verificationUrl":"https://evil.example/link/"})"));
@@ -134,7 +134,7 @@ struct FakeService {
     if (path == "/api/device/link")
       return {true, 200, R"({"deviceCode":")" + std::string(64, 'c') +
                              R"(","userCode":")" + (count[path] == 1 ? "BCDF2345" : "GHJK6789") +
-                             R"(","verificationUrl":"https://beta.skager.app/link/","expiresIn":600,"interval":5})"};
+                             R"(","verificationUrl":"https://app.skager.app/link/","expiresIn":600,"interval":5})"};
     if (path == "/api/device/link/poll")
       return {true, 200, approved ? R"({"state":"approved","token":")" + kToken + R"("})" : R"({"state":"pending"})"};
     if (!authorized) return {true, 401, R"({"linked":false})"};

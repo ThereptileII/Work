@@ -126,6 +126,20 @@ test('device routes accept the explicit-port Origin the SKAGER app client always
   assert.ok(state.calls.some(c => c.name === 'cloud_link_start'));
 });
 
+test('pairing: each SKAGER gets the link page on the address it was built with', async () => {
+  // SKAGER accepts a verification URL only on its own address (CloudProtocol.cpp), so builds
+  // from before the public launch must keep getting beta.skager.app.
+  const { ctx } = backend();
+  const start = (origin?: string) => call(ctx, app('/api/device/link', { body: { name: 'x', platform: 'windows', version: '1' },
+    headers: origin ? { Origin: origin } : {} }));
+  assert.equal((await start('https://app.skager.app:443')).data.verificationUrl, 'https://app.skager.app/link/');
+  assert.equal((await start('https://beta.skager.app:443')).data.verificationUrl, 'https://beta.skager.app/link/');
+  assert.equal((await start()).data.verificationUrl, 'https://beta.skager.app/link/');
+  for (const origin of ['https://app.skager.app', 'https://skager.app:443', 'https://app.skager.app:8443']) {
+    assert.equal((await start(origin)).status, 403, origin);
+  }
+});
+
 test('device routes refuse browsers, cookies, bad bodies and unknown tokens', async () => {
   const { ctx, state } = backend();
   for (const headers of [{ Origin: 'https://beta.skager.app' }, { Origin: 'https://evil.example' }, { Origin: 'null' },

@@ -66,7 +66,7 @@ User decision 2026-10-31. A Staging build that passes every gate is released by 
    lives in R2 under `operator/beta/`. The reserved version is stored before any metadata,
    and the timestamp is uploaded last. A schedule renews the 24-hour timestamp every
    8 hours. Schedules run only from the default branch; `mode: renew` starts it by hand.
-2. **Account download at beta.skager.app:** the job writes `portal/beta-releases.json`
+2. **Account download at app.skager.app:** the job writes `portal/beta-releases.json`
    (newest first, at most 16). The portal validates it like its reviewed catalog and
    serves the feed's own files. If the list is missing or invalid, the reviewed catalog
    in `web/edge/downloads.ts` is used.

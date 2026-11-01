@@ -17,7 +17,7 @@ wxString LocalTime(cloud::WallTime t) {
 // "2026-11-19T10:00:00+00:00" -> "2026-11-19". The day is enough here.
 wxString Day(const std::string &iso) { return iso.size() >= 10 ? W(iso.substr(0, 10)) : wxString(); }
 wxString LinkAddress(const cloud::CloudSnapshot &s) {
-  auto url = s.verification_url.empty() ? std::string("https://beta.skager.app/link/") : s.verification_url;
+  auto url = s.verification_url.empty() ? std::string(cloud::kOrigin) + "/link/" : s.verification_url;
   for (const char *prefix : {"https://", "http://"})
     if (url.rfind(prefix, 0) == 0) url = url.substr(std::string(prefix).size());
   if (!url.empty() && url.back() == '/') url.pop_back();
@@ -67,7 +67,7 @@ void ProductPanel::CloudPage() {
   case cloud::LinkState::Unlinked:
   case cloud::LinkState::Starting: {
     Text("Link this SKAGER to your SKAGER account. With SKAGER Cloud you get automatic "
-         "updates and can follow your boat on beta.skager.app.");
+         "updates and can follow your boat on app.skager.app.");
     Text("SKAGER keeps working without an account. Without SKAGER Cloud you can still "
          "download new versions from your account and install them yourself.", 12);
     const bool starting = cloud_.link == cloud::LinkState::Starting;
@@ -144,7 +144,7 @@ void ProductPanel::CloudPage() {
     return text;
   });
   if (cloud_.account && !cloud_.account->cloud_active)
-    Text("Start SKAGER Cloud under Cloud in your account at beta.skager.app. "
+    Text("Start SKAGER Cloud under Cloud in your account at app.skager.app. "
          "SKAGER notices the change within a few minutes, or choose Check now.", 12);
 
   Text("Share boat data", 20);

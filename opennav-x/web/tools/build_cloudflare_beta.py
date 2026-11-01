@@ -15,6 +15,9 @@ import sys
 
 WEB = Path(__file__).resolve().parents[1]
 SDK = WEB/'edge/vendor/aws4fetch-1.0.20'
+# skager.app: website; app.skager.app: account and API; beta.skager.app: builds from before the
+# public launch; www.skager.app: redirects to skager.app.
+HOSTNAMES = ['skager.app', 'www.skager.app', 'app.skager.app', 'beta.skager.app']
 
 
 def main():
@@ -60,9 +63,20 @@ def main():
     server.write_text(notice + server.read_text())
     files = ['cloudflare-upload.js', 'supabase-index.ts']
     info = {'schema':1, 'sourceCommit':actual, 'environment':'private-beta',
-            'hostname':'beta.skager.app', 'livePayments':False,
+            'hostnames':HOSTNAMES, 'livePayments':False,
             'esbuildVersion':'0.28.2', 'serverDependencies':{'aws4fetch':dependency}, 'files':{name:hashlib.sha256((output/name).read_bytes()).hexdigest() for name in files}}
     (output/'build-info.json').write_text(json.dumps(info, indent=2)+'\n')
+    # Ready for `wrangler deploy --config <output>/deploy/wrangler.jsonc`: the same Worker on every
+    # SKAGER address (cloudflare-worker.mjs decides what each one serves). Custom domains create
+    # their DNS records; existing variables and secrets are kept.
+    deploy = output/'deploy'
+    deploy.mkdir()
+    shutil.copy2(output/'cloudflare-upload.js', deploy/'worker.js')
+    (deploy/'wrangler.jsonc').write_text(json.dumps({
+        'name':'skager-beta-web', 'main':'worker.js', 'compatibility_date':'2026-10-28', 'workers_dev':True,
+        'no_bundle':True, 'keep_vars':True, 'find_additional_modules':False,
+        'routes':[{'pattern':host, 'custom_domain':True} for host in HOSTNAMES],
+        'r2_buckets':[{'binding':'SKAGER_UPDATES', 'bucket_name':'skager-private-releases'}]}, indent=2)+'\n')
     print(json.dumps(info, indent=2))
 
 

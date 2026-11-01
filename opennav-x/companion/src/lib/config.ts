@@ -6,7 +6,7 @@ declare const __SKAGER_PUSH__: string[] | undefined;
 declare const __SKAGER_PREVIEW__: boolean | undefined;
 
 /** SKAGER Cloud. The phone only ever talks to this origin (and map tiles). */
-export const API_ORIGIN: string = typeof __SKAGER_API__ === 'string' ? __SKAGER_API__ : 'https://beta.skager.app';
+export const API_ORIGIN: string = typeof __SKAGER_API__ === 'string' ? __SKAGER_API__ : 'https://app.skager.app';
 export const APP_VERSION: string = typeof __SKAGER_VERSION__ === 'string' ? __SKAGER_VERSION__ : '0.0.0';
 /** Platforms whose native project has push set up (Firebase for Android, APNs for iOS).
  * Elsewhere the app never registers, because registering without it can crash the app. */

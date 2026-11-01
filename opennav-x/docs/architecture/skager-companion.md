@@ -27,7 +27,7 @@ SKAGER Cloud and boat data sharing switched on in SKAGER.
 ## Sign-in (RFC 8252 + PKCE)
 
 1. The app makes a 43-character verifier and a state, then opens
-   `https://beta.skager.app/app/authorize/?challenge=S256(verifier)&state=…` in the
+   `https://app.skager.app/app/authorize/?challenge=S256(verifier)&state=…` in the
    system browser (Custom Tabs or SFSafariViewController).
 2. The owner signs in as usual (password plus e-mail code). `auth.js` returns only
    to `/link/` or to that exact authorize URL. The page then asks "Sign in on this

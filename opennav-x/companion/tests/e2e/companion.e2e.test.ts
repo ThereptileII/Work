@@ -45,12 +45,12 @@ test('SKAGER Companion through the real Worker, router and SQL', { skip: !psqlAr
        insert into skager_private.cloud_devices(account_id,token_hash,name,platform,app_version) values ('${OWNER}','${sha(DEVICE_TOKEN)}','Aurora helm','windows','0.4.0-beta2.7');`);
   const cookie = `__Host-skager_session=${SESSION}; __Host-skager_csrf=${CSRF}`;
   const browser = (path: string, body?: unknown) => worker(path, body === undefined ? { headers: { cookie } }
-    : { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json', origin: 'https://beta.skager.app', 'x-csrf-token': CSRF, cookie } });
+    : { method: 'POST', body: JSON.stringify(body), headers: { 'content-type': 'application/json', origin: 'https://app.skager.app', 'x-csrf-token': CSRF, cookie } });
   const boat = (path: string, body: unknown) => worker(path, { method: 'POST', body: JSON.stringify(body),
     headers: { authorization: `Bearer ${DEVICE_TOKEN}`, 'content-type': 'application/json', 'x-skager-version': '0.4.0-beta2.8' } });
   let token: string | null = null;
   const phone = new Api({ token: async () => token }, ((url: string, init: RequestInit) =>
-    worker(url.replace('https://beta.skager.app', ''), init)) as typeof fetch);
+    worker(url.replace('https://app.skager.app', ''), init)) as typeof fetch);
 
   // 1. Sign-in: the app opens the page; the signed-in owner approves; the app redeems with its verifier.
   const pending = newPending();

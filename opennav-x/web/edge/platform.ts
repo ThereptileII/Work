@@ -8,7 +8,13 @@ export type Context = {
   getAccount: (request: Request) => Promise<Account | null>;
 };
 
-export const PUBLIC_ORIGIN = 'https://beta.skager.app';
+/** Where customers use SKAGER (account, checkout, sign-in): links and emails point here. */
+export const PUBLIC_ORIGIN = 'https://app.skager.app';
+/** The address before the public launch. SKAGER on board and Companion builds made before the move
+ * have it built in, so it keeps the same service. */
+export const LEGACY_ORIGIN = 'https://beta.skager.app';
+/** Browser origins that may change data (with the CSRF cookie of that same host). */
+export const WEB_ORIGINS: readonly string[] = [PUBLIC_ORIGIN, LEGACY_ORIGIN];
 export const SUPABASE_ORIGIN = 'https://kelwgubkuvditalsbqpr.supabase.co';
 export const MAX_BODY = 262144;
 
@@ -81,7 +87,7 @@ export function newToken(): string {
 }
 
 export async function csrfValid(request: Request): Promise<boolean> {
-  if (request.headers.get('origin') !== PUBLIC_ORIGIN) return false;
+  if (!WEB_ORIGINS.includes(request.headers.get('origin') ?? '')) return false;
   const expected = cookie(request, '__Host-skager_csrf');
   const supplied = request.headers.get('X-CSRF-Token');
   if (!expected || !supplied || !/^[a-f0-9]{64}$/.test(expected) || !/^[a-f0-9]{64}$/.test(supplied)) return false;

@@ -16,7 +16,7 @@ test('PKCE: RFC 7636 S256 and a 43-character verifier the server accepts', async
   assert.match(pending.verifier, /^[A-Za-z0-9_-]{43}$/);
   assert.match(pending.state, /^[A-Za-z0-9_-]{32}$/);
   assert.notEqual(newPending().verifier, pending.verifier);
-  assert.match(await authorizeUrl(pending), /^https:\/\/beta\.skager\.app\/app\/authorize\/\?challenge=[A-Za-z0-9_-]{43}&state=[A-Za-z0-9_-]{32}$/);
+  assert.match(await authorizeUrl(pending), /^https:\/\/app\.skager\.app\/app\/authorize\/\?challenge=[A-Za-z0-9_-]{43}&state=[A-Za-z0-9_-]{32}$/);
 });
 
 test('the browser callback is accepted only with this sign-in\'s state', () => {
@@ -38,7 +38,7 @@ test('API client: bearer token, version, ETag; offline, signed-out and service e
   const api = new Api({ token: async () => TOKEN }, (async (url: string, init: RequestInit) => { seen.push({ url, init }); return reply(); }) as typeof fetch);
   await api.boats();
   const headers = seen[0].init.headers as Record<string, string>;
-  assert.equal(seen[0].url, 'https://beta.skager.app/api/companion/boats');
+  assert.equal(seen[0].url, 'https://app.skager.app/api/companion/boats');
   assert.equal(headers.Authorization, `Bearer ${TOKEN}`);
   assert.equal(seen[0].init.credentials, 'omit');
   reply = () => new Response(null, { status: 304 });

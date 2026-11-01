@@ -6,7 +6,8 @@ SCRUM-44 (paid access to the update channel) and SCRUM-369 (My Boat telemetry),
 under epic SCRUM-13. Owner decisions of 2026-10-19:
 
 - The app logs in with a **pairing code**: SKAGER shows an 8-character code, the
-  customer approves it at `beta.skager.app/link/` while signed in, and the app
+  customer approves it at `app.skager.app/link/` (builds before the public launch:
+  `beta.skager.app/link/`, see public-addresses.md) while signed in, and the app
   receives a revocable device token. No password is typed at the helm.
 - **Automatic updates are a SKAGER Cloud service.** Beta Access buyers keep every
   update as a manual download from the portal.

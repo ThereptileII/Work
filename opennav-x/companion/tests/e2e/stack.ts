@@ -78,8 +78,8 @@ export async function stack(extraEnv: Record<string, string> = {}) {
   const { handleRequest } = await import(new URL('index.ts', `file://${EDGE_DIR}`).href);
   const env = { SUPABASE_URL: SUPABASE, SUPABASE_SERVICE_ROLE_KEY: 'local-service-role', SKAGER_AUTH_ENABLED: 'true', ...extraEnv };
   const edge = async (url: string, init: RequestInit) => handleRequest(new Request(url, init), env, outbound as typeof fetch);
-  /** One request through the Worker, as the phone (or browser) would send it to beta.skager.app. */
-  const call = (path: string, init: RequestInit = {}) => handleWorker(new Request('https://beta.skager.app' + path, init), edge, {}) as Promise<Response>;
+  /** One request through the Worker, as the phone (or browser) would send it to app.skager.app. */
+  const call = (path: string, init: RequestInit = {}) => handleWorker(new Request('https://app.skager.app' + path, init), edge, {}) as Promise<Response>;
   /** Straight to the function, as pg_cron calls the scheduled job (store-schedule.sql). */
   const direct = (path: string, init: RequestInit = {}) => edge(`${SUPABASE}/functions/v1/skager-web${path}`, init) as Promise<Response>;
   return Object.assign(call, { direct });

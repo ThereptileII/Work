@@ -3,7 +3,7 @@ name: SKAGER release (update feed, account download, public source)
 # Every build that passed all SKAGER Staging gates goes to three places
 # (owner decision 2026-10-31, docs/delivery-workflow.md):
 #   1. the beta update feed, so SKAGER updates itself (signed here);
-#   2. the download in the account portal at beta.skager.app;
+#   2. the download in the account portal at app.skager.app;
 #   3. a release in the public repository ThereptileII/SKAGER with the corresponding
 #      source, notices, release notes and checksums (not the installer).
 # The feed's signature lasts 24 hours; the schedule renews it. Schedules and manual

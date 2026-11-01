@@ -7,7 +7,8 @@ public-launch acceptance decision. Jira remains the sole backlog.
 
 ## Decision and supersession
 
-Use a Cloudflare Free Worker for the exported frontend at `beta.skager.app`,
+Use a Cloudflare Free Worker for the exported frontend at `beta.skager.app`
+(since 2026-11-01 also `skager.app` and `app.skager.app`: see public-addresses.md),
 with one Supabase Edge Function, `skager-web`, providing the account, commerce
 and portal API. Supabase Auth supplies email proof and canonical identities;
 Supabase PostgreSQL stores private application state. Stripe Checkout remains
@@ -86,7 +87,7 @@ revokes the record. User deletion/bans and allowlist removal are checked during
 session lookup. Provider global signout alone does not revoke an independent
 application session; its remaining validity is bounded by that absolute expiry.
 
-Mutations require exact `https://beta.skager.app` Origin plus the matching
+Mutations require the exact Origin `https://app.skager.app` or `https://beta.skager.app` plus the matching
 readable host-only CSRF cookie and `X-CSRF-Token`. The Stripe webhook instead
 requires its provider signature. Challenges are browser-bound and consumed
 atomically once. Database limits apply by email and globally; an IP limit is

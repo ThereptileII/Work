@@ -47,8 +47,9 @@ prepare/review, leave provider mutations and live checks unperformed and say so.
 
 ## Preserve the boundaries
 
-- Target only `https://beta.skager.app`; no apex-domain exchange, DNS replacement
-  for `skager.app`, paid Containers backend or architecture substitution.
+- Target only the Worker's custom domains in `public-addresses.md` (`skager.app`,
+  `www.skager.app`, `app.skager.app`, `beta.skager.app`); no replacement of other DNS
+  records, paid Containers backend or architecture substitution.
 - Keep global public signup OFF, email confirmation ON and exact friend-email
   allowlisting enforced. Empty allowlist denies all. Both Magic Link and
   Invitation email templates must render `{{ .Token }}` for code entry.

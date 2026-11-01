@@ -1,6 +1,8 @@
 /** Server-only Supabase identity with opaque, bounded sessions.
  * Accounts are created only by a purchase: the buyer confirms an emailed code and
  * chooses a password. Later sign-ins need the password and then an emailed code. */
+import { WEB_ORIGINS } from "./platform.ts";
+
 export type Account = { id: string; email: string; passwordSet: boolean };
 export type AuthContext = {
   env: Record<string, string | undefined>;
@@ -71,7 +73,7 @@ function equal(a: string, b: string): boolean {
 }
 function mutationAllowed(request: Request): boolean {
   const csrf = readCookie(request, "__Host-skager_csrf");
-  return request.headers.get("origin") === "https://beta.skager.app" &&
+  return WEB_ORIGINS.includes(request.headers.get("origin") ?? "") &&
     /^[a-f0-9]{64}$/.test(csrf) &&
     equal(csrf, request.headers.get("x-csrf-token") || "");
 }

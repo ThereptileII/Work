@@ -1,7 +1,18 @@
 // Generated ASSETS contains only reviewed public pages, never server bindings.
 import ASSETS from './generated-assets.mjs';
 
-const ORIGIN = 'https://beta.skager.app';
+// One Worker, three addresses:
+//   skager.app      the public website; account, checkout and API paths move to app.skager.app
+//   app.skager.app  the account, checkout, sign-in, boat linking and the API
+//   beta.skager.app the API and update feed, unchanged: SKAGER on board and Companion builds
+//                   from before the launch have it built in. Its pages (old emails, QR codes,
+//                   bookmarks) move to the new addresses. www.skager.app goes to skager.app.
+const SITE = 'https://skager.app';
+const APP = 'https://app.skager.app';
+const LEGACY = 'https://beta.skager.app';
+const WWW = 'https://www.skager.app';
+// Paths that belong to the account service rather than the website.
+const APP_PATH = /^\/(?:api|auth|portal|link|app|admin|checkout|welcome|account|updates|artifacts)(?:\/|$)/;
 const EDGE = 'https://kelwgubkuvditalsbqpr.supabase.co/functions/v1/skager-web';
 const MAX_BODY = 262144;
 // Admin product images are sent as base64 JSON (2 MB image); every other route keeps the small limit.
@@ -102,9 +113,25 @@ async function serveUpdate(request, url, env, transport) {
   return finish(new Response(request.method === 'HEAD' ? null : object.body, { headers }));
 }
 
+/** Same path and query on another of SKAGER's addresses; 308 keeps the method and body. */
+function moved(origin, url) {
+  return finish(new Response(null, { status: 308, headers: { Location: origin + url.pathname + url.search, 'Cache-Control': 'no-store' } }));
+}
+
 export async function handleWorker(request, transport = fetch, env = undefined) {
   const url = new URL(request.url);
-  if (url.origin !== ORIGIN) return finish(new Response('Use beta.skager.app', { status: 421 }));
+  if (url.origin === WWW) return moved(SITE, url);
+  if (url.origin === SITE && APP_PATH.test(url.pathname)) return moved(APP, url);
+  const file = url.pathname.startsWith('/static/') || /\/[^/]+\.[a-z0-9]+$/.test(url.pathname);
+  if (url.origin === LEGACY && !/^\/(?:api|updates|artifacts)\//.test(url.pathname) && !file) {
+    return moved(APP_PATH.test(url.pathname) ? APP : SITE, url);
+  }
+  if (url.origin === APP) {
+    if (url.pathname === '/') return finish(new Response(null, { status: 302, headers: { Location: '/portal/', 'Cache-Control': 'no-store' } }));
+    // Website pages live on skager.app; files (scripts, styles, images) are served on every address.
+    if (!APP_PATH.test(url.pathname) && !file) return moved(SITE, url);
+  }
+  if (![SITE, APP, LEGACY].includes(url.origin)) return finish(new Response('Use skager.app', { status: 421 }));
   if (url.pathname.startsWith('/updates/') || url.pathname.startsWith('/artifacts/')) return serveUpdate(request, url, env, transport);
   if (url.pathname.startsWith('/api/companion/') && request.method === 'OPTIONS') {
     const origin = request.headers.get('origin');

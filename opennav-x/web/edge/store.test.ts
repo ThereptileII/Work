@@ -141,6 +141,17 @@ test('guest checkout builds Stripe parameters from the catalog and binds the ses
   assert.deepEqual(f.calls.find(c => c.name === 'store_bind_order')!.args.p_session_id, 'cs_test_session0001');
 });
 
+test('checkout returns the buyer to the address the purchase started on; the website itself cannot buy', async () => {
+  const f = fixture();
+  assert.equal((await handleStore(post('/api/store/checkout', { email: 'b@example.com' }, 'https://app.skager.app'), f.ctx))!.status, 200);
+  const form = f.stripe[0].body!;
+  assert.equal(form.get('success_url'), 'https://app.skager.app/welcome/?session_id={CHECKOUT_SESSION_ID}');
+  assert.equal(form.get('branding_settings[logo][url]'), 'https://app.skager.app/static/marketing/skager-wordmark.png');
+  for (const origin of ['https://skager.app', 'https://app.skager.app:443', 'https://evil.example']) {
+    assert.equal((await handleStore(post('/api/store/checkout', { email: 'b@example.com' }, origin), fixture().ctx))!.status, 403, origin);
+  }
+});
+
 test('Stripe Checkout opens in SKAGER colours, and falls back to the standard page if Stripe refuses them', async () => {
   const f = fixture();
   assert.equal((await handleStore(post('/api/store/checkout', { email: 'b@example.com' }), f.ctx))!.status, 200);

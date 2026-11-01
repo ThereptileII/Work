@@ -40,7 +40,7 @@ export function renderSignIn(state: { busy?: boolean; message?: string; error?: 
     <p class="lead">See your boat's position, battery, wind and anchor watch from your phone, and get an alarm when something needs attention.</p>
     <button class="button primary" type="button" id="sign-in" ${state.busy ? 'disabled' : ''}>${state.busy ? 'Waiting for the browser…' : 'Sign in with your SKAGER account'}</button>
     ${state.message ? `<p class="message${state.error ? ' error' : ''}" role="status">${esc(state.message)}</p>` : ''}
-    <p class="note">Sign-in opens beta.skager.app. Companion needs SKAGER Cloud, and SKAGER on board linked to your account.</p>
+    <p class="note">Sign-in opens app.skager.app. Companion needs SKAGER Cloud, and SKAGER on board linked to your account.</p>
     <button class="button secondary" type="button" id="demo">Try the demo</button>
     <p class="note">No account needed: two simulated boats show what Companion does.</p>
     <p class="note fine">Companion shows what SKAGER reports. It is not for navigation and cannot control the boat.</p>
@@ -49,7 +49,7 @@ export function renderSignIn(state: { busy?: boolean; message?: string; error?: 
 
 export function renderNoCloud(cloud: Cloud | null): string {
   return `<section class="card empty-state"><p class="eyebrow">SKAGER Cloud</p><h2>SKAGER Cloud is not active on this account.</h2>
-    <p class="note">${cloud?.status === 'past_due' ? 'The last payment did not go through.' : 'Boat data, alarms and the anchor watch on your phone are part of SKAGER Cloud.'} You can manage your account at beta.skager.app.</p></section>`;
+    <p class="note">${cloud?.status === 'past_due' ? 'The last payment did not go through.' : 'Boat data, alarms and the anchor watch on your phone are part of SKAGER Cloud.'} You can manage your account at app.skager.app.</p></section>`;
 }
 
 export function renderNoBoats(): string {
@@ -57,7 +57,7 @@ export function renderNoBoats(): string {
     <ol class="steps">
       <li>On the boat computer, open SKAGER and go to <strong>Settings → System → SKAGER Cloud</strong>.</li>
       <li>Tap <strong>Link to my account</strong>. A QR code and a pairing code appear.</li>
-      <li>Scan the QR code with this phone's camera, sign in and tap <strong>Link to my account</strong>. Or open beta.skager.app/link and type the code.</li>
+      <li>Scan the QR code with this phone's camera, sign in and tap <strong>Link to my account</strong>. Or open app.skager.app/link and type the code.</li>
       <li>Back in SKAGER, switch <strong>Share boat data</strong> on.</li>
     </ol>
     <p class="note">Your boat appears here within a minute.</p></section>`;
@@ -369,7 +369,7 @@ export function renderSettings(v: SettingsView): string {
       ${v.push === 'prompt' ? '<button type="button" class="button secondary" id="push-enable">Allow alarm notifications</button>' : ''}</section>
     <section class="card"><p class="eyebrow">Display</p><div class="segmented" role="group" aria-label="Display mode">${[['auto', 'Auto'], ['day', 'Day'], ['dusk', 'Dusk'], ['night', 'Night']].map(([k, l]) => `<button type="button" class="${v.theme === k ? 'active' : ''}" data-theme-choice="${k}">${l}</button>`).join('')}</div></section>
     <section class="card"><p class="eyebrow">Boats</p>${v.boats.length ? v.boats.map(b => `<p>${esc(b.name)} <span class="note">· SKAGER ${esc(b.appVersion)}</span></p>`).join('') : '<p class="note">No boat linked yet.</p>'}
-      <p class="note">Boats and phones are managed at beta.skager.app under SKAGER Cloud.</p></section>
+      <p class="note">Boats and phones are managed at app.skager.app under SKAGER Cloud.</p></section>
     <button type="button" class="button danger" id="sign-out">${v.demo ? 'Leave the demo' : 'Sign out of this phone'}</button>
     <p class="note fine center">SKAGER Companion ${esc(v.version)} · Not for navigation · Map data © OpenStreetMap contributors, OpenMapTiles, OpenFreeMap</p>
   </div>`;

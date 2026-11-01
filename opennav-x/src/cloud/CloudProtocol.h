@@ -11,7 +11,9 @@
 
 namespace opennav::cloud {
 
-inline constexpr const char *kOrigin = "https://beta.skager.app";
+// Where SKAGER Cloud is. Builds before the public launch used https://beta.skager.app, which
+// keeps serving them; the server answers each build with links on its own address.
+inline constexpr const char *kOrigin = "https://app.skager.app";
 // Upload cadence for the latest snapshot; the server keeps one sample a minute.
 inline constexpr std::chrono::seconds kTelemetryInterval{15};
 // A device token as issued by pairing: "skg1_" + 64 lowercase hex.

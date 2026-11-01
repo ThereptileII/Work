@@ -1,6 +1,6 @@
 ---
 name: skager-cloudflare
-description: Operate SKAGER's existing Cloudflare Worker, beta.skager.app DNS and private R2 release storage. Use for deployment routing, upload verification, private downloads and Cloudflare faults within the established Supabase architecture.
+description: Operate SKAGER's existing Cloudflare Worker, its addresses (skager.app, www/app/beta.skager.app) and private R2 release storage. Use for deployment routing, upload verification, private downloads and Cloudflare faults within the established Supabase architecture.
 ---
 
 # SKAGER Cloudflare
@@ -18,8 +18,10 @@ or a paid plan merely to perform an existing workflow.
   product questions and `cf-cli` for supported CLI operations; use `wrangler`
   where the repository already has its configuration. Do not invent deployment
   commands or recover browser tokens to work around a disconnected browser.
-- Preserve the apex domain and unrelated DNS. SKAGER invited-beta publication
-  targets `beta.skager.app`; this skill grants no wider publication authority.
+- Preserve unrelated DNS. The Worker answers on `skager.app`, `www.skager.app`,
+  `app.skager.app` and `beta.skager.app` as its custom domains (owner decision
+  2026-11-01, `opennav-x/docs/architecture/public-addresses.md`); this skill grants
+  no wider publication authority.
 - For an actual deployment, follow `skager-web-publish` (or its versioned source
   under `tools/agents/skills`). Check the source SHA, clean web inputs, builder
   arguments and CI evidence before producing the bundle.

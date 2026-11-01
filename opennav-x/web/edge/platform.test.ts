@@ -6,7 +6,9 @@ test('CSRF requires exact origin, matching single cookie and header', async () =
   const token = 'a'.repeat(64);
   const headers = { Origin: 'https://beta.skager.app', Cookie: `__Host-skager_csrf=${token}`, 'X-CSRF-Token': token };
   assert.equal(await csrfValid(new Request('https://beta.skager.app/api/test', { method: 'POST', headers })), true);
-  for (const other of [{ Origin: 'https://evil.example' }, { 'X-CSRF-Token': 'b'.repeat(64) },
+  // The public address and the pre-launch one; the website (skager.app) never changes data.
+  assert.equal(await csrfValid(new Request('https://app.skager.app/api/test', { method: 'POST', headers: { ...headers, Origin: 'https://app.skager.app' } })), true);
+  for (const other of [{ Origin: 'https://evil.example' }, { Origin: 'https://skager.app' }, { Origin: 'https://app.skager.app:443' }, { 'X-CSRF-Token': 'b'.repeat(64) },
     { Cookie: `${headers.Cookie}; ${headers.Cookie}` }, { 'X-CSRF-Token': '' }]) {
     assert.equal(await csrfValid(new Request('https://beta.skager.app/api/test', { method: 'POST', headers: { ...headers, ...other } })), false);
   }

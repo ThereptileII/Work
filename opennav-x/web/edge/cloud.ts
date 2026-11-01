@@ -2,11 +2,12 @@
  *  - /api/device/*: the SKAGER app. Never cookies or CSRF: pairing uses a secret device
  *    code, later requests a bearer device token. A browser Origin header is refused, so a
  *    web page cannot drive these routes with a visitor's network position. The one Origin
- *    accepted is the explicit-port form the app's HTTP client (IXWebSocket) always adds;
+ *    accepted is the explicit-port form the app's HTTP client (IXWebSocket) always adds (one per address);
  *    browsers serialise origins without a default port, so a page cannot send it.
  *  - /api/cloud/*: the logged-in customer (cookie session; the router checks CSRF).
  * Tokens and device codes are stored only as SHA-256. Missing Cloud never blocks the
  * app: it only withholds the update feed and telemetry storage. */
+import { LEGACY_ORIGIN, PUBLIC_ORIGIN } from './platform.ts';
 import { dispatchPush, inBackground } from './push.ts';
 
 export interface CloudContext {
@@ -18,7 +19,10 @@ export interface CloudContext {
 }
 type Json = Record<string, any>;
 
-export const LINK_URL = 'https://beta.skager.app/link/';
+/** The page where an owner types the code SKAGER shows. SKAGER accepts a link only on the
+ * address it was built with, so each boat gets its own: builds since the public launch use
+ * app.skager.app, older ones beta.skager.app (known by the Origin their HTTP client sends). */
+export const linkUrl = (origin: string | null) => (origin === `${PUBLIC_ORIGIN}:443` ? PUBLIC_ORIGIN : LEGACY_ORIGIN) + '/link/';
 const LINK_SECONDS = 600;
 const POLL_SECONDS = 5;
 const UUID = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/;
@@ -238,7 +242,7 @@ async function linkStart(req: Request, ctx: CloudContext): Promise<Response> {
     const started = object(await ctx.rpc('cloud_link_start', { p_device_hash: await sha256(deviceCode),
       p_user_code: code, p_name: input.name.trim(), p_platform: input.platform, p_version: input.version }));
     if (started.state === 'pending') {
-      return reply(200, { deviceCode, userCode: code, verificationUrl: LINK_URL,
+      return reply(200, { deviceCode, userCode: code, verificationUrl: linkUrl(req.headers.get('Origin')),
         expiresIn: LINK_SECONDS, interval: POLL_SECONDS });
     }
   }
@@ -445,7 +449,7 @@ const CUSTOMER_ROUTES = ['/api/cloud/overview', '/api/cloud/link/find', '/api/cl
   '/api/cloud/phones/revoke'];
 
 /** IXWebSocket's HttpClient adds `Origin: <scheme>://<host>:<port>` unless told otherwise. */
-const APP_CLIENT_ORIGIN = 'https://beta.skager.app:443';
+const APP_CLIENT_ORIGINS = [`${PUBLIC_ORIGIN}:443`, `${LEGACY_ORIGIN}:443`];
 
 /** Device routes are exempt from the browser CSRF check; see the module comment. */
 export function isDeviceRoute(path: string): boolean { return DEVICE_ROUTES.includes(path); }
@@ -454,7 +458,7 @@ export async function handleCloud(req: Request, ctx: CloudContext): Promise<Resp
   const path = new URL(req.url).pathname;
   if (DEVICE_ROUTES.includes(path)) {
     const origin = req.headers.get('Origin');
-    if ((origin !== null && origin !== APP_CLIENT_ORIGIN) || req.headers.has('Cookie')) return reply(403, { error: 'Request rejected' });
+    if ((origin !== null && !APP_CLIENT_ORIGINS.includes(origin)) || req.headers.has('Cookie')) return reply(403, { error: 'Request rejected' });
     try {
       if (path === '/api/device/link' || path === '/api/device/link/poll') {
         if (req.method !== 'POST') return reply(405, { error: 'POST required' });

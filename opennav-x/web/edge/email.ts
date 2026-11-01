@@ -76,9 +76,9 @@ export function compose(template: string, data: Json): { subject: string; html: 
 <h1 style="font-size:28px;font-weight:600;margin:0 0 16px">${escape(message.heading)}</h1>
 ${message.paragraphs.map(p => `<p style="font-size:16px;line-height:1.6;color:#d6dedb;margin:0 0 14px">${escape(p)}</p>`).join('')}
 ${table.html}${message.action ? `<p style="margin:28px 0"><a href="${escape(message.action[1])}" style="display:inline-block;background:#6fe0ea;color:#04161b;text-decoration:none;font-weight:600;padding:14px 22px;border-radius:8px">${escape(message.action[0])}</a></p>` : ''}
-<p style="font-size:13px;color:#7e9699;margin-top:36px">SKAGER · beta.skager.app · This is a service email about your SKAGER purchase.</p></div></body></html>`;
+<p style="font-size:13px;color:#7e9699;margin-top:36px">SKAGER · skager.app · This is a service email about your SKAGER purchase.</p></div></body></html>`;
   const text = [message.heading, '', ...message.paragraphs, '', table.text,
-    ...(message.action ? ['', `${message.action[0]}: ${message.action[1]}`] : []), '', 'SKAGER · beta.skager.app'].join('\n');
+    ...(message.action ? ['', `${message.action[0]}: ${message.action[1]}`] : []), '', 'SKAGER · skager.app'].join('\n');
   return { subject: message.subject, html, text };
 }
 
