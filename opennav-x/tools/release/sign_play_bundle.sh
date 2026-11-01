@@ -8,5 +8,6 @@ out=${in%-unsigned.aab}.aab
 [ "$in" != "$out" ] || { echo "expected a *-unsigned.aab" >&2; exit 2; }
 cp "$in" "$out"
 jarsigner -sigalg SHA256withRSA -digestalg SHA-256 -keystore "$keystore" -storepass:file "$password" "$out" "$alias" >/dev/null
-jarsigner -verify -strict "$out" >/dev/null
+# Not -strict: an upload key is self-signed by design, which -strict reports as an error.
+jarsigner -verify "$out" | grep -q "jar verified."
 sha256sum "$out"
